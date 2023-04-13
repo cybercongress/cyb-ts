@@ -27,6 +27,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import useIpfs from 'src/hooks/useIpfs';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 const {
   MEMO,
@@ -207,7 +208,7 @@ class ActionBarTweet extends Component {
   };
 
   generateTxKeplr = async () => {
-    const { keplr } = this.props;
+    const { signer, signingClient } = this.props;
     const { fromCid, toCid, addressLocalStor } = this.state;
 
     console.log('fromCid, toCid :>> ', fromCid, toCid);
@@ -215,15 +216,19 @@ class ActionBarTweet extends Component {
     this.setState({
       stage: STAGE_KEPLR_APPROVE,
     });
-    if (keplr !== null) {
-      await window.keplr.enable(CYBER.CHAIN_ID);
-      const { address } = (await keplr.signer.getAccounts())[0];
+    if (signer && signingClient) {
+      const { address } = (await signer.getAccounts())[0];
       const fee = {
         amount: [],
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
       if (addressLocalStor !== null && addressLocalStor.address === address) {
-        const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+        const result = await signingClient.cyberlink(
+          address,
+          fromCid,
+          toCid,
+          fee
+        );
         if (result.code === 0) {
           const hash = result.transactionHash;
           console.log('hash :>> ', hash);
@@ -510,8 +515,15 @@ const mapStateToProps = (store) => {
 // temp
 export const withIpfsAndKeplr = (Component) => (props) => {
   const { node } = useIpfs();
-  const { keplr } = useContext(AppContext);
-  return <Component {...props} node={node} keplr={keplr} />;
+  const { signer, signingClient } = useSigningClient(AppContext);
+  return (
+    <Component
+      {...props}
+      node={node}
+      signer={signer}
+      signingClient={signingClient}
+    />
+  );
 };
 
 export default withIpfsAndKeplr(connect(mapStateToProps)(ActionBarTweet));

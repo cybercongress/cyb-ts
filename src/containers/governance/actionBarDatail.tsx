@@ -26,6 +26,8 @@ import {
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
+import useSdk from 'src/hooks/useSdk';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgCyber = require('../../image/blue-circle.png');
@@ -40,7 +42,8 @@ const {
 const LEDGER_TX_ACOUNT_INFO = 10;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const {queryClient } = useSdk();
+  const { signer, signingClient } = useSigningClient()
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
@@ -50,12 +53,12 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
+      if (queryClient && txHash !== null) {
         setStage(STAGE_CONFIRMING);
         const response = await getTxs(txHash);
         console.log('response :>> ', response);
 
-        const responseGetTx = await jsCyber.getTx(txHash);
+        const responseGetTx = await queryClient.getTx(txHash);
         console.log('responseGetTx :>> ', responseGetTx);
 
         if (response && response !== null) {
@@ -79,7 +82,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   const cleatState = () => {
     setStage(STAGE_INIT);
@@ -91,9 +94,9 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
   };
 
   const generateTxKeplr = async () => {
-    if (keplr !== null && Object.keys(proposals).length > 0) {
+    if (signingClient && signer && Object.keys(proposals).length > 0) {
       try {
-        const [{ address }] = await keplr.signer.getAccounts();
+        const [{ address }] = await signer.getAccounts();
         if (addressActive !== null && addressActive.bech32 === address) {
           let response = {};
           const fee = {
@@ -106,7 +109,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
           if (
             proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD
           ) {
-            response = await keplr.voteProposal(
+            response = await signingClient.voteProposal(
               address,
               id,
               valueSelect,
@@ -119,7 +122,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
             proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ) {
             const amount = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
-            response = await keplr.depositProposal(
+            response = await signingClient.depositProposal(
               address,
               id,
               amount,

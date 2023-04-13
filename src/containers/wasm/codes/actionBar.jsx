@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
   Pane,
 } from '@cybercongress/gravity';
 import { GasPrice } from '@cosmjs/launchpad';
+import useSigningClient from 'src/hooks/useSigningClient';
 import txs from '../../../utils/txs';
-import { AppContext } from '../../../context';
 import { CYBER, LEDGER } from '../../../utils/config';
 import {
   ActionBarContentText,
@@ -30,7 +30,7 @@ const {
 } = LEDGER;
 
 function ActionBar({ updateFnc, addressActive }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
   const inputOpenFileRef = useRef();
   const [wasm, setWasm] = useState(null);
   const [stage, setStage] = useState(STAGE_INIT);
@@ -40,7 +40,7 @@ function ActionBar({ updateFnc, addressActive }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
+      if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
         const response = await getTxs(txHash);
         console.log('response :>> ', response);
@@ -65,42 +65,43 @@ function ActionBar({ updateFnc, addressActive }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash]);
+  }, [txHash]);
 
   const uploadCode = async () => {
     setStage(STAGE_SUBMITTED);
+    if (signer && signingClient) {
+      const wasmBytes = new Uint8Array(await wasm.arrayBuffer());
+      try {
+        const [{ address }] = await signer.getAccounts();
 
-    const wasmBytes = new Uint8Array(await wasm.arrayBuffer());
-    try {
-      const [{ address }] = await keplr.signer.getAccounts();
-
-      if (addressActive !== null && addressActive.bech32 === address) {
-        const response = await keplr.upload(
-          address,
-          wasmBytes,
-          txs.calculateFee(4000000, gasPrice),
-          CYBER.MEMO_KEPLR
-        );
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
+        if (addressActive !== null && addressActive.bech32 === address) {
+          const response = await signingClient.upload(
+            address,
+            wasmBytes,
+            txs.calculateFee(4000000, gasPrice),
+            CYBER.MEMO_KEPLR
+          );
+          if (response.code === 0) {
+            setTxHash(response.transactionHash);
+          } else {
+            setTxHash(null);
+            setErrorMessage(response.rawLog.toString());
+            setStage(STAGE_ERROR);
+          }
         } else {
-          setTxHash(null);
-          setErrorMessage(response.rawLog.toString());
+          setErrorMessage(
+            <span>
+              Add address <Account margin="0 5px" address={address} /> to your
+              pocket or make active{' '}
+            </span>
+          );
           setStage(STAGE_ERROR);
         }
-      } else {
-        setErrorMessage(
-          <span>
-            Add address <Account margin="0 5px" address={address} /> to your
-            pocket or make active{' '}
-          </span>
-        );
+      } catch (e) {
+        console.log(`e`, e);
         setStage(STAGE_ERROR);
+        setErrorMessage(e.toString());
       }
-    } catch (e) {
-      console.log(`e`, e);
-      setStage(STAGE_ERROR);
-      setErrorMessage(e.toString());
     }
   };
 
@@ -155,7 +156,7 @@ function ActionBar({ updateFnc, addressActive }) {
             />
           </ActionBarContentText>
           <Button
-            disabled={wasm === null || keplr === null}
+            disabled={wasm === null || !signer}
             onClick={() => uploadCode()}
           >
             Upload

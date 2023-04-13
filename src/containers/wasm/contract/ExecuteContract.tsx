@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
 import { JsonView } from '../ui/ui';
-import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 const executePlaceholder = {
   transfer: {
@@ -24,7 +24,7 @@ const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
 function ExecuteContract({ contractAddress }) {
-  const { keplr } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -60,16 +60,16 @@ function ExecuteContract({ contractAddress }) {
   }, [coinsObject, executeResponse, msgObject]);
 
   const executeContract = async () => {
-    if (!msgObject.result || keplr === null) {
+    if (!msgObject.result || !signer || !signingClient) {
       return;
     }
 
     setExecuting(true);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-      const executeResponseResult = await keplr.execute(
+      const executeResponseResult = await signingClient.execute(
         address,
         contractAddress,
         msgObject.result,

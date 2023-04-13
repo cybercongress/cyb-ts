@@ -15,6 +15,7 @@ import { AppContext } from '../../context';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
+import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const STAGE_TYPE_GOV = 9;
 
@@ -59,9 +60,8 @@ class ActionBar extends Component {
       valueDeposit,
       valueAddressRecipient,
     } = this.state;
-    const { keplr } = this.context;
-    console.log('keplr', keplr);
-    if (keplr !== null) {
+    const { signer, signingClient } = this.props;
+    if (signer && signingClient) {
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
@@ -70,12 +70,12 @@ class ActionBar extends Component {
         amount: [],
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
       try {
         const deposit = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
         if (valueSelect === 'textProposal') {
-          response = await keplr.submitProposal(
+          response = await signingClient.submitProposal(
             address,
             {
               typeUrl: '/cosmos.gov.v1beta1.TextProposal',
@@ -91,7 +91,7 @@ class ActionBar extends Component {
 
         if (valueSelect === 'communityPool') {
           const amount = coins(10, CYBER.DENOM_CYBER);
-          response = await keplr.submitProposal(
+          response = await signingClient.submitProposal(
             address,
             {
               typeUrl:
@@ -459,6 +459,4 @@ class ActionBar extends Component {
   }
 }
 
-ActionBar.contextType = AppContext;
-
-export default ActionBar;
+export default withIpfsAndKeplr(ActionBar);

@@ -1,9 +1,9 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
+import useSigningClient from 'src/hooks/useSigningClient';
 import txs from '../../../utils/txs';
-import { AppContext } from '../../../context';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
@@ -51,7 +51,7 @@ export function JSONInputCard({ title, placeholder, setState, height }) {
 }
 
 function InstantiationContract({ codeId, updateFnc }) {
-  const { keplr } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
   const [error, setError] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [executeResponse, setExecuteResponse] = useState({});
@@ -92,16 +92,16 @@ function InstantiationContract({ codeId, updateFnc }) {
   }, [coinsObject, executeResponse, msgObject]);
 
   const executeContract = async () => {
-    if (!msgObject.result || !label || keplr === null) {
+    if (!msgObject.result || !label || !signer || !signingClient) {
       return;
     }
 
     setExecuting(true);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-      const executeResponseResult = await keplr.instantiate(
+      const executeResponseResult = await signingClient.instantiate(
         address,
         parseFloat(codeId),
         msgObject.result,
@@ -205,7 +205,7 @@ function InstantiationContract({ codeId, updateFnc }) {
           type="button"
           className="btn btn-primary"
           onClick={executeContract}
-          disabled={!msgObject.result || keplr === null}
+          disabled={!msgObject.result || !signer}
         >
           Instantiate contract
         </button>

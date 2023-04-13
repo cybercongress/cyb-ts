@@ -1,18 +1,16 @@
 /* eslint-disable */
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { BtnGrd } from 'src/components';
 import { ActionBarSteps } from '../portal/components';
-import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 function ActionBar({ updateFunc }) {
-  const { keplr, initSigner } = useContext(AppContext);
+  const { signer, initSigner } = useSigningClient();
 
   const connectKeplr = useCallback(async () => {
-    if (keplr !== null) {
-      const { bech32Address, name } = await keplr.signer.keplr.getKey(
-        CYBER.CHAIN_ID
-      );
+    if (signer) {
+      const { bech32Address, name } = await signer.keplr.getKey(CYBER.CHAIN_ID);
       const currenAddress = {
         bech32: bech32Address,
         keyWallet: 'keplr',
@@ -24,9 +22,9 @@ function ActionBar({ updateFunc }) {
       }
     } else if (initSigner) {
       console.log('initSigner');
-      await initSigner();
+      initSigner();
     }
-  }, [keplr, initSigner]);
+  }, [signer, initSigner]);
 
   return (
     <ActionBarSteps>

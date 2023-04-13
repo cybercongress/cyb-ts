@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useMemo, useContext, useCallback, useState, useEffect } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
+import useSigningClient from 'src/hooks/useSigningClient';
 import txs from '../../../utils/txs';
-import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
 import { Dots, BtnGrd } from '../../../components';
 import { ActionBarSteps } from '../components';
@@ -42,11 +42,11 @@ function ActionBarRelease({
 }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
-  const { keplr } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
 
   const getRelease = useCallback(async () => {
     try {
-      if (keplr !== null && currentRelease !== null) {
+      if (signer && signingClient && currentRelease !== null) {
         const msgs = [];
         if (currentRelease.length > 0) {
           currentRelease.forEach((item) => {
@@ -56,11 +56,11 @@ function ActionBarRelease({
           });
         }
 
-        const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+        const [{ address: addressKeplr }] = await signer.getAccounts();
 
         if (msgs.length > 0) {
           const gasLimits = 400000 * msgs.length;
-          const executeResponseResult = await keplr.executeArray(
+          const executeResponseResult = await signingClient.executeArray(
             addressKeplr,
             CONTRACT_ADDRESS_GIFT,
             msgs,
@@ -91,13 +91,13 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keplr, currentRelease]);
+  }, [signer, signingClient, currentRelease]);
 
   useEffect(() => {
     const checkAddress = async () => {
       if (step === STEP_CHECK_ACC || step === STATE_CHANGE_ACCOUNT) {
-        if (keplr !== null && addressActive !== null) {
-          const [{ address }] = await keplr.signer.getAccounts();
+        if (signer && addressActive !== null) {
+          const [{ address }] = await signer.getAccounts();
           const { bech32 } = addressActive;
           if (address === bech32) {
             setStep(STEP_RELEASE);
@@ -110,7 +110,7 @@ function ActionBarRelease({
     };
     checkAddress();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, keplr, addressActive]);
+  }, [step, signer, addressActive]);
 
   const useAddressOwner = useMemo(() => {
     if (addressActive !== null) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useNavigate } from 'react-router-dom';
@@ -16,8 +16,9 @@ import {
 import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
-import { AppContext } from '../../context';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
+import useSdk from 'src/hooks/useSdk';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 const {
   STAGE_INIT,
@@ -138,14 +139,14 @@ const checkTxs = (response, updateState) => {
 };
 
 const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
-  const { jsCyber } = useContext(AppContext);
+  const { queryClient } = useSdk();
   const [txHeight, setTxHeight] = useState(null);
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
+      if (queryClient && txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await jsCyber.getTx(txHash);
+        const response = await queryClient.getTx(txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -168,7 +169,7 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   return { txHeight };
 };
@@ -184,7 +185,8 @@ function ActionBarContainer({
   updateFnc,
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient()
+  const { queryClient } = useSdk()
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
@@ -215,121 +217,130 @@ function ActionBarContainer({
   };
 
   const delegateTokens = async () => {
-    console.log('delegateTokens', delegateTokens);
-    try {
-      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
-      const validatorAddres = getValidatorAddres(validators);
-      if (
-        checkAddress(addressPocket, addressKeplr, {
-          setErrorMessage,
-          setStage,
-        })
-      ) {
-        setStage(STAGE_WAIT);
-        const response = await keplr.delegateTokens(
-          addressKeplr,
-          validatorAddres,
-          coin(parseFloat(amount), CYBER.DENOM_CYBER),
-          fee,
-          CYBER.MEMO_KEPLR
-        );
-        checkTxs(response, { setTxHash, setErrorMessage, setStage });
+    if (signer && signingClient) {
+      try {
+        const [{ address: addressKeplr }] = await signer.getAccounts();
+        const validatorAddres = getValidatorAddres(validators);
+        if (
+          checkAddress(addressPocket, addressKeplr, {
+            setErrorMessage,
+            setStage,
+          })
+        ) {
+          setStage(STAGE_WAIT);
+          const response = await signingClient.delegateTokens(
+            addressKeplr,
+            validatorAddres,
+            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            fee,
+            CYBER.MEMO_KEPLR
+          );
+          checkTxs(response, { setTxHash, setErrorMessage, setStage });
+        }
+      } catch (error) {
+        errorState(error);
       }
-    } catch (error) {
-      errorState(error);
     }
   };
 
   const undelegateTokens = async () => {
-    try {
-      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
-
-      const validatorAddres = getValidatorAddres(validators);
-      if (
-        checkAddress(addressPocket, addressKeplr, {
-          setErrorMessage,
-          setStage,
-        })
-      ) {
-        setStage(STAGE_WAIT);
-        const response = await keplr.undelegateTokens(
-          addressKeplr,
-          validatorAddres,
-          coin(parseFloat(amount), CYBER.DENOM_CYBER),
-          fee,
-          CYBER.MEMO_KEPLR
-        );
-        checkTxs(response, { setTxHash, setErrorMessage, setStage });
+    if (signer && signingClient) {
+      try {
+        const [{ address: addressKeplr }] = await signer.getAccounts();
+  
+        const validatorAddres = getValidatorAddres(validators);
+        if (
+          checkAddress(addressPocket, addressKeplr, {
+            setErrorMessage,
+            setStage,
+          })
+        ) {
+          setStage(STAGE_WAIT);
+          const response = await signingClient.undelegateTokens(
+            addressKeplr,
+            validatorAddres,
+            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            fee,
+            CYBER.MEMO_KEPLR
+          );
+          checkTxs(response, { setTxHash, setErrorMessage, setStage });
+        }
+      } catch (error) {
+        errorState(error);
       }
-    } catch (error) {
-      errorState(error);
     }
   };
 
   const redelegateTokens = async () => {
-    try {
-      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
-      if (
-        checkAddress(addressPocket, addressKeplr, {
-          setErrorMessage,
-          setStage,
-        })
-      ) {
-        setStage(STAGE_WAIT);
-        const validatorAddres = getValidatorAddres(validators);
-        const response = await keplr.redelegateTokens(
-          addressKeplr,
-          validatorAddres,
-          valueSelect,
-          coin(parseFloat(amount), CYBER.DENOM_CYBER),
-          fee,
-          CYBER.MEMO_KEPLR
-        );
-        checkTxs(response, { setTxHash, setErrorMessage, setStage });
+    if (signer && signingClient) {
+      try {
+        const [{ address: addressKeplr }] = await signer.getAccounts();
+        if (
+          checkAddress(addressPocket, addressKeplr, {
+            setErrorMessage,
+            setStage,
+          })
+        ) {
+          setStage(STAGE_WAIT);
+          const validatorAddres = getValidatorAddres(validators);
+          const response = await signingClient.redelegateTokens(
+            addressKeplr,
+            validatorAddres,
+            valueSelect,
+            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            fee,
+            CYBER.MEMO_KEPLR
+          );
+          checkTxs(response, { setTxHash, setErrorMessage, setStage });
+        }
+      } catch (error) {
+        errorState(error);
       }
-    } catch (error) {
-      errorState(error);
     }
   };
 
   const claimRewards = async () => {
-    try {
-      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
-      const validatorAddress = [];
-      if (
-        checkAddress(addressPocket, addressKeplr, {
-          setErrorMessage,
-          setStage,
-        })
-      ) {
-        setStage(LEDGER_GENERATION);
-        const delegationTotalRewards = await jsCyber.delegationTotalRewards(
-          addressKeplr
-        );
-        if (delegationTotalRewards !== null && delegationTotalRewards.rewards) {
-          const { rewards } = delegationTotalRewards;
-          Object.keys(rewards).forEach((key) => {
-            if (rewards[key].reward !== null) {
-              validatorAddress.push(rewards[key].validatorAddress);
-            }
-          });
-          const gasLimitsRewards =
-            150000 * Object.keys(validatorAddress).length;
-          const feeRewards = {
-            amount: [],
-            gas: gasLimitsRewards.toString(),
-          };
-          setStage(STAGE_WAIT);
-          const response = await keplr.withdrawAllRewards(
-            addressKeplr,
-            validatorAddress,
-            feeRewards
-          );
-          checkTxs(response, { setTxHash, setErrorMessage, setStage });
+    if (signer && signingClient && queryClient) {
+      try {
+        const [{ address: addressKeplr }] = await signer.getAccounts();
+        const validatorAddress = [];
+        if (
+          checkAddress(addressPocket, addressKeplr, {
+            setErrorMessage,
+            setStage,
+          })
+        ) {
+          setStage(LEDGER_GENERATION);
+          const delegationTotalRewards =
+            await queryClient.delegationTotalRewards(addressKeplr);
+          if (
+            delegationTotalRewards !== null &&
+            delegationTotalRewards.rewards
+          ) {
+            const { rewards } = delegationTotalRewards;
+            Object.keys(rewards).forEach((key) => {
+              if (rewards[key].reward !== null) {
+                validatorAddress.push(rewards[key].validatorAddress);
+              }
+            });
+            const gasLimitsRewards =
+              150000 * Object.keys(validatorAddress).length;
+            const feeRewards = {
+              amount: [],
+              gas: gasLimitsRewards.toString(),
+            };
+            setStage(STAGE_WAIT);
+            const response = await signingClient.withdrawAllRewards(
+              addressKeplr,
+              validatorAddress,
+              feeRewards
+            );
+            checkTxs(response, { setTxHash, setErrorMessage, setStage });
+          }
         }
+      } catch (error) {
+        errorState(error);
       }
-    } catch (error) {
-      errorState(error);
     }
   };
 

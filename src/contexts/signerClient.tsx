@@ -1,39 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
-import { Keplr } from '@keplr-wallet/types';
-import configKeplr from 'src/utils/keplrUtils';
+import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { Option } from 'src/types/common';
+
+// TO DO interface for keplr and OfflineSigner
+// type SignerType = OfflineSigner & {
+//   keplr: Keplr;
+// };
+
+// interface
 
 type SigningClientContextType = {
   readonly signingClient: Option<SigningCyberClient>;
   readonly signer: Option<OfflineSigner>;
   initSigner: () => void;
-};
-
-const getKeplr = async (): Promise<Keplr | undefined> => {
-  if (window.keplr) {
-    return window.keplr;
-  }
-
-  if (document.readyState === 'complete') {
-    return window.keplr;
-  }
-
-  return new Promise((resolve) => {
-    const documentStateChange = (event: Event) => {
-      if (
-        event.target &&
-        (event.target as Document).readyState === 'complete'
-      ) {
-        resolve(window.keplr);
-        document.removeEventListener('readystatechange', documentStateChange);
-      }
-    };
-
-    document.addEventListener('readystatechange', documentStateChange);
-  });
 };
 
 async function createClient(
@@ -45,8 +27,6 @@ async function createClient(
     signer,
     options
   );
-
-  console.log('client', client);
 
   return client;
 }
@@ -64,12 +44,15 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   const [value, setValue] = useState<SigningClientContextType>(valueContext);
 
   useEffect(() => {
-    window.onload = async () => {
+    const initWindowKeplr = async () => {
+      // window.onload = async () => {
       const windowKeplr = await getKeplr();
       if (windowKeplr) {
         initSigner();
       }
+      // };
     };
+    initWindowKeplr();
   }, []);
 
   useEffect(() => {
@@ -89,7 +72,11 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
         CYBER.CHAIN_ID
       );
 
+      console.log('offlineSigner', offlineSigner);
+
       const clientJs = await createClient(offlineSigner);
+
+      console.log('clientJs', clientJs);
       setValue((item) => ({
         ...item,
         signer: offlineSigner,
@@ -98,13 +85,10 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const valueMemo = useMemo(() => ({ ...value, initSigner }), [value]);
+
   return (
-    <SignerClientContext.Provider
-      value={useMemo(
-        () => ({ ...value, initSigner } as SigningClientContextType),
-        [value]
-      )}
-    >
+    <SignerClientContext.Provider value={valueMemo}>
       {children}
     </SignerClientContext.Provider>
   );
