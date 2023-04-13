@@ -1,10 +1,9 @@
-import { create } from 'ipfs-core';
+import { create, Options } from 'ipfs-core';
 import { PrivateKey } from 'libp2p-crypto';
 import { KeychainConfig, DEK } from 'ipfs-core-types/src/config';
 import { webSockets } from '@libp2p/websockets';
 import { all, dnsWsOrWss } from '@libp2p/websockets/filters';
 import { IPFS, PeerId } from 'kubo-rpc-client/types';
-
 import { multiaddr } from '@multiformats/multiaddr';
 import { webRTCStar } from '@libp2p/webrtc-star';
 // import { MulticastDNS } from '@libp2p/mdns';
@@ -114,6 +113,57 @@ const tryConnectToSwarm = async (nodeIpfs, address) => {
   }
 };
 
+const customConfig: Options = {
+  repo: `ok${Math.random()}`,
+  EXPERIMENTAL: {
+    ipnsPubsub: true,
+  },
+  relay: {
+    enabled: true,
+    hop: {
+      enabled: true,
+    },
+  },
+  config: {
+    Pubsub: {
+      Enabled: true,
+    },
+    Bootstrap: [
+      '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
+      '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
+      '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
+      '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
+    ],
+    Addresses: {
+      Swarm: [
+        // '/ip4/127.0.0.1/tcp/9090/wss',
+        `/ip4/0.0.0.0/tcp/0`,
+        `/ip4/127.0.0.1/tcp/0/ws`,
+        '/ip4/0.0.0.0/tcp/9090/ws/p2p-webrtc-star',
+        '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star',
+        '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        // '/ip4/88.99.105.146/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
+        // '/ip4/135.181.19.86/tcp/9094/p2p/12D3KooWRkf2iZHfy1mUrdReHBFXu8TWWzK1XzsMy8TXqVohwEtH',
+      ],
+    },
+    Discovery: {
+      MDNS: {
+        Enabled: true,
+        Interval: 10,
+      },
+      webRTCStar: {
+        Enabled: true,
+      },
+    },
+  },
+  libp2p: nodeLibp2p,
+  // libp2p: {
+  //   transports: [ws],
+  // },
+};
+
 export async function init() {
   if (node !== null) {
     console.log('IPFS already started');
@@ -124,57 +174,8 @@ export async function init() {
     try {
       // await deleteStore(path);
       console.time('IPFS Started');
-      // node = await create(configIpfs());
-      node = await create({
-        repo: `ok${Math.random()}`,
-        EXPERIMENTAL: {
-          ipnsPubsub: true,
-        },
-        relay: {
-          enabled: true,
-          hop: {
-            enabled: true,
-          },
-        },
-        config: {
-          Pubsub: {
-            Enabled: true,
-          },
-          Bootstrap: [
-            '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-            '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
-            '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-            '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
-          ],
-          Addresses: {
-            Swarm: [
-              // '/ip4/127.0.0.1/tcp/9090/wss',
-              `/ip4/0.0.0.0/tcp/0`,
-              `/ip4/127.0.0.1/tcp/0/ws`,
-              '/ip4/0.0.0.0/tcp/9090/ws/p2p-webrtc-star',
-              '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star',
-              '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-              // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-              // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-              // '/ip4/88.99.105.146/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
-              // '/ip4/135.181.19.86/tcp/9094/p2p/12D3KooWRkf2iZHfy1mUrdReHBFXu8TWWzK1XzsMy8TXqVohwEtH',
-            ],
-          },
-          Discovery: {
-            MDNS: {
-              Enabled: true,
-              Interval: 10,
-            },
-            webRTCStar: {
-              Enabled: true,
-            },
-          },
-        },
-        libp2p: nodeLibp2p,
-        // libp2p: {
-        //   transports: [ws],
-        // },
-      });
+      node = await create(configIpfs());
+      // node = await create(customConfig);
       window.node = node;
       node.libp2p.addEventListener('peer:discovery', (evt) => {
         // window.discoveredPeers.set(evt.detail.id.toString(), evt.detail)
@@ -203,10 +204,31 @@ export async function init() {
       // );
       const { id } = await node.id();
       console.log(id.toString());
-      // await tryConnectToSwarm(
-      //   node,
-      //   `/ip4/0.0.0.0/tcp/9090/ws/p2p-webrtc-star/`
-      // );
+      await tryConnectToSwarm(
+        node,
+        // '/ip4/88.99.105.146/tcp/433/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        `/dnsaddr/io.cybernode.ai/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB`
+      );
+      await tryConnectToSwarm(
+        node,
+        // '/dnsaddr/swarm.io.cybernode.ai/tcp/433/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        '/ip6/2a01:4f8:10a:19d1::2/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        // `/ip4/172.20.10.2/tcp/4004/ws/p2p/12D3KooWFr1j1SyVgLnTx9AgS8dkKExvUpq75JCuC3ndonoFpckz`
+      );
+      await tryConnectToSwarm(
+        node,
+        // '/ip4/88.99.105.146/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        '/dns4/swarm.io.cybernode.ai/tcp/433/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        // '/dnsaddr/swarm.io.cybernode.ai/tcp/433/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        // `/ip4/88.99.105.146/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB`
+      );
+      await tryConnectToSwarm(
+        node,
+        '/ip4/88.99.105.146/tcp/4011/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        // '/dnsaddr/swarm.io.cybernode.ai/tcp/433/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+        // `/ip4/88.99.105.146/tcp/4011/ws/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB`
+      );
+      //
       // await tryConnectToSwarm(
       //   node,
       //   '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star/'

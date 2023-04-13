@@ -34,7 +34,7 @@ function ContentItem({
 
   useEffect(() => {
     const feachData = async (): Promise<void> => {
-      console.log('dataResponseByCid', content, status);
+      // console.log('dataResponseByCid', content, status);
       if (content) {
         if (content === 'availableDownload' || !content.data) {
           setTextPreview(cid);
