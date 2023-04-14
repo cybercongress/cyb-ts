@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
-import isSvg from 'is-svg';
 import Unixfs from 'ipfs-unixfs';
-import FileType from 'file-type';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
@@ -781,42 +778,12 @@ export const authAccounts = async (address) => {
   }
 };
 
-const resolveContentIpfs = async (data) => {
-  let mime;
-  const dataFileType = await FileType.fromBuffer(data);
-  if (dataFileType !== undefined) {
-    mime = dataFileType.mime;
-    if (mime.indexOf('image') !== -1) {
-      // const dataBase64 = data.toString('base64');
-      const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-      const file = `data:${mime};base64,${dataBase64}`;
-      return file;
-    }
-  }
-  const dataBase64 = uint8ArrayToAsciiString(data);
-  // console.log(`dataBase64`, dataBase64);
-  if (isSvg(dataBase64)) {
-    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-      data,
-      'base64'
-    )}`;
-    return svg;
-  }
-  return null;
-};
-
 export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getIPFSContent(ipfs, cid);
   if (response === 'availableDownload') {
     return 'availableDownload';
   }
-
-  if (response !== undefined) {
-    const responseResolve = await resolveContentIpfs(response.data);
-    return responseResolve;
-  }
-
-  return null;
+  return response?.details?.content;
 };
 
 // Access-Control-Allow-Origin

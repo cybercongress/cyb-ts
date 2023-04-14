@@ -5,10 +5,10 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
-import useIpfs from 'src/hooks/useIpfs';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { IPFSContentWithType } from 'src/utils/ipfs/ipfs';
+
 import SearchItem from '../SearchItem/searchItem';
-import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
 
 import { getRankGrade } from '../../utils/search/utils';
 
@@ -17,76 +17,37 @@ type ContentItemProps = {
   cid: string;
   grade?: $TsFixMe;
   className?: string;
+  parent?: string;
 };
 
 function ContentItem({
   item,
   cid,
   grade,
+  parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  const [content, setContent] = useState<string | undefined>(undefined);
-  const [textPreview, setTextPreview] = useState<string | undefined>(cid);
-  const [typeContent, setTypeContent] = useState<string | undefined>(undefined);
-  const [status, setStatus] = useState('understandingState');
-  const [link, setLink] = useState(`/ipfs/${cid}`);
-  const { node } = useIpfs();
+  const [ipfsData, setIpfData] = useState<IPFSContentWithType>(undefined);
+  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
   useEffect(() => {
-    const feachData = async (): Promise<void> => {
-      const dataResponseByCid = await getIPFSContent(node, cid);
-      console.log('dataResponseByCid', dataResponseByCid);
-      if (dataResponseByCid) {
-        if (dataResponseByCid === 'availableDownload') {
-          setStatus('availableDownload');
-          setTextPreview(cid);
-        } else if (!dataResponseByCid.data) {
-          setStatus('Not Available');
-          setTextPreview(cid);
-        } else {
-          // const { data } = dataResponseByCid;
-          const dataTypeContent = await getTypeContent(
-            dataResponseByCid.data,
-            cid
-          );
-
-          const {
-            text: textContent,
-            type,
-            content: contentCid,
-            link: linkContent,
-          } = dataTypeContent;
-
-          setTextPreview(textContent);
-          setTypeContent(type);
-          setContent(contentCid);
-          setLink(linkContent);
-          setStatus('downloaded');
-        }
-      } else {
-        setStatus('impossibleLoad');
-      }
-    };
-    feachData();
-  }, [cid, node]);
+    // TODO: cover case with content === 'availableDownload'
+    if (status === 'completed' && content && content !== 'availableDownload') {
+      setIpfData(content.details);
+    }
+  }, [content, status]);
 
   return (
-    <Link className={className} to={link}>
+    <Link className={className} to={`/ipfs/${cid}`}>
       <SearchItem
         key={cid}
         textPreview={
           <div className="container-text-SearchItem">
             <ReactMarkdown
               rehypePlugins={[rehypeSanitize]}
-              // skipHtml
-              // escapeHtml
-              // skipHtml={false}
-              // astPlugins={[parseHtml]}
               remarkPlugins={[remarkGfm]}
-
-              // escapeHtml={false}
             >
-              {textPreview || ''}
+              {ipfsData?.text || cid}
             </ReactMarkdown>
           </div>
         }
@@ -97,19 +58,19 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        {typeContent === 'image' && (
+        {ipfsData?.type === 'image' && (
           <img
             style={{ width: '100%', paddingTop: 10 }}
             alt="img"
-            src={content}
+            src={ipfsData?.content}
           />
         )}
-        {content && typeContent === 'application/pdf' && (
+        {ipfsData?.type === 'application/pdf' && (
           <Iframe
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            url={content}
+            url={ipfsData?.content}
           />
         )}
       </SearchItem>

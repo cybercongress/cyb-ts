@@ -12,6 +12,7 @@ function SearchTokenInfo({
   fetchMoreData,
   page,
   allPage,
+  parentId,
 }) {
   try {
     const apps = [];
@@ -42,7 +43,12 @@ function SearchTokenInfo({
                   />
                 </Pane>
               )}
-              <ContentItem cid={key} item={data[key]} className="contentItem" />
+              <ContentItem
+                cid={key}
+                item={data[key]}
+                className="contentItem"
+                parent={parentId}
+              />
             </Pane>
           );
         })

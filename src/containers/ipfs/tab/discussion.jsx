@@ -34,7 +34,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function DiscussionTab({ data, mobile }) {
+function DiscussionTab({ data, mobile, parent }) {
   if (data && data.length > 0) {
     const d = new Date();
     return (
@@ -71,7 +71,12 @@ function DiscussionTab({ data, mobile }) {
                   />
                 </Pane>
               )}
-              <ContentItem cid={cid} item={item} className="contentItem" />
+              <ContentItem
+                cid={cid}
+                item={item}
+                className="contentItem"
+                parent={parent}
+              />
               <Pane
                 className="time-discussion rank-contentItem"
                 position="absolute"

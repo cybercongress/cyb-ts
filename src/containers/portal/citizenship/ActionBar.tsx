@@ -3,8 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import useSigningClient from 'src/hooks/useSigningClient';
-import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
-// import { ActionBarSteps } from '../../energy/component/actionBar';
+import { setDefaultAccount, setAccounts } from '../../../redux/features/pocket';
 import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
@@ -354,7 +353,12 @@ function ActionBar({
 const mapDispatchprops = (dispatch) => {
   return {
     setDefaultAccountProps: (name, account) =>
-      dispatch(setDefaultAccount(name, account)),
+      dispatch(
+        setDefaultAccount({
+          name,
+          account,
+        })
+      ),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
   };
 };

@@ -8,8 +8,11 @@ import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
+import { useDevice } from 'src/contexts/device';
 
-function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
+function Relevance({ items, fetchMoreData, page, allPage }) {
+  const { isMobile: mobile } = useDevice();
+
   return (
     <InfiniteScroll
       dataLength={Object.keys(items).length}
@@ -52,7 +55,12 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
                 />
               </Pane>
             )}
-            <ContentItem cid={key} item={items[key]} className="contentItem" />
+            <ContentItem
+              cid={key}
+              item={items[key]}
+              className="contentItem"
+              parent="particles"
+            />
           </Pane>
         );
       })}
@@ -60,7 +68,7 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
   );
 }
 
-function Objects({ mobile }) {
+function Objects() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -138,21 +146,14 @@ function Objects({ mobile }) {
 
   return (
     <MainContainer width="90%">
-      <Relevace
+      <Relevance
         items={items}
         fetchMoreData={fetchMoreData}
         page={page}
         allPage={allPage}
-        mobile={mobile}
       />
     </MainContainer>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(Objects);
+export default Objects;

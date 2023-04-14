@@ -3,7 +3,7 @@ import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import useIbcDenom from 'src/hooks/useIbcDenom';
-import { setDefaultAccount } from '../../../redux/actions/pocket';
+import { setDefaultAccount } from '../../../redux/features/pocket';
 import {
   PocketCard,
   ContainerAddressInfo,
@@ -20,7 +20,6 @@ import {
 import { COSMOS, CYBER } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
-import { AppContext } from '../../../context';
 
 import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
@@ -734,7 +733,7 @@ function PubkeyCard({
 const mapDispatchprops = (dispatch) => {
   return {
     setDefaultAccountProps: (name, account) =>
-      dispatch(setDefaultAccount(name, account)),
+      dispatch(setDefaultAccount({ name, account })),
   };
 };
 

@@ -1,8 +1,10 @@
+// TODO: Refactor this component - too heavy
+import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Pane, Tablist, Pill } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
 import useIpfs from 'src/hooks/useIpfs';
+import { useDevice } from 'src/contexts/device';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
@@ -61,8 +63,8 @@ const PaneWithPill = ({ caption, count, active }) => (
   </Pane>
 );
 
-function ContentIpfsCid(dataGetIpfsContent) {
-  const loading = dataGetIpfsContent.loading;
+function ContentIpfsCid({ loading, statusFetching, status }) {
+  // const loading = dataGetIpfsContent.loading;
 
   if (loading) {
     return (
@@ -79,14 +81,12 @@ function ContentIpfsCid(dataGetIpfsContent) {
         }}
       >
         <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
-        <div style={{ fontSize: '20px' }}>
-          {dataGetIpfsContent.statusFetching}
-        </div>
+        <div style={{ fontSize: '20px' }}>{statusFetching}</div>
       </div>
     );
   }
 
-  if (!loading && dataGetIpfsContent.status === 'impossibleLoad') {
+  if (!loading && status === 'impossibleLoad') {
     return (
       <div
         style={{
@@ -105,16 +105,22 @@ function ContentIpfsCid(dataGetIpfsContent) {
   }
 }
 
-function Ipfs({ mobile }) {
+function Ipfs() {
   const { jsCyber } = useContext(AppContext);
   const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
-  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
+  const { contentIpfs, status, loading, statusFetching } = useGetIpfsContent(
+    cid,
+    nodeIpfs
+  );
+  const { isMobile: mobile } = useDevice();
 
-  const [content, setContent] = useState('');
-  const [typeContent, setTypeContent] = useState('');
+  // const [content, setContent] = useState('');
+  // const [typeContent, setTypeContent] = useState('');
+  // const [text, setText] = useState('');
+  // const [loadStatus, setLoadStatus] = useState('');
   const [communityData, setCommunityData] = useState({});
-  const [gateway, setGateway] = useState(null);
+  // const [gateway, setGateway] = useState(null);
   const [dataToLink, setDataToLink] = useState([]);
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
@@ -126,26 +132,29 @@ function Ipfs({ mobile }) {
     address: '',
     timestamp: '',
   });
-  const [metaData, setMetaData] = useState({
-    type: 'file',
-    size: 0,
-    blockSizes: [],
-    data: '',
-  });
 
-  useEffect(() => {
-    setContent(dataGetIpfsContent.content);
-    setTypeContent(dataGetIpfsContent.typeContent);
-    setGateway(dataGetIpfsContent.gateway);
-    setMetaData(dataGetIpfsContent.metaData);
-  }, [dataGetIpfsContent]);
+  const queryParamsId = `${cid}.${tab}`;
+  // const [metaData, setMetaData] = useState({
+  //   type: 'file',
+  //   size: 0,
+  //   blockSizes: [],
+  //   data: '',
+  // });
+
+  // useEffect(() => {
+  //   setContent(dataGetIpfsContent.content);
+  //   setTypeContent(dataGetIpfsContent.typeContent);
+  //   setGateway(dataGetIpfsContent.gateway);
+  //   setMetaData(dataGetIpfsContent.metaData);
+  //   setLoadStatus(dataGetIpfsContent.status);
+  //   setText(dataGetIpfsContent.text);
+  // }, [dataGetIpfsContent]);
 
   useEffect(() => {
     if (jsCyber !== null) {
       getLinks();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cid, jsCyber]);
+  }, [jsCyber]);
 
   useEffect(() => {
     const feachBacklinks = async () => {
@@ -255,13 +264,20 @@ function Ipfs({ mobile }) {
   return (
     <>
       <main className="block-body">
-        {dataGetIpfsContent.loading ? (
-          <ContentIpfsCid dataGetIpfsContent={dataGetIpfsContent} />
+        {loading ? (
+          <ContentIpfsCid
+            loading={loading}
+            statusFetching={statusFetching}
+            status={status}
+          />
         ) : (
           <ContentTab
-            typeContent={typeContent}
-            gateway={gateway}
-            content={content}
+            contentIpfs={contentIpfs}
+            // typeContent={typeContent}
+            // status={loadStatus}
+            // gateway={gateway}
+            // content={content}
+            // text={text}
             cid={cid}
           />
         )}
@@ -310,7 +326,11 @@ function Ipfs({ mobile }) {
           flexDirection="column"
         >
           {tab === 'discussion' && (
-            <DiscussionTab data={dataToLink} mobile={mobile} />
+            <DiscussionTab
+              data={dataToLink}
+              mobile={mobile}
+              parent={queryParamsId}
+            />
           )}
           {tab === 'answers' && (
             <AnswersTab
@@ -320,6 +340,7 @@ function Ipfs({ mobile }) {
               page={page}
               allPage={allPage}
               total={total}
+              parent={queryParamsId}
             />
           )}
           {tab === 'meta' && (
@@ -365,11 +386,15 @@ function Ipfs({ mobile }) {
               >
                 Backlinks
               </Pane>
-              <OptimisationTab data={dataBacklinks} mobile={mobile} />
+              <OptimisationTab
+                data={dataBacklinks}
+                mobile={mobile}
+                parent={queryParamsId}
+              />
               <Pane width="60%" marginX="auto" fontSize="18px">
                 Meta
               </Pane>
-              <MetaTab cid={cid} data={metaData} />
+              <MetaTab cid={cid} data={contentIpfs?.meta} />
             </>
           )}
         </Pane>
@@ -388,10 +413,4 @@ function Ipfs({ mobile }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(Ipfs);
+export default Ipfs;
