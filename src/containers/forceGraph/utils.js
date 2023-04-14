@@ -1,5 +1,6 @@
+// TODO: move ipfs calls to ipfs-utils
 import all from 'it-all';
-import FileType from 'file-type';
+import { fileTypeFromBuffer } from 'file-type';
 import { PATTERN_CYBER } from '../../utils/config';
 import db from '../../db';
 
@@ -18,7 +19,7 @@ const getIndexdDb = async (cid, nodeIpfs) => {
       const bufs = [];
       bufs.push(someVar);
       const dataBufs = Buffer.concat(bufs);
-      const dataFileType = await FileType.fromBuffer(dataBufs);
+      const dataFileType = await fileTypeFromBuffer(dataBufs);
       if (dataFileType === undefined) {
         const dataBase64 = dataBufs.toString();
         if (dataBase64.match(PATTERN_CYBER)) {

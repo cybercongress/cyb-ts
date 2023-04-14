@@ -55,7 +55,12 @@ function Relevance({ items, fetchMoreData, page, allPage }) {
                 />
               </Pane>
             )}
-            <ContentItem cid={key} item={items[key]} className="contentItem" />
+            <ContentItem
+              cid={key}
+              item={items[key]}
+              className="contentItem"
+              parent="particles"
+            />
           </Pane>
         );
       })}

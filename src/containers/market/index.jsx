@@ -201,6 +201,7 @@ function Market({ defaultAccount }) {
               fetchMoreData={fetchMoreData}
               page={page}
               allPage={allPage}
+              parentId={`market.${tab}`}
             />
           )}
         </ContainerGrid>

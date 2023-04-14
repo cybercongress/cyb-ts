@@ -27,8 +27,18 @@ type IPFSData =
   | File
   | Blob[];
 
-type IPFSContent = {
-  data: IPFSData | undefined;
+type IPFSContentDetails =
+  | {
+      text: string | undefined;
+      type: 'image' | 'application/pdf' | 'link' | 'text' | undefined;
+      content: string;
+      link: string;
+      gateway: boolean;
+    }
+  | undefined;
+
+export type IPFSContent = {
+  details: IPFSContentDetails;
   cid: IPFSPath;
   meta: IPFSContentMeta;
 };

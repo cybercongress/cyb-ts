@@ -1,5 +1,5 @@
 import { create } from 'ipfs-core';
-import { IPFS } from 'kubo-rpc-client/dist/src/types';
+import { IPFS } from 'kubo-rpc-client/types';
 import configIpfs from './configIpfs';
 
 let node: null | IPFS = null;

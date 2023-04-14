@@ -65,6 +65,19 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
     }),
+    new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      const mod = resource.request.replace(/^node:/, '');
+      switch (mod) {
+        case 'buffer':
+          resource.request = 'buffer';
+          break;
+        case 'stream':
+          resource.request = 'readable-stream';
+          break;
+        default:
+          throw new Error(`Not found ${mod}`);
+      }
+    }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
