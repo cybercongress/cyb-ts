@@ -7,6 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
+require('dotenv').config();
+
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
