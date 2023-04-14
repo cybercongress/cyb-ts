@@ -12,9 +12,7 @@ type ValueContextType = {
 };
 
 const valueContext = {
-  keplr: null,
   jsCyber: null,
-  initSigner: () => {},
   block: null,
 };
 
@@ -24,8 +22,6 @@ function AppContextProvider({ children }: { children: React.ReactNode }) {
   const [loadUrl, setLoadUrl] = useState(true);
   const { cyber } = useWebsockets();
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
-
-  // console.log('dataMarket', dataMarket);
 
   useEffect(() => {
     const createQueryCliet = async () => {
