@@ -31,6 +31,7 @@ import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import DataProvider from './contexts/DataProvider';
+import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
@@ -95,18 +96,22 @@ root.render(
           <SigningClientProvider>
             <DataProvider>
               <ApolloProvider client={client}>
-                <AppContextProvider>
-                  <DeviceProvider>
-                    <QueryClientProvider client={queryClient}>
-                      <IbcDenomProvider>
-                        <ErrorBoundary fallback={<ErrorScreen />}>
-                          <AppRouter />
-                          <ReactQueryDevtools />
-                        </ErrorBoundary>
-                      </IbcDenomProvider>
-                    </QueryClientProvider>
-                  </DeviceProvider>
-                </AppContextProvider>
+                <DeviceProvider>
+                  <WebsocketsProvider>
+                    <AppContextProvider>
+                      <QueryClientProvider client={queryClient}>
+                        <IbcDenomProvider>
+                          <ErrorBoundary fallback={<ErrorScreen />}>
+                            <>
+                              <AppRouter />
+                              <ReactQueryDevtools />
+                            </>
+                          </ErrorBoundary>
+                        </IbcDenomProvider>
+                      </QueryClientProvider>
+                    </AppContextProvider>
+                  </WebsocketsProvider>
+                </DeviceProvider>
               </ApolloProvider>
             </DataProvider>
           </SigningClientProvider>
