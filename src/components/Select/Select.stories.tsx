@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react';
 import Select, { SelectProps, OptionSelect } from './';
 
 export default {
-  title: 'Components/Select',
+  title: 'Atoms/Select',
   component: Select,
   argTypes: {
     valueSelect: {

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Tab } from '@cybercongress/gravity';
 
-type TabBtnProps = {
+export type TabBtnProps = {
   key: string;
   text: string;
   isSelected: boolean;

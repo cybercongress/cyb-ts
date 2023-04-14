@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react';
 import InputNumber, { Props } from './InputNumber';
 
 export default {
-  title: 'Components/InputNumber',
+  title: 'Atoms/Input/InputNumber',
   component: InputNumber,
   argTypes: {
     value: {

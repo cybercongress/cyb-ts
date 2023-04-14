@@ -4,7 +4,7 @@ import { StatusType } from './status';
 import SearchItem from './searchItem';
 
 export default {
-  title: 'search/SearchItem',
+  title: 'Features/Search/SearchItem',
   component: SearchItem,
 } as Meta;
 

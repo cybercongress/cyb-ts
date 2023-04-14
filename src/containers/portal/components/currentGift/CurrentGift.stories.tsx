@@ -41,15 +41,8 @@ const mockValueTextResult = 'claimable';
 const mockCurrentBonus = new BigNumber(1.5);
 
 export default {
-  title: 'Components/CurrentGift',
+  title: 'Features/Gift/CurrentGift',
   component: CurrentGift,
-  decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 } as Meta;
 
 const Template: Story = (args) => (

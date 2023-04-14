@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react';
+import { BrowserRouter } from 'react-router-dom';
 
 import '../src/style/main.css';
 import './styles.scss';
@@ -20,6 +21,15 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ margin: '3em' }}>
+        <BrowserRouter>
+          <Story />
+        </BrowserRouter>
+      </div>
+    ),
+  ],
 };
 
 export default preview;

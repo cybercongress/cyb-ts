@@ -3,7 +3,7 @@ import { useState } from 'react';
 import CoinDenom, { CoinDenomProps } from './TextDenom';
 
 export default {
-  title: 'Components/CoinDenom',
+  title: 'Atoms/CoinDenom',
   component: CoinDenom,
   argTypes: {
     coinDenom: {

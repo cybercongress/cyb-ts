@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react';
 import Status, { Props, StatusType } from './status';
 
 export default {
-  title: 'search/Status',
+  title: 'Features/Search/Status',
   component: Status,
   // argTypes: {
   //   status: {

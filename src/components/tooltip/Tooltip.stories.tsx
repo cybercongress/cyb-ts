@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react';
 import Tooltip, { TooltipProps } from './tooltip';
 
 export default {
-  title: 'Components/Tooltip',
+  title: 'Atoms/Tooltip',
   component: Tooltip,
   argTypes: {
     children: {

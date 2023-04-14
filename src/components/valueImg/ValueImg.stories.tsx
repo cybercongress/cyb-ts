@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react';
 import ValueImg from '.';
 
 export default {
-  title: 'Components/ValueImg',
+  title: 'Atoms/ValueImg',
   component: ValueImg,
   argTypes: {
     text: {
