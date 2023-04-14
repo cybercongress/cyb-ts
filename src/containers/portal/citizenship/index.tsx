@@ -30,7 +30,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
@@ -137,7 +137,7 @@ const calculatePriceNicname = (valueNickname) => {
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [step, setStep] = useState(STEP_INIT);

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 
 type OptionPoolListInterval = {
   refetchInterval?: number | false;
@@ -12,7 +12,7 @@ type OptionPoolListInterval = {
 function usePoolListInterval(
   option: OptionPoolListInterval = { refetchInterval: false }
 ) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const [poolsData, setPoolsData] = useState<Pool[]>();
   const { data } = useQuery(
     ['liquidityPools'],

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import useSdk from './useSdk';
 import useGetTotalSupply from './useGetTotalSupply';
 import usePoolListInterval from './usePoolListInterval';
 import useIbcDenom from './useIbcDenom';
 import { CYBER } from '../utils/config';
 import { reduceBalances, convertAmount } from '../utils/utils';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -75,7 +75,7 @@ const getPoolsBalance = async (data, client) => {
 };
 
 function useGetMarketData() {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});

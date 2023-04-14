@@ -26,7 +26,6 @@ import {
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';
-import useSdk from 'src/hooks/useSdk';
 import { useSigningClient } from 'src/contexts/signerClient';
 
 const back = require('../../../image/arrow-back-outline.svg');

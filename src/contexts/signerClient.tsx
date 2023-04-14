@@ -3,7 +3,7 @@ import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
@@ -29,14 +29,12 @@ async function createClient(
   return client;
 }
 
-export const SignerClientContext = React.createContext<SignerClientContextType>(
-  {
-    signer: undefined,
-    signingClient: undefined,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    initSigner: () => {},
-  }
-);
+const SignerClientContext = React.createContext<SignerClientContextType>({
+  signer: undefined,
+  signingClient: undefined,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  initSigner: () => {},
+});
 
 export function useSigningClient() {
   const signingClient = useContext(SignerClientContext);

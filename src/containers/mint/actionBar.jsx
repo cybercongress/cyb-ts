@@ -6,7 +6,7 @@ import {
 import { coin } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import {
   Dots,
   ActionBarContentText,
@@ -36,7 +36,7 @@ function ActionBar({
   updateFnc,
   addressActive,
 }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);

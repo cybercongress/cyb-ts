@@ -24,9 +24,9 @@ import { ActionBarSteps } from '../portal/components';
 
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import ActionBarStaps from '../teleport/actionBarSteps';
@@ -57,7 +57,7 @@ const coinFunc = (amount: number, denom: string): Coin => {
 function ActionBar({ stateActionBar }) {
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();
   const navigate = useNavigate();

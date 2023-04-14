@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import { Option } from 'src/types/common';
-import useSdk from 'src/hooks/useSdk';
+import { Option } from 'src/types';
+import { useQueryClient } from 'src/contexts/queryClient';
 import useIbcDenom from 'src/hooks/useIbcDenom';
 import useAppData from 'src/hooks/useAppData';
 import {
@@ -14,7 +14,7 @@ import {
 import { convertAmount, reduceBalances } from '../../../utils/utils';
 
 const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { marketData } = useAppData();
   const { traseDenom } = useIbcDenom();
   const [poolsBal, setPoolsBal] = useState<

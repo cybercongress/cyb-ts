@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Params } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { QueryParamsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 
 function useGetParams() {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { data } = useQuery(
     ['liquidityParams'],
     () => {

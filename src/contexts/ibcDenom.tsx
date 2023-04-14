@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
-import useSdk from 'src/hooks/useSdk';
-import { Option } from 'src/types/common';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { Option } from 'src/types';
 import {
   IbcDenomsArrType,
   TraseDenomFuncResponse,
@@ -28,7 +28,7 @@ export const IbcDenomContext =
   React.createContext<IbcDenomContextContextType>(valueContext);
 
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const poolsData = usePoolListInterval();
   const [ibcDenoms, setIbcDenoms] =
     useState<Option<IbcDenomsArrType>>(undefined);

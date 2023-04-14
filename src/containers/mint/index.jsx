@@ -14,7 +14,7 @@ import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
 import useIbcDenom from 'src/hooks/useIbcDenom';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const BASE_VESTING_TIME = 86401;
 const BASE_MAX_MINT_TIME = 41;
@@ -41,7 +41,7 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);

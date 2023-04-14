@@ -17,7 +17,7 @@ import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 
 const {
@@ -139,7 +139,7 @@ const checkTxs = (response, updateState) => {
 };
 
 const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const [txHeight, setTxHeight] = useState(null);
 
   useEffect(() => {
@@ -186,7 +186,7 @@ function ActionBarContainer({
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
   const { signer, signingClient } = useSigningClient();
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);

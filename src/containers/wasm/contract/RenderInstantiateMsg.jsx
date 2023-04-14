@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
@@ -8,7 +8,7 @@ import JsonSchemaParse from './renderAbi/JsonSchemaParse';
 const gasPrice = GasPrice.fromString('0.001boot');
 
 function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [contractResponse, setContractResponse] = useState(null);
   const [txHash, setTxHash] = useState(null);

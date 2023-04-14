@@ -26,7 +26,7 @@ import {
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
@@ -42,7 +42,7 @@ const {
 const LEDGER_TX_ACOUNT_INFO = 10;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);

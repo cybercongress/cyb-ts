@@ -6,11 +6,11 @@ import {
   reduceBalances,
   isNative,
 } from 'src/utils/utils';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { CyberClient } from '@cybercongress/cyber-js';
-import useSdk from './useSdk';
 import useIbcDenom from './useIbcDenom';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 type OptionInterval = {
   refetchInterval?: number | false;
@@ -35,7 +35,7 @@ const totalSupplyFetcher = (client: Option<CyberClient>) => {
 function useGetTotalSupply(
   option: OptionInterval = { refetchInterval: false }
 ) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [totalSupplyAll, setTotalSupplyAll] =
     useState<Option<ObjKeyValue>>(undefined);

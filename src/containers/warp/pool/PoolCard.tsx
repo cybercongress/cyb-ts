@@ -8,8 +8,8 @@ import { ContainerGradient } from '../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
-import { PoolsWithAssetsCapType } from '../type'
-import { Option } from 'src/types/common';
+import { PoolsWithAssetsCapType } from '../type';
+import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import useIbcDenom from 'src/hooks/useIbcDenom';
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../../utils/txs';
 import { CYBER } from '../../../../utils/config';
@@ -11,7 +11,7 @@ const gasPrice = GasPrice.fromString('0.001boot');
 // const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 
 function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [contractResponse, setContractResponse] = useState(null);
   const [txHash, setTxHash] = useState(null);

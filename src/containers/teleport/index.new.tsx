@@ -11,7 +11,7 @@ import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { InputNumber, MainContainer } from 'src/components';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import imgSwap from 'images/exchange-arrows.svg';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
@@ -44,7 +44,7 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
 
 function Teleport() {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { ibcDenoms: ibcDataDenom, traseDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);

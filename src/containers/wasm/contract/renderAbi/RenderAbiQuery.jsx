@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
-import useSdk from 'src/hooks/useSdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import JsonSchemaParse from './JsonSchemaParse';
 
 function RenderAbiQuery({ contractAddress, schema }) {
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const [contractResponse, setContractResponse] = useState(null);
 
   const runQuery = async ({ formData }, key) => {

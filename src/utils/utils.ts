@@ -5,7 +5,7 @@ import { Sha256 } from '@cosmjs/crypto';
 import BigNumber from 'bignumber.js';
 import { ObjKeyValue } from 'src/types/data';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 import { CYBER } from './config';
 import tokenList from './tokenList';
 
