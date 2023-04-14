@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Pin, AddResult } from 'kubo-rpc-client/types';
-import { Option } from 'src/types/common';
+import { Option } from 'index';
 import { create } from 'ipfs-http-client';
 
 export default class RestIpfsNode {

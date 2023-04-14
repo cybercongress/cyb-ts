@@ -327,6 +327,7 @@ function SearchResults() {
             <ContentItem
               cid={key}
               item={searchResults[key]}
+              parent={query}
               className="SearchItem"
             />
           </Pane>
