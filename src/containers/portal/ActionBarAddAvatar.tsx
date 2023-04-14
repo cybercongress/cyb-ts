@@ -6,7 +6,7 @@ import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;

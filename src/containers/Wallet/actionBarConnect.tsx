@@ -14,7 +14,7 @@ import {
   PATTERN_CYBER,
 } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
   LEDGER;
@@ -40,7 +40,7 @@ function ActionBarConnect({
   accountsETH,
   selectAccount,
 }) {
-  const { signer } = useSigningClient()
+  const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [hdpath, setHDpath] = useState([44, 118, 0, 0, 0]);
   const [connectLedger, setConnectLedger] = useState(null);
@@ -97,7 +97,6 @@ function ActionBarConnect({
 
   const connctAddress = () => {
     switch (selectMethod) {
-
       case 'keplr':
         connectKeplr();
         break;
@@ -323,7 +322,7 @@ function ActionBarConnect({
   };
 
   const connectKeplr = async () => {
-    console.log('signer', signer)
+    console.log('signer', signer);
     if (signer) {
       const accounts = {};
       let key = 'Account 1';
@@ -336,7 +335,7 @@ function ActionBarConnect({
         chainId
       );
       const pk = Buffer.from(pubKey).toString('hex');
-  
+
       const localStorageStory = await localStorage.getItem('pocketAccount');
       const localStoragePocket = await localStorage.getItem('pocket');
       const localStorageCount = await localStorage.getItem('count');

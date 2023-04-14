@@ -50,7 +50,7 @@ const formatNumber = (number: number | string, toFixed?: number): string => {
   if (typeof number === 'string') {
     return numberWithCommas(formatted);
   }
-  // debugger;
+
   return formatted
     .toLocaleString('en')
     .replace(/(\.\d{0,})0+$/, '$1')

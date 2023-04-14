@@ -18,7 +18,7 @@ import { trimString } from '../../utils/utils';
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const {
   STAGE_INIT,
@@ -185,8 +185,8 @@ function ActionBarContainer({
   updateFnc,
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
-  const { signer, signingClient } = useSigningClient()
-  const { queryClient } = useSdk()
+  const { signer, signingClient } = useSigningClient();
+  const { queryClient } = useSdk();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
@@ -247,7 +247,7 @@ function ActionBarContainer({
     if (signer && signingClient) {
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
-  
+
         const validatorAddres = getValidatorAddres(validators);
         if (
           checkAddress(addressPocket, addressKeplr, {

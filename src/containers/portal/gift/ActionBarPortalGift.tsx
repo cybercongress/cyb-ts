@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import useIpfs from 'src/hooks/useIpfs';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { Dots, ButtonIcon, BtnGrd } from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
@@ -314,8 +314,9 @@ function ActionBarPortalGift({
             msgs.push(msgObject);
           });
           const gasLimits = 500000 * Object.keys(currentGift).length;
-          const { isNanoLedger, bech32Address } =
-            await signer.keplr.getKey(CYBER.CHAIN_ID);
+          const { isNanoLedger, bech32Address } = await signer.keplr.getKey(
+            CYBER.CHAIN_ID
+          );
           if (msgs.length > 0) {
             let executeResponseResult;
             if (isNanoLedger && msgs.length > 1) {
@@ -366,7 +367,14 @@ function ActionBarPortalGift({
       // setStep(STEP_INIT);
       setStepApp(STEP_INFO.STATE_CLAIME);
     }
-  }, [signer, signingClient, selectedAddress, currentGift, citizenship, initSigner]);
+  }, [
+    signer,
+    signingClient,
+    selectedAddress,
+    currentGift,
+    citizenship,
+    initSigner,
+  ]);
 
   const isProve = useMemo(() => {
     if (citizenship !== null && citizenship.extension.addresses === null) {

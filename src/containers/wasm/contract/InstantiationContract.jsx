@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
 import { CYBER } from '../../../utils/config';

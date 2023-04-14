@@ -5,7 +5,7 @@ import { JsonView } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const executePlaceholder = {
   transfer: {

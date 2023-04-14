@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pane, ActionBar, Input } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   Dots,
   ActionBarContentText,

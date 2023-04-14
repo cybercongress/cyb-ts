@@ -25,7 +25,7 @@ import { ActionBarSteps } from '../portal/components';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types/common';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';

@@ -6,7 +6,7 @@ import {
   Pane,
 } from '@cybercongress/gravity';
 import { GasPrice } from '@cosmjs/launchpad';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { CYBER, LEDGER } from '../../../utils/config';
 import {

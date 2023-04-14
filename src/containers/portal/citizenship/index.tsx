@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
@@ -37,7 +31,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
 // import InfoCard from '../components/infoCard/infoCard';

@@ -2,7 +2,7 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
 import { Dots, BtnGrd } from '../../../components';

@@ -32,7 +32,7 @@ import ActionBarStaps from './actionBarSteps';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types/common';
 import { DeliverTxResponse } from '@cosmjs/stargate';
 import { connect, useSelector } from 'react-redux';

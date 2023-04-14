@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { BtnGrd } from 'src/components';
 import { ActionBarSteps } from '../portal/components';
 import { CYBER } from '../../utils/config';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 function ActionBar({ updateFunc }) {
   const { signer, initSigner } = useSigningClient();

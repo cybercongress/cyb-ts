@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect } from 'react';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { CYBER } from '../../../utils/config';
 import useGetBalancesIbc from './useGetBalancesIbc';

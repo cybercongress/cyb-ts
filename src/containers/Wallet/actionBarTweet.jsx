@@ -27,7 +27,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import useIpfs from 'src/hooks/useIpfs';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const {
   MEMO,

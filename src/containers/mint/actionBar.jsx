@@ -5,7 +5,7 @@ import {
 } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import useSdk from 'src/hooks/useSdk';
 import {
   Dots,

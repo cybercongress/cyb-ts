@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../../utils/txs';
 import { CYBER } from '../../../../utils/config';
 import JsonSchemaParse from './JsonSchemaParse';
