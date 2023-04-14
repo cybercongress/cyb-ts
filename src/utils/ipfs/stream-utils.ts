@@ -4,7 +4,13 @@ import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 type ReadableStreamWithMime = {
   stream: ReadableStream<Uint8Array>;
   mime: string | undefined;
+  blob?: Blob;
 };
+
+type StreamDoneCallback = (
+  chunks: Array<Uint8Array>,
+  mime: string | undefined
+) => Promise<any>;
 
 interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
   return?: (value?: any) => Promise<IteratorResult<T>>;
@@ -17,26 +23,29 @@ const getUint8ArrayMime = async (raw: Uint8Array): Promise<string> =>
 export async function asyncGeneratorToReadableStream(
   source:
     | AsyncIterableWithReturn<Uint8Array>
-    | AsyncGenerator<Uint8Array, any, any>
+    | AsyncGenerator<Uint8Array, any, any>,
+  callback?: StreamDoneCallback
 ): Promise<ReadableStreamWithMime> {
   const iterator = source[Symbol.asyncIterator]();
-  // let firstChunk: Uint8Array | null = null;
   const chunk = await iterator.next();
   const firstChunk: Uint8Array | null = chunk.value;
   const mime = firstChunk ? await getUint8ArrayMime(firstChunk) : undefined;
+  const chunks: Array<Uint8Array> = [];
 
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {
       try {
         if (firstChunk !== null) {
           controller.enqueue(firstChunk);
-          // firstChunk = null;
+          callback && chunks.push(firstChunk);
         }
         const chunk = await iterator.next();
         if (chunk.done) {
           controller.close();
+          callback && callback(chunks, mime);
         } else {
           controller.enqueue(chunk.value);
+          callback && chunks.push(chunk.value);
         }
       } catch (error) {
         controller.error(error);
@@ -50,7 +59,6 @@ export async function asyncGeneratorToReadableStream(
   });
 
   return { mime, stream };
-  // return stream.pipeThrough(new WritableStream());
 }
 
 export async function arrayToReadableStream(
@@ -67,7 +75,7 @@ export async function arrayToReadableStream(
       }
     },
     cancel(reason) {
-      throw Error('Not implemented');
+      throw Error(`Not implemented: ${reason}`);
     },
   });
 
@@ -94,7 +102,11 @@ export const readableStreamToAsyncGenerator = async function* <T>(
   }
 };
 
-export const readStreamDummy = async (cid: string, stream: ReadableStream) => {
+export const readStreamFully = async (
+  cid: string,
+  stream: ReadableStream<Uint8Array>
+) => {
+  // try {
   const reader = stream.getReader();
   const chunks: Array<Uint8Array> = [];
   return reader.read().then(function readStream({ done, value }) {
@@ -106,4 +118,10 @@ export const readStreamDummy = async (cid: string, stream: ReadableStream) => {
 
     return reader.read().then(readStream);
   });
+  // } catch (error) {
+  //   console.error(
+  //     `Error reading stream for ${cid}\r\n Probably Hot reload error!`,
+  //     error
+  //   );
+  // }
 };

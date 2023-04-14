@@ -4,6 +4,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import { PATTERN_CYBER } from '../../utils/config';
 import db from '../../db';
 
+// TODO: IPFS move to utils
 const getIndexdDb = async (cid, nodeIpfs) => {
   let addressResolve = null;
   const dataIndexdDb = await db.table('following').get({ cid });

@@ -4,6 +4,12 @@ import { IPFSPath } from 'kubo-rpc-client/types';
 import { IPFSContentDetails } from './ipfs';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
+// eslint-disable-next-line import/no-unused-modules
+export const chunksToBlob = (
+  chunks: Array<Uint8Array>,
+  mime: string | undefined
+) => new Blob(chunks, mime ? { type: mime } : {});
+
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseRawIpfsData = (
   rawData: Uint8Array,

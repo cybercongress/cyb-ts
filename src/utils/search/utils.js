@@ -4,7 +4,7 @@ import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
-import { readStreamDummy } from '../ipfs/stream-utils';
+import { readStreamFully } from '../ipfs/stream-utils';
 import { parseRawIpfsData } from '../ipfs/content-utils';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -21,6 +21,7 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
+// TODO: IPFS move to utils
 export const getPin = async (node, content) => {
   let cid;
   if (node) {
@@ -695,7 +696,7 @@ export const getTweet = async (address) => {
     return null;
   }
 };
-
+// TODO: IPFS move to utils
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   // const timeoutPromise = () =>
   //   new Promise((reject) => {
@@ -784,7 +785,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getIPFSContent(ipfs, cid);
 
   if (response.stream) {
-    const rawData = await readStreamDummy(cid, response.stream);
+    const rawData = await readStreamFully(cid, response.stream);
     const details = parseRawIpfsData(rawData, response.meta.mime, cid);
     return details.content;
   }

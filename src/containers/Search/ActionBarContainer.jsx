@@ -23,7 +23,7 @@ import {
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
-import { pinToIpfsCluster } from '../../utils/ipfs/utils-ipfs';
+import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const imgKeplr = require('../../image/keplr-icon.svg');

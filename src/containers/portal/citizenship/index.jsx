@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import useIpfs from 'src/hooks/useIpfs';
-import { pinToIpfsCluster } from 'src/utils/ipfs/utils-ipfs';
+import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import txs from '../../../utils/txs';
 
 import { MainContainer, MoonAnimation, Stars } from '../components';

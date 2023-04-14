@@ -46,9 +46,9 @@ function useQueueIpfsContent(
         setContent(result);
       }
     };
-
     if (node) {
       const controller = new AbortController();
+
       queueManager.enqueue(
         cid,
         () => getIPFSContent(node, cid, controller),

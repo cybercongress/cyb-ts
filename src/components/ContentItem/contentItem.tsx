@@ -7,9 +7,9 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import { readStreamDummy } from 'src/utils/ipfs/stream-utils';
+import { readStreamFully } from 'src/utils/ipfs/stream-utils';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -21,6 +21,21 @@ type ContentItemProps = {
   grade?: $TsFixMe;
   className?: string;
   parent?: string;
+};
+
+const getContentDetails = async (
+  cid: string,
+  content: IPFSContentMaybe
+): Promise<IPFSContentDetails> => {
+  if (content?.stream) {
+    const rawData = await readStreamFully(cid, content.stream);
+
+    const details = parseRawIpfsData(rawData, content.meta?.mime, cid);
+    // console.log('---ContentItem useEffect---', details, cid);
+
+    return details;
+  }
+  return undefined;
 };
 
 function ContentItem({
@@ -36,15 +51,8 @@ function ContentItem({
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed' && content && content.stream) {
-      const fetchData = async (): Promise<void> => {
-        const rawData = await readStreamDummy(cid, content.stream);
-        const details = parseRawIpfsData(rawData, content.meta.mime, cid);
-
-        setIpfsDatDetails(details);
-      };
-
-      fetchData();
+    if (status === 'completed') {
+      getContentDetails(cid, content).then(setIpfsDatDetails);
     }
   }, [content, status, cid]);
 
@@ -60,7 +68,7 @@ function ContentItem({
                 rehypePlugins={[rehypeSanitize]}
                 remarkPlugins={[remarkGfm]}
               >
-                {ipfsDataDetails?.text || cid}
+                {ipfsDataDetails?.text}
               </ReactMarkdown>
             </div>
           )
@@ -72,6 +80,10 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
+        {status !== 'completed' && <div>{cid}</div>}
+        {ipfsDataDetails?.type === 'link' && (
+          <div>{ipfsDataDetails.content}</div>
+        )}
         {ipfsDataDetails?.type === 'image' && (
           <img
             style={{ width: '100%', paddingTop: 10 }}

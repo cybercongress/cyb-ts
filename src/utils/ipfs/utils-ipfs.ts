@@ -1,19 +1,11 @@
 import axios from 'axios';
-import { Cluster } from '@nftstorage/ipfs-cluster';
 
-import { $TsFixMe } from 'src/types/tsfix';
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
-
-import {
-  AddResponse,
-  PinResponse,
-} from '@nftstorage/ipfs-cluster/dist/src/interface';
 
 import {
   getIpfsUserGatewanAndNodeType,
   IPFSContentMaybe,
   IPFSContentMeta,
-  IPFSMaybe,
   CallBackFuncStatus,
 } from './ipfs.d';
 
@@ -25,13 +17,13 @@ import {
   readableStreamToAsyncGenerator,
 } from './stream-utils';
 
+import { addDataChunksToIpfsCluster } from './cluster-utils';
+
+import { getIpfsContentFromDb } from './db-utils';
+
 // import RestIpfsNode from './restIpfsNode';
 
 const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
-const CYBERNODE_URL = 'https://io.cybernode.ai';
-// const cyberNodeCluster = new RestIpfsNode(CYBERNODE_URL);
-
-const cluster = new Cluster(CYBERNODE_URL);
 
 // Get IPFS node from local storage
 // TODO: refactor
@@ -67,25 +59,20 @@ const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
 // };
 
 // Get data by CID from local storage
-const getIPFSContentFromDb = async (
+const loadIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
   // TODO: use cursor
-  const dataIndexdDb = await db.table('cid').get({ cid });
+  const data = await getIpfsContentFromDb(cid.toString());
 
-  // backward compatibility
-  const data = dataIndexdDb.data || dataIndexdDb.content;
-
-  if (dataIndexdDb !== undefined && data) {
+  if (data) {
     // TODO: use cursor
     const { mime, stream } = await arrayToReadableStream(data);
-    const meta = dataIndexdDb.meta || {
-      type: 'file',
-      size: -1,
+    const meta: IPFSContentMeta = {
+      type: 'file', // dir support ?
+      size: data.length,
       mime,
     };
-    // backward compatibility
-    meta.mime = mime;
 
     return { stream, cid, meta };
   }
@@ -111,9 +98,8 @@ const fetchIPFSContentFromNode = async (
   const path = `/ipfs/${cid}`;
 
   try {
-    // const response = await all(node.ls(cid, { signal }));
     const stat = await node.files.stat(path, { signal });
-    // console.log('---stat', stat);
+
     timer && clearTimeout(timer);
 
     switch (stat.type) {
@@ -125,16 +111,16 @@ const fetchIPFSContentFromNode = async (
         // return await fetchIPFSFile(ipfs, path);
 
         if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
-          // const dataWithMime = await toUint8ArrayWithMime(node.cat(path));
-          // return { details: parseRawIpfsData(dataWithMime, cid), cid, meta };
           const { mime, stream } = await asyncGeneratorToReadableStream(
-            node.cat(path)
+            node.cat(path),
+            (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
           );
           const meta: IPFSContentMeta = {
             type: stat.type,
             size: stat.size || -1,
             mime,
           };
+
           return { stream, cid, meta };
         }
       }
@@ -148,17 +134,11 @@ const fetchIPFSContentFromNode = async (
 };
 
 const fetchIPFSContentFromGateway = async (
+  node: IPFS,
   cid: string,
   userGateway?: string | undefined,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
-  // const response = await getIpfsDataFromGatway(
-  //   cid,
-  //   'arraybuffer',
-  //   userGateway,
-  //   controller
-  // );
-
   const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
     signal: controller?.signal,
     responseType: 'stream',
@@ -169,16 +149,18 @@ const fetchIPFSContentFromGateway = async (
       response.headers['content-length'] || '-1',
       10
     );
-    // const dataUint8Array = new Uint8Array(response as ArrayBufferLike);
 
     const isReadableStream = typeof response.data.read === 'function';
 
     // In case if axios return cached value convert it to buffer->readablestream
     const { mime, stream } = await (isReadableStream
       ? asyncGeneratorToReadableStream(
-          readableStreamToAsyncGenerator(response.data)
+          readableStreamToAsyncGenerator(response.data),
+          (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime, true)
         )
       : arrayToReadableStream(Buffer.from(response.data)));
+
+    node?.pin?.add(cid); // pin to local ipfs node
 
     const meta: IPFSContentMeta = {
       type: 'file', // TODO: can be directory?
@@ -191,19 +173,7 @@ const fetchIPFSContentFromGateway = async (
       cid,
       meta,
     };
-
-    // if (dataUint8Array.length < FILE_SIZE_DOWNLOAD) {
-    //   const mime = await getUint8ArrayMime(dataUint8Array);
-
-    //   return {
-    //     details: parseRawIpfsData({ mime, rawData: dataUint8Array }, cid),
-    //     cid,
-    //     meta,
-    //   };
   }
-
-  // return 'availableDownload';
-  // }
 
   return undefined;
 };
@@ -214,8 +184,7 @@ const getIPFSContent = async (
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
-  const dataRsponseDb = await getIPFSContentFromDb(cid);
-
+  const dataRsponseDb = await loadIPFSContentFromDb(cid);
   if (dataRsponseDb !== undefined) {
     return dataRsponseDb;
   }
@@ -225,142 +194,20 @@ const getIPFSContent = async (
 
     const ipfsContent = await fetchIPFSContentFromNode(node, cid, controller);
 
-    // TODO: disabled TMP
-    // if (ipfsContent !== undefined) {
-    //   pinContentToDbAndIpfs(node, ipfsContent, cid);
-    //   return ipfsContent;
-    // }
     return ipfsContent;
   }
 
   callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
-
+  console.log('----Fetch from gateway', cid);
   const { userGateway } = getIpfsUserGatewanAndNodeType();
   const respnseGateway = await fetchIPFSContentFromGateway(
+    node,
     cid,
     userGateway,
     controller
   );
 
   return respnseGateway;
-
-  // TODO: tmp disabled
-  // if (respnseGateway !== undefined) {
-  //   pinContentToDbAndIpfs(null, respnseGateway, cid);
-
-  //   return respnseGateway;
-  // }
-
-  // return undefined;
-};
-// TODO: remove
-// const getIpfsDataFromGatway = async (
-//   cid: string,
-//   type: ResponseType = 'json',
-//   userGateway = config.CYBER.CYBER_GATEWAY,
-//   controller?: AbortController
-// ): Promise<IPFSData | undefined> => {
-//   try {
-//     const abortControllerLegacy = controller || new AbortController();
-//     setTimeout(() => {
-//       abortControllerLegacy.abort();
-//     }, 1000 * 60 * 1); // 1 min
-
-//     // Read object from IPFS gateway
-//     // Object size can be infinite?
-
-//     const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
-//       signal: abortControllerLegacy.signal,
-//       responseType: 'stream',
-//     });
-
-//     return response.data;
-//   } catch (error) {
-//     console.log('error getIpfsDataFromGatway', error);
-//     return undefined;
-//   }
-// };
-
-const pinContentToDbAndIpfs = async (
-  node: IPFSMaybe,
-  content: IPFSContentMaybe,
-  cid: string
-): Promise<void> => {
-  if (node && node !== null) {
-    node.pin.add(cid); // pin to local ipfs node
-  }
-
-  if (content && !content.availableDownload && content.stream) {
-    const { stream: data } = content;
-
-    const blob = new Blob([data.content], { type: data.type });
-
-    await pinToIpfsCluster(cid, blob); // pin to cluster
-
-    const dataIndexdDb = await db.table('cid').get({ cid });
-    if (dataIndexdDb === undefined) {
-      db.table('cid').add(content); // pin to IndexedDB
-    }
-  }
 };
 
-const addFileToIpfsCluster = async (
-  cid: string,
-  file: File | Blob | string
-): Promise<AddResponse | PinResponse> => {
-  let dataFile: $TsFixMe = null;
-
-  // TODO: unclear logic
-  // if (cid === file) {
-  //   return cyberNode.pin(cid);
-  // }
-
-  if (file instanceof Blob) {
-    dataFile = file;
-  } else if (typeof file === 'string') {
-    dataFile = new File([file], 'file.txt');
-  }
-  // TODO: unclear type
-  // } else if (file.name && file.size < 8 * 10 ** 6) {
-  //   dataFile = new File([file], file.name);
-  // }
-  else if (dataFile !== null) {
-    return cluster.add(dataFile);
-  }
-
-  return cluster.pin(cid);
-};
-
-// check if the file is pinned to cybernode,
-// if not, add&pin it to cluster
-// file can be .... text/blob and ???
-const pinToIpfsCluster = async (
-  cid: string,
-  file: $TsFixMe
-): Promise<PinResponse | AddResponse | undefined> => {
-  try {
-    const cidStatus = await cluster.status(cid);
-
-    const pinInfoValues = Object.values(cidStatus.peerMap);
-    if (pinInfoValues.length > 0) {
-      // already pinned
-      if (pinInfoValues.find((p) => p.status !== 'unpinned')) {
-        return undefined;
-      }
-
-      // add to cluster and pin
-      if (file !== undefined) {
-        return await addFileToIpfsCluster(cid, file);
-      }
-
-      return await cluster.pin(cid);
-    }
-
-    return undefined;
-  } catch (e) {
-    console.log(e);
-    return undefined;
-  }
-};
-
-export { getIPFSContent, pinToIpfsCluster, getIpfsUserGatewanAndNodeType };
+export { getIPFSContent, getIpfsUserGatewanAndNodeType };
