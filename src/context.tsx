@@ -17,6 +17,7 @@ import { $TsFixMe, $TsFixMeFunc } from './types/tsfix';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { Option } from './types/common';
 import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
+import { useWebsockets } from './websockets/context';
 
 const getKeplr = async (): Promise<Keplr | undefined> => {
   if (window.keplr) {
@@ -71,6 +72,7 @@ type ValueContextType = {
   updateDataTotalSupply: $TsFixMeFunc;
   initSigner: () => void;
   traseDenom: TraseDenomFuncType;
+  block: number | null;
 };
 
 const valueContext = {
@@ -86,6 +88,7 @@ const valueContext = {
   updateDataTotalSupply: () => {},
   initSigner: () => {},
   traseDenom: () => {},
+  block: null,
 };
 
 export const AppContext = React.createContext<ValueContextType>(valueContext);
@@ -103,11 +106,14 @@ async function createClient(signer: OfflineSigner) {
   return client;
 }
 
-function AppContextProvider({ children }) {
+function AppContextProvider({ children }: { children: React.ReactNode }) {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState<OfflineSigner | undefined>(undefined);
   const [client, setClient] = useState<CyberClient | undefined>(undefined);
   const [loadUrl, setLoadUrl] = useState(true);
+  const { cyber } = useWebsockets();
+  const [blockHeight, setBlockHeight] = useState<number | null>(null);
+
   // const dataMarket = useGetMarketData(value.jsCyber, value.traseDenom);
 
   // console.log('dataMarket', dataMarket);
@@ -265,6 +271,35 @@ function AppContextProvider({ children }) {
     }));
   };
 
+  useEffect(() => {
+    if (!cyber?.connected) {
+      return;
+    }
+
+    cyber.sendMessage({
+      method: 'subscribe',
+      params: ["tm.event='NewBlockHeader'"],
+      id: '1',
+      jsonrpc: '2.0',
+    });
+  }, [cyber, cyber?.connected]);
+
+  useEffect(() => {
+    if (!cyber?.message?.result) {
+      return;
+    }
+
+    const message = cyber?.message;
+
+    if (
+      Object.keys(message.result).length > 0 &&
+      message.result.data.type === 'tendermint/event/NewBlockHeader'
+    ) {
+      const { height } = message.result.data.value.header;
+      setBlockHeight(height);
+    }
+  }, [cyber?.message]);
+
   const updateDataTotalSupply = (newData: $TsFixMe) => {
     setValue((item) => ({
       ...item,
@@ -354,6 +389,7 @@ function AppContextProvider({ children }) {
         updatetMarketData,
         traseDenom,
         updateDataTotalSupply,
+        block: blockHeight,
       }}
     >
       {children}
