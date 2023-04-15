@@ -10,16 +10,23 @@ type ReadableStreamWithMime = {
 type StreamDoneCallback = (
   chunks: Array<Uint8Array>,
   mime: string | undefined
-) => Promise<any>;
+) => Promise<unknown>;
 
 interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
-  return?: (value?: any) => Promise<IteratorResult<T>>;
+  return?: (value?: unknown) => Promise<IteratorResult<T>>;
 }
 
 const getUint8ArrayMime = async (raw: Uint8Array): Promise<string> =>
   (await fileTypeFromBuffer(raw))?.mime || 'text/plain';
 
 // eslint-disable-next-line import/no-unused-modules
+/**
+ * Convert async generator to readable stream, with mime type
+ * callback is called when stream is done
+ * @param source
+ * @param callback
+ * @returns
+ */
 export async function asyncGeneratorToReadableStream(
   source:
     | AsyncIterableWithReturn<Uint8Array>
@@ -84,6 +91,12 @@ export async function arrayToReadableStream(
 }
 
 // eslint-disable-next-line import/no-unused-modules, func-names
+
+/**
+ * Converts ReadableStream to AsyncGenerator
+ * @param stream
+ * @returns
+ */
 export const readableStreamToAsyncGenerator = async function* <T>(
   stream: ReadableStream<T>
 ): AsyncGenerator<T> {
@@ -106,22 +119,24 @@ export const readStreamFully = async (
   cid: string,
   stream: ReadableStream<Uint8Array>
 ) => {
-  // try {
-  const reader = stream.getReader();
-  const chunks: Array<Uint8Array> = [];
-  return reader.read().then(function readStream({ done, value }) {
-    if (done) {
-      return uint8ArrayConcat(chunks);
-    }
+  try {
+    const reader = stream.getReader();
+    const chunks: Array<Uint8Array> = [];
+    return reader.read().then(function readStream({ done, value }) {
+      if (done) {
+        return uint8ArrayConcat(chunks);
+      }
 
-    chunks.push(value);
+      chunks.push(value);
 
-    return reader.read().then(readStream);
-  });
-  // } catch (error) {
-  //   console.error(
-  //     `Error reading stream for ${cid}\r\n Probably Hot reload error!`,
-  //     error
-  //   );
-  // }
+      return reader.read().then(readStream);
+    });
+  } catch (error) {
+    console.error(
+      `Error reading stream for ${cid}\r\n Probably Hot reload error!`,
+      error
+    );
+
+    return undefined;
+  }
 };

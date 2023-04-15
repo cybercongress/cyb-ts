@@ -3,24 +3,20 @@ import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
 
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
-import { IPFSContentMaybe } from '../utils/ipfs/ipfs';
+import { IPFSContentMaybe, IpfsContentSource } from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
 
 import useIpfs from './useIpfs';
+import { IPFS } from 'ipfs-core-types';
 
-const FETCH_LIMIT = 21;
-const FETCH_TIMEOUT = 1000 * 60 * 1; // 10 sec
-
-const queueManager = new QueueManager<IPFSContentMaybe>(
-  FETCH_LIMIT,
-  FETCH_TIMEOUT
-);
+const queueManager = new QueueManager<IPFSContentMaybe>();
 
 window.qm = queueManager;
 
 type UseIpfsContentReturn = {
   status?: string;
+  source?: IpfsContentSource;
   content: IPFSContentMaybe;
 };
 
@@ -30,31 +26,35 @@ function useQueueIpfsContent(
   parentId?: string
 ): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus | undefined>();
+  const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
+  const prevNodeRef = useRef<IPFS | undefined>();
   const { node } = useIpfs();
 
   useEffect(() => {
     const callback = (
       cid: string,
       status: QueueItemStatus,
+      source: IpfsContentSource,
       result: IPFSContentMaybe
     ): void => {
       setStatus(status);
-
+      setSource(source);
       if (status === 'completed') {
         setContent(result);
       }
     };
     if (node) {
+      if (prevNodeRef.current !== node) {
+        queueManager.setNode(node);
+      }
       const controller = new AbortController();
 
-      queueManager.enqueue(
-        cid,
-        () => getIPFSContent(node, cid, controller),
-        callback,
-        { controller, parent: parentId, priority: rank }
-      );
+      queueManager.enqueue(cid, callback, {
+        parent: parentId,
+        priority: rank,
+      });
 
       if (prevParentIdRef.current !== parentId) {
         if (prevParentIdRef.current) {
@@ -65,7 +65,7 @@ function useQueueIpfsContent(
     }
   }, [node, cid, rank, parentId]);
 
-  return { status, content };
+  return { status, source, content };
 }
 
 export default useQueueIpfsContent;

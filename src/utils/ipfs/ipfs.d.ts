@@ -52,3 +52,5 @@ export type IPFSContent = {
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;
+
+export type IpfsContentSource = 'db' | 'node' | 'gateway';

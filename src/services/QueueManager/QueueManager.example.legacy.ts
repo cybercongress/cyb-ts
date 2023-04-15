@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import QueueManager from './QueueManager';
+
 import searchResponse from './stub/searchResponse.json';
 
-const queue = new QueueManager(3, 1500);
+const queue = new QueueManager();
 
 const resultAll: Record<string, any> = {};
 

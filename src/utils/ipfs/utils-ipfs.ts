@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 import axios from 'axios';
 
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
@@ -7,9 +8,8 @@ import {
   IPFSContentMaybe,
   IPFSContentMeta,
   CallBackFuncStatus,
+  IpfsContentSource,
 } from './ipfs.d';
-
-import db from '../../db';
 
 import {
   asyncGeneratorToReadableStream,
@@ -41,33 +41,16 @@ const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
   return { ipfsNodeType: undefined, userGateway: undefined };
 };
 
-// const toUint8ArrayWithMime = async (
-//   source: AsyncIterable<Uint8Array>
-// ): Promise<Uint8ArrayWithMime> => {
-//   const iterator = source[Symbol.asyncIterator]();
-//   const firstChunk = await iterator.next();
-//   const chunks: Array<Uint8Array> = [firstChunk.value];
-//   const mime = await getUint8ArrayMime(firstChunk.value);
-
-//   // TODO: should be wrapped as ReadableStream
-//   // eslint-disable-next-line no-restricted-syntax
-//   for await (const chunk of source) {
-//     chunks.push(chunk);
-//   }
-
-//   return { mime, rawData: uint8ArrayConcat(chunks) };
-// };
-
 // Get data by CID from local storage
 const loadIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
   // TODO: use cursor
   const data = await getIpfsContentFromDb(cid.toString());
-
-  if (data) {
+  if (data && data.length) {
     // TODO: use cursor
     const { mime, stream } = await arrayToReadableStream(data);
+
     const meta: IPFSContentMeta = {
       type: 'file', // dir support ?
       size: data.length,
@@ -76,7 +59,6 @@ const loadIPFSContentFromDb = async (
 
     return { stream, cid, meta };
   }
-
   return undefined;
 };
 
@@ -108,8 +90,6 @@ const fetchIPFSContentFromNode = async (
         return { cid, availableDownload: true };
       }
       default: {
-        // return await fetchIPFSFile(ipfs, path);
-
         if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
           const { mime, stream } = await asyncGeneratorToReadableStream(
             node.cat(path),
@@ -136,9 +116,11 @@ const fetchIPFSContentFromNode = async (
 const fetchIPFSContentFromGateway = async (
   node: IPFS,
   cid: string,
-  userGateway?: string | undefined,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
+  // TODO: Should we use Cyber Gateway?
+  const { userGateway } = getIpfsUserGatewanAndNodeType();
+
   const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
     signal: controller?.signal,
     responseType: 'stream',
@@ -152,7 +134,8 @@ const fetchIPFSContentFromGateway = async (
 
     const isReadableStream = typeof response.data.read === 'function';
 
-    // In case if axios return cached value convert it to buffer->readablestream
+    // In case if axios return cached value,
+    // convert it to buffer->readablestream
     const { mime, stream } = await (isReadableStream
       ? asyncGeneratorToReadableStream(
           readableStreamToAsyncGenerator(response.data),
@@ -160,7 +143,8 @@ const fetchIPFSContentFromGateway = async (
         )
       : arrayToReadableStream(Buffer.from(response.data)));
 
-    node?.pin?.add(cid); // pin to local ipfs node
+    // pin to local ipfs node
+    node?.pin?.add(cid);
 
     const meta: IPFSContentMeta = {
       type: 'file', // TODO: can be directory?
@@ -178,6 +162,33 @@ const fetchIPFSContentFromGateway = async (
   return undefined;
 };
 
+type fetchContentOptions = {
+  controller?: AbortController;
+  node?: IPFS;
+};
+
+export async function fetchIpfsContent<T>(
+  cid: string,
+  source: IpfsContentSource,
+  options: fetchContentOptions
+): Promise<T | undefined> {
+  const { node, controller } = options;
+  switch (source) {
+    case 'db':
+      return loadIPFSContentFromDb(cid) as T;
+    case 'node':
+    case 'gateway':
+      if (node) {
+        return source === 'gateway'
+          ? (fetchIPFSContentFromGateway(node, cid, controller) as T)
+          : (fetchIPFSContentFromNode(node, cid, controller) as T);
+      }
+      return undefined;
+    default:
+      return undefined;
+  }
+}
+
 const getIPFSContent = async (
   node: IPFS,
   cid: string,
@@ -191,7 +202,7 @@ const getIPFSContent = async (
 
   if (node) {
     callBackFuncStatus && callBackFuncStatus('trying to get with a node');
-
+    console.log('----Fetch from node', cid);
     const ipfsContent = await fetchIPFSContentFromNode(node, cid, controller);
 
     return ipfsContent;
@@ -199,11 +210,9 @@ const getIPFSContent = async (
 
   callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
   console.log('----Fetch from gateway', cid);
-  const { userGateway } = getIpfsUserGatewanAndNodeType();
   const respnseGateway = await fetchIPFSContentFromGateway(
     node,
     cid,
-    userGateway,
     controller
   );
 
