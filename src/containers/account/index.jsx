@@ -3,7 +3,7 @@ import { useContext, useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';

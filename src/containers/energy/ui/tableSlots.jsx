@@ -1,5 +1,5 @@
 import { TableEv as Table } from '@cybercongress/gravity';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { NoItems, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';

@@ -496,7 +496,7 @@ function ActionBarConnect({
         connctAddress={connctAddress}
         web3={web3}
         selectAccount={selectAccount}
-        keplr={keplr}
+        keplr={signer}
       />
     );
   }

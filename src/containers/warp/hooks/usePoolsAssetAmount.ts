@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { Option } from 'src/types';
 import { useQueryClient } from 'src/contexts/queryClient';
-import useIbcDenom from 'src/hooks/useIbcDenom';
-import useAppData from 'src/hooks/useAppData';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import {
   OptionNeverArray,
   PoolsWithAssetsType,

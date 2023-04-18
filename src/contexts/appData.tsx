@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { ObjKeyValue } from 'src/types/data';
 
 type OptionObj<T> = T | object;
@@ -21,8 +21,12 @@ const valueContext = {
   updateDataTotalSupply: () => {},
 };
 
-export const DataProviderContext =
+const DataProviderContext =
   React.createContext<DataProviderContextType>(valueContext);
+
+export function useAppData() {
+  return useContext(DataProviderContext);
+}
 
 function DataProvider({ children }: { children: React.ReactNode }) {
   const [marketData, setMarketData] = useState<ObjData>({});

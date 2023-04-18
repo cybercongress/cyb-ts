@@ -26,7 +26,7 @@ import {
   POCKET,
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
 
 const {

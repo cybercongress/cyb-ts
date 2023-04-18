@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Pane, Tablist, Pill } from '@cybercongress/gravity';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';

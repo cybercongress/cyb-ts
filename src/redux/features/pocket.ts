@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
-import { AccountType, DefaultAccountType } from 'src/types/defaultAccount';
+import { Account, DefaultAccount } from 'src/types/defaultAccount';
 import { POCKET } from '../../utils/config';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
@@ -9,8 +9,8 @@ type SliceState = {
   actionBar: {
     tweet: string;
   };
-  defaultAccount: DefaultAccountType;
-  accounts: null | AccountType[];
+  defaultAccount: DefaultAccount;
+  accounts: null | Account[];
 };
 
 const initialState: SliceState = {
@@ -30,11 +30,11 @@ const slice = createSlice({
   reducers: {
     setDefaultAccount: (
       state,
-      { payload }: PayloadAction<DefaultAccountType>
+      { payload }: PayloadAction<DefaultAccount>
     ) => {
       state.defaultAccount = payload;
     },
-    setAccounts: (state, { payload }: PayloadAction<AccountType[]>) => {
+    setAccounts: (state, { payload }: PayloadAction<Account[]>) => {
       state.accounts = payload;
     },
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {

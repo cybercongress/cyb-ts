@@ -11,7 +11,7 @@ import styles from './styles.scss';
 import { PoolsWithAssetsCapType } from '../type';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 type PoolCardProps = {
   pool: PoolsWithAssetsCapType;

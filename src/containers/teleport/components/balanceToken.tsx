@@ -4,7 +4,7 @@ import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import { ObjKeyValue } from 'src/types/data';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 type BalanceTokenProps = {
   token: string;

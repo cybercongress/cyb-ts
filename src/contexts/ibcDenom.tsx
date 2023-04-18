@@ -1,9 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { Option } from 'src/types';
 import {
-  IbcDenomsArrType,
+  IbcDenomsArr,
   TraseDenomFuncResponse,
   TraseDenomFuncType,
 } from 'src/types/ibc';
@@ -15,7 +21,7 @@ import {
 } from 'src/utils/utils';
 
 type IbcDenomContextContextType = {
-  ibcDenoms: Option<IbcDenomsArrType>;
+  ibcDenoms: Option<IbcDenomsArr>;
   traseDenom: TraseDenomFuncType;
 };
 
@@ -24,14 +30,17 @@ const valueContext = {
   traseDenom: () => {},
 };
 
-export const IbcDenomContext =
+const IbcDenomContext =
   React.createContext<IbcDenomContextContextType>(valueContext);
+
+export function useIbcDenom() {
+  return useContext(IbcDenomContext);
+}
 
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const poolsData = usePoolListInterval();
-  const [ibcDenoms, setIbcDenoms] =
-    useState<Option<IbcDenomsArrType>>(undefined);
+  const [ibcDenoms, setIbcDenoms] = useState<Option<IbcDenomsArr>>(undefined);
 
   useEffect(() => {
     const getIBCDenomData = async () => {
@@ -129,7 +138,7 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   return (
     <IbcDenomContext.Provider
       value={useMemo(
-        () => ({ ibcDenoms, traseDenom } as IbcDenomContextContextType),
+        () => ({ ibcDenoms, traseDenom }),
         [ibcDenoms, traseDenom]
       )}
     >

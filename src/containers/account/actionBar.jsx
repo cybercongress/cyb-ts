@@ -23,8 +23,6 @@ import {
 
 import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
-import { AppContext } from '../../context';
-import { IpfsContext } from 'src/contexts/ipfs';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -40,7 +38,6 @@ const {
 } = LEDGER;
 
 class ActionBarContainer extends Component {
-  static contextType = IpfsContext;
   constructor(props) {
     super(props);
     this.state = {

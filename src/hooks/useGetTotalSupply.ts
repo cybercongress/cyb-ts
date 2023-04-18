@@ -9,8 +9,8 @@ import {
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { CyberClient } from '@cybercongress/cyber-js';
-import useIbcDenom from './useIbcDenom';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 type OptionInterval = {
   refetchInterval?: number | false;

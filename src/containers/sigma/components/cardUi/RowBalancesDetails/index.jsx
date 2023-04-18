@@ -9,7 +9,7 @@ import { AppContext } from '../../../../../context';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const cx = require('classnames');
 

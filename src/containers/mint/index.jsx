@@ -13,7 +13,7 @@ import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 const BASE_VESTING_TIME = 86401;

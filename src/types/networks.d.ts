@@ -1,4 +1,4 @@
-export type NetworksType = {
+export type Networks = {
   CHAIN_ID: string;
   DENOM_CYBER: string;
   DENOM_LIQUID_TOKEN: string;
@@ -13,8 +13,8 @@ export type NetworksType = {
   MEMO_KEPLR: string;
 };
 
-type KeyNetworksListType = 'bostrom' | 'space-pussy' | string;
+type KeyNetworksList = 'bostrom' | 'space-pussy' | string;
 
-export type NetworksListType = {
-  [key: KeyNetworksListType]: NetworksType;
+export type NetworksList = {
+  [key: KeyNetworksList]: Networks;
 };

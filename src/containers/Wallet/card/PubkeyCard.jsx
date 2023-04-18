@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { setDefaultAccount } from '../../../redux/features/pocket';
 import {
   PocketCard,

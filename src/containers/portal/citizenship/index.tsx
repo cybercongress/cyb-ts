@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { pinToIpfsCluster } from 'src/utils/ipfs/utils-ipfs';
 import txs from '../../../utils/txs';
 

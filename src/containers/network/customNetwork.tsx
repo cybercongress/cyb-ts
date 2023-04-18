@@ -1,9 +1,13 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNetworks } from 'src/contexts/networks';
 import { ActionBarSteps } from '../portal/components';
-import { AppContext } from '../../context';
-import { Input, BtnGrd, ContainerGradientText, MainContainer } from '../../components';
-import useNetworks from 'src/hooks/useNetwork';
+import {
+  Input,
+  BtnGrd,
+  ContainerGradientText,
+  MainContainer,
+} from '../../components';
 
 function ValueItem({ text, value, onChange }) {
   return (

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { useEffect, useState } from 'react';
 import { Sha256 } from '@cosmjs/crypto';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../../utils/config';
 import networkList from '../../../utils/networkListIbc';
 

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
-import useAppData from 'src/hooks/useAppData';
+import { useAppData } from 'src/contexts/appData';
 
 const useGetMySharesInPools = (accountBalances) => {
   const [myCap, setMyCap] = useState(0);

@@ -185,7 +185,6 @@ function ActionBar({
       <ActionBarConnect
         web3={web3}
         accountsETH={accountsETH}
-        keplr={keplr}
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}

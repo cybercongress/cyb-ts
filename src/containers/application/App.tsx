@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
-import useIpfs from 'src/hooks/useIpfs';
-import useAppData from 'src/hooks/useAppData';
+import { useIpfs } from 'src/contexts/ipfs';
 import useGetMarketData from 'src/hooks/useGetMarketData';
+import { AppDispatch, RootState } from 'src/redux/store';
+import { useAppData } from 'src/contexts/appData';
 import AppMenu from './AppMenu';
 import { initPocket } from '../../redux/features/pocket';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -12,7 +13,6 @@ import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
-import { AppDispatch, RootState } from 'src/redux/store';
 
 function App() {
   const { updatetMarketData, updateDataTotalSupply } = useAppData();

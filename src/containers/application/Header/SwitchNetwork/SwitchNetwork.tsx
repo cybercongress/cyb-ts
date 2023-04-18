@@ -2,7 +2,7 @@ import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
-import useNetworks from 'src/hooks/useNetwork';
+import { useNetworks } from 'src/contexts/networks';
 import { CYBER } from '../../../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
 import { BandwidthBar } from '../../../../components';

@@ -5,7 +5,7 @@ import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
 import { AppContext } from '../../../context';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 function Row({ text, number, color }) {
   return (

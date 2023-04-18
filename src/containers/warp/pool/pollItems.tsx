@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
-import useIbcDenom from 'src/hooks/useIbcDenom';
-import useAppData from 'src/hooks/useAppData';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import { DenomArr } from '../../../components';
 import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
 import { CYBER } from '../../../utils/config';

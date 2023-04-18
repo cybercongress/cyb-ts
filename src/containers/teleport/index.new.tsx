@@ -15,7 +15,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import imgSwap from 'images/exchange-arrows.svg';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';

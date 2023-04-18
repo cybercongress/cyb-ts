@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { ObjKeyValue } from 'src/types/data';
 import { Option } from 'src/types';
-import { IbcDenomsArrType } from 'src/types/ibc';
+import { IbcDenomsArr } from 'src/types/ibc';
 import coinDecimalsConfig from '../../utils/configToken';
 import { MyPoolsT } from './type';
 
@@ -12,7 +12,7 @@ export function sortReserveCoinDenoms(x, y) {
 
 export const checkInactiveFunc = (
   token: string,
-  ibcDataDenom: Option<IbcDenomsArrType>
+  ibcDataDenom: Option<IbcDenomsArr>
 ): boolean => {
   if (token.includes('ibc') && ibcDataDenom) {
     if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {

@@ -2,8 +2,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import { DenomArr, ContainerGradient, MainContainer } from '../../components';
 import {
   formatNumber,
@@ -13,8 +14,6 @@ import {
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
-import useIbcDenom from 'src/hooks/useIbcDenom';
-import useAppData from 'src/hooks/useAppData';
 
 function Title({ capData }) {
   return (

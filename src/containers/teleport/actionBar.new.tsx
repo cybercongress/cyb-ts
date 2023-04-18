@@ -37,7 +37,7 @@ import { Option } from 'src/types';
 import { DeliverTxResponse } from '@cosmjs/stargate';
 import { connect, useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const POOL_TYPE_INDEX = 1;
 

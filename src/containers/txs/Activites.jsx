@@ -9,7 +9,7 @@ import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
 import { AppContext } from '../../context';
 import { FormatNumberTokens } from '../nebula/components';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const S_TO_MS = 1 * 10 ** 3;
 

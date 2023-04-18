@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { PocketCard } from '../components';
 import { Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';

@@ -1,25 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import usePoolListInterval from 'src/hooks/usePoolListInterval';
-import { useQueryClient } from 'src/contexts/queryClient';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Option } from 'src/types';
-import {
-  IbcDenomsArrType,
-  TraseDenomFuncResponse,
-  TraseDenomFuncType,
-} from 'src/types/ibc';
-import { NetworksListType } from 'src/types/networks';
-import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
-import defaultNetworks from 'src/utils/defaultNetworks';
-import {
-  findDenomInTokenList,
-  findPoolDenomInArr,
-  getDenomHash,
-  isNative,
-} from 'src/utils/utils';
 
-type NetworksContextType = {
-  networks: Option<NetworksListType>;
-  updateNetworks: (list: NetworksListType) => never;
+import { NetworksList } from 'src/types/networks';
+import { $TsFixMe } from 'src/types/tsfix';
+import defaultNetworks from 'src/utils/defaultNetworks';
+
+type NetworksContext = {
+  networks: Option<NetworksList>;
+  updateNetworks: (list: NetworksList) => never;
 };
 
 const valueContext = {
@@ -27,17 +15,20 @@ const valueContext = {
   updateNetworks: () => {},
 };
 
-export const NetworksContext =
-  React.createContext<NetworksContextType>(valueContext);
+const NetworksContext = React.createContext<NetworksContext>(valueContext);
+
+export function useNetworks() {
+  return useContext(NetworksContext);
+}
 
 function NetworksProvider({ children }: { children: React.ReactNode }) {
-  const [networks, setNetworks] = useState<Option<NetworksListType>>(undefined);
+  const [networks, setNetworks] = useState<Option<NetworksList>>(undefined);
 
   useEffect(() => {
     let networksTmp = {};
     const response = localStorage.getItem('CHAIN_PARAMS');
-    if (response !== null) {
-      const networksData: NetworksListType = JSON.parse(response);
+    if (response) {
+      const networksData: NetworksList = JSON.parse(response);
       networksTmp = { ...networksData };
     } else {
       networksTmp = { ...defaultNetworks };
@@ -61,7 +52,7 @@ function NetworksProvider({ children }: { children: React.ReactNode }) {
   return (
     <NetworksContext.Provider
       value={useMemo(
-        () => ({ networks, updateNetworks } as NetworksContextType),
+        () => ({ networks, updateNetworks } as NetworksContext),
         [networks]
       )}
     >

@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {

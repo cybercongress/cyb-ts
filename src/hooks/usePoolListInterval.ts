@@ -26,7 +26,7 @@ function usePoolListInterval(
   );
 
   useEffect(() => {
-    if (data !== undefined) {
+    if (data) {
       setPoolsData(data.pools);
     }
   }, [data]);

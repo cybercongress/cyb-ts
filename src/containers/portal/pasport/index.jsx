@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { Signatures, ParseAddressesImg } from '../components';
 import { AppContext } from '../../../context';
 import { AvataImgIpfs } from '../components/avataIpfs';

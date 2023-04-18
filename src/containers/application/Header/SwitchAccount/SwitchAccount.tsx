@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
 import styles from './SwitchAccount.module.scss';

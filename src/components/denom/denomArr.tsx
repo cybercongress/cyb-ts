@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { TraseDenomFuncResponse } from 'src/types/ibc';
 import { Option } from 'src/types';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import Denom from './index';
 
 type DenomArrProps = {

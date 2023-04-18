@@ -31,7 +31,7 @@ import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const POOL_TYPE_INDEX = 1;
 

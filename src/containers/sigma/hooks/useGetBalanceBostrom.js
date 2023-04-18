@@ -1,12 +1,11 @@
-import { useEffect, useState, useContext, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { AppContext } from '../../../context';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
-import useIbcDenom from 'src/hooks/useIbcDenom';
-import useAppData from 'src/hooks/useAppData';
 
 function useGetBalanceBostrom(address) {
   const { marketData } = useAppData();

@@ -1,11 +1,11 @@
-export type IbcDenomsType = {
+export type IbcDenoms = {
   sourceChannelId: string;
   baseDenom: string;
   ibcDenom: string;
 };
 
-export type IbcDenomsArrType = {
-  [key: string]: IbcDenomsType;
+export type IbcDenomsArr = {
+  [key: string]: IbcDenoms;
 };
 
 export type TraseDenomFuncResponse = {

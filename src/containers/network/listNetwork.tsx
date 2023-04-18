@@ -1,7 +1,6 @@
-import { useContext, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import useNetworks from 'src/hooks/useNetwork';
-import { AppContext } from '../../context';
+import { useNetworks } from 'src/contexts/networks';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 import { ContainerGradientText } from '../../components';
@@ -45,52 +44,57 @@ function ListNetwork() {
     [networks, updateNetworks]
   );
 
-  const renderItem = networks && Object.keys(networks).map((key) => {
-    const item = networks[key];
-    return (
-      <ContainerGradientText status={statusCard(key)} key={key}>
-        {key !== 'bostrom' &&
-          key !== 'space-pussy' &&
-          key !== CYBER.CHAIN_ID && (
-            <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
-              X
-            </BtnPasport>
-          )}
-        <Link to={`/networks/${key}`}>
-          <div style={{ gap: '5px', display: 'grid' }}>
-            <ValueItem>
-              <div>chainId</div>
-              <div>{key}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>prefix</div>
-              <div>{item.BECH32_PREFIX_ACC_ADDR_CYBER}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>denom</div>
-              <div>{item.DENOM_CYBER}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>liquid denom</div>
-              <div>{item.DENOM_LIQUID_TOKEN}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>rpc</div>
-              <div>{item.CYBER_NODE_URL_API}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>lcd</div>
-              <div>{item.CYBER_NODE_URL_LCD}</div>
-            </ValueItem>
-            <ValueItem>
-              <div>index</div>
-              <div>{item.CYBER_INDEX_HTTPS}</div>
-            </ValueItem>
-          </div>
-        </Link>
-      </ContainerGradientText>
-    );
-  });
+  const renderItem =
+    networks &&
+    Object.keys(networks).map((key) => {
+      const item = networks[key];
+      return (
+        <ContainerGradientText status={statusCard(key)} key={key}>
+          {key !== 'bostrom' &&
+            key !== 'space-pussy' &&
+            key !== CYBER.CHAIN_ID && (
+              <BtnPasport
+                onClick={() => onClickDeleteAddress(key)}
+                typeBtn="red"
+              >
+                X
+              </BtnPasport>
+            )}
+          <Link to={`/networks/${key}`}>
+            <div style={{ gap: '5px', display: 'grid' }}>
+              <ValueItem>
+                <div>chainId</div>
+                <div>{key}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>prefix</div>
+                <div>{item.BECH32_PREFIX_ACC_ADDR_CYBER}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>denom</div>
+                <div>{item.DENOM_CYBER}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>liquid denom</div>
+                <div>{item.DENOM_LIQUID_TOKEN}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>rpc</div>
+                <div>{item.CYBER_NODE_URL_API}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>lcd</div>
+                <div>{item.CYBER_NODE_URL_LCD}</div>
+              </ValueItem>
+              <ValueItem>
+                <div>index</div>
+                <div>{item.CYBER_INDEX_HTTPS}</div>
+              </ValueItem>
+            </div>
+          </Link>
+        </ContainerGradientText>
+      );
+    });
 
   return <MainContainer>{renderItem}</MainContainer>;
 }
