@@ -44,30 +44,32 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const getIBCDenomData = async () => {
-      if (queryClient) {
-        const response = await queryClient.allDenomTraces();
-        const ibcData = {};
+      if (!queryClient) {
+        return;
+      }
 
-        const { denomTraces } = response;
-        denomTraces.forEach((item) => {
-          const { path, baseDenom } = item;
-          const ibcDenomHash = getDenomHash(path, baseDenom);
+      const response = await queryClient.allDenomTraces();
+      const ibcData = {};
 
-          // sourceChannelId
-          const parts = path.split('/');
-          const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
-          const sourceChannelId = removetr.join('/');
+      const { denomTraces } = response;
+      denomTraces.forEach((item) => {
+        const { path, baseDenom } = item;
+        const ibcDenomHash = getDenomHash(path, baseDenom);
 
-          ibcData[ibcDenomHash] = {
-            sourceChannelId,
-            baseDenom,
-            ibcDenom: ibcDenomHash,
-          };
-        });
+        // sourceChannelId
+        const parts = path.split('/');
+        const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+        const sourceChannelId = removetr.join('/');
 
-        if (Object.keys(ibcData).length > 0) {
-          setIbcDenoms(ibcData);
-        }
+        ibcData[ibcDenomHash] = {
+          sourceChannelId,
+          baseDenom,
+          ibcDenom: ibcDenomHash,
+        };
+      });
+
+      if (Object.keys(ibcData).length > 0) {
+        setIbcDenoms(ibcData);
       }
     };
     getIBCDenomData();
