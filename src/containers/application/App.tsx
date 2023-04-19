@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
-import useGetMarketData from 'src/hooks/useGetMarketData';
 import { AppDispatch, RootState } from 'src/redux/store';
-import { useAppData } from 'src/contexts/appData';
 import AppMenu from './AppMenu';
 import { initPocket } from '../../redux/features/pocket';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -15,9 +13,6 @@ import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
 
 function App() {
-  const { updateMarketData, updateDataTotalSupply } = useAppData();
-  const { marketData, dataTotal } = useGetMarketData();
-
   const { pocket } = useSelector((state: RootState) => state);
   const dispatch: AppDispatch = useDispatch();
   const { defaultAccount } = pocket;
@@ -28,20 +23,6 @@ function App() {
   const [openMenu, setOpenMenu] = useState(false);
 
   const ipfs = useIpfs();
-
-  useEffect(() => {
-    if (Object.keys(marketData).length > 0) {
-      updateMarketData(marketData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [marketData]);
-
-  useEffect(() => {
-    if (Object.keys(dataTotal).length > 0) {
-      updateDataTotalSupply(dataTotal);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataTotal]);
 
   // useEffect(() => {
   //   const { pathname } = location;

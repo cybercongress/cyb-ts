@@ -1,24 +1,19 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import useGetMarketData from 'src/hooks/useGetMarketData';
 import { ObjKeyValue } from 'src/types/data';
 
 type OptionObj<T> = T | object;
-
-type UpdateFuncT = (newList: OptionObj<ObjKeyValue>) => void;
 
 type ObjData = OptionObj<ObjKeyValue>;
 
 type DataProviderContextType = {
   marketData: ObjData;
   dataTotalSupply: ObjData;
-  updateMarketData: UpdateFuncT;
-  updateDataTotalSupply: UpdateFuncT;
 };
 
 const valueContext = {
   marketData: {},
   dataTotalSupply: {},
-  updateMarketData: () => {},
-  updateDataTotalSupply: () => {},
 };
 
 const DataProviderContext =
@@ -29,31 +24,36 @@ export function useAppData() {
 }
 
 function DataProvider({ children }: { children: React.ReactNode }) {
-  const [marketData, setMarketData] = useState<ObjData>({});
-  const [dataTotalSupply, setDataTotalSupply] = useState<ObjData>({});
+  const { marketData, dataTotal } = useGetMarketData();
+  const [marketDataState, setMarketData] = useState<ObjData>({});
+  const [dataTotalSupplyState, setDataTotalSupply] = useState<ObjData>({});
 
-  const updateMarketData = (newData: ObjData) => {
-    setMarketData((item) => ({
-      ...item,
-      ...newData,
-    }));
-  };
+  useEffect(() => {
+    if (Object.keys(marketData).length > 0) {
+      setMarketData((item) => ({
+        ...item,
+        ...marketData,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marketData]);
 
-  const updateDataTotalSupply = (newData: ObjData) => {
-    setDataTotalSupply((item) => ({
-      ...item,
-      ...newData,
-    }));
-  };
+  useEffect(() => {
+    if (Object.keys(dataTotal).length > 0) {
+      setDataTotalSupply((item) => ({
+        ...item,
+        ...dataTotal,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataTotal]);
 
   const valueMemo = useMemo(
     () => ({
-      marketData,
-      dataTotalSupply,
-      updateMarketData,
-      updateDataTotalSupply,
+      marketData: marketDataState,
+      dataTotalSupply: dataTotalSupplyState,
     }),
-    [marketData, dataTotalSupply]
+    [marketDataState, dataTotalSupplyState]
   );
 
   return (

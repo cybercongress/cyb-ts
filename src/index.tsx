@@ -95,12 +95,12 @@ root.render(
       <NetworksProvider>
         <SdkQueryClientProvider>
           <SigningClientProvider>
-            <DataProvider>
-              <ApolloProvider client={client}>
-                <DeviceProvider>
-                  <WebsocketsProvider>
-                    <AppContextProvider>
-                      <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient}>
+              <DataProvider>
+                <ApolloProvider client={client}>
+                  <DeviceProvider>
+                    <WebsocketsProvider>
+                      <AppContextProvider>
                         <IbcDenomProvider>
                           <ErrorBoundary fallback={<ErrorScreen />}>
                             <>
@@ -109,12 +109,12 @@ root.render(
                             </>
                           </ErrorBoundary>
                         </IbcDenomProvider>
-                      </QueryClientProvider>
-                    </AppContextProvider>
-                  </WebsocketsProvider>
-                </DeviceProvider>
-              </ApolloProvider>
-            </DataProvider>
+                      </AppContextProvider>
+                    </WebsocketsProvider>
+                  </DeviceProvider>
+                </ApolloProvider>
+              </DataProvider>
+            </QueryClientProvider>
           </SigningClientProvider>
         </SdkQueryClientProvider>
       </NetworksProvider>
