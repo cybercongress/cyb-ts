@@ -1,40 +1,19 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState, useEffect } from 'react';
-import { CyberClient } from '@cybercongress/cyber-js';
-import { CYBER } from './utils/config';
 import { useWebsockets } from './websockets/context';
 
-import { $TsFixMe } from './types/tsfix';
-
 type ValueContextType = {
-  jsCyber: CyberClient | null;
   block: number | null;
 };
 
 const valueContext = {
-  jsCyber: null,
   block: null,
 };
 
 export const AppContext = React.createContext<ValueContextType>(valueContext);
 function AppContextProvider({ children }: { children: React.ReactNode }) {
-  const [value, setValue] = useState(valueContext);
-  const [loadUrl, setLoadUrl] = useState(true);
   const { cyber } = useWebsockets();
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
-
-  useEffect(() => {
-    const createQueryCliet = async () => {
-      setLoadUrl(true);
-      const queryClient = await CyberClient.connect(CYBER.CYBER_NODE_URL_API);
-      setValue((item: $TsFixMe) => ({
-        ...item,
-        jsCyber: queryClient,
-      }));
-      setLoadUrl(false);
-    };
-    createQueryCliet();
-  }, []);
 
   useEffect(() => {
     if (!cyber?.connected) {
@@ -65,15 +44,10 @@ function AppContextProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cyber?.message]);
 
-  if (loadUrl) {
-    return <div>...</div>;
-  }
-
   return (
     <AppContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
-        ...value,
         block: blockHeight,
       }}
     >

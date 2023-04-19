@@ -96,24 +96,24 @@ root.render(
         <SdkQueryClientProvider>
           <SigningClientProvider>
             <QueryClientProvider client={queryClient}>
-              <DataProvider>
-                <ApolloProvider client={client}>
-                  <DeviceProvider>
-                    <WebsocketsProvider>
-                      <AppContextProvider>
-                        <IbcDenomProvider>
+              <IbcDenomProvider>
+                <DataProvider>
+                  <ApolloProvider client={client}>
+                    <DeviceProvider>
+                      <WebsocketsProvider>
+                        <AppContextProvider>
                           <ErrorBoundary fallback={<ErrorScreen />}>
                             <>
                               <AppRouter />
                               <ReactQueryDevtools />
                             </>
                           </ErrorBoundary>
-                        </IbcDenomProvider>
-                      </AppContextProvider>
-                    </WebsocketsProvider>
-                  </DeviceProvider>
-                </ApolloProvider>
-              </DataProvider>
+                        </AppContextProvider>
+                      </WebsocketsProvider>
+                    </DeviceProvider>
+                  </ApolloProvider>
+                </DataProvider>
+              </IbcDenomProvider>
             </QueryClientProvider>
           </SigningClientProvider>
         </SdkQueryClientProvider>

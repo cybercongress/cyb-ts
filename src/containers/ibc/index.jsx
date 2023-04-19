@@ -57,7 +57,6 @@ const setupClient = async (keplr, option) => {
 };
 
 function Ibc() {
-  // const { keplr, jsCyber } = useContext(AppContext);
   const [step, setStep] = useState(STEPS.ENTER_CHAIN_A);
   const [configChains, setConfigChains] = useState(config);
   const [valueChannelsRelayer, setValueChannelsRelayer] =
