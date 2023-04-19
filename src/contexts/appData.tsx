@@ -10,14 +10,14 @@ type ObjData = OptionObj<ObjKeyValue>;
 type DataProviderContextType = {
   marketData: ObjData;
   dataTotalSupply: ObjData;
-  updatetMarketData: UpdateFuncT;
+  updateMarketData: UpdateFuncT;
   updateDataTotalSupply: UpdateFuncT;
 };
 
 const valueContext = {
   marketData: {},
   dataTotalSupply: {},
-  updatetMarketData: () => {},
+  updateMarketData: () => {},
   updateDataTotalSupply: () => {},
 };
 
@@ -32,7 +32,7 @@ function DataProvider({ children }: { children: React.ReactNode }) {
   const [marketData, setMarketData] = useState<ObjData>({});
   const [dataTotalSupply, setDataTotalSupply] = useState<ObjData>({});
 
-  const updatetMarketData = (newData: ObjData) => {
+  const updateMarketData = (newData: ObjData) => {
     setMarketData((item) => ({
       ...item,
       ...newData,
@@ -50,7 +50,7 @@ function DataProvider({ children }: { children: React.ReactNode }) {
     () => ({
       marketData,
       dataTotalSupply,
-      updatetMarketData,
+      updateMarketData,
       updateDataTotalSupply,
     }),
     [marketData, dataTotalSupply]

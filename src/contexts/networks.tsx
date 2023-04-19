@@ -1,13 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Option } from 'src/types';
-
 import { NetworksList } from 'src/types/networks';
-import { $TsFixMe } from 'src/types/tsfix';
 import defaultNetworks from 'src/utils/defaultNetworks';
 
 type NetworksContext = {
   networks: Option<NetworksList>;
-  updateNetworks: (list: NetworksList) => never;
+  updateNetworks: (list: NetworksList) => void;
 };
 
 const valueContext = {
@@ -41,7 +39,7 @@ function NetworksProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  const updateNetworks = (newList: $TsFixMe) => {
+  const updateNetworks = (newList: NetworksList) => {
     localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
     setNetworks((item) => ({
       ...item,
@@ -49,13 +47,10 @@ function NetworksProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const value = useMemo(() => ({ networks, updateNetworks }), [networks]);
+
   return (
-    <NetworksContext.Provider
-      value={useMemo(
-        () => ({ networks, updateNetworks } as NetworksContext),
-        [networks]
-      )}
-    >
+    <NetworksContext.Provider value={value}>
       {children}
     </NetworksContext.Provider>
   );

@@ -15,7 +15,7 @@ import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
 
 function App() {
-  const { updatetMarketData, updateDataTotalSupply } = useAppData();
+  const { updateMarketData, updateDataTotalSupply } = useAppData();
   const { marketData, dataTotal } = useGetMarketData();
 
   const { pocket } = useSelector((state: RootState) => state);
@@ -31,7 +31,7 @@ function App() {
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
-      updatetMarketData(marketData);
+      updateMarketData(marketData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marketData]);
