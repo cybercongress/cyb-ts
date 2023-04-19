@@ -1,10 +1,8 @@
-import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { Dots } from '../../../components';
-import { formatNumber, getDisplayAmount } from '../../../utils/utils';
-import { AppContext } from '../../../context';
 import { ObjKeyValue } from 'src/types/data';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { Dots } from '../../../components';
+import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 
 type BalanceTokenProps = {
   token: string;

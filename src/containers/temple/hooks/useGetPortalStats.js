@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { AppContext } from '../../../context';
 import { getConfigGift, getNumTokens, getStateGift } from '../../portal/utils';
 
 function useGetPortalStats() {
-  const queryClient = useQueryClient(AppContext);
+  const queryClient = useQueryClient();
   const keyQuery = 'portalStats';
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     citizensAmount: 0,

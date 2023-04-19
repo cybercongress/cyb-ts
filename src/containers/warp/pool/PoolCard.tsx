@@ -1,6 +1,8 @@
-import { useMemo, useContext, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { AppContext } from '../../../context';
+import { Option } from 'src/types';
+import { ObjKeyValue } from 'src/types/data';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import tokenList from '../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../utils/utils';
 import { FormatNumberTokens } from '../../nebula/components';
@@ -9,9 +11,6 @@ import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
 import { PoolsWithAssetsCapType } from '../type';
-import { Option } from 'src/types';
-import { ObjKeyValue } from 'src/types/data';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 type PoolCardProps = {
   pool: PoolsWithAssetsCapType;

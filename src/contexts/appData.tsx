@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import useGetMarketData from 'src/hooks/useGetMarketData';
 import { ObjKeyValue } from 'src/types/data';
 
@@ -25,35 +25,13 @@ export function useAppData() {
 
 function DataProvider({ children }: { children: React.ReactNode }) {
   const { marketData, dataTotal } = useGetMarketData();
-  const [marketDataState, setMarketData] = useState<ObjData>({});
-  const [dataTotalSupplyState, setDataTotalSupply] = useState<ObjData>({});
-
-  useEffect(() => {
-    if (Object.keys(marketData).length > 0) {
-      setMarketData((item) => ({
-        ...item,
-        ...marketData,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [marketData]);
-
-  useEffect(() => {
-    if (Object.keys(dataTotal).length > 0) {
-      setDataTotalSupply((item) => ({
-        ...item,
-        ...dataTotal,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataTotal]);
 
   const valueMemo = useMemo(
     () => ({
-      marketData: marketDataState,
-      dataTotalSupply: dataTotalSupplyState,
+      marketData,
+      dataTotalSupply: dataTotal,
     }),
-    [marketDataState, dataTotalSupplyState]
+    [marketData, dataTotal]
   );
 
   return (

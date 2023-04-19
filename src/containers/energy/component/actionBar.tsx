@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
@@ -7,6 +7,7 @@ import {
 } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   Dots,
   ActionBarContentText,
@@ -16,7 +17,6 @@ import {
   Account,
   ButtonIcon,
 } from '../../../components';
-import { AppContext } from '../../../context';
 import {
   LEDGER,
   PATTERN_CYBER,
@@ -26,7 +26,6 @@ import {
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';
-import { useSigningClient } from 'src/contexts/signerClient';
 
 const back = require('../../../image/arrow-back-outline.svg');
 

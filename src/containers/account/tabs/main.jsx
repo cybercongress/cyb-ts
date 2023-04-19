@@ -1,11 +1,9 @@
-import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 // import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
-import { AppContext } from '../../../context';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 function Row({ text, number, color }) {
   return (

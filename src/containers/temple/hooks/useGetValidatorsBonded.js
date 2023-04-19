@@ -3,12 +3,11 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { AppContext } from '../../../context';
 
 const keyQuery = 'validatorsBONDED';
 
 function useGetValidatorsBonded() {
-  const queryClient = useQueryClient(AppContext);
+  const queryClient = useQueryClient();
 
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     amount: 0,
