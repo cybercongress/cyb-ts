@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
-import { JsonView } from '../ui/ui';
+import { JsonView, LinkTx } from '../ui/ui';
 import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
+import { trimString } from 'src/utils/utils';
 
 const executePlaceholder = {
   transfer: {
@@ -81,7 +82,7 @@ function ExecuteContract({ contractAddress }) {
       console.log(`executeResponseResult`, executeResponseResult);
       setExecuteResponse({ result: executeResponseResult });
     } catch (e) {
-      console.log(`e`, e);
+      console.error(e);
       setExecuteResponse({ error: `Execute error: ${e}` });
     }
 
@@ -133,6 +134,13 @@ function ExecuteContract({ contractAddress }) {
       {executeResponse.result && (
         <div className={styles.containerExecuteContractResult}>
           <span>Response:</span>
+
+          <div>
+            Txs:{' '}
+            <LinkTx txs={executeResponse.result.transactionHash}>
+              {trimString(executeResponse.result.transactionHash, 3, 3)}
+            </LinkTx>
+          </div>
           <JsonView src={executeResponse.result} />
         </div>
       )}
