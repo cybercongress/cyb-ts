@@ -1,12 +1,13 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { AppContext } from '../../../context';
 import { getConfigGift, getNumTokens, getStateGift } from '../../portal/utils';
 
 function useGetPortalStats() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient(AppContext);
   const keyQuery = 'portalStats';
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     citizensAmount: 0,
@@ -19,9 +20,9 @@ function useGetPortalStats() {
     queryFn: async () => {
       let response = { citizens: 0, procentClaim: 0, timestamp: '' };
 
-      const queryResponseResultState = await getStateGift(jsCyber);
-      const queryResponseConfigGift = await getConfigGift(jsCyber);
-      const respnseNumTokens = await getNumTokens(jsCyber);
+      const queryResponseResultState = await getStateGift(queryClient);
+      const queryResponseConfigGift = await getConfigGift(queryClient);
+      const respnseNumTokens = await getNumTokens(queryClient);
 
       if (
         queryResponseConfigGift !== null &&
@@ -51,7 +52,7 @@ function useGetPortalStats() {
       return null;
     },
     refetchInterval: 1000 * 60 * 3,
-    enabled: Boolean(jsCyber),
+    enabled: Boolean(queryClient),
   });
 
   useEffect(() => {

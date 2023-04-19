@@ -106,7 +106,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
 }
 
 function Ipfs() {
-  const { jsCyber } = useContext(AppContext);
+ const queryClient = useQueryClient();
   const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
   const { contentIpfs, status, loading, statusFetching } = useGetIpfsContent(
@@ -151,16 +151,16 @@ function Ipfs() {
   // }, [dataGetIpfsContent]);
 
   useEffect(() => {
-    if (jsCyber !== null) {
+    if (queryClient) {
       getLinks();
     }
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const feachBacklinks = async () => {
       setDataBacklinks([]);
-      if (jsCyber !== null) {
-        const responseBacklinks = await jsCyber.backlinks(cid);
+      if (queryClient) {
+        const responseBacklinks = await queryClient.backlinks(cid);
         // console.log(`responseBacklinks`, responseBacklinks)
         if (
           responseBacklinks.result &&
@@ -173,7 +173,7 @@ function Ipfs() {
       }
     };
     feachBacklinks();
-  }, [cid, jsCyber]);
+  }, [cid, queryClient]);
 
   const getLinks = () => {
     feacDataSearch();
@@ -186,7 +186,7 @@ function Ipfs() {
     setAllPage(0);
     setPage(0);
     setTotal(0);
-    const responseSearch = await search(jsCyber, cid, 0);
+    const responseSearch = await search(queryClient, cid, 0);
     if (responseSearch.result && responseSearch.result.length > 0) {
       setDataAnswers(reduceParticleArr(responseSearch.result, cid));
       setAllPage(Math.ceil(parseFloat(responseSearch.pagination.total) / 10));
@@ -198,7 +198,7 @@ function Ipfs() {
   const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
-    const data = await search(jsCyber, cid, page);
+    const data = await search(queryClient, cid, page);
     // console.log(`data`, data)
     if (data.result) {
       const result = reduceParticleArr(data.result, cid);

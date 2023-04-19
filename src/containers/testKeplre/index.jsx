@@ -131,7 +131,6 @@ const testFunc = (responseDataPools, jsCyber) => {
 };
 
 function TestKeplr() {
-  // const { keplr, jsCyber } = useContext(AppContext);
   // const { result, error, run } = useWebworker(testFunc);
 
   // console.log('result', result);

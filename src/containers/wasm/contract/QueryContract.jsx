@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { JsonView } from '../ui/ui';
 import styles from './stylesQueryContract.scss';
 import { JSONInputCard } from './InstantiationContract';
@@ -9,7 +9,7 @@ const queryPlaceholder = {
 };
 
 function QueryContract({ contractAddress }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [error, setError] = useState(null);
   const [queryObject, setQueryObject] = useState({});
   const [queryResponse, setQueryResponse] = useState({});
@@ -33,12 +33,12 @@ function QueryContract({ contractAddress }) {
   }, [queryObject, queryResponse]);
 
   const runQuery = async () => {
-    if (jsCyber === null || !queryObject.result) {
+    if (!queryClient || !queryObject.result) {
       return;
     }
 
     try {
-      const queryResponseResult = await jsCyber.queryContractSmart(
+      const queryResponseResult = await queryClient.queryContractSmart(
         contractAddress,
         queryObject.result
       );
@@ -62,7 +62,7 @@ function QueryContract({ contractAddress }) {
         type="button"
         className="btn btn-primary"
         style={{
-          cursor: jsCyber && queryObject.result ? 'pointer' : 'not-allowed',
+          cursor: queryClient && queryObject.result ? 'pointer' : 'not-allowed',
         }}
         onClick={runQuery}
         disabled={!queryObject?.result}

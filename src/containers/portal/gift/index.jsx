@@ -1,7 +1,7 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { useIpfs } from 'src/contexts/ipfs';
-import { AppContext } from '../../../context';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
   useGetActivePassport,
@@ -25,7 +25,6 @@ import STEP_INFO from './utils';
 import Info from './Info';
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
-import { useDevice } from 'src/contexts/device';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -72,7 +71,7 @@ const itemsStep = [
 
 function PortalGift({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [updateFunc, setUpdateFunc] = useState(0);
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
@@ -134,8 +133,8 @@ function PortalGift({ defaultAccount }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
-        const response = await jsCyber.getTx(txHash.txHash);
+      if (queryClient && txHash !== null && txHash.status === 'pending') {
+        const response = await queryClient.getTx(txHash.txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -165,7 +164,7 @@ function PortalGift({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   useEffect(() => {
     if (
@@ -224,9 +223,9 @@ function PortalGift({ defaultAccount }) {
 
   useEffect(() => {
     const cheeckStateFunc = async () => {
-      if (jsCyber !== null) {
-        const queryResponseResultConfig = await getConfigGift(jsCyber);
-        const queryResponseResultState = await getStateGift(jsCyber);
+      if (queryClient) {
+        const queryResponseResultConfig = await getConfigGift(queryClient);
+        const queryResponseResultState = await getStateGift(queryClient);
 
         if (
           queryResponseResultConfig !== null &&
@@ -247,7 +246,7 @@ function PortalGift({ defaultAccount }) {
       }
     };
     cheeckStateFunc();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     if (!loadingGift) {

@@ -10,6 +10,7 @@ import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 import { AppContext } from '../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const dateFormat = require('dateformat');
 
@@ -41,7 +42,7 @@ function Statistics({ communityPoolCyber, staked }) {
 }
 
 function Governance({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+ const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
@@ -67,19 +68,19 @@ function Governance({ defaultAccount }) {
 
   useEffect(() => {
     const getStatistics = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         let communityPool = 0;
         const totalCyb = {};
         let stakedBoot = 0;
 
-        const dataCommunityPool = await jsCyber.communityPool();
+        const dataCommunityPool = await queryClient.communityPool();
         const { pool } = dataCommunityPool;
         if (dataCommunityPool !== null) {
           communityPool = coinDecimals(Math.floor(parseFloat(pool[0].amount)));
         }
         setCommunityPoolCyber(communityPool);
 
-        const datagetTotalSupply = await jsCyber.totalSupply();
+        const datagetTotalSupply = await queryClient.totalSupply();
         if (Object.keys(datagetTotalSupply).length > 0) {
           datagetTotalSupply.forEach((item) => {
             totalCyb[item.denom] = parseFloat(item.amount);
@@ -93,16 +94,16 @@ function Governance({ defaultAccount }) {
       }
     };
     getStatistics();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     feachProposals();
   }, []);
 
   const feachProposals = async () => {
-    // if (jsCyber !== null) {
+    // if (queryClient !== null) {
     const responseProposals = await getProposals();
-    // const responseProposals = await jsCyber.proposals(
+    // const responseProposals = await queryClient.proposals(
     //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
     //   '',
     //   ''

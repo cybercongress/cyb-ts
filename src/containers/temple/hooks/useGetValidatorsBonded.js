@@ -1,13 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { AppContext } from '../../../context';
 
 const keyQuery = 'validatorsBONDED';
 
 function useGetValidatorsBonded() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient(AppContext);
 
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     amount: 0,
@@ -22,7 +23,7 @@ function useGetValidatorsBonded() {
         timestamp: '',
       };
 
-      const responseHeroesActive = await jsCyber.validators(
+      const responseHeroesActive = await queryClient.validators(
         'BOND_STATUS_BONDED'
       );
       if (responseHeroesActive && responseHeroesActive !== null) {
@@ -37,7 +38,7 @@ function useGetValidatorsBonded() {
       return response;
     },
     refetchInterval: 1000 * 60 * 3,
-    enabled: Boolean(jsCyber),
+    enabled: Boolean(queryClient),
   });
 
   useEffect(() => {

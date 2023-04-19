@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ChainId,
   Token,
@@ -6,8 +6,8 @@ import {
   Fetcher,
   Route as RouteUniswap,
 } from '@uniswap/sdk';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { TOTAL_GOL_GENESIS_SUPPLY, CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 import { convertResources } from '../../utils/utils';
 
 const initValue = {
@@ -42,7 +42,7 @@ const initState = {
 };
 
 function useGetCybernomics() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [cybernomics, setCybernomics] = useState(initState);
   const [poolsData, setPoolsData] = useState([]);
   const [totalSupplyData, setTotalSupplyData] = useState({});
@@ -97,10 +97,10 @@ function useGetCybernomics() {
 
   useEffect(() => {
     const feachTotal = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         const totalCyb = {};
 
-        const totalSupply = await jsCyber.totalSupply();
+        const totalSupply = await queryClient.totalSupply();
         if (Object.keys(totalSupply).length > 0) {
           totalSupply.forEach((item) => {
             totalCyb[item.denom] = parseFloat(item.amount);
@@ -164,13 +164,13 @@ function useGetCybernomics() {
       }
     };
     feachTotal();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     try {
       const getPools = async () => {
-        if (jsCyber !== null) {
-          const responsePools = await jsCyber.pools();
+        if (queryClient) {
+          const responsePools = await queryClient.pools();
           setPoolsData(responsePools.pools);
         }
       };
@@ -178,7 +178,7 @@ function useGetCybernomics() {
     } catch (error) {
       setPoolsData([]);
     }
-  }, [jsCyber]);
+  }, [queryClient]);
 
   return {
     ...cybernomics,

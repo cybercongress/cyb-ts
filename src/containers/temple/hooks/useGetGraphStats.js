@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { AppContext } from '../../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const keyQuery = 'graphStats';
 function useGetGraphStats() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     particles: 0,
     cyberlinks: 0,
@@ -24,7 +24,7 @@ function useGetGraphStats() {
         beta: 0,
         timestamp: '',
       };
-      const responseGraphStats = await jsCyber.graphStats();
+      const responseGraphStats = await queryClient.graphStats();
 
       if (responseGraphStats !== null) {
         const { cyberlinks, particles } = responseGraphStats;
@@ -53,7 +53,7 @@ function useGetGraphStats() {
       }
       return response;
     },
-    enabled: Boolean(jsCyber),
+    enabled: Boolean(queryClient),
     refetchInterval: 1000 * 60 * 3,
   });
 

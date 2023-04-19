@@ -59,7 +59,7 @@ const reduceSearchResults = (data, query) => {
 
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { jsCyber } = useContext(AppContext);
+ const queryClient = useQueryClient();
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
     useGetCybernomics();
@@ -74,14 +74,14 @@ function Market({ defaultAccount }) {
 
   useEffect(() => {
     const getFirstItem = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         setPage(0);
         setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
         const hash = await getIpfsHash(tab);
         setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash, 0);
+        const responseApps = await search(queryClient, hash, 0);
         if (responseApps.result && responseApps.result.length > 0) {
           const dataApps = reduceSearchResults(responseApps.result, tab);
           setResultSearch(dataApps);
@@ -98,13 +98,13 @@ function Market({ defaultAccount }) {
       }
     };
     getFirstItem();
-  }, [jsCyber, tab, update]);
+  }, [queryClient, tab, update]);
 
   const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(jsCyber, keywordHash, page);
+    const data = await search(queryClient, keywordHash, page);
     if (data.result) {
       links = reduceSearchResults(data.result, tab);
     }

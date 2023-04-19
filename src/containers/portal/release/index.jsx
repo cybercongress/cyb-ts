@@ -1,8 +1,9 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
-import { AppContext } from '../../../context';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
   useGetActivePassport,
@@ -30,7 +31,6 @@ import Info from './Info';
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 import { ContainerGradientText } from '../../../components';
-import { useDevice } from 'src/contexts/device';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -86,7 +86,7 @@ const initStateBonus = {
 
 function Release({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [updateFunc, setUpdateFunc] = useState(0);
 
@@ -179,8 +179,8 @@ function Release({ defaultAccount }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
-        const response = await jsCyber.getTx(txHash.txHash);
+      if (queryClient && txHash !== null && txHash.status === 'pending') {
+        const response = await queryClient.getTx(txHash.txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -210,15 +210,15 @@ function Release({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   useEffect(() => {
     const cheeckStateRelease = async () => {
       setLoading(true);
-      if (jsCyber !== null) {
+      if (queryClient) {
         try {
-          const queryResponseResultConfig = await getConfigGift(jsCyber);
-          const queryResponseResultState = await getStateGift(jsCyber);
+          const queryResponseResultConfig = await getConfigGift(queryClient);
+          const queryResponseResultState = await getStateGift(queryClient);
 
           const validResponse =
             queryResponseResultState !== null &&
@@ -255,7 +255,7 @@ function Release({ defaultAccount }) {
       }
     };
     cheeckStateRelease();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   const initState = () => {
     setTimeNext(null);
