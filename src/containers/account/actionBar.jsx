@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { coins } from '@cosmjs/launchpad';
 import {
@@ -24,6 +24,7 @@ import {
 import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
+import Button from 'src/components/btnGrd';
 
 const { DIVISOR_CYBER_G } = CYBER;
 

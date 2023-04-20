@@ -36,17 +36,18 @@ const playAudioClick = () => {
 
 export type Props = {
   disabled?: boolean;
-  text: string | JSX.Element;
+  text?: string | JSX.Element;
   img?: $TsFixMe;
   pending?: boolean;
   className?: $TsFixMe;
   onClick: () => void;
 };
 
-function BtnGrd({
+function Button({
   disabled,
   text,
   img,
+  children,
   pending,
   onClick,
   className,
@@ -100,7 +101,7 @@ function BtnGrd({
           </>
         ) : (
           <>
-            {text}
+            {text || children}
             {img && (
               <img style={{ width: 20, height: 20 }} alt="img" src={img} />
             )}
@@ -111,4 +112,4 @@ function BtnGrd({
   );
 }
 
-export default BtnGrd;
+export default Button;

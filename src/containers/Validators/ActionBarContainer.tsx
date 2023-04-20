@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
@@ -19,6 +19,7 @@ import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
+import Button from 'src/components/btnGrd';
 
 const {
   STAGE_INIT,
@@ -453,19 +454,13 @@ function ActionBarContainer({
             {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
               balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
                 <Pane>
-                  <button
-                    type="button"
-                    className="btn-disabled"
+                  <Button
                     onClick={() => handleHistory('/hfr')}
+                    text="Investmint"
                     style={{
-                      height: 42,
-                      maxWidth: '200px',
-                      padding: '0 20px',
-                      marginRight: '15px',
+                      marginRight: 15,
                     }}
-                  >
-                    Investmint
-                  </button>
+                  />
                   yor free H to get A and V
                 </Pane>
               )}
@@ -475,19 +470,13 @@ function ActionBarContainer({
             {validRewards && (
               <Pane marginLeft={15}>
                 or
-                <button
-                  type="button"
-                  className="btn-disabled"
-                  onClick={() => claimRewards()}
+                <Button
                   style={{
-                    height: 42,
-                    maxWidth: '200px',
-                    padding: '0 20px',
-                    marginLeft: '15px',
+                    marginLeft: 15,
                   }}
-                >
-                  Claim rewards
-                </button>
+                  onClick={claimRewards}
+                  text="Claim rewards"
+                />
               </Pane>
             )}
           </Pane>
@@ -529,7 +518,9 @@ function ActionBarContainer({
         {unStake && (
           <div>
             <Button
-              marginX={25}
+              style={{
+                margin: '0 25px',
+              }}
               onClick={() => funcSetTxType(TXTYPE_UNDELEGATE)}
             >
               Unstake

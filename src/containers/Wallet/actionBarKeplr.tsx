@@ -16,6 +16,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
+import Button from 'src/components/btnGrd';
 
 const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
   LEDGER;
@@ -186,14 +187,9 @@ function ActionBarKeplr({ updateAddress, updateBalance, selectAccount }) {
             />
           </ActionBarContentText>
 
-          <button
-            type="button"
-            className="btn-disabled"
-            disabled={disabledGenerate}
-            onClick={() => generateTxSend()}
-          >
+          <Button disabled={disabledGenerate} onClick={() => generateTxSend()}>
             Generate Tx
-          </button>
+          </Button>
         </Pane>
       </ActionBar>
     );

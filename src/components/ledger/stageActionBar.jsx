@@ -3,7 +3,6 @@ import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
   ActionBar,
-  Button,
   Input,
   Pane,
   Text,
@@ -22,6 +21,7 @@ import ButtonImgText from '../Button/buttonImgText';
 import { i18n } from '../../i18n/en';
 
 import { CYBER, BOND_STATUS } from '../../utils/config';
+import Button from '../btnGrd';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -192,7 +192,7 @@ export function Confirmed({ txHash, txHeight, cosmos, onClickBtnCloce }) {
           {formatNumber(parseFloat(txHeight))}
         </Pane>
       </ActionBarContentText>
-      <Button marginX={10} onClick={onClickBtnCloce}>
+      <Button style={{ margin: '0 10px' }} onClick={onClickBtnCloce}>
         Fuck Google
       </Button>
     </ActionBar>
@@ -205,7 +205,7 @@ export function TransactionError({ onClickBtn, errorMessage }) {
       <ActionBarContentText display="block">
         Message Error: {errorMessage}
       </ActionBarContentText>
-      <Button marginX={10} onClick={onClickBtn}>
+      <Button style={{ margin: '0 10px' }} onClick={onClickBtn}>
         {T.actionBar.confirmedTX.continue}
       </Button>
     </ActionBar>
@@ -970,15 +970,13 @@ export function Delegate({
           placeholder="amount"
         />
       </ActionBarContentText>
-      <button
-        type="button"
-        className="btn-disabled"
+      <Button
         onClick={generateTx}
         style={{ height: 42, maxWidth: '200px' }}
         disabled={disabledBtn}
       >
         {T.actionBar.delegate.generate}
-      </button>
+      </Button>
     </ActionBar>
   );
 }
@@ -1048,15 +1046,13 @@ export function ReDelegate({
             ))}
         </select>
       </ActionBarContentText>
-      <button
-        type="button"
-        className="btn-disabled"
+      <Button
         onClick={generateTx}
         style={{ height: 42, maxWidth: '200px' }}
         disabled={disabledBtn}
       >
         {T.actionBar.delegate.generate}
-      </button>
+      </Button>
     </ActionBar>
   );
 }
@@ -1096,14 +1092,9 @@ export function SendLedger({
             message={amountSendInputValid}
           />
         </ActionBarContentText>
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
+        <Button disabled={disabledBtn} onClick={onClickBtn}>
           Generate Tx
-        </button>
+        </Button>
       </Pane>
     </ActionBar>
   );
@@ -1149,14 +1140,9 @@ export function RewardsDelegators({
         <Pane>{itemReward}</Pane>
       </Pane>
       <div className="text-align-center">
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
+        <Button disabled={disabledBtn} onClick={onClickBtn}>
           {T.actionBar.send.generate}
-        </button>
+        </Button>
       </div>
     </ContainetLedger>
   );
