@@ -3,9 +3,9 @@ import { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
 import cx from 'classnames';
 
-import styles from './styles.scss';
+import styles from './Tooltip.module.scss';
 
-type TooltipProps = {
+export type TooltipProps = {
   children: React.ReactNode;
   trigger?: 'click' | 'hover';
   tooltip: React.ReactNode;
@@ -39,9 +39,7 @@ function Tooltip({
 
   return (
     <>
-      <span ref={setTriggerRef} className="trigger">
-        {children}
-      </span>
+      <span ref={setTriggerRef}>{children}</span>
 
       {mounted && (
         <div

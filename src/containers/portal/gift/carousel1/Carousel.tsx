@@ -1,8 +1,25 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useCallback } from 'react';
-import styles from './carousel.scss';
+import styles from './carousel.module.scss';
 
 const cx = require('classnames');
+
+type Slide = {
+  step?: number;
+  title?: string;
+};
+
+export type Props = {
+  slides: Slide[];
+  speed?: number;
+  activeStep: number;
+  setStep: (index: number) => void;
+  transitionSpeed?: number;
+  slideWidth?: number;
+  disableNext?: boolean;
+  disableMode?: boolean;
+  heightSlide?: string;
+};
 
 function Carousel({
   slides = [],
@@ -14,7 +31,7 @@ function Carousel({
   disableNext,
   disableMode,
   heightSlide,
-}) {
+}: Props) {
   if (slides.length < 2) {
     console.error('Please provide more slides');
     return null;
@@ -63,7 +80,7 @@ function Carousel({
   };
 
   const setActiveItem = useCallback(
-    (index) => {
+    (index: number) => {
       if (index !== 0 && index <= slides.length && !disableMode) {
         // setVisibleSlide(index);
         if (index <= visibleSlide) {

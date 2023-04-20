@@ -1,6 +1,6 @@
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
-import Status from './status';
+import Status, { StatusType } from './status';
 
 const gradeColorRank = (grade) => {
   let classColor = 'grey';
@@ -29,7 +29,16 @@ const gradeColorRank = (grade) => {
   return classColor;
 };
 
-function SearchItem({ status, grade, children, textPreview }) {
+type Props = {
+  status: StatusType;
+  grade?: {
+    value: number;
+  };
+  children: React.ReactNode;
+  textPreview?: string;
+};
+
+function SearchItem({ status, grade, children, textPreview }: Props) {
   let colorRank = 'grey';
 
   if (grade && grade.value) {

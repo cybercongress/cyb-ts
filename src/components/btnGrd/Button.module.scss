@@ -43,6 +43,11 @@ $color-text: #36d6ae;
     color: #40ecc1;
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    color: #777;
+  }
+
   &:disabled:hover {
     color: #777;
   }
@@ -71,16 +76,13 @@ $color-text: #36d6ae;
 }
 
 @keyframes blink {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.7;
-    }
-
-  // 100% {
-  //   opacity: 0.7;
-  // }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .GradientContainer {

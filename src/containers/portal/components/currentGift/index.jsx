@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
-import styles from './styles.scss';
+import styles from './CurrentGift.module.scss';
 import { PATTERN_CYBER } from '../../../../utils/config';
 
 const GIFT_ICON = '🎁';

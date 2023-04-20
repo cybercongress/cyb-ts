@@ -2,8 +2,19 @@ import { useEffect, useState } from 'react';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 
-function CoinDenom({ coinDenom, tooltipStatus, infoDenom }) {
-  const [textDenom, setTextDenom] = useState(null);
+export type CoinDenomProps = {
+  coinDenom: string;
+  // use demom type
+  infoDenom: {
+    denom: string;
+    path: string;
+    native?: boolean;
+  } | null;
+  tooltipStatus?: boolean;
+};
+
+function CoinDenom({ coinDenom, tooltipStatus, infoDenom }: CoinDenomProps) {
+  const [textDenom, setTextDenom] = useState<string | null>(null);
   const [tooltipText, setTooltipText] = useState(coinDenom);
 
   useEffect(() => {
