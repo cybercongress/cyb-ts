@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import { useIpfs } from 'src/contexts/ipfs';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
 import styles from './SwitchAccount.module.scss';
@@ -11,12 +13,10 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../karma';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   setAccounts,
   setDefaultAccount,
 } from '../../../../redux/features/pocket';
-import { RootState } from 'src/redux/store';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);

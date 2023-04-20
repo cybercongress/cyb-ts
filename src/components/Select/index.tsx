@@ -3,11 +3,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { useState, useRef } from 'react';
 
+import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 import LinearGradientContainer from './LinearGradientContainer';
 import styles from './Select.module.scss';
 import { SelectContext, useSelectContext } from './selectContext';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
-import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 
 const classNames = require('classnames');
 

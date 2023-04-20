@@ -1,8 +1,6 @@
-import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { Meta, Story } from '@storybook/react';
 import BigNumber from 'bignumber.js';
-import CurrentGift from './';
+import CurrentGift from '.';
 
 const mockGift = {
   amount: '10000000',
@@ -50,7 +48,7 @@ const Template: Story = (args) => (
     {...args}
     currentGift={mockGift}
     currentBonus={{ current: mockCurrentBonus }}
-    stateOpen={true}
+    stateOpen
     selectedAddress={mockSelectedAddress}
     initStateCard={{ lamp: 'green' }}
     totalGiftClaimed={mockTotalGiftClaimed}

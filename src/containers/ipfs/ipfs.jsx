@@ -1,6 +1,6 @@
 // TODO: Refactor this component - too heavy
 import { useParams } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Pane, Tablist, Pill } from '@cybercongress/gravity';
 import { useIpfs } from 'src/contexts/ipfs';
@@ -50,17 +50,19 @@ const reduceParticleArr = (data, query = '') => {
   );
 };
 
-//TODO: Move to reusable components
-const PaneWithPill = ({ caption, count, active }) => (
-  <Pane display="flex" alignItems="center">
-    <Pane>{caption}</Pane>
-    {count > 0 && (
-      <Pill marginLeft={5} active={active}>
-        {formatNumber(count)}
-      </Pill>
-    )}
-  </Pane>
-);
+// TODO: Move to reusable components
+function PaneWithPill({ caption, count, active }) {
+  return (
+    <Pane display="flex" alignItems="center">
+      <Pane>{caption}</Pane>
+      {count > 0 && (
+        <Pill marginLeft={5} active={active}>
+          {formatNumber(count)}
+        </Pill>
+      )}
+    </Pane>
+  );
+}
 
 function ContentIpfsCid({ loading, statusFetching, status }) {
   // const loading = dataGetIpfsContent.loading;
@@ -69,7 +71,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
     return (
       <div
         style={{
-          //TODO: Avoid inline styles
+          // TODO: Avoid inline styles
           width: '100%',
           // height: '50vh',
           display: 'flex',

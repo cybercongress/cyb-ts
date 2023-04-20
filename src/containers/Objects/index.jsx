@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useIpfs } from 'src/contexts/ipfs';
+import { useDevice } from 'src/contexts/device';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
 import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
-import { useDevice } from 'src/contexts/device';
 
 function Relevance({ items, fetchMoreData, page, allPage }) {
   const { isMobile: mobile } = useDevice();

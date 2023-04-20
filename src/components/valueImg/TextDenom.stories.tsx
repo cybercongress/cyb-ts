@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react';
-import { useState } from 'react';
 import CoinDenom, { CoinDenomProps } from './TextDenom';
 
 export default {
@@ -25,7 +24,7 @@ export default {
 } as Meta;
 
 const Template: Story<CoinDenomProps> = (args) => {
-  return <CoinDenom {...args} tooltipStatus={true} />;
+  return <CoinDenom {...args} tooltipStatus />;
 };
 
 export const Default = Template.bind({});

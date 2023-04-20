@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { parseCoins } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import Long from 'long';
+import { getKeplr } from 'src/utils/keplrUtils';
 import { DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { configKeplr } from './configKepler';
 import useSetupIbc from './useSetupIbc';
 import { config, STEPS } from './utils';
 import { IbcTxs, Relayer } from './components';
-import { getKeplr } from 'src/utils/keplrUtils';
 
 const fee = {
   amount: [],

@@ -1,6 +1,7 @@
-import { useState, useMemo, useContext } from 'react';
+import { useState, useMemo } from 'react';
 import { Transition } from 'react-transition-group';
 import { Link } from 'react-router-dom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
@@ -8,7 +9,6 @@ import styles from './styles.scss';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const cx = require('classnames');
 

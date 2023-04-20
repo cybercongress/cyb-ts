@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { trimString } from 'src/utils/utils';
 import txs from '../../../utils/txs';
 import { JsonView, LinkTx } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { trimString } from 'src/utils/utils';
 
 const executePlaceholder = {
   transfer: {

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 
+import withDevice from 'src/components/helpers/withDevice';
 import ValidatorInfo from './validatorInfo';
 import {
   getValidatorsInfo,
@@ -19,8 +20,6 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
-import { useDevice } from 'src/contexts/device';
-import withDevice from 'src/components/helpers/withDevice';
 
 function TabBtn({ text, isSelected, onSelect, to }) {
   return (

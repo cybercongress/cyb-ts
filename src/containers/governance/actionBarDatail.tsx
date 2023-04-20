@@ -1,8 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
 import { ActionBar, Pane } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -25,8 +27,6 @@ import {
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useSigningClient } from 'src/contexts/signerClient';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgCyber = require('../../image/blue-circle.png');

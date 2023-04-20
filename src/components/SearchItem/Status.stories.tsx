@@ -1,5 +1,5 @@
 import { Meta, Story } from '@storybook/react';
-import Status, { Props, StatusType } from './status';
+import Status, { Props } from './status';
 
 export default {
   title: 'Features/Search/Status',

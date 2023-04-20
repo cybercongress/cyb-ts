@@ -4,6 +4,7 @@ import {
   ActionBar as ActionBarGravity,
   Button,
 } from '@cybercongress/gravity';
+import { useSigningClient } from 'src/contexts/signerClient';
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
 import ActionBarUser from './actionBarUser';
@@ -14,7 +15,6 @@ import { NETWORKSIDS } from '../../utils/config';
 import imgLedger from '../../image/ledger.svg';
 import imgKeplr from '../../image/keplr-icon.svg';
 import imgRead from '../../image/duplicate-outline.svg';
-import { useSigningClient } from 'src/contexts/signerClient';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;

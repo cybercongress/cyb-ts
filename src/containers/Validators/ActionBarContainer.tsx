@@ -3,6 +3,8 @@ import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -17,8 +19,6 @@ import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useSigningClient } from 'src/contexts/signerClient';
 
 const {
   STAGE_INIT,

@@ -8,6 +8,7 @@ import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
+import { getKeplr } from 'src/utils/keplrUtils';
 import txs from '../../../utils/txs';
 import { Dots, ButtonIcon, BtnGrd } from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
@@ -30,7 +31,6 @@ import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import { pinToIpfsCluster } from '../../../utils/ipfs/utils-ipfs';
-import { getKeplr } from 'src/utils/keplrUtils';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

@@ -1,8 +1,10 @@
-import { useEffect, useContext, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
@@ -12,8 +14,6 @@ import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { useQueryClient } from 'src/contexts/queryClient';
 
 const BASE_VESTING_TIME = 86401;
 const BASE_MAX_MINT_TIME = 41;

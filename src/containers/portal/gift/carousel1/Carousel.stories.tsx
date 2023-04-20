@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
-import Carousel, { Props } from './Carousel';
 import { useState } from 'react';
+import Carousel, { Props } from './Carousel';
 
 export default {
   title: 'Molecules/Carousel',

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import useWebSocket, { Socket } from './hook';
 import { CYBER } from 'src/utils/config';
+import useWebSocket, { Socket } from './hook';
 
 const WebsocketsContext = React.createContext<{ cyber: Socket | null }>({
   cyber: null,

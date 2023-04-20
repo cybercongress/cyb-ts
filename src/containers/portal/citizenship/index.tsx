@@ -5,6 +5,10 @@ import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useIpfs } from 'src/contexts/ipfs';
 import { pinToIpfsCluster } from 'src/utils/ipfs/utils-ipfs';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { getKeplr } from 'src/utils/keplrUtils';
+import { useDevice } from 'src/contexts/device';
 import txs from '../../../utils/txs';
 
 import { MainContainer, MoonAnimation, Stars } from '../components';
@@ -30,10 +34,6 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { getKeplr } from 'src/utils/keplrUtils';
-import { useDevice } from 'src/contexts/device';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');

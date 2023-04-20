@@ -5,6 +5,8 @@ export default {
   component: Loading,
 };
 
-const Template = (args) => <Loading {...args} />;
+function Template(args) {
+  return <Loading {...args} />;
+}
 
 export const Default = Template.bind({});

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
+import { useIpfs } from 'src/contexts/ipfs';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
-import { useIpfs } from 'src/contexts/ipfs';
 
 type AvatarIpfsProps = {
   addressCyber: string;
