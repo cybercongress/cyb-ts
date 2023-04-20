@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { coinDecimals, fromBech32 } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import useGetSlots from '../../mint/useGetSlots';
@@ -25,7 +25,7 @@ const initValueToken = {
 };
 
 function useGetBalance(address, updateAddress) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [addressActive, setAddressActive] = useState(null);
   const [loadingBalanceInfo, setLoadingBalanceInfo] = useState(true);
   const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
@@ -49,10 +49,10 @@ function useGetBalance(address, updateAddress) {
   useEffect(() => {
     const getBalance = async () => {
       try {
-        if (jsCyber !== null && addressActive !== null) {
+        if (queryClient && addressActive !== null) {
           setBalance(initValue);
           setLoadingBalanceInfo(true);
-          const availablePromise = await jsCyber.getBalance(
+          const availablePromise = await queryClient.getBalance(
             addressActive,
             CYBER.DENOM_CYBER
           );
@@ -62,7 +62,7 @@ function useGetBalance(address, updateAddress) {
             total: item.total + parseFloat(availablePromise.amount),
           }));
 
-          const delegationsPromise = await jsCyber.delegatorDelegations(
+          const delegationsPromise = await queryClient.delegatorDelegations(
             addressActive
           );
           let delegationsAmount = 0;
@@ -82,9 +82,8 @@ function useGetBalance(address, updateAddress) {
             total: item.total + parseFloat(delegationsAmount),
           }));
 
-          const unbondingPromise = await jsCyber.delegatorUnbondingDelegations(
-            addressActive
-          );
+          const unbondingPromise =
+            await queryClient.delegatorUnbondingDelegations(addressActive);
           if (
             unbondingPromise.unbondingResponses &&
             unbondingPromise.unbondingResponses.length > 0
@@ -102,7 +101,7 @@ function useGetBalance(address, updateAddress) {
               });
             });
           }
-          const rewardsPropsise = await jsCyber.delegationTotalRewards(
+          const rewardsPropsise = await queryClient.delegationTotalRewards(
             addressActive
           );
           if (rewardsPropsise.total && rewardsPropsise.total.length > 0) {
@@ -121,7 +120,7 @@ function useGetBalance(address, updateAddress) {
             addressActive,
             CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
           );
-          const resultGetDistribution = await jsCyber.validatorCommission(
+          const resultGetDistribution = await queryClient.validatorCommission(
             dataValidatorAddress
           );
           if (resultGetDistribution.commission.commission.length > 0) {
@@ -148,7 +147,7 @@ function useGetBalance(address, updateAddress) {
       }
     };
     getBalance();
-  }, [jsCyber, addressActive, updateAddress]);
+  }, [queryClient, addressActive, updateAddress]);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -165,10 +164,10 @@ function useGetBalance(address, updateAddress) {
         tocyb: 0,
       };
 
-      if (jsCyber !== null && addressActive !== null && !loadingAuthAccounts) {
+      if (queryClient && addressActive !== null && !loadingAuthAccounts) {
         setBalanceToken(initValueToken);
         setLoadingBalanceToken(true);
-        const getAllBalancesPromise = await jsCyber.getAllBalances(
+        const getAllBalancesPromise = await queryClient.getAllBalances(
           addressActive
         );
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
@@ -209,7 +208,13 @@ function useGetBalance(address, updateAddress) {
       setLoadingBalanceToken(false);
     };
     getBalance();
-  }, [jsCyber, addressActive, vested, originalVesting, loadingAuthAccounts]);
+  }, [
+    queryClient,
+    addressActive,
+    vested,
+    originalVesting,
+    loadingAuthAccounts,
+  ]);
 
   const getCalculationBalance = (data) => {
     const balances = {};

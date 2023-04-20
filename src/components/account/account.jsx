@@ -1,19 +1,19 @@
-import { useState, useEffect, useContext, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 
 function useGetValidatorInfo(address) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
 
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      const response = await jsCyber.validator(address);
+      const response = await queryClient.validator(address);
       if (response !== null) {
         return response;
       }
@@ -21,7 +21,8 @@ function useGetValidatorInfo(address) {
     },
     {
       enabled: Boolean(
-        jsCyber && address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+        queryClient &&
+          address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
       ),
     }
   );
@@ -30,11 +31,11 @@ function useGetValidatorInfo(address) {
 }
 
 function useGetPassportByAddress(address) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { data } = useQuery(
     ['activePassport', address],
     async () => {
-      const response = await activePassport(jsCyber, address);
+      const response = await activePassport(queryClient, address);
       if (response !== null) {
         return response;
       }
@@ -42,7 +43,8 @@ function useGetPassportByAddress(address) {
     },
     {
       enabled: Boolean(
-        jsCyber && !address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+        queryClient &&
+          !address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
       ),
     }
   );

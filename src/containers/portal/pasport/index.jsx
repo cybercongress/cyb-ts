@@ -1,8 +1,7 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import useIpfs from 'src/hooks/useIpfs';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Signatures, ParseAddressesImg } from '../components';
-import { AppContext } from '../../../context';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
@@ -23,8 +22,7 @@ function PasportCitizenship({
   onClickProveeAddress,
   onClickEditAvatar,
 }) {
-  const { node } = useIpfs();
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
@@ -54,8 +52,8 @@ function PasportCitizenship({
   useEffect(() => {
     const getKarma = async () => {
       try {
-        if (owner !== null && owner.match(PATTERN_CYBER) && jsCyber !== null) {
-          const responseKarma = await jsCyber.karma(owner);
+        if (owner !== null && owner.match(PATTERN_CYBER) && queryClient) {
+          const responseKarma = await queryClient.karma(owner);
           if (responseKarma.karma) {
             setKarma(parseFloat(responseKarma.karma));
           }
@@ -65,7 +63,7 @@ function PasportCitizenship({
       }
     };
     getKarma();
-  }, [owner, jsCyber]);
+  }, [owner, queryClient]);
 
   useEffect(() => {
     const getPasport = async () => {

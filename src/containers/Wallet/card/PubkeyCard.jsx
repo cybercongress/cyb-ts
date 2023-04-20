@@ -1,7 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { setDefaultAccount } from '../../../redux/features/pocket';
 import {
   PocketCard,
@@ -19,7 +20,6 @@ import {
 import { COSMOS, CYBER } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
-import { AppContext } from '../../../context';
 
 import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
@@ -35,8 +35,8 @@ function RowBalance({ children, ...props }) {
 }
 
 function FormatNumberTokens({ text, value, ...props }) {
-  const { traseDenom } = useContext(AppContext);
-  const { coinDecimals } = traseDenom(text);
+  const { traseDenom } = useIbcDenom();
+  const [{ coinDecimals }] = traseDenom(text);
   return (
     <Pane
       display="grid"

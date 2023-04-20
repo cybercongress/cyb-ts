@@ -14,7 +14,6 @@ import {
   ActionBar as ActionBarCenter,
   BtnGrd,
 } from '../../components';
-import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   fromBech32,
@@ -31,12 +30,13 @@ import ActionBarStaps from './actionBarSteps';
 
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
-import { Option } from 'src/types/common';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { Option } from 'src/types';
 import { DeliverTxResponse } from '@cosmjs/stargate';
 import { connect, useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -62,9 +62,9 @@ const coinFunc = (amount: number, denom: string): Coin => {
 function ActionBar({ stateActionBar }) {
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
@@ -127,7 +127,7 @@ function ActionBar({ stateActionBar }) {
 
       let amountTokenA = tokenAAmount;
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
 
       amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
 
@@ -212,7 +212,7 @@ function ActionBar({ stateActionBar }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + 60000}000000`
       );
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
 
       const transferAmount = coinFunc(amount, denomIbc);
@@ -282,7 +282,7 @@ function ActionBar({ stateActionBar }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + 60000}000000`
       );
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const transferAmount = coinFunc(amount, tokenA);
       const msg = {

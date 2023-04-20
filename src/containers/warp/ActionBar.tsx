@@ -13,7 +13,6 @@ import {
   ActionBar as ActionBarCenter,
   BtnGrd,
 } from '../../components';
-import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   trimString,
@@ -24,13 +23,14 @@ import { ActionBarSteps } from '../portal/components';
 
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import useSdk from 'src/hooks/useSdk';
-import useSigningClient from 'src/hooks/useSigningClient';
-import { Option } from 'src/types/common';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { Option } from 'src/types';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -56,9 +56,9 @@ const coinFunc = (amount: number, denom: string): Coin => {
 function ActionBar({ stateActionBar }) {
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { queryClient } = useSdk();
+  const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
@@ -117,8 +117,8 @@ function ActionBar({ stateActionBar }) {
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-      const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
       const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
@@ -209,10 +209,10 @@ function ActionBar({ stateActionBar }) {
         [tokenB]: amountY,
       };
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(
         arrangedReserveCoinDenoms[0]
       );
-      const { coinDecimals: coinDecimalsB } = traseDenom(
+      const [{ coinDecimals: coinDecimalsB }] = traseDenom(
         arrangedReserveCoinDenoms[1]
       );
 
@@ -250,7 +250,7 @@ function ActionBar({ stateActionBar }) {
         if (response.code === 0) {
           setTxHash(response.transactionHash);
         } else {
-          setTxHash(null);
+          setTxHash(undefined);
           setErrorMessage(response.rawLog.toString());
           setStage(STAGE_ERROR);
         }

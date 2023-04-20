@@ -1,12 +1,18 @@
 import cx from 'classnames';
 import { Dots } from '../ui/Dots';
-import styles from './styles.scss';
+import styles from './Button.module.scss';
 import { $TsFixMe } from 'src/types/tsfix';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
 
-function GradientContainer({ disabled, children }) {
+function GradientContainer({
+  disabled,
+  children,
+}: {
+  children: React.ReactNode;
+  disabled: boolean;
+}) {
   return <div className={styles.GradientContainer}>{children}</div>;
 }
 
@@ -28,7 +34,7 @@ const playAudioClick = () => {
 //   audioBtnHoverObg.currentTime = 0;
 // };
 
-type BtnGrdProsp = {
+export type Props = {
   disabled?: boolean;
   text: string | JSX.Element;
   img?: $TsFixMe;
@@ -45,7 +51,7 @@ function BtnGrd({
   onClick,
   className,
   ...props
-}: BtnGrdProsp) {
+}: Props) {
   // useEffect(() => {
   //   const element = document.querySelector('#BtnGrd');
 
@@ -69,13 +75,13 @@ function BtnGrd({
   //   };
   // }, []);
 
-  const handleClick = () => {
+  function handleClick() {
     if (onClick) {
       onClick();
     }
 
     playAudioClick();
-  };
+  }
 
   return (
     <button
@@ -83,17 +89,18 @@ function BtnGrd({
       id="BtnGrd"
       onClick={handleClick}
       className={cx(styles.containerBtnGrd, className)}
-      disabled={disabled}
+      disabled={disabled || pending}
       {...props}
     >
       <GradientContainer disabled={disabled}>
         {pending ? (
           <>
-            pending <Dots />
+            pending
+            <Dots />
           </>
         ) : (
           <>
-            {text && text}
+            {text}
             {img && (
               <img style={{ width: 20, height: 20 }} alt="img" src={img} />
             )}

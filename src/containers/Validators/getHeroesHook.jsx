@@ -1,8 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 function useGetHeroes() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [validators, setValidators] = useState([]);
   const [loadingValidators, setLoadingValidators] = useState(true);
   const [countHeroes, setCountHeroes] = useState({
@@ -14,8 +14,10 @@ function useGetHeroes() {
     const feachHeroes = async () => {
       setLoadingValidators(true);
       let validatorsArr = [];
-      if (jsCyber !== null) {
-        const responseActive = await jsCyber.validators('BOND_STATUS_BONDED');
+      if (queryClient) {
+        const responseActive = await queryClient.validators(
+          'BOND_STATUS_BONDED'
+        );
         console.log(`responseActive`, responseActive);
         if (
           responseActive.validators &&
@@ -28,7 +30,7 @@ function useGetHeroes() {
           }));
         }
 
-        const responseJailed = await jsCyber.validators(
+        const responseJailed = await queryClient.validators(
           'BOND_STATUS_UNBONDING'
         );
 
@@ -43,7 +45,7 @@ function useGetHeroes() {
           }));
         }
 
-        const responseUnbonded = await jsCyber.validators(
+        const responseUnbonded = await queryClient.validators(
           'BOND_STATUS_UNBONDED'
         );
 
@@ -68,7 +70,7 @@ function useGetHeroes() {
       setLoadingValidators(false);
     };
     feachHeroes();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   return { validators, countHeroes, loadingValidators };
 }

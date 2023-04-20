@@ -6,7 +6,6 @@ import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
 import { trimString } from '../../utils/utils';
 import { ActionBarContentText, NoItems } from '../../components';
-import { IpfsContext } from 'src/contexts/ipfs';
 
 const imgSend = require('../../image/paper-plane-outline.svg');
 
@@ -105,7 +104,6 @@ function SendMessage({
 }
 
 class TrollBoxx extends React.PureComponent {
-  static contextType = IpfsContext;
   constructor(props) {
     super(props);
     this.state = {

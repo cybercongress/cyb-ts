@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { IPFS } from 'kubo-rpc-client/types';
 
 import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
@@ -40,6 +40,10 @@ export const IpfsContext = React.createContext<IpfsContextType>({
   error: null,
   isLoading: false,
 });
+
+export function useIpfs() {
+  return useContext(IpfsContext);
+}
 
 function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 import BalanceToken from '../../teleport/components/balanceToken';
 import Select from '../../teleport/components/select';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 import { MyPoolsT } from '../../teleport/type';
 import { ObjKeyValue } from 'src/types/data';
 import { $TsFixMeFunc } from 'src/types/tsfix';

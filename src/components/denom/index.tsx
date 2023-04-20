@@ -1,4 +1,4 @@
-import CoinDenom from '../valueImg/textDenom';
+import CoinDenom from '../valueImg/TextDenom';
 import ImgDenom from '../valueImg/imgDenom';
 import ImgNetwork from '../networksImg/imgNetwork';
 import TextNetwork from '../networksImg/textNetwork';
@@ -9,14 +9,14 @@ type DenomProps = {
   onlyImg?: boolean;
   tooltipStatusImg?: boolean;
   tooltipStatusText?: boolean;
-  marginContainer?: string,
-  justifyContent?: string,
-  flexDirection?: string,
-  gap?: number,
-  infoDenom?: any,
-  type?: string,
-  size?: number,
-}
+  marginContainer?: string;
+  justifyContent?: string;
+  flexDirection?: string;
+  gap?: number;
+  infoDenom?: any;
+  type?: string;
+  size?: number;
+};
 
 function ContainerDenom({
   justifyContent,

@@ -1,15 +1,16 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
+import { TraseDenomFuncResponse } from 'src/types/ibc';
+import { Option } from 'src/types';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import Denom from './index';
-import { AppContext } from '../../context';
-import { $TsFixMe } from 'src/types/tsfix';
 
 type DenomArrProps = {
-  denomValue: $TsFixMe;
+  denomValue: string;
   onlyText?: boolean;
   onlyImg?: boolean;
   tooltipStatusImg?: boolean;
   tooltipStatusText?: boolean;
-  type?: string;
+  type?: 'network';
   size?: number;
 };
 
@@ -22,36 +23,49 @@ function DenomArr({
   type,
   size,
 }: DenomArrProps) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
 
   const useDenomValue = useMemo(() => {
-    let denom: $TsFixMe = denomValue;
-    let infoDenomTemp;
+    let denom: Option<TraseDenomFuncResponse[]>;
 
     if (type === undefined) {
-      const infoDenom = traseDenom(denomValue);
-      const { denom: denomTrase } = infoDenom;
+      const denomTrase = traseDenom(denomValue);
       denom = denomTrase;
-      infoDenomTemp = { ...infoDenom };
     }
 
-    if (typeof denom === 'string') {
+    if (type === 'network') {
       return (
         <Denom
           onlyImg={onlyImg}
           onlyText={onlyText}
-          denomValue={denom}
+          denomValue={denomValue}
           tooltipStatusImg={tooltipStatusImg}
           tooltipStatusText={tooltipStatusText}
           type={type}
-          infoDenom={infoDenomTemp}
+          infoDenom={{}}
           gap={13}
           size={size}
         />
       );
     }
 
-    if (typeof denom === 'object') {
+    if (denom && denom.length === 1) {
+      return (
+        <Denom
+          onlyImg={onlyImg}
+          onlyText={onlyText}
+          denomValue={denom[0].denom}
+          tooltipStatusImg={tooltipStatusImg}
+          tooltipStatusText={tooltipStatusText}
+          type={type}
+          infoDenom={denom[0]}
+          gap={13}
+          size={size}
+        />
+      );
+    }
+
+    if (denom && denom.length > 1) {
       return (
         <div style={{ display: 'flex' }}>
           {!onlyText && (
@@ -62,7 +76,7 @@ function DenomArr({
                 onlyImg
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
-                infoDenom={infoDenomTemp.denom[0]}
+                infoDenom={denom[0]}
                 size={size}
               />
               <Denom
@@ -74,7 +88,7 @@ function DenomArr({
                 onlyImg
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
-                infoDenom={infoDenomTemp.denom[1]}
+                infoDenom={denom[1]}
                 size={size}
               />
             </>
@@ -88,7 +102,7 @@ function DenomArr({
                 onlyText
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
-                infoDenom={infoDenomTemp.denom[0]}
+                infoDenom={denom[0]}
                 size={size}
               />
               -
@@ -98,7 +112,7 @@ function DenomArr({
                 onlyText
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
-                infoDenom={infoDenomTemp.denom[1]}
+                infoDenom={denom[1]}
                 size={size}
               />
             </>

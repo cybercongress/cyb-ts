@@ -2,7 +2,6 @@ import { Pane } from '@cybercongress/gravity';
 import Select from './select';
 import { DenomArr, OptionSelect } from '../../../components';
 
-
 type NetworkList = {
   [key: string]: string;
 };

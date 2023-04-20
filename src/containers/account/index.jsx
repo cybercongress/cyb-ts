@@ -1,9 +1,10 @@
 /* eslint-disable no-nested-ternary */
-import { useContext, useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
-import useIpfs from 'src/hooks/useIpfs';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';
@@ -15,12 +16,10 @@ import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
 import FollowsTab from './tabs/follows';
 import AvatarIpfs from './component/avatarIpfs';
-import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
-import { useDevice } from 'src/contexts/device';
 
 const getTabsMap = (address) => ({
   security: {
@@ -42,10 +41,9 @@ const getTabsMap = (address) => ({
 });
 
 function AccountDetails({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { address, tab = 'log' } = useParams();
   const [updateAddress, setUpdateAddress] = useState(0);
-  const { node } = useIpfs();
   const { community } = useGetCommunity(address, updateAddress);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
     address,
@@ -88,14 +86,14 @@ function AccountDetails({ defaultAccount }) {
 
   useEffect(() => {
     const getKarma = async () => {
-      if (jsCyber !== null && address.match(PATTERN_CYBER)) {
-        const responseKarma = await jsCyber.karma(address);
+      if (queryClient && address.match(PATTERN_CYBER)) {
+        const responseKarma = await queryClient.karma(address);
         const karma = parseFloat(responseKarma.karma);
         setKarmaNeuron(karma);
       }
     };
     getKarma();
-  }, [jsCyber, address]);
+  }, [queryClient, address]);
 
   useEffect(() => {
     const chekFollowAddress = async () => {

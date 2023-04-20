@@ -17,9 +17,9 @@ import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
 import store from './redux/store';
-import AppContextProvider from './context';
 
 import './style/main.css';
+import './style/index.scss';
 import './image/favicon.ico';
 
 // for bootloading
@@ -30,8 +30,11 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
+import DataProvider from './contexts/appData';
 import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
+import IbcDenomProvider from './contexts/ibcDenom';
+import NetworksProvider from './contexts/networks';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -88,26 +91,30 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <IpfsProvider>
-      <SdkQueryClientProvider>
-        <SigningClientProvider>
-          <ApolloProvider client={client}>
-            <DeviceProvider>
-              <WebsocketsProvider>
-                <AppContextProvider>
-                  <QueryClientProvider client={queryClient}>
-                    <ErrorBoundary fallback={<ErrorScreen />}>
-                      <>
-                        <AppRouter />
-                        <ReactQueryDevtools />
-                      </>
-                    </ErrorBoundary>
-                  </QueryClientProvider>
-                </AppContextProvider>
-              </WebsocketsProvider>
-            </DeviceProvider>
-          </ApolloProvider>
-        </SigningClientProvider>
-      </SdkQueryClientProvider>
+      <NetworksProvider>
+        <SdkQueryClientProvider>
+          <SigningClientProvider>
+            <QueryClientProvider client={queryClient}>
+              <IbcDenomProvider>
+                <WebsocketsProvider>
+                  <DataProvider>
+                    <ApolloProvider client={client}>
+                      <DeviceProvider>
+                        <ErrorBoundary fallback={<ErrorScreen />}>
+                          <>
+                            <AppRouter />
+                            <ReactQueryDevtools />
+                          </>
+                        </ErrorBoundary>
+                      </DeviceProvider>
+                    </ApolloProvider>
+                  </DataProvider>
+                </WebsocketsProvider>
+              </IbcDenomProvider>
+            </QueryClientProvider>
+          </SigningClientProvider>
+        </SdkQueryClientProvider>
+      </NetworksProvider>
     </IpfsProvider>
   </Provider>
 );

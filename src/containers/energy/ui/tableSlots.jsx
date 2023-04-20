@@ -1,11 +1,13 @@
 import { TableEv as Table } from '@cybercongress/gravity';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { NoItems, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
-function TableSlots({ data, traseDenom }) {
-  const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');
-  const { coinDecimals: coinDecimalsV } = traseDenom('millivolt');
+function TableSlots({ data }) {
+  const { traseDenom } = useIbcDenom();
+  const [{ coinDecimals: coinDecimalsA }] = traseDenom('milliampere');
+  const [{ coinDecimals: coinDecimalsV }] = traseDenom('millivolt');
 
   let slotRows = [];
 

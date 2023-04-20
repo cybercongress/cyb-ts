@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js';
-import { useContext } from 'react';
-import { AppContext } from '../../../../../context';
 import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.scss';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 // const testData = {
 //   liquid: '1 102 102 102 102',
@@ -15,7 +14,7 @@ import styles from './styles.scss';
 // };
 
 function DetailsBalance({ data }) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const { price } = data;
 
   return (
@@ -28,7 +27,7 @@ function DetailsBalance({ data }) {
         .map((key) => {
           const { amount, denom } = data[key];
           const value = { amount, denom };
-          const { coinDecimals } = traseDenom(denom);
+          const [{ coinDecimals }] = traseDenom(denom);
           value.amount = convertAmount(amount, coinDecimals);
           const cap = new BigNumber(value.amount)
             .multipliedBy(price.amount)

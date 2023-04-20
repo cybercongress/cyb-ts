@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { activePassport } from '../../portal/utils';
 
 type Passport = {
@@ -20,20 +20,20 @@ type Passport = {
 };
 
 function useGetPassportByAddress(accounts: any) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [passport, setPassport] = useState<Passport | null>(null);
   const [addressBech32, setAddressBech32] = useState(null);
   const { data } = useQuery(
     ['activePassport', addressBech32],
     async () => {
-      const response = await activePassport(jsCyber, addressBech32);
+      const response = await activePassport(queryClient, addressBech32);
       if (response !== null) {
         return response;
       }
       return null;
     },
     {
-      enabled: Boolean(jsCyber && addressBech32 !== null),
+      enabled: Boolean(queryClient && addressBech32 !== null),
     }
   );
 
