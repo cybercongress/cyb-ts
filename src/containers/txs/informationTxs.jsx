@@ -8,22 +8,29 @@ const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
 function InformationTxs({ data, messageError, ...props }) {
-  console.log(data);
   const value = Object.keys(data).map((key) => {
     let item = '';
-    switch (key) {
-      case 'height':
-        item = formatNumber(data[key]);
-        break;
-      case 'status':
-        item = data[key] ? 'Success' : 'Fail';
-        break;
-      case 'timestamp':
-        item = dateFormat(data[key], 'UTC: dd/mm/yyyy, hh:MM:ss tt "UTC"');
-        break;
-      default:
-        item = data[key];
-        break;
+
+    if (!data[key] && key !== 'status') {
+      item = '-';
+    } else {
+      switch (key) {
+        case 'height':
+          item = formatNumber(data[key]);
+          break;
+        case 'status':
+          item = data[key] ? 'Success' : 'Fail';
+          break;
+        case 'timestamp':
+          item = new Intl.DateTimeFormat(navigator.language, {
+            dateStyle: 'full',
+            timeStyle: 'medium',
+          }).format(new Date(data[key]));
+          break;
+        default:
+          item = data[key];
+          break;
+      }
     }
 
     return (
