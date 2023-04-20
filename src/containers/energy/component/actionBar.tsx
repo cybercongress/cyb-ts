@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
@@ -7,6 +7,7 @@ import {
 } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   Dots,
   ActionBarContentText,
@@ -16,7 +17,6 @@ import {
   Account,
   ButtonIcon,
 } from '../../../components';
-import { AppContext } from '../../../context';
 import {
   LEDGER,
   PATTERN_CYBER,
@@ -92,7 +92,7 @@ function ActionBarSteps({
 
 function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   const navigate = useNavigate();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
@@ -105,7 +105,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
+      if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
         const response = await getTxs(txHash);
         console.log('response :>> ', response);
@@ -130,7 +130,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash]);
+  }, [txHash]);
 
   useEffect(() => {
     if (addressAddRouteInput !== '') {
@@ -157,9 +157,9 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   };
 
   const generationTxs = async () => {
-    if (keplr !== null) {
+    if (signer && signingClient) {
       try {
-        const [{ address }] = await keplr.signer.getAccounts();
+        const [{ address }] = await signer.getAccounts();
         if (addressActive === address) {
           let response = {};
           const fee = {
@@ -168,7 +168,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           };
           if (stage === STAGE_ADD_ROUTER) {
             setStage(STAGE_SUBMITTED);
-            response = await keplr.createEnergyRoute(
+            response = await signingClient.createEnergyRoute(
               address,
               addressAddRouteInput,
               aliasInput,
@@ -177,7 +177,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           }
           if (stage === STAGE_SET_ROUTER) {
             setStage(STAGE_SUBMITTED);
-            response = await keplr.editEnergyRoute(
+            response = await signingClient.editEnergyRoute(
               address,
               selectedRoute.destination,
               coin(parseFloat(amountInput) * 10 ** 3, selectResource),
@@ -186,7 +186,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           }
           if (stage === STAGE_DELETE_ROUTER) {
             setStage(STAGE_SUBMITTED);
-            response = await keplr.deleteEnergyRoute(
+            response = await signingClient.deleteEnergyRoute(
               address,
               selectedRoute.destination,
               fee
@@ -233,7 +233,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     );
   }
 
-  if (jsCyber === null || keplr === null) {
+  if (!signingClient && !signer) {
     return (
       <ActionBarContainer>
         <Dots big />

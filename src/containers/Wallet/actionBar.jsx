@@ -14,6 +14,7 @@ import { NETWORKSIDS } from '../../utils/config';
 import imgLedger from '../../image/ledger.svg';
 import imgKeplr from '../../image/keplr-icon.svg';
 import imgRead from '../../image/duplicate-outline.svg';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -43,8 +44,6 @@ function ActionBar({
   selectCard,
   selectAccount,
   hoverCard,
-  // actionBar keplr props
-  keplr,
   // actionBar web3
   accountsETH,
   // actionBar tweet
@@ -55,6 +54,7 @@ function ActionBar({
   defaultAccounts,
   defaultAccountsKeys,
 }) {
+  const { signer: keplr } = useSigningClient();
   const [typeActionBar, setTypeActionBar] = useState('');
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
@@ -185,7 +185,6 @@ function ActionBar({
       <ActionBarConnect
         web3={web3}
         accountsETH={accountsETH}
-        keplr={keplr}
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}

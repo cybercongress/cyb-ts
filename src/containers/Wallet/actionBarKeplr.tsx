@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pane, ActionBar, Input } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
+import { useSigningClient } from 'src/contexts/signerClient';
 import {
   Dots,
   ActionBarContentText,
@@ -21,12 +22,8 @@ const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
 
 const STAGE_SEND = 1.1;
 
-function ActionBarKeplr({
-  keplr,
-  updateAddress,
-  updateBalance,
-  selectAccount,
-}) {
+function ActionBarKeplr({ updateAddress, updateBalance, selectAccount }) {
+  const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_SEND);
   const [amountSend, setAmountSend] = useState('');
   const [recipient, setRecipient] = useState('');
@@ -39,14 +36,14 @@ function ActionBarKeplr({
 
   const generateTxSend = async () => {
     const amount = parseFloat(amountSend);
-    if (keplr !== null) {
+    if (signer && signingClient) {
       setStage(STAGE_SUBMITTED);
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
       const fee = {
         amount: [],
         gas: (DEFAULT_GAS_LIMITS * 2).toString(),
       };
-      const result = await keplr.sendTokens(
+      const result = await signingClient.sendTokens(
         address,
         recipient,
         coins(amount, CYBER.DENOM_CYBER),

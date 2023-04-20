@@ -1,16 +1,9 @@
-import {
-  useEffect,
-  useState,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-} from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { pinToIpfsCluster } from 'src/utils/ipfs/utils-ipfs';
 import txs from '../../../utils/txs';
 
@@ -26,7 +19,6 @@ import {
 import ActionBar from './ActionBar';
 import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
-import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
@@ -38,7 +30,9 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
-import { getKeplr } from '../gift/ActionBarPortalGift';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
 // import InfoCard from '../components/infoCard/infoCard';
 
@@ -143,7 +137,8 @@ const calculatePriceNicname = (valueNickname) => {
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { signer, signingClient } = useSigningClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [step, setStep] = useState(STEP_INIT);
   const [valueNickname, setValueNickname] = useState('');
@@ -186,15 +181,15 @@ function GetCitizenship({ defaultAccount }) {
 
   useEffect(() => {
     const getCounCitizenshipst = async () => {
-      if (jsCyber !== null) {
-        const respnseNumTokens = await getNumTokens(jsCyber);
+      if (queryClient) {
+        const respnseNumTokens = await getNumTokens(queryClient);
         if (respnseNumTokens !== null && respnseNumTokens.count) {
           setCounCitizenshipst(parseFloat(respnseNumTokens.count));
         }
       }
     };
     getCounCitizenshipst();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const getPinAvatar = async () => {
@@ -243,8 +238,8 @@ function GetCitizenship({ defaultAccount }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
-        const response = await jsCyber.getTx(txHash.txHash);
+      if (queryClient && txHash !== null && txHash.status === 'pending') {
+        const response = await queryClient.getTx(txHash.txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -277,7 +272,7 @@ function GetCitizenship({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   const usePriceNickname = useMemo(() => {
     if (valueNickname.length < 8) {
@@ -295,11 +290,11 @@ function GetCitizenship({ defaultAccount }) {
     const checkAddress = async () => {
       if (
         step === STEP_CHECK_ADDRESS_CHECK_FNC &&
-        jsCyber !== null &&
+        queryClient &&
         addressActive !== null
       ) {
         const { bech32 } = addressActive;
-        const response = await jsCyber.getAccount(bech32);
+        const response = await queryClient.getAccount(bech32);
         await getBalanceAndNickname(bech32);
         if (
           response &&
@@ -313,14 +308,14 @@ function GetCitizenship({ defaultAccount }) {
     };
     checkAddress();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, addressActive, step]);
+  }, [queryClient, addressActive, step]);
 
   const getBalanceAndNickname = useCallback(
     async (bech32) => {
       if (usePriceNickname !== null) {
         const { amountPrice } = usePriceNickname;
-        if (jsCyber !== null) {
-          const getBalance = await jsCyber.getBalance(
+        if (queryClient) {
+          const getBalance = await queryClient.getBalance(
             bech32,
             CYBER.DENOM_CYBER
           );
@@ -337,17 +332,13 @@ function GetCitizenship({ defaultAccount }) {
         setRegisterDisabled(true);
       }
     },
-    [jsCyber, usePriceNickname]
+    [queryClient, usePriceNickname]
   );
 
   const checkAddressNetwork = useCallback(async () => {
-    if (
-      step === STEP_ACTIVE_ADD &&
-      jsCyber !== null &&
-      addressActive !== null
-    ) {
+    if (step === STEP_ACTIVE_ADD && queryClient && addressActive !== null) {
       const { bech32 } = addressActive;
-      const response = await jsCyber.getAccount(bech32);
+      const response = await queryClient.getAccount(bech32);
       console.log('response', response);
       if (
         response &&
@@ -361,7 +352,7 @@ function GetCitizenship({ defaultAccount }) {
         }
       }
     }
-  }, [jsCyber, addressActive, step]);
+  }, [queryClient, addressActive, step]);
 
   const onClickSignMoonCode = async () => {
     const keplrWindow = await getKeplr();
@@ -395,8 +386,11 @@ function GetCitizenship({ defaultAccount }) {
 
   const checkNickname = useCallback(async () => {
     try {
-      if (jsCyber !== null) {
-        const responsData = await getPassportByNickname(jsCyber, valueNickname);
+      if (queryClient) {
+        const responsData = await getPassportByNickname(
+          queryClient,
+          valueNickname
+        );
         if (responsData === null) {
           setStep(STEP_NICKNAME_APROVE);
         } else {
@@ -407,7 +401,7 @@ function GetCitizenship({ defaultAccount }) {
       console.log('error', error);
       setStep(STEP_NICKNAME_INVALID);
     }
-  }, [jsCyber, valueNickname]);
+  }, [queryClient, valueNickname]);
 
   const setupNickname = useCallback(() => {
     localStorage.setItem('nickname', JSON.stringify(valueNickname));
@@ -436,54 +430,56 @@ function GetCitizenship({ defaultAccount }) {
   };
 
   const onClickRegister = useCallback(async () => {
-    try {
-      const [{ address }] = await keplr.signer.getAccounts();
-      console.log('create_passport', {
-        signedMessage,
-        valueNickname,
-        avatarIpfs,
-      });
-      const msgObject = {
-        create_passport: {
-          avatar: avatarIpfs,
-          nickname: valueNickname,
-          signature: signedMessage,
-        },
-      };
-      const funds = calculatePriceNicname(valueNickname);
-      console.log('funds', funds);
-      const executeResponseResult = await keplr.execute(
-        address,
-        CONTRACT_ADDRESS_PASSPORT,
-        msgObject,
-        txs.calculateFee(500000, gasPrice),
-        'cyber',
-        funds
-      );
-      console.log('executeResponseResult', executeResponseResult);
-      if (executeResponseResult.code === 0) {
-        setTxHash({
-          status: 'pending',
-          txHash: executeResponseResult.transactionHash,
+    if (signer && signingClient) {
+      try {
+        const [{ address }] = await signer.getAccounts();
+        console.log('create_passport', {
+          signedMessage,
+          valueNickname,
+          avatarIpfs,
         });
-        setStep(STEP_DONE);
-      }
+        const msgObject = {
+          create_passport: {
+            avatar: avatarIpfs,
+            nickname: valueNickname,
+            signature: signedMessage,
+          },
+        };
+        const funds = calculatePriceNicname(valueNickname);
+        console.log('funds', funds);
+        const executeResponseResult = await signingClient.execute(
+          address,
+          CONTRACT_ADDRESS_PASSPORT,
+          msgObject,
+          txs.calculateFee(500000, gasPrice),
+          'cyber',
+          funds
+        );
+        console.log('executeResponseResult', executeResponseResult);
+        if (executeResponseResult.code === 0) {
+          setTxHash({
+            status: 'pending',
+            txHash: executeResponseResult.transactionHash,
+          });
+          setStep(STEP_DONE);
+        }
 
-      if (executeResponseResult.code) {
-        setTxHash({
-          txHash: executeResponseResult?.transactionHash,
-          status: 'error',
-          rawLog: executeResponseResult?.rawLog.toString(),
-        });
-      }
+        if (executeResponseResult.code) {
+          setTxHash({
+            txHash: executeResponseResult?.transactionHash,
+            status: 'error',
+            rawLog: executeResponseResult?.rawLog.toString(),
+          });
+        }
 
-      if (node !== null) {
-        pinPassportData(node, { nickname: valueNickname, address });
+        if (node !== null) {
+          pinPassportData(node, { nickname: valueNickname, address });
+        }
+      } catch (error) {
+        console.log('error', error);
       }
-    } catch (error) {
-      console.log('error', error);
     }
-  }, [valueNickname, avatarIpfs, keplr, signedMessage, node]);
+  }, [valueNickname, avatarIpfs, signer, signingClient, signedMessage, node]);
 
   const onChangeNickname = useCallback((e) => {
     const { value } = e.target;
@@ -625,7 +621,6 @@ function GetCitizenship({ defaultAccount }) {
 
       {!mobile && (
         <ActionBar
-          keplr={keplr}
           step={step}
           valueNickname={valueNickname}
           signedMessage={signedMessage}

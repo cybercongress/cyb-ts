@@ -3,13 +3,15 @@ import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
 import { Sha256 } from '@cosmjs/crypto';
 import BigNumber from 'bignumber.js';
+import { ObjKeyValue } from 'src/types/data';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { Option } from 'src/types';
 import { CYBER } from './config';
 import tokenList from './tokenList';
 
 import cyberSpace from '../image/large-purple-circle.png';
 import customNetwork from '../image/large-orange-circle.png';
 import cyberBostrom from '../image/large-green.png';
-import { ObjKeyValue } from 'src/types/data';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
@@ -48,7 +50,7 @@ const formatNumber = (number: number | string, toFixed?: number): string => {
   if (typeof number === 'string') {
     return numberWithCommas(formatted);
   }
-  // debugger;
+
   return formatted
     .toLocaleString('en')
     .replace(/(\.\d{0,})0+$/, '$1')
@@ -342,10 +344,12 @@ function convertAmountReverce(rawAmount, precision) {
 }
 
 function getDisplayAmount(rawAmount: number, precision: number): number {
-  return parseFloat(new BigNumber(rawAmount)
-    .shiftedBy(-precision)
-    .dp(precision, BigNumber.ROUND_FLOOR)
-    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR));
+  return parseFloat(
+    new BigNumber(rawAmount)
+      .shiftedBy(-precision)
+      .dp(precision, BigNumber.ROUND_FLOOR)
+      .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR)
+  );
 }
 
 function getDisplayAmountReverce(rawAmount, precision) {
@@ -374,16 +378,12 @@ const findDenomInTokenList = (baseDenom) => {
   return demonInfo;
 };
 
-const findPoolDenomInArr = (baseDenom, dataPools) => {
-  let demonInfo = null;
-
+const findPoolDenomInArr = (
+  baseDenom: string,
+  dataPools: Pool[]
+): Option<Pool> => {
   const findObj = dataPools.find((item) => item.poolCoinDenom === baseDenom);
-
-  if (findObj) {
-    demonInfo = { ...findObj };
-  }
-
-  return demonInfo;
+  return findObj;
 };
 
 export {

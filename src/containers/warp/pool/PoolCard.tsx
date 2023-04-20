@@ -1,6 +1,8 @@
-import { useMemo, useContext, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { AppContext } from '../../../context';
+import { Option } from 'src/types';
+import { ObjKeyValue } from 'src/types/data';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import tokenList from '../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../utils/utils';
 import { FormatNumberTokens } from '../../nebula/components';
@@ -8,9 +10,7 @@ import { ContainerGradient } from '../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
-import { PoolsWithAssetsCapType } from '../type'
-import { Option } from 'src/types/common';
-import { ObjKeyValue } from 'src/types/data';
+import { PoolsWithAssetsCapType } from '../type';
 
 type PoolCardProps = {
   pool: PoolsWithAssetsCapType;
@@ -19,7 +19,7 @@ type PoolCardProps = {
 };
 
 function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
 
   const [sharesToken, setSharesToken] = useState(null);
 
@@ -49,7 +49,7 @@ function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
       if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
         reserveCoinDenoms.forEach((itemCoin) => {
           if (itemCoin.includes('ibc')) {
-            const { denom, path } = traseDenom(itemCoin);
+            const [{ denom, path }] = traseDenom(itemCoin);
             const result = tokenList.find((item) => item.denom === denom);
             if (result !== undefined) {
               const { counterpartyChainId, destChannelId } = result;

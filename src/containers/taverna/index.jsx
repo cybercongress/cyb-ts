@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
 import { NoItems, Dots, SearchSnippet } from '../../components';
 import useGetTweets from './useGetTweets';

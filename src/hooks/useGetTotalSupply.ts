@@ -1,15 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from 'src/context';
+import { useEffect, useState } from 'react';
 import { CYBER } from 'src/utils/config';
 import {
   findDenomInTokenList,
   reduceBalances,
   isNative,
 } from 'src/utils/utils';
-import useSdk from './useSdk';
-import { Option } from 'src/types/common';
+import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
+import { CyberClient } from '@cybercongress/cyber-js';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+
+type OptionInterval = {
+  refetchInterval?: number | false;
+};
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -19,26 +24,29 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const totalSupplyFetcher = (client) => {
-  if (client === null) {
-    return null;
+const totalSupplyFetcher = (client: Option<CyberClient>) => {
+  if (!client) {
+    return undefined;
   }
 
   return client.totalSupply();
 };
 
-function useGetTotalSupply() {
-  const { queryClient } = useSdk();
-  const { ibcDataDenom } = useContext(AppContext);
+function useGetTotalSupply(
+  option: OptionInterval = { refetchInterval: false }
+) {
+  const queryClient = useQueryClient();
+  const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [totalSupplyAll, setTotalSupplyAll] =
     useState<Option<ObjKeyValue>>(undefined);
   const [totalSupplyProofList, setTotalSupplyProofList] =
     useState<Option<ObjKeyValue>>(undefined);
   const { data: dataGetTotalSupply } = useQuery(
-    ['getTotalSupply'],
+    ['totalSupply'],
     () => totalSupplyFetcher(queryClient),
     {
       enabled: Boolean(queryClient),
+      refetchInterval: option.refetchInterval,
     }
   );
 
@@ -53,7 +61,7 @@ function useGetTotalSupply() {
 
         const reduceData = {};
 
-        if (Object.keys(ibcDataDenom).length > 0) {
+        if (ibcDataDenom) {
           Object.keys(datareduceTotalSupply).forEach((key) => {
             const value = datareduceTotalSupply[key];
             if (!isNative(key)) {

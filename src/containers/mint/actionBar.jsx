@@ -1,10 +1,12 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
 } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { useQueryClient } from 'src/contexts/queryClient';
 import {
   Dots,
   ActionBarContentText,
@@ -13,7 +15,6 @@ import {
   TransactionError,
   Account,
 } from '../../components';
-import { AppContext } from '../../context';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 
@@ -35,7 +36,8 @@ function ActionBar({
   updateFnc,
   addressActive,
 }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
@@ -43,7 +45,7 @@ function ActionBar({
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
+      if (queryClient && txHash !== null) {
         setStage(STAGE_CONFIRMING);
         const response = await getTxs(txHash);
         console.log('response :>> ', response);
@@ -68,19 +70,19 @@ function ActionBar({
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash]);
+  }, [signingClient, txHash]);
 
   const investmint = async () => {
-    if (keplr !== null) {
+    if (signer && signingClient) {
       setStage(STAGE_SUBMITTED);
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
       const gas = DEFAULT_GAS_LIMITS * 2;
       const fee = {
         amount: [],
         gas: gas.toString(),
       };
       if (addressActive === address) {
-        const response = await keplr.investmint(
+        const response = await signingClient.investmint(
           address,
           coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
           selected,
@@ -134,7 +136,7 @@ function ActionBar({
     );
   }
 
-  if (jsCyber === null || keplr === null) {
+  if (!signer && !queryClient) {
     return (
       <ActionBarContainer>
         <Dots big />

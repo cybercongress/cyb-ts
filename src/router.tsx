@@ -51,7 +51,6 @@ import {
   DashboardPage,
 } from './containers/wasm';
 import Help from './containers/help';
-import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
 import {
   ListNetwork,
@@ -174,7 +173,6 @@ function AppRouter() {
           <Route path="/networks/add" element={<CustomNetwork />} />
           <Route path="/networks/:networkId" element={<DetailsNetwork />} />
           <Route path="/help" element={<Help />} />
-          <Route path="/assets" element={<Assets />} />
           {/* Sigma */}
           <Route path="/sigma" element={<Sigma />} />
           <Route path="/nebula" element={<Nebula />} />

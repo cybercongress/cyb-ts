@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import { CYBER } from '../../../utils/config';
 import {
   findDenomInTokenList,
@@ -9,7 +10,8 @@ import {
 } from '../../../utils/utils';
 
 function useGetTotalCap() {
-  const { marketData, traseDenom, dataTotalSupply } = useContext(AppContext);
+  const { marketData, dataTotalSupply } = useAppData();
+  const { traseDenom } = useIbcDenom();
   const [capData, setCapData] = useState({
     currentCap: 0,
     change: { amount: 0, time: 0 },
@@ -28,7 +30,7 @@ function useGetTotalCap() {
       let cap = 0;
       Object.keys(dataTotalSupply).forEach((key) => {
         const amount = dataTotalSupply[key];
-        const { coinDecimals } = traseDenom(key);
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (Object.prototype.hasOwnProperty.call(marketData, key)) {
           const poolPrice = new BigNumber(marketData[key]);

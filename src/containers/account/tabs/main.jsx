@@ -1,10 +1,9 @@
-import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 // import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
-import { AppContext } from '../../../context';
 
 function Row({ text, number, color }) {
   return (
@@ -77,8 +76,8 @@ function DetailsMainToken({ balance }) {
 }
 
 function RowToken({ denom, amount }) {
-  const { traseDenom } = useContext(AppContext);
-  const { coinDecimals } = traseDenom(denom);
+  const { traseDenom } = useIbcDenom();
+  const [{ coinDecimals }] = traseDenom(denom);
   return (
     <Pane
       display="flex"

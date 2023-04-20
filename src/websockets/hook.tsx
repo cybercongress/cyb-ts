@@ -4,12 +4,15 @@ export type Socket = {
   connected: boolean;
   message: any | null;
   sendMessage: (message: object) => void;
+  subscriptions: string[];
 };
 
 function useWebSocket(url: string): Socket {
   const [connected, setConnected] = useState(false);
   const [message, setMessage] = useState<Socket['message']>(null);
+
   const webSocketRef = useRef<WebSocket | null>(null);
+  const subscriptions = useRef<string[]>([]);
 
   useEffect(() => {
     webSocketRef.current = new WebSocket(url);
@@ -37,10 +40,19 @@ function useWebSocket(url: string): Socket {
       return;
     }
 
+    if (message.method === 'subscribe') {
+      subscriptions.current.push(message.params[0]);
+    }
+
     webSocketRef.current.send(JSON.stringify(message));
   }
 
-  return { connected, message, sendMessage };
+  return {
+    connected,
+    message,
+    sendMessage,
+    subscriptions: subscriptions.current,
+  };
 }
 
 export default useWebSocket;

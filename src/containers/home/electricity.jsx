@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { AppContext } from 'src/context';
+import { useAppData } from 'src/contexts/appData';
 
 const M = Math;
 const DOC = document;
@@ -7,7 +7,7 @@ const DOC = document;
 function Electricity() {
   const [data, setData] = useState('M0,0 L240,0');
   const [stage, setStage] = useState(false);
-  const { block } = useContext(AppContext);
+  const { block } = useAppData();
 
   const At = (el, a, v) => {
     try {

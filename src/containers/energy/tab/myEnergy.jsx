@@ -14,12 +14,7 @@ function ValueImg({ text, img }) {
   );
 }
 
-function MyEnergy({
-  slotsData,
-  balacesResource,
-  loadingAuthAccounts,
-  traseDenom,
-}) {
+function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
@@ -73,11 +68,7 @@ function MyEnergy({
         />
       </Pane>
 
-      {loadingAuthAccounts ? (
-        <Dots big />
-      ) : (
-        <TableSlots data={slotsData} traseDenom={traseDenom} />
-      )}
+      {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
     </div>
   );
 }

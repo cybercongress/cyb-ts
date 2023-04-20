@@ -1,13 +1,13 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { getInlfation } from '../../../utils/search/utils';
 import { getProposals } from '../../../utils/governance';
-import { AppContext } from '../../../context';
 import { coinDecimals } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
 function useGetStatisticsCyber() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [knowledge, setKnowledge] = useState({
     linksCount: 0,
     cidsCount: 0,
@@ -23,11 +23,11 @@ function useGetStatisticsCyber() {
 
   useEffect(() => {
     const getGovernment = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         let communityPool = 0;
         let proposals = 0;
 
-        const dataCommunityPool = await jsCyber.communityPool();
+        const dataCommunityPool = await queryClient.communityPool();
         const { pool } = dataCommunityPool;
         if (dataCommunityPool !== null) {
           communityPool = Math.floor(coinDecimals(parseFloat(pool[0].amount)));
@@ -42,16 +42,16 @@ function useGetStatisticsCyber() {
       }
     };
     getGovernment();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const getStatisticsBrain = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         const totalCyb = {};
         let staked = 0;
         let inlfation = 0;
 
-        const responseGraphStats = await jsCyber.graphStats();
+        const responseGraphStats = await queryClient.graphStats();
         const { cyberlinks, particles } = responseGraphStats;
         setKnowledge((item) => ({
           ...item,
@@ -59,7 +59,7 @@ function useGetStatisticsCyber() {
           cidsCount: particles,
         }));
 
-        const responseHeroesActive = await jsCyber.validators(
+        const responseHeroesActive = await queryClient.validators(
           'BOND_STATUS_BONDED'
         );
         const { validators } = responseHeroesActive;
@@ -68,7 +68,7 @@ function useGetStatisticsCyber() {
           activeValidatorsCount: validators.length,
         }));
 
-        const datagetTotalSupply = await jsCyber.totalSupply();
+        const datagetTotalSupply = await queryClient.totalSupply();
         if (Object.keys(datagetTotalSupply).length > 0) {
           datagetTotalSupply.forEach((item) => {
             totalCyb[item.denom] = parseFloat(item.amount);
@@ -96,7 +96,7 @@ function useGetStatisticsCyber() {
       }
     };
     getStatisticsBrain();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   return {
     ...government,

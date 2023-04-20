@@ -1,8 +1,13 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainContainer, ActionBarSteps } from '../portal/components';
-import { AppContext } from '../../context';
-import { Input, BtnGrd, ContainerGradientText } from '../../components';
+import { useNetworks } from 'src/contexts/networks';
+import { ActionBarSteps } from '../portal/components';
+import {
+  Input,
+  BtnGrd,
+  ContainerGradientText,
+  MainContainer,
+} from '../../components';
 
 function ValueItem({ text, value, onChange }) {
   return (
@@ -36,7 +41,7 @@ const initValue = {
 
 function CustomNetwork() {
   const navigate = useNavigate();
-  const { networks, updateNetworks } = useContext(AppContext);
+  const { networks, updateNetworks } = useNetworks();
   const [customConfig, setCustomConfig] = useState({ ...initValue });
 
   const onChangeValue = (e, key) => {
@@ -72,7 +77,7 @@ function CustomNetwork() {
   };
 
   const onClickAddNetwork = useCallback(() => {
-    if (networks !== null && Object.keys(networks).length > 0) {
+    if (networks && Object.keys(networks).length > 0) {
       if (
         !Object.prototype.hasOwnProperty.call(networks, customConfig.CHAIN_ID)
       ) {

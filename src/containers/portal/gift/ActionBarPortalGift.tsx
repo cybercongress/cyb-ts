@@ -2,16 +2,17 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useEffect, useState, useContext, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
+import { useIpfs } from 'src/contexts/ipfs';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { Dots, ButtonIcon, BtnGrd } from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import { getPin } from '../../../utils/search/utils';
-import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
@@ -29,30 +30,9 @@ import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import { pinToIpfsCluster } from '../../../utils/ipfs/utils-ipfs';
-import useIpfs from 'src/hooks/useIpfs';
+import { getKeplr } from 'src/utils/keplrUtils';
 
 const gasPrice = GasPrice.fromString('0.001boot');
-
-export const getKeplr = async () => {
-  if (window.keplr) {
-    return window.keplr;
-  }
-
-  if (document.readyState === 'complete') {
-    return window.keplr;
-  }
-
-  return new Promise((resolve) => {
-    const documentStateChange = (event) => {
-      if (event.target && event.target.readyState === 'complete') {
-        resolve(window.keplr);
-        document.removeEventListener('readystatechange', documentStateChange);
-      }
-    };
-
-    document.addEventListener('readystatechange', documentStateChange);
-  });
-};
 
 const proofAddressMsg = (address, nickname, signature) => {
   return {
@@ -99,7 +79,7 @@ function ActionBarPortalGift({
 }) {
   const { node } = useIpfs();
   const navigate = useNavigate();
-  const { keplr, initSigner } = useContext(AppContext);
+  const { signer, signingClient, initSigner } = useSigningClient();
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
@@ -110,10 +90,9 @@ function ActionBarPortalGift({
         activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT ||
         activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT
       ) {
-        console.log('keplr', keplr);
         console.log('addressActive', addressActive);
-        if (keplr !== null && addressActive !== null) {
-          const [{ address }] = await keplr.signer.getAccounts();
+        if (signer && addressActive !== null) {
+          const [{ address }] = await signer.getAccounts();
           const { bech32 } = addressActive;
           if (address === bech32) {
             setStepApp(STEP_INFO.STATE_PROVE_SEND_SIGN);
@@ -124,7 +103,7 @@ function ActionBarPortalGift({
       }
     };
     checkAddress();
-  }, [keplr, addressActive, selectMethod, activeStep]);
+  }, [signer, addressActive, selectMethod, activeStep]);
 
   const useAddressOwner = useMemo(() => {
     if (citizenship !== null && addressActive !== null) {
@@ -249,7 +228,12 @@ function ActionBarPortalGift({
   };
 
   const sendSignedMessage = useCallback(async () => {
-    if (keplr !== null && citizenship !== null && signedMessageKeplr !== null) {
+    if (
+      signer &&
+      signingClient &&
+      citizenship !== null &&
+      signedMessageKeplr !== null
+    ) {
       const { nickname } = citizenship.extension;
 
       const msgObject = proofAddressMsg(
@@ -259,8 +243,8 @@ function ActionBarPortalGift({
       );
 
       try {
-        const [{ address }] = await keplr.signer.getAccounts();
-        const executeResponseResult = await keplr.execute(
+        const [{ address }] = await signer.getAccounts();
+        const executeResponseResult = await signingClient.execute(
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
@@ -297,18 +281,26 @@ function ActionBarPortalGift({
         setStepApp(STEP_INFO.STATE_PROVE);
       }
     }
-  }, [keplr, citizenship, signedMessageKeplr, setLoading, node]);
+  }, [
+    signer,
+    signingClient,
+    citizenship,
+    signedMessageKeplr,
+    setLoading,
+    node,
+  ]);
 
   const claim = useCallback(async () => {
     try {
-      if (keplr === null) {
+      if (!signer) {
         if (initSigner) {
           initSigner();
         }
       }
 
       if (
-        keplr !== null &&
+        signer &&
+        signingClient &&
         selectedAddress !== null &&
         currentGift !== null &&
         citizenship !== null
@@ -322,14 +314,15 @@ function ActionBarPortalGift({
             msgs.push(msgObject);
           });
           const gasLimits = 500000 * Object.keys(currentGift).length;
-          const { isNanoLedger, bech32Address } =
-            await keplr.signer.keplr.getKey(CYBER.CHAIN_ID);
+          const { isNanoLedger, bech32Address } = await signer.keplr.getKey(
+            CYBER.CHAIN_ID
+          );
           if (msgs.length > 0) {
             let executeResponseResult;
             if (isNanoLedger && msgs.length > 1) {
               const groupMsgData = groupMsg(msgs, 1);
               const elementMsg = groupMsgData[0];
-              executeResponseResult = await keplr.executeArray(
+              executeResponseResult = await signingClient.executeArray(
                 bech32Address,
                 CONTRACT_ADDRESS_GIFT,
                 elementMsg,
@@ -337,7 +330,7 @@ function ActionBarPortalGift({
                 'cyber'
               );
             } else {
-              executeResponseResult = await keplr.executeArray(
+              executeResponseResult = await signingClient.executeArray(
                 bech32Address,
                 CONTRACT_ADDRESS_GIFT,
                 msgs,
@@ -374,7 +367,14 @@ function ActionBarPortalGift({
       // setStep(STEP_INIT);
       setStepApp(STEP_INFO.STATE_CLAIME);
     }
-  }, [keplr, selectedAddress, currentGift, citizenship, initSigner]);
+  }, [
+    signer,
+    signingClient,
+    selectedAddress,
+    currentGift,
+    citizenship,
+    initSigner,
+  ]);
 
   const isProve = useMemo(() => {
     if (citizenship !== null && citizenship.extension.addresses === null) {
@@ -397,7 +397,7 @@ function ActionBarPortalGift({
   }, [isClaimed]);
 
   const useDeleteAddress = useCallback(async () => {
-    if (keplr !== null) {
+    if (signer && signingClient) {
       if (
         selectedAddress !== null &&
         !selectedAddress.match(PATTERN_CYBER) &&
@@ -406,8 +406,8 @@ function ActionBarPortalGift({
         const { nickname } = citizenship.extension;
         const msgObject = deleteAddressMsg(selectedAddress, nickname);
         try {
-          const [{ address }] = await keplr.signer.getAccounts();
-          const executeResponseResult = await keplr.execute(
+          const [{ address }] = await signer.getAccounts();
+          const executeResponseResult = await signingClient.execute(
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
@@ -436,7 +436,7 @@ function ActionBarPortalGift({
         }
       }
     }
-  }, [keplr, selectedAddress, citizenship]);
+  }, [signer, signingClient, selectedAddress, citizenship]);
 
   const useGetSelectAddress = useMemo(() => {
     if (selectedAddress && selectedAddress !== null) {

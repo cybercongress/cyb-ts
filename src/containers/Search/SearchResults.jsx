@@ -1,9 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, Link } from 'react-router-dom';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -29,9 +31,7 @@ import {
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import ContentItem from '../../components/ContentItem/contentItem';
-import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
-import { useDevice } from 'src/contexts/device';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -68,7 +68,7 @@ const reduceSearchResults = (data, query) => {
 };
 
 function SearchResults() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { query } = useParams();
 
   const location = useLocation();
@@ -94,7 +94,7 @@ function SearchResults() {
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
-      if (jsCyber !== null) {
+      if (queryClient) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
         let searchResultsData = [];
@@ -104,7 +104,11 @@ function SearchResults() {
           keywordHashTemp = await getIpfsHash(encodeSlash(query));
         }
 
-        let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
+        let responseSearchResults = await search(
+          queryClient,
+          keywordHashTemp,
+          0
+        );
 
         if (
           responseSearchResults.length === 0 ||
@@ -113,7 +117,7 @@ function SearchResults() {
         ) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(jsCyber, keywordHashNull, 0);
+          responseSearchResults = await search(queryClient, keywordHashNull, 0);
         }
 
         if (
@@ -139,13 +143,13 @@ function SearchResults() {
     };
     getFirstItem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, location, update, jsCyber]);
+  }, [query, location, update, queryClient]);
 
   const fetchMoreData = async (page) => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(jsCyber, keywordHash, page);
+    const data = await search(queryClient, keywordHash, page);
     if (data && Object.keys(data).length > 0 && data.result) {
       links = reduceSearchResults(data.result, encodeSlash(query));
     } else {

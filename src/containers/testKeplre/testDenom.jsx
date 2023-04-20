@@ -1,23 +1,23 @@
-import { useState, useEffect, useContext } from 'react';
-import { AppContext } from '../../context';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { reduceBalances } from '../../utils/utils';
 
 import Denom from '../../components/denom';
 
 function DenomTest() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [totalSupply, setTotalSupply] = useState(null);
 
   useEffect(() => {
     const feachData = async () => {
-      if (jsCyber !== null) {
-        const responseTotalSupply = await jsCyber.totalSupply();
+      if (queryClient) {
+        const responseTotalSupply = await queryClient.totalSupply();
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
         setTotalSupply(datareduceTotalSupply);
       }
     };
     feachData();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   console.log(`totalSupply`, totalSupply);
 

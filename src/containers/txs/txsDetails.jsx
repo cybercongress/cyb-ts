@@ -1,15 +1,13 @@
 /* eslint-disable camelcase */
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { connect } from 'react-redux';
+import { useDevice } from 'src/contexts/device';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
-import { useDevice } from 'src/contexts/device';
 
 const getTxs = async (txs) => {
   try {
@@ -34,7 +32,6 @@ const initValueInformation = {
 
 function TxsDetails() {
   const { isMobile: mobile } = useDevice();
-  const { jsCyber } = useContext(AppContext);
   const { txHash } = useParams();
   const [msgs, setMsgs] = useState(null);
   const [information, setInformation] = useState(initValueInformation);
@@ -71,7 +68,7 @@ function TxsDetails() {
     // return () => {
 
     // };
-  }, [txHash, jsCyber]);
+  }, [txHash]);
 
   console.log('msgs', msgs);
 
