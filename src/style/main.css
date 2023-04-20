@@ -1,4 +1,4 @@
-@import'./global.css';
+@import './global.css';
 
 @import './funding.css';
 @import './container-distribution.css';
@@ -13,3 +13,4 @@
 @import './story.css';
 
 @import './components.css';
+@import './libs.css';
