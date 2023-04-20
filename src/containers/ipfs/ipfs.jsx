@@ -19,6 +19,7 @@ import {
 import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const dateFormat = require('dateformat');
 

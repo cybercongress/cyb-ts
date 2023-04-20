@@ -26,15 +26,20 @@ function useUptime({ accountUser }) {
 
     let uptime = 0;
 
-    if (data !== undefined) {
+    if (data) {
+      const { pre_commit, pre_commit_aggregate, block_aggregate } = data;
+
       if (
-        Object.keys(data.pre_commit).length !== 0 &&
-        Object.keys(data.pre_commit_aggregate).length !== 0 &&
-        Object.keys(data.block_aggregate).length !== 0
+        pre_commit &&
+        pre_commit_aggregate &&
+        block_aggregate &&
+        Object.keys(pre_commit).length !== 0 &&
+        Object.keys(pre_commit_aggregate).length !== 0 &&
+        Object.keys(block_aggregate).length !== 0
       ) {
-        const thisBlock = data.block_aggregate.nodes[0].height;
-        const firstPreCommit = data.pre_commit[0].validator.blocks[0].height;
-        const countPreCommit = data.pre_commit_aggregate.aggregate.count;
+        const thisBlock = block_aggregate.nodes[0].height;
+        const firstPreCommit = pre_commit[0].validator.blocks[0].height;
+        const countPreCommit = pre_commit_aggregate.aggregate.count;
         uptime = countPreCommit / (thisBlock - firstPreCommit);
       }
     }
