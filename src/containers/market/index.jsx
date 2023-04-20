@@ -7,7 +7,6 @@ import { useIpfs } from 'src/contexts/ipfs';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
-import { AppContext } from '../../context';
 import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';

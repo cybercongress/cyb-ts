@@ -11,7 +11,6 @@ import {
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
 } from '../../components';
-import { AppContext } from '../../context';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';

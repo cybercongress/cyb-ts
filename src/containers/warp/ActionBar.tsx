@@ -13,7 +13,6 @@ import {
   ActionBar as ActionBarCenter,
   BtnGrd,
 } from '../../components';
-import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   trimString,

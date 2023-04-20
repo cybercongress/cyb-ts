@@ -5,7 +5,6 @@ import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
 import styles from './styles.scss';
-import { AppContext } from '../../../../../context';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';

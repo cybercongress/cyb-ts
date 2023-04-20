@@ -7,7 +7,6 @@ import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 import ERatio from './eRatio';
 import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';

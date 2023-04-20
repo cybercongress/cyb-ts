@@ -18,7 +18,6 @@ import {
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
-import { AppContext } from '../../context';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
 
 const dateFormat = require('dateformat');
@@ -106,7 +105,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
 }
 
 function Ipfs() {
- const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
   const { contentIpfs, status, loading, statusFetching } = useGetIpfsContent(

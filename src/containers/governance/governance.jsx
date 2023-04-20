@@ -9,7 +9,6 @@ import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 const dateFormat = require('dateformat');
@@ -42,7 +41,7 @@ function Statistics({ communityPoolCyber, staked }) {
 }
 
 function Governance({ defaultAccount }) {
- const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);

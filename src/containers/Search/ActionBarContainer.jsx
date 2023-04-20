@@ -22,7 +22,6 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { pinToIpfsCluster } from '../../utils/ipfs/utils-ipfs';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
@@ -159,7 +158,7 @@ class ActionBarContainer extends Component {
       this.setState({
         stage: STAGE_KEPLR_APPROVE,
       });
-      if ((signer && signingClient)) {
+      if (signer && signingClient) {
         const { address } = (await signer.getAccounts())[0];
 
         console.log('address', address);
@@ -168,7 +167,12 @@ class ActionBarContainer extends Component {
             amount: [],
             gas: DEFAULT_GAS_LIMITS.toString(),
           };
-          const result = await signingClient.cyberlink(address, fromCid, toCid, fee);
+          const result = await signingClient.cyberlink(
+            address,
+            fromCid,
+            toCid,
+            fee
+          );
           if (result.code === 0) {
             const hash = result.transactionHash;
             console.log('hash :>> ', hash);

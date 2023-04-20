@@ -15,7 +15,6 @@ import {
   Input,
   BtnGrd,
 } from '../../components';
-import { AppContext } from '../../context';
 
 import { getTxs } from '../../utils/search/utils';
 

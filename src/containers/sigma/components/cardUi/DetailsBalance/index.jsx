@@ -1,6 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { useContext } from 'react';
-import { AppContext } from '../../../../../context';
 import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';

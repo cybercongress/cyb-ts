@@ -17,8 +17,6 @@ import {
 import { getPin, getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 
-import { AppContext } from '../../context';
-
 import {
   LEDGER,
   CYBER,
@@ -515,7 +513,8 @@ const mapStateToProps = (store) => {
 // temp
 export const withIpfsAndKeplr = (Component) => (props) => {
   const { node } = useIpfs();
-  const { signer, signingClient } = useSigningClient(AppContext);
+  const { signer, signingClient } = useSigningClient();
+
   return (
     <Component
       {...props}

@@ -17,7 +17,6 @@ import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
 import store from './redux/store';
-import AppContextProvider from './context';
 
 import './style/main.css';
 import './style/index.scss';
@@ -97,22 +96,20 @@ root.render(
           <SigningClientProvider>
             <QueryClientProvider client={queryClient}>
               <IbcDenomProvider>
-                <DataProvider>
-                  <ApolloProvider client={client}>
-                    <DeviceProvider>
-                      <WebsocketsProvider>
-                        <AppContextProvider>
-                          <ErrorBoundary fallback={<ErrorScreen />}>
-                            <>
-                              <AppRouter />
-                              <ReactQueryDevtools />
-                            </>
-                          </ErrorBoundary>
-                        </AppContextProvider>
-                      </WebsocketsProvider>
-                    </DeviceProvider>
-                  </ApolloProvider>
-                </DataProvider>
+                <WebsocketsProvider>
+                  <DataProvider>
+                    <ApolloProvider client={client}>
+                      <DeviceProvider>
+                        <ErrorBoundary fallback={<ErrorScreen />}>
+                          <>
+                            <AppRouter />
+                            <ReactQueryDevtools />
+                          </>
+                        </ErrorBoundary>
+                      </DeviceProvider>
+                    </ApolloProvider>
+                  </DataProvider>
+                </WebsocketsProvider>
               </IbcDenomProvider>
             </QueryClientProvider>
           </SigningClientProvider>

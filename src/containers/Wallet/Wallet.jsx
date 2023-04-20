@@ -18,7 +18,6 @@ import { PocketCard } from './components';
 import { PubkeyCard, ImportLinkLedger, TweetCard } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
-import { AppContext } from '../../context';
 import { InfoCard, MainContainer } from '../portal/components';
 
 import db from '../../db';
@@ -473,7 +472,6 @@ class Wallet extends React.Component {
       hoverCard,
     } = this.state;
     const { web3, contractToken } = this.props;
-    const { keplr } = this.context;
     let countLink = 0;
     if (link !== null) {
       // eslint-disable-next-line prefer-spread
@@ -532,7 +530,6 @@ class Wallet extends React.Component {
             {/* <NotFound text=" " /> */}
           </main>
           <ActionBarConnect
-            keplr={keplr}
             accountKeplr={accountKeplr}
             updateAddress={this.checkAddressLocalStorage}
             web3={web3}
@@ -631,8 +628,6 @@ class Wallet extends React.Component {
             selectCard={selectCard}
             selectAccount={selectAccount}
             hoverCard={hoverCard}
-            // actionBar keplr props
-            keplr={keplr}
             // actionBar web3
             web3={web3}
             accountsETH={accountsETH}
@@ -666,7 +661,5 @@ const mapStateToProps = (store) => {
     defaultAccount: store.pocket.defaultAccount,
   };
 };
-
-Wallet.contextType = AppContext;
 
 export default connect(mapStateToProps, mapDispatchprops)(Wallet);

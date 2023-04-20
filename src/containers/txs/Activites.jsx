@@ -7,7 +7,6 @@ import { formatNumber } from '../../utils/search/utils';
 import { Account, MsgType, DenomArr } from '../../components';
 import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { FormatNumberTokens } from '../nebula/components';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 
