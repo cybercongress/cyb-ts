@@ -1,10 +1,12 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useAppData } from 'src/contexts/appData';
 import { CardStatisics, Dots } from '../../components';
 import { CYBER } from '../../utils/config';
 import Txs from '../brain/tx';
@@ -12,8 +14,6 @@ import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useAppData } from 'src/contexts/appData';
 
 const PREFIXES = [
   {

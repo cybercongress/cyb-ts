@@ -2,7 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems } from '../../../components';
 
-//TODO: rethink that helper use Map
+// TODO: rethink that helper use Map
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
 

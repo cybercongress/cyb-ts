@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.scss';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 // const testData = {
 //   liquid: '1 102 102 102 102',

@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { DefaultAccount, AccountValue } from 'src/types/defaultAccount';
 
 function useSetActiveAddress(defaultAccount: DefaultAccount) {
-  const [addressActive, setAddressActive] = useState<AccountValue | null>(
-    null
-  );
+  const [addressActive, setAddressActive] = useState<AccountValue | null>(null);
 
   useEffect(() => {
     const { account } = defaultAccount;

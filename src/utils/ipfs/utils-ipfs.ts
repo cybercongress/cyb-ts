@@ -26,7 +26,7 @@ import {
 import db from '../../db';
 
 import * as config from '../config';
-import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
+import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
 // import RestIpfsNode from './restIpfsNode';
 

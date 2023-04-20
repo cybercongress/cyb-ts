@@ -1,7 +1,6 @@
-import React from 'react';
 import imgSwap from 'images/exchange-arrows.svg';
-import { TokenSetter } from '../../teleport/components';
 import { InputNumber } from 'src/components';
+import { TokenSetter } from '../../teleport/components';
 import { ButtonIcon } from '../../teleport/components/slider';
 
 function DepositCreatePool({ stateProps, amountChangeHandler }) {

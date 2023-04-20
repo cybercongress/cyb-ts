@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js";
-import { useEffect, useState } from "react";
-import { getCoinDecimals } from "../utils";
+import BigNumber from 'bignumber.js';
+import { useEffect, useState } from 'react';
+import { getCoinDecimals } from '../utils';
 
 function useGetSwapPrice(
   tokenA: string,

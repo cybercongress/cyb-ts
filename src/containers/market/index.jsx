@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { useIpfs } from 'src/contexts/ipfs';
+import { useDevice } from 'src/contexts/device';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
@@ -12,7 +12,6 @@ import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
-import { useDevice } from 'src/contexts/device';
 
 function ContainerGrid({ children }) {
   return (
@@ -58,7 +57,7 @@ const reduceSearchResults = (data, query) => {
 
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
- const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
     useGetCybernomics();

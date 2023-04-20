@@ -1,4 +1,4 @@
-import { Pool } from "@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity";
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 
 type AccountTypeKey = 'cyber' | 'cosmos';
 

@@ -1,7 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
+import { useQueryClient } from 'src/contexts/queryClient';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
@@ -9,7 +10,6 @@ import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { useQueryClient } from 'src/contexts/queryClient';
 
 const dateFormat = require('dateformat');
 

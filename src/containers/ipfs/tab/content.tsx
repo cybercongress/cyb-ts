@@ -7,9 +7,9 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 import { useIpfs } from 'src/contexts/ipfs';
 
+import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
-import { IPFSContent } from 'src/utils/ipfs/ipfs';
 
 // const htmlParser = require('react-markdown/plugins/html-parser');
 

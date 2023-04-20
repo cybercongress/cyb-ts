@@ -2,8 +2,8 @@ import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
 import { Account, DefaultAccount } from 'src/types/defaultAccount';
-import { POCKET } from '../../utils/config';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { POCKET } from '../../utils/config';
 
 type SliceState = {
   actionBar: {
@@ -28,10 +28,7 @@ const slice = createSlice({
   name: 'pocket',
   initialState,
   reducers: {
-    setDefaultAccount: (
-      state,
-      { payload }: PayloadAction<DefaultAccount>
-    ) => {
+    setDefaultAccount: (state, { payload }: PayloadAction<DefaultAccount>) => {
       state.defaultAccount = payload;
     },
     setAccounts: (state, { payload }: PayloadAction<Account[]>) => {

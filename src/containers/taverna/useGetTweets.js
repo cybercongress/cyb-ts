@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
+import { useWebsockets } from 'src/websockets/context';
 import db from '../../db';
 import { getFollows, getTweet, getContent } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { fromBech32 } from '../../utils/utils';
-import { useWebsockets } from 'src/websockets/context';
 
 const getIndexdDb = async (cid) => {
   let addressResolve = null;

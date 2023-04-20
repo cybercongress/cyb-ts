@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Pane,
@@ -6,6 +6,13 @@ import {
 } from '@cybercongress/gravity';
 import { Link, useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { Option } from 'src/types';
+import { useSelector } from 'react-redux';
+import { Coin } from '@cosmjs/launchpad';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import {
   ActionBarContentText,
   Account,
@@ -22,15 +29,8 @@ import {
 import { ActionBarSteps } from '../portal/components';
 
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { Option } from 'src/types';
-import { useSelector } from 'react-redux';
-import { Coin } from '@cosmjs/launchpad';
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const POOL_TYPE_INDEX = 1;
 

@@ -1,9 +1,9 @@
 import { Pane } from '@cybercongress/gravity';
-import BalanceToken from './balanceToken';
-import Select from './select';
-import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 import { ObjKeyValue } from 'src/types/data';
+import BalanceToken from './balanceToken';
+import Select from './select';
+import { DenomArr, OptionSelect } from '../../../components';
 
 type TokenSetterProps = {
   accountBalances: ObjKeyValue | null;

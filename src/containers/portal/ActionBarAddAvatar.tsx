@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useIpfs } from 'src/contexts/ipfs';
+import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../utils/txs';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
-import { useSigningClient } from 'src/contexts/signerClient';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;

@@ -1,15 +1,14 @@
 import { Meta } from '@storybook/react';
-import { Tab } from '@cybercongress/gravity';
 
-import TabBtn, { TabBtnProps } from './';
 import { useState } from 'react';
+import TabBtn, { TabBtnProps } from '.';
 
 export default {
   component: TabBtn,
   title: 'Atoms/TabBtn',
 } as Meta;
 
-const Template = (args: TabBtnProps) => {
+function Template(args: TabBtnProps) {
   const [isSelected, setIsSelected] = useState(false);
   return (
     <div
@@ -38,7 +37,7 @@ const Template = (args: TabBtnProps) => {
       />
     </div>
   );
-};
+}
 
 export const Default = Template.bind({});
 Default.args = {
