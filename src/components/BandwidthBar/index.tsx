@@ -1,6 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Battery, Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQueryClient } from 'src/contexts/queryClient';
 import Tooltip from '../tooltip/tooltip';
 import { CYBER } from '../../utils/config';
 import {
@@ -9,10 +11,7 @@ import {
   formatCurrency,
   reduceBalances,
 } from '../../utils/utils';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppContext } from '../../context';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import React from 'react';
 
 const PREFIXES = [
   {
@@ -70,7 +69,7 @@ function BandwidthBar(
 ) {
   const [linkPrice] = useState(4);
 
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
 
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
@@ -96,10 +95,10 @@ function BandwidthBar(
         if (
           account !== null &&
           Object.prototype.hasOwnProperty.call(account, 'cyber') &&
-          jsCyber !== null
+          queryClient
         ) {
           const { bech32: cyberBech32 } = account.cyber;
-          const responseAccountBandwidth = await jsCyber.accountBandwidth(
+          const responseAccountBandwidth = await queryClient.accountBandwidth(
             cyberBech32
           );
 
@@ -126,17 +125,17 @@ function BandwidthBar(
     };
     getBandwidth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount, location.pathname, priceLink, jsCyber]);
+  }, [defaultAccount, location.pathname, priceLink, queryClient]);
 
   useEffect(() => {
     const getPrice = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.price();
+      if (queryClient) {
+        const response = await queryClient.price();
         setPriceLink(coinDecimals(response.price.dec));
       }
     };
     getPrice();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const getAmounPower = async () => {
@@ -145,10 +144,10 @@ function BandwidthBar(
         if (
           account !== null &&
           Object.prototype.hasOwnProperty.call(account, 'cyber') &&
-          jsCyber !== null
+          queryClient
         ) {
           const { bech32 } = account.cyber;
-          const allBalances = await jsCyber.getAllBalances(bech32);
+          const allBalances = await queryClient.getAllBalances(bech32);
           const reduceallBalances = reduceBalances(allBalances);
           if (reduceallBalances.milliampere && reduceallBalances.millivolt) {
             const { milliampere, millivolt } = reduceallBalances;
@@ -164,7 +163,7 @@ function BandwidthBar(
       }
     };
     getAmounPower();
-  }, [jsCyber, defaultAccount]);
+  }, [queryClient, defaultAccount]);
 
   return (
     <Tooltip

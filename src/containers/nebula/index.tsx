@@ -1,21 +1,19 @@
 /* eslint-disable no-await-in-loop */
-import { useEffect, useState, useMemo, useContext } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { MainContainer } from '../portal/components';
-import { DenomArr, ContainerGradient } from '../../components';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
+import { DenomArr, ContainerGradient, MainContainer } from '../../components';
 import {
   formatNumber,
   replaceSlash,
   getDisplayAmount,
 } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
-import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 
 function Title({ capData }) {
   return (
@@ -55,16 +53,16 @@ function Title({ capData }) {
 }
 
 function Nebula() {
-  const { traseDenom } = useContext(AppContext);
-  const { dataTotal, marketData } = useGetMarketData();
+  const { traseDenom } = useIbcDenom();
+  const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
   useEffect(() => {
-    if (Object.keys(dataTotal).length > 0) {
+    if (Object.keys(dataTotalSupply).length > 0) {
       let cap = 0;
-      Object.keys(dataTotal).forEach((key) => {
-        const amount = dataTotal[key];
-        const { coinDecimals } = traseDenom(key);
+      Object.keys(dataTotalSupply).forEach((key) => {
+        const amount = dataTotalSupply[key];
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
@@ -96,16 +94,16 @@ function Nebula() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataTotal, marketData]);
+  }, [dataTotalSupply, marketData]);
 
   const dataRenderItems = useMemo(() => {
     let dataObj = {};
-    if (Object.keys(dataTotal).length > 0) {
-      Object.keys(dataTotal).forEach((key) => {
-        const amount = dataTotal[key];
+    if (Object.keys(dataTotalSupply).length > 0) {
+      Object.keys(dataTotalSupply).forEach((key) => {
+        const amount = dataTotalSupply[key];
         let price = 0;
         let cap = 0;
-        const { coinDecimals } = traseDenom(key);
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
@@ -134,13 +132,13 @@ function Nebula() {
     }
     return dataObj;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataTotal, marketData]);
+  }, [dataTotalSupply, marketData]);
 
   const getTypeDenomKey = (key) => {
-    const { denom } = traseDenom(key);
+    const denom = traseDenom(key);
 
-    if (denom.includes('ibc')) {
-      return replaceSlash(denom);
+    if (denom[0].denom.includes('ibc')) {
+      return replaceSlash(denom[0].denom);
     }
 
     if (key.includes('pool')) {
@@ -149,7 +147,7 @@ function Nebula() {
       )}`;
     }
 
-    return denom;
+    return denom[0].denom;
   };
 
   const getLinktoSearch = (key) => {

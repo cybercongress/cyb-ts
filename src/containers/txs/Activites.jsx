@@ -7,8 +7,8 @@ import { formatNumber } from '../../utils/search/utils';
 import { Account, MsgType, DenomArr } from '../../components';
 import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { FormatNumberTokens } from '../nebula/components';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 const S_TO_MS = 1 * 10 ** 3;
 
@@ -80,12 +80,12 @@ function Row({ value, title }) {
 
 // eslint-disable-next-line import/no-unused-modules
 export function AmountDenom({ amountValue, denom }) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
 
   let amount = 0;
 
   if (amountValue && amountValue > 0) {
-    const { coinDecimals } = traseDenom(denom);
+    const [{ coinDecimals }] = traseDenom(denom);
     amount = convertAmount(amountValue, coinDecimals);
   }
 

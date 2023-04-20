@@ -2,8 +2,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { useSigningClient } from 'src/contexts/signerClient';
 import { setDefaultAccount, setAccounts } from '../../../redux/features/pocket';
-// import { ActionBarSteps } from '../../energy/component/actionBar';
 import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
@@ -38,7 +38,6 @@ function ActionBar({
   uploadAvatarImg,
   avatarIpfs,
   onClickRegister,
-  keplr,
   setAccountsProps,
   setDefaultAccountProps,
   checkAddressNetwork,
@@ -47,6 +46,7 @@ function ActionBar({
   onClickSignMoonCode,
   signedMessage,
 }) {
+  const { signer } = useSigningClient();
   const navigate = useNavigate();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
@@ -65,65 +65,66 @@ function ActionBar({
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
     const chainId = CYBER.CHAIN_ID;
-    await window.keplr.enable(chainId);
 
     let count = 1;
-    const { bech32Address, pubKey, name } = await keplr.signer.keplr.getKey(
-      chainId
-    );
-    const pk = Buffer.from(pubKey).toString('hex');
-
-    const localStoragePocketAccount = localStorage.getItem('pocketAccount');
-    const localStorageCount = localStorage.getItem('count');
-    if (localStorageCount !== null) {
-      const dataCount = JSON.parse(localStorageCount);
-      count = parseFloat(dataCount);
-      key = `Account ${count}`;
-    }
-    localStorage.setItem('count', JSON.stringify(count + 1));
-    if (localStoragePocketAccount !== null) {
-      dataPocketAccount = JSON.parse(localStoragePocketAccount);
-      valueObj = { ...dataPocketAccount };
-    }
-
-    const acc = checkAddress(valueObj, 'cyber', bech32Address);
-    if (acc && acc.length > 0) {
-      const activeKey = acc[0];
-      key = activeKey;
-      accounts = {
-        ...valueObj[activeKey],
-      };
-    } else {
-      accounts.cyber = {
-        bech32: bech32Address,
-        keys: 'keplr',
-        pk,
-        path: LEDGER.HDPATH,
-        name,
-      };
-    }
-
-    if (localStoragePocketAccount !== null) {
-      if (Object.keys(accounts).length > 0) {
-        pocketAccount = { [key]: accounts, ...dataPocketAccount };
-      }
-    } else {
-      pocketAccount = { [key]: accounts };
-    }
-    if (Object.keys(pocketAccount).length > 0) {
-      localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      const keys0 = Object.keys(pocketAccount)[0];
-      localStorage.setItem(
-        'pocket',
-        JSON.stringify({ [keys0]: pocketAccount[keys0] })
+    if (signer) {
+      const { bech32Address, pubKey, name } = await signer.keplr.getKey(
+        chainId
       );
-      defaultAccounts = pocketAccount[keys0];
-      defaultAccountsKeys = keys0;
+      const pk = Buffer.from(pubKey).toString('hex');
 
-      setAccountsProps(pocketAccount);
-      setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
+      const localStoragePocketAccount = localStorage.getItem('pocketAccount');
+      const localStorageCount = localStorage.getItem('count');
+      if (localStorageCount !== null) {
+        const dataCount = JSON.parse(localStorageCount);
+        count = parseFloat(dataCount);
+        key = `Account ${count}`;
+      }
+      localStorage.setItem('count', JSON.stringify(count + 1));
+      if (localStoragePocketAccount !== null) {
+        dataPocketAccount = JSON.parse(localStoragePocketAccount);
+        valueObj = { ...dataPocketAccount };
+      }
 
-      setStep(STEP_CHECK_ADDRESS_CHECK_FNC);
+      const acc = checkAddress(valueObj, 'cyber', bech32Address);
+      if (acc && acc.length > 0) {
+        const activeKey = acc[0];
+        key = activeKey;
+        accounts = {
+          ...valueObj[activeKey],
+        };
+      } else {
+        accounts.cyber = {
+          bech32: bech32Address,
+          keys: 'keplr',
+          pk,
+          path: LEDGER.HDPATH,
+          name,
+        };
+      }
+
+      if (localStoragePocketAccount !== null) {
+        if (Object.keys(accounts).length > 0) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+        }
+      } else {
+        pocketAccount = { [key]: accounts };
+      }
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        const keys0 = Object.keys(pocketAccount)[0];
+        localStorage.setItem(
+          'pocket',
+          JSON.stringify({ [keys0]: pocketAccount[keys0] })
+        );
+        defaultAccounts = pocketAccount[keys0];
+        defaultAccountsKeys = keys0;
+
+        setAccountsProps(pocketAccount);
+        setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
+
+        setStep(STEP_CHECK_ADDRESS_CHECK_FNC);
+      }
     }
   };
 
@@ -142,14 +143,14 @@ function ActionBar({
   };
 
   const onClickInstallKeplr = useCallback(() => {
-    if (keplr === null) {
+    if (!signer) {
       setStep(STEP_KEPLR_INIT_INSTALLED);
       openInNewTab('https://www.keplr.app');
     } else {
       setStep(STEP_KEPLR_SETUP);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keplr]);
+  }, [signer]);
 
   useEffect(() => {
     if (step === STEP_KEPLR_REGISTER || step === STEP_ACTIVE_ADD) {
@@ -215,7 +216,7 @@ function ActionBar({
       <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
         <BtnGrd
           onClick={() => onClickInstallKeplr()}
-          text={keplr === null ? 'install Keplr' : 'I installed Keplr'}
+          text={!signer ? 'install Keplr' : 'I installed Keplr'}
         />
         {/* <Button onClick={() => setStep(STEP_KEPLR_SETUP)}>install Keplr</Button> */}
       </ActionBarSteps>
@@ -251,7 +252,7 @@ function ActionBar({
   if (step === STEP_KEPLR_CONNECT) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_SETUP)}>
-        {keplr === null ? (
+        {!signer ? (
           <BtnGrd
             onClick={() => document.location.reload(true)}
             text="update page"

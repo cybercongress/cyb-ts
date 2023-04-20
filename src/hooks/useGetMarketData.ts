@@ -1,10 +1,11 @@
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { useQuery } from '@tanstack/react-query';
-import { AppContext } from '../../context';
-import { reduceBalances, convertAmount } from '../../utils/utils';
-
-import { CYBER } from '../../utils/config';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import useGetTotalSupply from './useGetTotalSupply';
+import usePoolListInterval from './usePoolListInterval';
+import { CYBER } from '../utils/config';
+import { reduceBalances, convertAmount } from '../utils/utils';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -18,8 +19,8 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
-  const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-  const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+  const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+  const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
   const amountA = new BigNumber(convertAmount(balances[tokenA], coinDecimalsA));
   const amountB = new BigNumber(convertAmount(balances[tokenB], coinDecimalsB));
@@ -74,31 +75,16 @@ const getPoolsBalance = async (data, client) => {
 };
 
 function useGetMarketData() {
-  const { jsCyber, traseDenom } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { traseDenom } = useIbcDenom();
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
   const [marketData, setMarketData] = useState({});
-
-  const { data: dataTotalSupply } = useQuery({
-    queryKey: ['totalSupply'],
-    queryFn: async () => {
-      const responsetotalSupply = await jsCyber.totalSupply();
-      return responsetotalSupply;
-    },
-    enabled: Boolean(jsCyber),
+  const { totalSupplyAll: dataTotalSupply } = useGetTotalSupply({
     refetchInterval: 1000 * 60 * 3,
   });
-
-  const { data: dataPools } = useQuery({
-    queryKey: ['pools'],
-    queryFn: async () => {
-      const responsePools = await jsCyber.pools();
-      return responsePools;
-    },
-    enabled: Boolean(jsCyber),
-    refetchInterval: 1000 * 60 * 3,
-  });
+  const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
 
   useEffect(() => {
     const marketDataLS = localStorage.getItem('marketData');
@@ -110,9 +96,8 @@ function useGetMarketData() {
 
   useEffect(() => {
     try {
-      if (dataTotalSupply && dataTotalSupply.length > 0) {
-        const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
-        setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
+      if (dataTotalSupply && Object.keys(dataTotalSupply).length > 0) {
+        setDataTotal({ ...defaultTokenList, ...dataTotalSupply });
       }
     } catch (error) {
       console.log('error', error);
@@ -123,9 +108,8 @@ function useGetMarketData() {
   useEffect(() => {
     const getPpools = async () => {
       try {
-        const { pools } = dataPools || {};
-        if (dataPools && pools && Object.keys(pools).length > 0) {
-          const reduceObj = pools.reduce(
+        if (dataPools && Object.keys(dataPools).length > 0) {
+          const reduceObj = dataPools.reduce(
             (obj, item) => ({
               ...obj,
               [item.poolCoinDenom]: {
@@ -134,7 +118,7 @@ function useGetMarketData() {
             }),
             {}
           );
-          const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
+          const poolsBalance = await getPoolsBalance(reduceObj, queryClient);
           const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
           setPoolsTotal(poolPriceObj);
         }
@@ -144,8 +128,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataPools, traseDenom]);
+  }, [dataPools, queryClient, traseDenom]);
 
   useEffect(() => {
     try {
@@ -204,7 +187,7 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const { coinDecimals } = traseDenom(itemJ);
+                    const [{ coinDecimals }] = traseDenom(itemJ);
                     const balancesConvert = convertAmount(
                       balances[itemJ],
                       coinDecimals

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 
 import eth from 'images/Ethereum_logo_2014.svg';
 import pool from 'images/gravitydexPool.png';

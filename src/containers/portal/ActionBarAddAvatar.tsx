@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect, useCallback, useContext } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import txs from '../../utils/txs';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
-import { AppContext } from '../../context';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;
@@ -15,7 +15,7 @@ const STATE_AVATAR_IN_PROCESS = 15.1;
 const gasPrice = GasPrice.fromString('0.001boot');
 
 function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
-  const { keplr } = useContext(AppContext);
+  const { signingClient, signer } = useSigningClient();
   const { node } = useIpfs();
 
   const inputOpenFileRef = useRef();
@@ -43,7 +43,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   }, [node, avatarImg]);
 
   const uploadAvatarImg = useCallback(async () => {
-    if (keplr !== null) {
+    if (signer && signingClient) {
       if (avatarIpfs !== null && citizenship !== null) {
         try {
           const { nickname } = citizenship.extension;
@@ -53,8 +53,8 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
               nickname,
             },
           };
-          const [{ address }] = await keplr.signer.getAccounts();
-          const executeResponseResult = await keplr.execute(
+          const [{ address }] = await signer.getAccounts();
+          const executeResponseResult = await signingClient.execute(
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
@@ -86,7 +86,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatarIpfs, keplr, citizenship]);
+  }, [avatarIpfs, signer, signingClient, citizenship]);
 
   if (step === STATE_AVATAR) {
     return (

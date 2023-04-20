@@ -1,8 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { MainContainer, InfoCard, Stars } from './components';
-import { AppContext } from '../../context';
 import { activePassport } from './utils';
 import Release from './release';
 import PortalGift from './gift';
@@ -44,7 +44,7 @@ const scaleInitValue = 0.9;
 
 function MainPartal({ defaultAccount }) {
   const navigate = useNavigate();
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [scale, setScale] = useState(scaleInitValue);
 
@@ -52,11 +52,11 @@ function MainPartal({ defaultAccount }) {
     const getPasport = async () => {
       if (stagePortal === STAGE_LOADING) {
         setStagePortal(STAGE_LOADING);
-        if (jsCyber !== null) {
+        if (queryClient) {
           const addressActive = getActiveAddress(defaultAccount);
           if (addressActive !== null) {
             const responseActivePassport = await activePassport(
-              jsCyber,
+              queryClient,
               addressActive.bech32
             );
             if (responseActivePassport !== null) {
@@ -78,7 +78,7 @@ function MainPartal({ defaultAccount }) {
       }
     };
     getPasport();
-  }, [jsCyber, defaultAccount, stagePortal]);
+  }, [queryClient, defaultAccount, stagePortal]);
 
   const onClickSpacePussy = () => {
     setScale(6);

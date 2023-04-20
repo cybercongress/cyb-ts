@@ -1,6 +1,6 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { AppContext } from '../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 import Rank from '../Rank/rank';
 import {
   timeSince,
@@ -33,13 +33,13 @@ const initialState = {
 };
 
 function SearchSnippet({ cid, data, mobile, onClickRank }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [rankInfo, setRankInfo] = useState(initialState);
 
   useEffect(() => {
     const getRank = async () => {
-      if ((data.rank === undefined || data.rank === null) && jsCyber !== null) {
-        const response = await jsCyber.rank(cid);
+      if ((data.rank === undefined || data.rank === null) && queryClient) {
+        const response = await queryClient.rank(cid);
 
         const rank = coinDecimals(parseFloat(response.rank));
         const rankData = {
@@ -50,7 +50,7 @@ function SearchSnippet({ cid, data, mobile, onClickRank }) {
       }
     };
     getRank();
-  }, [data, jsCyber, cid]);
+  }, [data, queryClient, cid]);
 
   let timeAgoInMS = null;
 

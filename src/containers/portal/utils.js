@@ -1,6 +1,6 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { AppContext } from '../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const CONSTITUTION_HASH = 'QmcHB9GKHAKCLQhmSj71qNJhENJJg8Gymd1PvvsCQBhG7M';
 
@@ -34,7 +34,7 @@ const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
 
 const useGetActivePassport = (addressActive, updateFunc) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [citizenship, setCitizenship] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +61,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
   useEffect(() => {
     const getActivePassport = async () => {
       setLoading(true);
-      if (jsCyber !== null) {
+      if (queryClient) {
         if (useGetActiveAddress !== null) {
           setLoading(true);
           try {
@@ -70,7 +70,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
                 address: useGetActiveAddress.bech32,
               },
             };
-            const response = await jsCyber.queryContractSmart(
+            const response = await queryClient.queryContractSmart(
               CONTRACT_ADDRESS_PASSPORT,
               query
             );
@@ -86,7 +86,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
       }
     };
     getActivePassport();
-  }, [useGetActiveAddress, jsCyber, updateFunc]);
+  }, [useGetActiveAddress, queryClient, updateFunc]);
 
   return { citizenship, loading, setLoading };
 };

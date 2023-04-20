@@ -1,13 +1,14 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import {
   MainContainer,
   ActionBarSteps,
   MoonAnimation,
   Stars,
 } from './components';
-import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport, parseRowLog } from './utils';
 import PasportCitizenship from './pasport';
@@ -17,7 +18,6 @@ import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
 import { BtnGrd } from '../../components';
-import { useDevice } from 'src/contexts/device';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -41,7 +41,7 @@ const stopPortalAmbient = () => {
 function PasportMoonCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const navigate = useNavigate();
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [updateFunc, setUpdateFunc] = useState(0);
@@ -61,8 +61,8 @@ function PasportMoonCitizenship({ defaultAccount }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
-        const response = await jsCyber.getTx(txHash.txHash);
+      if (queryClient && txHash !== null && txHash.status === 'pending') {
+        const response = await queryClient.getTx(txHash.txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -90,16 +90,16 @@ function PasportMoonCitizenship({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   useEffect(() => {
     const getPasport = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         setStagePortal(STAGE_LOADING);
         const addressActiveData = getActiveAddress(defaultAccount);
         if (addressActiveData !== null) {
           const response = await activePassport(
-            jsCyber,
+            queryClient,
             addressActiveData.bech32
           );
           console.log('response', response);
@@ -112,7 +112,7 @@ function PasportMoonCitizenship({ defaultAccount }) {
       }
     };
     getPasport();
-  }, [jsCyber, defaultAccount, updateFunc]);
+  }, [queryClient, defaultAccount, updateFunc]);
 
   const getActiveAddress = (address) => {
     const { account } = address;

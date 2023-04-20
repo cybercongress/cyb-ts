@@ -1,6 +1,6 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AppContext } from '../../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { CYBER } from '../../../utils/config';
 import useGetSlots from '../../mint/useGetSlots';
 
@@ -27,7 +27,7 @@ const initValueToken = {
 const balanceFetcher = (options, client) => {
   const { address } = options;
 
-  if (client === null || address === null) {
+  if (!client || address === null) {
     return null;
   }
 
@@ -35,14 +35,14 @@ const balanceFetcher = (options, client) => {
 };
 
 const useQueryGetAllBalances = (options) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { address } = options;
 
   const { data } = useQuery(
     ['getAllBalances', address],
-    () => balanceFetcher(options, jsCyber),
+    () => balanceFetcher(options, queryClient),
     {
-      enabled: Boolean(jsCyber && address),
+      enabled: Boolean(queryClient && address),
       retry: 1,
       refetchOnWindowFocus: false,
     }

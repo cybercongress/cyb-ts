@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';

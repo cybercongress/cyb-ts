@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
+import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
+import { useIpfs } from 'src/contexts/ipfs';
 import { IPFSContentMaybe } from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
-import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
-
-import useIpfs from './useIpfs';
 
 const FETCH_LIMIT = 21;
 const FETCH_TIMEOUT = 1000 * 60 * 1; // 10 sec

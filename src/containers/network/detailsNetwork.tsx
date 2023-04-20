@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useContext } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useNetworks } from 'src/contexts/networks';
+import { Networks } from 'src/types/networks';
 import { MainContainer, ActionBarSteps } from '../portal/components';
-import { AppContext } from '../../context';
 import { Input, BtnGrd, ContainerGradientText } from '../../components';
 
 function ValueItem({ text, value, onChange }) {
@@ -20,17 +21,15 @@ function ValueItem({ text, value, onChange }) {
 }
 
 function DetailsNetwork() {
-  const param = useParams();
+  const param = useParams<{ networkId: string | undefined }>();
   const navigate = useNavigate();
-  const { networks, updateNetworks } = useContext(AppContext);
-  const [customConfig, setCustomConfig] = useState({});
+  const { networks, updateNetworks } = useNetworks();
+  const [customConfig, setCustomConfig] = useState<Networks>({});
 
   useEffect(() => {
-    if (
-      Object.keys(networks).length > 0 &&
-      Object.prototype.hasOwnProperty.call(param, 'networkId')
-    ) {
-      const { networkId } = param;
+    const { networkId } = param;
+
+    if (networks && networkId) {
       if (Object.prototype.hasOwnProperty.call(networks, networkId)) {
         setCustomConfig({ ...networks[networkId] });
       }
@@ -70,11 +69,9 @@ function DetailsNetwork() {
   };
 
   const onClickUpdateNetwork = useCallback(() => {
-    if (
-      Object.keys(networks).length > 0 &&
-      Object.prototype.hasOwnProperty.call(param, 'networkId')
-    ) {
-      const { networkId } = param;
+    const { networkId } = param;
+
+    if (networks && networkId) {
       if (Object.prototype.hasOwnProperty.call(networks, networkId)) {
         const newList = { ...networks };
         delete newList[networkId];

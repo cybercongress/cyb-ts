@@ -1,5 +1,4 @@
 import React, {
-  useContext,
   useEffect,
   useState,
   useCallback,
@@ -11,30 +10,29 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
-import { AppContext } from '../../context';
+import { InputNumber, MainContainer } from 'src/components';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import imgSwap from 'images/exchange-arrows.svg';
+import usePoolListInterval from 'src/hooks/usePoolListInterval';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import {
   calculateCounterPairAmount,
   sortReserveCoinDenoms,
-  getMyTokenBalance,
   networkList,
   checkInactiveFunc,
   getMyTokenBalanceNumber,
 } from './utils';
 import ActionBar from './actionBar.new';
 import networks from '../../utils/networkListIbc';
-import { InputNumber, MainContainer } from 'src/components';
 import TokenSetter from './components/tokenSetter.new';
 import NetworkSetter from './components/networkSetter';
-import useSdk from 'src/hooks/useSdk';
-import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import imgSwap from 'images/exchange-arrows.svg';
 import { ButtonIcon } from './components/slider';
 import {
   useGetSwapPrice,
-  usePoolListInterval,
   useGetParams,
   getBalances,
   useSetupIbcClient,
@@ -46,8 +44,8 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
 
 function Teleport() {
-  const { queryClient } = useSdk();
-  const { ibcDataDenom, traseDenom } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { ibcDenoms: ibcDataDenom, traseDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,7 +56,7 @@ function Teleport() {
   );
   const params = useGetParams();
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
-  const poolsData = usePoolListInterval();
+  const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
@@ -200,7 +198,7 @@ function Teleport() {
           accountBalances,
           tokenA
         );
-        const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
 
         const validTokenAmountA =
           parseFloat(getDisplayAmountReverce(tokenAAmount, coinDecimalsA)) <=

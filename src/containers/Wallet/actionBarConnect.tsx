@@ -14,6 +14,7 @@ import {
   PATTERN_CYBER,
 } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
+import { useSigningClient } from 'src/contexts/signerClient';
 
 const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
   LEDGER;
@@ -35,11 +36,11 @@ function ActionBarConnect({
   addAddress,
   updateAddress,
   updateFuncActionBar,
-  keplr,
   web3,
   accountsETH,
   selectAccount,
 }) {
+  const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [hdpath, setHDpath] = useState([44, 118, 0, 0, 0]);
   const [connectLedger, setConnectLedger] = useState(null);
@@ -96,7 +97,6 @@ function ActionBarConnect({
 
   const connctAddress = () => {
     switch (selectMethod) {
-
       case 'keplr':
         connectKeplr();
         break;
@@ -322,106 +322,108 @@ function ActionBarConnect({
   };
 
   const connectKeplr = async () => {
-    const accounts = {};
-    let key = 'Account 1';
-    let dataPocketAccount = null;
-    let valueObj = {};
-    let pocketAccount = {};
-    const chainId = CYBER.CHAIN_ID;
-    await window.keplr.enable(chainId);
-    let count = 1;
-    const { bech32Address, pubKey, name } = await keplr.signer.keplr.getKey(
-      chainId
-    );
-    const pk = Buffer.from(pubKey).toString('hex');
+    console.log('signer', signer);
+    if (signer) {
+      const accounts = {};
+      let key = 'Account 1';
+      let dataPocketAccount = null;
+      let valueObj = {};
+      let pocketAccount = {};
+      const chainId = CYBER.CHAIN_ID;
+      let count = 1;
+      const { bech32Address, pubKey, name } = await signer.keplr.getKey(
+        chainId
+      );
+      const pk = Buffer.from(pubKey).toString('hex');
 
-    const localStorageStory = await localStorage.getItem('pocketAccount');
-    const localStoragePocket = await localStorage.getItem('pocket');
-    const localStorageCount = await localStorage.getItem('count');
-    if (localStorageCount !== null) {
-      const dataCount = JSON.parse(localStorageCount);
-      count = parseFloat(dataCount);
-      key = `Account ${count}`;
-    }
-    localStorage.setItem('count', JSON.stringify(count + 1));
-    if (localStorageStory !== null) {
-      dataPocketAccount = JSON.parse(localStorageStory);
-      valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
+      const localStorageStory = await localStorage.getItem('pocketAccount');
+      const localStoragePocket = await localStorage.getItem('pocket');
+      const localStorageCount = await localStorage.getItem('count');
+      if (localStorageCount !== null) {
+        const dataCount = JSON.parse(localStorageCount);
+        count = parseFloat(dataCount);
+        key = `Account ${count}`;
       }
-    }
-    if (selectNetwork === 'cyber' || addCyberAddress) {
-      const cyberBech32 = bech32Address;
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cyber', cyberBech32)
-      ) {
-        accounts.cyber = {
-          bech32: cyberBech32,
-          keys: 'keplr',
-          pk,
-          path: HDPATH,
-          name,
-        };
-      }
-    }
-    if (selectNetwork === 'cosmos') {
-      const cosmosAddress = fromBech32(bech32Address, 'cosmos');
-      const cosmosBech32 = cosmosAddress;
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cosmos', cosmosBech32)
-      ) {
-        accounts.cosmos = {
-          bech32: cosmosBech32,
-          keys: 'keplr',
-          pk,
-          path: HDPATH,
-          name,
-        };
-      }
-    }
-    setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
+      localStorage.setItem('count', JSON.stringify(count + 1));
       if (localStorageStory !== null) {
-        if (Object.keys(accounts).length > 0) {
-          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+        dataPocketAccount = JSON.parse(localStorageStory);
+        valueObj = Object.values(dataPocketAccount);
+        if (selectAccount !== null) {
+          key = selectAccount.key;
+        }
+      }
+      if (selectNetwork === 'cyber' || addCyberAddress) {
+        const cyberBech32 = bech32Address;
+        if (
+          selectAccount !== null ||
+          !checkAddress(valueObj, 'cyber', cyberBech32)
+        ) {
+          accounts.cyber = {
+            bech32: cyberBech32,
+            keys: 'keplr',
+            pk,
+            path: HDPATH,
+            name,
+          };
+        }
+      }
+      if (selectNetwork === 'cosmos') {
+        const cosmosAddress = fromBech32(bech32Address, 'cosmos');
+        const cosmosBech32 = cosmosAddress;
+        if (
+          selectAccount !== null ||
+          !checkAddress(valueObj, 'cosmos', cosmosBech32)
+        ) {
+          accounts.cosmos = {
+            bech32: cosmosBech32,
+            keys: 'keplr',
+            pk,
+            path: HDPATH,
+            name,
+          };
+        }
+      }
+      setStage(STAGE_ADD_ADDRESS_OK);
+      if (selectAccount === null) {
+        if (localStorageStory !== null) {
+          if (Object.keys(accounts).length > 0) {
+            pocketAccount = { [key]: accounts, ...dataPocketAccount };
+          }
+        } else {
+          pocketAccount = { [key]: accounts };
+        }
+        if (Object.keys(pocketAccount).length > 0) {
+          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
         }
       } else {
-        pocketAccount = { [key]: accounts };
-      }
-      if (Object.keys(pocketAccount).length > 0) {
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      }
-    } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
-        accounts[selectNetwork];
-      if (Object.keys(dataPocketAccount).length > 0) {
-        localStorage.setItem(
-          'pocketAccount',
-          JSON.stringify(dataPocketAccount)
-        );
-      }
-      if (localStoragePocket !== null) {
-        const localStoragePocketData = JSON.parse(localStoragePocket);
-        const keyPocket = Object.keys(localStoragePocketData)[0];
-        localStoragePocketData[keyPocket][selectNetwork] =
+        dataPocketAccount[selectAccount.key][selectNetwork] =
           accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
+        if (Object.keys(dataPocketAccount).length > 0) {
           localStorage.setItem(
-            'pocket',
-            JSON.stringify(localStoragePocketData)
+            'pocketAccount',
+            JSON.stringify(dataPocketAccount)
           );
         }
+        if (localStoragePocket !== null) {
+          const localStoragePocketData = JSON.parse(localStoragePocket);
+          const keyPocket = Object.keys(localStoragePocketData)[0];
+          localStoragePocketData[keyPocket][selectNetwork] =
+            accounts[selectNetwork];
+          if (keyPocket === selectAccount.key) {
+            localStorage.setItem(
+              'pocket',
+              JSON.stringify(localStoragePocketData)
+            );
+          }
+        }
       }
-    }
-    cleatState();
-    if (updateAddress) {
-      updateAddress();
-    }
-    if (updateFuncActionBar) {
-      updateFuncActionBar();
+      cleatState();
+      if (updateAddress) {
+        updateAddress();
+      }
+      if (updateFuncActionBar) {
+        updateFuncActionBar();
+      }
     }
   };
 
@@ -494,7 +496,7 @@ function ActionBarConnect({
         connctAddress={connctAddress}
         web3={web3}
         selectAccount={selectAccount}
-        keplr={keplr}
+        keplr={signer}
       />
     );
   }

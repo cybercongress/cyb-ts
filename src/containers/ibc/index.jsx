@@ -4,9 +4,10 @@ import { SigningCyberClient } from '@cybercongress/cyber-js';
 import Long from 'long';
 import { DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { configKeplr } from './configKepler';
-import useSetupIbc, { getKeplr } from './useSetupIbc';
+import useSetupIbc from './useSetupIbc';
 import { config, STEPS } from './utils';
 import { IbcTxs, Relayer } from './components';
+import { getKeplr } from 'src/utils/keplrUtils';
 
 const fee = {
   amount: [],
@@ -56,7 +57,6 @@ const setupClient = async (keplr, option) => {
 };
 
 function Ibc() {
-  // const { keplr, jsCyber } = useContext(AppContext);
   const [step, setStep] = useState(STEPS.ENTER_CHAIN_A);
   const [configChains, setConfigChains] = useState(config);
   const [valueChannelsRelayer, setValueChannelsRelayer] =

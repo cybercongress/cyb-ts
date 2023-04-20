@@ -1,13 +1,15 @@
-import { useEffect, useState, useContext, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { AppContext } from '../../../context';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
 function useGetBalanceBostrom(address) {
-  const { traseDenom, marketData } = useContext(AppContext);
+  const { marketData } = useAppData();
+  const { traseDenom } = useIbcDenom();
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
@@ -55,7 +57,7 @@ function useGetBalanceBostrom(address) {
           const { total } = data[key];
           if (total.amount > 0) {
             const { amount, denom } = total;
-            const { coinDecimals } = traseDenom(denom);
+            const [{ coinDecimals }] = traseDenom(denom);
             const amountReduce = convertAmount(amount, coinDecimals);
 
             if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
