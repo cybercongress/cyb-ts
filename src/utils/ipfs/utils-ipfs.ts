@@ -146,19 +146,19 @@ export const parseRawIpfsData = (
 const getIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
-  const dataIndexdDb = await db.table('cid').get({ cid });
-  if (dataIndexdDb !== undefined && dataIndexdDb.content) {
-    const data = await toUint8ArrayWithMime(dataIndexdDb.content);
-    console.log('getIPFSContentFromDb data', data);
-    const meta = dataIndexdDb.meta || {
-      type: 'file',
-      size: 0,
-      blockSizes: [],
-      data: null,
-    };
+  // const dataIndexdDb = await db.table('cid').get({ cid });
+  // if (dataIndexdDb !== undefined && dataIndexdDb.content) {
+  //   const data = await toUint8ArrayWithMime(dataIndexdDb.content);
+  //   console.log('getIPFSContentFromDb data', data);
+  //   const meta = dataIndexdDb.meta || {
+  //     type: 'file',
+  //     size: 0,
+  //     blockSizes: [],
+  //     data: null,
+  //   };
 
-    return { details: parseRawIpfsData(data, cid), cid, meta };
-  }
+  //   return { details: parseRawIpfsData(data, cid), cid, meta };
+  // }
 
   return undefined;
 };

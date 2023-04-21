@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SendLedger } from '../../components';
+import { ActionBarSend } from '../../components';
 import txs from '../../utils/txs';
 import { CYBER } from '../../utils/config';
 import { downloadObjectAsJson } from '../../utils/utils';
@@ -43,7 +43,7 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
 
   if (stage === STAGE_SEND_TX) {
     return (
-      <SendLedger
+      <ActionBarSend
         onClickBtn={() => generateTx()}
         onChangeInputAmount={(e) => setAmount(e.target.value)}
         valueInputAmount={amount}

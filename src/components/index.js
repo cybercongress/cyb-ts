@@ -6,7 +6,7 @@ import {
   Cyberlink,
   StartStageSearchActionBar,
   Delegate,
-  SendLedger,
+  ActionBarSend,
   GovernanceStartStageActionBar,
   CommunityPool,
   TextProposal,
@@ -18,7 +18,6 @@ import {
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
   ConnectAddress,
-  ButtonIcon,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -46,6 +45,7 @@ import ContainerGradient, {
   ContainerGradientText,
 } from './containerGradient/ContainerGradient';
 import MainContainer from './MainContainer';
+import ButtonIcon from './ButtonIcon';
 
 // eslint-disable-next-line import/no-unused-modules
 export {
@@ -61,7 +61,7 @@ export {
   Cyberlink,
   StartStageSearchActionBar,
   Delegate,
-  SendLedger,
+  ActionBarSend,
   GovernanceStartStageActionBar,
   CommunityPool,
   TextProposal,

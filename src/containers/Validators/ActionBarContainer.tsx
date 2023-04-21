@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Pane, Text, ActionBar } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
@@ -12,7 +12,7 @@ import {
   ReDelegate,
   TransactionError,
   Dots,
-  ActionBar as ActionBarCenter,
+  ActionBar,
 } from '../../components';
 
 import { trimString } from '../../utils/utils';
@@ -60,9 +60,7 @@ function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          tx generation <Dots big />
-        </ActionBarContentText>
+        tx generation <Dots big />
       </ActionBar>
     );
   }
@@ -70,10 +68,10 @@ function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
   if (stage === STAGE_WAIT) {
     return (
       <ActionBar>
-        <ActionBarContentText>
+        <div>
           approve tx
           <Dots big />
-        </ActionBarContentText>
+        </div>
       </ActionBar>
     );
   }
@@ -193,7 +191,7 @@ function ActionBarContainer({
   const [txType, setTxType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [txHash, setTxHash] = useState(null);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState<string>('');
   const [valueSelect, setValueSelect] = useState('');
   const { txHeight } = useCheckStatusTx(
     txHash,
@@ -385,9 +383,18 @@ function ActionBarContainer({
     navigate(to);
   };
 
+  const amountChangeHandler = (values: string) => {
+    setAmount(values);
+  };
+
+  const onClickBackToChoseHandler = () => {
+    setStage(STAGE_INIT);
+    setTxType(null);
+  };
+
   if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
     return (
-      <ActionBarCenter
+      <ActionBar
         btnText="get citizenship"
         onClickFnc={() => handleHistory('/portal')}
       />
@@ -402,12 +409,10 @@ function ActionBarContainer({
   ) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          <Pane fontSize="18px">
-            {/* eslint-disable-next-line react/no-unescaped-entities */}
-            you don't have cyber address in your pocket
-          </Pane>
-        </ActionBarContentText>
+        <Pane fontSize="18px">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          you don't have cyber address in your pocket
+        </Pane>
       </ActionBar>
     );
   }
@@ -420,11 +425,9 @@ function ActionBarContainer({
   ) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          <Pane fontSize="18px">
-            <Dots />
-          </Pane>
-        </ActionBarContentText>
+        <Pane fontSize="18px">
+          <Dots />
+        </Pane>
       </ActionBar>
     );
   }
@@ -438,9 +441,7 @@ function ActionBarContainer({
   ) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          <Pane fontSize="18px">Choose hero to get H and earn rewards</Pane>
-        </ActionBarContentText>
+        <Pane fontSize="18px">Choose hero to get H and earn rewards</Pane>
       </ActionBar>
     );
   }
@@ -449,38 +450,36 @@ function ActionBarContainer({
   if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          <Pane fontSize="18px" display="flex" alignItems="center">
-            {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
-              balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
-                <Pane>
-                  <Button
-                    onClick={() => handleHistory('/hfr')}
-                    text="Investmint"
-                    style={{
-                      marginRight: 15,
-                    }}
-                  />
-                  yor free H to get A and V
-                </Pane>
-              )}
-            {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
-              balance.available !== 0 &&
-              'Choose hero to get H'}
-            {validRewards && (
-              <Pane marginLeft={15}>
-                or
+        <Pane fontSize="18px" display="flex" alignItems="center">
+          {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
+            balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
+              <Pane>
                 <Button
+                  onClick={() => handleHistory('/hfr')}
+                  text="Investmint"
                   style={{
-                    marginLeft: 15,
+                    marginRight: 15,
                   }}
-                  onClick={claimRewards}
-                  text="Claim rewards"
                 />
+                yor free H to get A and V
               </Pane>
             )}
-          </Pane>
-        </ActionBarContentText>
+          {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
+            balance.available !== 0 &&
+            'Choose hero to get H'}
+          {validRewards && (
+            <Pane marginLeft={15}>
+              or
+              <Button
+                style={{
+                  marginLeft: 15,
+                }}
+                onClick={claimRewards}
+                text="Claim rewards"
+              />
+            </Pane>
+          )}
+        </Pane>
       </ActionBar>
     );
   }
@@ -493,11 +492,9 @@ function ActionBarContainer({
   ) {
     return (
       <ActionBar>
-        <ActionBarContentText>
-          <Pane fontSize="18px">
-            this {trimString(addressPocket.bech32, 8, 6)} address is read-only
-          </Pane>
-        </ActionBarContentText>
+        <Pane fontSize="18px">
+          this {trimString(addressPocket.bech32, 8, 6)} address is read-only
+        </Pane>
       </ActionBar>
     );
   }
@@ -508,13 +505,13 @@ function ActionBarContainer({
     txType === null
   ) {
     return (
-      <ActionBar>
-        <ActionBarContentText>
-          <Text fontSize="18px" color="#fff" fontWeight={600}>
-            {validators.description.moniker}
-          </Text>
-        </ActionBarContentText>
-        <Button onClick={() => funcSetTxType(TXTYPE_DELEGATE)}>Stake</Button>
+      <ActionBar
+        onClickFnc={() => funcSetTxType(TXTYPE_DELEGATE)}
+        btnText="Stake"
+      >
+        <Text fontSize="18px" color="#fff" marginRight={20} fontWeight={600}>
+          {validators.description.moniker}
+        </Text>
         {unStake && (
           <div>
             <Button
@@ -541,13 +538,14 @@ function ActionBarContainer({
     return (
       <Delegate
         moniker={validators.description.moniker}
-        onChangeInputAmount={(e) => setAmount(e.target.value)}
+        onChangeInputAmount={amountChangeHandler}
         toSend={amount}
-        disabledBtn={amount.length === 0}
+        // disabledBtn={amount.length === 0}
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
         delegate={txType === TXTYPE_DELEGATE}
+        onClickBack={onClickBackToChoseHandler}
       />
     );
   }
@@ -556,13 +554,14 @@ function ActionBarContainer({
     return (
       <ReDelegate
         generateTx={() => redelegateTokens()}
-        onChangeInputAmount={(e) => setAmount(e.target.value)}
+        onChangeInputAmount={amountChangeHandler}
         toSend={amount}
         disabledBtn={!validRestakeBtn}
         validatorsAll={validatorsAll}
         validators={validators}
         onChangeReDelegate={(e) => setValueSelect(e.target.value)}
         valueSelect={valueSelect}
+        onClickBack={onClickBackToChoseHandler}
       />
     );
   }

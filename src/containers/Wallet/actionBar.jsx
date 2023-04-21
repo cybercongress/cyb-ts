@@ -291,6 +291,7 @@ function ActionBar({
         selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
         updateBalance={updateAddress}
+        onClickBack={() => setStage(STAGE_INIT)}
       />
     );
   }
