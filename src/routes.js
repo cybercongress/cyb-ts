@@ -16,4 +16,7 @@ export const routes = {
   hfr: {
     path: '/hfr',
   },
+  gift: {
+    path: '/gift',
+  },
 };

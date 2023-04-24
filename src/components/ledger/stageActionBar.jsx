@@ -615,12 +615,8 @@ export function TextProposal({
         <Text color="#fff">{addrProposer}</Text> */}
           <Pane marginY={10} width="100%">
             <Text color="#fff">title</Text>
-            <input
+            <Input
               value={valueTitle}
-              style={{
-                height: 42,
-                width: '100%',
-              }}
               onChange={onChangeInputTitle}
               placeholder="title"
             />
@@ -635,17 +631,19 @@ export function TextProposal({
           </Pane>
           <Pane width="100%">
             <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
-            <input
+            <InputNumber
               value={valueDeposit}
-              style={{
-                height: 42,
-                width: '100%',
-              }}
               onChange={onChangeInputDeposit}
               placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             />
           </Pane>
-          <Button marginTop={25} onClick={onClickBtn}>
+          <Button
+            style={{
+              marginTop: 25,
+            }}
+            disabled={!valueTitle || !valueDescription || !valueDeposit}
+            onClick={onClickBtn}
+          >
             Create Governance
           </Button>
         </Pane>
@@ -854,18 +852,15 @@ export function Cyberlink({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          // width: '100%',
         }}
       >
-        <button
-          type="button"
-          className="btn-disabled"
+        <Button
           onClick={onClickBtn}
-          style={{ height: 42, maxWidth: '200px' }}
+          style={{ maxWidth: '200px' }}
           disabled={disabledBtn}
         >
           {T.actionBar.link.cyberIt}
-        </button>
+        </Button>
       </div>
     </ActionBar>
   );

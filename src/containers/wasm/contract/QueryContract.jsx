@@ -3,6 +3,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { JsonView } from '../ui/ui';
 import styles from './stylesQueryContract.scss';
 import { JSONInputCard } from './InstantiationContract';
+import Button from 'src/components/btnGrd';
 
 const queryPlaceholder = {
   balance: { address: 'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3' },
@@ -34,6 +35,7 @@ function QueryContract({ contractAddress }) {
 
   const runQuery = async () => {
     if (!queryClient || !queryObject.result) {
+      setError('Some error');
       return;
     }
 
@@ -58,17 +60,12 @@ function QueryContract({ contractAddress }) {
         height="200px"
       />
 
-      <button
-        type="button"
-        className="btn btn-primary"
-        style={{
-          cursor: queryClient && queryObject.result ? 'pointer' : 'not-allowed',
-        }}
+      <Button
         onClick={runQuery}
-        disabled={!queryObject?.result}
+        disabled={!queryClient || !queryObject?.result}
       >
         Run query
-      </button>
+      </Button>
 
       {queryResponse.result && (
         <div className={styles.containerQueryContractMessage}>
@@ -76,7 +73,7 @@ function QueryContract({ contractAddress }) {
           <JsonView src={JSON.parse(queryResponse.result)} />
         </div>
       )}
-      {error !== null && (
+      {error && (
         <div className={styles.containerQueryContractMessage}>
           <span className="text-danger" title="The contract query error">
             {error}

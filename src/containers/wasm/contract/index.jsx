@@ -177,16 +177,19 @@ function ContractPage() {
       >
         <div className={styles.containerContractPageContainerTitle}>
           <div className={styles.containerContractPageContainerTitleTitle}>
-            Contract {trimString(contractAddress, 12)}
+            Contract: {trimString(contractAddress, 12)}
           </div>
           <div className={styles.containerContractPageContainerTitleBalance}>
             Balance: {formatNumber(parseFloat(balance.amount))}
             {balance.denom && (
-              <DenomArr
-                onlyImg
-                marginContainer="0px 0px 0px 3px"
-                denomValue={balance.denom}
-              />
+              <>
+                &nbsp;
+                <DenomArr
+                  onlyImg
+                  marginContainer="0px 0px 0px 3px"
+                  denomValue={balance.denom}
+                />
+              </>
             )}
           </div>
         </div>

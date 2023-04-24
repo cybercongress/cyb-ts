@@ -7,6 +7,8 @@ import { JsonView, LinkTx } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
+import { Input } from 'src/components';
+import Button from 'src/components/btnGrd';
 
 const executePlaceholder = {
   transfer: {
@@ -24,7 +26,7 @@ const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-function ExecuteContract({ contractAddress }) {
+function ExecuteContract({ contractAddress }: { contractAddress: string }) {
   const { signer, signingClient } = useSigningClient();
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState(null);
@@ -108,28 +110,21 @@ function ExecuteContract({ contractAddress }) {
       <div className={styles.containerExecuteContractInputContainer}>
         <div className={styles.containerExecuteContractInputContainerItem}>
           <span>Memo</span>
-          <input
-            className="form-control"
+          <Input
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
           />
         </div>
       </div>
 
-      {executing ? (
-        <button type="button" className="btn btn-primary" disabled>
-          Executing...
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={executeContract}
-          disabled={!msgObject.result || !signer}
-        >
-          Execute contract
-        </button>
-      )}
+      <Button
+        pending={executing}
+        pendingText="Executing"
+        onClick={executeContract}
+        disabled={!msgObject.result || !signer}
+      >
+        Execute contract
+      </Button>
 
       {executeResponse.result && (
         <div className={styles.containerExecuteContractResult}>
@@ -145,7 +140,7 @@ function ExecuteContract({ contractAddress }) {
         </div>
       )}
 
-      {error !== null && (
+      {error && (
         <div className={styles.containerExecuteContractResult}>
           <div>{error}</div>
         </div>

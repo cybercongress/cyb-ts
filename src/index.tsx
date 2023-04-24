@@ -88,33 +88,42 @@ if (container === null) {
 
 const root = createRoot(container);
 
+// for Storybook, WIP
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <Provider store={store}>
+      <IpfsProvider>
+        <NetworksProvider>
+          <SdkQueryClientProvider>
+            <SigningClientProvider>
+              <QueryClientProvider client={queryClient}>
+                <IbcDenomProvider>
+                  <WebsocketsProvider>
+                    <DataProvider>
+                      <ApolloProvider client={client}>
+                        <DeviceProvider>
+                          <ErrorBoundary fallback={<ErrorScreen />}>
+                            {children}
+                          </ErrorBoundary>
+                        </DeviceProvider>
+                      </ApolloProvider>
+                    </DataProvider>
+                  </WebsocketsProvider>
+                </IbcDenomProvider>
+              </QueryClientProvider>
+            </SigningClientProvider>
+          </SdkQueryClientProvider>
+        </NetworksProvider>
+      </IpfsProvider>
+    </Provider>
+  );
+}
+
 root.render(
-  <Provider store={store}>
-    <IpfsProvider>
-      <NetworksProvider>
-        <SdkQueryClientProvider>
-          <SigningClientProvider>
-            <QueryClientProvider client={queryClient}>
-              <IbcDenomProvider>
-                <WebsocketsProvider>
-                  <DataProvider>
-                    <ApolloProvider client={client}>
-                      <DeviceProvider>
-                        <ErrorBoundary fallback={<ErrorScreen />}>
-                          <>
-                            <AppRouter />
-                            <ReactQueryDevtools />
-                          </>
-                        </ErrorBoundary>
-                      </DeviceProvider>
-                    </ApolloProvider>
-                  </DataProvider>
-                </WebsocketsProvider>
-              </IbcDenomProvider>
-            </QueryClientProvider>
-          </SigningClientProvider>
-        </SdkQueryClientProvider>
-      </NetworksProvider>
-    </IpfsProvider>
-  </Provider>
+  <Providers>
+    <>
+      <AppRouter />
+      <ReactQueryDevtools />
+    </>
+  </Providers>
 );

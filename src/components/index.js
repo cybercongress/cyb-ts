@@ -40,12 +40,14 @@ import Particle from './particle';
 import SearchItem from './SearchItem/searchItem';
 import { Input, InputNumber } from './Input';
 import Select, { OptionSelect } from './Select';
-import BtnGrd from './btnGrd';
+import Button from './btnGrd';
 import ContainerGradient, {
   ContainerGradientText,
 } from './containerGradient/ContainerGradient';
 import MainContainer from './MainContainer';
 import ButtonIcon from './ButtonIcon';
+
+const BtnGrd = Button;
 
 // eslint-disable-next-line import/no-unused-modules
 export {
@@ -93,6 +95,7 @@ export {
   Select,
   OptionSelect,
   BtnGrd,
+  Button,
   ContainerGradient,
   ContainerGradientText,
   MainContainer,
