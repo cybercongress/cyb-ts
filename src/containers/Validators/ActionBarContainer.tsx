@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
+import Button from 'src/components/btnGrd';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -19,7 +20,6 @@ import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import Button from 'src/components/btnGrd';
 
 const {
   STAGE_INIT,
@@ -455,12 +455,13 @@ function ActionBarContainer({
             balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
               <Pane>
                 <Button
-                  onClick={() => handleHistory('/hfr')}
-                  text="Investmint"
+                  link="/hfr"
                   style={{
                     marginRight: 15,
                   }}
-                />
+                >
+                  Investmint
+                </Button>
                 yor free H to get A and V
               </Pane>
             )}
@@ -475,8 +476,9 @@ function ActionBarContainer({
                   marginLeft: 15,
                 }}
                 onClick={claimRewards}
-                text="Claim rewards"
-              />
+              >
+                Claim rewards
+              </Button>
             </Pane>
           )}
         </Pane>

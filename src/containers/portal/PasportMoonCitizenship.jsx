@@ -165,7 +165,7 @@ function PasportMoonCitizenship({ defaultAccount }) {
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>
-          <Button text="check gift" link={routes.gift.path} />
+          <Button link={routes.gift.path}>check gift</Button>
         </ActionBarSteps>
       )}
       {Math.floor(appStep) !== STEP_INFO.STATE_INIT &&
