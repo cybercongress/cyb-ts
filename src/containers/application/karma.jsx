@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../utils/utils';
 import styles from './styles.scss';
+import { Tooltip } from 'src/components';
 
 const KARMA_ICON = '🔮';
 
@@ -64,20 +65,26 @@ function Karma({ address }) {
   const { data } = useGetKarma(address);
 
   const karmaNumber = useMemo(() => {
-    if (data && data !== null) {
-      const value = formatKarma(data);
-
-      return (
-        <>
-          {formatNumber(value.number)} {value.prefix}
-        </>
-      );
+    if (!data) {
+      return null;
     }
 
-    return null;
+    const value = formatKarma(data);
+
+    return (
+      <>
+        {formatNumber(value.number)} {value.prefix}
+      </>
+    );
   }, [data]);
 
-  return <div className={styles.containerKarma}>{karmaNumber}</div>;
+  return (
+    <div className={styles.containerKarma}>
+      <Tooltip tooltip="Karma measure the brightness of cyberlinks and particles created by you">
+        {karmaNumber}
+      </Tooltip>
+    </div>
+  );
 }
 
 export default Karma;
