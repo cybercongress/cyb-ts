@@ -112,7 +112,7 @@ function Carousel({
 
   return (
     <div
-      className={styles.carousel}
+      className={cx(styles.carousel, disableMode && styles.disableMode)}
       id="containerCarousel"
       style={{
         height: heightSlide || '40px',

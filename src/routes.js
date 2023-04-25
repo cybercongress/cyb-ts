@@ -19,4 +19,7 @@ export const routes = {
   gift: {
     path: '/gift',
   },
+  ipfs: {
+    path: '/ipfs',
+  },
 };

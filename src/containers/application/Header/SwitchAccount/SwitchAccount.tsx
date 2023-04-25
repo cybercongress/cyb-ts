@@ -135,6 +135,7 @@ function SwitchAccount() {
         })
       );
       dispatch(setAccounts(accountsPocket));
+      setControlledVisible(false);
       localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }
   };

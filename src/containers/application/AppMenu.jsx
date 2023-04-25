@@ -1,5 +1,3 @@
-import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
-
 import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
@@ -179,7 +177,6 @@ function AppMenu({ addressActive }) {
       }}
     >
       <Bookmarks items={itemsMenu(addressActive)} />
-      <ReportLinkContainer />
     </div>
   );
 }

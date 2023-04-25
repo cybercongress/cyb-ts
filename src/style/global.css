@@ -5,18 +5,16 @@
   font-style: normal;
 }
 
+html {
+  font-family: 'Play';
+}
+
 body {
   padding: 0;
   overflow-x: hidden;
   background-color: #000000;
   color: #fff;
   margin: 0 auto;
-}
-
-html {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  font-family: 'Play';
 }
 
 .rjsf fieldset {

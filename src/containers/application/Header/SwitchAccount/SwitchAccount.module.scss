@@ -19,6 +19,7 @@
 
 .tooltipContainerRight {
   position: absolute;
+  right: 0px !important;
   // top: unset !important;
   top: 90px !important;
   left: unset !important;
@@ -36,12 +37,12 @@
 .containerSwichAccountList {
   display: flex;
   flex-direction: column;
-  background: #0000008c;
   // padding-right: 15px;
   width: 300px;
   padding-bottom: 15px;
   opacity: 0;
   transition: 0.2s;
+  background: #0000008c;
   backdrop-filter: blur(7px);
 
   &entering {

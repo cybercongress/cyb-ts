@@ -61,6 +61,12 @@ $color-border-lamp-white: #e2e2e2;
   overflow-x: hidden;
   height: 40px;
 
+  &.disableMode {
+    .slide {
+      cursor: unset !important;
+    }
+  }
+
   .slidesContainer {
     height: 100%;
     // overflow: hidden;
