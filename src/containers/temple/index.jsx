@@ -81,6 +81,7 @@ function Temple({ defaultAccount }) {
 
         <ContainerGradientText
           userStyleContent={{ padding: 0, paddingTop: 30 }}
+          status="green"
         >
           <PlayBanerContent />
 

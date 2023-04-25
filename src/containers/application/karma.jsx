@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../utils/utils';
+import styles from './styles.scss';
 
 const KARMA_ICON = '🔮';
 
@@ -76,7 +77,7 @@ function Karma({ address }) {
     return null;
   }, [data]);
 
-  return <div style={{ color: '#fff' }}>{karmaNumber}</div>;
+  return <div className={styles.containerKarma}>{karmaNumber}</div>;
 }
 
 export default Karma;

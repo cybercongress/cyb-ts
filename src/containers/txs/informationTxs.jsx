@@ -90,7 +90,7 @@ function InformationTxs({ data, messageError, ...props }) {
         </Text>
       }
       {...props}
-      styleLampContent={!data.status ? 'red' : 'blue'}
+      styleLampContent={!data.status ? 'red' : 'green'}
       txs={
         !data.status
           ? { rawLog: messageError, status: !data.status ? 'error' : '' }

@@ -170,10 +170,17 @@ const itemsMenu = (address) => {
 
 function AppMenu({ addressActive }) {
   return (
-    <MenuContainer>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+      }}
+    >
       <Bookmarks items={itemsMenu(addressActive)} />
       <ReportLinkContainer />
-    </MenuContainer>
+    </div>
   );
 }
 
