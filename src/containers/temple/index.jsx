@@ -54,7 +54,7 @@ const itemCarousel1 = [
       </div>
     ),
   },
-  { title: <div className={styles.itemCarousel}>🟣 spase-pussy</div> },
+  { title: <div className={styles.itemCarousel}>🟣 space-pussy</div> },
 ];
 
 function Temple({ defaultAccount }) {
