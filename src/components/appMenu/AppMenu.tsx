@@ -5,7 +5,6 @@ import styles from './AppMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
 
-
 // recheck types
 interface SubItem {
   name: string;

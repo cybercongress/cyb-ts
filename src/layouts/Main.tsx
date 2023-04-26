@@ -12,7 +12,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = pocket;
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [openMenu, setOpenMenu] = useState(false);
+  const [openMenu, setOpenMenu] = useState(true);
 
   return (
     <div>
