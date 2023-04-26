@@ -1,8 +1,9 @@
 import { create } from 'ipfs-core';
-import { IPFS } from 'kubo-rpc-client/types';
+import type { AppIPFS } from './ipfs';
+
 import configIpfs from './configIpfs';
 
-let node: null | IPFS = null;
+let node: null | AppIPFS = null;
 
 export async function init() {
   if (node !== null) {

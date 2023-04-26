@@ -1,4 +1,5 @@
 import QueueManager from './QueueManager';
+import { QueueStrategy } from './QueueStrategy';
 
 import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
@@ -51,13 +52,17 @@ const getPromise = (
 
 describe('QueueManager', () => {
   let queueManager: QueueManager<string>;
-
-  beforeEach(() => {
-    queueManager = new QueueManager<string>({
+  const strategy = new QueueStrategy(
+    {
       db: { timeout: 300, maxConcurrentExecutions: 2 },
       node: { timeout: 300, maxConcurrentExecutions: 2 },
       gateway: { timeout: 300, maxConcurrentExecutions: 2 },
-    });
+    },
+    ['db', 'node', 'gateway']
+  );
+
+  beforeEach(() => {
+    queueManager = new QueueManager<string>(strategy);
   });
 
   it('should keep in pending items thats is out of maxConcurrentExecutions', () => {

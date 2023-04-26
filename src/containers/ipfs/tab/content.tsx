@@ -56,7 +56,7 @@ type ContentTabProps = {
 function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
   const { node: nodeIpfs } = useIpfs();
   const [gatewayUrl, setGatewayUrl] = useState<string | undefined>(undefined);
-  console.log('----contentIpfs ContentTab', contentIpfs);
+
   useEffect(() => {
     if (!nodeIpfs) {
       const response = getIpfsUserGatewanAndNodeType();

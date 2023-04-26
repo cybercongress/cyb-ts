@@ -3,6 +3,10 @@ import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 export type CallBackFuncStatus = (a: string) => void;
 
+export type NodeType = 'external' | 'embedded';
+
+export type AppIPFS = IPFS & { nodeType: NodeType };
+
 export type IPFSMaybe = IPFS | null;
 
 type IPFSNodeType = 'emdedded' | 'external';

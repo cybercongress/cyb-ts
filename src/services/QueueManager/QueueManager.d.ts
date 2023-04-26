@@ -18,6 +18,12 @@ type QueueSource = IpfsContentSource;
 
 export type QueueSettings = Record<QueueSource, QueueSourceSettings>;
 
+export interface IQueueStrategy {
+  settings: QueueSettings;
+  order: QueueSource[];
+  getNextSource(source: QueueSource): QueueSource | undefined;
+}
+
 export type QueueStats = {
   status: QueueItemStatus;
   count: number;

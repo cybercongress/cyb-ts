@@ -13,7 +13,7 @@ import {
 import * as R from 'ramda';
 
 import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
-import { IPFS } from 'ipfs-core-types';
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -24,22 +24,37 @@ import type {
   QueueItemOptions,
   QueueStats,
   QueueSource,
-  QueueSettings,
 } from './QueueManager.d';
+
+import { QueueStrategy } from './QueueStrategy';
+
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 
-const defaultQueueSettings: QueueSettings = {
-  db: { timeout: 5000, maxConcurrentExecutions: 25 },
-  node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-  gateway: { timeout: 5000, maxConcurrentExecutions: 3 },
+const strategies = {
+  external: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 25 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      gateway: { timeout: 15000, maxConcurrentExecutions: 5 },
+    },
+    ['db', 'node', 'gateway']
+  ),
+  embedded: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 25 },
+      gateway: { timeout: 15000, maxConcurrentExecutions: 5 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+    },
+    ['db', 'gateway', 'node']
+  ),
 };
 
 class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueItem<T>[]>([]);
 
-  private node: IPFS | undefined = undefined;
+  private node: AppIPFS | undefined = undefined;
 
-  private settings: QueueSettings;
+  private strategy: QueueStrategy;
 
   private executing: Record<QueueSource, number> = {
     db: 0,
@@ -47,8 +62,15 @@ class QueueManager<T> {
     gateway: 0,
   };
 
-  public setNode(node: IPFS) {
+  private switchStrategy(strategy: QueueStrategy): void {
+    this.strategy = strategy;
+  }
+
+  public setNode(node: AppIPFS) {
+    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
+
     this.node = node;
+    this.switchStrategy(strategies[node.nodeType]);
   }
 
   private getItemBySourceAndPriority(queue: QueueItem<T>[]) {
@@ -57,7 +79,7 @@ class QueueManager<T> {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [queueSource, items] of Object.entries(queueByPending)) {
-      const settings = this.settings[queueSource];
+      const settings = this.strategy.settings[queueSource];
 
       if (this.executing[queueSource] < settings.maxConcurrentExecutions) {
         // TODO: just find one with max priority
@@ -70,7 +92,9 @@ class QueueManager<T> {
 
   private fetchData$(item: QueueItem<T>) {
     const { cid, source, controller } = item;
-    const settings = this.settings[source];
+    const settings = this.strategy.settings[source];
+    // console.log('---fetchData', source, this.strategy);
+
     return promiseToObservable(() => {
       // fetch by item source
       return fetchIpfsContent<T>(cid, source, {
@@ -111,8 +135,8 @@ class QueueManager<T> {
     );
   }
 
-  constructor(settings: QueueSettings = defaultQueueSettings) {
-    this.settings = settings;
+  constructor(strategy: QueueStrategy = strategies.embedded) {
+    this.strategy = strategy;
     this.queue$
       .pipe(
         // tap((queue) => console.log('---tap', queue)),
@@ -149,10 +173,9 @@ class QueueManager<T> {
         // console.log('------error', item, status, source, result);
 
         // Retry -> (next sources) or -> next
-        if (source === 'db') {
-          this.switchSourceAndNext(item, 'node');
-        } else if (source === 'node') {
-          this.switchSourceAndNext(item, 'gateway');
+        const nextSource = this.strategy.getNextSource(source);
+        if (nextSource) {
+          this.switchSourceAndNext(item, nextSource);
         } else {
           this.removeAndNext(item.cid);
         }
@@ -184,7 +207,7 @@ class QueueManager<T> {
     const item: QueueItem<T> = {
       cid,
       callback,
-      source: 'db', // initial method to fetch
+      source: this.strategy.order[0], // initial method to fetch
       status: 'pending',
       ...options,
     };

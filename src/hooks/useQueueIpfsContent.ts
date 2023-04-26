@@ -3,7 +3,11 @@ import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
 import { IPFS } from 'ipfs-core-types';
 import { useIpfs } from 'src/contexts/ipfs';
 
-import { IPFSContentMaybe, IpfsContentSource } from '../utils/ipfs/ipfs';
+import {
+  AppIPFS,
+  IPFSContentMaybe,
+  IpfsContentSource,
+} from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
 
@@ -26,7 +30,7 @@ function useQueueIpfsContent(
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
-  const prevNodeRef = useRef<IPFS | undefined>();
+  const prevNodeRef = useRef<AppIPFS | undefined>();
   const { node } = useIpfs();
 
   useEffect(() => {
@@ -42,11 +46,11 @@ function useQueueIpfsContent(
         setContent(result);
       }
     };
+
     if (node) {
       if (prevNodeRef.current !== node) {
         queueManager.setNode(node);
       }
-      const controller = new AbortController();
 
       queueManager.enqueue(cid, callback, {
         parent: parentId,

@@ -47,9 +47,6 @@ const configIpfs = (): Options => ({
         Enabled: true,
       },
     },
-    Peering: {
-      Peers: null,
-    },
     Bootstrap: [
       '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
       '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
@@ -67,8 +64,6 @@ const configIpfs = (): Options => ({
         LowWater: 50,
       },
       DisableNatPortMap: false,
-      EnableAutoRelay: false,
-      EnableRelayHop: false,
     },
     Routing: {
       Type: 'dhtclient',
