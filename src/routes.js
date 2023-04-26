@@ -22,4 +22,10 @@ export const routes = {
   ipfs: {
     path: '/ipfs',
   },
+  citizenship: {
+    path: '/citizenship',
+  },
+  robot: {
+    path: '/robot',
+  },
 };
