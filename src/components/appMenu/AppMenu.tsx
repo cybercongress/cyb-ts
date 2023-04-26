@@ -26,18 +26,14 @@ interface Props {
   onClick: () => void;
 }
 
-function Items({ item, selected }: Props) {
+function Items({ item, selected, onClick }: Props) {
   return (
     <Link
       to={item.to}
       className={cx(styles.bookmarks__item, { [styles.active]: selected })}
+      onClick={onClick}
     >
-      <Pane
-        display="flex"
-        paddingY={5}
-        alignItems="center"
-        key={item.name}
-      >
+      <Pane display="flex" paddingY={5} alignItems="center" key={item.name}>
         <div
           style={{
             display: 'grid',
@@ -89,16 +85,16 @@ const renderSubItems = (subItems, location, onClickSubItem) => {
 
 // eslint-disable-next-line import/prefer-default-export
 export function Bookmarks({ items }) {
-  const [selectedItem, setSelectedItem] = useState('');
-  const [selectedItemSub, setSelectedItemSub] = useState('');
+  const [selectedItem, setSelectedItem] = useState<string>('');
+  const [selectedItemSub, setSelectedItemSub] = useState<string>('');
   const location = useLocation();
 
-  const onClickItem = (itemKey) => {
+  const onClickItem = (itemKey: string) => {
     setSelectedItem(itemKey);
     setSelectedItemSub('');
   };
 
-  const onClickSubItem = (itemKey) => {
+  const onClickSubItem = (itemKey: string) => {
     setSelectedItemSub(itemKey);
   };
 
@@ -108,7 +104,7 @@ export function Bookmarks({ items }) {
 
   return (
     <div className={styles.bookmarks}>
-      {items.map((item) => {
+      {items.map((item: Item) => {
         const key = uuidv4();
         return (
           <div key={key}>
