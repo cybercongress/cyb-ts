@@ -381,11 +381,6 @@ input:active {
   color: #3ab793;
 }
 
-.trigger {
-  width: 100%;
-  display: flex;
-}
-
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -577,4 +572,3 @@ input:focus:-ms-input-placeholder {
   padding-top: 3px !important;
   overflow: hidden !important;
 }
-

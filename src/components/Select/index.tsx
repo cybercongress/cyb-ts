@@ -3,11 +3,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { useState, useRef } from 'react';
 
+import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 import LinearGradientContainer from './LinearGradientContainer';
-import styles from './styles.scss';
+import styles from './Select.module.scss';
 import { SelectContext, useSelectContext } from './selectContext';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
-import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 
 const classNames = require('classnames');
 
@@ -18,12 +18,7 @@ type OptionSelectProps = {
   bgrImg?: boolean;
 };
 
-export function OptionSelect({
-  text,
-  img,
-  bgrImg,
-  value,
-}: OptionSelectProps) {
+export function OptionSelect({ text, img, bgrImg, value }: OptionSelectProps) {
   const { changeSelectedOption } = useSelectContext();
   return (
     <div
@@ -41,12 +36,18 @@ export function OptionSelect({
   );
 }
 
+type SelectOption = {
+  text: string;
+  value: string;
+};
+
 type SelectProps = {
   valueSelect: $TsFixMe;
   onChangeSelect: $TsFixMeFunc;
   children: React.ReactNode;
   width?: string;
   disabled?: boolean;
+  options?: SelectOption[];
   currentValue: React.ReactNode;
 };
 
@@ -56,6 +57,7 @@ function Select({
   children,
   width,
   disabled,
+  options,
   currentValue,
 }: SelectProps) {
   const selectContainerRef = useRef(null);
@@ -99,7 +101,16 @@ function Select({
           </button>
           {isOpen && (
             <div className={styles.dropDownListContainer}>
-              <div className={styles.dropDownList}>{children}</div>
+              <div className={styles.dropDownList}>
+                {options
+                  ? options.map((option) => {
+                      const { value, text } = option;
+                      return (
+                        <OptionSelect key={value} text={text} value={value} />
+                      );
+                    })
+                  : children}
+              </div>
 
               <div
                 className={classNames(

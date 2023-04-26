@@ -23,8 +23,6 @@ import {
 
 import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
-import { AppContext } from '../../context';
-import { IpfsContext } from 'src/contexts/ipfs';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -40,7 +38,6 @@ const {
 } = LEDGER;
 
 class ActionBarContainer extends Component {
-  static contextType = IpfsContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -84,15 +81,16 @@ class ActionBarContainer extends Component {
 
   generateTxSendKplr = async () => {
     const { contentHash, toSendAddres, toSend } = this.state;
-    const { type, addressSend, follow, tweets, keplr, node } = this.props;
+    const { type, addressSend, follow, tweets, signer, signingClient, node } =
+      this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
       amount: [],
       gas: DEFAULT_GAS_LIMITS.toString(),
     };
 
-    if (keplr !== null) {
-      const [{ address }] = await keplr.signer.getAccounts();
+    if (signer && signingClient) {
+      const [{ address }] = await signer.getAccounts();
       let response = null;
       const msg = [];
       if (type === 'security') {
@@ -113,7 +111,7 @@ class ActionBarContainer extends Component {
               amount: [],
               gas: gasLimitsRewards.toString(),
             };
-            response = await keplr.withdrawAllRewards(
+            response = await signingClient.withdrawAllRewards(
               address,
               validatorAddress,
               feeRewards
@@ -123,11 +121,11 @@ class ActionBarContainer extends Component {
       } else if (type === 'log' && follow) {
         const fromCid = await getPin(node, 'follow');
         const toCid = await getPin(node, addressSend);
-        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'log' && tweets) {
         const fromCid = await getPin(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
-        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else {
         msg.push({
           type: 'cosmos-sdk/MsgSend',

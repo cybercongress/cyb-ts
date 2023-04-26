@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';

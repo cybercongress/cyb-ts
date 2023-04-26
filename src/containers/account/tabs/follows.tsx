@@ -50,18 +50,18 @@ function FollowsTab({
   return (
     <Pane className="contentItem">
       <CommunityEntity
-        title={'Friends'}
-        noItemsTitle={'No Friends'}
+        title="Friends"
+        noItemsTitle="No Friends"
         items={friends}
       />
       <CommunityEntity
-        title={'Following'}
-        noItemsTitle={'No Following'}
+        title="Following"
+        noItemsTitle="No Following"
         items={following}
       />
       <CommunityEntity
-        title={'Followers'}
-        noItemsTitle={'No Followers'}
+        title="Followers"
+        noItemsTitle="No Followers"
         items={followers}
       />
     </Pane>

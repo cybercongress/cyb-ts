@@ -35,7 +35,6 @@ import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
 import TeleportTs from './containers/teleport/index.new';
-import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
@@ -51,7 +50,6 @@ import {
   DashboardPage,
 } from './containers/wasm';
 import Help from './containers/help';
-import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
 import {
   ListNetwork,
@@ -174,7 +172,6 @@ function AppRouter() {
           <Route path="/networks/add" element={<CustomNetwork />} />
           <Route path="/networks/:networkId" element={<DetailsNetwork />} />
           <Route path="/help" element={<Help />} />
-          <Route path="/assets" element={<Assets />} />
           {/* Sigma */}
           <Route path="/sigma" element={<Sigma />} />
           <Route path="/nebula" element={<Nebula />} />

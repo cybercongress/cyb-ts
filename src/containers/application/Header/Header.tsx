@@ -1,4 +1,3 @@
-import React from 'react';
 import SwitchNetwork from './SwitchNetwork/SwitchNetwork';
 import Electricity from '../../home/electricity';
 import SwitchAccount from './SwitchAccount/SwitchAccount';

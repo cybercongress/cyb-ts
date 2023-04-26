@@ -1,6 +1,6 @@
-type AccountKeyType = 'cyber' | 'cosmos';
+type AccountKey = 'cyber' | 'cosmos';
 
-export type AccountValueType = {
+export type AccountValue = {
   keys: string;
   bech32: string;
   name?: string;
@@ -8,11 +8,11 @@ export type AccountValueType = {
   pk?: string;
 };
 
-type AccountType = {
-  [key in AccountKeyType]: AccountValueType;
+type Account = {
+  [key in AccountKey]: AccountValue;
 };
 
-export type DefaultAccountType = {
+export type DefaultAccount = {
   name: string | null;
-  account: AccountType | null;
+  account: Account | null;
 };

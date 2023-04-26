@@ -11,12 +11,17 @@ const CYBERNODE_SWARM_ADDR =
 const connectToSwarm = async (node, address) => {
   const multiaddrSwarm = multiaddr(address);
   console.log(`Connecting to swarm ${address}`);
-  await node.bootstrap.add(multiaddrSwarm);
-  // .then((resp) => console.log('----resp', resp));
+  await node.bootstrap
+    .add(multiaddrSwarm)
+    .then((resp) => console.log('----resp bootstrap', resp));
 
   node?.swarm
     .connect(multiaddrSwarm)
-    .then(() => console.log(`Welcome to swarm ${address} 🐝🐝🐝`))
+    .then((resp) => {
+      console.log(`Welcome to swarm ${address} 🐝🐝🐝`);
+      // node.swarm.peers().then((peers) => console.log('---peeers', peers));
+      console.log('-resp', resp);
+    })
     .catch((err) => {
       console.log(
         'Error object properties:',
@@ -46,8 +51,34 @@ export async function initIpfsClient(opts) {
 
   const instance = await backend.init(opts);
   window.ipfs = instance;
+  // instance.libp2p.addEventListener('peer:discovery', (evt) => {
+  //   // window.discoveredPeers.set(evt.detail.id.toString(), evt.detail)
+  //   // console.log(`Discovered peer ${evt.detail.id.toString()}`);
+  // });
+
+  instance.libp2p.addEventListener('peer:connect', (evt) => {
+    console.log(`Connected to ${evt.detail.remotePeer.toString()}`);
+  });
+  instance.libp2p.addEventListener('peer:disconnect', (evt) => {
+    console.log(`Disconnected from ${evt.detail.remotePeer.toString()}`);
+  });
 
   connectToSwarm(instance, CYBERNODE_SWARM_ADDR);
+  //         '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+  // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+  // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+  connectToSwarm(
+    instance,
+    '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star'
+  );
+  // connectToSwarm(
+  //   instance,
+  //   '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star'
+  // );
+  // connectToSwarm(
+  //   instance,
+  //   '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star'
+  // );
   client = backend;
   return instance;
 }

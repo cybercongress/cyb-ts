@@ -28,7 +28,7 @@ import type {
 } from './QueueManager.d';
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 
-const defaultIpfsSourceSettings: QueueSettings = {
+const defaultQueueSettings: QueueSettings = {
   db: { timeout: 5000, maxConcurrentExecutions: 25 },
   node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
   gateway: { timeout: 5000, maxConcurrentExecutions: 3 },
@@ -51,10 +51,28 @@ class QueueManager<T> {
     this.node = node;
   }
 
-  private getIpfsDataSourceObservable(item: QueueItem<T>) {
+  private getItemBySourceAndPriority(queue: QueueItem<T>[]) {
+    const pendingQueue = queue.filter((i) => i.status === 'pending');
+    const queueByPending = R.groupBy((i) => i.source, pendingQueue);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [queueSource, items] of Object.entries(queueByPending)) {
+      const settings = this.settings[queueSource];
+
+      if (this.executing[queueSource] < settings.maxConcurrentExecutions) {
+        // TODO: just find one with max priority
+        return items.sort((a, b) => (b.priority || 0) - (a.priority || 0))[0];
+      }
+    }
+
+    return undefined;
+  }
+
+  private fetchData$(item: QueueItem<T>) {
     const { cid, source, controller } = item;
     const settings = this.settings[source];
     return promiseToObservable(() => {
+      // fetch by item source
       return fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
@@ -93,23 +111,7 @@ class QueueManager<T> {
     );
   }
 
-  private getItemBySourceAndPriority(queue: QueueItem<T>[]) {
-    const pendingQueue = queue.filter((i) => i.status === 'pending');
-    const queueByPending = R.groupBy((i) => i.source, pendingQueue);
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [queueSource, items] of Object.entries(queueByPending)) {
-      const settings = this.settings[queueSource];
-
-      if (this.executing[queueSource] < settings.maxConcurrentExecutions) {
-        return items.sort((a, b) => (b.priority || 0) - (a.priority || 0))[0];
-      }
-    }
-
-    return undefined;
-  }
-
-  constructor(settings: QueueSettings = defaultIpfsSourceSettings) {
+  constructor(settings: QueueSettings = defaultQueueSettings) {
     this.settings = settings;
     this.queue$
       .pipe(
@@ -119,10 +121,14 @@ class QueueManager<T> {
           if (workItem) {
             const { source, cid, callback } = workItem;
             this.executing[source]++;
+
             workItem.status = 'executing';
             workItem.controller = new AbortController();
+
             callback(cid, 'executing', source);
-            return this.getIpfsDataSourceObservable(workItem);
+
+            // create observable of fetch from datasource
+            return this.fetchData$(workItem);
           }
 
           return EMPTY;
@@ -132,6 +138,8 @@ class QueueManager<T> {
         item.callback(item.cid, status, source, result);
 
         this.executing[source]--;
+
+        // Correct execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);
 
@@ -139,7 +147,8 @@ class QueueManager<T> {
           return;
         }
         // console.log('------error', item, status, source, result);
-        // Process with error
+
+        // Retry -> (next sources) or -> next
         if (source === 'db') {
           this.switchSourceAndNext(item, 'node');
         } else if (source === 'node') {
@@ -155,6 +164,7 @@ class QueueManager<T> {
     this.queue$.next(updatedQueue);
   }
 
+  // reset status and switch to next source
   private switchSourceAndNext(
     item: QueueItem<T>,
     nextSource: QueueSource
@@ -174,7 +184,7 @@ class QueueManager<T> {
     const item: QueueItem<T> = {
       cid,
       callback,
-      source: 'db',
+      source: 'db', // initial method to fetch
       status: 'pending',
       ...options,
     };
@@ -199,7 +209,7 @@ class QueueManager<T> {
     const item = currentQueue.find((item) => item.cid === cid);
     if (item) {
       // If item has no abortController we can just remove it
-      // Otherwise abort should be handled by subscriber
+      // Otherwise abort&keep-to-finalize
       if (!item.controller) {
         this.queue$.next(currentQueue.filter((item) => item.cid !== cid));
       } else {
@@ -213,9 +223,8 @@ class QueueManager<T> {
     const newQueue: QueueItem<T>[] = [];
 
     this.queue$.value.forEach((item) => {
-      // If item parent is different the keep item,
-      // If item managed by abortController abort&keep
-      // Otherwise just skip it
+      // If item managed by abortController abort&keep-to-finalize
+      // Otherwise keep all non-parent items
       if (item.parent !== parent) {
         newQueue.push(item);
       } else if (item.controller) {

@@ -18,7 +18,6 @@ import {
 } from './stream-utils';
 
 import { addDataChunksToIpfsCluster } from './cluster-utils';
-
 import { getIpfsContentFromDb } from './db-utils';
 
 // import RestIpfsNode from './restIpfsNode';
@@ -92,7 +91,7 @@ const fetchIPFSContentFromNode = async (
       default: {
         if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
           const { mime, stream } = await asyncGeneratorToReadableStream(
-            node.cat(path),
+            node.cat(path),node.id()
             (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
           );
           const meta: IPFSContentMeta = {

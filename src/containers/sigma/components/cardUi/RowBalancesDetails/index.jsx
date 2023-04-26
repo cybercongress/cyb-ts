@@ -1,11 +1,11 @@
-import { useState, useMemo, useContext } from 'react';
+import { useState, useMemo } from 'react';
 import { Transition } from 'react-transition-group';
 import { Link } from 'react-router-dom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
 import styles from './styles.scss';
-import { AppContext } from '../../../../../context';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
@@ -13,7 +13,7 @@ import { DenomArr } from '../../../../../components';
 const cx = require('classnames');
 
 function RowBalancesDetails({ balance }) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const [isOpen, setIsOpen] = useState(false);
 
   const onClickBtnArrow = () => {
@@ -37,7 +37,7 @@ function RowBalancesDetails({ balance }) {
     if (balance.total) {
       const { amount, denom } = balance.total;
 
-      const { coinDecimals } = traseDenom(denom);
+      const [{ coinDecimals }] = traseDenom(denom);
 
       return convertAmount(amount, coinDecimals);
     }
@@ -47,10 +47,10 @@ function RowBalancesDetails({ balance }) {
   }, [balance]);
 
   const getTypeDenomKey = (key) => {
-    const { denom } = traseDenom(key);
+    const denom = traseDenom(key);
 
-    if (denom.includes('ibc')) {
-      return replaceSlash(denom);
+    if (denom[0].denom.includes('ibc')) {
+      return replaceSlash(denom[0].denom);
     }
 
     if (key.includes('pool')) {
@@ -59,7 +59,7 @@ function RowBalancesDetails({ balance }) {
       )}`;
     }
 
-    return denom;
+    return denom[0].denom;
   };
 
   const getLinktoSearch = (key) => {

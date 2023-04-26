@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import stylesLinear from './stylesLinear.scss';
+import stylesLinear from './LinearGradientContainer.module.scss';
 
 function LinearGradientContainer() {
   return (

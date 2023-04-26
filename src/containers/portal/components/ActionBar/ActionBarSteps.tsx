@@ -22,7 +22,7 @@ function ActionBarContentText({ children, gridGap, ...props }) {
 }
 
 type ActionBarSteps = {
-  children?: JSX.Element; 
+  children?: JSX.Element;
   btnText?: string;
   disabled?: boolean;
   gridGap?: number;

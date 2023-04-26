@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const initValue = {
   millivolt: 0,
@@ -18,7 +18,7 @@ const getCalculationBalance = (data) => {
 };
 
 function useGetSourceRoutes(addressActive, updateAddressFunc) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [sourceRouted, setSourceRouted] = useState([]);
   const [destinationRoutes, setDestinationRoutes] = useState([]);
   const [sourceEnergy, setSourceEnergy] = useState(initValue);
@@ -28,9 +28,9 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
     const sourceRoutedGet = async () => {
       setSourceRouted([]);
 
-      if (jsCyber && jsCyber !== null && addressActive !== null) {
+      if (queryClient && addressActive !== null) {
         try {
-          const queryResultsourceRoutes = await jsCyber.sourceRoutes(
+          const queryResultsourceRoutes = await queryClient.sourceRoutes(
             addressActive
           );
           if (queryResultsourceRoutes.routes) {
@@ -54,16 +54,16 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [jsCyber, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, updateAddressFunc]);
 
   useEffect(() => {
     const sourceRoutedGet = async () => {
       setSourceEnergy(initValue);
 
-      if (jsCyber && jsCyber !== null && addressActive !== null) {
+      if (queryClient && addressActive !== null) {
         try {
           const queryResultsourceRoutedEnergy =
-            await jsCyber.sourceRoutedEnergy(addressActive);
+            await queryClient.sourceRoutedEnergy(addressActive);
           if (queryResultsourceRoutedEnergy.value) {
             const { value } = queryResultsourceRoutedEnergy;
             const sourceRoutedEnergy = getCalculationBalance(value);
@@ -87,16 +87,15 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [jsCyber, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, updateAddressFunc]);
 
   useEffect(() => {
     setDestinationRoutes([]);
     const sourceRoutedGet = async () => {
-      if (jsCyber && jsCyber !== null && addressActive !== null) {
+      if (queryClient && addressActive !== null) {
         try {
-          const queryResultdestinationRoutes = await jsCyber.destinationRoutes(
-            addressActive
-          );
+          const queryResultdestinationRoutes =
+            await queryClient.destinationRoutes(addressActive);
           if (queryResultdestinationRoutes.routes) {
             queryResultdestinationRoutes.routes.forEach((item, index) => {
               queryResultdestinationRoutes.routes[index].resource = {
@@ -118,15 +117,15 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [jsCyber, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, updateAddressFunc]);
 
   useEffect(() => {
     const sourceRoutedGet = async () => {
       setDestinationEnergy(initValue);
-      if (jsCyber && jsCyber !== null && addressActive !== null) {
+      if (queryClient && addressActive !== null) {
         try {
           const queryResultdestinationRoutedEnergy =
-            await jsCyber.destinationRoutedEnergy(addressActive);
+            await queryClient.destinationRoutedEnergy(addressActive);
           if (queryResultdestinationRoutedEnergy.value) {
             const { value } = queryResultdestinationRoutedEnergy;
             const destinationRoutedEnergy = getCalculationBalance(value);
@@ -150,7 +149,7 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [jsCyber, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, updateAddressFunc]);
 
   return { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy };
 }

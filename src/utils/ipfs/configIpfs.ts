@@ -29,8 +29,8 @@ const configIpfs = (): Options => ({
       Gateway: '/ip4/127.0.0.1/tcp/8080',
       Swarm: [
         '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-        '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
       ],
       Delegates: [
         '/dns4/node0.delegate.ipfs.io/tcp/443/https',
@@ -62,14 +62,10 @@ const configIpfs = (): Options => ({
       Enabled: true,
     },
     Swarm: {
-      AddrFilters: null,
       ConnMgr: {
-        GracePeriod: '300s',
         HighWater: 300,
         LowWater: 50,
-        Type: 'basic',
       },
-      DisableBandwidthMetrics: false,
       DisableNatPortMap: false,
       EnableAutoRelay: false,
       EnableRelayHop: false,

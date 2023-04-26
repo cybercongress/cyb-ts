@@ -1,13 +1,14 @@
-import { useEffect, useContext, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 import ERatio from './eRatio';
 import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
@@ -39,7 +40,8 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { jsCyber, traseDenom } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { traseDenom } = useIbcDenom();
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
@@ -59,8 +61,8 @@ function Mint({ defaultAccount }) {
   useEffect(() => {
     const getBalanceH = async () => {
       let amountHydrogen = 0;
-      if (jsCyber !== null && addressActive !== null) {
-        const responseBalance = await jsCyber.getBalance(
+      if (queryClient && addressActive !== null) {
+        const responseBalance = await queryClient.getBalance(
           addressActive,
           CYBER.DENOM_LIQUID_TOKEN
         );
@@ -71,11 +73,11 @@ function Mint({ defaultAccount }) {
       SetBalanceHydrogen(amountHydrogen);
     };
     getBalanceH();
-  }, [jsCyber, addressActive]);
+  }, [queryClient, addressActive]);
 
   useEffect(() => {
     const getParam = async () => {
-      const responseResourcesParams = await jsCyber.resourcesParams();
+      const responseResourcesParams = await queryClient.resourcesParams();
       if (
         responseResourcesParams.params &&
         Object.keys(responseResourcesParams.params).length > 0
@@ -85,13 +87,13 @@ function Mint({ defaultAccount }) {
         setResourcesParams((item) => ({ ...item, ...params }));
       }
 
-      const responseGetHeight = await jsCyber.getHeight();
+      const responseGetHeight = await queryClient.getHeight();
       if (responseGetHeight > 0) {
         setHeight(responseGetHeight);
       }
     };
     getParam();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -206,7 +208,7 @@ function Mint({ defaultAccount }) {
   const vestedA = useMemo(() => {
     let amountA = 0;
     if (originalVesting.milliampere > 0) {
-      const { coinDecimals } = traseDenom('milliampere');
+      const [{ coinDecimals }] = traseDenom('milliampere');
       const vestedTokensA = new BigNumber(originalVesting.milliampere)
         .minus(vested.milliampere)
         .toNumber();
@@ -219,7 +221,7 @@ function Mint({ defaultAccount }) {
   const vestedV = useMemo(() => {
     let amountV = 0;
     if (originalVesting.millivolt > 0) {
-      const { coinDecimals } = traseDenom('millivolt');
+      const [{ coinDecimals }] = traseDenom('millivolt');
       const vestedTokensA = new BigNumber(originalVesting.millivolt)
         .minus(vested.millivolt)
         .toNumber();
@@ -390,11 +392,7 @@ function Mint({ defaultAccount }) {
           )}
         </div>
 
-        {loadingAuthAccounts ? (
-          <Dots big />
-        ) : (
-          <TableSlots data={slotsData} traseDenom={traseDenom} />
-        )}
+        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
       </main>
       <ActionBar
         value={value}

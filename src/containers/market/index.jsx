@@ -1,19 +1,17 @@
 /* eslint-disable no-await-in-loop */
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import useIpfs from 'src/hooks/useIpfs';
+import { useDevice } from 'src/contexts/device';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
-import { AppContext } from '../../context';
 import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
-import { useDevice } from 'src/contexts/device';
 
 function ContainerGrid({ children }) {
   return (
@@ -59,7 +57,7 @@ const reduceSearchResults = (data, query) => {
 
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
     useGetCybernomics();
@@ -74,14 +72,14 @@ function Market({ defaultAccount }) {
 
   useEffect(() => {
     const getFirstItem = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         setPage(0);
         setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
         const hash = await getIpfsHash(tab);
         setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash, 0);
+        const responseApps = await search(queryClient, hash, 0);
         if (responseApps.result && responseApps.result.length > 0) {
           const dataApps = reduceSearchResults(responseApps.result, tab);
           setResultSearch(dataApps);
@@ -98,13 +96,13 @@ function Market({ defaultAccount }) {
       }
     };
     getFirstItem();
-  }, [jsCyber, tab, update]);
+  }, [queryClient, tab, update]);
 
   const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(jsCyber, keywordHash, page);
+    const data = await search(queryClient, keywordHash, page);
     if (data.result) {
       links = reduceSearchResults(data.result, tab);
     }

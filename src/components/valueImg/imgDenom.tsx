@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 
 import eth from 'images/Ethereum_logo_2014.svg';
 import pool from 'images/gravitydexPool.png';
@@ -34,7 +34,7 @@ const getNativeImg = (text: string) => {
   return nativeImageMap[text.toLowerCase()] || defaultImg;
 };
 
-type ImgDenomProps = {
+export type ImgDenomProps = {
   coinDenom: string;
   marginImg: string;
   size: string | number;

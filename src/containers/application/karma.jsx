@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { useContext, useMemo } from 'react';
-import { AppContext } from '../../context';
+import { useMemo } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../utils/utils';
 
 const KARMA_ICON = '🔮';
@@ -39,13 +39,13 @@ const formatKarma = (value, prefixCustom = PREFIXES) => {
 };
 
 const useGetKarma = (address) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ['karma', address],
     queryFn: async () => {
       try {
-        const response = await jsCyber.karma(address);
+        const response = await queryClient.karma(address);
 
         return response.karma;
       } catch (error) {
@@ -53,7 +53,7 @@ const useGetKarma = (address) => {
         return null;
       }
     },
-    enabled: Boolean(jsCyber && address && address !== null),
+    enabled: Boolean(queryClient && address && address !== null),
   });
 
   return { data };

@@ -1,11 +1,5 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
-import { connect, useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
   useParams,
   createSearchParams,
@@ -14,27 +8,23 @@ import {
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
-import { AppContext } from '../../context';
+import { MainContainer } from 'src/components';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { Option } from 'src/types';
+import usePoolListInterval from 'src/hooks/usePoolListInterval';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
-import { MainContainer } from 'src/components';
 import { TabList } from '../teleport/components';
-import {
-  getBalances,
-  useGetParams,
-  useGetSwapPrice,
-  usePoolListInterval,
-} from '../teleport/hooks';
-import useSdk from 'src/hooks/useSdk';
-import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { getBalances, useGetSwapPrice } from '../teleport/hooks';
 import {
   calculateCounterPairAmount,
   getMyTokenBalanceNumber,
   getPoolToken,
   sortReserveCoinDenoms,
 } from '../teleport/utils';
-import { Option } from 'src/types/common';
 import { MyPoolsT } from '../teleport/type';
 import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
@@ -45,8 +35,8 @@ const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 function Warp() {
-  const { queryClient } = useSdk();
-  const { traseDenom } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { traseDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state) => state.pocket);
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
@@ -57,7 +47,7 @@ function Warp() {
     update
   );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
-  const poolsData = usePoolListInterval();
+  const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
@@ -162,8 +152,8 @@ function Warp() {
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
     if (accountBalances !== null) {
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-      const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
       const validTokensAB =
         Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
@@ -352,9 +342,7 @@ function Warp() {
 
         {/* <TraceTxTable /> */}
       </MainContainer>
-      <ActionBar
-        stateActionBar={stateActionBar}
-      />
+      <ActionBar stateActionBar={stateActionBar} />
     </>
   );
 }

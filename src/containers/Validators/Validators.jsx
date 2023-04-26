@@ -1,22 +1,22 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
-import { AppContext } from '../../context';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { useDevice } from 'src/contexts/device';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { status = 'active' } = useParams();
 
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [updatePage, setUpdatePage] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
@@ -53,23 +53,23 @@ function Validators({ defaultAccount }) {
 
   useEffect(() => {
     const feachPool = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.stakingPool();
+      if (queryClient) {
+        const response = await queryClient.stakingPool();
         if (response.pool.bondedTokens) {
           setBondedTokens(response.pool.bondedTokens);
         }
       }
     };
     feachPool();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     try {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
-        if (addressActive !== null && jsCyber !== null) {
+        if (addressActive !== null && queryClient) {
           const responseDelegatorDelegations =
-            await jsCyber.delegatorDelegations(addressActive.bech32);
+            await queryClient.delegatorDelegations(addressActive.bech32);
           delegationsDataTemp =
             responseDelegatorDelegations.delegationResponses;
         }
@@ -80,7 +80,7 @@ function Validators({ defaultAccount }) {
       console.log(`e`, e);
       setDelegationsData([]);
     }
-  }, [addressActive, jsCyber, updatePage]);
+  }, [addressActive, queryClient, updatePage]);
 
   useEffect(() => {
     if (validators.length > 0 && delegationsData.length > 0) {
@@ -105,7 +105,7 @@ function Validators({ defaultAccount }) {
 
   useEffect(() => {
     const selfDelegation = async () => {
-      if (jsCyber !== null && validatorsData.length > 0) {
+      if (queryClient && validatorsData.length > 0) {
         await asyncForEach(
           Array.from(Array(validatorsData.length).keys()),
           async (item) => {
@@ -114,7 +114,7 @@ function Validators({ defaultAccount }) {
             );
             let shares = 0;
             try {
-              const getSelfDelegation = await jsCyber.delegation(
+              const getSelfDelegation = await queryClient.delegation(
                 delegatorAddress,
                 validatorsData[item].operatorAddress
               );
@@ -141,7 +141,7 @@ function Validators({ defaultAccount }) {
       }
     };
     selfDelegation();
-  }, [validatorsData, jsCyber]);
+  }, [validatorsData, queryClient]);
 
   const selectValidators = (validator, index) => {
     let selectValidator = {};

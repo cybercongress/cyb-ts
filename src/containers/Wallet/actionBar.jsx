@@ -4,6 +4,7 @@ import {
   ActionBar as ActionBarGravity,
   Button,
 } from '@cybercongress/gravity';
+import { useSigningClient } from 'src/contexts/signerClient';
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
 import ActionBarUser from './actionBarUser';
@@ -43,8 +44,6 @@ function ActionBar({
   selectCard,
   selectAccount,
   hoverCard,
-  // actionBar keplr props
-  keplr,
   // actionBar web3
   accountsETH,
   // actionBar tweet
@@ -55,6 +54,7 @@ function ActionBar({
   defaultAccounts,
   defaultAccountsKeys,
 }) {
+  const { signer: keplr } = useSigningClient();
   const [typeActionBar, setTypeActionBar] = useState('');
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
@@ -185,7 +185,6 @@ function ActionBar({
       <ActionBarConnect
         web3={web3}
         accountsETH={accountsETH}
-        keplr={keplr}
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}

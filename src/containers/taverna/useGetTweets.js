@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
+import { useWebsockets } from 'src/websockets/context';
 import db from '../../db';
 import { getFollows, getTweet, getContent } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
@@ -29,36 +30,35 @@ const useGetTweets = (defaultAccount, node = null) => {
   const [loadingTweets, setLoadingTweets] = useState(true);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [addressFollowData, setAddressFollowData] = useState({});
-  const ws = useRef(null);
+  const { cyber } = useWebsockets();
 
   useEffect(() => {
-    ws.current = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
-    ws.current.onopen = () => {
-      console.log('ws opened');
-      ws.current.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query:
-              "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
-          },
-        })
-      );
-    };
-    ws.current.onmessage = (e) => {
-      const message = JSON.parse(e.data);
-      if (message.result && Object.keys(message.result).length > 0) {
-        updateWs(message.result.events);
-      }
-    };
-    ws.current.onclose = () => console.log('ws closed');
-    return () => {
-      ws.current.close();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!cyber?.connected) {
+      return;
+    }
+
+    cyber.sendMessage({
+      jsonrpc: '2.0',
+      method: 'subscribe',
+      id: '0',
+      params: {
+        query:
+          "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
+      },
+    });
+  }, [cyber, cyber?.connected]);
+
+  useEffect(() => {
+    if (!cyber?.message?.result) {
+      return;
+    }
+
+    const { message } = cyber;
+
+    if (Object.keys(message.result).length > 0) {
+      updateWs(message.result.events);
+    }
+  }, [cyber, cyber?.message]);
 
   // useEffect(() => {
   //   const { account } = defaultAccount;
@@ -166,10 +166,16 @@ const useGetTweets = (defaultAccount, node = null) => {
   };
 
   const updateWs = async (data) => {
-    const subject = data['cybermeta.subject'][0];
-    const objectTo = data['cyberlink.objectTo'][0];
+    const subject = data['cybermeta.subject']?.[0];
+    const objectTo = data['cyberlink.objectTo']?.[0];
     const d = new Date();
     const timestamp = dateFormat(d, 'isoUtcDateTime');
+
+    // TODO: filter by type
+    if (!subject || !objectTo) {
+      return;
+    }
+
     if (
       Object.keys(addressFollowData).length > 0 &&
       Object.prototype.hasOwnProperty.call(addressFollowData, subject)

@@ -1,9 +1,9 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tx } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { Registry } from '@cosmjs/proto-signing';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
-import { AppContext } from '../../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber, makeTags, trimString } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import HistoryInfo from './HistoryInfo';
@@ -120,7 +120,7 @@ const getBalance = async (client, contractAddress, setBalance) => {
 };
 
 const useGetInfoContractAddress = (contractAddress, updateFnc) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [instantiationTxHash, setInstantiationTxHash] = useState('');
   const [contractCodeHistory, setContractCodeHistory] = useState([]);
   const [details, setDetails] = useState({});
@@ -128,27 +128,27 @@ const useGetInfoContractAddress = (contractAddress, updateFnc) => {
   const [balance, setBalance] = useState({ denom: '', amount: 0 });
 
   useEffect(() => {
-    if (jsCyber !== null) {
-      getAndSetDetails(jsCyber, contractAddress, setDetails);
+    if (queryClient) {
+      getAndSetDetails(queryClient, contractAddress, setDetails);
       getAndSetContractCodeHistory(
-        jsCyber,
+        queryClient,
         contractAddress,
         setContractCodeHistory
       );
       getAndSetInstantiationTxHash(
-        jsCyber,
+        queryClient,
         contractAddress,
         setInstantiationTxHash
       );
-      getBalance(jsCyber, contractAddress, setBalance);
+      getBalance(queryClient, contractAddress, setBalance);
     }
-  }, [jsCyber, contractAddress]);
+  }, [queryClient, contractAddress]);
 
   useEffect(() => {
-    if (jsCyber !== null) {
-      getExecutions(jsCyber, contractAddress, setExecutions);
+    if (queryClient) {
+      getExecutions(queryClient, contractAddress, setExecutions);
     }
-  }, [jsCyber, contractAddress, updateFnc]);
+  }, [queryClient, contractAddress, updateFnc]);
 
   return {
     balance,

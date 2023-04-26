@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { reduceBalances } from '../../../utils/utils';
 import { authAccounts } from '../../../utils/search/utils';
 import { CYBER } from '../../../utils/config';
@@ -41,15 +41,15 @@ const getVestingPeriodsData = (data, startTime) => {
 };
 
 function useGetBalances(addressActive, updateAddress) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
   const [liquidBalances, setLiquidBalances] = useState(null);
 
   useEffect(() => {
     const getAllBalances = async () => {
-      if (jsCyber !== null && addressActive !== null) {
-        const getAllBalancesPromise = await jsCyber.getAllBalances(
+      if (queryClient && addressActive !== null) {
+        const getAllBalancesPromise = await queryClient.getAllBalances(
           addressActive.bech32
         );
         const balances = reduceBalances(getAllBalancesPromise);
@@ -57,7 +57,7 @@ function useGetBalances(addressActive, updateAddress) {
       }
     };
     getAllBalances();
-  }, [addressActive, jsCyber, updateAddress]);
+  }, [addressActive, queryClient, updateAddress]);
 
   useEffect(() => {
     const getAuth = async () => {

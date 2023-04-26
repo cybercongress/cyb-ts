@@ -1,12 +1,12 @@
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect } from 'react';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { getKeplr } from '../../ibc/useSetupIbc';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { getKeplr } from 'src/utils/keplrUtils';
 import { CYBER } from '../../../utils/config';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
-import useSigningClient from 'src/hooks/useSigningClient';
 
 function useSetupIbcClient(denom, network) {
   const { signingClient } = useSigningClient();

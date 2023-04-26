@@ -17,7 +17,7 @@ export const formatNumber = (number, toFixed) => {
   if (toFixed) {
     formatted = +formatted.toFixed(toFixed);
   }
-  // debugger;
+
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 

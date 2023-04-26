@@ -1,17 +1,22 @@
 import BigNumber from 'bignumber.js';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../../context';
-import { convertAmount, reduceBalances } from '../../../utils/utils';
+import { useEffect, useState } from 'react';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import { Option } from 'src/types/common';
-import useSdk from 'src/hooks/useSdk';
-import { OptionNeverArray, PoolsWithAssetsType, PoolsWithAssetsCapType, AssetsType } from '../type';
-
-
+import { Option } from 'src/types';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
+import {
+  OptionNeverArray,
+  PoolsWithAssetsType,
+  PoolsWithAssetsCapType,
+  AssetsType,
+} from '../type';
+import { convertAmount, reduceBalances } from '../../../utils/utils';
 
 const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
-  const { queryClient } = useSdk();
-  const { traseDenom, marketData } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { marketData } = useAppData();
+  const { traseDenom } = useIbcDenom();
   const [poolsBal, setPoolsBal] = useState<
     OptionNeverArray<PoolsWithAssetsType[]>
   >([]);
@@ -51,7 +56,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
           const dataReduceBalances = reduceBalances(getBalancePromise);
           Object.keys(dataReduceBalances).forEach((key) => {
             const amount = new BigNumber(dataReduceBalances[key]).toNumber();
-            const { coinDecimals } = traseDenom(key);
+            const [{ coinDecimals }] = traseDenom(key);
             const reduceAmoun = convertAmount(amount, coinDecimals);
             assetsData[key] = reduceAmoun;
           });

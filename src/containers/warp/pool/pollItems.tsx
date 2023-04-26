@@ -1,14 +1,16 @@
-import { useMemo, useContext } from 'react';
+import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import { DenomArr } from '../../../components';
 import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
-import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
 import { replaceSlash } from '../../../utils/utils';
 
-function PoolItemsList({ assets, token, ...props }) {
-  const { marketData, traseDenom } = useContext(AppContext);
+function PoolItemsList({ assets, token }) {
+  const { traseDenom } = useIbcDenom();
+  const { marketData } = useAppData();
 
   const amounToken = useMemo(() => {
     if (assets && Object.prototype.hasOwnProperty.call(assets, token)) {
@@ -39,8 +41,8 @@ function PoolItemsList({ assets, token, ...props }) {
     return 0;
   }, [amounToken, usePrice]);
 
-  const getTypeDenomKey = (key) => {
-    const { denom } = traseDenom(key);
+  const getTypeDenomKey = (key: string) => {
+    const [{ denom }] = traseDenom(key);
 
     if (denom.includes('ibc')) {
       return replaceSlash(denom);

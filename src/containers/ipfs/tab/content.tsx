@@ -5,9 +5,9 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
-import useIpfs from 'src/hooks/useIpfs';
-import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
+import { useIpfs } from 'src/contexts/ipfs';
 
+import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
@@ -49,14 +49,14 @@ const getIpfsUserGatewanAndNodeType = () => {
 };
 
 type ContentTabProps = {
-  contentDetails: IPFSContentDetails;
+  contentIpfs: IPFSContent;
   cid: string;
 };
 
-function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
+function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
   const { node: nodeIpfs } = useIpfs();
   const [gatewayUrl, setGatewayUrl] = useState<string | undefined>(undefined);
-  // console.log('----contentIpfs ContentTab', contentDetails);
+  console.log('----contentIpfs ContentTab', contentIpfs);
   useEffect(() => {
     if (!nodeIpfs) {
       const response = getIpfsUserGatewanAndNodeType();
@@ -71,11 +71,7 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
       return <div>...</div>;
     }
 
-    if (!contentDetails) {
-      return <div>{`Impossible to load ${cid}`}</div>;
-    }
-
-    if (contentDetails.gateway) {
+    if (contentIpfs?.details?.gateway) {
       return (
         <>
           {/* <Pane
@@ -113,29 +109,29 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
         </>
       );
     }
-    if (contentDetails.type === 'image') {
+    if (contentIpfs.details?.type === 'image') {
       return (
         <img
           alt="content"
           id="imgIpfs"
           style={{ objectFit: 'contain', width: '100%' }}
-          src={contentDetails.content}
+          src={contentIpfs.details?.content}
         />
       );
     }
-    if (contentDetails.type === 'text') {
+    if (contentIpfs.details?.type === 'text') {
       return (
         <div
           style={{
             textAlign: 'center',
           }}
         >
-          {contentDetails.text || cid}
+          {contentIpfs.details?.text || contentIpfs.cid.toString()}
         </div>
       );
     }
 
-    if (contentDetails.type === 'link') {
+    if (contentIpfs.details?.type === 'link') {
       return (
         <div
           style={{
@@ -145,8 +141,8 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
             minHeight: '100px',
           }}
         >
-          <LinkWindow to={contentDetails.link}>
-            {contentDetails.content}
+          <LinkWindow to={contentIpfs.details?.link}>
+            {contentIpfs.details?.content}
           </LinkWindow>
 
           <Iframe
@@ -155,7 +151,7 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
             // loading={<Dots />}
             id="iframeCid"
             className="iframe-SearchItem"
-            src={contentDetails.content}
+            src={contentIpfs.details?.content}
             style={{
               backgroundColor: '#fff',
             }}
@@ -197,7 +193,7 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
           // plugins={[toc]}
           // escapeHtml={false}
         >
-          {contentDetails.content}
+          {contentIpfs.details?.content}
         </ReactMarkdown>
       </div>
     );

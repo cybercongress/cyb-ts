@@ -38,9 +38,7 @@ function SelectTeleport({
         ) : valueSelect === '' ? (
           <OptionSelect
             text="choose"
-            img={
-              <DenomArr denomValue="choose" onlyImg />
-            }
+            img={<DenomArr denomValue="choose" onlyImg />}
             value=""
           />
         ) : (

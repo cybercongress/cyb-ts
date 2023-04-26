@@ -1,19 +1,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useState, useContext } from 'react';
-import { AppContext } from '../../../../context';
+import { useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import JsonSchemaParse from './JsonSchemaParse';
 
 function RenderAbiQuery({ contractAddress, schema }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [contractResponse, setContractResponse] = useState(null);
 
   const runQuery = async ({ formData }, key) => {
-    if (jsCyber === null || !formData) {
+    if (!queryClient || !formData) {
       return;
     }
     setContractResponse(null);
     try {
-      const queryResponseResult = await jsCyber.queryContractSmart(
+      const queryResponseResult = await queryClient.queryContractSmart(
         contractAddress,
         formData
       );

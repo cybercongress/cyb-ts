@@ -22,7 +22,6 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
@@ -153,16 +152,14 @@ class ActionBarContainer extends Component {
 
   generateTx = async () => {
     try {
-      const { keplr } = this.props;
+      const { signer, signingClient } = this.props;
       const { fromCid, toCid, addressLocalStor } = this.state;
 
       this.setState({
         stage: STAGE_KEPLR_APPROVE,
       });
-      if (keplr !== null) {
-        const chainId = CYBER.CHAIN_ID;
-        await window.keplr.enable(chainId);
-        const { address } = (await keplr.signer.getAccounts())[0];
+      if (signer && signingClient) {
+        const { address } = (await signer.getAccounts())[0];
 
         console.log('address', address);
         if (addressLocalStor !== null && addressLocalStor.address === address) {
@@ -170,7 +167,12 @@ class ActionBarContainer extends Component {
             amount: [],
             gas: DEFAULT_GAS_LIMITS.toString(),
           };
-          const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+          const result = await signingClient.cyberlink(
+            address,
+            fromCid,
+            toCid,
+            fee
+          );
           if (result.code === 0) {
             const hash = result.transactionHash;
             console.log('hash :>> ', hash);

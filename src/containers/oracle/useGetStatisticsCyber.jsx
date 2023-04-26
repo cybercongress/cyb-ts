@@ -1,8 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 function useGetStatisticsCyber() {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [knowledge, setKnowledge] = useState({
     linksCount: 0,
     cidsCount: 0,
@@ -14,11 +14,11 @@ function useGetStatisticsCyber() {
 
   useEffect(() => {
     const getStatisticsBrain = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         const totalCyb = {};
         let stakedCyb = 0;
 
-        const responseGraphStats = await jsCyber.graphStats();
+        const responseGraphStats = await queryClient.graphStats();
         const { particles, cyberlinks } = responseGraphStats;
         setKnowledge((item) => ({
           ...item,
@@ -26,7 +26,7 @@ function useGetStatisticsCyber() {
           cidsCount: particles,
         }));
 
-        const responseHeroesActive = await jsCyber.validators(
+        const responseHeroesActive = await queryClient.validators(
           'BOND_STATUS_BONDED'
         );
         const { validators } = responseHeroesActive;
@@ -35,7 +35,7 @@ function useGetStatisticsCyber() {
           activeValidatorsCount: validators.length,
         }));
 
-        const datagetTotalSupply = await jsCyber.totalSupply();
+        const datagetTotalSupply = await queryClient.totalSupply();
         if (Object.keys(datagetTotalSupply).length > 0) {
           datagetTotalSupply.forEach((item) => {
             totalCyb[item.denom] = parseFloat(item.amount);
@@ -53,7 +53,7 @@ function useGetStatisticsCyber() {
       }
     };
     getStatisticsBrain();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   return {
     knowledge,

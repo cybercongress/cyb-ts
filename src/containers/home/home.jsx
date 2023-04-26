@@ -1,13 +1,13 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import BigNumber from 'bignumber.js';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useAppData } from 'src/contexts/appData';
 import { CardStatisics, Dots } from '../../components';
-import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import Txs from '../brain/tx';
 import { formatCurrency, formatNumber } from '../../utils/utils';
@@ -58,8 +58,9 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-function Home({ block }) {
-  const { jsCyber } = useContext(AppContext);
+function Home() {
+  const { block } = useAppData();
+  const queryClient = useQueryClient();
   const [entropy, setEntropy] = useState(0);
   const [entropyLoader, setEntropyLoader] = useState(true);
   const [memory, setMemory] = useState(0);
@@ -81,10 +82,10 @@ function Home({ block }) {
   useEffect(() => {
     const cheeckStateRelease = async () => {
       // setLoading(true);
-      if (jsCyber !== null) {
+      if (queryClient) {
         try {
-          const queryResponseResultState = await getStateGift(jsCyber);
-          const respnseNumTokens = await getNumTokens(jsCyber);
+          const queryResponseResultState = await getStateGift(queryClient);
+          const respnseNumTokens = await getNumTokens(queryClient);
           if (respnseNumTokens !== null && respnseNumTokens.count) {
             setCounCitizenshipst(parseFloat(respnseNumTokens.count));
           }
@@ -102,7 +103,7 @@ function Home({ block }) {
       }
     };
     cheeckStateRelease();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     getEntropy();
@@ -130,8 +131,8 @@ function Home({ block }) {
     try {
       const getGraphStats = async () => {
         setMemoryLoader(true);
-        if (jsCyber !== null) {
-          const responseGraphStats = await jsCyber.graphStats();
+        if (queryClient) {
+          const responseGraphStats = await queryClient.graphStats();
           const { particles, cyberlinks } = responseGraphStats;
           const bits = 40 * parseFloat(cyberlinks) + 40 * parseFloat(particles);
           setMemory(bits);
@@ -144,7 +145,7 @@ function Home({ block }) {
       setMemory(0);
       setMemoryLoader(false);
     }
-  }, [jsCyber]);
+  }, [queryClient]);
 
   const useCountContracts = useMemo(() => {
     if (data && data !== null && data.contracts_aggregate.aggregate) {
@@ -255,10 +256,4 @@ function Home({ block }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    block: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(Home);
+export default Home;

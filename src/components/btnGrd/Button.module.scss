@@ -1,0 +1,112 @@
+$color-text: #36d6ae;
+
+@mixin linear-gradient-green($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 237, 235, 0) 0%,
+    rgba(0, 237, 235, 6) 100%
+  );
+}
+
+@mixin ion-lamp {
+  content: '';
+  position: absolute;
+  background: #ffffff;
+  border: 1.5px solid #ffffff;
+  box-sizing: border-box;
+  top: 0;
+  bottom: 0;
+}
+
+@mixin styleGradientPseudoEl {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 50px;
+  top: 0;
+  bottom: 0;
+  opacity: 20%;
+}
+
+.containerBtnGrd {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: $color-text;
+  position: relative;
+  height: 52px;
+  min-width: 217px;
+  font-size: 18px;
+
+  &:hover {
+    cursor: pointer;
+    color: #40ecc1;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: #777;
+  }
+
+  &:disabled:hover {
+    color: #777;
+  }
+
+  &::before {
+    @include ion-lamp;
+    left: 0;
+    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+    border-radius: 2px 0px 0px 2px;
+    animation: blink 1s infinite;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+    opacity: 1;
+  }
+
+  &::after {
+    right: 0;
+    @include ion-lamp;
+    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+    border-radius: 0px 2px 2px 0px;
+    animation: blink 1s infinite;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.GradientContainer {
+  transform-style: preserve-3d;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+
+  &::before {
+    @include styleGradientPseudoEl;
+    @include linear-gradient-green(-90deg);
+    left: 3px;
+    transform-origin: left;
+    transform: perspective(100px) rotateY(55deg);
+  }
+
+  &::after {
+    @include styleGradientPseudoEl;
+    @include linear-gradient-green(90deg);
+    right: 3px;
+    transform-origin: right;
+    transform: perspective(100px) rotateY(-55deg);
+  }
+}

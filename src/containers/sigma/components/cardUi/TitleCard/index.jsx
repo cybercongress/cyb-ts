@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import useIpfs from 'src/hooks/useIpfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';

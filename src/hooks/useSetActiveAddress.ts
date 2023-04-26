@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
-import { DefaultAccountType, AccountValueType } from 'src/types/defaultAccount';
+import { DefaultAccount, AccountValue } from 'src/types/defaultAccount';
 
-function useSetActiveAddress(defaultAccount: DefaultAccountType) {
-  const [addressActive, setAddressActive] = useState<AccountValueType | null>(
-    null
-  );
+function useSetActiveAddress(defaultAccount: DefaultAccount) {
+  const [addressActive, setAddressActive] = useState<AccountValue | null>(null);
 
   useEffect(() => {
     const { account } = defaultAccount;
-    let addressPocket: AccountValueType | null = null;
+    let addressPocket: AccountValue | null = null;
     if (account && account.cyber) {
       const { keys, bech32, name } = account.cyber;
       addressPocket = {
