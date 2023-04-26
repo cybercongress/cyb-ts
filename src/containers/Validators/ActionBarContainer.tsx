@@ -500,7 +500,7 @@ function ActionBarContainer({
           {validators.description.moniker}
         </Text>
         {unStake && (
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               style={{
                 margin: '0 25px',
