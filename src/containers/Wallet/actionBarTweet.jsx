@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { Component, useContext } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import {
   ConnectLadger,
@@ -26,6 +26,7 @@ import {
 } from '../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
+import Button from 'src/components/btnGrd';
 
 const {
   MEMO,

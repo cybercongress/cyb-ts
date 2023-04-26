@@ -73,7 +73,7 @@
     &::after {
       opacity: 11%;
       @include styleGradientPseudoEl;
-      @include linear-gradient-blue(90deg);
+      @include linear-gradient-green(90deg);
       right: 0;
     }
   }
@@ -208,7 +208,7 @@
       &::before {
         opacity: 11%;
         @include styleGradientPseudoEl;
-        @include linear-gradient-blue(-90deg);
+        @include linear-gradient-green(-90deg);
         left: 0;
         z-index: -1;
       }
@@ -266,14 +266,14 @@
       @include ion-lamp;
       left: 0;
       // border-radius: 2px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
     }
 
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
     }
   }
 
@@ -281,7 +281,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
 
@@ -289,49 +289,49 @@
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
     }
   }
   &Green {
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
     }
   }
   &Blue {
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
     }
   }
   &Yellow {
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
     }
   }
 
@@ -339,14 +339,14 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
     }
   }
 
@@ -354,14 +354,14 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(246, 43, 253, 0.5);
+      box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
       // border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(246, 43, 253, 0.5);
+      box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
     }
   }
 }
@@ -373,7 +373,7 @@
     &::before {
       @include ion-lamp;
       border-radius: 2px 0px 0px 0px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
       left: 0;
     }
   }
@@ -381,7 +381,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
   }
@@ -389,7 +389,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
   }
@@ -397,7 +397,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
   }
@@ -405,7 +405,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
   }
@@ -413,7 +413,7 @@
     &::before {
       @include ion-lamp;
       // border-radius: 0px 0px 0px 2px;
-      box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
   }
@@ -426,7 +426,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
       right: 0;
     }
   }
@@ -434,7 +434,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
       right: 0;
     }
   }
@@ -442,7 +442,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       right: 0;
     }
   }
@@ -450,7 +450,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       right: 0;
     }
   }
@@ -458,7 +458,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
       right: 0;
     }
   }
@@ -466,7 +466,7 @@
     &::after {
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
-      box-shadow: 3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       right: 0;
     }
   }
@@ -558,7 +558,7 @@
   &Primary {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-blue(90deg);
+      @include linear-gradient-green(90deg);
       right: 0;
       opacity: 11%;
     }

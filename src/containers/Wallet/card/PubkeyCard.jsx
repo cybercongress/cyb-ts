@@ -25,8 +25,9 @@ import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import deleteIcon from '../../../image/trash-outline.svg';
 import { routes } from '../../../routes';
+import EULnetworkInfo from './EULnetworkInfo/EULnetworkInfo';
 
-function RowBalance({ children, ...props }) {
+export function RowBalance({ children, ...props }) {
   return (
     <Pane display="flex" justifyContent="space-between" width="100%" {...props}>
       {children}
@@ -34,7 +35,7 @@ function RowBalance({ children, ...props }) {
   );
 }
 
-function FormatNumberTokens({ text, value, ...props }) {
+export function FormatNumberTokens({ text, value, ...props }) {
   const { traseDenom } = useIbcDenom();
   const [{ coinDecimals }] = traseDenom(text);
   return (
@@ -75,7 +76,7 @@ function FormatNumberTokens({ text, value, ...props }) {
 //   return amountReduce;
 // };
 
-function DetailsBalance({
+export function DetailsBalance({
   total,
   divisor = COSMOS.DIVISOR_ATOM,
   currency = CYBER.DENOM_CYBER,
@@ -319,7 +320,13 @@ function CosmosAddressInfo({
 //   );
 // }
 
-function BalanceToken({ onClickOpen, open, balanceToken, currency, address }) {
+export function BalanceToken({
+  onClickOpen,
+  open,
+  balanceToken,
+  currency,
+  address,
+}) {
   return (
     <>
       {' '}
@@ -349,93 +356,6 @@ function BalanceToken({ onClickOpen, open, balanceToken, currency, address }) {
         />
       )}
     </>
-  );
-}
-
-function EULnetworkInfo({
-  totalCyber,
-  address,
-  loading,
-  openEul,
-  onClickDeleteAddress,
-  network,
-  balanceToken,
-  ...props
-}) {
-  return (
-    <ContainerAddressInfo>
-      <Address
-        network={network}
-        address={address}
-        onClickDeleteAddress={onClickDeleteAddress}
-        addressLink={
-          <Link to={`/network/bostrom/contract/${address.bech32}`}>
-            <div>{trimString(address.bech32, 9, 3)}</div>
-          </Link>
-        }
-      />
-      <Pane flexDirection="column" display="flex" alignItems="flex-end">
-        {loading ? (
-          <span>
-            <Dots /> CYB
-          </span>
-        ) : (
-          <>
-            <RowBalance
-              {...props}
-              marginBottom={4}
-              className="cosmos-address-balance"
-            >
-              {openEul ? (
-                <div>total</div>
-              ) : (
-                <div className="details-balance">details</div>
-              )}
-              {/* <NumberCurrency
-                amount={totalCyber.total}
-                currencyNetwork={CYBER.DENOM_CYBER}
-              /> */}
-              <FormatNumberTokens
-                value={totalCyber.total}
-                text={CYBER.DENOM_CYBER}
-              />
-              {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
-            </RowBalance>
-            {openEul && (
-              <DetailsBalance
-                total={totalCyber}
-                address={address.bech32}
-                paddingLeft={15}
-              />
-            )}
-
-            {Object.keys(balanceToken).map((key) => {
-              // console.log('Object', Object.keys(balanceToken[key].length))
-              if (Object.keys(balanceToken[key]).length > 0) {
-                return (
-                  <BalanceToken
-                    key={key}
-                    onClickOpen={props[`onClickOpen${key}`]}
-                    open={props[`open${key}`]}
-                    balanceToken={balanceToken[key]}
-                    currency={key}
-                    address={address}
-                  />
-                );
-              }
-              return (
-                <FormatNumberTokens
-                  key={key}
-                  value={balanceToken[key]}
-                  text={key}
-                  marginBottom={4}
-                />
-              );
-            })}
-          </>
-        )}
-      </Pane>
-    </ContainerAddressInfo>
   );
 }
 

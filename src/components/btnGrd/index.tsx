@@ -2,17 +2,12 @@ import cx from 'classnames';
 import { $TsFixMe } from 'src/types/tsfix';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
+import { Link } from 'react-router-dom';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
 
-function GradientContainer({
-  disabled,
-  children,
-}: {
-  children: React.ReactNode;
-  disabled: boolean;
-}) {
+function GradientContainer({ children }: { children: React.ReactNode }) {
   return <div className={styles.GradientContainer}>{children}</div>;
 }
 
@@ -36,19 +31,25 @@ const playAudioClick = () => {
 
 export type Props = {
   disabled?: boolean;
-  text: string | JSX.Element;
+  text?: string | JSX.Element;
   img?: $TsFixMe;
   pending?: boolean;
   className?: $TsFixMe;
-  onClick: () => void;
+  pendingText?: string;
+  children?: React.ReactNode;
+  link?: string;
+  onClick?: () => void;
 };
 
-function BtnGrd({
+function Button({
   disabled,
   text,
   img,
+  children,
+  pendingText,
   pending,
   onClick,
+  link,
   className,
   ...props
 }: Props) {
@@ -76,39 +77,51 @@ function BtnGrd({
   // }, []);
 
   function handleClick() {
-    if (onClick) {
-      onClick();
-    }
+    onClick?.();
 
     playAudioClick();
   }
 
+  let Component: HTMLButtonElement | Link = 'button';
+  let componentProps: object = {
+    type: 'button',
+  };
+
+  // if http: will need to add <a> tag
+  if (link && !link.includes('http:')) {
+    Component = Link;
+    componentProps = {
+      to: link,
+    };
+  }
+
   return (
-    <button
+    <Component
       type="button"
       id="BtnGrd"
       onClick={handleClick}
       className={cx(styles.containerBtnGrd, className)}
       disabled={disabled || pending}
       {...props}
+      {...componentProps}
     >
-      <GradientContainer disabled={disabled}>
+      <GradientContainer>
         {pending ? (
           <>
-            pending
+            {pendingText || 'pending'}
             <Dots />
           </>
         ) : (
           <>
-            {text}
+            {text || children}
             {img && (
               <img style={{ width: 20, height: 20 }} alt="img" src={img} />
             )}
           </>
         )}
       </GradientContainer>
-    </button>
+    </Component>
   );
 }
 
-export default BtnGrd;
+export default Button;

@@ -1,5 +1,6 @@
-import { Pane, Button, Input } from '@cybercongress/gravity';
+import { Pane, Input } from '@cybercongress/gravity';
 import { STEPS } from '../utils';
+import Button from 'src/components/btnGrd';
 
 const styleLog = {
   width: '720px',

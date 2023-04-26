@@ -17,7 +17,8 @@ import { steps } from './citizenship/utils';
 import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
-import { BtnGrd } from '../../components';
+import { Button } from '../../components';
+import { routes } from 'src/routes';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -164,7 +165,7 @@ function PasportMoonCitizenship({ defaultAccount }) {
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>
-          <BtnGrd text="check gift" onClick={() => navigate('/gift')} />
+          <Button link={routes.gift.path}>Check gift</Button>
         </ActionBarSteps>
       )}
       {Math.floor(appStep) !== STEP_INFO.STATE_INIT &&

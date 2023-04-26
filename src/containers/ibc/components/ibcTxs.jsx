@@ -1,4 +1,5 @@
-import { Button, Input } from '@cybercongress/gravity';
+import { Input } from '@cybercongress/gravity';
+import Button from 'src/components/btnGrd';
 
 function IbcTxs({ ...props }) {
   const {
@@ -32,11 +33,7 @@ function IbcTxs({ ...props }) {
         style={{ marginBottom: '20px' }}
       />
 
-      <Button
-        disabled={disabledSend}
-        onClick={() => onClickSend(id)}
-        type="button"
-      >
+      <Button disabled={disabledSend} onClick={() => onClickSend(id)}>
         send
       </Button>
     </div>

@@ -16,4 +16,16 @@ export const routes = {
   hfr: {
     path: '/hfr',
   },
+  gift: {
+    path: '/gift',
+  },
+  ipfs: {
+    path: '/ipfs',
+  },
+  citizenship: {
+    path: '/citizenship',
+  },
+  robot: {
+    path: '/robot',
+  },
 };

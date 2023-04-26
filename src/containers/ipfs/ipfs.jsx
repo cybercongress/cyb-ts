@@ -101,7 +101,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
           marginBottom: '50px',
         }}
       >
-        <div style={{ fontSize: '20px' }}>impossible load content</div>
+        <div style={{ fontSize: '20px' }}>IPFS content is not available</div>
       </div>
     );
   }

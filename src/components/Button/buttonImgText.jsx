@@ -1,8 +1,8 @@
-import { Button } from '@cybercongress/gravity';
+import Button from '../btnGrd';
 
 function ButtonImgText({ img, text = 'Send', ...props }) {
   return (
-    <Button marginX={10} {...props}>
+    <Button style={{ margin: '0 10px' }} {...props}>
       {text}{' '}
       {img && (
         <img
