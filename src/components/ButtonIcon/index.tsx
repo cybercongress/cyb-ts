@@ -1,15 +1,15 @@
 import { Pane } from '@cybercongress/gravity';
 import { $TsFixMe } from 'src/types/tsfix';
-import Tooltip from '../tooltip/tooltip';
+import Tooltip, { TooltipProps } from '../tooltip/tooltip';
 
 export type Props = {
   img: $TsFixMe;
   active?: boolean;
   disabled?: boolean;
-  text?: string | JSX.Element;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  text?: TooltipProps['tooltip'];
+  placement?: TooltipProps['placement'];
   styleContainer?: $TsFixMe;
-  onClick?: () => void;
+  onClick: () => void;
 };
 
 function ButtonIcon({

@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
+import { routes } from 'src/routes';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -39,22 +40,6 @@ const TXTYPE_DELEGATE = 0;
 const TXTYPE_UNDELEGATE = 1;
 const TXTYPE_REDELEGATE = 2;
 const LEDGER_GENERATION = 23;
-
-function ActionBarContentText({ children, ...props }) {
-  return (
-    <Pane
-      display="flex"
-      fontSize="20px"
-      justifyContent="center"
-      alignItems="center"
-      flexGrow={1}
-      marginRight="15px"
-      {...props}
-    >
-      {children}
-    </Pane>
-  );
-}
 
 function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
@@ -230,7 +215,7 @@ function ActionBarContainer({
           const response = await signingClient.delegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            coin(amount, CYBER.DENOM_CYBER),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -258,7 +243,7 @@ function ActionBarContainer({
           const response = await signingClient.undelegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            coin(amount, CYBER.DENOM_CYBER),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -286,7 +271,7 @@ function ActionBarContainer({
             addressKeplr,
             validatorAddres,
             valueSelect,
-            coin(parseFloat(amount), CYBER.DENOM_CYBER),
+            coin(amount, CYBER.DENOM_CYBER),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -455,7 +440,7 @@ function ActionBarContainer({
             balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
               <Pane>
                 <Button
-                  link="/hfr"
+                  link={routes.hfr.path}
                   style={{
                     marginRight: 15,
                   }}
