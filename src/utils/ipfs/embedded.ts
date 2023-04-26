@@ -16,6 +16,7 @@ export async function init() {
       // await deleteStore(path);
       console.time('IPFS Started');
       node = await create(configIpfs());
+      node.nodeType = 'embedded';
       console.timeEnd('IPFS Started');
     } catch (error) {
       console.error('IPFS init error:', error);
