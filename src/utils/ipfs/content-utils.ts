@@ -4,6 +4,11 @@ import { IPFSPath } from 'kubo-rpc-client/types';
 import { IPFSContentDetails } from './ipfs';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
+function createObjectURL(rawData: Uint8Array, type: string) {
+  const blob = new Blob([rawData], { type });
+  return URL.createObjectURL(blob);
+}
+
 // eslint-disable-next-line import/no-unused-modules
 export const chunksToBlob = (
   chunks: Array<Uint8Array>,
@@ -31,8 +36,7 @@ export const parseRawIpfsData = (
     ) {
       if (isSvg(Buffer.from(rawData))) {
         response.type = 'image';
-        const blob = new Blob([rawData], { type: 'image/svg+xml' });
-        response.content = URL.createObjectURL(blob); // file
+        response.content = createObjectURL(rawData, 'image/svg+xml'); // file
       } else {
         const dataBase64 = uint8ArrayToAsciiString(rawData);
         // TODO: search can bel longer for 42???!
@@ -58,15 +62,12 @@ export const parseRawIpfsData = (
         }
       }
     } else if (mime.indexOf('image') !== -1) {
-      const blob = new Blob([rawData], { type: mime });
-      response.content = URL.createObjectURL(blob); // file
+      response.content = createObjectURL(rawData, mime); // file
       response.type = 'image';
       response.gateway = false;
     } else if (mime.indexOf('application/pdf') !== -1) {
-      const blob = new Blob([rawData], { type: 'application/pdf' });
-      // const file = `data:${mime};base64,${uint8ArrayToAsciiString(rawData)}`;
       response.type = 'pdf';
-      response.content = URL.createObjectURL(blob); // file
+      response.content = createObjectURL(rawData, mime); // file
       response.gateway = true; // ???
     }
 
