@@ -46,6 +46,7 @@ import ContainerGradient, {
 } from './containerGradient/ContainerGradient';
 import MainContainer from './MainContainer';
 import ButtonIcon from './ButtonIcon';
+import Loading from './ui/Loading';
 
 const BtnGrd = Button;
 
@@ -103,7 +104,7 @@ export {
 
 export { Dots } from './ui/Dots';
 export { ContainerCard, Card, CardStatisics } from './statistics/item';
-export { Loading } from './ui/loading';
+export { Loading };
 export { FormatNumber } from './formatNumber/formatNumber';
 export { Copy } from './ui/copy';
 export { Votes, IconStatus, Deposit, Item } from './governance/governance';

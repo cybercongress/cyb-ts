@@ -45,14 +45,11 @@ function Rumors({ accountUser }) {
     return `Error! ${error.message}`;
   }
 
-  console.log('data wss', dataTxs);
   if (dataTxs) {
     return (
       <div>
         {loading ? (
-          <div className="container-loading">
-            <Loading />
-          </div>
+          <Loading />
         ) : (
           <TableTxs
             accountUser={accountUser}

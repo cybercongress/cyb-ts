@@ -1,6 +1,19 @@
 import { Text } from '@cybercongress/gravity';
 
-function TextTable({ children, fontSize, color, display, ...props }) {
+interface TextTableProps {
+  children: React.ReactNode;
+  fontSize?: number;
+  color?: string;
+  display?: string;
+}
+
+function TextTable({
+  children,
+  fontSize,
+  color,
+  display,
+  ...props
+}: TextTableProps) {
   return (
     <Text
       fontSize={`${fontSize || 16}px`}

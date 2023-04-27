@@ -58,6 +58,7 @@
     "default-param-last": "off",
     "react/prop-types": "off",
     "no-console": "off",
+    "no-nested-ternary": "off",
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
