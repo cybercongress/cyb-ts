@@ -1,5 +1,5 @@
 // TODO: refactor needed
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
@@ -12,8 +12,10 @@ import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 import { getResponseResult } from 'src/utils/ipfs/stream-utils';
 
 import SearchItem from '../SearchItem/searchItem';
+import { CYBER } from '../../utils/config';
 
 import { getRankGrade } from '../../utils/search/utils';
+import styles from './contentItem.module.scss';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -29,7 +31,6 @@ const getContentDetails = async (
 ): Promise<IPFSContentDetails> => {
   if (content?.result) {
     const rawData = await getResponseResult(content.result);
-
     const details = parseRawIpfsData(rawData, content.meta?.mime, cid);
 
     return details;
@@ -61,7 +62,12 @@ function ContentItem({
 
   return (
     <Link className={className} to={`/ipfs/${cid}`}>
-      {/* DEBUG! MIME: {JSON.stringify(content?.meta)} {cid} {source} */}
+      {/* status !== 'completed' && */}
+      {
+        <div
+          className={styles.contentLoadInfo}
+        >{`[source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} status: ${status}] cid: ${cid}`}</div>
+      }
       <SearchItem
         key={cid}
         textPreview={
@@ -100,7 +106,9 @@ function ContentItem({
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            url={ipfsDataDetails?.content}
+            // url={ipfsDataDetails?.content}
+            // TODO: USE loaded content
+            url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
           />
         )}
       </SearchItem>

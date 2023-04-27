@@ -37,18 +37,18 @@ function timeSince(timeMS) {
 function DiscussionTab({ data, mobile, parent }) {
   if (data && data.length > 0) {
     const d = new Date();
+    const dataToRender = data.filter(
+      (item) => item.tx.value.msg[0].type === 'cyber/MsgCyberlink'
+    );
     return (
       <div className="container-contentItem" style={{ width: '100%' }}>
-        {data.map((item, i) => {
+        {dataToRender.map((item, i) => {
           let timeAgoInMS = 0;
           const time = Date.parse(d) - Date.parse(item.timestamp);
           if (time > 0) {
             timeAgoInMS = time;
           }
-          let cid = '';
-          if (item.tx.value.msg[0].type === 'cyber/MsgCyberlink') {
-            cid = item.tx.value.msg[0].value.links[0].to;
-          }
+          const cid = item.tx.value.msg[0].value.links[0].to;
 
           return (
             <Pane

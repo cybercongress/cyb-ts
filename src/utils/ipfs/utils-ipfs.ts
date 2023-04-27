@@ -24,6 +24,7 @@ import { CYBER } from '../config';
 
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb } from './db-utils';
+import all from 'it-all';
 
 // import RestIpfsNode from './restIpfsNode';
 
@@ -101,11 +102,12 @@ const fetchIPFSContentFromNode = async (
         return { cid, availableDownload: true };
       }
       default: {
-        if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
+        if (!(!stat.size || stat.size < FILE_SIZE_DOWNLOAD)) {
           const { mime, result: stream } = await asyncGeneratorToReadableStream(
-            node.cat(path),
+            node.cat(path, { signal }),
             (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
           );
+
           const meta: IPFSContentMeta = {
             type: stat.type,
             size: stat.size || -1,

@@ -35,7 +35,7 @@ type Props = {
     value: number;
   };
   children: React.ReactNode;
-  textPreview?: string;
+  textPreview?: React.ReactNode;
 };
 
 function SearchItem({ status, grade, children, textPreview }: Props) {
