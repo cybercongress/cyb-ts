@@ -31,10 +31,8 @@ export const parseRawIpfsData = (
     ) {
       if (isSvg(Buffer.from(rawData))) {
         response.type = 'image';
-        response.content = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-          rawData,
-          'base64'
-        )}`;
+        const blob = new Blob([rawData], { type: 'image/svg+xml' });
+        response.content = URL.createObjectURL(blob); // file
       } else {
         const dataBase64 = uint8ArrayToAsciiString(rawData);
         // TODO: search can bel longer for 42???!
@@ -60,10 +58,9 @@ export const parseRawIpfsData = (
         }
       }
     } else if (mime.indexOf('image') !== -1) {
-      const imgBase64 = uint8ArrayToAsciiString(rawData, 'base64');
-      const file = `data:${mime};base64,${imgBase64}`;
+      const blob = new Blob([rawData], { type: mime });
+      response.content = URL.createObjectURL(blob); // file
       response.type = 'image';
-      response.content = file;
       response.gateway = false;
     } else if (mime.indexOf('application/pdf') !== -1) {
       const blob = new Blob([rawData], { type: 'application/pdf' });
