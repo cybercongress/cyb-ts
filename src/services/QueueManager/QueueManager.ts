@@ -34,7 +34,7 @@ const strategies = {
   external: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 100 },
-      node: { timeout: 10 * 1000, maxConcurrentExecutions: 21 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
       gateway: { timeout: 11000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']

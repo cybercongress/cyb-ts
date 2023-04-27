@@ -102,11 +102,13 @@ const fetchIPFSContentFromNode = async (
         return { cid, availableDownload: true };
       }
       default: {
-        if (!(!stat.size || stat.size < FILE_SIZE_DOWNLOAD)) {
+        if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
           const { mime, result: stream } = await asyncGeneratorToReadableStream(
             node.cat(path, { signal }),
             (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
           );
+
+          console.log('------ fetch node', mime, stream);
 
           const meta: IPFSContentMeta = {
             type: stat.type,
