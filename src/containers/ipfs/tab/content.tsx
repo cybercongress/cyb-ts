@@ -151,7 +151,7 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
             // loading={<Dots />}
             id="iframeCid"
             className="iframe-SearchItem"
-            src={contentDetails?.content}
+            url={contentDetails?.content}
             style={{
               backgroundColor: '#fff',
             }}
