@@ -137,38 +137,28 @@ export async function toReadableStreamWithMime(
   // Read the first chunk from the stream
   const reader = firstChunkStream.getReader();
   const { done, value } = await reader.read();
-
   const mime = value ? await getMimeFromUint8Array(value) : undefined;
 
   if (done) {
     reader.releaseLock();
     callback && value?.length && callback([value], mime);
-
     return { mime, result: value || new Uint8Array() };
   }
 
-  let firstChunk: Uint8Array | null = value;
+  // let firstChunk: Uint8Array | null = value;
 
   const modifiedStream = new ReadableStream<Uint8Array>({
     async pull(controller) {
-      if (firstChunk !== null) {
-        // If the first chunk not processed yet, push it to the new stream
-        controller.enqueue(firstChunk);
-        callback && chunks.push(firstChunk);
-
-        firstChunk = null;
+      const restReader = restOfStream.getReader();
+      const { done, value } = await restReader.read();
+      if (done) {
+        controller.close();
+        callback && callback(chunks, mime);
       } else {
-        const restReader = restOfStream.getReader();
-        const { done, value } = await restReader.read();
-        if (done) {
-          controller.close();
-          callback && callback(chunks, mime);
-        } else {
-          controller.enqueue(value);
-          callback && chunks.push(value);
-        }
-        restReader.releaseLock();
+        controller.enqueue(value);
+        callback && chunks.push(value);
       }
+      restReader.releaseLock();
     },
     cancel() {
       firstChunkStream.cancel();
