@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
-import { IPFS } from 'ipfs-core-types';
 import { useIpfs } from 'src/contexts/ipfs';
 
-import {
-  AppIPFS,
-  IPFSContentMaybe,
-  IpfsContentSource,
-} from '../utils/ipfs/ipfs';
+import { IPFSContentMaybe, IpfsContentSource } from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
 
@@ -30,7 +25,7 @@ function useQueueIpfsContent(
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
-  const prevNodeRef = useRef<AppIPFS | undefined>();
+  const [prevNodeType, setPrevNodeType] = useState<string | undefined>();
   const { node } = useIpfs();
 
   useEffect(() => {
@@ -48,21 +43,22 @@ function useQueueIpfsContent(
     };
 
     if (node) {
-      if (prevNodeRef.current !== node) {
+      if (prevNodeType !== node.nodeType) {
         queueManager.setNode(node);
+        setPrevNodeType(node.nodeType);
       }
+    }
 
-      queueManager.enqueue(cid, callback, {
-        parent: parentId,
-        priority: rank,
-      });
+    queueManager.enqueue(cid, callback, {
+      parent: parentId,
+      priority: rank,
+    });
 
-      if (prevParentIdRef.current !== parentId) {
-        if (prevParentIdRef.current) {
-          queueManager.cancelByParent(prevParentIdRef.current);
-        }
-        prevParentIdRef.current = parentId;
+    if (prevParentIdRef.current !== parentId) {
+      if (prevParentIdRef.current) {
+        queueManager.cancelByParent(prevParentIdRef.current);
       }
+      prevParentIdRef.current = parentId;
     }
   }, [node, cid, rank, parentId]);
 

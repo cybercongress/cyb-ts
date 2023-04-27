@@ -5,12 +5,10 @@ import {
 import { $TsFixMe } from 'src/types/tsfix';
 
 import { chunksToBlob } from 'src/utils/ipfs/content-utils';
-import { addIpfsContentToDb } from './db-utils';
-
-import db from 'src/db';
 
 import { Cluster } from '@nftstorage/ipfs-cluster';
 import { IPFSPath } from 'kubo-rpc-client/types';
+import { addIpfsContentToDb } from './db-utils';
 
 const CYBERNODE_URL = 'https://io.cybernode.ai';
 
@@ -23,17 +21,23 @@ export const addDataChunksToIpfsCluster = async (
   mime: string | undefined,
   saveToDb?: boolean
 ): Promise<AddResponse | undefined> => {
-  if (chunks.length > 0) {
-    const blob = chunksToBlob(chunks, mime);
+  try {
+    if (chunks.length > 0) {
+      const blob = chunksToBlob(chunks, mime);
 
-    const result = await cluster.add(blob);
-
-    // result.cid is cidV1 - can we use that?
-    if (saveToDb) {
-      addIpfsContentToDb(cid.toString(), blob);
+      // result.cid is cidV1 - can we use that?
+      if (saveToDb) {
+        addIpfsContentToDb(cid.toString(), blob);
+      }
+      // console.log('----cluster:', await cluster.info());
+      // TODO: ERROR on DEV ENV
+      // Access to fetch at 'https://io.cybernode.ai/add?stream-channels=false&raw-leaves=true&cid-version=1'
+      // from origin 'https://localhost:3001'
+      // has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present .....
+      return await cluster.add(blob, { cidVersion: 0 });
     }
-
-    return result;
+  } catch (error) {
+    console.log('error addDataChunksToIpfsCluster', cid, error);
   }
 
   return undefined;
@@ -52,11 +56,11 @@ const addFileToIpfsCluster = async (
   // }
 
   if (file instanceof Blob) {
-    cluster.add(file);
+    cluster.add(file, { cidVersion: 0 });
   } else if (typeof file === 'string') {
     // Why need this, can we use blob?
     dataFile = new File([file], 'file.txt');
-    cluster.add(dataFile);
+    cluster.add(dataFile, { cidVersion: 0 });
   }
   // TODO: unclear type
   // } else if (file.name && file.size < 8 * 10 ** 6) {

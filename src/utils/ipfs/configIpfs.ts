@@ -28,7 +28,7 @@ const configIpfs = (): Options => ({
     Addresses: {
       Gateway: '/ip4/127.0.0.1/tcp/8080',
       Swarm: [
-        '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
         // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
         // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
       ],

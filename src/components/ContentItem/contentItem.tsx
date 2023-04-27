@@ -9,7 +9,7 @@ import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import { readStreamFully } from 'src/utils/ipfs/stream-utils';
+import { getResponseResult } from 'src/utils/ipfs/stream-utils';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -27,11 +27,10 @@ const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
-  if (content?.stream) {
-    const rawData = await readStreamFully(cid, content.stream);
+  if (content?.result) {
+    const rawData = await getResponseResult(content.result);
 
     const details = parseRawIpfsData(rawData, content.meta?.mime, cid);
-    // console.log('---ContentItem useEffect---', details, cid);
 
     return details;
   }
@@ -47,7 +46,11 @@ function ContentItem({
 }: ContentItemProps): JSX.Element {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
-  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+  const { status, content, source } = useQueueIpfsContent(
+    cid,
+    item.rank,
+    parentId
+  );
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
@@ -58,6 +61,7 @@ function ContentItem({
 
   return (
     <Link className={className} to={`/ipfs/${cid}`}>
+      {/* DEBUG! MIME: {JSON.stringify(content?.meta)} {cid} {source} */}
       <SearchItem
         key={cid}
         textPreview={

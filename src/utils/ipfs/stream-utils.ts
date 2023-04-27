@@ -1,10 +1,11 @@
+/* eslint-disable valid-jsdoc */
+/* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 
-type ReadableStreamWithMime = {
-  stream: ReadableStream<Uint8Array>;
+type ResultWithMime = {
+  result: Uint8Array | ReadableStream<Uint8Array>;
   mime: string | undefined;
-  blob?: Blob;
 };
 
 type StreamDoneCallback = (
@@ -16,8 +17,13 @@ interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
   return?: (value?: unknown) => Promise<IteratorResult<T>>;
 }
 
-const getUint8ArrayMime = async (raw: Uint8Array): Promise<string> =>
-  (await fileTypeFromBuffer(raw))?.mime || 'text/plain';
+export const getMimeFromUint8Array = async (
+  raw: Uint8Array
+): Promise<string | undefined> => {
+  const fileType = await fileTypeFromBuffer(raw);
+
+  return fileType?.mime || 'text/plain';
+};
 
 // eslint-disable-next-line import/no-unused-modules
 /**
@@ -32,12 +38,17 @@ export async function asyncGeneratorToReadableStream(
     | AsyncIterableWithReturn<Uint8Array>
     | AsyncGenerator<Uint8Array, any, any>,
   callback?: StreamDoneCallback
-): Promise<ReadableStreamWithMime> {
+): Promise<ResultWithMime> {
   const iterator = source[Symbol.asyncIterator]();
+  const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
   const chunk = await iterator.next();
   const firstChunk: Uint8Array | null = chunk.value;
-  const mime = firstChunk ? await getUint8ArrayMime(firstChunk) : undefined;
-  const chunks: Array<Uint8Array> = [];
+  const mime = firstChunk ? await getMimeFromUint8Array(firstChunk) : undefined;
+
+  if (chunk.done) {
+    callback && firstChunk?.length && callback([firstChunk], mime);
+    return { mime, result: firstChunk || new Uint8Array() };
+  }
 
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {
@@ -65,62 +76,118 @@ export async function asyncGeneratorToReadableStream(
     },
   });
 
-  return { mime, stream };
+  return { mime, result: stream };
 }
 
-export async function arrayToReadableStream(
-  source: Uint8Array
-): Promise<ReadableStreamWithMime> {
-  const mime = await getUint8ArrayMime(source);
-  const stream = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      try {
-        controller.enqueue(source);
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-    cancel(reason) {
-      throw Error(`Not implemented: ${reason}`);
-    },
-  });
+// export async function arrayToReadableStream(
+//   source: Uint8Array
+// ): Promise<ResultWithMime> {
+//   const mime = await getMimeFromUint8Array(source);
+//   const stream = new ReadableStream<Uint8Array>({
+//     async pull(controller) {
+//       try {
+//         controller.enqueue(source);
+//         controller.close();
+//       } catch (error) {
+//         controller.error(error);
+//       }
+//     },
+//     cancel(reason) {
+//       throw Error(`Not implemented: ${reason}`);
+//     },
+//   });
 
-  return { mime, stream };
-  // return stream.pipeThrough(new WritableStream());
-}
+//   return { mime, result: stream };
+//   // return stream.pipeThrough(new WritableStream());
+// }
 
 // eslint-disable-next-line import/no-unused-modules, func-names
 
-/**
- * Converts ReadableStream to AsyncGenerator
- * @param stream
- * @returns
- */
-export const readableStreamToAsyncGenerator = async function* <T>(
-  stream: ReadableStream<T>
-): AsyncGenerator<T> {
-  const reader = stream.getReader();
-  try {
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
-      const { done, value } = await reader.read();
-      if (done) {
-        return;
-      }
-      yield value;
-    }
-  } finally {
-    reader.releaseLock();
-  }
-};
+// /**
+//  * Converts ReadableStream to AsyncGenerator
+//  * @param stream
+//  * @returns
+//  */
+// // eslint-disable-next-line func-names
+// export const readableStreamToAsyncGenerator = async function* <T>(
+//   stream: ReadableStream<T>
+// ): AsyncGenerator<T> {
+//   const reader = stream.getReader();
+//   try {
+//     while (true) {
+//       // eslint-disable-next-line no-await-in-loop
+//       const { done, value } = await reader.read();
+//       if (done) {
+//         return;
+//       }
+//       yield value;
+//     }
+//   } finally {
+//     reader.releaseLock();
+//   }
+// };
 
-export const readStreamFully = async (
-  cid: string,
-  stream: ReadableStream<Uint8Array>
+export async function toReadableStreamWithMime(
+  stream: ReadableStream<Uint8Array>,
+  callback?: StreamDoneCallback
+): Promise<ResultWithMime> {
+  const [firstChunkStream, restOfStream] = stream.tee();
+  const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
+
+  // Read the first chunk from the stream
+  const reader = firstChunkStream.getReader();
+  const { done, value } = await reader.read();
+
+  const mime = value ? await getMimeFromUint8Array(value) : undefined;
+
+  if (done) {
+    reader.releaseLock();
+    callback && value?.length && callback([value], mime);
+
+    return { mime, result: value || new Uint8Array() };
+  }
+
+  let firstChunk: Uint8Array | null = value;
+
+  const modifiedStream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      if (firstChunk !== null) {
+        // If the first chunk not processed yet, push it to the new stream
+        controller.enqueue(firstChunk);
+        callback && chunks.push(firstChunk);
+
+        firstChunk = null;
+      } else {
+        const restReader = restOfStream.getReader();
+        const { done, value } = await restReader.read();
+        if (done) {
+          controller.close();
+          callback && callback(chunks, mime);
+        } else {
+          controller.enqueue(value);
+          callback && chunks.push(value);
+        }
+        restReader.releaseLock();
+      }
+    },
+    cancel() {
+      firstChunkStream.cancel();
+      restOfStream.cancel();
+    },
+  });
+
+  return { mime, result: modifiedStream };
+}
+
+export const getResponseResult = async (
+  response: ReadableStream<Uint8Array> | Uint8Array
 ) => {
   try {
-    const reader = stream.getReader();
+    if (response instanceof Uint8Array) {
+      return response;
+    }
+
+    const reader = response.getReader();
     const chunks: Array<Uint8Array> = [];
     return reader.read().then(function readStream({ done, value }) {
       if (done) {
@@ -133,7 +200,7 @@ export const readStreamFully = async (
     });
   } catch (error) {
     console.error(
-      `Error reading stream for ${cid}\r\n Probably Hot reload error!`,
+      `Error reading stream.\r\n Probably Hot reload error!`,
       error
     );
 

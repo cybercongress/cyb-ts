@@ -4,7 +4,7 @@ import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
-import { readStreamFully } from '../ipfs/stream-utils';
+import { getResponseResult } from '../ipfs/stream-utils';
 import { parseRawIpfsData } from '../ipfs/content-utils';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -784,8 +784,8 @@ export const authAccounts = async (address) => {
 export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getIPFSContent(ipfs, cid);
 
-  if (response.stream) {
-    const rawData = await readStreamFully(cid, response.stream);
+  if (response.result) {
+    const rawData = await getResponseResult(response.result);
     const details = parseRawIpfsData(rawData, response.meta.mime, cid);
     return details.content;
   }

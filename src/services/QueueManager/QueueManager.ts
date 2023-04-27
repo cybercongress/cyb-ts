@@ -79,6 +79,9 @@ class QueueManager<T> {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [queueSource, items] of Object.entries(queueByPending)) {
+      // if (!hasNode && queueSource === 'node') {
+      //   continue;
+      // }
       const settings = this.strategy.settings[queueSource];
 
       if (this.executing[queueSource] < settings.maxConcurrentExecutions) {
@@ -93,15 +96,15 @@ class QueueManager<T> {
   private fetchData$(item: QueueItem<T>) {
     const { cid, source, controller } = item;
     const settings = this.strategy.settings[source];
-    // console.log('---fetchData', source, this.strategy);
+    // console.log('---fetchData', cid, source, this.strategy);
 
-    return promiseToObservable(() => {
+    return promiseToObservable(() =>
       // fetch by item source
-      return fetchIpfsContent<T>(cid, source, {
+      fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      });
-    }).pipe(
+      })
+    ).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -137,18 +140,19 @@ class QueueManager<T> {
 
   constructor(strategy: QueueStrategy = strategies.embedded) {
     this.strategy = strategy;
+
     this.queue$
       .pipe(
         // tap((queue) => console.log('---tap', queue)),
         mergeMap((queue) => {
           const workItem = this.getItemBySourceAndPriority(queue);
+
           if (workItem) {
             const { source, cid, callback } = workItem;
             this.executing[source]++;
 
             workItem.status = 'executing';
             workItem.controller = new AbortController();
-
             callback(cid, 'executing', source);
 
             // create observable of fetch from datasource

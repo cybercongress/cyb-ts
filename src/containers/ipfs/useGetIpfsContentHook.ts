@@ -1,7 +1,7 @@
 // TODO: refactor hook
 import { useState, useEffect } from 'react';
 import { IPFS } from 'kubo-rpc-client/types';
-import { readStreamFully } from 'src/utils/ipfs/stream-utils';
+import { getResponseResult } from 'src/utils/ipfs/stream-utils';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 import {
   IPFSContentDetails,
@@ -36,8 +36,8 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
       } else if (contentIpfs.availableDownload) {
         // setContentIpfs(contentIpfs);
         setStatus('availableDownload');
-      } else if (contentIpfs.stream) {
-        const rawData = await readStreamFully(cid, contentIpfs.stream);
+      } else if (contentIpfs.result) {
+        const rawData = await getResponseResult(contentIpfs.result);
         const details = parseRawIpfsData(rawData, contentIpfs.meta?.mime, cid);
         setContentDetails(details);
         setStatus('downloaded');

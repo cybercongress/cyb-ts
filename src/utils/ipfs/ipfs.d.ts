@@ -50,7 +50,7 @@ export type IPFSContentDetails =
 
 export type IPFSContent = {
   availableDownload?: boolean;
-  stream?: ReadableStream<Uint8Array>; //IPFSContentDetails;
+  result?: Uint8Array | ReadableStream<Uint8Array>; //IPFSContentDetails;
   cid: IPFSPath;
   meta?: IPFSContentMeta;
 };
