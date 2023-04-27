@@ -15,7 +15,6 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState<IPFSContentMeta | undefined>(undefined);
-  useState<IPFSContentDetails>(undefined);
   const [contentDetails, setContentDetails] =
     useState<IPFSContentDetails>(undefined);
 

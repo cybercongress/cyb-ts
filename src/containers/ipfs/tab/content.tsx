@@ -7,7 +7,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 import { useIpfs } from 'src/contexts/ipfs';
 
-import { IPFSContent } from 'src/utils/ipfs/ipfs';
+import { IPFSContent, IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
@@ -49,11 +49,11 @@ const getIpfsUserGatewanAndNodeType = () => {
 };
 
 type ContentTabProps = {
-  contentIpfs: IPFSContent;
+  contentDetails: IPFSContentDetails;
   cid: string;
 };
 
-function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
+function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
   const { node: nodeIpfs } = useIpfs();
   const [gatewayUrl, setGatewayUrl] = useState<string | undefined>(undefined);
 
@@ -71,7 +71,7 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
       return <div>...</div>;
     }
 
-    if (contentIpfs?.details?.gateway) {
+    if (contentDetails?.gateway) {
       return (
         <>
           {/* <Pane
@@ -109,29 +109,29 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
         </>
       );
     }
-    if (contentIpfs.details?.type === 'image') {
+    if (contentDetails?.type === 'image') {
       return (
         <img
           alt="content"
           id="imgIpfs"
           style={{ objectFit: 'contain', width: '100%' }}
-          src={contentIpfs.details?.content}
+          src={contentDetails?.content}
         />
       );
     }
-    if (contentIpfs.details?.type === 'text') {
+    if (contentDetails?.type === 'text') {
       return (
         <div
           style={{
             textAlign: 'center',
           }}
         >
-          {contentIpfs.details?.text || contentIpfs.cid.toString()}
+          {contentDetails?.text || cid.toString()}
         </div>
       );
     }
 
-    if (contentIpfs.details?.type === 'link') {
+    if (contentDetails?.type === 'link') {
       return (
         <div
           style={{
@@ -141,8 +141,8 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
             minHeight: '100px',
           }}
         >
-          <LinkWindow to={contentIpfs.details?.link}>
-            {contentIpfs.details?.content}
+          <LinkWindow to={contentDetails?.link}>
+            {contentDetails?.content}
           </LinkWindow>
 
           <Iframe
@@ -193,7 +193,7 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
           // plugins={[toc]}
           // escapeHtml={false}
         >
-          {contentIpfs.details?.content}
+          {contentDetails?.content}
         </ReactMarkdown>
       </div>
     );
