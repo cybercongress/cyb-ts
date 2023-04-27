@@ -1,16 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-// import { Play } from './pages';
-import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { MainContainer } from '../portal/components';
-// import Carousel from '../portal/gift/carousel1/Carousel';
 import { Carousel, Canvas } from './components';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent } from './pages';
-import { ActionBar, ContainerGradientText, BtnGrd } from '../../components';
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
+import { ActionBar, ContainerGradientText } from '../../components';
 import styles from './styles.scss';
-import { CYBER } from '../../utils/config';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -57,15 +52,8 @@ const itemCarousel1 = [
   { title: <div className={styles.itemCarousel}>🟣 space-pussy</div> },
 ];
 
-function Temple({ defaultAccount }) {
-  const navigate = useNavigate();
-  const { passport } = useGetPassportByAddress(defaultAccount);
-
+function Temple() {
   const [step, setStep] = useState(2);
-
-  const handleGetCitizenship = () => {
-    navigate('/portal');
-  };
 
   return (
     <div>
@@ -111,22 +99,10 @@ function Temple({ defaultAccount }) {
 
         <PlayContent />
       </MainContainer>
-      {passport === null && CYBER.CHAIN_ID === 'bostrom' && (
-        <ActionBar>
-          <BtnGrd
-            onClick={() => handleGetCitizenship()}
-            text="get citizenship"
-          />
-        </ActionBar>
-      )}
+
+      <ActionBar />
     </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Temple);
+export default Temple;

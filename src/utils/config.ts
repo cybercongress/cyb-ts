@@ -1,3 +1,5 @@
+import { Networks } from 'src/types/networks';
+
 const TIME_START = '2022-10-03T19:32:28Z';
 const INFINITY = '∞';
 const WP =
@@ -68,7 +70,7 @@ const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
 
 let CHAIN_PARAMS = {
-  CHAIN_ID: 'bostrom',
+  CHAIN_ID: Networks.BOSTROM,
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
   DENOM_CYBER_G: `GBOOT`,
@@ -84,7 +86,7 @@ let CHAIN_PARAMS = {
 
 if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
   CHAIN_PARAMS = {
-    CHAIN_ID: 'space-pussy',
+    CHAIN_ID: Networks.SPACE_PUSSY,
     DENOM_CYBER: 'pussy',
     DENOM_LIQUID_TOKEN: 'liquidpussy',
     DENOM_CYBER_G: `GPUSSY`,

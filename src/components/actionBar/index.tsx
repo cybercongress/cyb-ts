@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import BtnGrd from '../btnGrd';
+import Button from '../btnGrd';
 import styles from './styles.scss';
 import Tooltip from '../tooltip/tooltip';
 
@@ -14,6 +14,13 @@ import useMediaQuery from '../../hooks/useMediaQuery';
 import ButtonIcon from '../ButtonIcon';
 import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
+import { useSelector } from 'react-redux';
+import store, { RootState } from 'src/redux/store';
+import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
+import { routes } from 'src/routes';
+import { CYBER } from 'src/utils/config';
+import { useLocation } from 'react-router-dom';
+import { Networks } from 'src/types/networks';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -320,6 +327,11 @@ type Props = {
   onClickFnc?: $TsFixMeFunc;
   onClickBack?: $TsFixMeFunc;
   disabled?: boolean;
+  button?: {
+    text: string;
+    onClick: () => {};
+    disabled?: boolean;
+  };
 };
 
 function ActionBar({
@@ -328,10 +340,34 @@ function ActionBar({
   onClickFnc,
   onClickBack,
   disabled,
+  button,
 }: Props) {
+  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
+  const { passport } = useGetPassportByAddress(defaultAccount);
+  const location = useLocation();
+
+  const accountWithPassport = defaultAccount.account && passport;
+
+  if (!accountWithPassport) {
+    return (
+      <ActionBarContainer>
+        {!defaultAccount.account && location.pathname !== routes.robot.path && (
+          <Button link={routes.robot.path}>Connect</Button>
+        )}
+
+        {!passport &&
+          CYBER.CHAIN_ID === Networks.BOSTROM &&
+          location.pathname !== routes.citizenship.path && (
+            <Button link={routes.portal.path}>Get citizenship</Button>
+          )}
+      </ActionBarContainer>
+    );
+  }
+
   return (
     <ActionBarContainer>
       {/* <Telegram /> */}
+
       {onClickBack && (
         <ButtonIcon
           styleContainer={{ position: 'absolute', left: '0' }}
@@ -341,10 +377,17 @@ function ActionBar({
           text="previous step"
         />
       )}
+
       {children && <ActionBarContentText>{children}</ActionBarContentText>}
-      {btnText && (
-        <BtnGrd disabled={disabled} onClick={onClickFnc} text={btnText} />
-      )}
+      {btnText ||
+        (button?.text && (
+          <Button
+            disabled={disabled || button.disabled}
+            onClick={onClickFnc || button.onClick}
+          >
+            {btnText || button.text}
+          </Button>
+        ))}
       {/* <GitHub /> */}
     </ActionBarContainer>
   );

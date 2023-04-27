@@ -168,7 +168,6 @@ function ActionBarContainer({
   unStake,
   updateFnc,
 }) {
-  const { passport } = useGetPassportByAddress(addressPocket);
   const { signer, signingClient } = useSigningClient();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -333,12 +332,6 @@ function ActionBarContainer({
     setStage(STAGE_READY);
   };
 
-  // console.log('addressPocket', addressPocket);
-  // console.log('loadingBalanceInfo', loadingBalanceInfo);
-  // console.log('balance', balance);
-  // console.log('balanceToken', balanceToken);
-  // console.log('validators', validators);
-
   const validRestakeBtn = parseFloat(amount) > 0 && valueSelect.length > 0;
 
   const validRewards = useMemo(() => {
@@ -377,31 +370,6 @@ function ActionBarContainer({
     setTxType(null);
   };
 
-  if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
-    return (
-      <ActionBar
-        btnText="get citizenship"
-        onClickFnc={() => handleHistory('/portal')}
-      />
-    );
-  }
-
-  // addressPocket empty
-  if (
-    Object.keys(validators).length === 0 &&
-    stage === STAGE_INIT &&
-    addressPocket === null
-  ) {
-    return (
-      <ActionBar>
-        <Pane fontSize="18px">
-          {/* eslint-disable-next-line react/no-unescaped-entities */}
-          you don't have cyber address in your pocket
-        </Pane>
-      </ActionBar>
-    );
-  }
-
   // loadingBalanceInfo
   if (
     Object.keys(validators).length === 0 &&
@@ -421,8 +389,7 @@ function ActionBarContainer({
   if (
     Object.keys(validators).length === 0 &&
     stage === STAGE_INIT &&
-    balance.delegation &&
-    balance.delegation === 0
+    balance?.delegation === 0
   ) {
     return (
       <ActionBar>

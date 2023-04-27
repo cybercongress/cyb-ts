@@ -9,7 +9,14 @@ import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';
 import { formatNumber } from '../../utils/utils';
-import { Copy, ContainerCard, Card, Dots, TabBtn } from '../../components';
+import {
+  Copy,
+  ContainerCard,
+  Card,
+  Dots,
+  TabBtn,
+  Button,
+} from '../../components';
 import ActionBarContainer from './actionBar';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
@@ -243,7 +250,7 @@ function AccountDetails({ defaultAccount }) {
         ) : (
           <ActionBar>
             <Pane>
-              <Link
+              <Button
                 style={{
                   paddingTop: 10,
                   paddingBottom: 10,
@@ -253,7 +260,7 @@ function AccountDetails({ defaultAccount }) {
                 to="/gol"
               >
                 add address to your pocket
-              </Link>
+              </Button>
             </Pane>
           </ActionBar>
         ))}
