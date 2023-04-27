@@ -35,14 +35,14 @@ const strategies = {
     {
       db: { timeout: 5000, maxConcurrentExecutions: 100 },
       node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-      gateway: { timeout: 11000, maxConcurrentExecutions: 11 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),
   embedded: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 100 },
-      gateway: { timeout: 11000, maxConcurrentExecutions: 11 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
       node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
     },
     ['db', 'gateway', 'node']

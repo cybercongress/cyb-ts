@@ -106,9 +106,9 @@ function ContentItem({
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            // url={ipfsDataDetails?.content}
+            url={ipfsDataDetails?.content}
             // TODO: USE loaded content
-            url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
+            // url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
           />
         )}
       </SearchItem>

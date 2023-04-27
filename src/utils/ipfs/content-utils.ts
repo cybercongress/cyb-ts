@@ -63,9 +63,10 @@ export const parseRawIpfsData = (
       response.content = file;
       response.gateway = false;
     } else if (mime.indexOf('application/pdf') !== -1) {
-      const file = `data:${mime};base64,${uint8ArrayToAsciiString(rawData)}`;
+      const blob = new Blob([rawData], { type: 'application/pdf' });
+      // const file = `data:${mime};base64,${uint8ArrayToAsciiString(rawData)}`;
       response.type = 'pdf';
-      response.content = file;
+      response.content = URL.createObjectURL(blob); // file
       response.gateway = true; // ???
     }
 
