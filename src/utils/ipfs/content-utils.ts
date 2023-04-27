@@ -25,8 +25,11 @@ export const parseRawIpfsData = (
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;
       response.gateway = true; // ???
-    } else if (mime.indexOf('text/plain') !== -1) {
-      if (isSvg(rawData as Buffer)) {
+    } else if (
+      mime.indexOf('text/plain') !== -1 ||
+      mime.indexOf('application/xml') !== -1
+    ) {
+      if (isSvg(Buffer.from(rawData))) {
         response.type = 'image';
         response.content = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
           rawData,
