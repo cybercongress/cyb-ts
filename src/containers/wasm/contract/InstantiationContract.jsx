@@ -12,6 +12,8 @@ import { CardItem } from '../codes/code';
 import RenderInstantiateMsg from './RenderInstantiateMsg';
 import SelectFile from './renderAbi/SelectFile';
 import useParseJsonSchema from './renderAbi/useParseJsonSchema';
+import Button from 'src/components/btnGrd';
+import { Input } from 'src/components';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -93,6 +95,7 @@ function InstantiationContract({ codeId, updateFnc }) {
 
   const executeContract = async () => {
     if (!msgObject.result || !label || !signer || !signingClient) {
+      setError('Some error');
       return;
     }
 
@@ -131,16 +134,7 @@ function InstantiationContract({ codeId, updateFnc }) {
   };
 
   if (fileAbiExecute === null) {
-    if (label.length === 0) {
-      content = (
-        <div style={{ fontSize: '18px' }}>
-          You must add a label{' '}
-          <button type="button" className="btn-disabled" disabled>
-            Upload schema
-          </button>
-        </div>
-      );
-    } else {
+    if (label.length) {
       content = (
         <div>
           <SelectFile
@@ -179,37 +173,29 @@ function InstantiationContract({ codeId, updateFnc }) {
       />
       <div className={styles.containerJsonContractInputContainer}>
         <div className={styles.containerJsonContractInputContainerItem}>
-          <span>Label</span>
-          <input
-            className={styles.containerJsonContractInputContainerItemInput}
+          <span>Label *</span>
+          <Input
             value={label}
             onChange={(event) => setLabel(event.target.value)}
           />
         </div>
         <div className={styles.containerJsonContractInputContainerItem}>
           <span>Memo</span>
-          <input
-            className={styles.containerJsonContractInputContainerItemInput}
+          <Input
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
           />
         </div>
       </div>
 
-      {executing ? (
-        <button className="btn btn-primary" type="button" disabled>
-          Executing...
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={executeContract}
-          disabled={!msgObject.result || !signer}
-        >
-          Instantiate contract
-        </button>
-      )}
+      <Button
+        pending={executing}
+        pendingText="Executing"
+        onClick={executeContract}
+        disabled={!msgObject.result || !signer || !label}
+      >
+        Instantiate contract
+      </Button>
 
       {executeResponse.result && (
         <div className={styles.containerJsonContractResult}>
@@ -235,11 +221,13 @@ function InstantiationContract({ codeId, updateFnc }) {
         </div>
       )}
 
-      <FlexWrapCantainer style={{ flexDirection: 'column' }}>
-        {content}
-      </FlexWrapCantainer>
+      {content && (
+        <FlexWrapCantainer style={{ flexDirection: 'column' }}>
+          {content}
+        </FlexWrapCantainer>
+      )}
 
-      {error !== null && (
+      {error && (
         <div>
           <div>{error}</div>
         </div>

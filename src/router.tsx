@@ -85,15 +85,6 @@ function PageNotExist() {
   );
 }
 
-function MainLayout() {
-  return (
-    <>
-      <App />
-      <Outlet />
-    </>
-  );
-}
-
 function ValidatorsRedirect() {
   const { status } = useParams();
   return <Navigate to={`/sphere/${status}`} />;
@@ -103,7 +94,7 @@ function AppRouter() {
   return (
     <WrappedRouter>
       <Routes>
-        <Route path={routes.home.path} element={<MainLayout />}>
+        <Route path={routes.home.path} Component={App}>
           <Route index element={<Temple />} />
           <Route path="/robot" element={<Wallet />} />
           <Route path="/oracle" element={<Home />} />

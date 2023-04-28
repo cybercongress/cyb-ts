@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import BtnGrd, { Props } from '.';
+import BtnGrd, { Props } from './';
 
 const Button = BtnGrd;
 
@@ -22,6 +22,13 @@ const defaultArgs: Props = {
 export const Main: Story = {
   args: {
     ...defaultArgs,
+  },
+};
+
+export const Link: Story = {
+  args: {
+    ...defaultArgs,
+    link: '/',
   },
 };
 

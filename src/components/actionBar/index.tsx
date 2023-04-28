@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { ButtonIcon } from '../ledger/stageActionBar';
 import BtnGrd from '../btnGrd';
 import styles from './styles.scss';
 import Tooltip from '../tooltip/tooltip';
@@ -12,6 +11,9 @@ import telegram from '../../image/telegram.png';
 import { LinkWindow } from '../link/link';
 import { formatNumber } from '../../utils/utils';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import ButtonIcon from '../ButtonIcon';
+import React from 'react';
+import { $TsFixMeFunc } from 'src/types/tsfix';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -312,14 +314,21 @@ export function Telegram() {
   );
 }
 
+type Props = {
+  children?: React.ReactNode;
+  btnText?: string | React.ReactNode;
+  onClickFnc?: $TsFixMeFunc;
+  onClickBack?: $TsFixMeFunc;
+  disabled?: boolean;
+};
+
 function ActionBar({
   children,
   btnText,
   onClickFnc,
   onClickBack,
   disabled,
-  gridGap,
-}) {
+}: Props) {
   return (
     <ActionBarContainer>
       {/* <Telegram /> */}
@@ -332,15 +341,10 @@ function ActionBar({
           text="previous step"
         />
       )}
+      {children && <ActionBarContentText>{children}</ActionBarContentText>}
       {btnText && (
         <BtnGrd disabled={disabled} onClick={onClickFnc} text={btnText} />
       )}
-      <ActionBarContentText
-        gridGap={gridGap}
-        //  marginLeft={onClickBack ? 30 : 0}
-      >
-        {children}
-      </ActionBarContentText>
       {/* <GitHub /> */}
     </ActionBarContainer>
   );

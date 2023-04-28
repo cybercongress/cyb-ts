@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import {
   ConnectLadger,
   Dots,
@@ -15,6 +15,7 @@ import {
 } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
 import { useSigningClient } from 'src/contexts/signerClient';
+import Button from 'src/components/btnGrd';
 
 const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
   LEDGER;

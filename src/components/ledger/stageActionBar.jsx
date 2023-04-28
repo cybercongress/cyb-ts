@@ -3,15 +3,12 @@ import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
   ActionBar,
-  Button,
-  Input,
   Pane,
   Text,
   Battery,
   IconButton,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
-import Tooltip from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -22,6 +19,10 @@ import ButtonImgText from '../Button/buttonImgText';
 import { i18n } from '../../i18n/en';
 
 import { CYBER, BOND_STATUS } from '../../utils/config';
+import Button from '../btnGrd';
+import { InputNumber, Input } from '../Input';
+import ActionBarContainer from '../actionBar';
+import ButtonIcon from '../ButtonIcon';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -112,36 +113,6 @@ export function ActionBarContentText({ children, ...props }) {
   );
 }
 
-export function ButtonIcon({
-  img,
-  active,
-  disabled,
-  text,
-  placement = 'top',
-  styleContainer,
-  ...props
-}) {
-  return (
-    <Pane style={styleContainer}>
-      <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
-        <button
-          type="button"
-          style={{
-            // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
-            margin: '0 10px',
-            padding: '5px 0',
-          }}
-          className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
-          disabled={disabled}
-          {...props}
-        >
-          <img src={img} alt="img" />
-        </button>
-      </Tooltip>
-    </Pane>
-  );
-}
-
 export function JsonTransaction() {
   return (
     <ActionBar>
@@ -192,7 +163,7 @@ export function Confirmed({ txHash, txHeight, cosmos, onClickBtnCloce }) {
           {formatNumber(parseFloat(txHeight))}
         </Pane>
       </ActionBarContentText>
-      <Button marginX={10} onClick={onClickBtnCloce}>
+      <Button style={{ margin: '0 10px' }} onClick={onClickBtnCloce}>
         Fuck Google
       </Button>
     </ActionBar>
@@ -205,7 +176,7 @@ export function TransactionError({ onClickBtn, errorMessage }) {
       <ActionBarContentText display="block">
         Message Error: {errorMessage}
       </ActionBarContentText>
-      <Button marginX={10} onClick={onClickBtn}>
+      <Button style={{ margin: '0 10px' }} onClick={onClickBtn}>
         {T.actionBar.confirmedTX.continue}
       </Button>
     </ActionBar>
@@ -644,12 +615,8 @@ export function TextProposal({
         <Text color="#fff">{addrProposer}</Text> */}
           <Pane marginY={10} width="100%">
             <Text color="#fff">title</Text>
-            <input
+            <Input
               value={valueTitle}
-              style={{
-                height: 42,
-                width: '100%',
-              }}
               onChange={onChangeInputTitle}
               placeholder="title"
             />
@@ -664,17 +631,19 @@ export function TextProposal({
           </Pane>
           <Pane width="100%">
             <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
-            <input
+            <InputNumber
               value={valueDeposit}
-              style={{
-                height: 42,
-                width: '100%',
-              }}
               onChange={onChangeInputDeposit}
               placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             />
           </Pane>
-          <Button marginTop={25} onClick={onClickBtn}>
+          <Button
+            style={{
+              marginTop: 25,
+            }}
+            disabled={!valueTitle || !valueDescription || !valueDeposit}
+            onClick={onClickBtn}
+          >
             Create Governance
           </Button>
         </Pane>
@@ -883,24 +852,26 @@ export function Cyberlink({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          // width: '100%',
         }}
       >
-        <button
-          type="button"
-          className="btn-disabled"
+        <Button
           onClick={onClickBtn}
-          style={{ height: 42, maxWidth: '200px' }}
+          style={{ maxWidth: '200px' }}
           disabled={disabledBtn}
         >
           {T.actionBar.link.cyberIt}
-        </button>
+        </Button>
       </div>
     </ActionBar>
   );
 }
 
-function IntupAutoSize({ value, onChangeInputAmount, placeholder }) {
+function IntupAutoSize({
+  value,
+  onChangeInputAmount,
+  placeholder,
+  autoFocus = true,
+}) {
   function isOverflown(element) {
     return element.scrollWidth > element.clientWidth;
   }
@@ -926,20 +897,14 @@ function IntupAutoSize({ value, onChangeInputAmount, placeholder }) {
   }
 
   return (
-    <Input
-      width="125px"
+    <InputNumber
       value={value}
-      style={{
-        height: 42,
-        width: '125px',
-        marginLeft: 20,
-        textAlign: 'end',
-      }}
       id="myInput"
       onkeypress={changefontsize()}
-      autoFocus
-      onChange={onChangeInputAmount}
+      autoFocus={autoFocus}
+      onValueChange={onChangeInputAmount}
       placeholder={placeholder}
+      width="180px"
     />
   );
 }
@@ -951,35 +916,34 @@ export function Delegate({
   toSend,
   disabledBtn,
   delegate,
+  onClickBack,
 }) {
   return (
-    <ActionBar>
-      <ActionBarContentText>
-        <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
-          {delegate
-            ? T.actionBar.delegate.delegate
-            : T.actionBar.delegate.unDelegateFrom}{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {moniker.length > 14 ? `${moniker.substring(0, 14)}...` : moniker}
-          </Text>
+    <ActionBarContainer
+      btnText={T.actionBar.delegate.generate}
+      onClickBack={onClickBack}
+      onClickFnc={generateTx}
+      disabled={disabledBtn}
+    >
+      <Text marginRight={20} fontSize="16px" color="#fff">
+        {delegate
+          ? T.actionBar.delegate.delegate
+          : T.actionBar.delegate.unDelegateFrom}{' '}
+        <Text fontSize="20px" color="#fff" fontWeight={600}>
+          {moniker && moniker.length > 14
+            ? `${moniker.substring(0, 14)}...`
+            : moniker}
         </Text>
-        <IntupAutoSize
-          value={toSend}
-          onChangeInputAmount={onChangeInputAmount}
-          placeholder="amount"
-        />
-      </ActionBarContentText>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
-      >
-        {T.actionBar.delegate.generate}
-      </button>
-    </ActionBar>
+      </Text>
+      <IntupAutoSize
+        value={toSend}
+        onChangeInputAmount={onChangeInputAmount}
+        placeholder="amount"
+      />
+      <Text marginLeft={10} fontSize="16px" color="#fff">
+        {DENOM_CYBER.toUpperCase()}
+      </Text>
+    </ActionBarContainer>
   );
 }
 
@@ -992,120 +956,87 @@ export function ReDelegate({
   validatorsAll,
   valueSelect,
   onChangeReDelegate,
+  onClickBack,
 }) {
   return (
-    <ActionBar>
-      <ActionBarContentText>
-        <Text marginRight={5} fontSize="16px" color="#fff">
-          amount{' '}
-        </Text>
-        <Input
-          value={toSend}
-          autoFocus
-          height="32px"
-          width="70px"
-          textAlign="end"
-          onChange={onChangeInputAmount}
-          placeholder="amount"
-        />
-        <Text marginLeft={5} fontSize="16px" color="#fff">
-          {DENOM_CYBER.toUpperCase()} restake from{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {validators.description.moniker.length > 14
-              ? `${validators.description.moniker.substring(0, 14)}...`
-              : validators.description.moniker}
-          </Text>
-        </Text>
-        <Text marginX={5} fontSize="16px" color="#fff">
-          to:
-        </Text>
-        <select
-          style={{
-            width: '120px',
-          }}
-          value={valueSelect}
-          onChange={onChangeReDelegate}
-        >
-          <option value="">pick hero</option>
-          {validatorsAll
-            .filter(
-              (validator) =>
-                BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
-            )
-            .map((item) => (
-              <option
-                key={item.operatorAddress}
-                value={item.operatorAddress}
-                style={{
-                  display:
-                    validators.operatorAddress === item.operatorAddress
-                      ? 'none'
-                      : 'block',
-                }}
-              >
-                {item.description.moniker}
-              </option>
-            ))}
-        </select>
-      </ActionBarContentText>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
+    <ActionBarContainer
+      btnText={T.actionBar.delegate.generate}
+      onClickBack={onClickBack}
+      onClickFnc={generateTx}
+      disabled={disabledBtn}
+    >
+      <IntupAutoSize
+        value={toSend}
+        onChangeInputAmount={onChangeInputAmount}
+        placeholder="amount"
+      />
+      <Text marginLeft={5} fontSize="16px" color="#fff">
+        {DENOM_CYBER.toUpperCase()} restake to:
+      </Text>
+      <select
+        style={{
+          width: '120px',
+        }}
+        value={valueSelect}
+        onChange={onChangeReDelegate}
       >
-        {T.actionBar.delegate.generate}
-      </button>
-    </ActionBar>
+        <option value="">pick hero</option>
+        {validatorsAll
+          .filter(
+            (validator) =>
+              BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
+          )
+          .map((item) => (
+            <option
+              key={item.operatorAddress}
+              value={item.operatorAddress}
+              style={{
+                display:
+                  validators.operatorAddress === item.operatorAddress
+                    ? 'none'
+                    : 'block',
+              }}
+            >
+              {item.description.moniker}
+            </option>
+          ))}
+      </select>
+    </ActionBarContainer>
   );
 }
 
-export function SendLedger({
+export function ActionBarSend({
   onClickBtn,
   valueInputAmount,
   valueInputAddressTo,
   onChangeInputAmount,
   onChangeInputAddressTo,
   disabledBtn,
-  addressToValid,
-  amountSendInputValid,
+  onClickBack,
 }) {
   return (
-    <ActionBar>
-      <Pane display="flex" className="contentItem">
-        <ActionBarContentText>
-          <Input
-            value={valueInputAddressTo}
-            height={42}
-            marginRight={10}
-            width="300px"
-            onChange={onChangeInputAddressTo}
-            placeholder="cyber address To"
-            isInvalid={addressToValid !== null}
-            message={addressToValid}
-          />
+    <ActionBarContainer
+      btnText="Generate Tx"
+      onClickBack={onClickBack}
+      onClickFnc={onClickBtn}
+      disabled={disabledBtn}
+    >
+      <div style={{ display: 'flex', gap: '30px' }}>
+        <Input
+          value={valueInputAddressTo}
+          width="250px"
+          onChange={onChangeInputAddressTo}
+          placeholder="recipient"
+        />
 
-          <Input
-            value={valueInputAmount}
-            height={42}
-            width="24%"
-            onChange={onChangeInputAmount}
-            placeholder={CYBER.DENOM_CYBER}
-            isInvalid={amountSendInputValid !== null}
-            message={amountSendInputValid}
-          />
-        </ActionBarContentText>
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
-          Generate Tx
-        </button>
-      </Pane>
-    </ActionBar>
+        <IntupAutoSize
+          value={valueInputAmount}
+          onChangeInputAmount={onChangeInputAmount}
+          placeholder="amount"
+          autoFocus={false}
+        />
+      </div>
+    </ActionBarContainer>
   );
 }
 
@@ -1149,14 +1080,9 @@ export function RewardsDelegators({
         <Pane>{itemReward}</Pane>
       </Pane>
       <div className="text-align-center">
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
+        <Button disabled={disabledBtn} onClick={onClickBtn}>
           {T.actionBar.send.generate}
-        </button>
+        </Button>
       </div>
     </ContainetLedger>
   );
@@ -1300,61 +1226,3 @@ export function ConnectAddress({
     </ActionBar>
   );
 }
-
-// function SetHdpath({
-//   hdpath,
-//   onChangeAccount,
-//   onChangeIndex,
-//   addressLedger,
-//   hdPathError,
-//   addAddressLedger,
-// }) {
-//   return (
-//     <ActionBar>
-//       <ActionBarContentText>
-//         <Pane>
-//           <Pane
-//             display="flex"
-//             alignItems="center"
-//             flex={1}
-//             justifyContent="center"
-//           >
-//             <Text color="#fff" fontSize="20px">
-//               HD derivation path: {hdpath[0]}/{hdpath[1]}/
-//             </Text>
-//             <Input
-//               value={hdpath[2]}
-//               onChange={(e) => onChangeAccount(e)}
-//               width="50px"
-//               height={42}
-//               marginLeft={3}
-//               marginRight={3}
-//               fontSize="20px"
-//               textAlign="end"
-//             />
-//             <Text color="#fff" fontSize="20px">
-//               /{hdpath[3]}/
-//             </Text>
-//             <Input
-//               value={hdpath[4]}
-//               onChange={(e) => onChangeIndex(e)}
-//               width="50px"
-//               marginLeft={3}
-//               height={42}
-//               fontSize="20px"
-//               textAlign="end"
-//             />
-//           </Pane>
-//           {addressLedger !== null ? (
-//             <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
-//           ) : (
-//             <Dots />
-//           )}
-//         </Pane>
-//       </ActionBarContentText>
-//       <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
-//         Apply
-//       </Button>
-//     </ActionBar>
-//   );
-// }

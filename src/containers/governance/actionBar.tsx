@@ -79,8 +79,8 @@ class ActionBar extends Component {
             {
               typeUrl: '/cosmos.gov.v1beta1.TextProposal',
               value: {
-                Title: title,
-                Description: description,
+                title,
+                description,
               },
             },
             deposit,
@@ -192,8 +192,7 @@ class ActionBar extends Component {
     });
   };
 
-  onChangeInputDeposit = async (e) => {
-    const { value } = e.target;
+  onChangeInputDeposit = async (value) => {
     this.setState({
       valueDeposit: value,
     });

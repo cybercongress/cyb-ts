@@ -1,4 +1,4 @@
-import { Button } from '@cybercongress/gravity';
+import Button from 'src/components/btnGrd';
 import { Btn } from './ui';
 
 function Convert({
@@ -47,7 +47,6 @@ function Convert({
         className="btn"
         maxWidth="160px"
         onClick={convert}
-        type="button"
         disabled={amount <= 0}
       >
         convert

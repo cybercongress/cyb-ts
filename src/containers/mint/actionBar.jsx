@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Button,
-} from '@cybercongress/gravity';
+import { ActionBar as ActionBarContainer } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
@@ -14,6 +11,7 @@ import {
   Confirmed,
   TransactionError,
   Account,
+  BtnGrd,
 } from '../../components';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
@@ -147,9 +145,9 @@ function ActionBar({
   if (stage === STAGE_INIT) {
     return (
       <ActionBarContainer>
-        <Button disabled={resourceToken === 0} onClick={investmint}>
+        <BtnGrd disabled={resourceToken === 0} onClick={investmint}>
           Investmint
-        </Button>
+        </BtnGrd>
       </ActionBarContainer>
     );
   }

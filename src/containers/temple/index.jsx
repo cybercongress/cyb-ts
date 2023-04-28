@@ -54,7 +54,7 @@ const itemCarousel1 = [
       </div>
     ),
   },
-  { title: <div className={styles.itemCarousel}>🟣 spase-pussy</div> },
+  { title: <div className={styles.itemCarousel}>🟣 space-pussy</div> },
 ];
 
 function Temple({ defaultAccount }) {
@@ -81,6 +81,7 @@ function Temple({ defaultAccount }) {
 
         <ContainerGradientText
           userStyleContent={{ padding: 0, paddingTop: 30 }}
+          status="green"
         >
           <PlayBanerContent />
 
