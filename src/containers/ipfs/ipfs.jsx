@@ -245,7 +245,13 @@ function Ipfs() {
     const tempArr = [...dataToLink, ...dataFromLink];
     if (tempArr.length > 0) {
       tempArr.forEach((item) => {
-        const subject = item.tx.value.msg[0].value.neuron;
+        let subject = '';
+        if (item.tx.value.msg[0].value.neuron) {
+          subject = item.tx.value.msg[0].value.neuron;
+        }
+        if (item.tx.value.msg[0].value.sender) {
+          subject = item.tx.value.msg[0].value.sender;
+        }
         if (dataTemp[subject]) {
           dataTemp[subject].amount += 1;
         } else {

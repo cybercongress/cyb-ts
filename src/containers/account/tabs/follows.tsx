@@ -1,6 +1,5 @@
 import { Pane } from '@cybercongress/gravity';
-import { NoItems } from '../../../components';
-import AvatarIpfs from '../component/avatarIpfs';
+import { NoItems, Account } from '../../../components';
 
 type CommunityEntityProps = {
   items: string[];
@@ -22,10 +21,13 @@ function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
           gridGap="10px"
         >
           {items.map((item) => (
-            <AvatarIpfs
+            <Account
+              styleUser={{ flexDirection: 'column' }}
+              sizeAvatar="80px"
+              avatar
+              address={item}
               key={`community_${title}_${item}`}
-              showAddress
-              addressCyber={item}
+              trimAddressParam={[4, 3]}
             />
           ))}
         </Pane>
