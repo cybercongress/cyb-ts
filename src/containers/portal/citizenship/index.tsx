@@ -9,6 +9,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import { Nullable } from 'src/types';
 import txs from '../../../utils/txs';
 
 import { MainContainer, MoonAnimation, Stars } from '../components';
@@ -21,7 +23,7 @@ import {
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';
-import { getPin, getCredit } from '../../../utils/search/utils';
+import { getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import {
   CONSTITUTION_HASH,
@@ -143,7 +145,7 @@ function GetCitizenship({ defaultAccount }) {
   const [step, setStep] = useState(STEP_INIT);
   const [valueNickname, setValueNickname] = useState('');
   // const [validNickname, setValidNickname] = useState(true);
-  const [avatarIpfs, setAvatarIpfs] = useState(null);
+  const [avatarIpfs, setAvatarIpfs] = useState<Nullable<string>>(null);
   const [avatarImg, setAvatarImg] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [registerDisabled, setRegisterDisabled] = useState(false);
@@ -195,11 +197,16 @@ function GetCitizenship({ defaultAccount }) {
     const getPinAvatar = async () => {
       try {
         if (node !== null && avatarImg !== null) {
-          const toCid = await getPin(node, avatarImg);
+          const toCid = await addContenToIpfs(node, avatarImg);
           console.log('toCid', toCid);
-          setAvatarIpfs(toCid);
-          const datapinToIpfsCluster = await pinToIpfsCluster(toCid, avatarImg);
-          console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
+          if (toCid) {
+            setAvatarIpfs(toCid);
+            const datapinToIpfsCluster = await pinToIpfsCluster(
+              toCid,
+              avatarImg
+            );
+            console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
+          }
         }
       } catch (error) {
         console.log('error', error);
@@ -418,12 +425,12 @@ function GetCitizenship({ defaultAccount }) {
   const pinPassportData = async (nodeIpfs, data) => {
     try {
       const { address, nickname } = data;
-      const cidNickname = await getPin(nodeIpfs, nickname);
-      console.log('cidNickname', cidNickname);
-      const cidAddress = await getPin(nodeIpfs, address);
-      console.log('cidAddress', cidAddress);
-      pinToIpfsCluster(cidAddress, address);
-      pinToIpfsCluster(cidNickname, nickname);
+      const cidNickname = await addContenToIpfs(nodeIpfs, nickname);
+      const cidAddress = await addContenToIpfs(nodeIpfs, address);
+      if (cidAddress && cidNickname) {
+        pinToIpfsCluster(cidAddress, address);
+        pinToIpfsCluster(cidNickname, nickname);
+      }
     } catch (error) {
       console.log('error', error);
     }

@@ -55,6 +55,7 @@ export const parseRawIpfsData = (
           response.link = `/ipfs/${cid}`;
         } else {
           response.type = 'text';
+          response.content = dataBase64;
           response.text =
             dataBase64.length > 300
               ? `${dataBase64.slice(0, 300)}...`

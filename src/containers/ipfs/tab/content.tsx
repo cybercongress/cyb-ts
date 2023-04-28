@@ -141,7 +141,7 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
     if (contentDetails?.type === 'text') {
       return (
         <ReactMarkdownContainer>
-          {contentDetails?.text || cid.toString()}
+          {contentDetails?.content || cid.toString()}
         </ReactMarkdownContainer>
       );
     }

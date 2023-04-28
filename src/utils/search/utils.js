@@ -21,21 +21,6 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
-// TODO: IPFS move to utils
-export const getPin = async (node, content) => {
-  let cid;
-  if (node) {
-    if (typeof content === 'string') {
-      cid = await node.add(Buffer.from(content), { pin: true });
-    } else {
-      cid = await node.add(content, { pin: true });
-    }
-    console.warn('content', content, 'cid', cid);
-    return cid.path;
-  }
-  return undefined;
-};
-
 export const getIpfsHash = (string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
