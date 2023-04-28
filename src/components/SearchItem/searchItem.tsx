@@ -53,6 +53,7 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
           width: '100%',
           flex: 1,
           flexDirection: 'column',
+          wordBreak: 'break-word',
         }}
       >
         <div
