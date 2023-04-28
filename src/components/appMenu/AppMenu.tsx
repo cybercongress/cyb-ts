@@ -29,8 +29,8 @@ function Items({ item, selected, onClick }: Props) {
   return (
     <NavLink
       to={item.to}
-      className={({ isActive }) => {
-        return cx(styles.bookmarks__item, { [styles.active]: isActive });
+      className={() => {
+        return cx(styles.bookmarks__item, { [styles.active]: selected });
       }}
       onClick={onClick}
     >
