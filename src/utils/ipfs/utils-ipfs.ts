@@ -1,7 +1,4 @@
 /* eslint-disable import/no-unused-modules */
-import axios from 'axios';
-import { fromString } from 'uint8arrays/from-string';
-
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 import {
@@ -10,12 +7,10 @@ import {
   IPFSContentMeta,
   CallBackFuncStatus,
   IpfsContentSource,
-  IPFSContent,
 } from './ipfs.d';
 
 import {
   asyncGeneratorToReadableStream,
-  readableStreamToAsyncGenerator,
   toReadableStreamWithMime,
   getMimeFromUint8Array,
 } from './stream-utils';
@@ -24,7 +19,6 @@ import { CYBER } from '../config';
 
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb } from './db-utils';
-import all from 'it-all';
 
 // import RestIpfsNode from './restIpfsNode';
 
@@ -68,8 +62,35 @@ const loadIPFSContentFromDb = async (
   return undefined;
 };
 
+const fetchIPFSContentMeta = async (
+  node: IPFS | undefined | null,
+  cid: IPFSPath,
+  signal?: AbortSignal
+): Promise<IPFSContentMeta> => {
+  if (node) {
+    const path = `/ipfs/${cid}`;
+
+    const { type, size, local, blocks } = await node.files.stat(path, {
+      signal,
+    });
+    return {
+      type,
+      size: size || -1,
+      local,
+      blocks,
+      fromStat: true,
+    };
+  }
+  return {
+    type: 'file',
+    size: -1,
+    local: undefined,
+    fromStat: false,
+  };
+};
+
 const fetchIPFSContentFromNode = async (
-  node?: IPFS,
+  node: IPFS | undefined | null,
   cid: IPFSPath,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
@@ -92,32 +113,30 @@ const fetchIPFSContentFromNode = async (
   const path = `/ipfs/${cid}`;
 
   try {
-    const stat = await node.files.stat(path, { signal });
+    // const stat = await node.files.stat(path, { signal });
+    const meta = await fetchIPFSContentMeta(node, cid, signal);
 
     timer && clearTimeout(timer);
 
-    switch (stat.type) {
+    switch (meta.type) {
       case 'directory': {
         // TODO: return directory structure
         return { cid, availableDownload: true };
       }
       default: {
-        if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
-          const { mime, result: stream } = await asyncGeneratorToReadableStream(
-            node.cat(path, { signal }),
-            (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
-          );
+        // if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
+        const flushResults = (chunks, mime) =>
+          addDataChunksToIpfsCluster(cid, chunks, mime);
 
-          console.log('------ fetch node', mime, stream);
+        const { mime, result: stream } = await asyncGeneratorToReadableStream(
+          node.cat(path, { signal }),
+          flushResults
+        );
 
-          const meta: IPFSContentMeta = {
-            type: stat.type,
-            size: stat.size || -1,
-            mime,
-          };
+        // console.log('------ fetch node', meta, stream, mime);
 
-          return { result: stream, cid, meta };
-        }
+        return { result: stream, cid, meta: { ...meta, mime } };
+        // }
       }
     }
 
@@ -129,17 +148,21 @@ const fetchIPFSContentFromNode = async (
 };
 
 const fetchIPFSContentFromGateway = async (
-  node?: IPFS,
+  node: IPFS | undefined | null,
   cid: string,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
   // TODO: Should we use Cyber Gateway?
   // const { userGateway } = getIpfsUserGatewanAndNodeType();
 
-  // const response = await axios.get(`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`, {
-  //   signal: controller?.signal,
-  //   responseType: 'stream', // TODO: tmp disabled //arraybuffer
-  // });
+  // console.log('-----fetch gateway', node);
+  // let meta: IPFSContentMeta | undefined;
+  // if (node) {
+  //   // const stat = await node.files.stat(path, { signal: controller?.signal });
+
+  //   // console.log('headResponse meta', meta);
+  // }
+  const meta = await fetchIPFSContentMeta(node, cid, controller?.signal);
 
   const response = await fetch(`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`, {
     method: 'GET',
@@ -147,61 +170,32 @@ const fetchIPFSContentFromGateway = async (
   });
 
   if (response && response.body) {
-    const contentLength = parseInt(
-      response.headers['content-length'] || '-1',
-      10
-    );
-    const contentType = response.headers['content-type'];
-    const meta: IPFSContentMeta = {
-      type: 'file', // TODO: can be directory?
-      size: contentLength,
-      mime: contentType,
-    };
+    // fetch don't provide any headers
+
+    // const contentLength = parseInt(
+    //   response.headers['content-length'] || '-1',
+    //   10
+    // );
+    // const contentType = response.headers['content-type'];
+
+    // Extract meta if ipfs prob/node not started yet
+    // if (!meta.mime) {
+    //   meta = { ...meta, mime: contentType };
+    // }
+
+    const flushResults = (chunks, mime) =>
+      addDataChunksToIpfsCluster(cid, chunks, mime);
 
     const { mime, result } = await toReadableStreamWithMime(
       response.body,
-      (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime)
+      flushResults
     );
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    meta.mime = mime;
-    // fetchResult.result = result;
 
-    //
-    // const isReadableStream = typeof response.data.read === 'function';
-    // console.log('----fetchIPFSContentFromGateway', response, isReadableStream);
-
-    // // In case if axios return cached value,
-    // // convert it to buffer->readablestream
-    // if (isReadableStream) {
-    //   const { mime, result: data } = await asyncGeneratorToReadableStream(
-    //     readableStreamToAsyncGenerator(response.data),
-    //     (chunks, mime) => addDataChunksToIpfsCluster(cid, chunks, mime, true)
-    //   );
-    //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    //   // fetchResult.meta.mime = mime;
-    //   fetchResult.result = data;
-    // } else {
-    //   // const uint8Array = new TextEncoder().encode(response.data);
-    //   // const uint8Array = new Blob([response.data], {
-    //   //   type: contentType,
-    //   // });
-    //   console.log(
-    //     '----fetchResult1',
-    //     fetchResult,
-    //     new TextEncoder().encode(response.data),
-    //     new Uint8Array(
-    //       await new Blob([response.data], { type: contentType }).arrayBuffer()
-    //     )
-    //   );
-    //   fetchResult.result = new Uint8Array(
-    //     await new Blob([response.data], { type: contentType }).arrayBuffer()
-    //   );
-    // }
-
+    // console.log('=---fetchgatew', mime, meta, contentType);
     // pin to local ipfs node
     node?.pin?.add(cid);
 
-    return { cid, meta, result };
+    return { cid, meta: { ...meta, mime }, result };
   }
 
   return undefined;

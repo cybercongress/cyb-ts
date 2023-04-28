@@ -20,6 +20,7 @@ interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
 export const getMimeFromUint8Array = async (
   raw: Uint8Array
 ): Promise<string | undefined> => {
+  // TODO: try to pass only first N-bytes
   const fileType = await fileTypeFromBuffer(raw);
 
   return fileType?.mime || 'text/plain';
@@ -30,40 +31,44 @@ export const getMimeFromUint8Array = async (
  * Convert async generator to readable stream, with mime type
  * callback is called when stream is done
  * @param source
- * @param callback
+ * @param flush
  * @returns
  */
 export async function asyncGeneratorToReadableStream(
   source:
     | AsyncIterableWithReturn<Uint8Array>
     | AsyncGenerator<Uint8Array, any, any>,
-  callback?: StreamDoneCallback
+  flush?: StreamDoneCallback
 ): Promise<ResultWithMime> {
   const iterator = source[Symbol.asyncIterator]();
   const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
-  const chunk = await iterator.next();
-  const firstChunk: Uint8Array | null = chunk.value;
-  const mime = firstChunk ? await getMimeFromUint8Array(firstChunk) : undefined;
+  const { value: firstValue, done: firstDone } = await iterator.next();
+  const mime = firstValue ? await getMimeFromUint8Array(firstValue) : undefined;
 
-  if (chunk.done) {
-    callback && firstChunk?.length && callback([firstChunk], mime);
-    return { mime, result: firstChunk || new Uint8Array() };
-  }
+  // if (firstDone) {
+  //   flush && flush([firstValue || []], mime);
+  //   return { mime, result: firstValue || new Uint8Array() };
+  // }
+
+  let firstChunk: Uint8Array | null = firstValue;
 
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {
       try {
         if (firstChunk !== null) {
-          controller.enqueue(firstChunk);
-          callback && chunks.push(firstChunk);
+          controller.enqueue(firstValue);
+          flush && chunks.push(firstValue);
+          // accum chunks
+          firstChunk = null;
         }
         const chunk = await iterator.next();
         if (chunk.done) {
           controller.close();
-          callback && callback(chunks, mime);
+          // flush results
+          flush && flush(chunks, mime);
         } else {
           controller.enqueue(chunk.value);
-          callback && chunks.push(chunk.value);
+          flush && chunks.push(chunk.value);
         }
       } catch (error) {
         controller.error(error);
@@ -129,40 +134,51 @@ export async function asyncGeneratorToReadableStream(
 
 export async function toReadableStreamWithMime(
   stream: ReadableStream<Uint8Array>,
-  callback?: StreamDoneCallback
+  flush?: StreamDoneCallback
 ): Promise<ResultWithMime> {
-  const [firstChunkStream, restOfStream] = stream.tee();
+  const [firstChunkStream, fullStream] = stream.tee();
   const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
 
   // Read the first chunk from the stream
-  const reader = firstChunkStream.getReader();
-  const { done, value } = await reader.read();
+  const firstReader = firstChunkStream.getReader();
+  const { value } = await firstReader.read();
   const mime = value ? await getMimeFromUint8Array(value) : undefined;
 
-  if (done) {
-    reader.releaseLock();
-    callback && value?.length && callback([value], mime);
-    return { mime, result: value || new Uint8Array() };
-  }
+  // const accumulator = new TransformStream({
+  //   transform(chunk, controller) {
+  //     controller.enqueue(chunk);
+  //     chunks.push(chunk);
+  //   },
+  //   flush(controller) {
+  //     flush(chunks, mime);
+  //   }
+  // });
+  // fullStream.pipeTo(accumulator);
+
+  // if (done) {
+  //   firstReader.releaseLock();
+  //   callback && value?.length && callback([value], mime);
+  //   return { mime, result: value || new Uint8Array() };
+  // }
 
   // let firstChunk: Uint8Array | null = value;
-
+  // fullStream.pipeThrough
   const modifiedStream = new ReadableStream<Uint8Array>({
     async pull(controller) {
-      const restReader = restOfStream.getReader();
+      const restReader = fullStream.getReader();
       const { done, value } = await restReader.read();
       if (done) {
         controller.close();
-        callback && callback(chunks, mime);
+        flush && flush(chunks, mime);
       } else {
         controller.enqueue(value);
-        callback && chunks.push(value);
+        flush && chunks.push(value);
       }
       restReader.releaseLock();
     },
     cancel() {
       firstChunkStream.cancel();
-      restOfStream.cancel();
+      fullStream.cancel();
     },
   });
 

@@ -20,8 +20,10 @@ export type IPFSContentMeta = {
   type: 'file' | 'directory';
   size: number;
   blockSizes?: never[]; // ???
+  blocks?: number;
   data?: string; // ???
   mime?: string;
+  local?: boolean;
 };
 
 type IPFSData =

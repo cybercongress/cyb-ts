@@ -66,7 +66,7 @@ function ContentItem({
       {
         <div
           className={styles.contentLoadInfo}
-        >{`[source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} status: ${status}] cid: ${cid}`}</div>
+        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
       }
       <SearchItem
         key={cid}
