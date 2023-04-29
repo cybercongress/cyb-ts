@@ -19,34 +19,17 @@ async function* logAsyncIterable<T>(input: AsyncIterable<T>): AsyncIterable<T> {
   }
 }
 
-function waitForFlag(flag) {
+function* waitForFlag(flag) {
   return new Promise((resolve) => {
     const checkFlag = () => {
       if (flag) {
         resolve();
       } else {
-        setTimeout(checkFlag, 100);
+        setTimeout(checkFlag, 1000);
       }
     };
     checkFlag();
   });
-}
-async function* chunkArrayAndWait(
-  arr: Uint8Array,
-  contentLength: number,
-  offset: number,
-  N: number
-): AsyncIterable<Uint8Array> {
-  let i = offset;
-  const length = arr.length;
-  const doWork = i < contentLength;
-  console.log('---chunke and wait', doWork, offset, arr.length, contentLength);
-  // return;
-  waitForFlag(doWork && i < length);
-  while (doWork) {
-    yield arr.subarray(i, i + N);
-    i += N;
-  }
 }
 
 async function* chunkArray(
@@ -60,6 +43,19 @@ async function* chunkArray(
     yield arr.subarray(i, i + N);
     i += N;
   }
+}
+
+async function* chunkArrayAndWait(
+  arr: Uint8Array,
+  contentLength: number,
+  offset: number,
+  N: number
+): AsyncIterable<Uint8Array> {
+  let i = offset;
+  const doWork = i < contentLength;
+  console.log('---chunke and wait', doWork, offset, arr.length, contentLength);
+  waitForFlag(!doWork);
+  yield* chunkArray(arr, offset, N);
 }
 
 const downloadData = async (response: AsyncIterable<Uint8Array>, callback) => {
@@ -147,7 +143,12 @@ function VideoPlayer({ content, raw }: VideoPlayerProps) {
             // if (streamRef.current && streamRef.current.destroy) {
             //   streamRef.current.destroy();
             // }
-            const dataS = chunkArray(chunkData, start, 160000);
+            const dataS = chunkArrayAndWait(
+              chunkData,
+              content.meta?.size,
+              start,
+              160000
+            );
             // const dataS = asyncIterableOffset(start);
 
             console.log('---dataS', dataS, content);
