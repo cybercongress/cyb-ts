@@ -63,10 +63,11 @@ module.exports = {
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
     // is fixed.
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
+    // new webpack.ProvidePlugin({
+    //   Buffer: ['buffer', 'Buffer'],
+    //   process: 'process/browser',
+    //   stream: 'readable-stream',
+    // }),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {

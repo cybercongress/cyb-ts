@@ -9,13 +9,13 @@ import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import { getResponseResult } from 'src/utils/ipfs/stream-utils';
 
 import SearchItem from '../SearchItem/searchItem';
 import { CYBER } from '../../utils/config';
 
 import { getRankGrade } from '../../utils/search/utils';
 import styles from './contentItem.module.scss';
+import VideoPlayer from '../VideoPlayer/VideoPlayer';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -30,8 +30,11 @@ const getContentDetails = async (
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
   if (content?.result) {
-    const rawData = await getResponseResult(content.result);
-    const details = parseRawIpfsData(rawData, content.meta?.mime, cid);
+    const details = await parseRawIpfsData(
+      content.result,
+      content.meta?.mime,
+      cid
+    );
 
     return details;
   }
@@ -63,11 +66,9 @@ function ContentItem({
   return (
     <Link className={className} to={`/ipfs/${cid}`}>
       {/* status !== 'completed' && */}
-      {
-        <div
-          className={styles.contentLoadInfo}
-        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
-      }
+      <div
+        className={styles.contentLoadInfo}
+      >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
       <SearchItem
         key={cid}
         textPreview={
@@ -110,6 +111,10 @@ function ContentItem({
             // TODO: USE loaded content
             // url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
           />
+        )}
+        {ipfsDataDetails?.type === 'video' && (
+          // <video controls src={ipfsDataDetails.content} />
+          <VideoPlayer content={content} raw={ipfsDataDetails.content} />
         )}
       </SearchItem>
     </Link>

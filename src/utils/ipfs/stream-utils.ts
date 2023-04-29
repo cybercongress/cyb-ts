@@ -2,9 +2,9 @@
 /* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-
+import { IpfsRawDataResponse } from './ipfs';
 type ResultWithMime = {
-  result: Uint8Array | ReadableStream<Uint8Array>;
+  result: IpfsRawDataResponse;
   mime: string | undefined;
 };
 
@@ -13,9 +13,9 @@ type StreamDoneCallback = (
   mime: string | undefined
 ) => Promise<unknown>;
 
-interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
-  return?: (value?: unknown) => Promise<IteratorResult<T>>;
-}
+// interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
+//   return?: (value?: unknown) => Promise<IteratorResult<T>>;
+// }
 
 export const getMimeFromUint8Array = async (
   raw: Uint8Array
@@ -35,9 +35,9 @@ export const getMimeFromUint8Array = async (
  * @returns
  */
 export async function asyncGeneratorToReadableStream(
-  source:
-    | AsyncIterableWithReturn<Uint8Array>
-    | AsyncGenerator<Uint8Array, any, any>,
+  source: AsyncIterable<Uint8Array>,
+  // | AsyncIterableWithReturn<Uint8Array>
+  // | AsyncGenerator<Uint8Array, any, any>,
   flush?: StreamDoneCallback
 ): Promise<ResultWithMime> {
   const iterator = source[Symbol.asyncIterator]();
@@ -75,9 +75,10 @@ export async function asyncGeneratorToReadableStream(
       }
     },
     cancel(reason) {
-      if (source.return) {
-        source.return(reason);
-      }
+      console.log('-------> Readble stream was cancelled');
+      // if (source.return) {
+      //   source.return(reason);
+      // }
     },
   });
 
@@ -132,6 +133,35 @@ export async function asyncGeneratorToReadableStream(
 //   }
 // };
 
+export async function toAsyncIterableWithMime(
+  input: AsyncIterable<Uint8Array>,
+  flush?: StreamDoneCallback
+): Promise<ResultWithMime> {
+  const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
+
+  const reader = input[Symbol.asyncIterator]();
+  const firstChunk = await reader.next();
+  const { value: firstValue, done: firstDone } = firstChunk;
+  const mime = firstValue ? await getMimeFromUint8Array(firstValue) : undefined;
+
+  async function* process() {
+    flush && chunks.push(firstValue);
+    // console.log('----val', firstChunk);
+    yield firstValue;
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const chunk of input) {
+      flush && chunks.push(chunk);
+      // console.log('----val', chunk);
+      yield chunk;
+    }
+
+    flush && flush(chunks, mime);
+  }
+
+  return { mime, result: process() };
+}
+
 export async function toReadableStreamWithMime(
   stream: ReadableStream<Uint8Array>,
   flush?: StreamDoneCallback
@@ -144,29 +174,11 @@ export async function toReadableStreamWithMime(
   const { value } = await firstReader.read();
   const mime = value ? await getMimeFromUint8Array(value) : undefined;
 
-  // const accumulator = new TransformStream({
-  //   transform(chunk, controller) {
-  //     controller.enqueue(chunk);
-  //     chunks.push(chunk);
-  //   },
-  //   flush(controller) {
-  //     flush(chunks, mime);
-  //   }
-  // });
-  // fullStream.pipeTo(accumulator);
-
-  // if (done) {
-  //   firstReader.releaseLock();
-  //   callback && value?.length && callback([value], mime);
-  //   return { mime, result: value || new Uint8Array() };
-  // }
-
-  // let firstChunk: Uint8Array | null = value;
-  // fullStream.pipeThrough
   const modifiedStream = new ReadableStream<Uint8Array>({
     async pull(controller) {
       const restReader = fullStream.getReader();
       const { done, value } = await restReader.read();
+      // console.log('-----modifiedStream', done, value);
       if (done) {
         controller.close();
         flush && flush(chunks, mime);
@@ -185,28 +197,38 @@ export async function toReadableStreamWithMime(
   return { mime, result: modifiedStream };
 }
 
-export const getResponseResult = async (
-  response: ReadableStream<Uint8Array> | Uint8Array
-) => {
+export const getResponseResult = async (response: IpfsRawDataResponse) => {
   try {
     if (response instanceof Uint8Array) {
       return response;
     }
-
-    const reader = response.getReader();
     const chunks: Array<Uint8Array> = [];
-    return reader.read().then(function readStream({ done, value }) {
-      if (done) {
-        return uint8ArrayConcat(chunks);
+
+    if (response instanceof ReadableStream) {
+      const reader = response.getReader();
+      return reader.read().then(function readStream({ done, value }) {
+        if (done) {
+          return uint8ArrayConcat(chunks);
+        }
+
+        chunks.push(value);
+
+        return reader.read().then(readStream);
+      });
+    }
+
+    const reader = response[Symbol.asyncIterator]();
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const chunk of reader) {
+      if (chunk instanceof Uint8Array) {
+        chunks.push(chunk);
       }
+    }
 
-      chunks.push(value);
-
-      return reader.read().then(readStream);
-    });
+    return uint8ArrayConcat(chunks);
   } catch (error) {
     console.error(
-      `Error reading stream.\r\n Probably Hot reload error!`,
+      `Error reading stream/iterable.\r\n Probably Hot reload error!`,
       error
     );
 

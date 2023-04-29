@@ -13,6 +13,7 @@ import {
   asyncGeneratorToReadableStream,
   toReadableStreamWithMime,
   getMimeFromUint8Array,
+  toAsyncIterableWithMime,
 } from './stream-utils';
 
 import { CYBER } from '../config';
@@ -56,7 +57,7 @@ const loadIPFSContentFromDb = async (
       size: data.length,
       mime,
     };
-    return { result: data, cid, meta };
+    return { result: data, cid, meta, source: 'db' };
   }
 
   return undefined;
@@ -78,14 +79,12 @@ const fetchIPFSContentMeta = async (
       size: size || -1,
       local,
       blocks,
-      fromStat: true,
     };
   }
   return {
     type: 'file',
     size: -1,
     local: undefined,
-    fromStat: false,
   };
 };
 
@@ -125,17 +124,17 @@ const fetchIPFSContentFromNode = async (
       }
       default: {
         // if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
-        const flushResults = (chunks, mime) =>
-          addDataChunksToIpfsCluster(cid, chunks, mime);
+        const flushResults = (chunks, mime) => console.log('_FLUSH_RESULTS_ ');
+        // addDataChunksToIpfsCluster(cid, chunks, mime);
 
-        const { mime, result: stream } = await asyncGeneratorToReadableStream(
+        const { mime, result: stream } = await toAsyncIterableWithMime(
           node.cat(path, { signal }),
           flushResults
         );
 
-        // console.log('------ fetch node', meta, stream, mime);
+        console.log('------ fetch node', meta, stream, mime);
 
-        return { result: stream, cid, meta: { ...meta, mime } };
+        return { result: stream, cid, meta: { ...meta, mime }, source: 'node' };
         // }
       }
     }
@@ -163,8 +162,8 @@ const fetchIPFSContentFromGateway = async (
   //   // console.log('headResponse meta', meta);
   // }
   const meta = await fetchIPFSContentMeta(node, cid, controller?.signal);
-
-  const response = await fetch(`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`, {
+  const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+  const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
   });
@@ -195,7 +194,13 @@ const fetchIPFSContentFromGateway = async (
     // pin to local ipfs node
     node?.pin?.add(cid);
 
-    return { cid, meta: { ...meta, mime }, result };
+    return {
+      cid,
+      meta: { ...meta, mime },
+      result,
+      source: 'gateway',
+      contentUrl,
+    };
   }
 
   return undefined;

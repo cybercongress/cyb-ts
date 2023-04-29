@@ -36,8 +36,11 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
         // setContentIpfs(contentIpfs);
         setStatus('availableDownload');
       } else if (contentIpfs.result) {
-        const rawData = await getResponseResult(contentIpfs.result);
-        const details = parseRawIpfsData(rawData, contentIpfs.meta?.mime, cid);
+        const details = await parseRawIpfsData(
+          contentIpfs.result,
+          contentIpfs.meta?.mime,
+          cid
+        );
         setContentDetails(details);
         setStatus('downloaded');
       }

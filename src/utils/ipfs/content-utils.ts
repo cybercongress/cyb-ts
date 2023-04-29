@@ -1,13 +1,30 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import { IPFSPath } from 'kubo-rpc-client/types';
-import { IPFSContentDetails } from './ipfs';
+import {
+  IPFSContentDetails,
+  IpfsContentSource,
+  IpfsRawDataResponse,
+} from './ipfs';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
+
+import { getResponseResult } from './stream-utils';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
   return URL.createObjectURL(blob);
 }
+
+type ContentType = 'video' | 'other';
+
+// eslint-disable-next-line import/no-unused-modules
+export const detectContentType = (mime: string | undefined): ContentType => {
+  if (mime && mime.indexOf('video') !== -1) {
+    return 'video';
+  }
+
+  return 'other';
+};
 
 // eslint-disable-next-line import/no-unused-modules
 export const chunksToBlob = (
@@ -16,16 +33,24 @@ export const chunksToBlob = (
 ) => new Blob(chunks, mime ? { type: mime } : {});
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
-export const parseRawIpfsData = (
-  rawData: Uint8Array,
+export const parseRawIpfsData = async (
+  rawDataResponse: IpfsRawDataResponse,
   mime: string | undefined,
   cid: IPFSPath
-): IPFSContentDetails => {
+): Promise<IPFSContentDetails> => {
   try {
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
     };
+
+    if (detectContentType(mime) === 'video') {
+      response.type = 'video';
+      // response.content = await getResponseResult(rawDataResponse);
+      return response;
+    }
+
+    const rawData = await getResponseResult(rawDataResponse);
 
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;
@@ -73,7 +98,7 @@ export const parseRawIpfsData = (
 
     return response;
   } catch (e) {
-    console.log('----parseRawIpfsData', e, cid, rawData, mime);
+    console.log('----parseRawIpfsData', e, cid, mime);
     return undefined;
   }
 };

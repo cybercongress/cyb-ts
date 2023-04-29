@@ -785,8 +785,11 @@ export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getIPFSContent(ipfs, cid);
 
   if (response.result) {
-    const rawData = await getResponseResult(response.result);
-    const details = parseRawIpfsData(rawData, response.meta.mime, cid);
+    const details = await parseRawIpfsData(
+      response.result,
+      response.meta.mime,
+      cid
+    );
     return details.content;
   }
 

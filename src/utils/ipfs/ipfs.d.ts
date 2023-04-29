@@ -40,23 +40,31 @@ export type Uint8ArrayWithMime = {
   rawData: Uint8Array;
 };
 
+export type IpfsRawDataResponse =
+  | ReadableStream<Uint8Array>
+  | Uint8Array
+  | AsyncIterator<Uint8Array>;
+
+export type IpfsContentSource = 'db' | 'node' | 'gateway';
+
 export type IPFSContentDetails =
   | {
       text?: string;
-      type?: 'image' | 'pdf' | 'link' | 'text';
+      type?: 'image' | 'pdf' | 'link' | 'text' | 'video';
       content?: string;
       link?: string;
       gateway: boolean;
+      streamMaybe?: IpfsRawDataResponse;
     }
   | undefined;
 
 export type IPFSContent = {
   availableDownload?: boolean;
-  result?: Uint8Array | ReadableStream<Uint8Array>; //IPFSContentDetails;
+  result?: IpfsRawDataResponse; //IPFSContentDetails;
   cid: IPFSPath;
   meta?: IPFSContentMeta;
+  source: IpfsContentSource;
+  contentUrl?: string;
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;
-
-export type IpfsContentSource = 'db' | 'node' | 'gateway';
