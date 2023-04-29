@@ -22,6 +22,7 @@ function FormatNumberTokens({
   styleValue,
   float,
   customText,
+  marginContainer,
   ...props
 }) {
   const decimal = getDecimal(value, float);
@@ -46,6 +47,7 @@ function FormatNumberTokens({
             marginImg="0 3px 0 0"
             denomValue={text}
             onlyImg
+            marginContainer={marginContainer}
             tooltipStatusImg={tooltipStatusImg}
           />
         </div>

@@ -8,6 +8,7 @@ import {
   Battery,
   IconButton,
 } from '@cybercongress/gravity';
+
 import TextareaAutosize from 'react-textarea-autosize';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
@@ -316,13 +317,18 @@ export function StartStageSearchActionBar({
 }
 
 export function GovernanceStartStageActionBar({
-  valueSelect,
-  onChangeSelect,
+  // valueSelect,
+  // onChangeSelect,
   onClickBtn,
 }) {
   return (
-    <ActionBar>
-      <ActionBarContentText>
+    <ActionBarContainer
+      button={{
+        text: 'Propose',
+        onClick: onClickBtn,
+      }}
+    >
+      {/* <ActionBarContentText>
         <select
           style={{ height: 42, width: '60%' }}
           className="select-green"
@@ -330,13 +336,12 @@ export function GovernanceStartStageActionBar({
           onChange={onChangeSelect}
         >
           <option value="textProposal">Text Proposal</option>
-          {/* <option value="communityPool">Community Pool Spend</option>
+          <option value="communityPool">Community Pool Spend</option>
         <option value="paramChange">Param Change</option>
-        <option value="softwareUpgrade">Software Upgrade</option> */}
+        <option value="softwareUpgrade">Software Upgrade</option>
         </select>
-      </ActionBarContentText>
-      <Button onClick={onClickBtn}>Propose</Button>
-    </ActionBar>
+      </ActionBarContentText> */}
+    </ActionBarContainer>
   );
 }
 

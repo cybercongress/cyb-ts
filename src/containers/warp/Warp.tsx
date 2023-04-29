@@ -30,6 +30,7 @@ import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
 import { TypeTab } from './type';
+import { RootState } from 'src/redux/store';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -37,7 +38,7 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 function Warp() {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
-  const { defaultAccount } = useSelector((state) => state.pocket);
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
   const { addressActive } = useSetActiveAddress(defaultAccount);

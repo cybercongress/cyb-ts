@@ -4,7 +4,6 @@ import {
   Pane,
   Button,
 } from '@cybercongress/gravity';
-import { Link, useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -18,7 +17,6 @@ import {
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
-  BtnGrd,
 } from '../../components';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
@@ -26,11 +24,12 @@ import {
   convertAmountReverce,
   selectNetworkImg,
 } from '../../utils/utils';
-import { ActionBarSteps } from '../portal/components';
 
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
+import { RootState } from 'src/redux/store';
+import { TypeTab, TypeTabEnum } from './type';
+import ImgDenom from 'src/components/valueImg/imgDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -53,13 +52,31 @@ const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
-function ActionBar({ stateActionBar }) {
-  const { defaultAccount } = useSelector((state) => state.pocket);
+// generated, recheck
+interface Props {
+  stateActionBar: {
+    tokenAAmount: string;
+    tokenBAmount: string;
+    tokenA: string;
+    tokenB: string;
+    selectedPool: {
+      id: string;
+    };
+    updateFunc?: () => void;
+    isExceeded: boolean;
+    tab: TypeTab;
+    amountPoolCoin: string;
+    myPools: Record<string, { id: string }>;
+    selectMyPool: string;
+  };
+}
+
+function ActionBar({ stateActionBar }: Props) {
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();
-  const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -81,8 +98,6 @@ function ActionBar({ stateActionBar }) {
     myPools,
     selectMyPool,
   } = stateActionBar;
-
-  const { passport } = useGetPassportByAddress(addressActive);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -136,7 +151,6 @@ function ActionBar({ stateActionBar }) {
           coinFunc(reduceAmountA, tokenA),
         ];
       }
-      console.log(`depositCoins`, depositCoins);
 
       const response = await signingClient.createPool(
         address,
@@ -145,7 +159,6 @@ function ActionBar({ stateActionBar }) {
         fee
       );
 
-      console.log(`response`, response);
       if (response.code === 0) {
         setTxHash(response.transactionHash);
       } else {
@@ -175,7 +188,6 @@ function ActionBar({ stateActionBar }) {
           fee
         );
 
-        console.log(`response`, response);
         if (response.code === 0) {
           setTxHash(response.transactionHash);
         } else {
@@ -237,7 +249,6 @@ function ActionBar({ stateActionBar }) {
         ),
       ];
 
-      console.log(`depositCoins`, depositCoins);
       if (addressActive !== null && addressActive.bech32 === address) {
         const response = await signingClient.depositWithinBatch(
           address,
@@ -246,7 +257,6 @@ function ActionBar({ stateActionBar }) {
           fee
         );
 
-        console.log(`response`, response);
         if (response.code === 0) {
           setTxHash(response.transactionHash);
         } else {
@@ -275,87 +285,51 @@ function ActionBar({ stateActionBar }) {
     setLinkIbcTxs(undefined);
   };
 
-  const handleHistory = (to: string) => {
-    navigate(to);
-  };
-
-  if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
-    return (
-      <ActionBarCenter
-        btnText="get citizenship"
-        onClickFnc={() => handleHistory('/portal')}
-      />
-    );
-  }
-
-  if (addressActive === null) {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          Start by adding a address to
-          <Link style={{ marginLeft: 5 }} to="/">
-            your pocket
-          </Link>
-          .
-        </ActionBarContentText>
-      </ActionBarContainer>
-    );
-  }
-
-  if (addressActive !== null && addressActive.keys !== 'keplr') {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          Start by connecting keplr wallet to
-          <Link style={{ marginLeft: 5 }} to="/">
-            your pocket
-          </Link>
-          .
-        </ActionBarContentText>
-      </ActionBarContainer>
-    );
-  }
-
-  if (tab === 'create-pool' && stage === STAGE_INIT) {
-    return (
-      <ActionBarCenter
-        disabled={isExceeded}
-        btnText="create pool"
-        onClickFnc={() => createPool()}
-      >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+  const actionBarConfig = {
+    [TypeTabEnum.CREATE_POOL]: {
+      button: {
+        text: 'create pool',
+        onClick: createPool,
+        disabled: isExceeded,
+      },
+      text: (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           price 1 000 000 000
           <img
-            style={{ width: '20px' }}
+            style={{ width: '20px', marginLeft: '5px' }}
             src={selectNetworkImg(CYBER.CHAIN_ID)}
-            alt="img"
+            alt={CYBER.CHAIN_ID}
           />
         </div>
-      </ActionBarCenter>
-    );
-  }
+      ),
+    },
+    [TypeTabEnum.ADD_LIQUIDITY]: {
+      button: {
+        text: 'deposit',
+        onClick: depositWithinBatch,
+        disabled: isExceeded,
+      },
+    },
+    [TypeTabEnum.SUB_LIQUIDITY]: {
+      button: {
+        text: 'withdrawal',
+        onClick: withdwawWithinBatch,
+        disabled: isExceeded,
+      },
+    },
+  };
 
-  if (tab === 'sub-liquidity' && stage === STAGE_INIT) {
+  if (stage !== STAGE_CONFIRMED_IBC) {
     return (
-      <ActionBarSteps>
-        <BtnGrd
-          disabled={isExceeded}
-          onClick={() => withdwawWithinBatch()}
-          text="withdrawal"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (tab === 'add-liquidity' && stage === STAGE_INIT) {
-    return (
-      <ActionBarSteps>
-        <BtnGrd
-          disabled={isExceeded}
-          onClick={() => depositWithinBatch()}
-          text="deposit"
-        />
-      </ActionBarSteps>
+      <ActionBarCenter
+        button={actionBarConfig[tab].button}
+        text={errorMessage || actionBarConfig[tab].text}
+      />
     );
   }
 

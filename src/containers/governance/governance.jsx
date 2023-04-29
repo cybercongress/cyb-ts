@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
 import { useQueryClient } from 'src/contexts/queryClient';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
@@ -40,30 +39,16 @@ function Statistics({ communityPoolCyber, staked }) {
   );
 }
 
-function Governance({ defaultAccount }) {
+function Governance() {
   const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
-  const [account, setAccount] = useState(null);
   const [staked, setStaked] = useState(0);
 
   useEffect(() => {
     feachMinDeposit();
   }, []);
-
-  useEffect(() => {
-    if (
-      defaultAccount.account !== null &&
-      defaultAccount.account.cyber &&
-      defaultAccount.account.cyber.keys !== 'read-only'
-    ) {
-      setAccount(defaultAccount.account.cyber);
-    } else {
-      setAccount(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount.name]);
 
   useEffect(() => {
     const getStatistics = async () => {
@@ -223,15 +208,9 @@ function Governance({ defaultAccount }) {
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
       </main>
-      <ActionBar account={account} update={feachProposals} />
+      <ActionBar update={feachProposals} />
     </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Governance);
+export default Governance;
