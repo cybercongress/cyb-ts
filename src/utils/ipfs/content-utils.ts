@@ -9,6 +9,12 @@ function createObjectURL(rawData: Uint8Array, type: string) {
   return URL.createObjectURL(blob);
 }
 
+function createImgData(rawData: Uint8Array, type: string) {
+  const imgBase64 = uint8ArrayToAsciiString(rawData, 'base64');
+  const file = `data:${type};base64,${imgBase64}`;
+  return file;
+}
+
 // eslint-disable-next-line import/no-unused-modules
 export const chunksToBlob = (
   chunks: Array<Uint8Array>,
@@ -36,7 +42,7 @@ export const parseRawIpfsData = (
     ) {
       if (isSvg(Buffer.from(rawData))) {
         response.type = 'image';
-        response.content = createObjectURL(rawData, 'image/svg+xml'); // file
+        response.content = createImgData(rawData, 'image/svg+xml'); // file
       } else {
         const dataBase64 = uint8ArrayToAsciiString(rawData);
         // TODO: search can bel longer for 42???!
@@ -63,7 +69,7 @@ export const parseRawIpfsData = (
         }
       }
     } else if (mime.indexOf('image') !== -1) {
-      response.content = createObjectURL(rawData, mime); // file
+      response.content = createImgData(rawData, mime); // file
       response.type = 'image';
       response.gateway = false;
     } else if (mime.indexOf('application/pdf') !== -1) {
