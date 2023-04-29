@@ -2,16 +2,14 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import { useIpfs } from 'src/contexts/ipfs';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';
 
 function ForceQuitter() {
-  const { node } = useIpfs();
   let graph;
   const [hasLoaded, setHasLoaded] = useState(true);
-  const { data: dataGql } = useGetDataGql(node);
+  const { data: dataGql } = useGetDataGql();
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
