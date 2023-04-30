@@ -1,6 +1,9 @@
 /* eslint-disable import/no-unused-modules */
 import { AddResult, IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import { Option } from 'src/types';
+
 import {
   getIpfsUserGatewanAndNodeType,
   IPFSContentMaybe,
@@ -10,7 +13,6 @@ import {
 } from './ipfs.d';
 
 import {
-  asyncGeneratorToReadableStream,
   toReadableStreamWithMime,
   getMimeFromUint8Array,
   toAsyncIterableWithMime,
@@ -20,12 +22,6 @@ import { CYBER } from '../config';
 
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb } from './db-utils';
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
-import { Option } from 'src/types';
-
-// import RestIpfsNode from './restIpfsNode';
-
-const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
 
 // Get IPFS node from local storage
 // TODO: refactor
@@ -170,7 +166,7 @@ const fetchIPFSContentFromGateway = async (
   });
 
   if (response && response.body) {
-    // fetch don't provide any headers
+    // fetch doesn't provide any headers in our case :(
 
     // const contentLength = parseInt(
     //   response.headers['content-length'] || '-1',
@@ -183,6 +179,7 @@ const fetchIPFSContentFromGateway = async (
     //   meta = { ...meta, mime: contentType };
     // }
 
+    // TODO: refact. in case of gateway just PIN to cluster
     const flushResults = (chunks, mime) =>
       addDataChunksToIpfsCluster(cid, chunks, mime);
 
@@ -295,6 +292,7 @@ const addContenToIpfs = async (
     } else {
       cid = await node.add(content, { pin: true });
     }
+    // TODO: pin | add to cluster
     console.warn('content', content, 'cid', cid);
     return cid.path;
   }

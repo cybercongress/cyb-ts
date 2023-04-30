@@ -3,6 +3,7 @@
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 import { IpfsRawDataResponse } from './ipfs';
+
 type ResultWithMime = {
   result: IpfsRawDataResponse;
   mime: string | undefined;
@@ -26,113 +27,6 @@ export const getMimeFromUint8Array = async (
   return fileType?.mime || 'text/plain';
 };
 
-// eslint-disable-next-line import/no-unused-modules
-/**
- * Convert async generator to readable stream, with mime type
- * callback is called when stream is done
- * @param source
- * @param flush
- * @returns
- */
-export async function asyncGeneratorToReadableStream(
-  source: AsyncIterable<Uint8Array>,
-  // | AsyncIterableWithReturn<Uint8Array>
-  // | AsyncGenerator<Uint8Array, any, any>,
-  flush?: StreamDoneCallback
-): Promise<ResultWithMime> {
-  const iterator = source[Symbol.asyncIterator]();
-  const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
-  const { value: firstValue, done: firstDone } = await iterator.next();
-  const mime = firstValue ? await getMimeFromUint8Array(firstValue) : undefined;
-
-  // if (firstDone) {
-  //   flush && flush([firstValue || []], mime);
-  //   return { mime, result: firstValue || new Uint8Array() };
-  // }
-
-  let firstChunk: Uint8Array | null = firstValue;
-
-  const stream = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      try {
-        if (firstChunk !== null) {
-          controller.enqueue(firstValue);
-          flush && chunks.push(firstValue);
-          // accum chunks
-          firstChunk = null;
-        }
-        const chunk = await iterator.next();
-        if (chunk.done) {
-          controller.close();
-          // flush results
-          flush && flush(chunks, mime);
-        } else {
-          controller.enqueue(chunk.value);
-          flush && chunks.push(chunk.value);
-        }
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-    cancel(reason) {
-      console.log('-------> Readble stream was cancelled');
-      // if (source.return) {
-      //   source.return(reason);
-      // }
-    },
-  });
-
-  return { mime, result: stream };
-}
-
-// export async function arrayToReadableStream(
-//   source: Uint8Array
-// ): Promise<ResultWithMime> {
-//   const mime = await getMimeFromUint8Array(source);
-//   const stream = new ReadableStream<Uint8Array>({
-//     async pull(controller) {
-//       try {
-//         controller.enqueue(source);
-//         controller.close();
-//       } catch (error) {
-//         controller.error(error);
-//       }
-//     },
-//     cancel(reason) {
-//       throw Error(`Not implemented: ${reason}`);
-//     },
-//   });
-
-//   return { mime, result: stream };
-//   // return stream.pipeThrough(new WritableStream());
-// }
-
-// eslint-disable-next-line import/no-unused-modules, func-names
-
-// /**
-//  * Converts ReadableStream to AsyncGenerator
-//  * @param stream
-//  * @returns
-//  */
-// // eslint-disable-next-line func-names
-// export const readableStreamToAsyncGenerator = async function* <T>(
-//   stream: ReadableStream<T>
-// ): AsyncGenerator<T> {
-//   const reader = stream.getReader();
-//   try {
-//     while (true) {
-//       // eslint-disable-next-line no-await-in-loop
-//       const { done, value } = await reader.read();
-//       if (done) {
-//         return;
-//       }
-//       yield value;
-//     }
-//   } finally {
-//     reader.releaseLock();
-//   }
-// };
-
 export async function toAsyncIterableWithMime(
   input: AsyncIterable<Uint8Array>,
   flush?: StreamDoneCallback
@@ -146,13 +40,11 @@ export async function toAsyncIterableWithMime(
 
   async function* process() {
     flush && chunks.push(firstValue);
-    // console.log('----val', firstChunk);
     yield firstValue;
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const chunk of input) {
       flush && chunks.push(chunk);
-      // console.log('----val', chunk);
       yield chunk;
     }
 
