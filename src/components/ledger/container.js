@@ -43,9 +43,14 @@ export function ContainetLedger({ logo, children, onClickBtnCloce, styles }) {
           <button
             onClick={onClickBtnCloce}
             type="button"
-            style={{ color: 'rgb(225, 225, 225)' }}
+            style={{
+              color: 'rgb(225, 225, 225)',
+              border: 'unset',
+              background: 'unset',
+              fontSize: 20,
+            }}
           >
-            exit
+            close
           </button>
           ]
         </span>

@@ -1,10 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useRef } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Button,
-  Pane,
-} from '@cybercongress/gravity';
+import { ActionBar as ActionBarContainer, Pane } from '@cybercongress/gravity';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
@@ -18,6 +14,7 @@ import {
   Account,
 } from '../../../components';
 import { getTxs } from '../../../utils/search/utils';
+import Button from 'src/components/btnGrd';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

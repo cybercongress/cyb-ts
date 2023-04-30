@@ -17,6 +17,9 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
     async () => getAvatarIpfs(cidAvatar, node),
     {
       enabled: Boolean(node && cidAvatar),
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+      retry: 0,
     }
   );
 

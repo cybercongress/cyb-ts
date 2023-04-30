@@ -1,7 +1,9 @@
 .wrapper {
   display: flex;
   justify-content: space-between;
-  position: relative;
+  position: sticky;
+  top: 0;
   padding: 15px;
+  background-color: #000000;
   z-index: 5;
 }

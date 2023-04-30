@@ -13,7 +13,7 @@ import {
   ButtonImgText,
 } from '../../components';
 
-import { getPin, getTxs } from '../../utils/search/utils';
+import { getTxs } from '../../utils/search/utils';
 
 import {
   LEDGER,
@@ -24,6 +24,7 @@ import {
 import { trimString } from '../../utils/utils';
 import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -117,7 +118,7 @@ class ActionBarContainer extends Component {
     if (file === null && content.match(PATTERN_IPFS_HASH)) {
       toCid = content;
     } else {
-      toCid = await getPin(node, content);
+      toCid = await addContenToIpfs(node, content);
     }
 
     this.setState({
@@ -134,7 +135,7 @@ class ActionBarContainer extends Component {
     let fromCid = keywordHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await getPin(node, fromCid);
+      fromCid = await addContenToIpfs(node, fromCid);
     }
 
     this.setState({

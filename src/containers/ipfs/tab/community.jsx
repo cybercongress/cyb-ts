@@ -1,12 +1,20 @@
 import { Pane } from '@cybercongress/gravity';
-import { NoItems } from '../../../components';
-import AvatarIpfs from '../../account/component/avatarIpfs';
+import { NoItems, Account } from '../../../components';
 
 function CommunityTab({ data }) {
   if (Object.keys(data).length > 0) {
     const rowItem = Object.keys(data)
       .sort((a, b) => data[b].amount - data[a].amount)
-      .map((key) => <AvatarIpfs key={key} showAddress addressCyber={key} />);
+      .map((key) => (
+        <Account
+          styleUser={{ flexDirection: 'column' }}
+          sizeAvatar="80px"
+          avatar
+          key={key}
+          address={key}
+          trimAddressParam={[4, 3]}
+        />
+      ));
 
     return (
       <Pane marginX="auto" width="60%" marginY={25}>

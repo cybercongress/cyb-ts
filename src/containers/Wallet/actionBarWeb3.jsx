@@ -1,4 +1,5 @@
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
+import Button from 'src/components/btnGrd';
 
 function ActionBarWeb3({ web3, accountsETH }) {
   const onClickConnect = async () => {

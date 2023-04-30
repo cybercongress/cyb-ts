@@ -13,7 +13,6 @@ import txs from '../../../utils/txs';
 import { Dots, ButtonIcon, BtnGrd } from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
-import { getPin } from '../../../utils/search/utils';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
@@ -31,6 +30,7 @@ import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -219,9 +219,11 @@ function ActionBarPortalGift({
 
   const pinPassportData = async (nodeIpfs, address) => {
     try {
-      const cidAddress = await getPin(nodeIpfs, address);
+      const cidAddress = await addContenToIpfs(nodeIpfs, address);
       console.log('cidAddress', cidAddress);
-      pinToIpfsCluster(cidAddress, address);
+      if (cidAddress) {
+        pinToIpfsCluster(cidAddress, address);
+      }
     } catch (error) {
       console.log('error', error);
     }

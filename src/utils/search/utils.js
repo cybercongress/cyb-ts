@@ -21,21 +21,6 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
-// TODO: IPFS move to utils
-export const getPin = async (node, content) => {
-  let cid;
-  if (node) {
-    if (typeof content === 'string') {
-      cid = await node.add(Buffer.from(content), { pin: true });
-    } else {
-      cid = await node.add(content, { pin: true });
-    }
-    console.warn('content', content, 'cid', cid);
-    return cid.path;
-  }
-  return undefined;
-};
-
 export const getIpfsHash = (string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
@@ -782,18 +767,19 @@ export const authAccounts = async (address) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const response = await getIPFSContent(ipfs, cid);
+  try {
+    const response = await getIPFSContent(ipfs, cid);
 
-  if (response.result) {
-    const details = await parseRawIpfsData(
-      response.result,
-      response.meta.mime,
-      cid
-    );
-    return details.content;
+    if (response?.result) {
+      const rawData = await getResponseResult(response.result);
+      const details = parseRawIpfsData(rawData, response.meta.mime, cid);
+      return details.content;
+    }
+
+    return undefined;
+  } catch (error) {
+    return undefined;
   }
-
-  return undefined;
 };
 
 // Access-Control-Allow-Origin

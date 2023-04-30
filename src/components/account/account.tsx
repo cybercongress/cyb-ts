@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -6,6 +6,7 @@ import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
+import { type } from 'ramda';
 
 function useGetValidatorInfo(address) {
   const queryClient = useQueryClient();
@@ -54,6 +55,17 @@ function useGetPassportByAddress(address) {
   };
 }
 
+type Props = {
+  address: string;
+  children?: React.ReactNode;
+  colorText?: string;
+  avatar?: boolean;
+  margin?: string;
+  sizeAvatar?: string;
+  styleUser?: object;
+  trimAddressParam?: [number, number];
+};
+
 function Account({
   address,
   children,
@@ -62,7 +74,8 @@ function Account({
   margin,
   sizeAvatar,
   styleUser,
-}) {
+  trimAddressParam = [9, 3],
+}: Props) {
   const [moniker, setMoniker] = useState(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
   const { data: dataPassport } = useGetPassportByAddress(address);
@@ -80,8 +93,8 @@ function Account({
   }, [dataValidInfo, dataPassport]);
 
   const trimAddress = useMemo(() => {
-    return trimString(address, 9, 3);
-  }, [address]);
+    return trimString(address, trimAddressParam[0], trimAddressParam[1]);
+  }, [address, trimAddressParam]);
 
   const linkAddress = useMemo(() => {
     if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
@@ -109,7 +122,7 @@ function Account({
         ...styleUser,
       }}
     >
-      {avatar && cidAvatar !== null && (
+      {avatar && (
         <div
           style={{
             width: sizeAvatar || '30px',
@@ -117,7 +130,7 @@ function Account({
             borderRadius: '50%',
           }}
         >
-          <AvataImgIpfs cidAvatar={cidAvatar} />
+          <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
         </div>
       )}
       <Link

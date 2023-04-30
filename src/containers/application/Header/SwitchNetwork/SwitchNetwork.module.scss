@@ -18,8 +18,13 @@
       }
     }
 
+    .networkBtnImg {
+      width: 65px;
+      height: 65px;
+    }
+
     .containerBtnItemSelectText {
-      font-size: 17px;
+      transform: translateX(5px);
     }
   }
 }
@@ -43,6 +48,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     left: 50%;
+    transition: 0.2s;
   }
 }
 
@@ -88,17 +94,22 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 10px;
+  height: 100%;
+  justify-content: space-between;
+  padding: 27px 0;
 }
 
 .containerSwichNetworkList {
   display: flex;
   flex-direction: column;
-  background: #00000075;
+  background: #0000008c;
   padding-left: 15px;
   width: 250px;
   padding-bottom: 15px;
   opacity: 0;
-  transition: 0.1s;
+  transition: 0.2s;
+  backdrop-filter: blur(7px);
 
   &entering {
     opacity: 0;
@@ -148,4 +159,11 @@
   // top: unset !important;
   top: 90px !important;
   z-index: 3;
+}
+
+.networkBtnImg {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  transition: 0.2s;
 }

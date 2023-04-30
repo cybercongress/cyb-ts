@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
+import { AddResult, IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 import {
   getIpfsUserGatewanAndNodeType,
@@ -20,6 +20,8 @@ import { CYBER } from '../config';
 
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb } from './db-utils';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import { Option } from 'src/types';
 
 // import RestIpfsNode from './restIpfsNode';
 
@@ -264,7 +266,7 @@ const getIPFSContent = async (
 };
 
 const catIPFSContentFromNode = (
-  node: IPFS | undefined | null,
+  node: IPFS,
   cid: IPFSPath,
   offset: number,
   controller?: AbortController
@@ -282,9 +284,27 @@ const catIPFSContentFromNode = (
   return node.cat(path, { offset, signal: controller?.signal });
 };
 
+const addContenToIpfs = async (
+  node: IPFS,
+  content: ImportCandidate
+): Promise<Option<string>> => {
+  let cid: AddResult;
+  if (node) {
+    if (typeof content === 'string') {
+      cid = await node.add(Buffer.from(content), { pin: true });
+    } else {
+      cid = await node.add(content, { pin: true });
+    }
+    console.warn('content', content, 'cid', cid);
+    return cid.path;
+  }
+  return undefined;
+};
+
 export {
   getIPFSContent,
   getIpfsUserGatewanAndNodeType,
   catIPFSContentFromNode,
-  fetchIpfsContent
+  fetchIpfsContent,
+  addContenToIpfs,
 };

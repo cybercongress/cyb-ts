@@ -5,10 +5,10 @@ import Tooltip from '../tooltip/tooltip';
 const size = '15 Mb';
 
 export type StatusType =
-  | 'understandingState'
-  | 'impossibleLoad'
+  | 'executing'
+  | 'timeout'
   | 'availableDownload'
-  | 'downloaded'
+  | 'completed'
   | 'sparkApp'
   | 'legacy';
 
@@ -19,13 +19,13 @@ const typeStatus = (type: StatusType) => {
   };
 
   switch (type) {
-    case 'understandingState':
+    case 'executing':
       status = {
         color: '#00b0ff',
         text: 'cyb: I am getting content meta information',
       };
       break;
-    case 'impossibleLoad':
+    case 'timeout':
       status = {
         color: '#ff3d00',
         text: 'cyb: I was unable to find traces of this in dht :-(',
@@ -37,7 +37,7 @@ const typeStatus = (type: StatusType) => {
         text: `cyb: ${size} answer is available for download`,
       };
       break;
-    case 'downloaded':
+    case 'completed':
       status = {
         color: '#00e676',
         text: `cyb: ${size} answer is loaded`,
@@ -77,7 +77,7 @@ function Status({ status }: Props) {
       <Tooltip placement="bottom" tooltip={text}>
         <div
           className={cx(styles.customPill, {
-            [styles.glow]: status === 'understandingState',
+            [styles.glow]: status === 'executing',
           })}
           style={{ backgroundColor: color }}
         />

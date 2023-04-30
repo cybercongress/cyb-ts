@@ -32,6 +32,25 @@ import { CYBER } from '../../../utils/config';
 //   return <canvas id="ipfsImg" />;
 // };
 
+function ReactMarkdownContainer({ children }: { children: string }) {
+  return (
+    <div className="markdown">
+      <ReactMarkdown
+        // eslint-disable-next-line react/no-children-prop
+
+        rehypePlugins={[rehypeStringify, rehypeSanitize]}
+        // skipHtml
+        // astPlugins={[parseHtml]}
+        remarkPlugins={[remarkGfm]}
+        // plugins={[toc]}
+        // escapeHtml={false}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
 const getIpfsUserGatewanAndNodeType = () => {
   const LS_IPFS_STATE = localStorage.getItem('ipfsState');
 
@@ -121,13 +140,9 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
     }
     if (contentDetails?.type === 'text') {
       return (
-        <div
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          {contentDetails?.text || cid.toString()}
-        </div>
+        <ReactMarkdownContainer>
+          {contentDetails?.content || cid.toString()}
+        </ReactMarkdownContainer>
       );
     }
 
@@ -182,20 +197,9 @@ function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
     // }
 
     return (
-      <div className="markdown">
-        <ReactMarkdown
-          // eslint-disable-next-line react/no-children-prop
-
-          rehypePlugins={[rehypeStringify, rehypeSanitize]}
-          // skipHtml
-          // astPlugins={[parseHtml]}
-          remarkPlugins={[remarkGfm]}
-          // plugins={[toc]}
-          // escapeHtml={false}
-        >
-          {contentDetails?.content}
-        </ReactMarkdown>
-      </div>
+      <ReactMarkdownContainer>
+        {contentDetails?.content || cid.toString()}
+      </ReactMarkdownContainer>
     );
   } catch (error) {
     return (

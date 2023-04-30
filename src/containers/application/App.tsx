@@ -1,36 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
-import { AppDispatch, RootState } from 'src/redux/store';
-import AppMenu from './AppMenu';
+import { AppDispatch } from 'src/redux/store';
 import { initPocket } from '../../redux/features/pocket';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { GitHub, Telegram } from '../../components/actionBar';
-import AppSideBar from './AppSideBar';
-import { InfoCard } from '../portal/components';
-import Header from './Header/Header';
+import MainLayout from 'src/layouts/Main';
+import IPFSConnectError from './IPFSConnectError/IPFSConnectError';
+import { routes } from 'src/routes';
 
 function App() {
-  const { pocket } = useSelector((state: RootState) => state);
   const dispatch: AppDispatch = useDispatch();
-  const { defaultAccount } = pocket;
 
-  const { addressActive } = useSetActiveAddress(defaultAccount);
   const location = useLocation();
 
-  const [openMenu, setOpenMenu] = useState(false);
-
   const ipfs = useIpfs();
-
-  // useEffect(() => {
-  //   const { pathname } = location;
-  //   if (pathname.indexOf(query) === -1) {
-  //     setQueryProps('');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [location.pathname]);
 
   useEffect(() => {
     dispatch(initPocket());
@@ -48,54 +32,15 @@ function App() {
   // };
 
   return (
-    <div>
-      <Header
-        menuProps={{
-          toggleMenu: () => setOpenMenu(!openMenu),
-          isOpen: openMenu,
-        }}
-      />
+    <MainLayout>
+      <>
+        {ipfs.error && location.pathname !== routes.ipfs.path && (
+          <IPFSConnectError />
+        )}
 
-      <AppSideBar openMenu={openMenu}>
-        <AppMenu addressActive={addressActive} />
-      </AppSideBar>
-
-      {ipfs.error !== null && location.pathname !== '/ipfs' && (
-        <div
-          style={{
-            width: '59%',
-            maxWidth: '1000px',
-            margin: '0 auto',
-          }}
-        >
-          <Link to="/ipfs">
-            <InfoCard status="red">
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '10px 50px 0px 50px',
-                  gap: 20,
-                  display: 'grid',
-                  color: '#fff',
-                }}
-              >
-                <div style={{ fontSize: '28px' }}>
-                  Could not connect to the IPFS API
-                </div>
-                <div>
-                  <span style={{ color: '#36d6ae' }}>Go to ipfs page</span>
-                </div>
-              </div>
-            </InfoCard>
-          </Link>
-        </div>
-      )}
-
-      <footer>
-        <Telegram />
-        <GitHub />
-      </footer>
-    </div>
+        <Outlet />
+      </>
+    </MainLayout>
   );
 }
 

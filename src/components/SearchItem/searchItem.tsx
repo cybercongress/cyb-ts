@@ -53,6 +53,7 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
           width: '100%',
           flex: 1,
           flexDirection: 'column',
+          wordBreak: 'break-word',
         }}
       >
         <div
@@ -77,7 +78,7 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
             )}
           </div>
           {/* TODO: Status seems that processed incorrect */}
-          {status !== 'downloaded' && <Status status={status} />}
+          {status !== 'completed' && <Status status={status} />}
         </div>
         <div className={styles.containerChildren}>{children}</div>
       </div>

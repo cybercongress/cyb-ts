@@ -30,6 +30,7 @@ $color-text: #36d6ae;
 
 .containerBtnGrd {
   border: none;
+  text-transform: lowercase;
   outline: none;
   background-color: transparent;
   color: $color-text;
@@ -37,9 +38,9 @@ $color-text: #36d6ae;
   height: 52px;
   min-width: 217px;
   font-size: 18px;
+  margin: 15px 10px;
 
   &:hover {
-    cursor: pointer;
     color: #40ecc1;
   }
 
@@ -73,6 +74,10 @@ $color-text: #36d6ae;
     animation-timing-function: ease-in-out;
     opacity: 1;
   }
+}
+
+a.containerBtnGrd {
+  display: inline-block;
 }
 
 @keyframes blink {

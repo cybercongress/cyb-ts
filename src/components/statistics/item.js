@@ -49,9 +49,10 @@ export function CardStatisics({
   styleTitle,
   tooltipValue,
   positionTooltip,
+  status = 'green',
 }) {
   return (
-    <ContainerGradientText userStyleContent={styleContainer}>
+    <ContainerGradientText status={status} userStyleContent={styleContainer}>
       <div style={styleValue} className={styles.containerValue}>
         {(value || value === 0) && <div>{value}</div>}
       </div>

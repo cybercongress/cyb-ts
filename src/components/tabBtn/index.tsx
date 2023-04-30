@@ -14,6 +14,9 @@ function TabBtn({ key, text, isSelected, onSelect, to }: TabBtnProps) {
     <Link to={to}>
       <Tab
         key={key}
+        style={{
+          textTransform: 'lowercase',
+        }}
         isSelected={isSelected}
         onSelect={onSelect}
         paddingX={10}

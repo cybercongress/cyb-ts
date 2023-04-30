@@ -81,15 +81,18 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
       <div
         className={cx(
           styles.containerAvatarConnect,
-          styles.containerAvatarConnectTrue,
           styles.containerAvatarConnectHover
         )}
       >
-        <AvataImgIpfs
-          style={{ position: 'relative' }}
-          cidAvatar={useGetCidAvatar}
-          addressCyber={useGetAddress}
-        />
+        <div className={styles.containerAvatarConnectHoverAbsolute}>
+          <div className={styles.containerAvatarConnectTrue}>
+            <AvataImgIpfs
+              style={{ position: 'relative' }}
+              cidAvatar={useGetCidAvatar}
+              addressCyber={useGetAddress}
+            />
+          </div>
+        </div>
       </div>
     </button>
   );
@@ -132,6 +135,7 @@ function SwitchAccount() {
         })
       );
       dispatch(setAccounts(accountsPocket));
+      setControlledVisible(false);
       localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }
   };
@@ -203,7 +207,7 @@ function SwitchAccount() {
         className={styles.containerSwichAccount}
         style={{
           gridTemplateColumns:
-            useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
+            useGetName === null || !mediaQuery ? '1fr' : '1fr 105px',
         }}
       >
         {mediaQuery && useGetAddress !== null && (
