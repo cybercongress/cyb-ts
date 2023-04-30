@@ -81,7 +81,7 @@ const addFileToIpfsCluster = async (
 // eslint-disable-next-line import/no-unused-modules
 export const pinToIpfsCluster = async (
   cid: string,
-  file: $TsFixMe
+  file?: $TsFixMe
 ): Promise<PinResponse | AddResponse | undefined> => {
   try {
     const cidStatus = await cluster.status(cid);
@@ -94,7 +94,6 @@ export const pinToIpfsCluster = async (
       }
 
       // add to cluster and pin
-      // TODO: UNCOMMENT
       if (file) {
         return await addFileToIpfsCluster(file);
       }

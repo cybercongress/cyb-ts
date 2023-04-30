@@ -61,12 +61,13 @@ export type IPFSContentDetails =
       content?: string;
       link?: string;
       gateway: boolean;
+      cid: IPFSPath;
     }
   | undefined;
 
 export type IPFSContent = {
   availableDownload?: boolean;
-  result?: IpfsRawDataResponse; //IPFSContentDetails;
+  result?: IpfsRawDataResponse;
   cid: IPFSPath;
   meta: IPFSContentMeta;
   source: IpfsContentSource;

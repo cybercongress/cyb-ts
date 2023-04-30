@@ -277,15 +277,7 @@ function Ipfs() {
             status={status}
           />
         ) : (
-          <ContentTab
-            contentDetails={contentDetails}
-            // typeContent={typeContent}
-            // status={loadStatus}
-            // gateway={gateway}
-            // content={content}
-            // text={text}
-            cid={cid}
-          />
+          <ContentTab contentDetails={contentDetails} />
         )}
         <Tablist
           display="grid"

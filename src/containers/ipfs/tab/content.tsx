@@ -69,11 +69,11 @@ const getIpfsUserGatewanAndNodeType = () => {
 
 type ContentTabProps = {
   contentDetails: IPFSContentDetails;
-  cid: string;
 };
 
-function ContentTab({ contentDetails, cid }: ContentTabProps): JSX.Element {
+function ContentTab({ contentDetails }: ContentTabProps): JSX.Element {
   const { node: nodeIpfs } = useIpfs();
+  const { cid } = contentDetails;
   const [gatewayUrl, setGatewayUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {

@@ -21,7 +21,7 @@ import {
 
 import { CYBER } from '../config';
 
-import { addDataChunksToIpfsCluster } from './cluster-utils';
+import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb } from './db-utils';
 
 // Get IPFS node from local storage
@@ -49,7 +49,6 @@ const loadIPFSContentFromDb = async (
   if (data && data.length) {
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
-    // const { mime, data: stream } = await arrayToReadableStream(data);
 
     const meta: IPFSContentMeta = {
       type: 'file', // dir support ?
@@ -67,8 +66,9 @@ const emptyMeta: IPFSContentMeta = {
   size: -1,
   local: undefined,
 };
+
 const fetchIPFSContentMeta = async (
-  node: IPFS | undefined | null,
+  node: AppIPFS | undefined | null,
   cid: IPFSPath,
   signal?: AbortSignal
 ): Promise<IPFSContentMeta> => {
@@ -89,7 +89,7 @@ const fetchIPFSContentMeta = async (
 };
 
 const fetchIPFSContentFromNode = async (
-  node: IPFS | undefined | null,
+  node: AppIPFS | undefined | null,
   cid: IPFSPath,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
@@ -132,8 +132,6 @@ const fetchIPFSContentFromNode = async (
           flushResults
         );
 
-        console.log('------ fetch node', meta, stream, mime);
-
         return { result: stream, cid, meta: { ...meta, mime }, source: 'node' };
         // }
       }
@@ -152,17 +150,9 @@ const fetchIPFSContentFromGateway = async (
   // TODO: Should we use Cyber Gateway?
   // const { userGateway } = getIpfsUserGatewanAndNodeType();
 
-  // console.log('-----fetch gateway', node);
-  // let meta: IPFSContentMeta | undefined;
-  // if (node) {
-  //   // const stat = await node.files.stat(path, { signal: controller?.signal });
-
-  //   // console.log('headResponse meta', meta);
-  // }
-
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const meta =
-    node?.nodeType === 'external'
+    node && node.nodeType === 'external'
       ? await fetchIPFSContentMeta(node, cid, controller?.signal)
       : emptyMeta;
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
@@ -186,17 +176,19 @@ const fetchIPFSContentFromGateway = async (
     // }
 
     // TODO: refact. in case of gateway just PIN to cluster
-    const flushResults = (chunks, mime) =>
-      addDataChunksToIpfsCluster(cid, chunks, mime);
+    // const flushResults = (chunks, mime) =>
+    //   addDataChunksToIpfsCluster(cid, chunks, mime);
 
     const { mime, result } = await toReadableStreamWithMime(
-      response.body,
-      flushResults
+      response.body
+      // flushResults
     );
 
     // pin to local ipfs node
     // TODO: use node?.add to add to node, move to separate func
     node?.pin?.add(cid);
+    // TODO: pin in background
+    // await pinToIpfsCluster(cid);
 
     return {
       cid,
@@ -212,7 +204,7 @@ const fetchIPFSContentFromGateway = async (
 
 type fetchContentOptions = {
   controller?: AbortController;
-  node?: IPFS;
+  node?: AppIPFS;
 };
 
 async function fetchIpfsContent<T>(
@@ -239,7 +231,7 @@ async function fetchIpfsContent<T>(
 }
 
 const getIPFSContent = async (
-  node: IPFS,
+  node: AppIPFS,
   cid: string,
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
@@ -269,7 +261,7 @@ const getIPFSContent = async (
 };
 
 const catIPFSContentFromNode = (
-  node: IPFS,
+  node: AppIPFS,
   cid: IPFSPath,
   offset: number,
   controller?: AbortController
@@ -288,7 +280,7 @@ const catIPFSContentFromNode = (
 };
 
 const addContenToIpfs = async (
-  node: IPFS,
+  node: AppIPFS,
   content: ImportCandidate
 ): Promise<Option<string>> => {
   let cid: AddResult;

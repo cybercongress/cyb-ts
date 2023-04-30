@@ -49,6 +49,7 @@ export const parseRawIpfsData = async (
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
+      cid,
     };
 
     if (detectContentType(mime) === 'video') {
