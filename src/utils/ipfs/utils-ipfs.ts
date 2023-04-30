@@ -10,6 +10,7 @@ import {
   IPFSContentMeta,
   CallBackFuncStatus,
   IpfsContentSource,
+  AppIPFS,
 } from './ipfs.d';
 
 import {
@@ -144,7 +145,7 @@ const fetchIPFSContentFromNode = async (
 };
 
 const fetchIPFSContentFromGateway = async (
-  node: IPFS | undefined | null,
+  node: AppIPFS | undefined | null,
   cid: string,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
@@ -158,7 +159,12 @@ const fetchIPFSContentFromGateway = async (
 
   //   // console.log('headResponse meta', meta);
   // }
-  const meta = await fetchIPFSContentMeta(node, cid, controller?.signal);
+
+  // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
+  const meta =
+    node?.nodeType === 'external'
+      ? await fetchIPFSContentMeta(node, cid, controller?.signal)
+      : emptyMeta;
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
