@@ -4,6 +4,7 @@ import { IPFSPath } from 'kubo-rpc-client/types';
 import {
   IPFSContentDetails,
   IpfsContentSource,
+  IpfsContentType,
   IpfsRawDataResponse,
 } from './ipfs';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
@@ -15,10 +16,10 @@ function createObjectURL(rawData: Uint8Array, type: string) {
   return URL.createObjectURL(blob);
 }
 
-type ContentType = 'video' | 'other';
-
 // eslint-disable-next-line import/no-unused-modules
-export const detectContentType = (mime: string | undefined): ContentType => {
+export const detectContentType = (
+  mime: string | undefined
+): IpfsContentType => {
   if (mime && mime.indexOf('video') !== -1) {
     return 'video';
   }
@@ -45,6 +46,7 @@ export const parseRawIpfsData = async (
     };
 
     if (detectContentType(mime) === 'video') {
+      // This type of content uses AsyncIterator<Uint8Array>
       response.type = 'video';
       // response.content = await getResponseResult(rawDataResponse);
       return response;

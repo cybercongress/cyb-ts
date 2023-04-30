@@ -112,9 +112,9 @@ function ContentItem({
             // url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
           />
         )}
-        {ipfsDataDetails?.type === 'video' && (
+        {content && ipfsDataDetails?.type === 'video' && (
           // <video controls src={ipfsDataDetails.content} />
-          <VideoPlayer content={content} raw={ipfsDataDetails.content} />
+          <VideoPlayer content={content} />
         )}
       </SearchItem>
     </Link>

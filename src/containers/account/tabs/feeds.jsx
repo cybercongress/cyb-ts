@@ -6,24 +6,24 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
   if (data && data.length > 0) {
     return (
       <div className="container-contentItem" style={{ width: '100%' }}>
-        {[
-          data.sort((a, b) => {
+        {data
+          .sort((a, b) => {
             const x = Date.parse(a.timestamp);
             const y = Date.parse(b.timestamp);
             return y - x;
-          })[0],
-        ].map((item, i) => {
-          const cid = item.tx.value.msg[0].value.links[0].to;
-          return (
-            <SearchSnippet
-              key={i}
-              cid={cid}
-              data={item}
-              mobile={mobile}
-              onClickRank={onClickRank}
-            />
-          );
-        })}
+          })
+          .map((item, i) => {
+            const cid = item.tx.value.msg[0].value.links[0].to;
+            return (
+              <SearchSnippet
+                key={i}
+                cid={cid}
+                data={item}
+                mobile={mobile}
+                onClickRank={onClickRank}
+              />
+            );
+          })}
       </div>
     );
   }

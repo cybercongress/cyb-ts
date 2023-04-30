@@ -63,6 +63,11 @@ const loadIPFSContentFromDb = async (
   return undefined;
 };
 
+const emptyMeta: IPFSContentMeta = {
+  type: 'file',
+  size: -1,
+  local: undefined,
+};
 const fetchIPFSContentMeta = async (
   node: IPFS | undefined | null,
   cid: IPFSPath,
@@ -81,11 +86,7 @@ const fetchIPFSContentMeta = async (
       blocks,
     };
   }
-  return {
-    type: 'file',
-    size: -1,
-    local: undefined,
-  };
+  return emptyMeta;
 };
 
 const fetchIPFSContentFromNode = async (
@@ -120,12 +121,12 @@ const fetchIPFSContentFromNode = async (
     switch (meta.type) {
       case 'directory': {
         // TODO: return directory structure
-        return { cid, availableDownload: true };
+        return { cid, availableDownload: true, source: 'node', meta };
       }
       default: {
         // if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
-        const flushResults = (chunks, mime) => console.log('_FLUSH_RESULTS_ ');
-        // addDataChunksToIpfsCluster(cid, chunks, mime);
+        const flushResults = (chunks, mime) =>
+          addDataChunksToIpfsCluster(cid, chunks, mime);
 
         const { mime, result: stream } = await toAsyncIterableWithMime(
           node.cat(path, { signal }),
@@ -138,11 +139,9 @@ const fetchIPFSContentFromNode = async (
         // }
       }
     }
-
-    return { cid, availableDownload: true };
   } catch (error) {
     console.log('error fetch stat', error);
-    return undefined;
+    return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
   }
 };
 
@@ -190,8 +189,8 @@ const fetchIPFSContentFromGateway = async (
       flushResults
     );
 
-    // console.log('=---fetchgatew', mime, meta, contentType);
     // pin to local ipfs node
+    // TODO: use node?.add to add to node, move to separate func
     node?.pin?.add(cid);
 
     return {
@@ -211,7 +210,7 @@ type fetchContentOptions = {
   node?: IPFS;
 };
 
-export async function fetchIpfsContent<T>(
+async function fetchIpfsContent<T>(
   cid: string,
   source: IpfsContentSource,
   options: fetchContentOptions
@@ -264,4 +263,28 @@ const getIPFSContent = async (
   return respnseGateway;
 };
 
-export { getIPFSContent, getIpfsUserGatewanAndNodeType };
+const catIPFSContentFromNode = (
+  node: IPFS | undefined | null,
+  cid: IPFSPath,
+  offset: number,
+  controller?: AbortController
+): AsyncIterable<Uint8Array> | undefined => {
+  if (!node) {
+    console.log(
+      '--------fetchIPFSContentFromNode NO NODE INTIALIZED TODO: cover case--------'
+    );
+    return undefined;
+  }
+
+  // TODO: cover ipns case
+  const path = `/ipfs/${cid}`;
+
+  return node.cat(path, { offset, signal: controller?.signal });
+};
+
+export {
+  getIPFSContent,
+  getIpfsUserGatewanAndNodeType,
+  catIPFSContentFromNode,
+  fetchIpfsContent
+};

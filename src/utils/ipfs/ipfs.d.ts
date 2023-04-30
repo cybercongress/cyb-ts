@@ -46,15 +46,21 @@ export type IpfsRawDataResponse =
   | AsyncIterator<Uint8Array>;
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
+export type IpfsContentType =
+  | 'image'
+  | 'pdf'
+  | 'link'
+  | 'text'
+  | 'video'
+  | 'other';
 
 export type IPFSContentDetails =
   | {
       text?: string;
-      type?: 'image' | 'pdf' | 'link' | 'text' | 'video';
+      type?: IpfsContentType;
       content?: string;
       link?: string;
       gateway: boolean;
-      streamMaybe?: IpfsRawDataResponse;
     }
   | undefined;
 
@@ -62,7 +68,7 @@ export type IPFSContent = {
   availableDownload?: boolean;
   result?: IpfsRawDataResponse; //IPFSContentDetails;
   cid: IPFSPath;
-  meta?: IPFSContentMeta;
+  meta: IPFSContentMeta;
   source: IpfsContentSource;
   contentUrl?: string;
 };
