@@ -33,7 +33,8 @@ const getContentDetails = async (
     const details = await parseRawIpfsData(
       content.result,
       content.meta?.mime,
-      cid
+      cid,
+      (progress: number) => console.log(`${cid} progress: ${progress}`)
     );
 
     return details;

@@ -3,13 +3,12 @@ import isSvg from 'is-svg';
 import { IPFSPath } from 'kubo-rpc-client/types';
 import {
   IPFSContentDetails,
-  IpfsContentSource,
   IpfsContentType,
   IpfsRawDataResponse,
 } from './ipfs';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
-import { getResponseResult } from './stream-utils';
+import { getResponseResult, onProgressCallback } from './stream-utils';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
@@ -26,10 +25,11 @@ function createImgData(rawData: Uint8Array, type: string) {
 export const detectContentType = (
   mime: string | undefined
 ): IpfsContentType => {
-  if (mime && mime.indexOf('video') !== -1) {
-    return 'video';
+  if (mime) {
+    if (mime.indexOf('video') !== -1) {
+      return 'video';
+    }
   }
-
   return 'other';
 };
 
@@ -43,7 +43,8 @@ export const chunksToBlob = (
 export const parseRawIpfsData = async (
   rawDataResponse: IpfsRawDataResponse,
   mime: string | undefined,
-  cid: IPFSPath
+  cid: IPFSPath,
+  onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
     const response: IPFSContentDetails = {
@@ -59,7 +60,7 @@ export const parseRawIpfsData = async (
       return response;
     }
 
-    const rawData = await getResponseResult(rawDataResponse);
+    const rawData = await getResponseResult(rawDataResponse, onProgress);
 
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;

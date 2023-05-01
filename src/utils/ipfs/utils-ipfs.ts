@@ -124,13 +124,15 @@ const fetchIPFSContentFromNode = async (
       }
       default: {
         // if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
-        const flushResults = (chunks, mime) =>
-          addDataChunksToIpfsCluster(cid, chunks, mime);
+        // const flushResults = (chunks, mime) =>
+        //   addDataChunksToIpfsCluster(cid, chunks, mime);
 
         const { mime, result: stream } = await toAsyncIterableWithMime(
-          node.cat(path, { signal }),
-          flushResults
+          node.cat(path, { signal })
+          // flushResults
         );
+
+        node.pin.add(cid);
 
         return { result: stream, cid, meta: { ...meta, mime }, source: 'node' };
         // }
@@ -155,6 +157,7 @@ const fetchIPFSContentFromGateway = async (
     node && node.nodeType === 'external'
       ? await fetchIPFSContentMeta(node, cid, controller?.signal)
       : emptyMeta;
+
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
@@ -183,11 +186,10 @@ const fetchIPFSContentFromGateway = async (
       response.body
       // flushResults
     );
-
+    // CHANGED: skip pinning to cluster and local node, because it's already pinned on gateway
     // pin to local ipfs node
-    // TODO: use node?.add to add to node, move to separate func
-    node?.pin?.add(cid);
-    // TODO: pin in background
+    // node?.pin?.add(cid);
+    // TODO: pin in background???
     // await pinToIpfsCluster(cid);
 
     return {
@@ -279,11 +281,45 @@ const catIPFSContentFromNode = (
   return node.cat(path, { offset, signal: controller?.signal });
 };
 
+// const nodeContentFindProvs = async (
+//   node: AppIPFS,
+//   cid: IPFSPath,
+//   offset: number,
+//   controller?: AbortController
+// ): AsyncIterable<number> | undefined => {
+//   if (!node) {
+//     console.log(
+//       '--------fetchIPFSContentFromNode NO NODE INTIALIZED TODO: cover case--------'
+//     );
+//     return undefined;
+//   }
+
+//   // TODO: cover ipns case
+//   const path = `/ipfs/${cid}`;
+
+//   const providers = node.dht.findProvs(path, {
+//     signal: controller?.signal,
+//   });
+
+//   let count = 0;
+//   for await (const provider of providers) {
+//     //  console.log(provider.id.toString())
+//     //  id: PeerId
+//     // multiaddrs: Multiaddr[]
+//     // protocols: string[]
+//     count++;
+//   }
+
+//   return count;
+// };
+
 const addContenToIpfs = async (
   node: AppIPFS,
   content: ImportCandidate
 ): Promise<Option<string>> => {
   let cid: AddResult;
+  // TODO: save into DB
+  // TODO: add to cluster
   if (node) {
     if (typeof content === 'string') {
       cid = await node.add(Buffer.from(content), { pin: true });

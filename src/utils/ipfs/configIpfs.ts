@@ -14,6 +14,9 @@ const configIpfs = (): Options => ({
       enabled: true,
     },
   },
+  preload: {
+    enabled: true,
+  },
   config: {
     API: {
       HTTPHeaders: {
@@ -84,7 +87,7 @@ const configIpfs = (): Options => ({
     },
   },
   EXPERIMENTAL: {
-    ipnsPubsub: true,
+    ipnsPubsub: false,
   },
 });
 

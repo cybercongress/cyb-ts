@@ -88,10 +88,15 @@ export async function toReadableStreamWithMime(
 
   return { mime, result: modifiedStream };
 }
+export type onProgressCallback = (progress: number) => void;
 
-export const getResponseResult = async (response: IpfsRawDataResponse) => {
+export const getResponseResult = async (
+  response: IpfsRawDataResponse,
+  onProgress?: onProgressCallback
+) => {
   try {
     if (response instanceof Uint8Array) {
+      onProgress && onProgress(response.byteLength);
       return response;
     }
     const chunks: Array<Uint8Array> = [];
@@ -104,7 +109,7 @@ export const getResponseResult = async (response: IpfsRawDataResponse) => {
         }
 
         chunks.push(value);
-
+        onProgress && onProgress(value.byteLength);
         return reader.read().then(readStream);
       });
     }
@@ -114,6 +119,7 @@ export const getResponseResult = async (response: IpfsRawDataResponse) => {
     for await (const chunk of reader) {
       if (chunk instanceof Uint8Array) {
         chunks.push(chunk);
+        onProgress && onProgress(chunk.byteLength);
       }
     }
 

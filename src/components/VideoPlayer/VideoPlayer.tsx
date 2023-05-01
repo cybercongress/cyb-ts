@@ -17,6 +17,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
   const { node } = useIpfs();
 
   const getReadableStream = (offset: number) => {
+    console.log('-----getReadableStream', node, offset);
     if (shouldCatFromNodeRef.current) {
       if (streamRef.current && streamRef.current.destroy) {
         streamRef.current.destroy();
@@ -70,7 +71,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
       );
       console.log('---opts', opts);
     } else if (content.source === 'gateway') {
-      videoRef.current.src = content.contentUrl;
+      videoRef.current!.src = content.contentUrl;
     } else {
       console.log('Unknown source, TODO: implement DB', content.source);
     }
