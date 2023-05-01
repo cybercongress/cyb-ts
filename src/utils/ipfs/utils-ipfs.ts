@@ -181,8 +181,8 @@ const fetchIPFSContentFromGateway = async (
     // }
 
     // TODO: refact. in case of gateway just PIN to cluster
-    const flushResults = (chunks, mime) =>
-      !isExternalNode && addIpfsContentToDb(cid, chunksToBlob(chunks, mime));
+    const flushResults = (chunks, mime) => null;
+    // !isExternalNode && addIpfsContentToDb(cid, chunksToBlob(chunks, mime));
 
     const { mime, result } = await toReadableStreamWithMime(
       response.body,
