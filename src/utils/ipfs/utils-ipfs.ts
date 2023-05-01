@@ -180,7 +180,7 @@ const fetchIPFSContentFromGateway = async (
     //   meta = { ...meta, mime: contentType };
     // }
 
-    // TODO: refact. in case of gateway just PIN to cluster
+    // TODO: fix
     const flushResults = (chunks, mime) => null;
     // !isExternalNode && addIpfsContentToDb(cid, chunksToBlob(chunks, mime));
 
