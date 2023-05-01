@@ -12,7 +12,7 @@ type ResultWithMime = {
 type StreamDoneCallback = (
   chunks: Array<Uint8Array>,
   mime: string | undefined
-) => Promise<unknown>;
+) => Promise<void> | void;
 
 // interface AsyncIterableWithReturn<T> extends AsyncIterable<T> {
 //   return?: (value?: unknown) => Promise<IteratorResult<T>>;
@@ -94,6 +94,7 @@ export const getResponseResult = async (
   response: IpfsRawDataResponse,
   onProgress?: onProgressCallback
 ) => {
+  let bytesDownloaded = 0;
   try {
     if (response instanceof Uint8Array) {
       onProgress && onProgress(response.byteLength);
@@ -109,7 +110,8 @@ export const getResponseResult = async (
         }
 
         chunks.push(value);
-        onProgress && onProgress(value.byteLength);
+        bytesDownloaded += value.byteLength;
+        onProgress && onProgress(bytesDownloaded);
         return reader.read().then(readStream);
       });
     }
@@ -119,7 +121,8 @@ export const getResponseResult = async (
     for await (const chunk of reader) {
       if (chunk instanceof Uint8Array) {
         chunks.push(chunk);
-        onProgress && onProgress(chunk.byteLength);
+        bytesDownloaded += chunk.byteLength;
+        onProgress && onProgress(bytesDownloaded);
       }
     }
 

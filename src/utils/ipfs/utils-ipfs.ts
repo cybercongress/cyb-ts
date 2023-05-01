@@ -3,7 +3,6 @@ import { AddResult, IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
-
 import {
   getIpfsUserGatewanAndNodeType,
   IPFSContentMaybe,
@@ -21,8 +20,9 @@ import {
 
 import { CYBER } from '../config';
 
-import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
-import { getIpfsContentFromDb } from './db-utils';
+// import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
+import { addIpfsContentToDb, getIpfsContentFromDb } from './db-utils';
+import { chunksToBlob } from './content-utils';
 
 // Get IPFS node from local storage
 // TODO: refactor
@@ -132,6 +132,8 @@ const fetchIPFSContentFromNode = async (
           // flushResults
         );
 
+        // TODO: add to db flag that content is pinned TO local node
+
         node.pin.add(cid);
 
         return { result: stream, cid, meta: { ...meta, mime }, source: 'node' };
@@ -153,10 +155,10 @@ const fetchIPFSContentFromGateway = async (
   // const { userGateway } = getIpfsUserGatewanAndNodeType();
 
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
-  const meta =
-    node && node.nodeType === 'external'
-      ? await fetchIPFSContentMeta(node, cid, controller?.signal)
-      : emptyMeta;
+  const isExternalNode = node?.nodeType === 'external';
+  const meta = isExternalNode
+    ? await fetchIPFSContentMeta(node, cid, controller?.signal)
+    : emptyMeta;
 
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
@@ -179,18 +181,13 @@ const fetchIPFSContentFromGateway = async (
     // }
 
     // TODO: refact. in case of gateway just PIN to cluster
-    // const flushResults = (chunks, mime) =>
-    //   addDataChunksToIpfsCluster(cid, chunks, mime);
+    const flushResults = (chunks, mime) =>
+      !isExternalNode && addIpfsContentToDb(cid, chunksToBlob(chunks, mime));
 
     const { mime, result } = await toReadableStreamWithMime(
-      response.body
-      // flushResults
+      response.body,
+      flushResults
     );
-    // CHANGED: skip pinning to cluster and local node, because it's already pinned on gateway
-    // pin to local ipfs node
-    // node?.pin?.add(cid);
-    // TODO: pin in background???
-    // await pinToIpfsCluster(cid);
 
     return {
       cid,
@@ -318,7 +315,7 @@ const addContenToIpfs = async (
   content: ImportCandidate
 ): Promise<Option<string>> => {
   let cid: AddResult;
-  // TODO: save into DB
+  // TODO: save into DB only embedded
   // TODO: add to cluster
   if (node) {
     if (typeof content === 'string') {
