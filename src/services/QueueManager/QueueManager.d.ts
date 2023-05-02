@@ -33,6 +33,7 @@ export type QueueItemOptions = {
   parent?: string;
   priority?: number;
   viewPortPriority?: number;
+  initialSource?: QueueSource;
 };
 
 export type QueueItemCallback<T> = (
@@ -49,7 +50,7 @@ export type QueueItem<T> = {
   callback: QueueItemCallback<T>;
   controller?: AbortController;
   executionTime?: number;
-} & QueueItemOptions;
+} & Omit<QueueItemOptions, 'initialSource'>;
 
 export type QueueItemResult<T> = {
   item: QueueItem<T>;

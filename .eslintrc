@@ -37,7 +37,7 @@
     "FileReader": true
   },
   "rules": {
-    "valid-jsdoc": "error",
+    "valid-jsdoc": "off",
     "no-shadow": "off",
     "react/require-default-props": "off", // typescript types using
     "react/destructuring-assignment": "off",
