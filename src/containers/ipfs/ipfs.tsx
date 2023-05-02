@@ -133,10 +133,6 @@ function Ipfs() {
     timestamp: '',
   });
 
-  console.log('status', status);
-  console.log('content', content);
-  console.log('source', source);
-
   const queryParamsId = `${cid}.${tab}`;
   // const [metaData, setMetaData] = useState({
   //   type: 'file',

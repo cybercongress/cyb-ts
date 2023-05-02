@@ -13,10 +13,6 @@ import { CYBER } from 'src/utils/config';
 //   ipfsDataDetails?.type === 'link' && <div>{ipfsDataDetails.content}</div>;
 // }
 
-function LinkHttp({ content }) {
-  return <div>{content}</div>;
-}
-
 function Img({ content }) {
   return (
     <img style={{ width: '100%', paddingTop: 10 }} alt="img" src={content} />
@@ -82,6 +78,15 @@ function GatewayContent({ url }: { url: string }) {
   );
 }
 
+function LinkHttp({ content, preview }) {
+  return (
+    <>
+      <div>{content}</div>
+      {preview && <GatewayContent url={content} />}
+    </>
+  );
+}
+
 const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe
@@ -134,7 +139,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   if (ipfsDataDetails?.type === 'link') {
-    return <LinkHttp content={ipfsDataDetails.content} />;
+    return <LinkHttp content={ipfsDataDetails.content} preview />;
   }
 
   if (content && ipfsDataDetails?.type === 'video') {
