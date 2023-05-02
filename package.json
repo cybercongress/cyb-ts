@@ -2,6 +2,10 @@
   "name": "cyb",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=1.22.19"
+  },
   "packageManager": "yarn@1.22.19",
   "scripts": {
     "start": "webpack serve --config=webpack.config.dev.js ",
@@ -13,6 +17,7 @@
     "watch-report": "webpack-bundle-analyzer stats.json",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix --ext .js,.jsx,.ts,.tsx",
+    "stylelint:lint": "stylelint \"**/*.*css\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "jest --transformIgnorePatterns --verbose"
@@ -107,6 +112,10 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "style-loader": "^3.3.1",
+    "stylelint": "^15.6.0",
+    "stylelint-config-standard": "^33.0.0",
+    "stylelint-config-standard-scss": "^9.0.0",
+    "stylelint-order": "^6.0.3",
     "swr": "^1.0.1",
     "terser-webpack-plugin": "4.2.3",
     "ts-migrate": "^0.1.35",

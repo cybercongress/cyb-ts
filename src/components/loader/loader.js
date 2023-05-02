@@ -223,6 +223,12 @@ function bootstrap() {
       const progressBar = document.getElementById('progressbar');
       const progressData = document.getElementById('progress-data');
 
+      if (!progressBar) {
+        return;
+      }
+
+      progressBar.style.visibility = 'unset';
+
       progressBar === null || progressBar === void 0
         ? void 0
         : progressBar.setAttribute('value', progress.toString());

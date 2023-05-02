@@ -3,4 +3,5 @@ export const localStorageKeys = {
     POCKET: 'pocket',
     POCKET_ACCOUNT: 'pocketAccount',
   },
+  MENU_SHOWED: 'menuShowed',
 };
