@@ -7,7 +7,7 @@ module.exports = {
 
   // Production build files
   // Директория для файлов сборки
-  build: path.resolve(__dirname, '../dist'),
+  build: path.resolve(__dirname, '../build'),
 
   // Static files that get copied to build folder
   // Статические файлы, которые будут скопированы в директорию для файлов сборки

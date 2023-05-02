@@ -1,8 +1,9 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+// const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const paths = require('./paths');
 
 module.exports = {
   // Where webpack looks to start building the bundle
@@ -15,7 +16,7 @@ module.exports = {
   // Куда помещаются файлы сборки
   output: {
     filename: '[name].bundle.js',
-    path: path.join(__dirname, '../build'),
+    path: paths.build,
     publicPath: './',
   },
 

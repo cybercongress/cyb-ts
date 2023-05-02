@@ -1,15 +1,17 @@
 const { merge } = require('webpack-merge');
-const webpack = require('webpack');
+// const webpack = require('webpack');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const common = require('./webpack.common.js');
+// const paths = require('./paths.js');
+// const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: false,
+  devtool: 'source-map',
   output: {
     filename: '[name].[contenthash].bundle.js',
     path: path.join(__dirname, '../build'),
@@ -24,6 +26,14 @@ module.exports = merge(common, {
       filename: '[name].[contenthash].css',
       chunkFilename: '[id].css',
     }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: paths.public + '/',
+    //       to: paths.build,
+    //     },
+    //   ],
+    // }),
   ],
   module: {
     rules: [
