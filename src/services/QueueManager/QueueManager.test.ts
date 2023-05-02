@@ -82,9 +82,10 @@ describe('QueueManager', () => {
     queueManager.enqueue('3', jest.fn);
 
     setTimeout(() => {
-      expect(queueManager.getQueue()[0].status).toEqual('executing');
-      expect(queueManager.getQueue()[1].status).toEqual('executing');
-      expect(queueManager.getQueue()[2].status).toEqual('pending');
+      const itemList = queueManager.getQueue();
+      expect(itemList[0].status).toEqual('executing');
+      expect(itemList[1].status).toEqual('executing');
+      expect(itemList[2].status).toEqual('pending');
       done();
     }, QUEUE_DEBOUNCE_MS * 2 + 50);
   });
@@ -101,7 +102,7 @@ describe('QueueManager', () => {
 
     (fetchIpfsContent as jest.Mock).mockImplementation(
       (cid: string, source: string, { controller }) =>
-        getPromise('result', 50000, controller.signal)
+        getPromise('result', 50000, controller?.signal)
     );
     queueManager.enqueue(itemId, (cid, status, source) => {
       const expectedStatus = statuses.next().value;
@@ -110,11 +111,10 @@ describe('QueueManager', () => {
     });
 
     setTimeout(() => {
-      const queue = queueManager.getQueue();
-      const nextItem = queue[0];
+      const nextItem = queueManager.getQueue()[0];
       expect(nextItem.status).toEqual('executing');
       expect(nextItem.source).toEqual('node');
-      expect(queue.length).toBe(1);
+      expect(queueManager.getQueue().length).toBe(1);
       done();
     }, 550);
   });

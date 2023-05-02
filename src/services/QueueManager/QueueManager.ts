@@ -66,8 +66,10 @@ const strategies = {
   ),
 };
 
+type QueueMap<T> = Map<string, QueueItem<T>>;
+
 class QueueManager<T> {
-  private queue$ = new BehaviorSubject<QueueItem<T>[]>([]);
+  private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
   private node: AppIPFS | undefined = undefined;
 
@@ -92,49 +94,50 @@ class QueueManager<T> {
     this.switchStrategy(strategies[node.nodeType]);
   }
 
-  private getItemBySourceAndPriority(queue: QueueItem<T>[]) {
-    const pendingQueue = queue.filter((i) => i.status === 'pending');
-    const queueByPending = R.groupBy((i) => i.source, pendingQueue);
+  private getItemBySourceAndPriority(queue: QueueMap<T>) {
+    const pendingItems = [...queue.values()].filter(
+      (i) => i.status === 'pending'
+    );
+
+    const pendingBySource = R.groupBy((i) => i.source, pendingItems);
 
     // eslint-disable-next-line no-restricted-syntax
-    const toExecute: QueueItem<T>[] = [];
+    const itemsToExecute: QueueItem<T>[] = [];
     // eslint-disable-next-line no-loop-func, no-restricted-syntax
-    for (const [queueSource, items] of Object.entries(queueByPending)) {
-      // if (!hasNode && queueSource === 'node') {
-      //   continue;
-      // }
+    for (const [queueSource, items] of Object.entries(pendingBySource)) {
       const settings = this.strategy.settings[queueSource];
+
       const executeCount =
         settings.maxConcurrentExecutions - this.executing[queueSource];
-      const itemsToExecute = items
+      const itemsByPriority = items
         .sort(
           (a, b) =>
             getQueueItemGeneralPriority(b) - getQueueItemGeneralPriority(a)
         )
         .slice(0, executeCount);
-      // console.log(
-      //   `-pick ${queueSource} ${executeCount} ${itemsToExecute.length}`, itemsToExecute,
-      // );
       // console.log('-----pick', this.executing);
-      toExecute.push(...itemsToExecute);
-
-      // if (this.executing[queueSource] < settings.maxConcurrentExecutions) {
-      //   // TODO: just find one with max priority
-
-      //   const getSumPriority = (item: QueueItem<T>) =>
-      //     (item.priority || 0) + (item.viewPortPriority || 0);
-
-      //   return items.sort((a, b) => getSumPriority(b) - getSumPriority(a))[0];
-      // }
+      itemsToExecute.push(...itemsByPriority);
     }
 
-    return toExecute;
+    return itemsToExecute;
   }
 
   private fetchData$(item: QueueItem<T>) {
-    const { cid, source, controller } = item;
+    const { cid, source, controller, callback } = item;
     const settings = this.strategy.settings[source];
     // console.log('---fetchData', cid, source, this.strategy);
+    this.executing[source]++;
+
+    const queueItem = this.queue$.value.get(cid);
+    // Mutate item without next
+    this.queue$.value.set(cid, {
+      ...queueItem,
+      status: 'executing',
+      executionTime: Date.now(),
+      controller: new AbortController(),
+    } as QueueItem<T>);
+
+    callback(cid, 'executing', source);
 
     return promiseToObservable(() =>
       // fetch by item source
@@ -176,6 +179,23 @@ class QueueManager<T> {
     );
   }
 
+  /**
+   * Mutate queue item, and return new queue
+   * @param cid
+   * @param changes
+   * @returns
+   */
+  private mutateItem(cid: string, changes: Partial<QueueItem<T>>) {
+    const queue = this.queue$.value;
+    const item = queue.get(cid);
+    if (item) {
+      queue.set(cid, { ...item, ...changes });
+      // this.queue$.next(queue);
+    }
+
+    return queue;
+  }
+
   constructor(
     strategy: QueueStrategy = strategies.embedded,
     queueDebounceMs = QUEUE_DEBOUNCE_MS
@@ -191,20 +211,7 @@ class QueueManager<T> {
           const workItems = this.getItemBySourceAndPriority(queue);
           // console.log('-mergemap', workItems.length, this.executing);
           if (workItems.length > 0) {
-            return concat(
-              ...workItems.map((item) => {
-                const { source, cid, callback } = item;
-                this.executing[source]++;
-
-                item.status = 'executing';
-                item.executionTime = Date.now();
-                item.controller = new AbortController();
-
-                callback(cid, 'executing', source);
-                // console.log('---exec', cid, item);
-                return this.fetchData$(item);
-              })
-            ); //.pipe(debounceTime(this.queueDebounceMs));
+            return concat(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
           }
           return EMPTY;
         })
@@ -234,8 +241,9 @@ class QueueManager<T> {
   }
 
   private removeAndNext(cid: string): void {
-    const updatedQueue = this.queue$.value.filter((i) => i.cid !== cid);
-    this.queue$.next(updatedQueue);
+    const queue = this.queue$.value;
+    queue.delete(cid);
+    this.queue$.next(queue);
   }
 
   // reset status and switch to next source
@@ -243,11 +251,9 @@ class QueueManager<T> {
     item: QueueItem<T>,
     nextSource: QueueSource
   ): void {
-    const updatedQueue = this.queue$.value.filter((i) => i.cid !== item.cid);
-    const nextItem = item;
-    nextItem.status = 'pending';
-    nextItem.source = nextSource;
-    this.queue$.next([...updatedQueue, nextItem]);
+    this.queue$.next(
+      this.mutateItem(item.cid, { status: 'pending', source: nextSource })
+    );
   }
 
   public enqueue(
@@ -263,66 +269,49 @@ class QueueManager<T> {
       status: 'pending',
       ...options,
     };
-    this.queue$.next([...this.queue$.value, item]);
+
+    const queue = this.queue$.value;
+    queue.set(cid, item);
+    this.queue$.next(queue);
   }
 
-  // private updateStatus(cid: string, status: QueueItemStatus) {
-  //   const alterStatus = R.curry((cid, status, items) =>
-  //     R.map(R.when(R.propEq('cid', cid), R.assoc('status', status)), items)
-  //   );
-  //   const updatedQueue = alterStatus(
-  //     cid,
-  //     status,
-  //     this.queue$.value
-  //   ) as QueueItem<T>[];
-
-  //   this.queue$.next(updatedQueue);
-  // }
-
   public updateViewPortPriority(cid: string, viewPortPriority: number) {
-    const updatedQueue = alterQueueItemViewPortPriority(
-      cid,
-      viewPortPriority,
-      this.queue$.value
-    ) as QueueItem<T>[];
-
-    this.queue$.next(updatedQueue);
+    this.queue$.next(this.mutateItem(cid, { viewPortPriority }));
   }
 
   public cancel(cid: string): void {
-    const currentQueue = this.queue$.value;
-    const item = currentQueue.find((item) => item.cid === cid);
+    const queue = this.queue$.value;
+    const item = queue.get(cid);
     if (item) {
       // If item has no abortController we can just remove it
       // Otherwise abort&keep-to-finalize
       if (!item.controller) {
-        this.queue$.next(currentQueue.filter((item) => item.cid !== cid));
+        this.removeAndNext(cid);
       } else {
-        // item.status = 'cancelled';
         item.controller.abort('cancelled');
       }
     }
   }
 
   public cancelByParent(parent: string): void {
-    const newQueue: QueueItem<T>[] = [];
+    const nextQueue: QueueMap<T> = new Map();
 
-    this.queue$.value.forEach((item) => {
+    this.queue$.value.forEach((item, cid) => {
       // If item managed by abortController abort&keep-to-finalize
       // Otherwise keep all non-parent items
       if (item.parent !== parent) {
-        newQueue.push(item);
+        nextQueue.set(cid, item);
       } else if (item.controller) {
         item.controller.abort('cancelled');
-        newQueue.push(item);
+        nextQueue.set(cid, item);
       }
     });
 
-    this.queue$.next(newQueue);
+    this.queue$.next(nextQueue);
   }
 
   public getQueue(): QueueItem<T>[] {
-    return this.queue$.value;
+    return Array.from(this.queue$.value.values());
   }
 
   public getStats(): QueueStats[] {
@@ -332,7 +321,7 @@ class QueueManager<T> {
       R.map(R.zipObj(['status', 'count']))
     );
 
-    return fn(this.queue$.value) as QueueStats[];
+    return fn(this.getQueue()) as QueueStats[];
   }
 }
 
