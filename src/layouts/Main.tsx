@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Telegram, GitHub } from 'src/components/actionBar';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
@@ -15,12 +15,17 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [openMenu, setOpenMenu] = useState(false);
 
+  function toggleMenu(isOpen: boolean) {
+    const newState = isOpen;
+
+    setOpenMenu(newState);
+    localStorage.setItem(localStorageKeys.MENU_SHOW, newState.toString());
+  }
+
   useEffect(() => {
-    if (!localStorage.getItem(localStorageKeys.MENU_SHOWED)) {
-      setTimeout(() => {
-        setOpenMenu(true);
-        localStorage.setItem(localStorageKeys.MENU_SHOWED, 'true');
-      }, 0);
+    // for animation
+    if (localStorage.getItem(localStorageKeys.MENU_SHOW) !== 'false') {
+      toggleMenu(true);
     }
   }, []);
 
@@ -28,7 +33,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
     <div>
       <Header
         menuProps={{
-          toggleMenu: () => setOpenMenu(!openMenu),
+          toggleMenu: useMemo(() => () => toggleMenu(!openMenu), [openMenu]),
           isOpen: openMenu,
         }}
       />
