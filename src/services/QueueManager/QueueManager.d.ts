@@ -32,6 +32,7 @@ export type QueueStats = {
 export type QueueItemOptions = {
   parent?: string;
   priority?: number;
+  viewPortPriority?: number;
 };
 
 export type QueueItemCallback<T> = (
@@ -47,6 +48,7 @@ export type QueueItem<T> = {
   status: QueueItemStatus;
   callback: QueueItemCallback<T>;
   controller?: AbortController;
+  executionTime?: number;
 } & QueueItemOptions;
 
 export type QueueItemResult<T> = {

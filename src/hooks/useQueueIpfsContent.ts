@@ -51,7 +51,8 @@ function useQueueIpfsContent(
 
     queueManager.enqueue(cid, callback, {
       parent: parentId,
-      priority: rank,
+      priority: rank || 0,
+      viewPortPriority: 0,
     });
 
     if (prevParentIdRef.current !== parentId) {

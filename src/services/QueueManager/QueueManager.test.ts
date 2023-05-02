@@ -7,8 +7,18 @@ jest.mock('src/utils/ipfs/utils-ipfs', () => ({
   fetchIpfsContent: jest.fn(),
 }));
 
-function* statusesExpected(resultStatuses: string[]): Generator<string> {
-  yield 'executing';
+const QUEUE_DEBOUNCE_MS = 100;
+
+const waitUtilQueueDebounce = (callback: () => void): NodeJS.Timeout =>
+  setTimeout(() => {
+    callback();
+  }, QUEUE_DEBOUNCE_MS);
+
+function* statusesExpected(
+  resultStatuses: string[],
+  initial = 'executing'
+): Generator<string> {
+  yield initial;
   for (let i = 0; i < resultStatuses.length; i++) {
     yield resultStatuses[i];
   }
@@ -62,41 +72,51 @@ describe('QueueManager', () => {
   );
 
   beforeEach(() => {
-    queueManager = new QueueManager<string>(strategy);
+    queueManager = new QueueManager<string>(strategy, QUEUE_DEBOUNCE_MS);
   });
 
-  it('should keep in pending items thats is out of maxConcurrentExecutions', () => {
+  it('should keep in pending items thats is out of maxConcurrentExecutions', (done) => {
     (fetchIpfsContent as jest.Mock).mockImplementation(() => getPromise());
     queueManager.enqueue('1', jest.fn);
     queueManager.enqueue('2', jest.fn);
     queueManager.enqueue('3', jest.fn);
-    expect(queueManager.getQueue()[0].status).toEqual('executing');
-    expect(queueManager.getQueue()[1].status).toEqual('executing');
-    expect(queueManager.getQueue()[2].status).toEqual('pending');
+
+    setTimeout(() => {
+      const itemList = queueManager.getQueue();
+      expect(itemList[0].status).toEqual('executing');
+      expect(itemList[1].status).toEqual('executing');
+      expect(itemList[2].status).toEqual('pending');
+      done();
+    }, QUEUE_DEBOUNCE_MS * 2 + 50);
   });
 
   it('should handle timeout and switch to next source', (done) => {
-    const statuses = statusesExpected(['timeout', 'executing']);
+    const statuses = statusesExpected([
+      'timeout', // db
+      'executing', // node
+      'timeout', // node
+      'executing', // gateway
+      'timeout', // gateway
+    ]);
     const itemId = 'xxx';
 
     (fetchIpfsContent as jest.Mock).mockImplementation(
       (cid: string, source: string, { controller }) =>
-        getPromise('result', 50000, controller.signal)
+        getPromise('result', 50000, controller?.signal)
     );
-
-    queueManager.enqueue(itemId, (cid, status) => {
+    queueManager.enqueue(itemId, (cid, status, source) => {
+      const expectedStatus = statuses.next().value;
       expect(cid).toBe(itemId);
-      expect(status).toBe(statuses.next().value);
+      expect(status).toBe(expectedStatus);
     });
 
     setTimeout(() => {
-      const queue = queueManager.getQueue();
-      const nextItem = queue[0];
+      const nextItem = queueManager.getQueue()[0];
       expect(nextItem.status).toEqual('executing');
       expect(nextItem.source).toEqual('node');
-      expect(queue.length).toBe(1);
+      expect(queueManager.getQueue().length).toBe(1);
       done();
-    }, 500);
+    }, 550);
   });
 
   it('should cancel queue items', (done) => {
@@ -160,19 +180,21 @@ describe('QueueManager', () => {
 
     const executingByPriority: string[] = [];
     queueManager.enqueue('3', (cid) => executingByPriority.push(cid), {
-      priority: 1,
+      priority: 0.5,
     });
 
     queueManager.enqueue('4', (cid) => executingByPriority.push(cid), {
-      priority: 10,
+      priority: 0.9,
     });
 
-    const queue = queueManager.getQueue();
-    expect(queue.length).toBe(4);
-    expect(queue[0].status).toBe('executing');
-    expect(queue[1].status).toBe('executing');
-    expect(queue[2].status).toBe('pending');
-    expect(queue[3].status).toBe('pending');
+    waitUtilQueueDebounce(() => {
+      const queue = queueManager.getQueue();
+      expect(queue.length).toBe(4);
+      expect(queue[0].status).toBe('executing');
+      expect(queue[1].status).toBe('executing');
+      expect(queue[2].status).toBe('pending');
+      expect(queue[3].status).toBe('pending');
+    });
 
     setTimeout(() => {
       const queue = queueManager.getQueue();
@@ -180,6 +202,46 @@ describe('QueueManager', () => {
 
       expect(executingByPriority[0]).toBe('4');
       expect(executingByPriority[1]).toBe('3');
+    }, 150);
+  });
+
+  it('should execute queue items in order by viewportPriority in real-time', () => {
+    (fetchIpfsContent as jest.Mock).mockImplementation(() =>
+      getPromise('x', 100)
+    );
+    queueManager.enqueue('1', jest.fn);
+    queueManager.enqueue('2', jest.fn);
+
+    const executingByPriority: string[] = [];
+    queueManager.enqueue('3', (cid) => executingByPriority.push(cid), {
+      priority: 0.5,
+      viewPortPriority: 0.1,
+    });
+
+    queueManager.enqueue('4', (cid) => executingByPriority.push(cid), {
+      priority: 0.9,
+      viewPortPriority: 0.1,
+    });
+
+    waitUtilQueueDebounce(() => {
+      const queue = queueManager.getQueue();
+      expect(queue.length).toBe(4);
+      expect(queue[0].status).toBe('executing');
+      expect(queue[1].status).toBe('executing');
+      expect(queue[2].status).toBe('pending');
+      expect(queue[3].status).toBe('pending');
+
+      // Update priorities by viewport
+      queueManager.updateViewportPriority(3, 0.5);
+      queueManager.updateViewportPriority(4, 0);
+    });
+
+    setTimeout(() => {
+      const queue = queueManager.getQueue();
+      expect(queue.length).toBe(0);
+      expect(executingByPriority[1]).toBe('3');
+
+      expect(executingByPriority[0]).toBe('4');
     }, 150);
   });
 });
