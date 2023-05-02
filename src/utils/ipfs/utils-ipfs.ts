@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { AddResult, IPFS, IPFSPath } from 'kubo-rpc-client/types';
+import { AddResult, IPFSPath } from 'kubo-rpc-client/types';
 
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
@@ -21,8 +21,8 @@ import {
 import { CYBER } from '../config';
 
 // import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
-import { addIpfsContentToDb, getIpfsContentFromDb } from './db-utils';
-import { chunksToBlob } from './content-utils';
+import { getIpfsContentFromDb } from './db-utils';
+import { addDataChunksToIpfsCluster } from './cluster-utils';
 
 // Get IPFS node from local storage
 // TODO: refactor
@@ -315,16 +315,29 @@ const addContenToIpfs = async (
   content: ImportCandidate
 ): Promise<Option<string>> => {
   let cid: AddResult;
-  // TODO: save into DB only embedded
-  // TODO: add to cluster
+  let arrayBuffer: Buffer | ArrayBuffer | undefined;
+
   if (node) {
     if (typeof content === 'string') {
       cid = await node.add(Buffer.from(content), { pin: true });
+      arrayBuffer = Buffer.from(content);
     } else {
       cid = await node.add(content, { pin: true });
+      if (content instanceof File) {
+        arrayBuffer = await content.arrayBuffer();
+      }
     }
-    // TODO: pin | add to cluster
-    console.warn('content', content, 'cid', cid);
+
+    if (arrayBuffer) {
+      const raw = new Uint8Array(arrayBuffer);
+      const result = await addDataChunksToIpfsCluster(
+        cid.cid,
+        raw,
+        node.nodeType === 'embedded'
+      );
+
+      console.log('result', result);
+    }
     return cid.path;
   }
   return undefined;
