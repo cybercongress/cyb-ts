@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { Readable } from 'readable-stream';
 import VideoStream from 'videostream';
@@ -81,7 +81,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
     );
   }, [node]);
 
-  return <video ref={videoRef} controls />;
+  return <video style={{ width: '100%' }} ref={videoRef} controls />;
 }
 
 export default VideoPlayer;

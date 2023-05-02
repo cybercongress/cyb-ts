@@ -11,7 +11,7 @@ const queueManager = new QueueManager<IPFSContentMaybe>();
 window.qm = queueManager;
 
 type UseIpfsContentReturn = {
-  status?: string;
+  status?: QueueItemStatus | undefined;
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
 };

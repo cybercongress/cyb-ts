@@ -95,7 +95,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             node: ipfs,
-            isReady: !ipfs,
+            isReady: ipfs !== null,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),

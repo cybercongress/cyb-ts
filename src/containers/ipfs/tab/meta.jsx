@@ -58,7 +58,7 @@ function MetaTab({ data, cid }) {
             text="SIZE"
             value={formatCurrency(data.size, 'B', 3, PREFIXES)}
           />
-          <RowItem text="LINKS" value={data.blockSizes.length} />
+          {data.blockSizes && <RowItem text="LINKS" value={data.blockSizes.length} />}
           <RowItem text="DATA" value="" />
         </Pane>
         <div

@@ -20,6 +20,8 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
 import { useQueryClient } from 'src/contexts/queryClient';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 
 const dateFormat = require('dateformat');
 
@@ -83,12 +85,12 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
         }}
       >
         <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
-        <div style={{ fontSize: '20px' }}>{statusFetching}</div>
+        {/* <div style={{ fontSize: '20px' }}>{statusFetching}</div> */}
       </div>
     );
   }
 
-  if (!loading && status === 'impossibleLoad') {
+  if (!loading && status === 'error') {
     return (
       <div
         style={{
@@ -110,9 +112,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
 function Ipfs() {
   const queryClient = useQueryClient();
   const { cid, tab = 'discussion' } = useParams();
-  const { node: nodeIpfs } = useIpfs();
-  const { contentDetails, meta, status, loading, statusFetching } =
-    useGetIpfsContent(cid, nodeIpfs);
+  const { status, content, source } = useQueueIpfsContent(cid, 0);
   const { isMobile: mobile } = useDevice();
 
   // const [content, setContent] = useState('');
@@ -132,6 +132,10 @@ function Ipfs() {
     address: '',
     timestamp: '',
   });
+
+  console.log('status', status);
+  console.log('content', content);
+  console.log('source', source);
 
   const queryParamsId = `${cid}.${tab}`;
   // const [metaData, setMetaData] = useState({
@@ -270,15 +274,16 @@ function Ipfs() {
   return (
     <>
       <main className="block-body">
-        {loading ? (
-          <ContentIpfsCid
-            loading={loading}
-            statusFetching={statusFetching}
-            status={status}
-          />
-        ) : (
-          <ContentTab contentDetails={contentDetails} />
+        <div
+          style={{ fontSize: '8px', color: '#00edeb' }}
+        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
+        {status !== 'completed' && (
+          <ContentIpfsCid loading={status === 'executing'} status={status} />
         )}
+        {status === 'completed' && (
+          <ContentIpfs status={status} content={content} cid={cid} />
+        )}
+       
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -392,7 +397,7 @@ function Ipfs() {
               <Pane width="60%" marginX="auto" fontSize="18px">
                 Meta
               </Pane>
-              <MetaTab cid={cid} data={meta} />
+              <MetaTab cid={cid} data={content?.meta} />
             </>
           )}
         </Pane>
