@@ -20,7 +20,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
       setTimeout(() => {
         setOpenMenu(true);
         localStorage.setItem(localStorageKeys.MENU_SHOWED, 'true');
-      }, 700);
+      }, 0);
     }
   }, []);
 
