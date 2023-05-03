@@ -94,7 +94,7 @@ function AppRouter() {
   return (
     <WrappedRouter>
       <Routes>
-        <Route path={routes.home.path} Component={App}>
+        <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
           <Route path="/robot" element={<Wallet />} />
           <Route path="/oracle" element={<Home />} />
