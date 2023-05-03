@@ -22,7 +22,6 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 
@@ -124,9 +123,6 @@ class ActionBarContainer extends Component {
     this.setState({
       toCid,
     });
-
-    const datapinToIpfsCluster = await pinToIpfsCluster(toCid, content);
-    console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
   };
 
   calculationIpfsFrom = async () => {

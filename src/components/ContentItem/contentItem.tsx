@@ -16,6 +16,7 @@ import { CYBER } from '../../utils/config';
 import { getRankGrade } from '../../utils/search/utils';
 import styles from './contentItem.module.scss';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
+import ContentIpfs from '../contentIpfs/contentIpfs';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -49,20 +50,20 @@ function ContentItem({
   parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(undefined);
+  // const [ipfsDataDetails, setIpfsDatDetails] =
+  //   useState<IPFSContentDetails>(undefined);
   const { status, content, source } = useQueueIpfsContent(
     cid,
     item.rank,
     parentId
   );
 
-  useEffect(() => {
-    // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed') {
-      getContentDetails(cid, content).then(setIpfsDatDetails);
-    }
-  }, [content, status, cid]);
+  // useEffect(() => {
+  //   // TODO: cover case with content === 'availableDownload'
+  //   if (status === 'completed') {
+  //     getContentDetails(cid, content).then(setIpfsDatDetails);
+  //   }
+  // }, [content, status, cid]);
 
   return (
     <Link className={className} to={`/ipfs/${cid}`}>
@@ -72,19 +73,6 @@ function ContentItem({
       >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
       <SearchItem
         key={cid}
-        textPreview={
-          // NEED TO move out from here this code or encapsulate whole logic into SearchItem
-          ipfsDataDetails?.type === 'text' && (
-            <div className="container-text-SearchItem">
-              <ReactMarkdown
-                rehypePlugins={[rehypeSanitize]}
-                remarkPlugins={[remarkGfm]}
-              >
-                {ipfsDataDetails?.text}
-              </ReactMarkdown>
-            </div>
-          )
-        }
         status={status}
         grade={
           item.rank
@@ -92,31 +80,7 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        {status !== 'completed' && <div>{cid}</div>}
-        {ipfsDataDetails?.type === 'link' && (
-          <div>{ipfsDataDetails.content}</div>
-        )}
-        {ipfsDataDetails?.type === 'image' && (
-          <img
-            style={{ width: '100%', paddingTop: 10 }}
-            alt="img"
-            src={ipfsDataDetails?.content}
-          />
-        )}
-        {ipfsDataDetails?.type === 'pdf' && (
-          <Iframe
-            width="100%"
-            height="400px"
-            className="iframe-SearchItem"
-            url={ipfsDataDetails?.content}
-            // TODO: USE loaded content
-            // url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
-          />
-        )}
-        {content && ipfsDataDetails?.type === 'video' && (
-          // <video controls src={ipfsDataDetails.content} />
-          <VideoPlayer content={content} />
-        )}
+        <ContentIpfs status={status} content={content} cid={cid} search />
       </SearchItem>
     </Link>
   );

@@ -6,7 +6,12 @@ import {
   IpfsContentType,
   IpfsRawDataResponse,
 } from './ipfs';
-import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
+import {
+  CYBER,
+  PATTERN_HTML,
+  PATTERN_HTTP,
+  PATTERN_IPFS_HASH,
+} from '../config';
 
 import { getResponseResult, onProgressCallback } from './stream-utils';
 
@@ -32,6 +37,13 @@ export const detectContentType = (
   }
   return 'other';
 };
+
+const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
+
+function isHtml(string) {
+  const newString = string.trim().slice(0, 1000);
+  return basic.test(newString);
+}
 
 // eslint-disable-next-line import/no-unused-modules
 export const chunksToBlob = (
@@ -81,13 +93,18 @@ export const parseRawIpfsData = async (
 
         if (dataBase64.match(PATTERN_IPFS_HASH)) {
           response.gateway = true;
-          response.type = 'link';
-          response.content = `${CYBER.CYBER_GATEWAY}ipfs/${dataBase64}`;
+          response.type = 'other';
+          response.content = dataBase64;
+          response.link = `/ipfs/${cid}`;
         } else if (dataBase64.match(PATTERN_HTTP)) {
           response.type = 'link';
           response.gateway = false;
           response.content = dataBase64;
           response.link = `/ipfs/${cid}`;
+        } else if (isHtml(dataBase64)) {
+          response.type = 'other';
+          response.gateway = true;
+          response.content = cid.toString();
         } else {
           response.type = 'text';
           response.content = dataBase64;

@@ -52,6 +52,7 @@ export type IpfsContentType =
   | 'link'
   | 'text'
   | 'video'
+  | 'html'
   | 'other';
 
 export type IPFSContentDetails =

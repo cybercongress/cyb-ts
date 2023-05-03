@@ -2,12 +2,16 @@ import db from 'src/db';
 
 export const addIpfsContentToDb = async (
   cid: string,
-  blob: Blob
+  raw: Uint8Array
 ): Promise<void> => {
   const dbValue = await db.table('cid').get({ cid });
 
   if (!dbValue) {
-    db.table('cid').add(blob);
+    const ipfsContentAddtToInddexdDB = {
+      cid,
+      data: raw,
+    };
+    db.table('cid').add(ipfsContentAddtToInddexdDB);
   }
 };
 

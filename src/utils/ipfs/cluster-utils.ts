@@ -9,6 +9,7 @@ import { chunksToBlob } from 'src/utils/ipfs/content-utils';
 import { Cluster } from '@nftstorage/ipfs-cluster';
 import { IPFSPath } from 'kubo-rpc-client/types';
 import { addIpfsContentToDb } from './db-utils';
+import { getMimeFromUint8Array } from './stream-utils';
 
 const CYBERNODE_URL = 'https://io.cybernode.ai';
 
@@ -17,24 +18,24 @@ const cluster = new Cluster(CYBERNODE_URL);
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const addDataChunksToIpfsCluster = async (
   cid: IPFSPath,
-  chunks: Array<Uint8Array>,
-  mime: string | undefined,
+  chunks: Uint8Array,
   saveToDb?: boolean
 ): Promise<AddResponse | undefined> => {
   try {
     if (chunks.length > 0) {
-      const blob = chunksToBlob(chunks, mime);
+      const mime = await getMimeFromUint8Array(chunks);
+      const blob = chunksToBlob([chunks], mime);
 
       // result.cid is cidV1 - can we use that?
       if (saveToDb) {
-        addIpfsContentToDb(cid.toString(), blob);
+        addIpfsContentToDb(cid.toString(), chunks);
       }
       // console.log('----cluster:', await cluster.info());
       // TODO: ERROR on DEV ENV
       // Access to fetch at 'https://io.cybernode.ai/add?stream-channels=false&raw-leaves=true&cid-version=1'
       // from origin 'https://localhost:3001'
       // has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present .....
-      return await cluster.add(blob, { cidVersion: 0 });
+      return await pinToIpfsCluster(cid.toString(), blob);
     }
   } catch (error) {
     console.log('error addDataChunksToIpfsCluster', cid, error);

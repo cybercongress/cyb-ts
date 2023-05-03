@@ -26,8 +26,10 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   useEffect(() => {
     if (!data) {
       if (cidAvatar) {
-        const { userGateway } = getIpfsUserGatewanAndNodeType();
-        const urlGateway = userGateway || CYBER.CYBER_GATEWAY;
+        // TO-DO use local gateway
+        // const { userGateway } = getIpfsUserGatewanAndNodeType();
+        // const urlGateway = userGateway || CYBER.CYBER_GATEWAY;
+        const urlGateway = CYBER.CYBER_GATEWAY;
         setAvatar(`${urlGateway}/ipfs/${cidAvatar}`);
       } else {
         setAvatar(null);

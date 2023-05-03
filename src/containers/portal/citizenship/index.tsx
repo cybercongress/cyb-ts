@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import { pinToIpfsCluster } from 'src/utils/ipfs/cluster-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
@@ -197,16 +196,9 @@ function GetCitizenship({ defaultAccount }) {
     const getPinAvatar = async () => {
       try {
         if (node !== null && avatarImg !== null) {
-          const toCid = await addContenToIpfs(node, avatarImg);
-          console.log('toCid', toCid);
-          if (toCid) {
-            setAvatarIpfs(toCid);
-            const datapinToIpfsCluster = await pinToIpfsCluster(
-              toCid,
-              avatarImg
-            );
-            console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
-          }
+          addContenToIpfs(node, avatarImg).then((cid) => {
+            console.log('pin cid avatar', cid);
+          });
         }
       } catch (error) {
         console.log('error', error);
@@ -425,12 +417,12 @@ function GetCitizenship({ defaultAccount }) {
   const pinPassportData = async (nodeIpfs, data) => {
     try {
       const { address, nickname } = data;
-      const cidNickname = await addContenToIpfs(nodeIpfs, nickname);
-      const cidAddress = await addContenToIpfs(nodeIpfs, address);
-      if (cidAddress && cidNickname) {
-        pinToIpfsCluster(cidAddress, address);
-        pinToIpfsCluster(cidNickname, nickname);
-      }
+      addContenToIpfs(nodeIpfs, nickname).then((cid) => {
+        console.log('pin cid nickname', cid);
+      });
+      addContenToIpfs(nodeIpfs, address).then((cid) => {
+        console.log('pin cid address', cid);
+      });
     } catch (error) {
       console.log('error', error);
     }
