@@ -66,7 +66,7 @@ function ContentItem({
   // }, [content, status, cid]);
 
   return (
-    <Link className={className} to={`/ipfs/${cid}`}>
+    <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
       {/* status !== 'completed' && */}
       <div
         className={styles.contentLoadInfo}

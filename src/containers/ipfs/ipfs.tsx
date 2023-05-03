@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Pane, Tablist, Pill } from '@cybercongress/gravity';
-import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
@@ -12,16 +14,11 @@ import {
   DiscussionTab,
   CommunityTab,
   AnswersTab,
-  ContentTab,
   OptimisationTab,
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import useGetIpfsContent from './useGetIpfsContentHook';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
-import { useQueryClient } from 'src/contexts/queryClient';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 
 const dateFormat = require('dateformat');
 
@@ -112,7 +109,7 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
 function Ipfs() {
   const queryClient = useQueryClient();
   const { cid, tab = 'discussion' } = useParams();
-  const { status, content, source } = useQueueIpfsContent(cid, 0);
+  const { status, content, source } = useQueueIpfsContent(cid, 1, cid);
   const { isMobile: mobile } = useDevice();
 
   // const [content, setContent] = useState('');
@@ -273,13 +270,13 @@ function Ipfs() {
         <div
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
-        {status !== 'completed' && (
-          <ContentIpfsCid loading={status === 'executing'} status={status} />
+        {(!status || status !== 'completed') && (
+          <ContentIpfsCid loading status={status} />
         )}
         {status === 'completed' && (
           <ContentIpfs status={status} content={content} cid={cid} />
         )}
-       
+
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"

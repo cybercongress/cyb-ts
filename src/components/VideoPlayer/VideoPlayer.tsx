@@ -5,6 +5,7 @@ import { Readable } from 'readable-stream';
 import VideoStream from 'videostream';
 import { useIpfs } from 'src/contexts/ipfs';
 import { catIPFSContentFromNode } from 'src/utils/ipfs/utils-ipfs';
+import { CYBER } from 'src/utils/config';
 
 interface VideoPlayerProps {
   content: IPFSContent;
@@ -72,6 +73,8 @@ function VideoPlayer({ content }: VideoPlayerProps) {
       console.log('---opts', opts);
     } else if (content.source === 'gateway') {
       videoRef.current!.src = content.contentUrl;
+    } else if (content.availableDownload) {
+      videoRef.current!.src = `${CYBER.CYBER_GATEWAY}/ipfs/${content.cid}`;
     } else {
       console.log('Unknown source, TODO: implement DB', content.source);
     }

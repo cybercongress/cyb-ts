@@ -1,91 +1,13 @@
 import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { useEffect, useState } from 'react';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import Iframe from 'react-iframe';
-import rehypeStringify from 'rehype-stringify';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
-import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import { CYBER } from 'src/utils/config';
-
-// {
-//   ipfsDataDetails?.type === 'link' && <div>{ipfsDataDetails.content}</div>;
-// }
-
-function Img({ content }) {
-  return (
-    <img style={{ width: '100%', paddingTop: 10 }} alt="img" src={content} />
-  );
-}
-
-function Pdf({ content }) {
-  return (
-    <Iframe
-      width="100%"
-      height="400px"
-      className="iframe-SearchItem"
-      url={content}
-      // TODO: USE loaded content
-      // url={`${CYBER.CYBER_GATEWAY}${ipfsDataDetails?.link}`}
-    />
-  );
-}
-
-function TextContainer({
-  children,
-  fullWidth,
-}: {
-  children: string;
-  fullWidth?: boolean;
-}) {
-  return (
-    <div className={fullWidth ? 'container-text-SearchItem' : 'markdown'}>
-      <ReactMarkdown
-        rehypePlugins={[rehypeStringify, rehypeSanitize]}
-        remarkPlugins={[remarkGfm]}
-      >
-        {children}
-      </ReactMarkdown>
-    </div>
-  );
-}
-
-function GatewayContent({ url }: { url: string }) {
-  return (
-    <div
-      style={{
-        textAlign: 'center',
-        backgroundColor: '#000',
-        minHeight: 'calc(100vh - 70px)',
-        paddingBottom: '5px',
-        height: '1px',
-        width: '100%',
-      }}
-    >
-      <Iframe
-        width="100%"
-        height="100%"
-        // loading={<Dots />}
-        id="iframeCid"
-        className="iframe-SearchItem"
-        src={url}
-        style={{
-          backgroundColor: '#fff',
-        }}
-      />
-    </div>
-  );
-}
-
-function LinkHttp({ content, preview }) {
-  return (
-    <>
-      <div>{content}</div>
-      {preview && <GatewayContent url={content} />}
-    </>
-  );
-}
+import VideoPlayer from '../VideoPlayer/VideoPlayer';
+import GatewayContent from './component/gateway';
+import TextMarkdown from '../TextMarkdown';
+import LinkHttp from './component/link';
+import Pdf from '../pdf';
+import Img from './component/img';
 
 const getContentDetails = async (
   cid: string,
@@ -117,16 +39,24 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed') {
+    if (status === 'completed' && !content?.availableDownload) {
       getContentDetails(cid, content).then(setIpfsDatDetails);
     }
   }, [content, status, cid]);
 
+  if (content?.availableDownload && search) {
+    <div>{cid.toString()}</div>;
+  }
+
+  if (content?.availableDownload && !search) {
+    return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
+  }
+
   if (ipfsDataDetails?.type === 'text') {
     return (
-      <TextContainer fullWidth={search}>
+      <TextMarkdown fullWidth={search}>
         {search ? ipfsDataDetails.text : ipfsDataDetails.content}
-      </TextContainer>
+      </TextMarkdown>
     );
   }
 
@@ -147,16 +77,12 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   if (content && ipfsDataDetails?.type === 'other' && !search) {
-    console.log('"other"');
-    console.log('content', content);
     return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
   }
 
   if (content && ipfsDataDetails?.type === 'other' && search) {
     return (
-      <TextContainer fullWidth={search}>
-        {ipfsDataDetails.content}
-      </TextContainer>
+      <TextMarkdown fullWidth={search}>{ipfsDataDetails.content}</TextMarkdown>
     );
   }
 

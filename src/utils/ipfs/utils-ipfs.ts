@@ -24,6 +24,8 @@ import { CYBER } from '../config';
 import { getIpfsContentFromDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 
+const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
+
 // Get IPFS node from local storage
 // TODO: refactor
 const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
@@ -123,21 +125,26 @@ const fetchIPFSContentFromNode = async (
         return { cid, availableDownload: true, source: 'node', meta };
       }
       default: {
-        // if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
-        // const flushResults = (chunks, mime) =>
-        //   addDataChunksToIpfsCluster(cid, chunks, mime);
+        if (!meta.size || meta.size < FILE_SIZE_DOWNLOAD) {
+          // const flushResults = (chunks, mime) =>
+          //   addDataChunksToIpfsCluster(cid, chunks, mime);
 
-        const { mime, result: stream } = await toAsyncIterableWithMime(
-          node.cat(path, { signal })
-          // flushResults
-        );
+          const { mime, result: stream } = await toAsyncIterableWithMime(
+            node.cat(path, { signal })
+            // flushResults
+          );
 
-        // TODO: add to db flag that content is pinned TO local node
+          // TODO: add to db flag that content is pinned TO local node
 
-        node.pin.add(cid);
+          node.pin.add(cid);
 
-        return { result: stream, cid, meta: { ...meta, mime }, source: 'node' };
-        // }
+          return {
+            result: stream,
+            cid,
+            meta: { ...meta, mime },
+            source: 'node',
+          };
+        }
       }
     }
   } catch (error) {
