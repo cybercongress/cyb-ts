@@ -6,6 +6,7 @@ import VideoStream from 'videostream';
 import { useIpfs } from 'src/contexts/ipfs';
 import { catIPFSContentFromNode } from 'src/utils/ipfs/utils-ipfs';
 import { CYBER } from 'src/utils/config';
+import { multiaddr } from '@multiformats/multiaddr';
 
 interface VideoPlayerProps {
   content: IPFSContent;
@@ -39,6 +40,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
     if (!videoRef.current) {
       return;
     }
+
     if (content.source === 'node') {
       const opts = new VideoStream(
         {
@@ -73,8 +75,16 @@ function VideoPlayer({ content }: VideoPlayerProps) {
       console.log('---opts', opts);
     } else if (content.source === 'gateway') {
       videoRef.current!.src = content.contentUrl;
-    } else if (content.availableDownload) {
-      videoRef.current!.src = `${CYBER.CYBER_GATEWAY}/ipfs/${content.cid}`;
+    } else if (content.availableDownload && node?.nodeType === 'external') {
+      node?.config
+        .get('Addresses.Gateway')
+        .then((response) => {
+          const address = multiaddr(response).nodeAddress();
+          videoRef.current!.src = `http://${address.address}:${address.port}/ipfs/${content.cid}`;
+        })
+        .catch(() => {
+          videoRef.current!.src = `${CYBER.CYBER_GATEWAY}/ipfs/${content.cid}`;
+        });
     } else {
       console.log('Unknown source, TODO: implement DB', content.source);
     }
