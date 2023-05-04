@@ -6,7 +6,6 @@ import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
-import { type } from 'ramda';
 
 function useGetValidatorInfo(address) {
   const queryClient = useQueryClient();
