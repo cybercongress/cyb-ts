@@ -1,33 +1,48 @@
 import cx from 'classnames';
 import styles from './Input.module.scss';
+import { useState } from 'react';
+import LinearGradientContainer, {
+  Color,
+} from '../LinearGradientContainer/LinearGradientContainer';
 
 export type Props = {
-  color?: 'pink';
+  color?: Color;
   width?: string;
   placeholder?: string;
+  value: string;
+  type?: 'text' | 'password';
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function Input({ color, placeholder, width, ...props }: Props) {
+function Input({
+  color,
+  placeholder,
+  onChange,
+  width,
+  type = 'text',
+  ...props
+}: Props) {
+  const [focused, setFocused] = useState(false);
+
   return (
-    <div className={styles.textbox} style={{ width }}>
-      <div
-        className={cx(styles.textboxBottomGradient, styles.textboxFace, {
-          [styles.textboxFacePink]: color === 'pink',
-        })}
-      />
-
-      <div
-        className={cx(styles.textboxBottomLine, {
-          [styles.textboxBottomLinePink]: color === 'pink',
-        })}
-      />
-
+    <div
+      className={cx(
+        styles.textbox,
+        color && styles[color],
+        focused && styles.focused
+      )}
+      style={{ width }}
+    >
       <input
-        className={styles.textboxText}
-        type="text"
+        type={type}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         placeholder={placeholder}
         {...props}
       />
+
+      <LinearGradientContainer active={focused} color={color} />
     </div>
   );
 }

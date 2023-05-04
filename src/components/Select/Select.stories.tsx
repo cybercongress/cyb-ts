@@ -1,68 +1,89 @@
 import { Story, Meta } from '@storybook/react';
 import Select, { SelectProps, OptionSelect } from '.';
+import { useState } from 'react';
+import bootImg from '../../image/boot.png';
 
+// eslint-disable-next-line import/no-unused-modules
 export default {
   title: 'Atoms/Select',
   component: Select,
-  argTypes: {
-    valueSelect: {
-      control: {
-        type: 'text',
-      },
-    },
-    onChangeSelect: {
-      action: 'onChange',
-    },
-    children: {
-      control: {
-        disable: true,
-      },
-    },
-    width: {
-      control: {
-        type: 'text',
-      },
-    },
-    disabled: {
-      control: {
-        type: 'boolean',
-      },
-    },
-    currentValue: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
+  // argTypes: {
+  //   valueSelect: {
+  //     control: {
+  //       type: 'text',
+  //     },
+  //   },
+  //   children: {
+  //     control: {
+  //       disable: true,
+  //     },
+  //   },
+  //   width: {
+  //     control: {
+  //       type: 'text',
+  //     },
+  //   },
+  //   disabled: {
+  //     control: {
+  //       type: 'boolean',
+  //     },
+  //   },
+  //   currentValue: {
+  //     control: {
+  //       type: 'text',
+  //     },
+  //   },
+  // },
 } as Meta;
 
-const Template: Story<SelectProps> = (args) => (
-  <Select {...args}>
-    <OptionSelect
-      value="1"
-      text="BOOT"
-      // bgrImg={require('../../image/boot.png')}
+const image = <img src={bootImg} />;
+
+// eslint-disable-next-line react/function-component-definition
+const Template: Story<SelectProps> = (args) => {
+  const [value, setValue] = useState('1');
+
+  return (
+    <Select
+      valueSelect={value}
+      placeholder="Select token"
+      {...args}
+      onChangeSelect={setValue}
+      options={[
+        { text: '', value: '' },
+        {
+          text: 'BOOT',
+          value: '1',
+          img: image,
+        },
+        {
+          text: 'ATOM',
+          value: '2',
+          img: image,
+        },
+        {
+          text: 'PUSSY',
+          value: '3',
+          img: image,
+        },
+        {
+          text: 'JUNO',
+          value: '4',
+        },
+      ]}
     />
-    <OptionSelect value="2" text="ATOM" />
-    <OptionSelect value="3" text="PUSSY" />
-    <OptionSelect value="3" text="JUNO" />
-  </Select>
-);
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {
-  valueSelect: '',
-  onChangeSelect: () => {},
   width: '220px',
   disabled: false,
-  currentValue: 'BOOT',
 };
 
-// export const Disabled = Template.bind({});
-// Default.args = {
-//   valueSelect: '',
-//   onChangeSelect: () => {},
-//   width: '220px',
-//   disabled: true,
-//   currentValue: 'BOOT',
-// };
+export const Disabled = Template.bind({});
+Default.args = {
+  valueSelect: '',
+  width: '220px',
+  disabled: true,
+  currentValue: 'BOOT',
+};

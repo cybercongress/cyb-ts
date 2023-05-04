@@ -4,10 +4,12 @@
 import { useState, useRef } from 'react';
 
 import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
-import LinearGradientContainer from './LinearGradientContainer';
 import styles from './Select.module.scss';
 import { SelectContext, useSelectContext } from './selectContext';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
+import LinearGradientContainer, {
+  Color,
+} from '../LinearGradientContainer/LinearGradientContainer';
 
 const classNames = require('classnames');
 
@@ -25,13 +27,15 @@ export function OptionSelect({ text, img, bgrImg, value }: OptionSelectProps) {
       className={styles.listItem}
       onClick={() => changeSelectedOption(value)}
     >
-      <div
-        className={styles.bgrImg}
-        style={bgrImg ? { boxShadow: 'none', background: 'transparent' } : {}}
-      >
-        {img || ''}
-      </div>
-      <div>{text}</div>
+      {(bgrImg || img) && (
+        <div
+          className={styles.bgrImg}
+          style={bgrImg ? { boxShadow: 'none', background: 'transparent' } : {}}
+        >
+          {img}
+        </div>
+      )}
+      <div>{text || '-'}</div>
     </div>
   );
 }
@@ -39,6 +43,7 @@ export function OptionSelect({ text, img, bgrImg, value }: OptionSelectProps) {
 type SelectOption = {
   text: string;
   value: string;
+  img?: React.ReactNode;
 };
 
 type SelectProps = {
@@ -48,7 +53,9 @@ type SelectProps = {
   width?: string;
   disabled?: boolean;
   options?: SelectOption[];
+  placeholder?: string;
   currentValue: React.ReactNode;
+  color?: Color;
 };
 
 function Select({
@@ -59,6 +66,8 @@ function Select({
   disabled,
   options,
   currentValue,
+  placeholder,
+  color = Color.Yellow,
 }: SelectProps) {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -76,6 +85,24 @@ function Select({
   };
 
   useOnClickOutside(selectContainerRef, clickOutsideHandler);
+
+  function renderTitle() {
+    let value = currentValue;
+
+    if (valueSelect && options) {
+      const item = options.find((item) => item.value === valueSelect);
+
+      if (item) {
+        value = (
+          <>
+            {item.img} {item.text}
+          </>
+        );
+      }
+    }
+
+    return value;
+  }
 
   return (
     <SelectContext.Provider
@@ -96,17 +123,25 @@ function Select({
             onClick={toggling}
             className={styles.dropDownContainerHeader}
           >
-            <div className={styles.dropDownHeader}>{currentValue}</div>
-            <LinearGradientContainer />
+            <span className={styles.dropDownHeader}>{renderTitle()}</span>
+            <LinearGradientContainer active={isOpen} color={color} />
           </button>
           {isOpen && (
             <div className={styles.dropDownListContainer}>
               <div className={styles.dropDownList}>
+                {/* {placeholder && (
+                  <OptionSelect text={placeholder} value={null} />
+                )} */}
                 {options
                   ? options.map((option) => {
-                      const { value, text } = option;
+                      const { value, text, img } = option;
                       return (
-                        <OptionSelect key={value} text={text} value={value} />
+                        <OptionSelect
+                          key={value}
+                          text={text}
+                          value={value}
+                          img={img}
+                        />
                       );
                     })
                   : children}
