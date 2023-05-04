@@ -1,59 +1,48 @@
 // TODO: refactor hook
 import { useState, useEffect } from 'react';
-import { IPFS } from 'kubo-rpc-client/types';
-import { getResponseResult } from 'src/utils/ipfs/stream-utils';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import {
-  IPFSContentDetails,
-  IPFSContentMeta,
-  IPFSContentMaybe,
-} from '../../utils/ipfs/ipfs.d';
+import { useIpfs } from 'src/contexts/ipfs';
+import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
+import { IPFSContentMaybe, IpfsContentSource } from '../../utils/ipfs/ipfs.d';
 import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
 
-const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
+const useGetIpfsContent = (cid: string) => {
+  const { node } = useIpfs();
   const [statusFetching, setStatusFetching] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<QueueItemStatus | undefined>();
+  const [source, setSource] = useState<IpfsContentSource | undefined>();
+  const [content, setContent] = useState<IPFSContentMaybe>();
   const [loading, setLoading] = useState(true);
-  const [meta, setMeta] = useState<IPFSContentMeta | undefined>(undefined);
-  const [contentDetails, setContentDetails] =
-    useState<IPFSContentDetails>(undefined);
 
   useEffect(() => {
     const feachData = async (): Promise<void> => {
       setLoading(true);
       setStatusFetching('');
+      setStatus('executing');
 
       const contentIpfs: IPFSContentMaybe = await getIPFSContent(
-        nodeIpfs,
+        node,
         cid,
         undefined,
         setStatusFetching
       );
-      setMeta(contentIpfs?.meta);
-      if (!contentIpfs) {
-        setStatus('impossibleLoad');
-      } else if (contentIpfs.availableDownload) {
-        // setContentIpfs(contentIpfs);
-        setStatus('availableDownload');
-      } else if (contentIpfs.result) {
-        const details = await parseRawIpfsData(
-          contentIpfs.result,
-          contentIpfs.meta?.mime,
-          cid
-        );
-        setContentDetails(details);
-        setStatus('downloaded');
+
+      if (contentIpfs) {
+        setStatus('completed');
+        setSource(contentIpfs.source);
+        setContent(contentIpfs);
+      } else {
+        setStatus('timeout');
       }
 
       setLoading(false);
     };
     feachData();
-  }, [cid, nodeIpfs]);
+  }, [cid, node]);
 
   return {
-    contentDetails,
-    meta,
+    content,
     status,
+    source,
     loading,
     statusFetching,
   };

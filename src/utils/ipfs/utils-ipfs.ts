@@ -237,7 +237,7 @@ async function fetchIpfsContent<T>(
 }
 
 const getIPFSContent = async (
-  node: AppIPFS,
+  node: AppIPFS | null,
   cid: string,
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus

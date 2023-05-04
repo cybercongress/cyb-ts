@@ -1,12 +1,11 @@
 // TODO: Refactor this component - too heavy
-import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Pane, Tablist, Pill } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
@@ -19,6 +18,9 @@ import {
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
+import useGetIpfsContent from './useGetIpfsContentHook';
+import useGetBackLink from './hooks/useGetBackLink';
+import Backlinks from './components/backlinks';
 
 const dateFormat = require('dateformat');
 
@@ -82,7 +84,9 @@ function ContentIpfsCid({ loading, statusFetching, status }) {
         }}
       >
         <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
-        {/* <div style={{ fontSize: '20px' }}>{statusFetching}</div> */}
+        {statusFetching && (
+          <div style={{ fontSize: '20px' }}>{statusFetching}</div>
+        )}
       </div>
     );
   }
@@ -110,18 +114,14 @@ function Ipfs() {
   const queryClient = useQueryClient();
   const { cid, tab = 'discussion' } = useParams();
   const { status, content, source } = useQueueIpfsContent(cid, 1, cid);
+  const { backlinks } = useGetBackLink(cid);
+  // const { statusFetching, content, status, source, loading } =
+  //   useGetIpfsContent(cid);
   const { isMobile: mobile } = useDevice();
-
-  // const [content, setContent] = useState('');
-  // const [typeContent, setTypeContent] = useState('');
-  // const [text, setText] = useState('');
-  // const [loadStatus, setLoadStatus] = useState('');
   const [communityData, setCommunityData] = useState({});
-  // const [gateway, setGateway] = useState(null);
   const [dataToLink, setDataToLink] = useState([]);
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
-  const [dataBacklinks, setDataBacklinks] = useState([]);
   const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(0);
   const [total, setTotal] = useState(0);
@@ -131,46 +131,12 @@ function Ipfs() {
   });
 
   const queryParamsId = `${cid}.${tab}`;
-  // const [metaData, setMetaData] = useState({
-  //   type: 'file',
-  //   size: 0,
-  //   blockSizes: [],
-  //   data: '',
-  // });
-
-  // useEffect(() => {
-  //   setContent(dataGetIpfsContent.content);
-  //   setTypeContent(dataGetIpfsContent.typeContent);
-  //   setGateway(dataGetIpfsContent.gateway);
-  //   setMetaData(dataGetIpfsContent.metaData);
-  //   setLoadStatus(dataGetIpfsContent.status);
-  //   setText(dataGetIpfsContent.text);
-  // }, [dataGetIpfsContent]);
 
   useEffect(() => {
     if (queryClient) {
       getLinks();
     }
   }, [queryClient]);
-
-  useEffect(() => {
-    const feachBacklinks = async () => {
-      setDataBacklinks([]);
-      if (queryClient) {
-        const responseBacklinks = await queryClient.backlinks(cid);
-        // console.log(`responseBacklinks`, responseBacklinks)
-        if (
-          responseBacklinks.result &&
-          Object.keys(responseBacklinks.result).length > 0
-        ) {
-          const { result } = responseBacklinks;
-          const reduceArr = reduceParticleArr(result, cid);
-          setDataBacklinks(reduceArr);
-        }
-      }
-    };
-    feachBacklinks();
-  }, [cid, queryClient]);
 
   const getLinks = () => {
     feacDataSearch();
@@ -382,9 +348,8 @@ function Ipfs() {
               >
                 Backlinks
               </Pane>
-              <OptimisationTab
-                data={dataBacklinks}
-                mobile={mobile}
+              <Backlinks
+                data={backlinks}
                 parent={queryParamsId}
               />
               <Pane width="60%" marginX="auto" fontSize="18px">
@@ -398,11 +363,11 @@ function Ipfs() {
       {!mobile && (tab === 'discussion' || tab === 'answers') && (
         <ActionBarContainer
           placeholder={
-            tab == 'answers' ? 'add keywords, hash or file' : 'add message'
+            tab === 'answers' ? 'add keywords, hash or file' : 'add message'
           }
-          textBtn={tab == 'answers' ? 'add answer' : 'Comment'}
+          textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
           keywordHash={cid}
-          update={() => getLinks()}
+          // update={() => getLinks()}
         />
       )}
     </>
