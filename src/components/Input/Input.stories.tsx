@@ -22,6 +22,7 @@ const Template: Story<Props> = (args) => {
     <div style={{ width: 400 }}>
       <Input
         {...args}
+        title="Search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />

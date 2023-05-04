@@ -32,10 +32,20 @@ $box-shadow-pink: rgba(246, 43, 253, 0.65);
 $box-shadow-red: rgba(255, 0, 0, 0.53);
 $box-shadow-black: rgba(0, 0, 0, 0.53);
 
+.wrapper {
+  height: 20px;
+  width: 100%;
+  
+  p {
+    margin-top: 6px;
+    color: #777777;
+    text-align: center;
+    font-size: 12px;
+  }
+}
 
 .textbox {
-  width: 100%;
-  height: 42px;
+  height: 20px;
   position: relative;
   transform-style: preserve-3d;
 
@@ -50,7 +60,7 @@ $box-shadow-black: rgba(0, 0, 0, 0.53);
     width: 100%;
     bottom: 2px;
     transform-origin: 50% 100%;
-    transform: perspective(100px) rotateX(50deg);
+    transform: perspective(220px) rotateX(50deg);
   }
 
   &BottomLine {

@@ -11,17 +11,21 @@ export const enum Color {
 export type Props = {
   active: boolean;
   color?: Color;
+  title?: string;
 };
 
-function LinearGradientContainer({ active, color }: Props) {
+function LinearGradientContainer({ active, color, title }: Props) {
   return (
-    <div
-      className={cx(styles.textbox, color && styles[color], {
-        [styles.active]: active,
-      })}
-    >
-      <div className={cx(styles.textboxFace, styles.textboxBottomGradient)} />
-      <div className={cx(styles.textboxFace, styles.textboxBottomLine)} />
+    <div className={styles.wrapper}>
+      <div
+        className={cx(styles.textbox, color && styles[color], {
+          [styles.active]: active,
+        })}
+      >
+        <div className={cx(styles.textboxFace, styles.textboxBottomGradient)} />
+        <div className={cx(styles.textboxFace, styles.textboxBottomLine)} />
+      </div>
+      {title && !active && <p>{title}</p>}
     </div>
   );
 }

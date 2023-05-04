@@ -8,6 +8,7 @@ import LinearGradientContainer, {
 export type Props = {
   color?: Color;
   width?: string;
+  title?: string;
   placeholder?: string;
   value: string;
   type?: 'text' | 'password';
@@ -18,6 +19,7 @@ function Input({
   color,
   placeholder,
   onChange,
+  title,
   width,
   type = 'text',
   ...props
@@ -42,7 +44,7 @@ function Input({
         {...props}
       />
 
-      <LinearGradientContainer active={focused} color={color} />
+      <LinearGradientContainer active={focused} color={color} title={title} />
     </div>
   );
 }

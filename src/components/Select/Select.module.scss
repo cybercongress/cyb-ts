@@ -2,6 +2,7 @@
   width: 120px;
   height: 42px;
   position: relative;
+
   &Container {
     width: inherit;
     height: inherit;
@@ -11,7 +12,6 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: center;
     height: 100%;
     width: 100%;
     padding: 0;

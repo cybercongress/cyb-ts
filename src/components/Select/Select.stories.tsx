@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react';
-import Select, { SelectProps, OptionSelect } from '.';
+import Select, { SelectProps } from '.';
 import { useState } from 'react';
 import bootImg from '../../image/boot.png';
 
@@ -81,7 +81,7 @@ Default.args = {
 };
 
 export const Disabled = Template.bind({});
-Default.args = {
+Disabled.args = {
   valueSelect: '',
   width: '220px',
   disabled: true,
