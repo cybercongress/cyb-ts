@@ -1,4 +1,4 @@
-import { Networks } from 'src/types/networks';
+import { Networks } from '../types/networks';
 
 const TIME_START = '2022-10-03T19:32:28Z';
 const INFINITY = '∞';
