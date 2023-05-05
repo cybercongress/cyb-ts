@@ -6,8 +6,8 @@ import { LinkWindow } from '../link/link';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import React from 'react';
 import axios from 'axios';
-import { useQuery } from 'react-apollo';
 import { formatNumber } from 'src/utils/utils';
+import { useQuery } from '@tanstack/react-query';
 
 const getStargazersGitHub = async () => {
   try {
