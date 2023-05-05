@@ -22,12 +22,12 @@ import {
 
 type IbcDenomContextContextType = {
   ibcDenoms: Option<IbcDenomsArr>;
-  traseDenom: TraseDenomFuncType;
+  traseDenom: TraseDenomFuncType | undefined;
 };
 
 const valueContext = {
   ibcDenoms: undefined,
-  traseDenom: () => {},
+  traseDenom: undefined,
 };
 
 const IbcDenomContext =
@@ -40,7 +40,7 @@ export function useIbcDenom() {
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const poolsData = usePoolListInterval();
-  const [ibcDenoms, setIbcDenoms] = useState<Option<IbcDenomsArr>>(undefined);
+  const [ibcDenoms, setIbcDenoms] = useState<IbcDenomsArr>();
 
   useEffect(() => {
     const getIBCDenomData = async () => {

@@ -1,0 +1,7 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-standard-scss"],
+  // "plugins": ["stylelint-order"],
+  "rules": {
+    "selector-class-pattern": "^[a-z][\\w\\d]*((__[\\w\\d]+)?(--[a-z][\\w\\d]+)?|(--[a-z][\\w\\d]+(__[\\w\\d]+)?))$"
+  }
+}

@@ -248,7 +248,6 @@ class ValidatorsDetails extends React.PureComponent {
           style={{
             height: '50vh',
           }}
-          className="container-loading"
         >
           <Loading />
         </div>
@@ -259,7 +258,6 @@ class ValidatorsDetails extends React.PureComponent {
       return <NotFound />;
     }
 
-    console.log('addressPocket', addressPocket);
     return (
       <div>
         <main className="block-body">

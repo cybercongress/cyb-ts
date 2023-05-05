@@ -26,11 +26,9 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
     createQueryClient();
   }, []);
 
-  // TODO: seems it should be while bootloader
+  // TODO: need handle somehow
   if (!queryClient) {
-    return (
-      <div className="padded-text">Connecting to Cyber blockchain ...</div>
-    );
+    return null;
   }
 
   return (

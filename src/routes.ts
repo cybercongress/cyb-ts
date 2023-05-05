@@ -28,4 +28,7 @@ export const routes = {
   robot: {
     path: '/robot',
   },
+  portal: {
+    path: '/portal',
+  },
 };

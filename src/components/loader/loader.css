@@ -19,6 +19,7 @@ body {
   width: 100%;
   height: 100%;
   top: 0;
+  visibility: unset !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,9 +30,11 @@ img.logo-container {
   width: 180px;
   height: 90px;
   content: url('../../image/robot.svg');
+  margin-bottom: 20px;
 }
 
 #progress-data {
+  margin-top: 30px;
   color: #ffffff;
   font-size: 14pt;
   text-align: center;
