@@ -24,7 +24,7 @@ function useGetBackLink(cid: string) {
   const queryClient = useQueryClient();
   const [backlinks, setBacklinks] = useState<Option<CyberLink[]>>(undefined);
   const { data } = useQuery(
-    ['backlinks', cid],
+    ['useGetBackLink', cid],
     async () => {
       return queryClient?.backlinks(cid);
     },

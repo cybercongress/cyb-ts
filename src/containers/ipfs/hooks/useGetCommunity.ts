@@ -28,7 +28,7 @@ const fetchFunc = async (hash, func) => {
 
 function useGetCommunity(cid: string) {
   const { data } = useQuery(
-    ['getToLinkCommunity', cid],
+    ['useGetCommunity', cid],
     async () => {
       const responseTo = await fetchFunc(cid, getToLink);
       const responseFrom = await fetchFunc(cid, getFromLink);

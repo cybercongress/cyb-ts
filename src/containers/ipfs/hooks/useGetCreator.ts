@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getCreator } from '../../../utils/search/utils';
 import { Option } from 'src/types';
 import { CreatorCyberLink } from 'src/types/cyberLink';
+import { getCreator } from '../../../utils/search/utils';
 
 function useGetCreator(cid) {
-  const { data } = useQuery(['getCreator', cid], async () => {
-    return getCreator(cid);
-  }, {
-    enabled: Boolean(cid),
-  });
+  const { data } = useQuery(
+    ['useGetCreator', cid],
+    async () => {
+      return getCreator(cid);
+    },
+    {
+      enabled: Boolean(cid),
+    }
+  );
   const [creator, setCreator] = useState<Option<CreatorCyberLink>>(undefined);
 
   useEffect(() => {

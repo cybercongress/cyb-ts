@@ -32,7 +32,7 @@ function useGetDiscussion(hash: string) {
   const [total, setTotal] = useState(0);
   const { status, data, error, isFetching, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
-      ['getToLink', hash],
+      ['useGetDiscussion', hash],
       async ({ pageParam = 0 }) => {
         const response = await getTo(
           hash,
