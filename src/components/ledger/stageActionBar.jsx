@@ -614,19 +614,18 @@ export function TextProposal({
         </Text>
         <Text color="#fff">{addrProposer}</Text> */}
           <Pane marginY={10} width="100%">
-            <Text color="#fff">title</Text>
             <Input
               value={valueTitle}
               onChange={onChangeInputTitle}
               placeholder="title"
             />
           </Pane>
-          <Pane marginBottom={10} width="100%">
-            <Text color="#fff">description</Text>
+          <Pane marginTop={20} marginBottom={10} width="100%">
             <textarea
               onChange={onChangeInputDescription}
               value={valueDescription}
               className="resize-none"
+              placeholder="description"
             />
           </Pane>
           <Pane width="100%">
@@ -634,7 +633,7 @@ export function TextProposal({
             <InputNumber
               value={valueDeposit}
               onChange={onChangeInputDeposit}
-              placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+              placeholder="amount"
             />
           </Pane>
           <Button

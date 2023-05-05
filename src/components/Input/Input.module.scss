@@ -1,27 +1,3 @@
-$text-color: #fff;
-
-$linear-gradient-yellow: linear-gradient(
-  180deg,
-  rgba(252, 240, 0, 0) -3.3%,
-  rgba(252, 240, 0, 0.25) 100%
-);
-$linear-gradient-blue: linear-gradient(
-  180deg,
-  rgba(0, 237, 235, 0) -3.3%,
-  rgba(0, 237, 235, 0.35) 100%
-);
-$linear-gradient-pink: linear-gradient(
-  180deg,
-  rgba(246, 43, 253, 0) -3.3%,
-  rgba(246, 43, 253, 0.3) 100%
-);
-
-$color-border-botton-yellow: #fcf000;
-$color-border-botton-blue: #00edeb;
-$color-border-botton-pink: #f62bfd;
-
-$box-shadow-blue: rgba(31, 203, 255, 0.53);
-$box-shadow-pink: rgba(246, 43, 253, 0.65);
 
 .textbox {
   width: 100%;
@@ -30,18 +6,21 @@ $box-shadow-pink: rgba(246, 43, 253, 0.65);
   transform-style: preserve-3d;
   background-color: transparent;
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
 
-  &Text {
-    width: 100%;
+  input {
+    width: 90%;
+    margin: auto;
     height: 100%;
     border: none;
     padding: 0 2px;
     background-color: transparent;
     font-size: 1.25rem;
     display: block;
-    color: $text-color;
+    color: #fff;
     text-align: end;
-    -webkit-filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
 
     &::placeholder {
       color: #272343;
@@ -53,38 +32,5 @@ $box-shadow-pink: rgba(246, 43, 253, 0.65);
     }
   }
 
-  &BottomGradient {
-    height: 35px;
-    width: 100%;
-    bottom: 2px;
-    transform-origin: 50% 100%;
-    transform: perspective(100px) rotateX(50deg);
-  }
-
-  &Face {
-    position: absolute;
-    left: 0;
-    background: $linear-gradient-blue;
-
-    &Pink {
-      background: $linear-gradient-pink;
-    }
-  }
-
-  &BottomLine {
-    position: absolute;
-    height: 2px;
-    width: 100%;
-    bottom: 0;
-    transform-origin: 50% 0;
-    border-radius: 2px;
-    box-sizing: border-box;
-    border: 1px solid $color-border-botton-blue;
-    box-shadow: 0px 0px 6px 2px $box-shadow-blue;
-
-    &Pink {
-      border: 1px solid $color-border-botton-pink;
-      box-shadow: 0px 0px 6px 2px $box-shadow-pink;
-    }
-  }
 }
+

@@ -1,5 +1,7 @@
+/* eslint-disable import/no-unused-modules */
 import { Story, Meta } from '@storybook/react';
 import Input, { Props } from './Input';
+import { useState } from 'react';
 
 export default {
   title: 'Atoms/Input',
@@ -14,25 +16,22 @@ export default {
   },
 } as Meta;
 
-function InputWrapper({ children }: { children: React.ReactNode }) {
-  return <div style={{ width: 400 }}>{children}</div>;
-}
-
-const Template: Story<Props> = (args) => (
-  <InputWrapper>
-    <Input {...args} />
-  </InputWrapper>
-);
+const Template: Story<Props> = (args) => {
+  const [value, setValue] = useState('Search');
+  return (
+    <div style={{ width: 400 }}>
+      <Input
+        {...args}
+        title="Search"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </div>
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {
   placeholder: 'Enter...',
   value: 'Default',
-};
-
-export const Pink = Template.bind({});
-Pink.args = {
-  color: 'pink',
-  value: 'Pink',
-  placeholder: 'Enter...',
 };

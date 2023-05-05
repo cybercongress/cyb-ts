@@ -1,45 +1,35 @@
-$linear-gradient-yellow: linear-gradient(
-  173.97deg,
-  #fcf00091 -32.61%,
-  rgba(93, 93, 93, 0.0862155) 29.03%,
-  rgba(0, 0, 0, 0.13) 59.47%,
-  #fcf00047 133.82%
-);
-$color-border-botton-yellow: #fcf000;
-
 .dropDown {
   width: 120px;
   height: 42px;
   position: relative;
+
   &Container {
     width: inherit;
     height: inherit;
-    // position: absolute;
   }
 
   &ContainerHeader {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: flex-start;
     height: 100%;
     width: 100%;
+    padding: 0;
     border: none;
     outline: none;
     background: transparent;
   }
 
   &Header {
-    // margin-bottom: 0.8em;
-    // padding: 0.4em 2em 0.4em 1em;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    font-weight: 500;
-    font-size: 1.3rem;
-    color: #fff;
+    font-weight: 400;
+    color: #36D6AE;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     position: absolute;
     bottom: 10px;
     z-index: 1;
-    cursor: pointer;
+    font-size: 1rem;
     padding-left: 5px;
   }
 
@@ -49,31 +39,17 @@ $color-border-botton-yellow: #fcf000;
     width: 100%;
   }
 
-  &BottomLine {
-    position: absolute;
-    height: 2px;
-    width: 100%;
-    bottom: 0;
-    transform-origin: 50% 0;
-    border: 1px solid $color-border-botton-yellow;
-    border-radius: 2px;
-    box-sizing: border-box;
-    box-shadow: 0px 0px 6px 2px rgba(31, 203, 255, 0.53);
-  }
-
   &List {
     display: grid;
     grid-gap: 18px;
-    padding: 9px 10px;
+    padding: 18px;
     margin: 0px;
-    background: $linear-gradient-yellow;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
     // border-top: 1px solid #fcf000;
     // border-bottom: 1px solid #fcf000;
     box-sizing: border-box;
-    color: #fff;
-    font-size: 20px;
-    line-height: 23px;
-    backdrop-filter: blur(10px);
+    color: #36D6AE;
     max-height: 215px;
     overflow-y: auto;
   }
@@ -81,7 +57,8 @@ $color-border-botton-yellow: #fcf000;
   .listItem {
     display: grid;
     grid-template-columns: 28px 80px;
-    grid-gap: 6px;
+    grid-gap: 13px;
+    align-items: center;
     white-space: nowrap;
     &:hover {
       color: #c7c7c7;
@@ -95,7 +72,7 @@ $color-border-botton-yellow: #fcf000;
       justify-content: center;
       border-radius: 50%;
       background: #000000;
-      box-shadow: 0px 0px 6px 1px rgba(255, 255, 255, 0.5);
+      // box-shadow: 0px 0px 6px 1px rgba(255, 255, 255, 0.5);
     }
   }
 }
