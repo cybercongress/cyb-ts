@@ -21,8 +21,9 @@ import {
 import { CYBER } from '../config';
 
 // import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
-import { getIpfsContentFromDb } from './db-utils';
+import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -188,8 +189,10 @@ const fetchIPFSContentFromGateway = async (
     // }
 
     // TODO: fix
-    const flushResults = (chunks, mime) => null;
-    // !isExternalNode && addIpfsContentToDb(cid, chunksToBlob(chunks, mime));
+    const flushResults = (chunks, mime) =>
+      !isExternalNode
+        ? addIpfsContentToDb(cid, uint8ArrayConcat(chunks))
+        : Promise.resolve();
 
     const { mime, result } = await toReadableStreamWithMime(
       response.body,

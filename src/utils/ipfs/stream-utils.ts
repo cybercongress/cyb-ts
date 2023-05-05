@@ -70,7 +70,6 @@ export async function toReadableStreamWithMime(
     async pull(controller) {
       const restReader = fullStream.getReader();
       const { done, value } = await restReader.read();
-      // console.log('-----modifiedStream', done, value);
       if (done) {
         controller.close();
         flush && flush(chunks, mime);
