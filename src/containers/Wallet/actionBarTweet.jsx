@@ -14,7 +14,7 @@ import {
   Dots,
 } from '../../components';
 
-import { getPin, getTxs } from '../../utils/search/utils';
+import { getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 
 import {
@@ -26,6 +26,7 @@ import {
 } from '../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import Button from 'src/components/btnGrd';
 
 const {
@@ -169,9 +170,9 @@ class ActionBarTweet extends Component {
     }
 
     if (file !== null) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     }
 
     this.setState({
@@ -195,7 +196,7 @@ class ActionBarTweet extends Component {
       type = POCKET.STAGE_TWEET_ACTION_BAR.TWEET;
     }
 
-    const fromCid = await getPin(node, type);
+    const fromCid = await addContenToIpfs(node, type);
 
     this.setState({
       fromCid,

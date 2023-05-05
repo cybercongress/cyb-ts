@@ -1,8 +1,9 @@
 import { create } from 'ipfs-core';
-import { IPFS } from 'kubo-rpc-client/types';
+import type { AppIPFS } from './ipfs';
+
 import configIpfs from './configIpfs';
 
-let node: null | IPFS = null;
+let node: null | AppIPFS = null;
 
 export async function init() {
   if (node !== null) {
@@ -15,6 +16,7 @@ export async function init() {
       // await deleteStore(path);
       console.time('IPFS Started');
       node = await create(configIpfs());
+      node.nodeType = 'embedded';
       console.timeEnd('IPFS Started');
     } catch (error) {
       console.error('IPFS init error:', error);

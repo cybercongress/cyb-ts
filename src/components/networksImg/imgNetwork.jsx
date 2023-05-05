@@ -59,7 +59,7 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
     async (cidAvatar) => {
       if (cidAvatar) {
         const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg && responseImg !== null) {
+        if (responseImg) {
           setImgDenom(responseImg);
         }
       }

@@ -4,6 +4,8 @@ import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
+import { getResponseResult } from '../ipfs/stream-utils';
+import { parseRawIpfsData } from '../ipfs/content-utils';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -17,20 +19,6 @@ export const formatNumber = (number, toFixed) => {
   }
 
   return formatted.toLocaleString('en').replace(/,/g, ' ');
-};
-
-export const getPin = async (node, content) => {
-  let cid;
-  if (node) {
-    if (typeof content === 'string') {
-      cid = await node.add(Buffer.from(content), { pin: true });
-    } else {
-      cid = await node.add(content, { pin: true });
-    }
-    console.warn('content', content, 'cid', cid);
-    return cid.path;
-  }
-  return undefined;
 };
 
 export const getIpfsHash = (string) =>
@@ -642,11 +630,11 @@ export const getImportLink = async (address) => {
   }
 };
 
-export const getFromLink = async (cid) => {
+export const getFromLink = async (cid, offset, limit) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleTo=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
     return response.data;
   } catch (e) {
@@ -655,11 +643,11 @@ export const getFromLink = async (cid) => {
   }
 };
 
-export const getToLink = async (cid) => {
+export const getToLink = async (cid, offset, limit) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
     });
     return response.data;
   } catch (e) {
@@ -693,7 +681,7 @@ export const getTweet = async (address) => {
     return null;
   }
 };
-
+// TODO: IPFS move to utils
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   // const timeoutPromise = () =>
   //   new Promise((reject) => {
@@ -756,7 +744,7 @@ export const getCreator = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
     return response.data;
   } catch (error) {
@@ -779,11 +767,19 @@ export const authAccounts = async (address) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const response = await getIPFSContent(ipfs, cid);
-  if (response === 'availableDownload') {
-    return 'availableDownload';
+  try {
+    const response = await getIPFSContent(ipfs, cid);
+
+    if (response?.result) {
+      const rawData = await getResponseResult(response.result);
+      const details = await parseRawIpfsData(rawData, response.meta.mime, cid);
+      return details.content;
+    }
+
+    return undefined;
+  } catch (error) {
+    return undefined;
   }
-  return response?.details?.content;
 };
 
 // Access-Control-Allow-Origin

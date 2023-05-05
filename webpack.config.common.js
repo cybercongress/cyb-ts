@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
@@ -63,10 +63,11 @@ module.exports = {
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
     // is fixed.
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
+    // new webpack.ProvidePlugin({
+    //   Buffer: ['buffer', 'Buffer'],
+    //   process: 'process/browser',
+    //   stream: 'readable-stream',
+    // }),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {
@@ -110,7 +111,7 @@ module.exports = {
           loader: 'esbuild-loader',
           options: {
             loader: 'tsx',
-            target: 'es2015', // Syntax to compile to (see options below for possible values)
+            target: 'es2018', // Syntax to compile to (see options below for possible values)
           },
         },
       },
