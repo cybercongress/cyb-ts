@@ -123,8 +123,9 @@ function Select({
             onClick={toggling}
             className={styles.dropDownContainerHeader}
           >
-            <span className={styles.dropDownHeader}>{renderTitle()}</span>
-            <LinearGradientContainer active={isOpen} color={color} />
+            <LinearGradientContainer active={isOpen} color={color}>
+              <span className={styles.dropDownHeader}>{renderTitle()}</span>
+            </LinearGradientContainer>
           </button>
           {isOpen && (
             <div className={styles.dropDownListContainer}>

@@ -35,16 +35,16 @@ function Input({
       )}
       style={{ width }}
     >
-      <input
-        type={type}
-        onChange={onChange}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        placeholder={placeholder}
-        {...props}
-      />
-
-      <LinearGradientContainer active={focused} color={color} title={title} />
+      <LinearGradientContainer active={focused} color={color} title={title}>
+        <input
+          type={type}
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          {...props}
+        />
+      </LinearGradientContainer>
     </div>
   );
 }

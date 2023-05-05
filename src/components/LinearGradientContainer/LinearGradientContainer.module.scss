@@ -33,8 +33,9 @@ $box-shadow-red: rgba(255, 0, 0, 0.53);
 $box-shadow-black: rgba(0, 0, 0, 0.53);
 
 .wrapper {
-  height: 20px;
+  height: 42px;
   width: 100%;
+
   
   p {
     margin-top: 6px;
@@ -46,6 +47,7 @@ $box-shadow-black: rgba(0, 0, 0, 0.53);
 
 .textbox {
   height: 20px;
+  height: 100%;
   position: relative;
   transform-style: preserve-3d;
 
@@ -59,6 +61,7 @@ $box-shadow-black: rgba(0, 0, 0, 0.53);
     height: 35px;
     width: 100%;
     bottom: 2px;
+    border-radius: 2px;
     transform-origin: 50% 100%;
     transform: perspective(220px) rotateX(50deg);
   }

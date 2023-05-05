@@ -12,9 +12,10 @@ export type Props = {
   active: boolean;
   color?: Color;
   title?: string;
+  children: React.ReactNode;
 };
 
-function LinearGradientContainer({ active, color, title }: Props) {
+function LinearGradientContainer({ active, color, title, children }: Props) {
   return (
     <div className={styles.wrapper}>
       <div
@@ -22,6 +23,7 @@ function LinearGradientContainer({ active, color, title }: Props) {
           [styles.active]: active,
         })}
       >
+        {children}
         <div className={cx(styles.textboxFace, styles.textboxBottomGradient)} />
         <div className={cx(styles.textboxFace, styles.textboxBottomLine)} />
       </div>
