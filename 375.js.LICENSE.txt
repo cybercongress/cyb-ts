@@ -5,6 +5,8 @@
  * @license  MIT
  */
 
+/*! mediasource. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
 /**
  * @license
  * Copyright 2009 The Closure Library Authors
