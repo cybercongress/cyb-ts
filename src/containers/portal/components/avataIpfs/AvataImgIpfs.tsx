@@ -14,25 +14,24 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   const [avatar, setAvatar] = useState<string | null>(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
-    async () => getAvatarIpfs(cidAvatar, node),
+    async () => {
+      return getAvatarIpfs(cidAvatar, node);
+    },
     {
       enabled: Boolean(node && cidAvatar),
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+      retry: 0,
     }
   );
 
   useEffect(() => {
-    if (data) {
-      if (data === 'availableDownload') {
-        const { userGateway } = getIpfsUserGatewanAndNodeType();
-        const urlGateway = userGateway || CYBER.CYBER_GATEWAY;
-        setAvatar(`${urlGateway}/ipfs/${cidAvatar}`);
-      } else {
-        setAvatar(data);
-      }
-    } else {
+    if (!data) {
       setAvatar(null);
+    } else {
+      setAvatar(data);
     }
-  }, [data, cidAvatar]);
+  }, [data]);
 
   const avatarImage =
     avatar ||

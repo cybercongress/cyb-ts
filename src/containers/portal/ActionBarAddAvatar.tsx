@@ -2,10 +2,11 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import { Nullable } from 'src/types';
 import txs from '../../utils/txs';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
-import { getPin } from '../../utils/search/utils';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
 
 const STATE_INIT = 1;
@@ -19,7 +20,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { node } = useIpfs();
 
   const inputOpenFileRef = useRef();
-  const [avatarIpfs, setAvatarIpfs] = useState(null);
+  const [avatarIpfs, setAvatarIpfs] = useState<Nullable<string>>(null);
   const [avatarImg, setAvatarImg] = useState(null);
 
   const onFilePickerChange = (files) => {
@@ -34,7 +35,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   useEffect(() => {
     const getPinAvatar = async () => {
       if (node !== null && avatarImg !== null) {
-        const toCid = await getPin(node, avatarImg);
+        const toCid = await addContenToIpfs(node, avatarImg);
         console.log('toCid', toCid);
         setAvatarIpfs(toCid);
       }

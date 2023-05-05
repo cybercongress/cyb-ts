@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// TODO: refactor needed
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
@@ -6,11 +7,16 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentWithType } from 'src/utils/ipfs/ipfs';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
+import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 
 import SearchItem from '../SearchItem/searchItem';
+import { CYBER } from '../../utils/config';
 
 import { getRankGrade } from '../../utils/search/utils';
+import styles from './contentItem.module.scss';
+import VideoPlayer from '../VideoPlayer/VideoPlayer';
+import ContentIpfs from '../contentIpfs/contentIpfs';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -20,6 +26,23 @@ type ContentItemProps = {
   parent?: string;
 };
 
+const getContentDetails = async (
+  cid: string,
+  content: IPFSContentMaybe
+): Promise<IPFSContentDetails> => {
+  if (content?.result) {
+    const details = await parseRawIpfsData(
+      content.result,
+      content.meta?.mime,
+      cid
+      // (progress: number) => console.log(`${cid} progress: ${progress}`)
+    );
+
+    return details;
+  }
+  return undefined;
+};
+
 function ContentItem({
   item,
   cid,
@@ -27,30 +50,29 @@ function ContentItem({
   parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  const [ipfsData, setIpfData] = useState<IPFSContentWithType>(undefined);
-  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+  // const [ipfsDataDetails, setIpfsDatDetails] =
+  //   useState<IPFSContentDetails>(undefined);
+  const { status, content, source } = useQueueIpfsContent(
+    cid,
+    item.rank,
+    parentId
+  );
 
-  useEffect(() => {
-    // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed' && content && content !== 'availableDownload') {
-      setIpfData(content.details);
-    }
-  }, [content, status]);
+  // useEffect(() => {
+  //   // TODO: cover case with content === 'availableDownload'
+  //   if (status === 'completed') {
+  //     getContentDetails(cid, content).then(setIpfsDatDetails);
+  //   }
+  // }, [content, status, cid]);
 
   return (
-    <Link className={className} to={`/ipfs/${cid}`}>
+    <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
+      {/* status !== 'completed' && */}
+      <div
+        className={styles.contentLoadInfo}
+      >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
       <SearchItem
         key={cid}
-        textPreview={
-          <div className="container-text-SearchItem">
-            <ReactMarkdown
-              rehypePlugins={[rehypeSanitize]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {ipfsData?.text || cid}
-            </ReactMarkdown>
-          </div>
-        }
         status={status}
         grade={
           item.rank
@@ -58,21 +80,7 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        {ipfsData?.type === 'image' && (
-          <img
-            style={{ width: '100%', paddingTop: 10 }}
-            alt="img"
-            src={ipfsData?.content}
-          />
-        )}
-        {ipfsData?.type === 'application/pdf' && (
-          <Iframe
-            width="100%"
-            height="400px"
-            className="iframe-SearchItem"
-            url={ipfsData?.content}
-          />
-        )}
+        <ContentIpfs status={status} content={content} cid={cid} search />
       </SearchItem>
     </Link>
   );

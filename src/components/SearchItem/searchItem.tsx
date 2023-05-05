@@ -35,7 +35,7 @@ type Props = {
     value: number;
   };
   children: React.ReactNode;
-  textPreview?: string;
+  textPreview?: React.ReactNode;
 };
 
 function SearchItem({ status, grade, children, textPreview }: Props) {
@@ -53,6 +53,7 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
           width: '100%',
           flex: 1,
           flexDirection: 'column',
+          wordBreak: 'break-word',
         }}
       >
         <div
@@ -76,7 +77,8 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
               <div className={styles.containerTextPreview}>{textPreview}</div>
             )}
           </div>
-          {status !== 'downloaded' && <Status status={status} />}
+          {/* TODO: Status seems that processed incorrect */}
+          {status !== 'completed' && <Status status={status} />}
         </div>
         <div className={styles.containerChildren}>{children}</div>
       </div>

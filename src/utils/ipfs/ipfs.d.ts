@@ -1,6 +1,11 @@
+/* eslint-disable import/no-unused-modules */
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 export type CallBackFuncStatus = (a: string) => void;
+
+export type NodeType = 'external' | 'embedded';
+
+export type AppIPFS = IPFS & { nodeType: NodeType };
 
 export type IPFSMaybe = IPFS | null;
 
@@ -12,10 +17,13 @@ export type getIpfsUserGatewanAndNodeType = {
 };
 
 export type IPFSContentMeta = {
-  type: 'file' | 'dir';
+  type: 'file' | 'directory';
   size: number;
-  blockSizes: never[];
-  data: string | null;
+  blockSizes?: never[]; // ???
+  blocks?: number;
+  data?: string; // ???
+  mime?: string;
+  local?: boolean;
 };
 
 type IPFSData =
@@ -27,22 +35,44 @@ type IPFSData =
   | File
   | Blob[];
 
-type IPFSContentDetails =
+export type Uint8ArrayWithMime = {
+  mime: string;
+  rawData: Uint8Array;
+};
+
+export type IpfsRawDataResponse =
+  | ReadableStream<Uint8Array>
+  | Uint8Array
+  | AsyncIterator<Uint8Array>;
+
+export type IpfsContentSource = 'db' | 'node' | 'gateway';
+export type IpfsContentType =
+  | 'image'
+  | 'pdf'
+  | 'link'
+  | 'text'
+  | 'video'
+  | 'html'
+  | 'other';
+
+export type IPFSContentDetails =
   | {
-      text: string | undefined;
-      type: 'image' | 'application/pdf' | 'link' | 'text' | undefined;
-      content: string;
-      link: string;
+      text?: string;
+      type?: IpfsContentType;
+      content?: string;
+      link?: string;
       gateway: boolean;
+      cid: IPFSPath;
     }
   | undefined;
 
 export type IPFSContent = {
-  details: IPFSContentDetails;
+  availableDownload?: boolean;
+  result?: IpfsRawDataResponse;
   cid: IPFSPath;
   meta: IPFSContentMeta;
+  source: IpfsContentSource;
+  contentUrl?: string;
 };
 
-type IPFSContentStatus = 'availableDownload' | undefined;
-
-export type IPFSContentMaybe = IPFSContent | IPFSContentStatus;
+export type IPFSContentMaybe = IPFSContent | undefined;
