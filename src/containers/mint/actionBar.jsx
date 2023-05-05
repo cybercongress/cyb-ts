@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ActionBar as ActionBarContainer } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
@@ -11,6 +10,7 @@ import {
   Confirmed,
   TransactionError,
   Account,
+  ActionBar as ActionBarContainer,
   BtnGrd,
 } from '../../components';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
@@ -43,10 +43,10 @@ function ActionBar({
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (queryClient && txHash !== null) {
+      if (queryClient && txHash) {
         setStage(STAGE_CONFIRMING);
         const response = await getTxs(txHash);
-        console.log('response :>> ', response);
+
         if (response && response !== null) {
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
@@ -80,25 +80,31 @@ function ActionBar({
         gas: gas.toString(),
       };
       if (addressActive === address) {
-        const response = await signingClient.investmint(
-          address,
-          coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
-          selected,
-          parseFloat(BASE_VESTING_TIME * valueDays),
-          fee
-        );
-        console.log(`response`, response);
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
-        } else if (response.code === 4) {
-          setTxHash(null);
-          setErrorMessage(
-            'Cyberlinking and investmint is not working. Wait for updates.'
+        try {
+          const response = await signingClient.investmint(
+            address,
+            coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
+            selected,
+            parseFloat(BASE_VESTING_TIME * valueDays),
+            fee
           );
-          setStage(STAGE_ERROR);
-        } else {
+
+          if (response.code === 0) {
+            setTxHash(response.transactionHash);
+          } else if (response.code === 4) {
+            setTxHash(null);
+            setErrorMessage(
+              'Cyberlinking and investmint is not working. Wait for updates.'
+            );
+            setStage(STAGE_ERROR);
+          } else {
+            setTxHash(null);
+            setErrorMessage(response.rawLog.toString());
+            setStage(STAGE_ERROR);
+          }
+        } catch (error) {
           setTxHash(null);
-          setErrorMessage(response.rawLog.toString());
+          setErrorMessage(error.toString());
           setStage(STAGE_ERROR);
         }
       } else {
@@ -120,45 +126,27 @@ function ActionBar({
     setErrorMessage(null);
   };
 
-  if (addressActive === null) {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          Start by adding a address to
-          <Link style={{ marginLeft: 5 }} to="/">
-            your pocket
-          </Link>
-          .
-        </ActionBarContentText>
-      </ActionBarContainer>
-    );
-  }
-
-  if (!signer && !queryClient) {
-    return (
-      <ActionBarContainer>
-        <Dots big />
-      </ActionBarContainer>
-    );
-  }
-
   if (stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <BtnGrd disabled={resourceToken === 0} onClick={investmint}>
-          Investmint
-        </BtnGrd>
-      </ActionBarContainer>
+      <ActionBarContainer
+        button={{
+          text: 'Investmint',
+          onClick: investmint,
+          disabled: resourceToken === 0,
+        }}
+      />
     );
   }
 
   if (stage === STAGE_SUBMITTED) {
     return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          check the transaction <Dots big />
-        </ActionBarContentText>
-      </ActionBarContainer>
+      <ActionBarContainer
+        text={
+          <>
+            check the transaction <Dots big />
+          </>
+        }
+      />
     );
   }
 
@@ -185,7 +173,7 @@ function ActionBar({
     );
   }
 
-  return null;
+  return <ActionBarContainer />;
 }
 
 export default ActionBar;

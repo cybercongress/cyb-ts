@@ -15,7 +15,7 @@ import {
   Card,
   Dots,
   TabBtn,
-  Button,
+  ActionBar,
 } from '../../components';
 import ActionBarContainer from './actionBar';
 import Main from './tabs/main';
@@ -248,21 +248,7 @@ function AccountDetails({ defaultAccount }) {
             totalRewards={totalRewards}
           />
         ) : (
-          <ActionBar>
-            <Pane>
-              <Button
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  display: 'block',
-                }}
-                className="btn"
-                to="/gol"
-              >
-                add address to your pocket
-              </Button>
-            </Pane>
-          </ActionBar>
+          <ActionBar />
         ))}
     </div>
   );
