@@ -367,6 +367,12 @@ function SearchResults() {
             </h4>
           }
         >
+          {/* <ContentItem
+            cid={'QmP2rY3uUn3TfBYJVFKc7nTjDY82YnAAn7Ui8EcWL1zr5Y'}
+            item={{ rank: 9999 }}
+            parent={query}
+            className="SearchItem"
+          /> */}
           {Object.keys(searchItems).length > 0 ? (
             searchItems
           ) : (

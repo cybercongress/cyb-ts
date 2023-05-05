@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, NavLink } from 'react-router-dom';
 import styles from './AppMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
@@ -27,9 +27,11 @@ interface Props {
 
 function Items({ item, selected, onClick }: Props) {
   return (
-    <Link
+    <NavLink
       to={item.to}
-      className={cx(styles.bookmarks__item, { [styles.active]: selected })}
+      className={() => {
+        return cx(styles.bookmarks__item, { [styles.active]: selected });
+      }}
       onClick={onClick}
     >
       <Pane display="flex" paddingY={5} alignItems="center" key={item.name}>
@@ -60,7 +62,7 @@ function Items({ item, selected, onClick }: Props) {
           </Pane>
         </div>
       </Pane>
-    </Link>
+    </NavLink>
   );
 }
 

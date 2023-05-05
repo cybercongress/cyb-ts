@@ -39,32 +39,24 @@ function RowItem({ text, value }) {
   );
 }
 
-function MetaTab({ data, cid }) {
+function MetaInfo({ data, cid }) {
   try {
     if (!data) {
       return <div>Loading....</div>;
     }
     return (
       <>
-        <Pane
-          width="60%"
-          marginX="auto"
-          marginY={0}
-          paddingX={10}
-          paddingY={10}
-        >
-          <RowItem text="CID" value={cid} />
-          <RowItem
-            text="SIZE"
-            value={formatCurrency(data.size, 'B', 3, PREFIXES)}
-          />
+        <RowItem text="CID" value={cid} />
+        <RowItem
+          text="SIZE"
+          value={formatCurrency(data.size, 'B', 3, PREFIXES)}
+        />
+        {data.blockSizes && (
           <RowItem text="LINKS" value={data.blockSizes.length} />
-          <RowItem text="DATA" value="" />
-        </Pane>
-        <div
-          style={{ padding: '20px', width: '60%', margin: '0 auto' }}
-          className="objectInspector"
-        >
+        )}
+        <RowItem text="DATA" value="" />
+
+        <div className="objectInspector">
           <ObjectInspector
             showMaxKeys={100}
             data={data}
@@ -79,4 +71,4 @@ function MetaTab({ data, cid }) {
   }
 }
 
-export default MetaTab;
+export default MetaInfo;

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { IPFS } from 'kubo-rpc-client/types';
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
 
@@ -31,8 +31,7 @@ const getOpts = () => {
 };
 
 type IpfsContextType = {
-  ipfs: null | IPFS;
-  node: null | IPFS;
+  node: null | AppIPFS;
   isReady: boolean;
   error: null | string;
   isLoading: boolean;
@@ -40,7 +39,6 @@ type IpfsContextType = {
 
 // eslint-disable-next-line import/no-unused-modules
 export const IpfsContext = React.createContext<IpfsContextType>({
-  ipfs: null,
   node: null,
   isReady: false,
   error: null,
@@ -54,7 +52,6 @@ export function useIpfs() {
 function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
-
   const startConnectionIpfs = useCallback(async () => {
     setIsIpfsPending(true);
     setIpfsInitError(null);
@@ -84,7 +81,6 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     const handlerEventListener = () => {
       startConnectionIpfs();
     };
-
     document.addEventListener('reconnectIpfsClient', handlerEventListener);
     return () => {
       document.removeEventListener('reconnectIpfsClient', handlerEventListener);
@@ -99,7 +95,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             node: ipfs,
-            isReady: !ipfs,
+            isReady: ipfs !== null,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),

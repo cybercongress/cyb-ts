@@ -269,6 +269,7 @@ const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
 const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
+const PATTERN_HTML = /<\/?[\w\d]+>/gi;
 
 export {
   TAKEOFF,
@@ -305,4 +306,5 @@ export {
   VOTE_OPTION,
   BOND_STATUS,
   CID_AVATAR,
+  PATTERN_HTML,
 };

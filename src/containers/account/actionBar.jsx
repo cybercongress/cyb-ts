@@ -21,9 +21,10 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 
-import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
+import { getTotalRewards, getTxs } from '../../utils/search/utils';
 
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import Button from 'src/components/btnGrd';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -72,9 +73,9 @@ class ActionBarContainer extends Component {
     }
 
     if (file !== null) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     }
 
     return toCid;
@@ -120,11 +121,11 @@ class ActionBarContainer extends Component {
           }
         }
       } else if (type === 'log' && follow) {
-        const fromCid = await getPin(node, 'follow');
-        const toCid = await getPin(node, addressSend);
+        const fromCid = await addContenToIpfs(node, 'follow');
+        const toCid = await addContenToIpfs(node, addressSend);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'log' && tweets) {
-        const fromCid = await getPin(node, 'tweet');
+        const fromCid = await addContenToIpfs(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else {

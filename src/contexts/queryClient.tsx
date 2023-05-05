@@ -26,9 +26,9 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
     createQueryClient();
   }, []);
 
-  // TODO: seems it should be while bootloader
+  // TODO: need handle somehow
   if (!queryClient) {
-    return <div>set up CyberClient ...</div>;
+    return null;
   }
 
   return (

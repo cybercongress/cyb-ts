@@ -1,10 +1,12 @@
 import { create as IpfsHttpClient } from 'kubo-rpc-client';
 
 export async function init(opts) {
-  console.log(`init with IPFS API at ${opts.urlOpts}`);
+  console.log(`Init with IPFS API at ${opts.urlOpts}`);
 
   try {
     const api = IpfsHttpClient(opts.urlOpts);
+    api.nodeType = 'external';
+
     // getPeers(api, opts);
     try {
       const peers = await api.swarm.peers();

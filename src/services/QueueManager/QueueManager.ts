@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import {
   BehaviorSubject,
   map,
@@ -9,9 +8,15 @@ import {
   EMPTY,
   Observable,
   mergeMap,
+  debounceTime,
+  concat,
+  tap,
 } from 'rxjs';
 
 import * as R from 'ramda';
+
+import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -21,129 +26,278 @@ import type {
   QueueItemCallback,
   QueueItemOptions,
   QueueStats,
+  QueueSource,
 } from './QueueManager.d';
 
-class QueueItemTimeoutError extends Error {
-  constructor(timeoutMs: number) {
-    super(`Timeout after ${timeoutMs}`);
-    Object.setPrototypeOf(this, QueueItemTimeoutError.prototype);
-  }
+import { QueueStrategy } from './QueueStrategy';
+
+import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+
+const QUEUE_DEBOUNCE_MS = 33;
+
+function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
+  return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
+const strategies = {
+  external: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 999 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+    },
+    ['db', 'node', 'gateway']
+  ),
+  embedded: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 999 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+    },
+    ['db', 'gateway', 'node']
+  ),
+};
+
+type QueueMap<T> = Map<string, QueueItem<T>>;
+
 class QueueManager<T> {
-  private queue$ = new BehaviorSubject<QueueItem<T>[]>([]);
+  private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
-  private executing = 0;
+  private node: AppIPFS | undefined = undefined;
 
-  private maxConcurrentExecutions: number;
+  private strategy: QueueStrategy;
 
-  private timeout: number;
+  private queueDebounceMs: number;
 
-  constructor(maxConcurrentExecutions: number, timeoutMs: number) {
-    this.maxConcurrentExecutions = maxConcurrentExecutions;
-    this.timeout = timeoutMs;
-    this.queue$
-      .pipe(
-        mergeMap((queue) => {
-          if (this.executing < this.maxConcurrentExecutions) {
-            const filteredQueue = queue
-              .filter((i) => i.status === 'pending')
-              .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+  private executing: Record<QueueSource, Set<string>> = {
+    db: new Set(),
+    node: new Set(),
+    gateway: new Set(),
+  };
 
-            if (filteredQueue.length) {
-              const item = filteredQueue[0];
-              const { cid, promiseFactory, callback, controller } = item;
-              item.status = 'executing';
+  private switchStrategy(strategy: QueueStrategy): void {
+    this.strategy = strategy;
+  }
 
-              callback(cid, 'executing');
-              this.executing++;
+  public setNode(node: AppIPFS) {
+    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
-              return promiseToObservable(promiseFactory).pipe(
-                timeout({
-                  each: this.timeout,
-                  with: () =>
-                    throwError(() => {
-                      controller?.abort('timeout');
-                      return new QueueItemTimeoutError(this.timeout);
-                    }),
-                }),
-                map(
-                  (result): QueueItemResult<T> => ({
-                    item,
-                    status: 'completed',
-                    result,
-                  })
-                ),
-                catchError((error): Observable<QueueItemResult<T>> => {
-                  if (error instanceof QueueItemTimeoutError) {
-                    return of({
-                      item,
-                      status: 'timeout',
-                    });
-                  }
-                  if (error.name === 'AbortError') {
-                    return of({ item, status: 'cancelled' });
-                  }
-                  return of({ item, status: 'error' });
-                })
-              );
-            }
-          }
+    this.node = node;
+    this.switchStrategy(strategies[node.nodeType]);
+  }
 
-          return EMPTY;
+  private getItemBySourceAndPriority(queue: QueueMap<T>) {
+    const pendingItems = [...queue.values()].filter(
+      (i) => i.status === 'pending'
+    );
+
+    const pendingBySource = R.groupBy((i) => i.source, pendingItems);
+
+    const itemsToExecute: QueueItem<T>[] = [];
+    // eslint-disable-next-line no-loop-func, no-restricted-syntax
+    for (const [queueSource, items] of Object.entries(pendingBySource)) {
+      const settings = this.strategy.settings[queueSource];
+
+      const executeCount =
+        settings.maxConcurrentExecutions - this.executing[queueSource].size;
+
+      const itemsByPriority = items
+        .sort(
+          (a, b) => getQueueItemTotalPriority(b) - getQueueItemTotalPriority(a)
+        )
+        .slice(0, executeCount);
+      itemsToExecute.push(...itemsByPriority);
+    }
+
+    return itemsToExecute;
+  }
+
+  private fetchData$(item: QueueItem<T>) {
+    const { cid, source, controller, callback } = item;
+    const settings = this.strategy.settings[source];
+    this.executing[source].add(cid);
+
+    const queueItem = this.queue$.value.get(cid);
+    // Mutate item without next
+    this.queue$.value.set(cid, {
+      ...queueItem,
+      status: 'executing',
+      executionTime: Date.now(),
+      controller: new AbortController(),
+    } as QueueItem<T>);
+
+    callback(cid, 'executing', source);
+
+    return promiseToObservable(() =>
+      // fetch by item source
+      fetchIpfsContent<T>(cid, source, {
+        controller,
+        node: this.node,
+      })
+    ).pipe(
+      timeout({
+        each: settings.timeout,
+        with: () =>
+          throwError(() => {
+            controller?.abort('timeout');
+            return new QueueItemTimeoutError(settings.timeout);
+          }),
+      }),
+      map(
+        (result): QueueItemResult<T> => ({
+          item,
+          status: result ? 'completed' : 'error',
+          source,
+          result,
         })
-      )
-      .subscribe(({ item, status, result }) => {
-        this.executing--;
-        this.removeAndNext(item.cid);
-        item.callback(item.cid, status, result);
-      });
+      ),
+      catchError((error): Observable<QueueItemResult<T>> => {
+        // console.log('-errror queue', error);
+        if (error instanceof QueueItemTimeoutError) {
+          return of({
+            item,
+            status: 'timeout',
+            source,
+          });
+        }
+        if (error.name === 'AbortError') {
+          return of({ item, status: 'cancelled', source });
+        }
+        return of({ item, status: 'error', source });
+      })
+    );
+  }
+
+  /**
+   * Mutate queue item, and return new queue
+   * @param cid
+   * @param changes
+   * @returns
+   */
+  private mutateQueueItem(cid: string, changes: Partial<QueueItem<T>>) {
+    const queue = this.queue$.value;
+    const item = queue.get(cid);
+    if (item) {
+      queue.set(cid, { ...item, ...changes });
+    }
+
+    return queue;
   }
 
   private removeAndNext(cid: string): void {
-    const updatedQueue = this.queue$.value.filter((i) => i.cid !== cid);
-    this.queue$.next(updatedQueue);
+    const queue = this.queue$.value;
+    queue.delete(cid);
+    this.queue$.next(queue);
+  }
+
+  // reset status and switch to next source
+  private switchSourceAndNext(
+    item: QueueItem<T>,
+    nextSource: QueueSource
+  ): void {
+    this.queue$.next(
+      this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource })
+    );
+  }
+
+  private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
+    ['node', 'gateway'].forEach((source) =>
+      Array.from(this.executing[source] as string[]).forEach((cid) => {
+        const item = queue.get(cid);
+
+        if (item && getQueueItemTotalPriority(item) < 0 && item.controller) {
+          // abort fetch and exclude from executing
+          item.controller.abort('cancelled');
+
+          queue.set(cid, { ...item, status: 'pending' });
+
+          this.executing[source].delete(cid);
+
+          // console.log('-----cancel item', queue);
+        }
+      })
+    );
+
+    return queue;
+  }
+
+  constructor(
+    strategy: QueueStrategy = strategies.embedded,
+    queueDebounceMs = QUEUE_DEBOUNCE_MS
+  ) {
+    this.strategy = strategy;
+    this.queueDebounceMs = queueDebounceMs;
+
+    this.queue$
+      .pipe(
+        // tap((queue) => console.log('---tap', queue)),
+        debounceTime(this.queueDebounceMs),
+        map((queue) => this.cancelDeprioritizedItems(queue)),
+        mergeMap((queue) => {
+          const workItems = this.getItemBySourceAndPriority(queue);
+
+          if (workItems.length > 0) {
+            return concat(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
+          }
+          return EMPTY;
+        })
+      )
+      .subscribe(({ item, status, source, result }) => {
+        item.callback(item.cid, status, source, result);
+
+        this.executing[source].delete(item.cid);
+        if (item.cid === 'xxx') {
+          console.log('------done', item, status, source, result);
+        }
+        // Correct execution -> next
+        if (status === 'completed' || status === 'cancelled') {
+          // console.log('------done', item, status, source, result);
+          this.removeAndNext(item.cid);
+          return;
+        }
+        // console.log('------error', item, status, source, result);
+
+        // Retry -> (next sources) or -> next
+        const nextSource = this.strategy.getNextSource(source);
+        if (nextSource) {
+          this.switchSourceAndNext(item, nextSource);
+        } else {
+          this.removeAndNext(item.cid);
+        }
+      });
   }
 
   public enqueue(
     cid: string,
-    promiseFactory: () => Promise<T>,
     callback: QueueItemCallback<T>,
     options: QueueItemOptions = {}
   ): void {
+    // const { priority = 0, viewPortPriority = 0, ...restOptions } = options;
     const item: QueueItem<T> = {
       cid,
-      promiseFactory,
       callback,
+      source: options.initialSource || this.strategy.order[0], // initial method to fetch
       status: 'pending',
       ...options,
     };
 
-    this.queue$.next([...this.queue$.value, item]);
+    const queue = this.queue$.value;
+    queue.set(cid, item);
+    this.queue$.next(queue);
   }
 
-  // private updateStatus(cid: string, status: QueueItemStatus) {
-  //   const alterStatus = R.curry((cid, status, items) =>
-  //     R.map(R.when(R.propEq('cid', cid), R.assoc('status', status)), items)
-  //   );
-  //   const updatedQueue = alterStatus(
-  //     cid,
-  //     status,
-  //     this.queue$.value
-  //   ) as QueueItem<T>[];
-
-  //   this.queue$.next(updatedQueue);
-  // }
+  public updateViewPortPriority(cid: string, viewPortPriority: number) {
+    this.queue$.next(this.mutateQueueItem(cid, { viewPortPriority }));
+  }
 
   public cancel(cid: string): void {
-    const currentQueue = this.queue$.value;
-    const item = currentQueue.find((item) => item.cid === cid);
+    const queue = this.queue$.value;
+    const item = queue.get(cid);
     if (item) {
       // If item has no abortController we can just remove it
-      // Otherwise abort should be handled by subscriber
-
+      // Otherwise abort&keep-to-finalize
       if (!item.controller) {
-        this.queue$.next(currentQueue.filter((item) => item.cid !== cid));
+        this.removeAndNext(cid);
       } else {
         item.controller.abort('cancelled');
       }
@@ -151,26 +305,37 @@ class QueueManager<T> {
   }
 
   public cancelByParent(parent: string): void {
-    const newQueue: QueueItem<T>[] = [];
-
-    this.queue$.value.forEach((item) => {
-      // If item parent is different the keep item,
-      // If item managed by abortController abort&keep
-      // Otherwise just skip it
-
-      if (item.parent !== parent) {
-        newQueue.push(item);
-      } else if (item.controller) {
-        item.controller.abort('cancelled');
-        newQueue.push(item);
+    const queue = this.queue$.value;
+    queue.forEach((item, cid) => {
+      if (item.parent === parent) {
+        item.controller?.abort('cancelled');
+        queue.delete(cid);
       }
     });
+    this.queue$.next(queue);
 
-    this.queue$.next(newQueue);
+    // const nextQueue: QueueMap<T> = new Map();
+
+    // this.queue$.value.forEach((item, cid) => {
+    //   // If item managed by abortController abort&keep-to-finalize
+    //   // Otherwise keep all non-parent items
+    //   if (item.parent !== parent) {
+    //     nextQueue.set(cid, item);
+    //   } else if (item.controller) {
+    //     item.controller.abort('cancelled');
+    //     nextQueue.set(cid, item);
+    //   }
+    // });
+
+    // this.queue$.next(nextQueue);
   }
 
-  public getQueue(): QueueItem<T>[] {
+  public getQueueMap(): QueueMap<T> {
     return this.queue$.value;
+  }
+
+  public getQueueList(): QueueItem<T>[] {
+    return Array.from(this.queue$.value.values());
   }
 
   public getStats(): QueueStats[] {
@@ -180,7 +345,7 @@ class QueueManager<T> {
       R.map(R.zipObj(['status', 'count']))
     );
 
-    return fn(this.queue$.value) as QueueStats[];
+    return fn(this.getQueueList()) as QueueStats[];
   }
 }
 

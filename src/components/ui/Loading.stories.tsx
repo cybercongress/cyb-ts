@@ -1,4 +1,4 @@
-import { Loading } from './loading';
+import Loading from './Loading';
 
 export default {
   title: 'Atoms/Loading',

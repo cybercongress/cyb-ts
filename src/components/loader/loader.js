@@ -231,7 +231,7 @@ function bootstrap() {
         progress * 100
       )}%</span>. <br/> Network speed: <span>${
         Math.round(e.networkSpeed * 100) / 100
-      }kbps</span>`;
+      } kbps</span>`;
 
       // console.log(e.loaded, e.loaded / e.totalSize); // @TODO
     })
