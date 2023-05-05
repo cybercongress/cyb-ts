@@ -30,9 +30,11 @@ img.logo-container {
   width: 180px;
   height: 90px;
   content: url('../../image/robot.svg');
+  margin-bottom: 20px;
 }
 
 #progress-data {
+  margin-top: 30px;
   color: #ffffff;
   font-size: 14pt;
   text-align: center;
