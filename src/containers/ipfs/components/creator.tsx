@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Account } from 'src/components';
 import dateFormat from 'dateformat';
+import { CreatorCyberLink } from 'src/types/cyberLink';
 
-function Creator({ creator }) {
+type Props = {
+  creator: CreatorCyberLink;
+};
+
+function Creator({ creator }: Props) {
   return (
     <div>
       <Link to={`/network/bostrom/contract/${creator.address}`}>
@@ -13,9 +18,9 @@ function Creator({ creator }) {
           address={creator.address}
         />
       </Link>
-      {creator.timestamp.length > 0 && (
-        <div>{dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}</div>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        {dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
+      </div>
     </div>
   );
 }

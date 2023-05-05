@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getCreator } from '../../../utils/search/utils';
+import { Option } from 'src/types';
+import { CreatorCyberLink } from 'src/types/cyberLink';
 
 function useGetCreator(cid) {
-  const [creator, setCreator] = useState({
-    address: '',
-    timestamp: '',
+  const { data } = useQuery(['getCreator', cid], async () => {
+    return getCreator(cid);
+  }, {
+    enabled: Boolean(cid),
   });
+  const [creator, setCreator] = useState<Option<CreatorCyberLink>>(undefined);
 
   useEffect(() => {
     const getCreatorFunc = async () => {
-      const response = await getCreator(cid);
-
-      if (
-        response !== null &&
-        response.tx_responses &&
-        response.tx_responses.length > 0
-      ) {
-        const { tx_responses: txResponses } = response;
+      if (data && data.tx_responses && data.tx_responses.length > 0) {
+        const { tx_responses: txResponses } = data;
         let addressCreator = '';
 
         if (txResponses[0].tx.body.messages[0].neuron) {
@@ -37,7 +35,7 @@ function useGetCreator(cid) {
       }
     };
     getCreatorFunc();
-  }, [cid]);
+  }, [data]);
 
   return { creator };
 }

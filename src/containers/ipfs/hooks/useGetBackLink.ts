@@ -10,7 +10,7 @@ type BackLink = {
   rank: string;
 };
 
-const reduceParticleArr = (data: BackLink[]) => {
+export const reduceParticleArr = (data: BackLink[]) => {
   return data.reduce<CyberLink[]>(
     (acc, item) => [
       ...acc,
