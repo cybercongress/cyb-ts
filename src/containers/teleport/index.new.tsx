@@ -43,6 +43,12 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
 
+export const enum TxsType {
+  Swap = 'swap',
+  Deposit = 'deposit',
+  Withdraw = 'withdraw',
+}
+
 function Teleport() {
   const queryClient = useQueryClient();
   const { ibcDenoms: ibcDataDenom, traseDenom } = useIbcDenom();

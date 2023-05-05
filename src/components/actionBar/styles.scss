@@ -14,12 +14,11 @@
   z-index: 2;
 
   &Content {
-    flex-grow: 1;
     max-width: 1000px;
     display: flex;
     align-items: center;
+    gap: 25px;
     justify-content: center;
-    flex-direction: row;
     padding: 0 3vw;
     position: relative;
   }
@@ -30,5 +29,5 @@
   align-items: center;
   justify-content: center;
   flex-grow: 1;
-  font-size: 20px;
+  color: #777777;
 }

@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useNetworks } from 'src/contexts/networks';
-import { Networks } from 'src/types/networks';
 import { MainContainer, ActionBarSteps } from '../portal/components';
 import { Input, BtnGrd, ContainerGradientText } from '../../components';
+import { NetworkConfig } from 'src/types/networks';
 
 function ValueItem({ text, value, onChange }) {
   return (
@@ -24,7 +24,7 @@ function DetailsNetwork() {
   const param = useParams<{ networkId: string | undefined }>();
   const navigate = useNavigate();
   const { networks, updateNetworks } = useNetworks();
-  const [customConfig, setCustomConfig] = useState<Networks>({});
+  const [customConfig, setCustomConfig] = useState<NetworkConfig>({});
 
   useEffect(() => {
     const { networkId } = param;

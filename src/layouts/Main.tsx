@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Telegram, GitHub } from 'src/components/actionBar';
+import { Telegram } from 'src/components/actionBar/Telegram';
+import { GitHub } from 'src/components/actionBar/GitHub';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 import AppMenu from 'src/containers/application/AppMenu';
 import AppSideBar from 'src/containers/application/AppSideBar';

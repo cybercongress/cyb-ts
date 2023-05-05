@@ -1,5 +1,10 @@
-export type Networks = {
-  CHAIN_ID: string;
+export const enum Networks {
+  BOSTROM = 'bostrom',
+  SPACE_PUSSY = 'space-pussy',
+}
+
+export type NetworkConfig = {
+  CHAIN_ID: Networks;
   DENOM_CYBER: string;
   DENOM_LIQUID_TOKEN: string;
   DENOM_CYBER_G: string;
@@ -13,8 +18,6 @@ export type Networks = {
   MEMO_KEPLR: string;
 };
 
-type KeyNetworksList = 'bostrom' | 'space-pussy' | string;
-
 export type NetworksList = {
-  [key: KeyNetworksList]: Networks;
+  [key in Networks]: NetworkConfig;
 };

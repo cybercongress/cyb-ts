@@ -5,7 +5,7 @@ import {
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -19,9 +19,8 @@ import {
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
-  BtnGrd,
 } from '../../components';
-import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
+import { DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   fromBech32,
   trimString,
@@ -29,11 +28,10 @@ import {
   convertAmount,
 } from '../../utils/utils';
 import networks from '../../utils/networkListIbc';
-import { ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
+import { TxsType } from './index.new';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -87,14 +85,11 @@ function ActionBar({ stateActionBar }) {
     swapPrice,
   } = stateActionBar;
 
-  const { passport } = useGetPassportByAddress(addressActive);
-
   useEffect(() => {
     const confirmTx = async () => {
       if (queryClient && txHash) {
         setStage(STAGE_CONFIRMING);
         const response = await queryClient.getTx(txHash);
-        console.log('response :>> ', response);
         if (response !== null) {
           if (response.code === 0) {
             setStage(STAGE_CONFIRMED);
@@ -139,9 +134,7 @@ function ActionBar({ stateActionBar }) {
       );
 
       const offerCoin = coinFunc(parseFloat(amountTokenA), tokenA);
-      console.log('offerCoin', offerCoin);
       const demandCoinDenom = tokenB;
-      console.log(`swapPrice`, swapPrice);
 
       const exp = new BigNumber(10).pow(18).toString();
       const convertSwapPrice = new BigNumber(swapPrice)
@@ -160,8 +153,6 @@ function ActionBar({ stateActionBar }) {
             convertSwapPrice,
             fee
           );
-
-          console.log(`response`, response);
 
           if (response.code === 0) {
             setTxHash(response.transactionHash);
@@ -198,7 +189,6 @@ function ActionBar({ stateActionBar }) {
 
   const depositOnClick = useCallback(async () => {
     if (signer) {
-      console.log('tokenAAmount', tokenAAmount);
       const [{ address }] = await ibcClient.signer.getAccounts();
       const [{ address: counterpartyAccount }] = await signer.getAccounts();
 
@@ -224,7 +214,6 @@ function ActionBar({ stateActionBar }) {
           token: transferAmount,
         },
       };
-      console.log('msg', msg);
       const gasEstimation = await ibcClient.simulate(address, [msg], '');
       const feeIbc = {
         amount: [],
@@ -237,7 +226,6 @@ function ActionBar({ stateActionBar }) {
           feeIbc,
           ''
         );
-        console.log(`response`, response);
         if (response.code === 0) {
           const responseChainId = ibcClient.signer.chainId;
           setTxHashIbc(response.transactionHash);
@@ -257,7 +245,7 @@ function ActionBar({ stateActionBar }) {
           setStage(STAGE_ERROR);
         }
       } catch (e) {
-        console.error(`Caught error: `, e);
+        console.error(`error: `, e);
         setTxHashIbc(null);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
@@ -293,7 +281,6 @@ function ActionBar({ stateActionBar }) {
           token: transferAmount,
         },
       };
-      console.log('msg', msg);
       try {
         const response = await signingClient.signAndBroadcast(
           address,
@@ -301,7 +288,6 @@ function ActionBar({ stateActionBar }) {
           fee,
           ''
         );
-        console.log(`response`, response);
         if (response.code === 0) {
           setTxHash(response.transactionHash);
         } else {
@@ -310,7 +296,7 @@ function ActionBar({ stateActionBar }) {
           setStage(STAGE_ERROR);
         }
       } catch (e) {
-        console.error(`Caught error: `, e);
+        console.error(`error: `, e);
         setTxHash(undefined);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
@@ -319,81 +305,25 @@ function ActionBar({ stateActionBar }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, signer, tokenAAmount, sourceChannel, networkB]);
 
-  const handleHistory = (to: string) => {
-    navigate(to);
+  const buttonConfigs = {
+    [TxsType.Swap]: {
+      text: 'Swap',
+      onClick: swapWithinBatch,
+      disabled: isExceeded,
+    },
+    [TxsType.Deposit]: {
+      text: 'Deposit',
+      onClick: depositOnClick,
+      disabled: ibcClient === null,
+    },
+    [TxsType.Withdraw]: {
+      text: 'withdraw',
+      onClick: withdrawOnClick,
+    },
   };
 
-  if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
-    return (
-      <ActionBarCenter
-        btnText="get citizenship"
-        onClickFnc={() => handleHistory('/portal')}
-      />
-    );
-  }
-
-  if (addressActive === null) {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          Start by adding a address to
-          <Link style={{ marginLeft: 5 }} to="/">
-            your pocket
-          </Link>
-          .
-        </ActionBarContentText>
-      </ActionBarContainer>
-    );
-  }
-
-  if (addressActive !== null && addressActive.keys !== 'keplr') {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText>
-          Start by connecting keplr wallet to
-          <Link style={{ marginLeft: 5 }} to="/">
-            your pocket
-          </Link>
-          .
-        </ActionBarContentText>
-      </ActionBarContainer>
-    );
-  }
-
-  if (typeTxs === 'swap' && stage === STAGE_INIT) {
-    return (
-      <ActionBarSteps>
-        <BtnGrd
-          disabled={isExceeded}
-          onClick={() => swapWithinBatch()}
-          text="swap"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (typeTxs === 'deposit' && stage === STAGE_INIT) {
-    return (
-      <ActionBarSteps>
-        <BtnGrd
-          disabled={ibcClient === null}
-          onClick={() => depositOnClick()}
-          text="deposit"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (typeTxs === 'withdraw' && stage === STAGE_INIT) {
-    return (
-      <ActionBarSteps>
-        <BtnGrd
-          disabled={signer === null}
-          onClick={() => withdrawOnClick()}
-          text="withdraw"
-        />
-      </ActionBarSteps>
-    );
+  if (stage === STAGE_INIT) {
+    return <ActionBarCenter button={buttonConfigs[typeTxs]} />;
   }
 
   if (stage === STAGE_CONFIRMED_IBC) {
