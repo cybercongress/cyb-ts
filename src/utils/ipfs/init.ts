@@ -5,8 +5,11 @@ import * as embedded from './embedded';
 
 let client;
 
-const CYBERNODE_SWARM_ADDR =
+const CYBERNODE_SWARM_ADDR_WSS =
   '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+
+const CYBERNODE_SWARM_ADDR_TCP =
+  '/ip4/88.99.105.146/tcp/8080/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 
 const connectToSwarm = async (node, address) => {
   const multiaddrSwarm = multiaddr(address);
@@ -67,8 +70,11 @@ export async function initIpfsClient(opts) {
     //   '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star'
     // );
   }
-
-  connectToSwarm(instance, CYBERNODE_SWARM_ADDR);
+  const cyberNodeAddr =
+    instance.nodeType === 'embedded'
+      ? CYBERNODE_SWARM_ADDR_WSS
+      : CYBERNODE_SWARM_ADDR_TCP;
+  connectToSwarm(instance, cyberNodeAddr);
 
   client = backend;
   return instance;

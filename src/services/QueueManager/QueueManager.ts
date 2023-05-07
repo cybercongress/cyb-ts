@@ -10,6 +10,7 @@ import {
   mergeMap,
   debounceTime,
   concat,
+  merge,
   tap,
 } from 'rxjs';
 
@@ -237,7 +238,7 @@ class QueueManager<T> {
           const workItems = this.getItemBySourceAndPriority(queue);
 
           if (workItems.length > 0) {
-            return concat(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
+            return merge(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
           }
           return EMPTY;
         })
@@ -246,9 +247,6 @@ class QueueManager<T> {
         item.callback(item.cid, status, source, result);
 
         this.executing[source].delete(item.cid);
-        if (item.cid === 'xxx') {
-          console.log('------done', item, status, source, result);
-        }
         // Correct execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);

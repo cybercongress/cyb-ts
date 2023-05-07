@@ -47,6 +47,9 @@ const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
 const loadIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
+  // TODO: enable, disabled for tests
+  // return undefined;
+
   // TODO: use cursor
   const data = await getIpfsContentFromDb(cid.toString());
   if (data && data.length) {
@@ -80,6 +83,8 @@ const fetchIPFSContentMeta = async (
 
     const { type, size, local, blocks } = await node.files.stat(path, {
       signal,
+      withLocal: true,
+      size: true,
     });
     return {
       type,
@@ -116,8 +121,10 @@ const fetchIPFSContentFromNode = async (
 
   try {
     // const stat = await node.files.stat(path, { signal });
+    const startTime = Date.now();
     const meta = await fetchIPFSContentMeta(node, cid, signal);
-
+    const statsDoneTime = Date.now();
+    meta.statsTime = statsDoneTime - startTime;
     timer && clearTimeout(timer);
 
     switch (meta.type) {
@@ -134,6 +141,7 @@ const fetchIPFSContentFromNode = async (
             node.cat(path, { signal })
             // flushResults
           );
+          meta.catTime = Date.now() - statsDoneTime;
 
           // TODO: add to db flag that content is pinned TO local node
 
