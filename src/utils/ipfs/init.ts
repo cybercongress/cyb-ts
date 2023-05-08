@@ -1,38 +1,8 @@
-import { multiaddr } from '@multiformats/multiaddr';
-
 import * as external from './external';
 import * as embedded from './embedded';
+import { reconnectToCyberSwarm } from './utils-ipfs';
 
 let client;
-
-const CYBERNODE_SWARM_ADDR_WSS =
-  '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
-
-const CYBERNODE_SWARM_ADDR_TCP =
-  '/ip4/88.99.105.146/tcp/8080/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
-
-const connectToSwarm = async (node, address) => {
-  const multiaddrSwarm = multiaddr(address);
-  console.log(`Connecting to swarm ${address}`);
-  await node.bootstrap.add(multiaddrSwarm);
-
-  node?.swarm
-    .connect(multiaddrSwarm)
-    .then((resp) => {
-      console.log(`Welcome to swarm ${address} 🐝🐝🐝`);
-      // node.swarm.peers().then((peers) => console.log('---peeers', peers));
-    })
-    .catch((err) => {
-      console.log(
-        'Error object properties:',
-        Object.getOwnPropertyNames(err),
-        err.stack,
-        err.errors,
-        err.message
-      );
-      console.log(`Can't connect to swarm ${address}: ${err.message}`);
-    });
-};
 
 export async function initIpfsClient(opts) {
   let backend;
@@ -70,12 +40,7 @@ export async function initIpfsClient(opts) {
     //   '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star'
     // );
   }
-  const cyberNodeAddr =
-    instance.nodeType === 'embedded'
-      ? CYBERNODE_SWARM_ADDR_WSS
-      : CYBERNODE_SWARM_ADDR_TCP;
-  connectToSwarm(instance, cyberNodeAddr);
-
+  await reconnectToCyberSwarm(instance);
   client = backend;
   return instance;
 }

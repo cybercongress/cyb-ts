@@ -9,14 +9,18 @@ import {
   Observable,
   mergeMap,
   debounceTime,
-  concat,
   merge,
   tap,
+  interval,
+  filter,
 } from 'rxjs';
 
 import * as R from 'ramda';
 
-import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
+import {
+  fetchIpfsContent,
+  reconnectToCyberSwarm,
+} from 'src/utils/ipfs/utils-ipfs';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
@@ -35,6 +39,7 @@ import { QueueStrategy } from './QueueStrategy';
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 
 const QUEUE_DEBOUNCE_MS = 33;
+const CONNECTION_KEEPER_RETRY_MS = 5000;
 
 function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
@@ -81,7 +86,7 @@ class QueueManager<T> {
   }
 
   public setNode(node: AppIPFS) {
-    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
+    // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
     this.node = node;
     this.switchStrategy(strategies[node.nodeType]);
@@ -229,6 +234,12 @@ class QueueManager<T> {
     this.strategy = strategy;
     this.queueDebounceMs = queueDebounceMs;
 
+    // Little hack to handle keep-alive connection to swarm cyber node
+    // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
+    interval(CONNECTION_KEEPER_RETRY_MS)
+      .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
+      .subscribe(() => reconnectToCyberSwarm(this.node));
+
     this.queue$
       .pipe(
         // tap((queue) => console.log('---tap', queue)),
@@ -238,6 +249,9 @@ class QueueManager<T> {
           const workItems = this.getItemBySourceAndPriority(queue);
 
           if (workItems.length > 0) {
+            //  establish swarm cyber node connnection
+            reconnectToCyberSwarm(this.node);
+
             return merge(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
           }
           return EMPTY;
