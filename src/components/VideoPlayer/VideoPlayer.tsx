@@ -72,7 +72,6 @@ function VideoPlayer({ content }: VideoPlayerProps) {
         },
         videoRef.current
       );
-      console.log('---opts', opts);
     } else if (content.source === 'gateway') {
       videoRef.current!.src = content.contentUrl;
     } else if (content.availableDownload && node?.nodeType === 'external') {
@@ -86,7 +85,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
           videoRef.current!.src = `${CYBER.CYBER_GATEWAY}/ipfs/${content.cid}`;
         });
     } else {
-      console.log('Unknown source, TODO: implement DB', content.source);
+      videoRef.current!.src = URL.createObjectURL(new Blob([content.result]));
     }
 
     videoRef.current?.addEventListener('error', () =>
