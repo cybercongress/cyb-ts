@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 
 const limit = '10';
 
+// TO DO reduce /cosmwasm.wasm.v1.MsgExecuteContract
 const reduceParticleArr = (data) => {
   return data.reduce((acc, item) => {
     if (
@@ -13,6 +14,7 @@ const reduceParticleArr = (data) => {
       const cid = item.tx.body.messages[0].links[0].to;
       return [...acc, { cid, timestamp: item.timestamp }];
     }
+    return [...acc];
   }, []);
 };
 
