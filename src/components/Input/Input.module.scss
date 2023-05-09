@@ -27,6 +27,11 @@
       opacity: 0.5;
     }
 
+    &:disabled {
+      color: #e4e4e4;
+      opacity: 0.5;
+    }
+
     &:focus {
       outline: none;
     }

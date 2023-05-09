@@ -9,10 +9,9 @@ export type Props = {
   color?: Color;
   width?: string;
   title?: string;
-  placeholder?: string;
-  value: string;
   className?: string;
   type?: 'text' | 'password';
+  value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -25,6 +24,8 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       title,
       width,
       type = 'text',
+      value,
+      autoFocus,
       className,
       ...props
     },
@@ -41,12 +42,19 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
         )}
         style={{ width }}
       >
-        <LinearGradientContainer active={focused} color={color} title={title}>
+        <LinearGradientContainer
+          active={focused}
+          color={color}
+          title={!(focused || value) ? title : undefined}
+        >
           <input
             type={type}
             ref={ref}
+            value={value}
             className={className}
             onChange={onChange}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus={autoFocus}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
