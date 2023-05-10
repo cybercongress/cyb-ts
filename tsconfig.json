@@ -6,7 +6,7 @@
     "target": "es2018",
     "lib": ["dom", "es2018"],
     "allowJs": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,

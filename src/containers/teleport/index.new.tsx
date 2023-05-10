@@ -324,6 +324,8 @@ function Teleport() {
       <MainContainer width="62%">
         <Pane
           width="375px"
+          // when open select list need more space
+          paddingBottom="120px"
           display="flex"
           alignItems="center"
           flexDirection="column"

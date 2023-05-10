@@ -4,6 +4,7 @@ import { Rank, NoItems, Dots } from '../../../components';
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { timeSince } from 'src/utils/utils';
+import Loader2 from 'src/components/ui/Loader2';
 
 const d = new Date();
 
@@ -12,10 +13,10 @@ function DiscussionTab({ dataDiscussion, mobile, parent }) {
     dataDiscussion;
   let discussionRows = [];
 
-  if (data) {
+  if (data?.pages) {
     discussionRows = data.pages.map((page) => (
       <React.Fragment key={page.page}>
-        {page.data.map((item, index) => {
+        {page.data?.map((item, index) => {
           let timeAgoInMS = 0;
           const { cid, timestamp } = item;
           const time = Date.parse(d) - Date.parse(timestamp);
@@ -79,14 +80,7 @@ function DiscussionTab({ dataDiscussion, mobile, parent }) {
         dataLength={discussionRows.length}
         next={fetchNextPageFnc}
         hasMore={hasNextPage}
-        loader={
-          isFetching && (
-            <h4>
-              Loading
-              <Dots />
-            </h4>
-          )
-        }
+        loader={isFetching && <Loader2 />}
       >
         {status === 'loading' ? (
           <Dots />

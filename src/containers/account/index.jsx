@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -16,13 +16,13 @@ import {
   Dots,
   TabBtn,
   ActionBar,
+  Account,
 } from '../../components';
 import ActionBarContainer from './actionBar';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
 import FollowsTab from './tabs/follows';
-import AvatarIpfs from './component/avatarIpfs';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
@@ -181,7 +181,12 @@ function AccountDetails({ defaultAccount }) {
               margin: 0,
             }}
           />
-          <AvatarIpfs addressCyber={address} />
+          <Account
+            address={address}
+            avatar
+            styleUser={{ flexDirection: 'column' }}
+            sizeAvatar="80px"
+          />
           <Card
             title={`total, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={formatNumber(balance.total)}

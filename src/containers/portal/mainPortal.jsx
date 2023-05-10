@@ -95,11 +95,12 @@ function MainPartal({ defaultAccount }) {
 
   if (stagePortal === STAGE_INIT) {
     return (
-      <MainContainer minHeight="100vh">
+      <MainContainer>
         <Stars />
         {scale === scaleInitValue && (
           <InfoCard>
-            The measure of intelligence is ability to change. Albert Einstein
+            The measure of intelligence is ability to change. <br /> Albert
+            Einstein
           </InfoCard>
         )}
 
