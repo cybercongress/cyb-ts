@@ -15,6 +15,7 @@ import {
 } from '../../../components';
 import { getTxs } from '../../../utils/search/utils';
 import Button from 'src/components/btnGrd';
+import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -126,7 +127,7 @@ function ActionBar({ updateFnc, addressActive }) {
   if (stage === STAGE_INIT) {
     return (
       <ActionBarContainer>
-        <Pane width="65%" alignItems="flex-end" display="flex">
+        <Pane width="65%" display="flex">
           <ActionBarContentText>
             <div>
               {wasm !== null && wasm.name ? wasm.name : 'Select .wasm file'}
@@ -138,18 +139,9 @@ function ActionBar({ updateFnc, addressActive }) {
               accept=".wasm"
               style={{ display: 'none' }}
             />
-            <button
-              type="button"
-              className={
-                wasm !== null && wasm !== undefined
-                  ? 'btn-add-close'
-                  : 'btn-add-file'
-              }
-              onClick={
-                wasm !== null && wasm !== undefined
-                  ? onClickClear
-                  : showOpenFileDlg
-              }
+            <AddFileButton
+              isRemove={wasm}
+              onClick={wasm ? onClickClear : showOpenFileDlg}
             />
           </ActionBarContentText>
           <Button

@@ -26,6 +26,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import Tooltip from '../tooltip/tooltip';
+import AddFileButton from '../buttons/AddFile/AddFile';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -229,8 +230,6 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
-  const buttonText = `${!file ? 'Add' : 'Remove'} file`;
-
   return (
     <ActionBar>
       <Pane width="65%" alignItems="flex-end" display="flex">
@@ -270,14 +269,10 @@ export function StartStageSearchActionBar({
                 type="file"
                 style={{ display: 'none' }}
               />
-              <Tooltip tooltip={buttonText}>
-                <button
-                  type="button"
-                  aria-label={buttonText}
-                  className={file ? 'btn-add-close' : 'btn-add-file'}
-                  onClick={file ? onClickClear : showOpenFileDlg}
-                />
-              </Tooltip>
+              <AddFileButton
+                isRemove={file}
+                onClick={file ? onClickClear : showOpenFileDlg}
+              />
             </Pane>
           </Pane>
         </ActionBarContentText>
