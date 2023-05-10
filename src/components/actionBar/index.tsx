@@ -1,7 +1,7 @@
 import Button from '../btnGrd';
 import styles from './styles.scss';
 
-import ButtonIcon from '../ButtonIcon';
+import ButtonIcon from '../buttons/ButtonIcon';
 import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 import { useSelector } from 'react-redux';

@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 
 const getName = (file) => file.name;
 
@@ -69,14 +70,9 @@ function AddTest() {
         type="file"
         style={{ display: 'none' }}
       />
-      <button
-        type="button"
-        className={
-          file !== null && file !== undefined ? 'btn-add-close' : 'btn-add-file'
-        }
-        onClick={
-          file !== null && file !== undefined ? onClickClear : showOpenFileDlg
-        }
+      <AddFileButton
+        isRemove={file}
+        onClick={file ? onClickClear : showOpenFileDlg}
       />
       <button type="button" onClick={() => addPin()}>
         add

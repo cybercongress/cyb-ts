@@ -45,7 +45,7 @@ import ContainerGradient, {
   ContainerGradientText,
 } from './containerGradient/ContainerGradient';
 import MainContainer from './MainContainer';
-import ButtonIcon from './ButtonIcon';
+import ButtonIcon from './buttons/ButtonIcon';
 import Loading from './ui/Loading';
 
 const BtnGrd = Button;

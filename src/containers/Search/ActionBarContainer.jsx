@@ -380,9 +380,7 @@ class ActionBarContainer extends Component {
           textBtn={textBtn || 'Cyberlink'}
           keys={addressLocalStor !== null ? addressLocalStor.keys : false}
           onClickBtn={this.onClickInit}
-          contentHash={
-            file !== null && file !== undefined ? file.name : contentHash
-          }
+          contentHash={file?.name || contentHash}
           onChangeInputContentHash={this.onChangeInput}
           inputOpenFileRef={this.inputOpenFileRef}
           showOpenFileDlg={this.showOpenFileDlg}

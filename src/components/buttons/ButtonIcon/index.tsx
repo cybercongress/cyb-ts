@@ -1,6 +1,6 @@
 import { Pane } from '@cybercongress/gravity';
 import { $TsFixMe } from 'src/types/tsfix';
-import Tooltip, { TooltipProps } from '../tooltip/tooltip';
+import Tooltip, { TooltipProps } from '../../tooltip/tooltip';
 
 export type Props = {
   img: $TsFixMe;

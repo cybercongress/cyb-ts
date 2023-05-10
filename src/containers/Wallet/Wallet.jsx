@@ -585,24 +585,26 @@ class Wallet extends React.Component {
               />
             )}
             {accounts !== null &&
-              Object.keys(accounts).map((key, i) => (
-                <PubkeyCard
-                  key={`${key}_${i}`}
-                  onClick={(e) => this.onClickSelect(e, `pubkey_${key}`, key)}
-                  select={selectCard === `pubkey_${key}`}
-                  pocket={accounts[key]}
-                  nameCard={key}
-                  onMouseEnter={(e) =>
-                    this.mouselogEnter(e, `pubkey_${key}`, key)
-                  }
-                  onMouseLeave={(e) => this.mouselogLeave(e, key)}
-                  updateCard={updateCard}
-                  defaultAccounts={defaultAccountsKeys === key}
-                  contractToken={contractToken}
-                  web3={web3}
-                  updateFunc={this.checkAddressLocalStorage}
-                />
-              ))}
+              Object.keys(accounts)
+                .filter((item) => !!accounts[item])
+                .map((key, i) => (
+                  <PubkeyCard
+                    key={`${key}_${i}`}
+                    onClick={(e) => this.onClickSelect(e, `pubkey_${key}`, key)}
+                    select={selectCard === `pubkey_${key}`}
+                    pocket={accounts[key]}
+                    nameCard={key}
+                    onMouseEnter={(e) =>
+                      this.mouselogEnter(e, `pubkey_${key}`, key)
+                    }
+                    onMouseLeave={(e) => this.mouselogLeave(e, key)}
+                    updateCard={updateCard}
+                    defaultAccounts={defaultAccountsKeys === key}
+                    contractToken={contractToken}
+                    web3={web3}
+                    updateFunc={this.checkAddressLocalStorage}
+                  />
+                ))}
             {link !== null && (
               <PocketCard
                 select={selectCard === 'importCli'}

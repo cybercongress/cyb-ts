@@ -1,10 +1,10 @@
 import { Meta } from '@storybook/react';
-import imgKeplr from '../../image/keplr-icon.svg';
+import imgKeplr from '../../../image/keplr-icon.svg';
 import ButtonIcon, { Props } from '.';
 
 export default {
   component: ButtonIcon,
-  title: 'Atoms/ButtonIcon',
+  title: 'buttons/ButtonIcon',
 } as Meta;
 
 const defaultArgs: Props = {
