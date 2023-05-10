@@ -1118,7 +1118,7 @@ export function ConnectAddress({
   return (
     <ActionBarContainer
       button={{
-        disabled: !(selectNetwork || selectMethod),
+        disabled: !selectNetwork || !selectMethod,
         text: 'Connect',
         onClick: connctAddress,
       }}
