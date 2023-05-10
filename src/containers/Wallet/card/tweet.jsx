@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useIpfs } from 'src/contexts/ipfs';
 import { PocketCard } from '../components';
-import { Dots } from '../../../components';
+import { Dots, Account } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import {
   getAvatar,
@@ -257,7 +257,7 @@ function TweetCard({
     return (
       <PocketCard display="flex" flexDirection="row" {...props}>
         <Pane display="flex" flex={1}>
-          <AvatarIpfs addressCyber={account} />
+          <Account address={account} avatar onlyAvatar sizeAvatar="80px" />
         </Pane>
         <Link style={{ margin: '0 10px' }} to="/sixthSense">
           <Pane

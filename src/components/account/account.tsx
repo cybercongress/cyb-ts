@@ -58,6 +58,7 @@ type Props = {
   address: string;
   children?: React.ReactNode;
   colorText?: string;
+  onlyAvatar?: boolean;
   avatar?: boolean;
   margin?: string;
   sizeAvatar?: string;
@@ -69,6 +70,7 @@ function Account({
   address,
   children,
   colorText,
+  onlyAvatar,
   avatar,
   margin,
   sizeAvatar,
@@ -132,12 +134,14 @@ function Account({
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
         </div>
       )}
-      <Link
-        style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
-        to={linkAddress}
-      >
-        {moniker === null ? trimAddress : moniker}
-      </Link>
+      {!onlyAvatar && (
+        <Link
+          style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
+          to={linkAddress}
+        >
+          {moniker === null ? trimAddress : moniker}
+        </Link>
+      )}
       {children}
     </div>
   );

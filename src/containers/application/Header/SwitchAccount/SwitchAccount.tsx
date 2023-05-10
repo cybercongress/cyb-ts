@@ -207,7 +207,9 @@ function SwitchAccount() {
         className={styles.containerSwichAccount}
         style={{
           gridTemplateColumns:
-            useGetName === null || !mediaQuery ? '1fr' : '1fr 105px',
+            useGetName === null || !mediaQuery || useGetAddress === null
+              ? '1fr'
+              : '1fr 105px',
         }}
       >
         {mediaQuery && useGetAddress !== null && (

@@ -61,7 +61,7 @@ function ActionBar({
 
   // TODO: not show while loading passport
 
-  if (!accountWithPassport) {
+  if (!accountWithPassport && location.pathname !== routes.robot.path) {
     return (
       <ActionBarContainer>
         {!defaultAccount.account && location.pathname !== routes.robot.path && (
