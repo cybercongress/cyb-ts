@@ -71,7 +71,7 @@ function InformationTxs({ data, messageError, ...props }) {
             />
           )}
           {key === 'height' ? (
-            <Link to={`/network/bostrom/block/${data[key]}`}>{item}</Link>
+            <Link to={`/network/bostrom/blocks/${data[key]}`}>{item}</Link>
           ) : (
             item
           )}
