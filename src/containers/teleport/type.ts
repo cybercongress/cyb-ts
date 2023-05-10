@@ -12,6 +12,14 @@ type Account = {
   [key in AccountTypeKey]: AccountTypeValue;
 };
 
+export type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
+
+export const enum TxsType {
+  Swap = 'swap',
+  Deposit = 'deposit',
+  Withdraw = 'withdraw',
+}
+
 export type DefaultAccount = {
   name: string;
   account: Account;

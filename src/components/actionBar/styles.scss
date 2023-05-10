@@ -15,6 +15,7 @@
 
   &Content {
     max-width: 1000px;
+    flex-grow: 1;
     display: flex;
     align-items: center;
     gap: 25px;

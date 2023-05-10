@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import { CYBER } from '../../../../utils/config';
-import { getIpfsUserGatewanAndNodeType } from '../../../../utils/ipfs/utils-ipfs';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
 

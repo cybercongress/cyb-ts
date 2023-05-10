@@ -206,8 +206,9 @@ function SwitchAccount() {
       <div
         className={styles.containerSwichAccount}
         style={{
-          gridTemplateColumns:
-            useGetName === null || !mediaQuery ? '1fr' : '1fr 105px',
+          gridTemplateColumns: !(useGetName || mediaQuery || useGetAddress)
+            ? '1fr'
+            : '1fr 105px',
         }}
       >
         {mediaQuery && useGetAddress !== null && (
@@ -233,7 +234,10 @@ function SwitchAccount() {
             })}
           >
             <AvataImgIpfs
-              style={{ position: 'relative', objectFit: 'contain' }}
+              style={{
+                position: 'relative',
+                objectFit: !useGetCidAvatar && 'contain',
+              }}
               cidAvatar={useGetCidAvatar}
               addressCyber={useGetAddress}
               img={robot}

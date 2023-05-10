@@ -2,6 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { $TsFixMeFunc } from 'src/types/tsfix';
+import { useMemo } from 'react';
 import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 import BalanceToken from '../../teleport/components/balanceToken';
 import Select from '../../teleport/components/select';
@@ -55,6 +56,13 @@ function Withdraw({ stateProps }: WithdrawProps) {
     onChangeInputWithdraw,
   } = stateProps;
 
+  const textSelectValue = useMemo(() => {
+    if (selectMyPool.length > 0 && myPools?.[selectMyPool]) {
+      return myPools[selectMyPool].poolCoinDenom;
+    }
+    return '';
+  }, [myPools, selectMyPool]);
+
   return (
     <Pane
       maxWidth="390px"
@@ -79,11 +87,7 @@ function Withdraw({ stateProps }: WithdrawProps) {
         <Select
           width="100%"
           valueSelect={selectMyPool}
-          textSelectValue={
-            selectMyPool !== '' && myPools
-              ? myPools[selectMyPool].poolCoinDenom
-              : ''
-          }
+          textSelectValue={textSelectValue}
           onChangeSelect={(value) => setSelectMyPool(value)}
         >
           {myPools && renderOptions(myPools)}

@@ -204,6 +204,7 @@ function ActionBar({
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}
+        onClickBack={() => setStage(STAGE_INIT)}
       />
     );
   }
@@ -230,21 +231,6 @@ function ActionBar({
               onClick={() => setStage(STAGE_SEND_KEPLR)}
             />
           )}
-          {makeActive && buttonActivate}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === 'ledger' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          {connect && buttonConnect}
-          <ButtonImgText
-            img={imgLedger}
-            onClick={() => setStage(STAGE_SEND_LEDGER)}
-          />
           {makeActive && buttonActivate}
         </Pane>
       </ActionBarGravity>
