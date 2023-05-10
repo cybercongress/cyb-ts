@@ -5,7 +5,6 @@
 
 .markdownContainerFullWidth {
   width: 100%;
-  margin-bottom: -20px;
 }
 
 .markdownContainer img {
@@ -28,6 +27,10 @@
 .markdownContainer p {
   margin-bottom: 20px;
   text-align: justify;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .markdownContainer a {
