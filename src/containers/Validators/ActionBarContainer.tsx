@@ -20,7 +20,6 @@ import {
 import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const {
   STAGE_INIT,
@@ -491,7 +490,9 @@ function ActionBarContainer({
   ) {
     return (
       <Delegate
-        moniker={validators.description.moniker}
+        moniker={
+          Object.keys(validators).length ? validators.description.moniker : ''
+        }
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
         // disabledBtn={amount.length === 0}
