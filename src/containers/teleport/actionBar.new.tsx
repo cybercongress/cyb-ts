@@ -5,7 +5,6 @@ import {
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -30,8 +29,7 @@ import {
 import networks from '../../utils/networkListIbc';
 
 import ActionBarStaps from './actionBarSteps';
-
-import { TxsType } from './index.new';
+import { TxsType } from './type';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -60,7 +58,6 @@ function ActionBar({ stateActionBar }) {
   const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();
-  const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);

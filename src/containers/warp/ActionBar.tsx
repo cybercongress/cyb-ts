@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Pane,
-  Button,
-} from '@cybercongress/gravity';
+
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -12,24 +8,14 @@ import { Option } from 'src/types';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import {
-  ActionBarContentText,
-  Account,
-  LinkWindow,
-  ActionBar as ActionBarCenter,
-} from '../../components';
+import { RootState } from 'src/redux/store';
+import { Account, ActionBar as ActionBarCenter } from '../../components';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
-import {
-  trimString,
-  convertAmountReverce,
-  selectNetworkImg,
-} from '../../utils/utils';
+import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
-import { RootState } from 'src/redux/store';
 import { TypeTab, TypeTabEnum } from './type';
-import ImgDenom from 'src/components/valueImg/imgDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -40,8 +26,6 @@ const {
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
 } = LEDGER;
-
-const STAGE_CONFIRMED_IBC = 7.1;
 
 const fee = {
   amount: [],
@@ -152,18 +136,23 @@ function ActionBar({ stateActionBar }: Props) {
         ];
       }
 
-      const response = await signingClient.createPool(
-        address,
-        POOL_TYPE_INDEX,
-        depositCoins,
-        fee
-      );
+      try {
+        const response = await signingClient.createPool(
+          address,
+          POOL_TYPE_INDEX,
+          depositCoins,
+          fee
+        );
 
-      if (response.code === 0) {
-        setTxHash(response.transactionHash);
-      } else {
-        setTxHash(undefined);
-        setErrorMessage(response.rawLog.toString());
+        if (response.code === 0) {
+          setTxHash(response.transactionHash);
+        } else {
+          setTxHash(undefined);
+          setErrorMessage(response.rawLog.toString());
+          setStage(STAGE_ERROR);
+        }
+      } catch (error) {
+        setErrorMessage(error.toString());
         setStage(STAGE_ERROR);
       }
     }
@@ -180,28 +169,33 @@ function ActionBar({ stateActionBar }: Props) {
       }
       const depositCoins = coinFunc(Number(amountPoolCoin), selectMyPool);
 
-      if (addressActive !== null && addressActive.bech32 === address) {
-        const response = await signingClient.withdwawWithinBatch(
-          address,
-          parseFloat(poolId),
-          depositCoins,
-          fee
-        );
+      try {
+        if (addressActive !== null && addressActive.bech32 === address) {
+          const response = await signingClient.withdwawWithinBatch(
+            address,
+            parseFloat(poolId),
+            depositCoins,
+            fee
+          );
 
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
+          if (response.code === 0) {
+            setTxHash(response.transactionHash);
+          } else {
+            setTxHash(undefined);
+            setErrorMessage(response.rawLog.toString());
+            setStage(STAGE_ERROR);
+          }
         } else {
-          setTxHash(null);
-          setErrorMessage(response.rawLog.toString());
+          setErrorMessage(
+            <span>
+              Add address <Account margin="0 5px" address={address} /> to your
+              pocket or make active{' '}
+            </span>
+          );
           setStage(STAGE_ERROR);
         }
-      } else {
-        setErrorMessage(
-          <span>
-            Add address <Account margin="0 5px" address={address} /> to your
-            pocket or make active{' '}
-          </span>
-        );
+      } catch (error) {
+        setErrorMessage(error.toString());
         setStage(STAGE_ERROR);
       }
     }
@@ -249,28 +243,33 @@ function ActionBar({ stateActionBar }: Props) {
         ),
       ];
 
-      if (addressActive !== null && addressActive.bech32 === address) {
-        const response = await signingClient.depositWithinBatch(
-          address,
-          parseFloat(selectedPool.id),
-          depositCoins,
-          fee
-        );
+      try {
+        if (addressActive !== null && addressActive.bech32 === address) {
+          const response = await signingClient.depositWithinBatch(
+            address,
+            parseFloat(selectedPool.id),
+            depositCoins,
+            fee
+          );
 
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
+          if (response.code === 0) {
+            setTxHash(response.transactionHash);
+          } else {
+            setTxHash(undefined);
+            setErrorMessage(response.rawLog.toString());
+            setStage(STAGE_ERROR);
+          }
         } else {
-          setTxHash(undefined);
-          setErrorMessage(response.rawLog.toString());
+          setErrorMessage(
+            <span>
+              Add address <Account margin="0 5px" address={address} /> to your
+              pocket or make active{' '}
+            </span>
+          );
           setStage(STAGE_ERROR);
         }
-      } else {
-        setErrorMessage(
-          <span>
-            Add address <Account margin="0 5px" address={address} /> to your
-            pocket or make active{' '}
-          </span>
-        );
+      } catch (error) {
+        setErrorMessage(error.toString());
         setStage(STAGE_ERROR);
       }
     }
@@ -324,26 +323,12 @@ function ActionBar({ stateActionBar }: Props) {
     },
   };
 
-  if (stage !== STAGE_CONFIRMED_IBC) {
+  if (stage === STAGE_INIT) {
     return (
       <ActionBarCenter
         button={actionBarConfig[tab].button}
         text={errorMessage || actionBarConfig[tab].text}
       />
-    );
-  }
-
-  if (stage === STAGE_CONFIRMED_IBC) {
-    return (
-      <ActionBarContainer>
-        <ActionBarContentText display="inline">
-          <Pane display="inline">Transaction Successful: </Pane>{' '}
-          <LinkWindow to={linkIbcTxs}>{trimString(txHashIbc, 6, 6)}</LinkWindow>
-        </ActionBarContentText>
-        <Button marginX={10} onClick={cleatState}>
-          Fuck Google
-        </Button>
-      </ActionBarContainer>
     );
   }
 

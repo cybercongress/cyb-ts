@@ -1,6 +1,7 @@
 import { Pane } from '@cybercongress/gravity';
 import { ObjKeyValue } from 'src/types/data';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useMemo } from 'react';
 import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 
@@ -11,12 +12,14 @@ type BalanceTokenProps = {
 
 function BalanceToken({ token, data }: BalanceTokenProps) {
   const { traseDenom } = useIbcDenom();
-  let balance = 0;
 
-  if (data) {
-    const [{ coinDecimals }] = traseDenom(token);
-    balance = getDisplayAmount(data[token], coinDecimals);
-  }
+  const balance = useMemo(() => {
+    if (data && token.length > 0 && data[token]) {
+      const [{ coinDecimals }] = traseDenom(token);
+      return getDisplayAmount(data[token], coinDecimals);
+    }
+    return 0;
+  }, [data, token, traseDenom]);
 
   return (
     <Pane

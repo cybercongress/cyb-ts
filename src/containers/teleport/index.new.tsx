@@ -37,17 +37,10 @@ import {
   getBalances,
   useSetupIbcClient,
 } from './hooks';
+import { TypeTxsT } from './type';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
-
-type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
-
-export const enum TxsType {
-  Swap = 'swap',
-  Deposit = 'deposit',
-  Withdraw = 'withdraw',
-}
 
 function Teleport() {
   const queryClient = useQueryClient();
