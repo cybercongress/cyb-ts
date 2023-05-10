@@ -6,6 +6,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const Dotenv = require('dotenv-webpack');
 
 require('dotenv').config();
 
