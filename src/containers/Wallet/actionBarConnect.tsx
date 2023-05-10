@@ -1,11 +1,13 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react';
-import { Pane, ActionBar } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import {
   ConnectLadger,
   Dots,
   ConnectAddress,
   TransactionError,
+  Input,
+  ActionBar,
 } from '../../components';
 import {
   LEDGER,
@@ -38,7 +40,7 @@ function ActionBarConnect({
   updateAddress,
   updateFuncActionBar,
   web3,
-  accountsETH,
+  onClickBack,
   selectAccount,
 }) {
   const { signer } = useSigningClient();
@@ -48,7 +50,6 @@ function ActionBarConnect({
   const [valueInputAddres, setValueInputAddres] = useState('');
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
-  const [hdPathError, setHdPathError] = useState(false);
   const [addressLedger, setAddressLedger] = useState(null);
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
@@ -119,7 +120,6 @@ function ActionBarConnect({
     setConnectLedger(null);
     setSelectMethod('');
     setSelectNetwork('');
-    setHdPathError(false);
     setAddressLedger(null);
     setAddCyberAddress(false);
     setValidAddressAddedUser(true);
@@ -498,13 +498,21 @@ function ActionBarConnect({
         web3={web3}
         selectAccount={selectAccount}
         keplr={signer}
+        onClickBack={onClickBack}
       />
     );
   }
 
   if (stage === STAGE_ADD_ADDRESS_USER) {
     return (
-      <ActionBar>
+      <ActionBar
+        button={{
+          disabled: validAddressAddedUser,
+          onClick: onClickAddAddressUserToLocalStr,
+          text: 'Add address',
+        }}
+        onClickBack={() => setStage(STAGE_INIT)}
+      >
         <Pane
           flex={1}
           justifyContent="center"
@@ -513,26 +521,14 @@ function ActionBarConnect({
           display="flex"
         >
           put {selectNetwork} address:
-          <input
+          <Input
+            width="250px"
             value={valueInputAddres}
-            style={{
-              height: '42px',
-              maxWidth: '200px',
-              marginLeft: '10px',
-              textAlign: 'end',
-            }}
             onChange={(e) => setValueInputAddres(e.target.value)}
             placeholder="address"
             autoFocus
           />
         </Pane>
-
-        <Button
-          disabled={validAddressAddedUser}
-          onClick={onClickAddAddressUserToLocalStr}
-        >
-          Add address
-        </Button>
       </ActionBar>
     );
   }

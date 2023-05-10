@@ -16,24 +16,25 @@ function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
   const [focused, setFocused] = useState(false);
 
   return (
-    <LinearGradientContainer active={focused}>
-      <NumericFormat
-        value={new BigNumber(value).toNumber()}
-        onValueChange={(values, sourceInfo) => {
-          onValueChange && onValueChange(values.value, sourceInfo.event);
-          onChange && onChange(values.value, sourceInfo.event);
-        }}
-        customInput={Input}
-        thousandsGroupStyle="thousand"
-        thousandSeparator=" "
-        decimalScale={3}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        autoComplete="off"
-        allowLeadingZeros
-        {...props}
-      />
-    </LinearGradientContainer>
+    // <LinearGradientContainer active={focused}>
+    <NumericFormat
+      value={new BigNumber(value).toNumber()}
+      onValueChange={(values, sourceInfo) => {
+        onValueChange && onValueChange(values.value, sourceInfo.event);
+        onChange && onChange(values.value, sourceInfo.event);
+      }}
+      customInput={Input}
+      thousandsGroupStyle="thousand"
+      thousandSeparator=" "
+      decimalScale={3}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      autoComplete="off"
+      allowLeadingZeros
+      focusedProps={focused}
+      {...props}
+    />
+    // </LinearGradientContainer>
   );
 }
 

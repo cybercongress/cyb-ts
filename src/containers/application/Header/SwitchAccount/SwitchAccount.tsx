@@ -233,7 +233,10 @@ function SwitchAccount() {
             })}
           >
             <AvataImgIpfs
-              style={{ position: 'relative', objectFit: 'contain' }}
+              style={{
+                position: 'relative',
+                objectFit: !useGetCidAvatar && 'contain',
+              }}
               cidAvatar={useGetCidAvatar}
               addressCyber={useGetAddress}
               img={robot}

@@ -1,6 +1,6 @@
 import cx from 'classnames';
-import styles from './Input.module.scss';
 import React, { useState } from 'react';
+import styles from './Input.module.scss';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
@@ -10,6 +10,7 @@ export type Props = {
   width?: string;
   title?: string;
   className?: string;
+  focusedProps?: boolean;
   type?: 'text' | 'password';
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -27,6 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       value,
       autoFocus,
       className,
+      focusedProps,
       ...props
     },
     ref
@@ -43,7 +45,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
         style={{ width }}
       >
         <LinearGradientContainer
-          active={focused}
+          active={focusedProps || focused}
           color={color}
           title={!(focused || value) ? title : undefined}
         >
