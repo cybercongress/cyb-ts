@@ -68,14 +68,14 @@ function ContentItem({
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
       {/* DEBUG: */}
-      <div
+      {/* <div
         className={styles.contentLoadInfo}
         onClick={async (e) => {
           e.preventDefault();
           e.stopPropagation();
           await navigator.clipboard.writeText(cid);
         }}
-      >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid} stats(ms): ${content?.meta.statsTime} cat(ms): ${content?.meta.catTime}`}</div>
+      >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid} stats(ms): ${content?.meta.statsTime} cat(ms): ${content?.meta.catTime}`}</div> */}
       <SearchItem
         key={cid}
         status={status}

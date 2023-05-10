@@ -31,9 +31,9 @@ function Ipfs() {
   return (
     <>
       <main className="block-body">
-        <div
+        {/* <div
           style={{ fontSize: '8px', color: '#00edeb' }}
-        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div>
+        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
         {(!status || status !== 'completed') && (
           <ContentIpfsCid loading status={status} />
         )}
