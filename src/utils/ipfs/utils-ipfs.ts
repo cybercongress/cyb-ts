@@ -1,4 +1,7 @@
 /* eslint-disable import/no-unused-modules */
+import { multiaddr } from '@multiformats/multiaddr';
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+
 import { AddResult, IPFSPath } from 'kubo-rpc-client/types';
 
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
@@ -23,7 +26,7 @@ import { CYBER } from '../config';
 // import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
-import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import { convertTimeToMilliseconds } from '../helpers';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -47,6 +50,9 @@ const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
 const loadIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
+  // TODO: enable, disabled for tests
+  // return undefined;
+
   // TODO: use cursor
   const data = await getIpfsContentFromDb(cid.toString());
   if (data && data.length) {
@@ -80,6 +86,8 @@ const fetchIPFSContentMeta = async (
 
     const { type, size, local, blocks } = await node.files.stat(path, {
       signal,
+      withLocal: true,
+      size: true,
     });
     return {
       type,
@@ -116,8 +124,10 @@ const fetchIPFSContentFromNode = async (
 
   try {
     // const stat = await node.files.stat(path, { signal });
+    const startTime = Date.now();
     const meta = await fetchIPFSContentMeta(node, cid, signal);
-
+    const statsDoneTime = Date.now();
+    meta.statsTime = statsDoneTime - startTime;
     timer && clearTimeout(timer);
 
     switch (meta.type) {
@@ -134,6 +144,7 @@ const fetchIPFSContentFromNode = async (
             node.cat(path, { signal })
             // flushResults
           );
+          meta.catTime = Date.now() - statsDoneTime;
 
           // TODO: add to db flag that content is pinned TO local node
 
@@ -353,10 +364,89 @@ const addContenToIpfs = async (
   return undefined;
 };
 
+const CYBER_NODE_SWARM_PEER_ID =
+  'QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+const CYBERNODE_SWARM_ADDR_WSS =
+  '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+
+const CYBERNODE_SWARM_ADDR_TCP =
+  '/ip4/88.99.105.146/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+// '/dns4/swarm.io.cybernode.ai/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+
+const connectToSwarm = async (node, address) => {
+  const multiaddrSwarm = multiaddr(address);
+  console.log(`Connecting to swarm ${address}`, node);
+  await node.bootstrap.add(multiaddrSwarm);
+
+  node?.swarm
+    .connect(multiaddrSwarm)
+    .then((resp) => {
+      console.log(`Welcome to swarm ${address} 🐝🐝🐝`);
+      // node.swarm.peers().then((peers) => console.log('---peeers', peers));
+    })
+    .catch((err) => {
+      console.log(
+        'Error object properties:',
+        Object.getOwnPropertyNames(err),
+        err.stack,
+        err.errors,
+        err.message
+      );
+      console.log(`Can't connect to swarm ${address}: ${err.message}`);
+    });
+};
+
+const connectToCyberSwarm = async (node: AppIPFS) => {
+  const cyberNodeAddr =
+    node.nodeType === 'embedded'
+      ? CYBERNODE_SWARM_ADDR_WSS
+      : CYBERNODE_SWARM_ADDR_TCP;
+  await connectToSwarm(node, cyberNodeAddr);
+};
+
+const reconnectToCyberSwarm = async (node?: AppIPFS) => {
+  if (!node) {
+    return;
+  }
+
+  const cyberNodeAddr =
+    node.nodeType === 'embedded'
+      ? CYBERNODE_SWARM_ADDR_WSS
+      : CYBERNODE_SWARM_ADDR_TCP;
+  const peers = await node.swarm.peers();
+
+  // console.log('autoDialTime', await getNodeAutoDialInterval(node));
+  const isConnected = peers.find(
+    (p) => p.peer.toString() === CYBER_NODE_SWARM_PEER_ID
+  );
+
+  if (!isConnected) {
+    await connectToSwarm(node, cyberNodeAddr);
+  }
+};
+
+const DEFAULT_AUTO_DIAL_INTERVAL = 20000;
+const GET_CONFIG_TIMEOUT = 3000;
+
+const getNodeAutoDialInterval = async (node: AppIPFS) => {
+  try {
+    const autoDialTime = convertTimeToMilliseconds(
+      ((await node.config.get('Swarm.ConnMgr.GracePeriod', {
+        timeout: GET_CONFIG_TIMEOUT,
+      })) as string) || DEFAULT_AUTO_DIAL_INTERVAL
+    );
+
+    return autoDialTime;
+  } catch {
+    return DEFAULT_AUTO_DIAL_INTERVAL;
+  }
+};
+
 export {
   getIPFSContent,
   getIpfsUserGatewanAndNodeType,
   catIPFSContentFromNode,
   fetchIpfsContent,
   addContenToIpfs,
+  reconnectToCyberSwarm,
 };

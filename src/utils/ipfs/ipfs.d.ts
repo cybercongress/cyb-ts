@@ -24,6 +24,8 @@ export type IPFSContentMeta = {
   data?: string; // ???
   mime?: string;
   local?: boolean;
+  statsTime?: number;
+  catTime?: number;
 };
 
 type IPFSData =
