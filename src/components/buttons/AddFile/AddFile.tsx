@@ -3,7 +3,7 @@ import Tooltip from 'src/components/tooltip/tooltip';
 import cx from 'classnames';
 import styles from './AddFile.module.scss';
 
-type Props = {
+export type Props = {
   isRemove: boolean;
 } & React.HTMLAttributes<HTMLButtonElement>;
 

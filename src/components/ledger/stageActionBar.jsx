@@ -23,7 +23,7 @@ import { CYBER, BOND_STATUS } from '../../utils/config';
 import Button from '../btnGrd';
 import { InputNumber, Input } from '../Input';
 import ActionBarContainer from '../actionBar';
-import ButtonIcon from '../ButtonIcon';
+import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import Tooltip from '../tooltip/tooltip';
 import AddFileButton from '../buttons/AddFile/AddFile';
