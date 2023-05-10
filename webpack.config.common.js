@@ -13,14 +13,13 @@ if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
 }
-
 module.exports = {
   devtool: false,
   entry: [path.join(__dirname, 'src', 'index.tsx')],
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
-    publicPath: process.env.IPFS_DEPLOY ? '/.' : '/',
+    publicPath: process.env.IPFS_DEPLOY ? './' : '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
   resolve: {
@@ -99,6 +98,9 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
+    }),
+    new Dotenv({
+      systemvars: true,
     }),
   ],
   module: {
