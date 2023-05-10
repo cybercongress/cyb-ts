@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect, useRef } from 'react';
+import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 function SelectFile({ stateCallback, text = 'Upload query schema' }) {
@@ -51,10 +52,9 @@ function SelectFile({ stateCallback, text = 'Upload query schema' }) {
         accept=".json"
         style={{ display: 'none' }}
       />
-      <button
-        type="button"
-        className={file !== null ? 'btn-add-close' : 'btn-add-file'}
-        onClick={file !== null ? onClickClear : showOpenFileDlg}
+      <AddFileButton
+        isRemove={file}
+        onClick={file ? onClickClear : showOpenFileDlg}
       />
     </div>
   );

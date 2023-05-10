@@ -23,7 +23,10 @@ import { CYBER, BOND_STATUS } from '../../utils/config';
 import Button from '../btnGrd';
 import { InputNumber, Input } from '../Input';
 import ActionBarContainer from '../actionBar';
-import ButtonIcon from '../ButtonIcon';
+import ButtonIcon from '../buttons/ButtonIcon';
+import { Color } from '../LinearGradientContainer/LinearGradientContainer';
+import Tooltip from '../tooltip/tooltip';
+import AddFileButton from '../buttons/AddFile/AddFile';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -237,29 +240,22 @@ export function StartStageSearchActionBar({
             position="relative"
             width="100%"
           >
-            <TextareaAutosize
+            <Input
+              color={Color.Pink}
               value={contentHash}
+              disabled={file}
               maxRows={20}
               style={{
-                height: 42,
                 width: '100%',
-                color: '#fff',
                 paddingLeft: '10px',
-                borderRadius: '20px',
-                textAlign: 'start',
+                textAlign: 'left',
                 paddingRight: '35px',
                 paddingTop: '10px',
                 paddingBottom: '10px',
               }}
               className="resize-none minHeightTextarea"
               onChange={(e) => onChangeInputContentHash(e)}
-              placeholder={placeholder}
-              onFocus={(e) => {
-                e.target.placeholder = '';
-              }}
-              onBlur={(e) => {
-                e.target.placeholder = placeholder;
-              }}
+              title={placeholder}
             />
             <Pane
               position="absolute"
@@ -273,19 +269,9 @@ export function StartStageSearchActionBar({
                 type="file"
                 style={{ display: 'none' }}
               />
-              <button
-                type="button"
-                aria-label="add file"
-                className={
-                  file !== null && file !== undefined
-                    ? 'btn-add-close'
-                    : 'btn-add-file'
-                }
-                onClick={
-                  file !== null && file !== undefined
-                    ? onClickClear
-                    : showOpenFileDlg
-                }
+              <AddFileButton
+                isRemove={file}
+                onClick={file ? onClickClear : showOpenFileDlg}
               />
             </Pane>
           </Pane>

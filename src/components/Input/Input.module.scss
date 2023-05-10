@@ -18,12 +18,17 @@
     background-color: transparent;
     font-size: 1.25rem;
     display: block;
-    color: #fff;
+    color: var(--primary-color);
     text-align: end;
     filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
 
     &::placeholder {
       color: #272343;
+      opacity: 0.5;
+    }
+
+    &:disabled {
+      color: #e4e4e4;
       opacity: 0.5;
     }
 
