@@ -26,7 +26,7 @@ import {
   checkInactiveFunc,
   getMyTokenBalanceNumber,
 } from './utils';
-import ActionBar from './actionBar.new';
+import ActionBar from './actionBar';
 import networks from '../../utils/networkListIbc';
 import TokenSetter from './components/tokenSetter.new';
 import NetworkSetter from './components/networkSetter';

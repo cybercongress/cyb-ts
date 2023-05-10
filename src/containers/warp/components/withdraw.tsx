@@ -47,7 +47,6 @@ type WithdrawProps = {
 };
 
 function Withdraw({ stateProps }: WithdrawProps) {
-  console.log('stateProps', stateProps);
   const {
     accountBalances,
     myPools,
@@ -58,7 +57,7 @@ function Withdraw({ stateProps }: WithdrawProps) {
   } = stateProps;
 
   const textSelectValue = useMemo(() => {
-    if (myPools && selectMyPool.length > 0 && myPools[selectMyPool]) {
+    if (selectMyPool.length > 0 && myPools?.[selectMyPool]) {
       return myPools[selectMyPool].poolCoinDenom;
     }
     return '';

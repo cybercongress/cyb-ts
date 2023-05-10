@@ -1118,8 +1118,8 @@ export function ConnectAddress({
   return (
     <ActionBarContainer
       button={{
-        disabled: selectNetwork === '' || selectMethod === '',
-        text: 'connect',
+        disabled: !(selectNetwork || selectMethod),
+        text: 'Connect',
         onClick: connctAddress,
       }}
       onClickBack={onClickBack}

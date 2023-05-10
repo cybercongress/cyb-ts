@@ -14,7 +14,7 @@ function BalanceToken({ token, data }: BalanceTokenProps) {
   const { traseDenom } = useIbcDenom();
 
   const balance = useMemo(() => {
-    if (data && token.length > 0 && data[token]) {
+    if (token.length > 0 && data?.[token]) {
       const [{ coinDecimals }] = traseDenom(token);
       return getDisplayAmount(data[token], coinDecimals);
     }

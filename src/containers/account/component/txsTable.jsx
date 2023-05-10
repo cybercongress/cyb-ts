@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Link } from 'react-router-dom';
 import { Dots, MsgType, NoItems, TextTable } from '../../../components';
-import { timeSince, trimString } from '../../../utils/utils';
+import { getNowUtcTime, timeSince, trimString } from '../../../utils/utils';
 import statusTrueImg from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
@@ -24,9 +24,8 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
         {page.data.map((item, index) => {
           const key = uuidv4();
           let timeAgoInMS = null;
-          const d = new Date().toUTCString();
           const time =
-            Date.parse(d) - Date.parse(item.transaction.block.timestamp);
+            getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
           if (time > 0) {
             timeAgoInMS = time;
           }

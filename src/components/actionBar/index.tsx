@@ -64,7 +64,7 @@ function ActionBar({
   if (!accountWithPassport && location.pathname !== routes.robot.path) {
     return (
       <ActionBarContainer>
-        {!defaultAccount.account && location.pathname !== routes.robot.path && (
+        {!defaultAccount.account && (
           <Button link={routes.robot.path}>Connect</Button>
         )}
 

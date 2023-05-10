@@ -386,6 +386,20 @@ const findPoolDenomInArr = (
   return findObj;
 };
 
+const getNowUtcTime = (): number => {
+  const now = new Date();
+  const utcTime = new Date(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  );
+
+  return utcTime.getTime();
+};
+
 export {
   formatNumber,
   asyncForEach,
@@ -414,4 +428,5 @@ export {
   findDenomInTokenList,
   isNative,
   findPoolDenomInArr,
+  getNowUtcTime,
 };

@@ -34,7 +34,7 @@ import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
-import TeleportTs from './containers/teleport/index.new';
+import TeleportTs from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
