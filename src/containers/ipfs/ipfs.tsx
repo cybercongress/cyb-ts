@@ -4,7 +4,7 @@ import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { TabBtn } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -18,17 +18,21 @@ import PaneWithPill from './components/PaneWithPill';
 
 function Ipfs() {
   const { cid, tab = 'discussion' } = useParams();
-  const [update, setUpdate] = useState(0);
   const { status, content, source } = useQueueIpfsContent(cid, 1, cid);
   const { backlinks } = useGetBackLink(cid);
   const { creator } = useGetCreator(cid);
   const dataAnswer = useGetAnswers(cid);
-  const dataDiscussion = useGetDiscussion(cid, update);
+  const dataDiscussion = useGetDiscussion(cid);
   const { community } = useGetCommunity(cid);
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
   const { isMobile: mobile } = useDevice();
   const queryParamsId = `${cid}.${tab}`;
+
+  const update = useCallback(() => {
+    dataDiscussion.refetch();
+    dataAnswer.refetch();
+  }, [dataAnswer, dataDiscussion]);
 
   return (
     <>
@@ -120,7 +124,7 @@ function Ipfs() {
           }
           textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
           keywordHash={cid}
-          update={() => setUpdate((item) => item + 1)}
+          update={update}
         />
       )}
     </>

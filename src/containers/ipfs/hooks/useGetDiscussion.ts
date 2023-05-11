@@ -48,7 +48,7 @@ const getTo = async (hash: string, offset: string, callBack) => {
   }
 };
 
-function useGetDiscussion(hash: string, update) {
+function useGetDiscussion(hash: string) {
   const [total, setTotal] = useState(0);
   const {
     status,
@@ -84,13 +84,16 @@ function useGetDiscussion(hash: string, update) {
     }
   );
 
-  useEffect(() => {
-    if (update && update > 0) {
-      refetch();
-    }
-  }, [update, refetch]);
-
-  return { status, data, error, isFetching, fetchNextPage, hasNextPage, total };
+  return {
+    status,
+    data,
+    error,
+    isFetching,
+    fetchNextPage,
+    hasNextPage,
+    total,
+    refetch,
+  };
 }
 
 export default useGetDiscussion;
