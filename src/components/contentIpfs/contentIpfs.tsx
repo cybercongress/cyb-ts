@@ -65,7 +65,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   if (ipfsDataDetails?.type === 'pdf') {
-    return <Pdf content={ipfsDataDetails.content} />;
+    return <Pdf content={ipfsDataDetails.content} search={search} />;
   }
 
   if (ipfsDataDetails?.type === 'link') {

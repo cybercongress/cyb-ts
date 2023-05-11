@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getToLink } from 'src/utils/search/utils';
 import BigNumber from 'bignumber.js';
 
@@ -48,34 +48,47 @@ const getTo = async (hash: string, offset: string, callBack) => {
   }
 };
 
-function useGetDiscussion(hash: string) {
+function useGetDiscussion(hash: string, update) {
   const [total, setTotal] = useState(0);
-  const { status, data, error, isFetching, fetchNextPage, hasNextPage } =
-    useInfiniteQuery(
-      ['useGetDiscussion', hash],
-      async ({ pageParam = 0 }) => {
-        const response = await getTo(
-          hash,
-          new BigNumber(limit).multipliedBy(pageParam).toString(),
-          setTotal
-        );
+  const {
+    status,
+    data,
+    error,
+    isFetching,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery(
+    ['useGetDiscussion', hash],
+    async ({ pageParam = 0 }) => {
+      const response = await getTo(
+        hash,
+        new BigNumber(limit).multipliedBy(pageParam).toString(),
+        setTotal
+      );
 
-        const reduceArr = reduceParticleArr(response, hash);
+      const reduceArr = reduceParticleArr(response, hash);
 
-        return { data: reduceArr, page: pageParam };
+      return { data: reduceArr, page: pageParam };
+    },
+    {
+      enabled: Boolean(hash),
+      getNextPageParam: (lastPage) => {
+        if (lastPage.data && lastPage.data.length === 0) {
+          return undefined;
+        }
+
+        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
+        return nextPage;
       },
-      {
-        enabled: Boolean(hash),
-        getNextPageParam: (lastPage) => {
-          if (lastPage.data && lastPage.data.length === 0) {
-            return undefined;
-          }
+    }
+  );
 
-          const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-          return nextPage;
-        },
-      }
-    );
+  useEffect(() => {
+    if (update && update > 0) {
+      refetch();
+    }
+  }, [update, refetch]);
 
   return { status, data, error, isFetching, fetchNextPage, hasNextPage, total };
 }

@@ -321,27 +321,6 @@ class ActionBarContainer extends Component {
 
     const { textBtn, placeholder, rankLink } = this.props;
 
-    if (stage === STAGE_INIT && addressLocalStor === null) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <LinkRoute
-              style={{
-                paddingTop: 10,
-                margin: '0 15px',
-                paddingBottom: 10,
-                display: 'block',
-              }}
-              className="btn"
-              to="/"
-            >
-              Connect
-            </LinkRoute>
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
     if (stage === STAGE_INIT && rankLink && rankLink !== null) {
       let keys = 'ledger';
       if (addressLocalStor !== null) {

@@ -35,10 +35,9 @@ type Props = {
     value: number;
   };
   children: React.ReactNode;
-  textPreview?: React.ReactNode;
 };
 
-function SearchItem({ status, grade, children, textPreview }: Props) {
+function SearchItem({ status, grade, children }: Props) {
   let colorRank = 'grey';
 
   if (grade && grade.value) {
@@ -66,21 +65,15 @@ function SearchItem({ status, grade, children, textPreview }: Props) {
         >
           <div
             style={{
-              display: 'flex',
               width: '100%',
-              justifyContent: 'flex-start',
-              alignItems: 'flex-start',
               flex: 1,
             }}
           >
-            {textPreview && (
-              <div className={styles.containerTextPreview}>{textPreview}</div>
-            )}
+            <div className={styles.containerChildren}>{children}</div>
           </div>
           {/* TODO: Status seems that processed incorrect */}
           {status !== 'completed' && <Status status={status} />}
         </div>
-        <div className={styles.containerChildren}>{children}</div>
       </div>
     </ContainerGradientText>
   );
