@@ -27,18 +27,18 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
 
   useEffect(() => {
     const lastPoolCapLocalStorage = localStorage.getItem('lastPoolCap');
-    const lastPoolLocalStorage = localStorage.getItem('lastPoolData');
+    // const lastPoolLocalStorage = localStorage.getItem('lastPoolData');
 
     if (lastPoolCapLocalStorage !== null) {
       setTotalCap(new BigNumber(lastPoolCapLocalStorage).toNumber());
     }
 
-    if (lastPoolLocalStorage !== null) {
-      const lastPoolLSData = JSON.parse(lastPoolLocalStorage);
-      if (lastPoolLSData.length > 0) {
-        setPoolsData(lastPoolLSData);
-      }
-    }
+    // if (lastPoolLocalStorage !== null) {
+    //   const lastPoolLSData = JSON.parse(lastPoolLocalStorage);
+    //   if (lastPoolLSData.length > 0) {
+    //     setPoolsData(lastPoolLSData);
+    //   }
+    // }
   }, []);
 
   useEffect(() => {
