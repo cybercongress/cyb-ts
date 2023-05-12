@@ -81,12 +81,12 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   return (
     <>
-      <DebugContentInfo
+      {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      />
+      /> */}
       {/* Default */}
       {!content && <div>{cid.toString()}</div>}
 
