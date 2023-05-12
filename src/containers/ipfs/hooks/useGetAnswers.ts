@@ -18,30 +18,46 @@ const search = async (client, hash, page, callBack) => {
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
   const [total, setTotal] = useState(0);
-  const { status, data, error, isFetching, fetchNextPage, hasNextPage } =
-    useInfiniteQuery(
-      ['useGetAnswers', hash],
-      async ({ pageParam = 0 }) => {
-        const response = await search(queryClient, hash, pageParam, setTotal);
+  const {
+    status,
+    data,
+    error,
+    isFetching,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery(
+    ['useGetAnswers', hash],
+    async ({ pageParam = 0 }) => {
+      const response = await search(queryClient, hash, pageParam, setTotal);
 
-        const reduceArr = reduceParticleArr(response);
+      const reduceArr = reduceParticleArr(response);
 
-        return { data: reduceArr, page: pageParam };
+      return { data: reduceArr, page: pageParam };
+    },
+    {
+      enabled: Boolean(queryClient),
+      getNextPageParam: (lastPage) => {
+        if (lastPage.data && lastPage.data.length === 0) {
+          return undefined;
+        }
+
+        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
+        return nextPage;
       },
-      {
-        enabled: Boolean(queryClient),
-        getNextPageParam: (lastPage) => {
-          if (lastPage.data && lastPage.data.length === 0) {
-            return undefined;
-          }
+    }
+  );
 
-          const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-          return nextPage;
-        },
-      }
-    );
-
-  return { status, data, error, isFetching, fetchNextPage, hasNextPage, total };
+  return {
+    status,
+    data,
+    error,
+    isFetching,
+    fetchNextPage,
+    hasNextPage,
+    total,
+    refetch,
+  };
 }
 
 export default useGetAnswers;

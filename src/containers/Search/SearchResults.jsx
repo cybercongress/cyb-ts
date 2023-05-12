@@ -208,14 +208,12 @@ function SearchResults() {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER`}
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of contract',
               <Account avatar address={query} />
             )}
-            status="sparkApp"
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -233,15 +231,12 @@ function SearchResults() {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER_VALOPER`}
-            text="Explore details of hero"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of hero',
               <Account address={query} />
             )}
-            status="sparkApp"
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -259,14 +254,12 @@ function SearchResults() {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_TX`}
-            status="sparkApp"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of tx',
               trimString(query, 4, 4)
             )}
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -284,15 +277,12 @@ function SearchResults() {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_BLOCK`}
-            text="Explore details of block "
-            status="sparkApp"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of block ',
               formatNumber(parseFloat(query))
             )}
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );

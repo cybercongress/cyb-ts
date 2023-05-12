@@ -4,6 +4,7 @@ import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { useCallback, useState } from 'react';
 import { TabBtn } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -27,6 +28,11 @@ function Ipfs() {
   //   useGetIpfsContent(cid);
   const { isMobile: mobile } = useDevice();
   const queryParamsId = `${cid}.${tab}`;
+
+  const update = useCallback(() => {
+    dataDiscussion.refetch();
+    dataAnswer.refetch();
+  }, [dataAnswer, dataDiscussion]);
 
   return (
     <>
@@ -118,7 +124,7 @@ function Ipfs() {
           }
           textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
           keywordHash={cid}
-          // update={() => getLinks()}
+          update={update}
         />
       )}
     </>

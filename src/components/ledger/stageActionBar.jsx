@@ -229,74 +229,55 @@ export function StartStageSearchActionBar({
   keys = 'ledger',
 }) {
   return (
-    <ActionBar>
-      <Pane width="65%" alignItems="flex-end" display="flex">
-        <ActionBarContentText>
-          <Pane
-            display="flex"
-            flexDirection="column"
-            position="relative"
-            width="100%"
-          >
-            <Input
-              color={Color.Pink}
-              value={contentHash}
-              disabled={file}
-              maxRows={20}
-              style={{
-                width: '100%',
-                paddingLeft: '10px',
-                textAlign: 'left',
-                paddingRight: '35px',
-                paddingTop: '10px',
-                paddingBottom: '10px',
-              }}
-              className="resize-none minHeightTextarea"
-              onChange={(e) => onChangeInputContentHash(e)}
-              title={placeholder}
-            />
-            <Pane
-              position="absolute"
-              right="0"
-              bottom="0"
-              transform="translate(0, -7px)"
-            >
-              <input
-                ref={inputOpenFileRef}
-                onChange={() => onChangeInput(inputOpenFileRef)}
-                type="file"
-                style={{ display: 'none' }}
-              />
-              <AddFileButton
-                isRemove={file}
-                onClick={file ? onClickClear : showOpenFileDlg}
-              />
-            </Pane>
-          </Pane>
-        </ActionBarContentText>
-        <ButtonImgText
-          text={
-            <Pane alignItems="center" display="flex">
-              {textBtn}{' '}
-              <img
-                src={selectNetworkImg(CYBER.CHAIN_ID)}
-                alt="cyber"
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginLeft: '5px',
-                  paddingTop: '2px',
-                  objectFit: 'contain',
-                }}
-              />
-            </Pane>
-          }
-          disabled={!contentHash.length}
-          onClick={onClickBtn}
-          img={keys === 'ledger' ? imgLedger : imgKeplr}
+    <ActionBarContainer
+      button={{
+        disabled: !contentHash.length,
+        onClick: onClickBtn,
+        text: textBtn,
+      }}
+    >
+      <Pane
+        display="flex"
+        flexDirection="column"
+        position="relative"
+        width="80%"
+      >
+        <Input
+          color={Color.Pink}
+          value={contentHash}
+          disabled={file}
+          maxRows={20}
+          style={{
+            width: '100%',
+            paddingLeft: '10px',
+            textAlign: 'left',
+            paddingRight: '35px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+          }}
+          className="resize-none minHeightTextarea"
+          onChange={(e) => onChangeInputContentHash(e)}
+          title={placeholder}
         />
+        <Pane
+          position="absolute"
+          right="0"
+          bottom="0"
+          transform="translate(0, -7px)"
+        >
+          <input
+            ref={inputOpenFileRef}
+            onChange={() => onChangeInput(inputOpenFileRef)}
+            type="file"
+            style={{ display: 'none' }}
+          />
+          <AddFileButton
+            isRemove={file}
+            onClick={file ? onClickClear : showOpenFileDlg}
+          />
+        </Pane>
       </Pane>
-    </ActionBar>
+    </ActionBarContainer>
   );
 }
 
