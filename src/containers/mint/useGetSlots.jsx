@@ -1,7 +1,7 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { authAccounts } from '../../utils/search/utils';
-import { AppContext } from '../../context';
 import { convertResources } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 
@@ -67,7 +67,7 @@ const balanceFetcher = (address, client) => {
   return client.getAllBalances(address);
 };
 function useGetSlots(addressActive, updateAddress) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [slotsData, setSlotsData] = useState([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
@@ -82,9 +82,9 @@ function useGetSlots(addressActive, updateAddress) {
   );
   const { data: dataGetAllBalances, refetch: refetchGetAllBalances } = useQuery(
     ['getAllBalances', addressActive],
-    () => balanceFetcher(addressActive, jsCyber),
+    () => balanceFetcher(addressActive, queryClient),
     {
-      enabled: Boolean(jsCyber && addressActive),
+      enabled: Boolean(queryClient && addressActive),
     }
   );
 
@@ -93,6 +93,7 @@ function useGetSlots(addressActive, updateAddress) {
       refetchGetAllBalances();
       refetchAuthAccounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateAddress]);
 
   useEffect(() => {
@@ -168,7 +169,8 @@ function useGetSlots(addressActive, updateAddress) {
       }
     };
     getBalacesResource();
-  }, [updateAddress, addressActive, jsCyber]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateAddress, addressActive]);
 
   const getCalculationBalance = (data) => {
     const balances = {};

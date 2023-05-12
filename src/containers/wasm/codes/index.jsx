@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { AppContext } from '../../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 import Code from './code';
 import ActionBar from './actionBar';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
@@ -8,7 +8,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import styles from './styles.scss';
 
 function Codes({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [codes, setCodes] = useState([]);
   const [updateFnc, setUpdateFunc] = useState(0);
@@ -16,8 +16,8 @@ function Codes({ defaultAccount }) {
   useEffect(() => {
     const getCodes = async () => {
       try {
-        if (jsCyber !== null) {
-          const resposeCodes = await jsCyber.getCodes();
+        if (queryClient) {
+          const resposeCodes = await queryClient.getCodes();
           if (resposeCodes && resposeCodes.length > 0) {
             setCodes(resposeCodes.reverse());
           }
@@ -28,7 +28,7 @@ function Codes({ defaultAccount }) {
       }
     };
     getCodes();
-  }, [jsCyber, updateFnc]);
+  }, [queryClient, updateFnc]);
 
   console.log(`codes`, codes);
 

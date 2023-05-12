@@ -1,63 +1,15 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import all from 'it-all';
-import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
+import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
-import db from '../../db';
-import { getContentByCid } from '../utils-ipfs';
+import { getIPFSContent } from '../ipfs/utils-ipfs';
+import { getResponseResult } from '../ipfs/stream-utils';
+import { parseRawIpfsData } from '../ipfs/content-utils';
 
-const {
-  CYBER_NODE_URL_API,
-  CYBER_NODE_URL_LCD,
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
-  CYBER_GATEWAY,
-} = config.CYBER;
-
-const { PATTERN_IPFS_HASH } = config;
+const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
-
-// const IPFS = require('ipfs-api');
-const isSvg = require('is-svg');
-
-const Unixfs = require('ipfs-unixfs');
-const FileType = require('file-type');
-
-let ipfsApi;
-
-const getIpfsConfig = async () => {
-  if (window.getIpfsConfig) {
-    return window.getIpfsConfig();
-  }
-
-  return {
-    host: 'localhost',
-    port: 5001,
-    protocol: 'http',
-  };
-};
-
-export const initIpfs = async () => {
-  if (ipfsApi) {
-    return;
-  }
-
-  const ipfsConfig = await getIpfsConfig();
-
-  // ipfsApi = new IPFS(ipfsConfig);
-};
-
-const getIpfs = async () => {
-  if (ipfsApi) {
-    return ipfsApi;
-  }
-
-  await initIpfs();
-
-  return ipfsApi;
-};
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -65,21 +17,8 @@ export const formatNumber = (number, toFixed) => {
   if (toFixed) {
     formatted = +formatted.toFixed(toFixed);
   }
-  // debugger;
-  return formatted.toLocaleString('en').replace(/,/g, ' ');
-};
 
-export const getPin = async (node, content) => {
-  let cid;
-  if (node) {
-    if (typeof content === 'string') {
-      cid = await node.add(new Buffer(content), { pin: true });
-    } else {
-      cid = await node.add(content, { pin: true });
-    }
-    console.warn('content', content, 'cid', cid);
-    return cid.path;
-  }
+  return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
 export const getIpfsHash = (string) =>
@@ -96,32 +35,6 @@ export const getIpfsHash = (string) =>
         resolve(cid.toBaseEncodedString());
       });
     });
-  });
-
-export const getString = (string) =>
-  new Promise((resolve, reject) => {
-    const unixFsFile = new Unixfs('file', Buffer.from(string));
-
-    const buffer = unixFsFile.marshal();
-    console.log(buffer);
-    DAGNode.create(buffer, (err, dagNode) => {
-      if (err) {
-        reject(new Error('Cannot create ipfs DAGNode'));
-      }
-
-      DAGUtil.cid(dagNode, (error, cid) => {
-        resolve(cid.toV1());
-      });
-    });
-  });
-
-export const search = async (keywordHash) =>
-  axios({
-    method: 'get',
-    url: `${CYBER_NODE_URL_LCD}/rank/search?cid=${keywordHash}&page=0&perPage=1000`,
-  }).then((response) => {
-    console.log('RESPONSE', response.data.result.result);
-    return response.data.result.result ? response.data.result.result : [];
   });
 
 export const getRankGrade = (rank) => {
@@ -170,112 +83,6 @@ export const getRankGrade = (rank) => {
   };
 };
 
-export const getStatistics = () =>
-  new Promise((resolve) => {
-    const indexStatsPromise = axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/index_stats`,
-    }).then((response) => response.data.result);
-
-    const stakingPromise = axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/staking/pool`,
-    }).then((response) => response.data.result);
-
-    const bandwidthPricePromise = axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
-    }).then((response) => response.data.result);
-
-    const latestBlockPromise = axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/block`,
-    }).then((response) => response.data.result);
-
-    const supplyTotalPropsise = axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/supply/total`,
-    }).then((response) => response.data.result);
-
-    Promise.all([
-      indexStatsPromise,
-      stakingPromise,
-      bandwidthPricePromise,
-      latestBlockPromise,
-      supplyTotalPropsise,
-    ]).then(
-      ([indexStats, staking, bandwidthPrice, latestBlock, supplyTotal]) => {
-        const response = {
-          ...indexStats,
-          bondedTokens: staking.bonded_tokens,
-          bandwidthPrice: bandwidthPrice.price,
-          txCount: 0,
-          supplyTotal: supplyTotal[0].amount,
-        };
-
-        resolve(response);
-      }
-    );
-  });
-
-export const getValidators = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getValidatorsUnbonding = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDING`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getValidatorsUnbonded = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDED`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getAllValidators = async () => {
-  const allValidators = [];
-
-  const responseGetValidators = await getValidators();
-  if (responseGetValidators !== null) {
-    allValidators.push(...responseGetValidators);
-  }
-  const responseGetValidatorsUnbonding = await getValidatorsUnbonding();
-  if (responseGetValidatorsUnbonding !== null) {
-    allValidators.push(...responseGetValidatorsUnbonding);
-  }
-  const responseGetValidatorsUnbonded = await getValidatorsUnbonded();
-  if (responseGetValidatorsUnbonded !== null) {
-    allValidators.push(...responseGetValidatorsUnbonded);
-  }
-
-  return allValidators;
-};
-
 export const selfDelegationShares = async (
   delegatorAddress,
   operatorAddress
@@ -319,30 +126,17 @@ export const getAccountBandwidth = async (address) => {
   }
 };
 
-export const statusNode = async () => {
+export const getRelevance = async (page = 0, limit = 50) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/status`,
+      url: `${CYBER_NODE_URL_LCD}/rank/top?page=${page}&limit=${limit}`,
     });
     return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
+  } catch (error) {
+    return {};
   }
 };
-
-export const getRelevance = (page = 0, limit = 50) =>
-  new Promise((resolve) =>
-    axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/rank/top?page=${page}&limit=${limit}`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => {})
-  );
 
 export const getBalance = async (address, node) => {
   try {
@@ -461,45 +255,6 @@ export const getTotalEUL = (data) => {
   return balance;
 };
 
-export const getAmountATOM = (data) => {
-  let amount = 0;
-  for (let item = 0; item < data.length; item++) {
-    if (amount <= config.TAKEOFF.ATOMsALL) {
-      amount +=
-        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) /
-        config.COSMOS.DIVISOR_ATOM;
-    } else {
-      amount = config.TAKEOFF.ATOMsALL;
-      break;
-    }
-  }
-  return amount;
-};
-
-export const getBalanceWallet = (address) =>
-  new Promise((resolve) =>
-    axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/account?address="${address}"`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => {})
-  );
-
-export const getDrop = async (address) => {
-  try {
-    // const response = await axios({
-    //   method: 'get',
-    //   url: `https://io.cybernode.ai/ipfs_api/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
-    // });
-    return 0;
-  } catch (e) {
-    return 0;
-  }
-};
-
 export const getTxs = async (txs) => {
   try {
     const response = await axios({
@@ -518,19 +273,6 @@ export const getValidatorsInfo = async (address) => {
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators/${address}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getDistribution = async (address) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/validators/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -578,19 +320,6 @@ export const getDelegators = async (validatorAddr) => {
   }
 };
 
-export const getRewards = async (delegatorAddr, validatorAddr) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/delegators/${delegatorAddr}/rewards/${validatorAddr}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 export const getTotalRewards = async (delegatorAddr) => {
   try {
     const response = await axios({
@@ -598,93 +327,6 @@ export const getTotalRewards = async (delegatorAddr) => {
       url: `${CYBER_NODE_URL_LCD}/distribution/delegators/${delegatorAddr}/rewards`,
     });
     return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getDelegations = async (address, node = CYBER_NODE_URL_LCD) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/delegators/${address}/delegations`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getTotalSupply = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/supply/total`,
-    });
-    return response.data.result[0].amount;
-  } catch (e) {
-    console.log(e);
-    return 0;
-  }
-};
-
-export const getCurrentBandwidthPrice = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
-    });
-    return response.data.result.price;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getIndexStats = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/index_stats`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getPreCommits = async (consensusAddress) => {
-  try {
-    const body = JSON.stringify({
-      query: `query lifetimeRate {
-        validator(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
-          pre_commits_aggregate {
-            aggregate {
-              count
-            }
-          }
-        }
-        pre_commit_aggregate {
-            aggregate {
-              count
-            }
-        }
-      }`,
-    });
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-
-    const response = await axios({
-      method: 'post',
-      url: config.CYBER.CYBER_INDEX_HTTPS,
-      headers,
-      data: body,
-    });
-    return response.data.data;
   } catch (e) {
     console.log(e);
     return null;
@@ -716,46 +358,7 @@ export const getGraphQLQuery = async (
   }
 };
 
-export const getParamStaking = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/parameters`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getSendTxToTakeoff = async (sender, recipient) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
-    });
-    return response.data.txs;
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
-};
-
-export const getCurrentNetworkLoad = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/current_network_load`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getParamSlashing = async () => {
+const getParamSlashing = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -768,7 +371,7 @@ export const getParamSlashing = async () => {
   }
 };
 
-export const getParamDistribution = async () => {
+const getParamDistribution = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -781,7 +384,7 @@ export const getParamDistribution = async () => {
   }
 };
 
-export const getParamBandwidth = async () => {
+const getParamBandwidth = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -794,7 +397,7 @@ export const getParamBandwidth = async () => {
   }
 };
 
-export const getParamGov = async () => {
+const getParamGov = async () => {
   try {
     const responseGovDeposit = await axios({
       method: 'get',
@@ -824,7 +427,7 @@ export const getParamGov = async () => {
   }
 };
 
-export const getParamRank = async () => {
+const getParamRank = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -837,7 +440,7 @@ export const getParamRank = async () => {
   }
 };
 
-export const getParamInlfation = async () => {
+const getParamInlfation = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -850,7 +453,7 @@ export const getParamInlfation = async () => {
   }
 };
 
-export const getParamResources = async () => {
+const getParamResources = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -863,7 +466,20 @@ export const getParamResources = async () => {
   }
 };
 
-export const getParamLiquidity = async () => {
+const getParamStaking = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/staking/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+const getParamLiquidity = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -876,7 +492,7 @@ export const getParamLiquidity = async () => {
   }
 };
 
-export const getParamGrid = async () => {
+const getParamGrid = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -889,7 +505,7 @@ export const getParamGrid = async () => {
   }
 };
 
-export const getParamDmn = async () => {
+const getParamDmn = async () => {
   try {
     const response = await axios({
       method: 'get',
@@ -988,76 +604,11 @@ export const getParamNetwork = async (address, node) => {
   }
 };
 
-export const getAvailable = async (address, node = CYBER_NODE_URL_LCD) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${node}/bank/balances/${address}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 export const getInlfation = async () => {
   try {
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/minting/inflation`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getUnbonding = async (address, node = CYBER_NODE_URL_LCD) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${node}/staking/delegators/${address}/unbonding_delegations`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getRewardsAll = async (address, node = CYBER_NODE_URL_LCD) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${node}/distribution/delegators/${address}/rewards`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getTxCosmos = async (page = 1) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${config.COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getcommunityPool = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
     });
     return response.data.result;
   } catch (e) {
@@ -1079,11 +630,11 @@ export const getImportLink = async (address) => {
   }
 };
 
-export const getFromLink = async (cid) => {
+export const getFromLink = async (cid, offset, limit) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleTo=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
     return response.data;
   } catch (e) {
@@ -1092,11 +643,11 @@ export const getFromLink = async (cid) => {
   }
 };
 
-export const getToLink = async (cid) => {
+export const getToLink = async (cid, offset, limit) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
     });
     return response.data;
   } catch (e) {
@@ -1130,9 +681,8 @@ export const getTweet = async (address) => {
     return null;
   }
 };
-
+// TODO: IPFS move to utils
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
-  let timerId;
   // const timeoutPromise = () =>
   //   new Promise((reject) => {
   //     timerId = setTimeout(reject, timeout);
@@ -1194,7 +744,7 @@ export const getCreator = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
     return response.data;
   } catch (error) {
@@ -1216,231 +766,26 @@ export const authAccounts = async (address) => {
   }
 };
 
-const convertAvatarImg = async (data) => {
-  let img = null;
-
-  const dataFileType = await FileType.fromBuffer(data);
-  console.log(`dataFileType`, dataFileType);
-
-  const base64 = btoa(
-    new Uint8Array(data).reduce(
-      (dataR, byte) => dataR + String.fromCharCode(byte),
-      ''
-    )
-  );
-
-  const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-  console.log(`base64`, base64);
-
-  if (dataFileType !== undefined) {
-    const { mime } = dataFileType;
-    if (mime.indexOf('image') !== -1) {
-      // const dataBase64 = data.toString('base64');
-      const file = `data:${mime};base64,${dataBase64}`;
-      return file;
-    }
-  }
-
-  if (isSvg(data)) {
-    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-      dataBase64,
-      'base64'
-    )}`;
-    img = svg;
-  } else {
-    img = data;
-  }
-
-  return img;
-};
-
-const resolveContentIpfs = async (data) => {
-  let mime;
-  const dataFileType = await FileType.fromBuffer(data);
-  if (dataFileType !== undefined) {
-    mime = dataFileType.mime;
-    if (mime.indexOf('image') !== -1) {
-      // const dataBase64 = data.toString('base64');
-      const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-      const file = `data:${mime};base64,${dataBase64}`;
-      return file;
-    }
-  }
-  const dataBase64 = uint8ArrayToAsciiString(data);
-  // console.log(`dataBase64`, dataBase64);
-  if (isSvg(dataBase64)) {
-    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-      data,
-      'base64'
-    )}`;
-    return svg;
-  }
-  return null;
-};
-
-const generateMeta = (responseDag) => {
-  const meta = {
-    type: 'file',
-    size: 0,
-    blockSizes: [],
-    data: '',
-  };
-
-  const linksCid = [];
-  if (responseDag.value.Links && responseDag.value.Links.length > 0) {
-    responseDag.value.Links.forEach((item, index) => {
-      if (item.Name.length > 0) {
-        linksCid.push({ name: item.Name, size: item.Tsize });
-      } else {
-        linksCid.push(item.Tsize);
-      }
-    });
-  }
-  meta.size = responseDag.value.size;
-  meta.blockSizes = linksCid;
-
-  return meta;
-};
-
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const response = await getContentByCid(ipfs, cid);
-  if (response !== undefined) {
-    const responseResolve = await resolveContentIpfs(response.data);
-    return responseResolve;
-  }
-
-  return null;
-};
-
-export const getIpfsGatway = async (
-  cid,
-  type = 'json',
-  userGateway = config.CYBER.CYBER_GATEWAY
-) => {
   try {
-    const abortController = new AbortController();
-    setTimeout(() => {
-      abortController.abort();
-    }, 1000 * 60 * 1); // 1 min
+    const response = await getIPFSContent(ipfs, cid);
 
-    const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
-      signal: abortController.signal,
-      responseType: type,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.log('error getIpfsGatway', error);
-    return null;
-  }
-};
-
-export const getPinsCidPost = async (cid) => {
-  console.log(`getPinsCidPost`);
-  try {
-    const response = await axios({
-      method: 'post',
-      url: `https://io.cybernode.ai/pins/${cid}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getPinsCidGet = async (cid) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `https://io.cybernode.ai/pins/${cid}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const addFileToCluster = async (cid, file) => {
-  console.log(`addFileToCluster`);
-  let dataFile = null;
-  if (cid === file) {
-    const responseGetPinsCidPost = await getPinsCidPost(cid);
-    return responseGetPinsCidPost;
-  }
-
-  if (file instanceof Blob) {
-    console.log(`Blob`);
-    dataFile = file;
-  } else if (typeof file === 'string') {
-    dataFile = new File([file], 'file.txt');
-  } else if (file.name && file.size < 8 * 10 ** 6) {
-    dataFile = new File([file], file.name);
-  }
-
-  if (dataFile !== null) {
-    const formData = new FormData();
-    formData.append('file', dataFile);
-    try {
-      const response = await axios({
-        method: 'post',
-        url: 'https://io.cybernode.ai/add',
-        data: formData,
-      });
-      return response;
-    } catch (error) {
-      const responseGetPinsCidPost = await getPinsCidPost(cid);
-      return responseGetPinsCidPost;
-    }
-  } else {
-    const responseGetPinsCidPost = await getPinsCidPost(cid);
-    return responseGetPinsCidPost;
-  }
-};
-
-export const getPinsCid = async (cid, file) => {
-  try {
-    const responseGetPinsCidGet = await getPinsCidGet(cid);
-    if (
-      responseGetPinsCidGet.peer_map &&
-      Object.keys(responseGetPinsCidGet.peer_map).length > 0
-    ) {
-      const { peer_map: peerMap } = responseGetPinsCidGet;
-      // eslint-disable-next-line no-restricted-syntax
-      for (const key in peerMap) {
-        if (Object.hasOwnProperty.call(peerMap, key)) {
-          const element = peerMap[key];
-          if (element.status !== 'unpinned') {
-            return null;
-          }
-        }
+    if (response?.result) {
+      const rawData = await getResponseResult(response.result);
+      const details = await parseRawIpfsData(rawData, response.meta.mime, cid);
+      if (details.type === 'image') {
+        return details.content;
       }
 
-      if (file !== undefined) {
-        const responseGetPinsCidPost = await addFileToCluster(cid, file);
-        return responseGetPinsCidPost;
-      }
-      const responseGetPinsCidPost = await getPinsCidPost(cid);
-      return responseGetPinsCidPost;
+      return undefined;
     }
-    return null;
-  } catch (e) {
-    console.log(e);
-    return null;
+
+    return undefined;
+  } catch (error) {
+    return undefined;
   }
 };
 
-export const searchClient = async (client, query, page) => {
-  try {
-    const hash = await getIpfsHash(query.toLowerCase());
-    const responseSearchResults = await client.search(hash, page);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
-  }
-};
 // Access-Control-Allow-Origin
 export const getCredit = async (address) => {
   try {

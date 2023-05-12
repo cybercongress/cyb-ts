@@ -1,9 +1,9 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { coinDecimals } from '../../../utils/utils';
 
 function useGetHeroes(address, updateAddress) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [staking, setStaking] = useState([]);
   const [totalRewards, setTotalRewards] = useState([]);
   const [loadingHeroesInfo, setLoadingHeroesInfo] = useState(true);
@@ -13,9 +13,9 @@ function useGetHeroes(address, updateAddress) {
       setStaking([]);
       setTotalRewards([]);
       setLoadingHeroesInfo(true);
-      if (jsCyber !== null) {
+      if (queryClient) {
         let delegations = [];
-        const delegatorDelegations = await jsCyber.delegatorDelegations(
+        const delegatorDelegations = await queryClient.delegatorDelegations(
           address
         );
         const { delegationResponses } = delegatorDelegations;
@@ -31,9 +31,8 @@ function useGetHeroes(address, updateAddress) {
           );
         }
 
-        const delegatorUnbondingDelegations = await jsCyber.delegatorUnbondingDelegations(
-          address
-        );
+        const delegatorUnbondingDelegations =
+          await queryClient.delegatorUnbondingDelegations(address);
         const { unbondingResponses } = delegatorUnbondingDelegations;
         if (unbondingResponses.length > 0) {
           unbondingResponses.forEach((itemUnb) => {
@@ -48,7 +47,7 @@ function useGetHeroes(address, updateAddress) {
           });
         }
 
-        const delegationTotalRewards = await jsCyber.delegationTotalRewards(
+        const delegationTotalRewards = await queryClient.delegationTotalRewards(
           address
         );
         const { rewards } = delegationTotalRewards;
@@ -76,7 +75,7 @@ function useGetHeroes(address, updateAddress) {
       }
     };
     getStaking();
-  }, [jsCyber, address, updateAddress]);
+  }, [queryClient, address, updateAddress]);
 
   return { staking, totalRewards, loadingHeroesInfo };
 }

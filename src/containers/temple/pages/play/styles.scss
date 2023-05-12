@@ -71,15 +71,15 @@
   }
 }
 
-  .containerPlayContentContainerText {
-    display: block;
-    transform: translateX(0px);
-    transition: 0.5s;
-  }
+.containerPlayContentContainerText {
+  display: block;
+  transform: translateX(0px);
+  transition: 0.4s;
+}
 
 .containerItemPlayContent {
   display: grid;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 75px 1fr;
   gap: 10px;
   height: 95px;
 
@@ -91,7 +91,7 @@
     width: 70px;
     height: 70px;
     object-fit: contain;
-    transition: 0.5s;
+    transition: 0.2s;
 
     @media (max-width: 768px) {
       width: 90px;
@@ -134,4 +134,9 @@
       transform: translateX(5px);
     }
   }
+}
+
+.containteImgItemPlayContent {
+  display: flex;
+  justify-content: center;
 }

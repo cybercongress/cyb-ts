@@ -1,13 +1,15 @@
-import { useEffect, useState, useContext, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { AppContext } from '../../../context';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useAppData } from 'src/contexts/appData';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
 function useGetBalanceBostrom(address) {
-  const { traseDenom, marketData } = useContext(AppContext);
+  const { marketData } = useAppData();
+  const { traseDenom } = useIbcDenom();
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
@@ -31,7 +33,7 @@ function useGetBalanceBostrom(address) {
         let dataResult = {};
         const mainToken = { [CYBER.DENOM_CYBER]: { ...balanceMainToken } };
         const dataResultTemp = { ...mainToken, ...balanceToken };
-        const tempData = useGetBalanceMarket(dataResultTemp);
+        const tempData = getBalanceMarket(dataResultTemp);
         dataResult = { ...tempData };
         setBalances(dataResult);
         if (Object.keys(dataResult).length > 0) {
@@ -42,9 +44,10 @@ function useGetBalanceBostrom(address) {
         setBalances(dataLs);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingMalin, loadingToken, balanceMainToken, balanceToken, address]);
 
-  const useGetBalanceMarket = useCallback(
+  const getBalanceMarket = useCallback(
     (data) => {
       if (Object.keys(data).length > 0) {
         return Object.keys(data).reduce((obj, key) => {
@@ -54,7 +57,7 @@ function useGetBalanceBostrom(address) {
           const { total } = data[key];
           if (total.amount > 0) {
             const { amount, denom } = total;
-            const { coinDecimals } = traseDenom(denom);
+            const [{ coinDecimals }] = traseDenom(denom);
             const amountReduce = convertAmount(amount, coinDecimals);
 
             if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
@@ -80,6 +83,7 @@ function useGetBalanceBostrom(address) {
       }
       return {};
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [marketData]
   );
 
@@ -131,6 +135,7 @@ function useGetBalanceBostrom(address) {
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useGetCapTokens]);
 
   return {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CardCantainer, LinkTx, LinkCreator } from '../ui/ui';
 import { CardItem } from '../codes/code';
 import { trimString } from '../../../utils/utils';

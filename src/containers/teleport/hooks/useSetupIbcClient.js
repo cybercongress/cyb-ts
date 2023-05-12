@@ -1,15 +1,15 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { networkList } from '../utils';
-import coinDecimalsConfig from '../../../utils/configToken';
-import { getKeplr } from '../../ibc/useSetupIbc';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { getKeplr } from 'src/utils/keplrUtils';
 import { CYBER } from '../../../utils/config';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
 
-function useSetupIbcClient(denom, network, keplrCybre) {
+function useSetupIbcClient(denom, network) {
+  const { signingClient } = useSigningClient();
   const [ibcClient, setIbcClient] = useState(null);
   const { balanceIbc, denomIbc } = useGetBalancesIbc(ibcClient, denom);
 
@@ -30,45 +30,13 @@ function useSetupIbcClient(denom, network, keplrCybre) {
           options
         );
       } else {
-        client = keplrCybre;
+        client = signingClient;
       }
-      console.log('client', client);
       setIbcClient(client);
     };
     createClient();
-  }, [network, denom]);
-
-  // useEffect(() => {
-  //   const createClient = async () => {
-  //     setIbcClient(null);
-  //     setIbcDenom(null);
-
-  //     let client = null;
-  //     if (denom.includes('ibc') && networkList[network] !== CYBER.CHAIN_ID) {
-  //       if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {
-  //         const keplr = await getKeplr();
-  //         const { rpc, prefix } = coinDecimalsConfig[denom];
-  //         const chainId = networkList[network];
-  //         await keplr.enable(chainId);
-  //         const offlineSigner = await keplr.getOfflineSignerAuto(chainId);
-  //         const options = { prefix };
-  //         client = await SigningStargateClient.connectWithSigner(
-  //           rpc,
-  //           offlineSigner,
-  //           options
-  //         );
-  //       } else {
-  //         client = null;
-  //       }
-  //     } else {
-  //       client = keplrCybre;
-  //     }
-  //     console.log('client', client);
-  //     setIbcClient(client);
-  //     setIbcDenom(denom);
-  //   };
-  //   createClient();
-  // }, [network, denom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [network, signingClient]);
 
   return { ibcClient, balanceIbc, denomIbc };
 }

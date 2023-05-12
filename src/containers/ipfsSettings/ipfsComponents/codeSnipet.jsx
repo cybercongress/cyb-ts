@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './stylesCode.scss';
 
 function CodeSnipet({ src }) {

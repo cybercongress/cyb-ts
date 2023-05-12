@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { useGetBalance, initValueMainToken } from './utils';
 
 function useGetBalanceMainToken(address) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [addressActive, setAddressActive] = useState(null);
   const [balance, setBalance] = useState({ ...initValueMainToken });
-  const data = useGetBalance(jsCyber, addressActive);
+  const data = useGetBalance(queryClient, addressActive);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

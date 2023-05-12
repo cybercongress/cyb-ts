@@ -14,7 +14,7 @@ export function isNativeChainId(chainId) {
   return false;
 }
 
-export const findChainIdInNetworkList = (chainId) => {
+const findChainIdInNetworkList = (chainId) => {
   let chainInfo = null;
 
   const findObj = networkList.find((item) => item.chainId === chainId);

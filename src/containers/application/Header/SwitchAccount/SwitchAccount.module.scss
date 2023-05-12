@@ -1,0 +1,137 @@
+@mixin before-Avatar {
+  content: '';
+  width: 100px;
+  height: 100px;
+  background: #000000;
+  position: absolute;
+  border-radius: 50%;
+  // z-index: -1;
+  display: flex;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.tooltipContainerRight {
+  position: absolute;
+  right: 0px !important;
+  // top: unset !important;
+  top: 90px !important;
+  left: unset !important;
+  z-index: 3;
+}
+
+.containerSwichAccount {
+  display: grid;
+  grid-template-columns: 1fr 105px;
+  gap: 25px;
+  align-items: center;
+  height: 105px;
+}
+
+.containerSwichAccountList {
+  display: flex;
+  flex-direction: column;
+  // padding-right: 15px;
+  width: 300px;
+  padding-bottom: 15px;
+  opacity: 0;
+  transition: 0.2s;
+  background: #0000008c;
+  backdrop-filter: blur(7px);
+
+  &entering {
+    opacity: 0;
+  }
+
+  &entered {
+    opacity: 1;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.1s;
+  }
+
+  &exited {
+    opacity: 0;
+    visibility: hidden;
+    height: 1px;
+  }
+}
+
+.containerAvatarConnectHoverAbsolute {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  transition: 0.2s;
+}
+
+.containerSwichAccountHover {
+  &:hover {
+    .containerAvatarConnectHoverAbsolute {
+      width: 105px;
+      height: 105px;
+    }
+    .btnContainerTextHover {
+      transform: translateX(-5px);
+    }
+    .containerKarma {
+      transform: translateX(-5px);
+    }
+    .containerAvatarConnectTrue {
+      &::before {
+        width: 105px;
+        height: 105px;
+      }
+    }
+  }
+}
+
+.containerAvatarConnect {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &False {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px rgba(255, 31, 31, 0.4);
+    }
+  }
+
+  &True {
+    width: 100%;
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px #1fcbff66;
+      transition: 0.2s;
+    }
+  }
+
+  &TrueGreen {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px #36d6ae;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .containerAvatarConnect {
+    width: 60px;
+    height: 60px;
+  }
+}

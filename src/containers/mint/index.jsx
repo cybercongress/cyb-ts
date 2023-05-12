@@ -1,58 +1,22 @@
-import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
-import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
-import {
-  trimString,
-  formatNumber,
-  getDecimal,
-  formatCurrencyNumber,
-  formatCurrency,
-  convertResources,
-  getDisplayAmount,
-} from '../../utils/utils';
-import { authAccounts } from '../../utils/search/utils';
+import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import { AppContext } from '../../context';
 import ERatio from './eRatio';
-import { useGetBalance } from '../account/hooks';
 import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
-import TabBtnList from './tabLinsBtn';
 import ActionBar from './actionBar';
 
-const INIT_STAGE = 0;
-const TSX_SEND = 1;
-
-const BASE_VESTING_AMOUNT = 10000000;
 const BASE_VESTING_TIME = 86401;
-const VESTING_TIME_HOURS = 3601;
 const BASE_MAX_MINT_TIME = 41;
-
-const PREFIXES = [
-  {
-    prefix: 't',
-    power: 10 ** 12,
-  },
-  {
-    prefix: 'g',
-    power: 10 ** 9,
-  },
-  {
-    prefix: 'm',
-    power: 10 ** 6,
-  },
-  {
-    prefix: 'k',
-    power: 10 ** 3,
-  },
-];
 
 const grid = {
   display: 'grid',
@@ -76,7 +40,8 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { jsCyber, traseDenom } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { traseDenom } = useIbcDenom();
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
@@ -96,8 +61,8 @@ function Mint({ defaultAccount }) {
   useEffect(() => {
     const getBalanceH = async () => {
       let amountHydrogen = 0;
-      if (jsCyber !== null && addressActive !== null) {
-        const responseBalance = await jsCyber.getBalance(
+      if (queryClient && addressActive !== null) {
+        const responseBalance = await queryClient.getBalance(
           addressActive,
           CYBER.DENOM_LIQUID_TOKEN
         );
@@ -108,11 +73,11 @@ function Mint({ defaultAccount }) {
       SetBalanceHydrogen(amountHydrogen);
     };
     getBalanceH();
-  }, [jsCyber, addressActive]);
+  }, [queryClient, addressActive]);
 
   useEffect(() => {
     const getParam = async () => {
-      const responseResourcesParams = await jsCyber.resourcesParams();
+      const responseResourcesParams = await queryClient.resourcesParams();
       if (
         responseResourcesParams.params &&
         Object.keys(responseResourcesParams.params).length > 0
@@ -122,13 +87,13 @@ function Mint({ defaultAccount }) {
         setResourcesParams((item) => ({ ...item, ...params }));
       }
 
-      const responseGetHeight = await jsCyber.getHeight();
+      const responseGetHeight = await queryClient.getHeight();
       if (responseGetHeight > 0) {
         setHeight(responseGetHeight);
       }
     };
     getParam();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -137,11 +102,12 @@ function Mint({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
+      const { bech32 } = account.cyber;
 
       addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -242,25 +208,27 @@ function Mint({ defaultAccount }) {
   const vestedA = useMemo(() => {
     let amountA = 0;
     if (originalVesting.milliampere > 0) {
-      const { coinDecimals } = traseDenom('milliampere');
+      const [{ coinDecimals }] = traseDenom('milliampere');
       const vestedTokensA = new BigNumber(originalVesting.milliampere)
         .minus(vested.milliampere)
         .toNumber();
       amountA = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountA;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   const vestedV = useMemo(() => {
     let amountV = 0;
     if (originalVesting.millivolt > 0) {
-      const { coinDecimals } = traseDenom('millivolt');
+      const [{ coinDecimals }] = traseDenom('millivolt');
       const vestedTokensA = new BigNumber(originalVesting.millivolt)
         .minus(vested.millivolt)
         .toNumber();
       amountV = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountV;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   return (
@@ -424,11 +392,7 @@ function Mint({ defaultAccount }) {
           )}
         </div>
 
-        {loadingAuthAccounts ? (
-          <Dots big />
-        ) : (
-          <TableSlots data={slotsData} traseDenom={traseDenom} />
-        )}
+        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
       </main>
       <ActionBar
         value={value}
@@ -444,8 +408,6 @@ function Mint({ defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

@@ -1,6 +1,5 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { CardStatisics, ContainerCard, Vitalik } from '../../../components';
+import { CardStatisics, Vitalik } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 
 function BandwidthParam({ data }) {

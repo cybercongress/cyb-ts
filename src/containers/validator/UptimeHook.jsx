@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Loading, Dots } from '../../components';
+import { Dots } from '../../components';
 import { formatNumber, fromBech32 } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
-  console.log(`accountUser`, accountUser)
   try {
     const GET_CHARACTERS = gql`
     query uptime {
@@ -19,7 +17,8 @@ function useUptime({ accountUser }) {
     }
   `;
 
-    const { loading, error, data } = useQuery(GET_CHARACTERS);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { loading, data } = useQuery(GET_CHARACTERS);
 
     if (loading) {
       return <Dots />;
@@ -27,23 +26,20 @@ function useUptime({ accountUser }) {
 
     let uptime = 0;
 
-    console.log(
-      `
-      )`,
-      fromBech32(accountUser, 'bostromvalcons')
-    );
+    if (data) {
+      const { pre_commit, pre_commit_aggregate, block_aggregate } = data;
 
-    console.log('data', data);
-
-    if (data !== undefined) {
       if (
-        Object.keys(data.pre_commit).length !== 0 &&
-        Object.keys(data.pre_commit_aggregate).length !== 0 &&
-        Object.keys(data.block_aggregate).length !== 0
+        pre_commit &&
+        pre_commit_aggregate &&
+        block_aggregate &&
+        Object.keys(pre_commit).length !== 0 &&
+        Object.keys(pre_commit_aggregate).length !== 0 &&
+        Object.keys(block_aggregate).length !== 0
       ) {
-        const thisBlock = data.block_aggregate.nodes[0].height;
-        const firstPreCommit = data.pre_commit[0].validator.blocks[0].height;
-        const countPreCommit = data.pre_commit_aggregate.aggregate.count;
+        const thisBlock = block_aggregate.nodes[0].height;
+        const firstPreCommit = pre_commit[0].validator.blocks[0].height;
+        const countPreCommit = pre_commit_aggregate.aggregate.count;
         uptime = countPreCommit / (thisBlock - firstPreCommit);
       }
     }

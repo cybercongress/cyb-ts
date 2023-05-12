@@ -1,9 +1,8 @@
-import React from 'react';
 import styles from './styles.scss';
 
 const cx = require('classnames');
 
-export const ButtonContainerAvatar = ({ children, uploadNew, ...props }) => {
+export function ButtonContainerAvatar({ children, uploadNew, ...props }) {
   return (
     <button
       className={cx(styles.buttonContainerAvatar, { [styles.new]: uploadNew })}
@@ -13,7 +12,7 @@ export const ButtonContainerAvatar = ({ children, uploadNew, ...props }) => {
       {children}
     </button>
   );
-};
+}
 
 function ContainerAvatar({ children }) {
   return <div className={styles.containetAvatar}>{children}</div>;

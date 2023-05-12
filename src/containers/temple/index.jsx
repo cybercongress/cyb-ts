@@ -1,22 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-// import { Play } from './pages';
-import { connect } from 'react-redux';
-import {
-  MainContainer,
-  ContainerGradient,
-  ContainerGradientText,
-} from '../portal/components';
-// import Carousel from '../portal/gift/carousel1/Carousel';
-import Carousel from './components/corusel';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { MainContainer } from '../portal/components';
+import { Carousel, Canvas } from './components';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent } from './pages';
-import { ActionBar } from '../../components';
-import BtnGrd from '../../components/btnGrd';
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import Canvas from './components/canvasOne';
+import { ActionBar, ContainerGradientText } from '../../components';
 import styles from './styles.scss';
-import { CYBER } from '../../utils/config';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -60,18 +49,11 @@ const itemCarousel1 = [
       </div>
     ),
   },
-  { title: <div className={styles.itemCarousel}>🟣 spase-pussy</div> },
+  { title: <div className={styles.itemCarousel}>🟣 space-pussy</div> },
 ];
 
-function Temple({ defaultAccount }) {
-  const history = useHistory();
-  const { passport } = useGetPassportByAddress(defaultAccount);
-
+function Temple() {
   const [step, setStep] = useState(2);
-
-  const handleGetCitizenship = () => {
-    history.push('/portal');
-  };
 
   return (
     <div>
@@ -87,6 +69,7 @@ function Temple({ defaultAccount }) {
 
         <ContainerGradientText
           userStyleContent={{ padding: 0, paddingTop: 30 }}
+          status="green"
         >
           <PlayBanerContent />
 
@@ -99,7 +82,7 @@ function Temple({ defaultAccount }) {
             }}
           >
             {itemLinks.map((item) => (
-              <Link to={item.to}>
+              <Link to={item.to} key={item.to}>
                 <div>{item.title}</div>
               </Link>
             ))}
@@ -116,22 +99,10 @@ function Temple({ defaultAccount }) {
 
         <PlayContent />
       </MainContainer>
-      {passport === null && CYBER.CHAIN_ID === 'bostrom' && (
-        <ActionBar>
-          <BtnGrd
-            onClick={() => handleGetCitizenship()}
-            text="get citizenship"
-          />
-        </ActionBar>
-      )}
+
+      <ActionBar />
     </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Temple);
+export default Temple;

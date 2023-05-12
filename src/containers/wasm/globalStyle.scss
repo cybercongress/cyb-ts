@@ -1,7 +1,3 @@
-@mixin box-shadow-green {
-  box-shadow: #36d6ae 0px 0px 5px;
-}
-
 @mixin displayFlexGap {
   display: flex;
   flex-direction: column;
@@ -19,17 +15,4 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #fff;
-}
-
-@mixin input-style {
-  height: 42px;
-  border: none;
-  background-color: transparent;
-  @include box-shadow-green;
-  color: #fff;
-  font-size: 18px;
-  text-align: end;
-  caret-color: #fff;
-  padding: 2px 15px;
-  border-radius: 5px;
 }

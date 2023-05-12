@@ -1,4 +1,3 @@
-import React from 'react';
 import { CardStatisics, LinkWindow, Dots } from '../../components';
 import { formatNumber } from '../../utils/utils';
 

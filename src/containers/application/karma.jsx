@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { AppContext } from '../../context';
+import { useMemo } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../utils/utils';
+import styles from './styles.scss';
+import { Tooltip } from 'src/components';
 
 const KARMA_ICON = '🔮';
 
@@ -25,7 +27,7 @@ const PREFIXES = [
   },
 ];
 
-export const formatKarma = (value, prefixCustom = PREFIXES) => {
+const formatKarma = (value, prefixCustom = PREFIXES) => {
   const { prefix = '', power = 1 } =
     prefixCustom.find((powerItem) => value >= powerItem.power) || {};
 
@@ -39,13 +41,13 @@ export const formatKarma = (value, prefixCustom = PREFIXES) => {
 };
 
 const useGetKarma = (address) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ['karma', address],
     queryFn: async () => {
       try {
-        const response = await jsCyber.karma(address);
+        const response = await queryClient.karma(address);
 
         return response.karma;
       } catch (error) {
@@ -53,7 +55,7 @@ const useGetKarma = (address) => {
         return null;
       }
     },
-    enabled: Boolean(jsCyber && address && address !== null),
+    enabled: Boolean(queryClient && address && address !== null),
   });
 
   return { data };
@@ -63,20 +65,26 @@ function Karma({ address }) {
   const { data } = useGetKarma(address);
 
   const karmaNumber = useMemo(() => {
-    if (data && data !== null) {
-      const value = formatKarma(data);
-
-      return (
-        <>
-          {formatNumber(value.number)} {value.prefix}
-        </>
-      );
+    if (!data) {
+      return null;
     }
 
-    return null;
+    const value = formatKarma(data);
+
+    return (
+      <>
+        {formatNumber(value.number)} {value.prefix}
+      </>
+    );
   }, [data]);
 
-  return <div style={{ color: '#fff' }}>{karmaNumber}</div>;
+  return (
+    <div className={styles.containerKarma}>
+      <Tooltip tooltip="Karma measure the brightness of cyberlinks and particles created by you">
+        {karmaNumber}
+      </Tooltip>
+    </div>
+  );
 }
 
 export default Karma;

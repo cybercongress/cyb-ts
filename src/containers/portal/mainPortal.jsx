@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { MainContainer, InfoCard, Stars } from './components';
-import { AppContext } from '../../context';
 import { activePassport } from './utils';
 import Release from './release';
 import PortalGift from './gift';
@@ -43,8 +43,8 @@ const getActiveAddress = (address) => {
 const scaleInitValue = 0.9;
 
 function MainPartal({ defaultAccount }) {
-  const history = useHistory();
-  const { jsCyber } = useContext(AppContext);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [scale, setScale] = useState(scaleInitValue);
 
@@ -52,11 +52,11 @@ function MainPartal({ defaultAccount }) {
     const getPasport = async () => {
       if (stagePortal === STAGE_LOADING) {
         setStagePortal(STAGE_LOADING);
-        if (jsCyber !== null) {
+        if (queryClient) {
           const addressActive = getActiveAddress(defaultAccount);
           if (addressActive !== null) {
             const responseActivePassport = await activePassport(
-              jsCyber,
+              queryClient,
               addressActive.bech32
             );
             if (responseActivePassport !== null) {
@@ -78,12 +78,12 @@ function MainPartal({ defaultAccount }) {
       }
     };
     getPasport();
-  }, [jsCyber, defaultAccount, stagePortal]);
+  }, [queryClient, defaultAccount, stagePortal]);
 
   const onClickSpacePussy = () => {
     setScale(6);
     setTimeout(() => {
-      history.push('/citizenship');
+      navigate('/citizenship');
       // setScale(1);
     }, 2705);
     playAudioClick();
@@ -95,11 +95,12 @@ function MainPartal({ defaultAccount }) {
 
   if (stagePortal === STAGE_INIT) {
     return (
-      <MainContainer minHeight="100vh">
+      <MainContainer>
         <Stars />
         {scale === scaleInitValue && (
           <InfoCard>
-            The measure of intelligence is ability to change. Albert Einstein
+            The measure of intelligence is ability to change. <br /> Albert
+            Einstein
           </InfoCard>
         )}
 

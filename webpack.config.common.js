@@ -4,8 +4,10 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+
+require('dotenv').config();
 
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
@@ -13,14 +15,13 @@ if (process.env.IPFS_DEPLOY) {
 }
 module.exports = {
   devtool: false,
-  entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
+  entry: [path.join(__dirname, 'src', 'index.tsx')],
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
     publicPath: process.env.IPFS_DEPLOY ? './' : '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
-  // node: { fs: 'empty' },
   resolve: {
     fallback: {
       buffer: require.resolve('buffer'),
@@ -36,13 +37,23 @@ module.exports = {
       stream: require.resolve('stream-browserify'),
       constants: require.resolve('constants-browserify'),
     },
-    extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
+    extensions: [
+      '*',
+      '.js',
+      '.jsx',
+      '.scss',
+      '.svg',
+      '.css',
+      '.json',
+      '.ts',
+      '.tsx',
+    ],
     alias: {
-      'multicodec/src/base-table': path.dirname(
-        require.resolve('multicodec/src/base-table.json')
-      ),
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
       'react/jsx-runtime.js': 'react/jsx-runtime',
+      src: path.resolve(__dirname, 'src/'),
+      components: path.resolve(__dirname, 'src', 'components'),
+      images: path.resolve(__dirname, 'src', 'image'),
     },
   },
   plugins: [
@@ -51,14 +62,29 @@ module.exports = {
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
     // is fixed.
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
+    // new webpack.ProvidePlugin({
+    //   Buffer: ['buffer', 'Buffer'],
+    //   process: 'process/browser',
+    //   stream: 'readable-stream',
+    // }),
+    new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      const mod = resource.request.replace(/^node:/, '');
+      switch (mod) {
+        case 'buffer':
+          resource.request = 'buffer';
+          break;
+        case 'stream':
+          resource.request = 'readable-stream';
+          break;
+        default:
+          throw new Error(`Not found ${mod}`);
+      }
     }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
     }),
+    new ReactRefreshWebpackPlugin(),
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
@@ -73,21 +99,18 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
     }),
-    new Dotenv({
-      systemvars: true,
-    }),
   ],
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         include: /src/,
         use: {
           loader: 'esbuild-loader',
           options: {
-            loader: 'jsx', // Remove this if you're not using JSX
-            target: 'es2015', // Syntax to compile to (see options below for possible values)
+            loader: 'tsx',
+            target: 'es2018', // Syntax to compile to (see options below for possible values)
           },
         },
       },

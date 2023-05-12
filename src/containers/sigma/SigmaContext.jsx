@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createContext, useContext } from 'react';
 
 const SigmaContext = createContext({

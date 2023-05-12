@@ -1,43 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import styles from './styles.scss';
+import { useState, useEffect } from 'react';
 import s from './styles1.scss';
 import { ValueImg } from '../../../../components';
 
 const cx = require('classnames');
 const imgSwap = require('../../../../image/exchange-arrows.svg');
 
-const Mark = ({ value }) => {
-  let position = '';
-
-  if (value <= 5) {
-    position = 'left';
-  } else if (value === 10) {
-    position = 'center';
-  } else {
-    position = 'right';
-  }
-
-  return (
-    <div className={styles.trackMark}>
-      <div className={styles.trackMarkBgBlur} />
-      <div
-        className={cx(
-          styles.trackMarkGradient,
-          styles[`trackMarkGradient${position}`]
-        )}
-      />
-      <div
-        className={cx(styles.trackMarkLabel, {
-          [styles.trackMarkLabelColorBlue]: value === 'Max',
-        })}
-      >
-        {value !== 'Max' ? `${value}%` : 'Max'}
-      </div>
-    </div>
-  );
-};
-
-export const ButtonIcon = ({ img, disabled, ...props }) => {
+export function ButtonIcon({ img, disabled, ...props }) {
   return (
     <button
       type="button"
@@ -48,9 +16,9 @@ export const ButtonIcon = ({ img, disabled, ...props }) => {
       <img src={img} alt="img" />
     </button>
   );
-};
+}
 
-const SpetionLabel = ({ value, lable }) => {
+function SpetionLabel({ value, lable }) {
   let position = '';
 
   if (value <= 3) {
@@ -76,7 +44,7 @@ const SpetionLabel = ({ value, lable }) => {
       </div>
     </label>
   );
-};
+}
 
 const constValue = {
   0: 0,
@@ -91,26 +59,6 @@ const constValue = {
 function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
   const [valueSilder, setValueSilder] = useState(0);
   const [angle, setAngle] = useState(26);
-
-  // console.log(`test`, valueSilder);
-
-  // useEffect(() => {
-  //   const getAngle = () => {
-  //     const minval = 0.1;
-  //     const maxval = 100;
-  //     const minlog = Math.log10(minval);
-  //     const maxlog = Math.log10(maxval);
-  //     const range = maxlog - minlog;
-  //     console.log(`range`, range);
-  //     const lineartolog = (n) => {
-  //       return (Math.log10(n) - minlog) / range;
-  //     };
-  //     const logplots = [0.1, 2, 5, 10, 20, 50, 100].map(lineartolog);
-  //     console.log(`logplots`, logplots);
-  //   };
-
-  //   getAngle();
-  // }, []);
 
   useEffect(() => {
     if (
@@ -237,4 +185,5 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default Slider;

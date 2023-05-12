@@ -1,9 +1,9 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Copy } from '../ui/copy';
 import Tooltip from '../tooltip/tooltip';
 import { LinkWindow } from '../link/link';
 import { trimString, exponentialToDecimal } from '../../utils/utils';
+import { getRankGrade } from 'src/utils/search/utils';
 
 function GradeTooltipContent({ grade, hash, color, rank }) {
   return (
@@ -81,14 +81,15 @@ const gradeColorRank = (rank) => {
   return rankGradeColor;
 };
 
-function Rank({ rank, grade, hash, tooltip, ...props }) {
-  const color = gradeColorRank(grade.value);
+function Rank({ rank, hash, ...props }) {
+  const gradeValue = getRankGrade(rank);
+  const color = gradeColorRank(gradeValue.value);
   return (
     <Tooltip
       placement="bottom"
       tooltip={
         <GradeTooltipContent
-          grade={grade}
+          grade={gradeValue}
           hash={hash}
           color={color}
           rank={rank}
@@ -96,7 +97,7 @@ function Rank({ rank, grade, hash, tooltip, ...props }) {
       }
     >
       <Pane className="rank" backgroundColor={color} {...props}>
-        {grade.value}
+        {gradeValue.value}
       </Pane>
     </Tooltip>
   );

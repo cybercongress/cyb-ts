@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { AppContext } from '../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
 import Rank from '../Rank/rank';
 import {
   timeSince,
@@ -8,36 +8,38 @@ import {
   exponentialToDecimal,
 } from '../../utils/utils';
 import { getRankGrade } from '../../utils/search/utils';
-import ContentItem from '../../containers/ipfs/contentItem';
+import ContentItem from '../ContentItem/contentItem';
 
-const TimeAgo = ({ timeAgoInMS }) => (
-  <Pane
-    className="time-discussion rank-contentItem"
-    position="absolute"
-    right="0"
-    fontSize={12}
-    whiteSpace="nowrap"
-    top="50%"
-    transform="translate(0, -50%)"
-    marginTop="-5px"
-  >
-    {timeSince(timeAgoInMS)} ago
-  </Pane>
-);
+function TimeAgo({ timeAgoInMS }) {
+  return (
+    <Pane
+      className="time-discussion rank-contentItem"
+      position="absolute"
+      right="0"
+      fontSize={12}
+      whiteSpace="nowrap"
+      top="50%"
+      transform="translate(0, -50%)"
+      marginTop="-5px"
+    >
+      {timeSince(timeAgoInMS)} ago
+    </Pane>
+  );
+}
 
 const initialState = {
   rank: 'n/a',
   grade: { from: 'n/a', to: 'n/a', value: 'n/a' },
 };
 
-function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
-  const { jsCyber } = useContext(AppContext);
+function SearchSnippet({ cid, data, mobile, onClickRank }) {
+  const queryClient = useQueryClient();
   const [rankInfo, setRankInfo] = useState(initialState);
 
   useEffect(() => {
     const getRank = async () => {
-      if ((data.rank === undefined || data.rank === null) && jsCyber !== null) {
-        const response = await jsCyber.rank(cid);
+      if ((data.rank === undefined || data.rank === null) && queryClient) {
+        const response = await queryClient.rank(cid);
 
         const rank = coinDecimals(parseFloat(response.rank));
         const rankData = {
@@ -48,7 +50,7 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
       }
     };
     getRank();
-  }, [data, jsCyber, cid]);
+  }, [data, queryClient, cid]);
 
   let timeAgoInMS = null;
 
@@ -86,11 +88,9 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
         </Pane>
       )}
       <ContentItem
-        nodeIpfs={node}
         cid={cid}
         item={data}
         className="contentItem"
-        rank={rankInfo.rank}
         grade={rankInfo.grade}
       />
       {timeAgoInMS !== null && <TimeAgo timeAgoInMS={timeAgoInMS} />}

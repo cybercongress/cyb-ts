@@ -1,20 +1,15 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+/* eslint-disable eqeqeq */
+/* eslint-disable no-nested-ternary */
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import { connect } from 'react-redux';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-const ForceQuitter = ({ nodeIpfs }) => {
+function ForceQuitter() {
   let graph;
   const [hasLoaded, setHasLoaded] = useState(true);
-  const { data: dataGql } = useGetDataGql(nodeIpfs);
+  const { data: dataGql } = useGetDataGql();
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
@@ -42,8 +37,8 @@ const ForceQuitter = ({ nodeIpfs }) => {
           ],
           []
         );
-        // console.log('dataGqlObj', dataGqlObj);
-        // console.log('object', object);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         graph = {
           nodes: object,
           links: dataGqlObj,
@@ -91,6 +86,7 @@ const ForceQuitter = ({ nodeIpfs }) => {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
@@ -101,9 +97,12 @@ const ForceQuitter = ({ nodeIpfs }) => {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
+  // check and fix
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleEngineStop = useCallback(() => {
     console.log('rendering engine is stopped!');
     setHasLoaded(false);
@@ -215,12 +214,6 @@ const ForceQuitter = ({ nodeIpfs }) => {
       />
     </div>
   );
-};
+}
 
-const mapStateToProps = (store) => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ForceQuitter);
+export default ForceQuitter;

@@ -1,12 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { isNativeChainId, useTraseNetworks } from '../../hooks/useTraseNetworks';
+import { useEffect, useState, useCallback } from 'react';
+import { useIpfs } from 'src/contexts/ipfs';
+import {
+  isNativeChainId,
+  useTraseNetworks,
+} from '../../hooks/useTraseNetworks';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import Tooltip from '../tooltip/tooltip';
 
-const boot = require('../../image/large-green.png');
-const pussy = require('../../image/large-purple-circle.png');
-const defaultImg = require('../../image/large-orange-circle.png');
+import boot from '../../image/large-green.png';
+import pussy from '../../image/large-purple-circle.png';
+import defaultImg from '../../image/large-orange-circle.png';
 
 const getNativeImg = (text) => {
   let img = null;
@@ -26,17 +29,12 @@ const getNativeImg = (text) => {
   return img;
 };
 
-function ImgNetwork({
-  network,
-  node,
-  marginImg,
-  size,
-  zIndexImg,
-  tooltipStatus,
-}) {
+function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
   const { chainInfo } = useTraseNetworks(network);
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(network);
+
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (network && !isNativeChainId(network)) {
@@ -54,13 +52,14 @@ function ImgNetwork({
       const nativeImg = getNativeImg(network);
       setImgDenom(nativeImg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainInfo, node, network]);
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {
       if (cidAvatar) {
         const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg && responseImg !== null) {
+        if (responseImg) {
           setImgDenom(responseImg);
         }
       }
@@ -105,10 +104,4 @@ function ImgNetwork({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ImgNetwork);
+export default ImgNetwork;

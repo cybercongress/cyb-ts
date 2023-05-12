@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import { PocketCard } from '../components';
 import { trimString } from '../../../utils/utils';

@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './styles.scss';
 
 function ButtonNetwork({ onClick, disabled, network }) {
@@ -14,4 +13,5 @@ function ButtonNetwork({ onClick, disabled, network }) {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default ButtonNetwork;

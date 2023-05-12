@@ -1,52 +1,28 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { ActionBar, Button } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
-import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
-  MainContainer,
-  ActionBarSteps,
-  BtnGrd,
-} from './components';
-import { AppContext } from '../../context';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { activePassport } from './utils';
-import PasportCitizenship from './pasport';
-import GetCitizenship from './citizenship';
-import Info from './citizenship/Info';
-import { steps } from './citizenship/utils';
-import PasportMoonCitizenship from './PasportMoonCitizenship';
 
-const styleSteps = { width: '120px', height: '40px' };
-const items = [
-  'nickname',
-  'rules',
-  'avatar',
-  'install keplr',
-  'setup keplr',
-  'connect keplr',
-  'passport look',
-];
+import { useQueryClient } from 'src/contexts/queryClient';
+import { activePassport } from './utils';
+import GetCitizenship from './citizenship';
+import PasportMoonCitizenship from './PasportMoonCitizenship';
 
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 function PortalCitizenship({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
 
   useEffect(() => {
     const getPasport = async () => {
       if (stagePortal === STAGE_LOADING) {
         setStagePortal(STAGE_LOADING);
-        if (jsCyber !== null) {
+        if (queryClient) {
           const addressActive = getActiveAddress(defaultAccount);
           if (addressActive !== null) {
             const response = await activePassport(
-              jsCyber,
+              queryClient,
               addressActive.bech32
             );
             console.log('response', response);
@@ -65,7 +41,7 @@ function PortalCitizenship({ defaultAccount }) {
       }
     };
     getPasport();
-  }, [jsCyber, defaultAccount, stagePortal]);
+  }, [queryClient, defaultAccount, stagePortal]);
 
   const getActiveAddress = (address) => {
     const { account } = address;

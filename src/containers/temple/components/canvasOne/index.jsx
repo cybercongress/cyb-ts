@@ -1,4 +1,3 @@
-import React from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './styles.scss';
 import useCanvas from './useCanvas';

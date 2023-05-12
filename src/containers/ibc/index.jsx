@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { coin, coins, GasPrice, parseCoins } from '@cosmjs/launchpad';
+import { useEffect, useState } from 'react';
+import { parseCoins } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import Long from 'long';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { getKeplr } from 'src/utils/keplrUtils';
+import { DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { configKeplr } from './configKepler';
-import useSetupIbc, { getKeplr } from './useSetupIbc';
+import useSetupIbc from './useSetupIbc';
 import { config, STEPS } from './utils';
 import { IbcTxs, Relayer } from './components';
 
@@ -56,12 +57,10 @@ const setupClient = async (keplr, option) => {
 };
 
 function Ibc() {
-  // const { keplr, jsCyber } = useContext(AppContext);
   const [step, setStep] = useState(STEPS.ENTER_CHAIN_A);
   const [configChains, setConfigChains] = useState(config);
-  const [valueChannelsRelayer, setValueChannelsRelayer] = useState(
-    channelsIbcValue
-  );
+  const [valueChannelsRelayer, setValueChannelsRelayer] =
+    useState(channelsIbcValue);
   const { relayerLog, channels } = useSetupIbc(
     step,
     configChains,

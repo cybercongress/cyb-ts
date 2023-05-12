@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
@@ -6,11 +6,9 @@ import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
-import { AppContext } from '../../context';
 
 function RoutedEnergy({ defaultAccount }) {
   const location = useLocation();
-  const { traseDenom } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddressFunc, setUpdateAddressFunc] = useState(0);
   const [selected, setSelected] = useState('myEnegy');
@@ -20,12 +18,8 @@ function RoutedEnergy({ defaultAccount }) {
     addressActive,
     updateAddressFunc
   );
-  const {
-    sourceRouted,
-    sourceEnergy,
-    destinationRoutes,
-    destinationEnergy,
-  } = useGetSourceRoutes(addressActive, updateAddressFunc);
+  const { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy } =
+    useGetSourceRoutes(addressActive, updateAddressFunc);
 
   useEffect(() => {
     setSelectedRoute({});
@@ -39,12 +33,11 @@ function RoutedEnergy({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
-      // if (keys === 'keplr') {
-        addressPocket = bech32;
-      // }
+      const { bech32 } = account.cyber;
+      addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -59,6 +52,7 @@ function RoutedEnergy({ defaultAccount }) {
     } else {
       setSelected('myEnegy');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const selectRouteFunc = (route, index) => {
@@ -83,7 +77,6 @@ function RoutedEnergy({ defaultAccount }) {
         slotsData={slotsData}
         balacesResource={balacesResource}
         loadingAuthAccounts={loadingAuthAccounts}
-        traseDenom={traseDenom}
       />
     );
   }
@@ -131,8 +124,6 @@ function RoutedEnergy({ defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

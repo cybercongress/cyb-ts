@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useContext } from 'react';
-import JSONInput from 'react-json-editor-ajrm';
-import { AppContext } from '../../../context';
-import { JsonView, jsonInputStyle } from '../ui/ui';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { JsonView } from '../ui/ui';
 import styles from './stylesQueryContract.scss';
 import { JSONInputCard } from './InstantiationContract';
+import Button from 'src/components/btnGrd';
 
 const queryPlaceholder = {
   balance: { address: 'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3' },
 };
 
 function QueryContract({ contractAddress }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [error, setError] = useState(null);
   const [queryObject, setQueryObject] = useState({});
   const [queryResponse, setQueryResponse] = useState({});
@@ -34,12 +34,13 @@ function QueryContract({ contractAddress }) {
   }, [queryObject, queryResponse]);
 
   const runQuery = async () => {
-    if (jsCyber === null || !queryObject.result) {
+    if (!queryClient || !queryObject.result) {
+      setError('Some error');
       return;
     }
 
     try {
-      const queryResponseResult = await jsCyber.queryContractSmart(
+      const queryResponseResult = await queryClient.queryContractSmart(
         contractAddress,
         queryObject.result
       );
@@ -59,17 +60,12 @@ function QueryContract({ contractAddress }) {
         height="200px"
       />
 
-      <button
-        type="button"
-        className="btn btn-primary"
-        style={{
-          cursor: jsCyber && queryObject.result ? 'pointer' : 'not-allowed',
-        }}
+      <Button
         onClick={runQuery}
-        disabled={!queryObject?.result}
+        disabled={!queryClient || !queryObject?.result}
       >
         Run query
-      </button>
+      </Button>
 
       {queryResponse.result && (
         <div className={styles.containerQueryContractMessage}>
@@ -77,7 +73,7 @@ function QueryContract({ contractAddress }) {
           <JsonView src={JSON.parse(queryResponse.result)} />
         </div>
       )}
-      {error !== null && (
+      {error && (
         <div className={styles.containerQueryContractMessage}>
           <span className="text-danger" title="The contract query error">
             {error}

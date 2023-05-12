@@ -1,50 +1,49 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
+import { useQueryClient } from 'src/contexts/queryClient';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { Card, ContainerCard, CardStatisics } from '../../components';
+import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { getcommunityPool } from '../../utils/search/utils';
-import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
-const Statistics = ({ communityPoolCyber, staked }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-    gridGap="20px"
-  >
-    <CardStatisics
-      title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
-      value={formatNumber(Math.floor(communityPoolCyber))}
-    />
-    <Link to="/sphere">
+function Statistics({ communityPoolCyber, staked }) {
+  return (
+    <Pane
+      marginTop={10}
+      marginBottom={50}
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="20px"
+    >
       <CardStatisics
-        title="% of staked BOOT"
-        value={formatNumber(staked * 100)}
-        link
+        title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        value={formatNumber(Math.floor(communityPoolCyber))}
       />
-    </Link>
-    <Link to="/network/bostrom/parameters">
-      <CardStatisics title="Network parameters" value={53} link />
-    </Link>
-  </Pane>
-);
+      <Link to="/sphere">
+        <CardStatisics
+          title="% of staked BOOT"
+          value={formatNumber(staked * 100)}
+          link
+        />
+      </Link>
+      <Link to="/network/bostrom/parameters">
+        <CardStatisics title="Network parameters" value={53} link />
+      </Link>
+    </Pane>
+  );
+}
 
-function Governance({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+function Governance() {
+  const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
-  const [account, setAccount] = useState(null);
   const [staked, setStaked] = useState(0);
 
   useEffect(() => {
@@ -52,32 +51,20 @@ function Governance({ defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    if (
-      defaultAccount.account !== null &&
-      defaultAccount.account.cyber &&
-      defaultAccount.account.cyber.keys !== 'read-only'
-    ) {
-      setAccount(defaultAccount.account.cyber);
-    } else {
-      setAccount(null);
-    }
-  }, [defaultAccount.name]);
-
-  useEffect(() => {
     const getStatistics = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         let communityPool = 0;
         const totalCyb = {};
         let stakedBoot = 0;
 
-        const dataCommunityPool = await jsCyber.communityPool();
+        const dataCommunityPool = await queryClient.communityPool();
         const { pool } = dataCommunityPool;
         if (dataCommunityPool !== null) {
           communityPool = coinDecimals(Math.floor(parseFloat(pool[0].amount)));
         }
         setCommunityPoolCyber(communityPool);
 
-        const datagetTotalSupply = await jsCyber.totalSupply();
+        const datagetTotalSupply = await queryClient.totalSupply();
         if (Object.keys(datagetTotalSupply).length > 0) {
           datagetTotalSupply.forEach((item) => {
             totalCyb[item.denom] = parseFloat(item.amount);
@@ -91,16 +78,16 @@ function Governance({ defaultAccount }) {
       }
     };
     getStatistics();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     feachProposals();
   }, []);
 
   const feachProposals = async () => {
-    // if (jsCyber !== null) {
+    // if (queryClient !== null) {
     const responseProposals = await getProposals();
-    // const responseProposals = await jsCyber.proposals(
+    // const responseProposals = await queryClient.proposals(
     //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
     //   '',
     //   ''
@@ -221,16 +208,9 @@ function Governance({ defaultAccount }) {
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
       </main>
-      <ActionBar account={account} update={feachProposals} />
+      <ActionBar update={feachProposals} />
     </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Governance);
+export default Governance;

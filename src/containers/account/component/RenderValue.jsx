@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Account, Cid, DenomArr } from '../../../components';
 import { CYBER } from '../../../utils/config';
@@ -8,61 +7,80 @@ import { AmountDenom } from '../../txs/Activites';
 
 const S_TO_MS = 1 * 10 ** 3;
 
-const ContainerMsgsType = ({ children, alignItems }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: alignItems || 'flex-start',
-      gap: '5px',
-      width: '100%',
-    }}
-  >
-    {children}
-  </div>
-);
+function ContainerMsgsType({ children, alignItems }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: alignItems || 'flex-start',
+        gap: '5px',
+        width: '100%',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
-const Row = ({ title, value }) => (
-  <div
-    style={{
-      display: 'flex',
-      gap: '5px',
-      width: '100%',
-      justifyContent: 'space-between',
-    }}
-  >
-    <div>{title}:</div>
-    <div>{value}</div>
-  </div>
-);
+function Row({ title, value }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: '5px',
+        width: '100%',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>{title}:</div>
+      <div>{value}</div>
+    </div>
+  );
+}
 
-const MsgCreateRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    <Row title="name" value={value.name} />
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
-
-const MsgEditRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    {value && (
+function MsgCreateRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      <Row title="name" value={value.name} />
       <Row
-        title="amount"
-        value={<AmountDenom amountValue={value.amount} denom={value.denom} />}
+        title="destination"
+        value={<Account address={value.destination} />}
       />
-    )}
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
+    </ContainerMsgsType>
+  );
+}
 
-const MsgDeleteRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
+function MsgEditRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      {value && (
+        <Row
+          title="amount"
+          value={<AmountDenom amountValue={value.amount} denom={value.denom} />}
+        />
+      )}
+      <Row
+        title="destination"
+        value={<Account address={value.destination} />}
+      />
+    </ContainerMsgsType>
+  );
+}
+
+function MsgDeleteRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      <Row
+        title="destination"
+        value={<Account address={value.destination} />}
+      />
+    </ContainerMsgsType>
+  );
+}
 
 function RenderValue({ value, type, accountUser }) {
   if (type.includes('MsgCyberlink')) {
@@ -98,9 +116,13 @@ function RenderValue({ value, type, accountUser }) {
           title="amount"
           value={
             <ContainerMsgsType>
-              {value.amount.map((item) => {
+              {value.amount.map((item, i) => {
                 return (
-                  <AmountDenom denom={item.denom} amountValue={item.amount} />
+                  <AmountDenom
+                    denom={item.denom}
+                    amountValue={item.amount}
+                    key={i}
+                  />
                 );
               })}
             </ContainerMsgsType>
@@ -123,11 +145,12 @@ function RenderValue({ value, type, accountUser }) {
               title="inputs coins"
               value={
                 <ContainerMsgsType>
-                  {itemInputs.coins.map((itemCoins) => {
+                  {itemInputs.coins.map((itemCoins, i) => {
                     return (
                       <AmountDenom
                         denom={itemCoins.denom}
                         amountValue={itemCoins.amount}
+                        key={i}
                       />
                     );
                   })}
@@ -148,9 +171,10 @@ function RenderValue({ value, type, accountUser }) {
                   title="outputs coins"
                   value={
                     <ContainerMsgsType>
-                      {itemOutputs.coins.map((itemCoins) => {
+                      {itemOutputs.coins.map((itemCoins, i) => {
                         return (
                           <AmountDenom
+                            key={i}
                             denom={itemCoins.denom}
                             amountValue={itemCoins.amount}
                           />
@@ -233,7 +257,11 @@ function RenderValue({ value, type, accountUser }) {
             <ContainerMsgsType alignItems="flex-end">
               {value.deposit_coins.map((data, i) => {
                 return (
-                  <AmountDenom amountValue={data.amount} denom={data.denom} />
+                  <AmountDenom
+                    amountValue={data.amount}
+                    denom={data.denom}
+                    key={i}
+                  />
                 );
               })}
             </ContainerMsgsType>
@@ -442,6 +470,7 @@ function RenderValue({ value, type, accountUser }) {
                 }
                 return (
                   <AmountDenom
+                    key={i}
                     amountValue={amount.amount}
                     denom={amount.denom}
                   />
@@ -482,7 +511,11 @@ function RenderValue({ value, type, accountUser }) {
               );
             }
             return (
-              <AmountDenom amountValue={amount.amount} denom={amount.denom} />
+              <AmountDenom
+                amountValue={amount.amount}
+                denom={amount.denom}
+                key={i}
+              />
             );
           })}
         />

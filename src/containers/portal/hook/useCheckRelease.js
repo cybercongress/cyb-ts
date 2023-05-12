@@ -1,13 +1,13 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { getReleaseState } from '../utils';
-import { AppContext } from '../../../context';
 
 const NS_TO_MS = 1 * 10 ** -6;
 
 function useCheckRelease(totalGift, loadingGift, updateFunc) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [loadingRelease, setLoadingRelease] = useState(true);
   const [totalRelease, setTotalRelease] = useState(null);
   const [totalReadyRelease, setTotalReadyRelease] = useState(null);
@@ -22,7 +22,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
         setTotalBalanceClaimAmount(0);
         setTimeNextFirstrelease(null);
       } else if (
-        jsCyber !== null &&
+        queryClient &&
         totalGift !== undefined &&
         totalGift !== null &&
         Object.keys(totalGift).length > 0
@@ -38,7 +38,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
             const { address, isClaimed } = element;
             if (isClaimed) {
               const queryResponseResultRelease = await getReleaseState(
-                jsCyber,
+                queryClient,
                 address
               );
               console.log(
@@ -92,6 +92,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
       }
     };
     checkReleaseFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalGift, loadingGift, updateFunc]);
 
   const calculationStateRelease = (dataQuery) => {

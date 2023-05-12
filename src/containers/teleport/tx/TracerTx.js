@@ -210,6 +210,7 @@ class TracerTx {
     }
   };
 
+  // eslint-disable-next-line class-methods-use-this
   createRandomId = () => {
     return parseInt(
       Array.from({ length: 6 })
@@ -219,6 +220,7 @@ class TracerTx {
     );
   };
 
+  // eslint-disable-next-line class-methods-use-this
   onOpen = (e) => {
     console.log('onOpen', e);
   };
@@ -270,9 +272,11 @@ class TracerTx {
     }
   };
 
+  // eslint-disable-next-line class-methods-use-this
   onClose = (e) => {
     console.log('onClose', e);
   };
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default TracerTx;

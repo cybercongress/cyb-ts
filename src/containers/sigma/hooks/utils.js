@@ -1,10 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 import { Decimal } from '@cosmjs/math';
 import BigNumber from 'bignumber.js';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { CYBER } from '../../../utils/config';
 import { fromBech32 } from '../../../utils/utils';
-import coinDecimalsConfig from '../../../utils/configToken';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -40,8 +39,8 @@ const getUnbondingAmount = (data) => {
   let unbondingAmount = new BigNumber(0);
   const { unbondingResponses } = data;
   if (unbondingResponses && Object.keys(unbondingResponses).length > 0) {
-    unbondingResponses.forEach((unbond, i) => {
-      unbond.entries.forEach((entry, j) => {
+    unbondingResponses.forEach((unbond) => {
+      unbond.entries.forEach((entry) => {
         unbondingAmount = unbondingAmount.plus(entry.balance);
       });
     });
@@ -76,8 +75,7 @@ const getCommissionAmount = (data) => {
 
 export const useGetBalance = (client, addressBech32) => {
   try {
-    // const queryClient = useQueryClient();
-
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { data, isFetching } = useQuery(
       ['getBalance', addressBech32],
       async () => {
@@ -128,11 +126,6 @@ export const useGetBalance = (client, addressBech32) => {
       },
       {
         enabled: Boolean(client && addressBech32),
-        // initialData: () => {
-        //   return queryClient
-        //     .getQueryData('getBalance')
-        //     ?.find((d) => d.id === addressBech32);
-        // },
       }
     );
 
@@ -147,20 +140,4 @@ export const useGetBalance = (client, addressBech32) => {
     delete tempObj.total;
     return { ...tempObj };
   }
-};
-
-export const reduceAmount = (amount, denom) => {
-  let amountReduce = amount;
-  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {
-    const { coinDecimals } = coinDecimalsConfig[denom];
-    if (coinDecimals !== undefined) {
-      amountReduce = parseFloat(
-        Decimal.fromAtomics(
-          amount.toString(),
-          parseFloat(coinDecimals)
-        ).toString()
-      );
-    }
-  }
-  return amountReduce;
 };
