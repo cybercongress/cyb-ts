@@ -7,7 +7,6 @@ import { $TsFixMe } from 'src/types/tsfix';
 import { chunksToBlob } from 'src/utils/ipfs/content-utils';
 
 import { Cluster } from '@nftstorage/ipfs-cluster';
-import { IPFSPath } from 'kubo-rpc-client/types';
 import { addIpfsContentToDb } from './db-utils';
 import { getMimeFromUint8Array } from './stream-utils';
 
@@ -17,7 +16,7 @@ const cluster = new Cluster(CYBERNODE_URL);
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const addDataChunksToIpfsCluster = async (
-  cid: IPFSPath,
+  cid: string,
   chunks: Uint8Array,
   saveToDb?: boolean
 ): Promise<AddResponse | undefined> => {
@@ -28,7 +27,7 @@ export const addDataChunksToIpfsCluster = async (
 
       // result.cid is cidV1 - can we use that?
       if (saveToDb) {
-        addIpfsContentToDb(cid.toString(), chunks);
+        addIpfsContentToDb(cid, chunks);
       }
       // console.log('----cluster:', await cluster.info());
       // TODO: ERROR on DEV ENV

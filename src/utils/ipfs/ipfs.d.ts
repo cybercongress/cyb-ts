@@ -1,11 +1,11 @@
 /* eslint-disable import/no-unused-modules */
-import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
+import { IPFS } from 'kubo-rpc-client/types';
 
 export type CallBackFuncStatus = (a: string) => void;
 
 export type NodeType = 'external' | 'embedded';
 
-export type AppIPFS = IPFS & { nodeType: NodeType };
+export type AppIPFS = IPFS & { nodeType: NodeType; connMgrGracePeriod: number };
 
 export type IPFSMaybe = IPFS | null;
 
@@ -26,6 +26,7 @@ export type IPFSContentMeta = {
   local?: boolean;
   statsTime?: number;
   catTime?: number;
+  pinTime?: number;
 };
 
 type IPFSData =
@@ -64,14 +65,14 @@ export type IPFSContentDetails =
       content?: string;
       link?: string;
       gateway: boolean;
-      cid: IPFSPath;
+      cid: string;
     }
   | undefined;
 
 export type IPFSContent = {
   availableDownload?: boolean;
   result?: IpfsRawDataResponse;
-  cid: IPFSPath;
+  cid: string;
   meta: IPFSContentMeta;
   source: IpfsContentSource;
   contentUrl?: string;

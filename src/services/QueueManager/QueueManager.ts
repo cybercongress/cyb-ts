@@ -21,7 +21,7 @@ import {
   fetchIpfsContent,
   reconnectToCyberSwarm,
 } from 'src/utils/ipfs/utils-ipfs';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { AppIPFS, IpfsContentSource } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -75,6 +75,8 @@ class QueueManager<T> {
 
   private queueDebounceMs: number;
 
+  private lastNodeCallTime: number = Date.now();
+
   private executing: Record<QueueSource, Set<string>> = {
     db: new Set(),
     node: new Set(),
@@ -102,10 +104,11 @@ class QueueManager<T> {
     const itemsToExecute: QueueItem<T>[] = [];
     // eslint-disable-next-line no-loop-func, no-restricted-syntax
     for (const [queueSource, items] of Object.entries(pendingBySource)) {
-      const settings = this.strategy.settings[queueSource];
+      const settings = this.strategy.settings[queueSource as IpfsContentSource];
 
       const executeCount =
-        settings.maxConcurrentExecutions - this.executing[queueSource].size;
+        settings.maxConcurrentExecutions -
+        this.executing[queueSource as IpfsContentSource].size;
 
       const itemsByPriority = items
         .sort(
@@ -119,7 +122,7 @@ class QueueManager<T> {
   }
 
   private fetchData$(item: QueueItem<T>) {
-    const { cid, source, controller, callback } = item;
+    const { cid, source, controller, callbacks } = item;
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
 
@@ -132,7 +135,7 @@ class QueueManager<T> {
       controller: new AbortController(),
     } as QueueItem<T>);
 
-    callback(cid, 'executing', source);
+    callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(() =>
       // fetch by item source
@@ -207,24 +210,28 @@ class QueueManager<T> {
   }
 
   private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
-    ['node', 'gateway'].forEach((source) =>
-      Array.from(this.executing[source] as string[]).forEach((cid) => {
+    (['node', 'gateway'] as IpfsContentSource[]).forEach((source) =>
+      Array.from(this.executing[source]).forEach((cid) => {
         const item = queue.get(cid);
 
         if (item && getQueueItemTotalPriority(item) < 0 && item.controller) {
-          // abort fetch and exclude from executing
+          // abort request and move to pending
           item.controller.abort('cancelled');
-
           queue.set(cid, { ...item, status: 'pending' });
 
           this.executing[source].delete(cid);
-
-          // console.log('-----cancel item', queue);
         }
       })
     );
 
     return queue;
+  }
+
+  private releaseExecution(cid: string) {
+    // eslint-disable-next-line no-restricted-syntax
+    Object.keys(this.executing).forEach((key) =>
+      this.executing[key as IpfsContentSource].delete(cid)
+    );
   }
 
   constructor(
@@ -238,7 +245,7 @@ class QueueManager<T> {
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
     interval(CONNECTION_KEEPER_RETRY_MS)
       .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
-      .subscribe(() => reconnectToCyberSwarm(this.node));
+      .subscribe(() => reconnectToCyberSwarm(this.node, this.lastNodeCallTime));
 
     this.queue$
       .pipe(
@@ -249,32 +256,40 @@ class QueueManager<T> {
           const workItems = this.getItemBySourceAndPriority(queue);
 
           if (workItems.length > 0) {
-            //  establish swarm cyber node connnection
-            reconnectToCyberSwarm(this.node);
+            // wake up connnection to swarm cyber node
+            reconnectToCyberSwarm(this.node, this.lastNodeCallTime);
 
-            return merge(...workItems.map((item) => this.fetchData$(item))); //.pipe(debounceTime(this.queueDebounceMs));
+            return merge(...workItems.map((item) => this.fetchData$(item)));
           }
           return EMPTY;
         })
       )
       .subscribe(({ item, status, source, result }) => {
-        item.callback(item.cid, status, source, result);
+        item.callbacks.map((callback) =>
+          callback(item.cid, status, source, result)
+        );
+
+        // HACK to use with GracePeriod for reconnection
+        if (source === 'node') {
+          this.lastNodeCallTime = Date.now();
+        }
 
         this.executing[source].delete(item.cid);
-        // Correct execution -> next
+
+        // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);
           this.removeAndNext(item.cid);
-          return;
-        }
-        // console.log('------error', item, status, source, result);
-
-        // Retry -> (next sources) or -> next
-        const nextSource = this.strategy.getNextSource(source);
-        if (nextSource) {
-          this.switchSourceAndNext(item, nextSource);
         } else {
-          this.removeAndNext(item.cid);
+          // console.log('------error', item, status, source, result);
+          // Retry -> (next sources) or -> next
+          const nextSource = this.strategy.getNextSource(source);
+
+          if (nextSource) {
+            this.switchSourceAndNext(item, nextSource);
+          } else {
+            this.removeAndNext(item.cid);
+          }
         }
       });
   }
@@ -284,18 +299,28 @@ class QueueManager<T> {
     callback: QueueItemCallback<T>,
     options: QueueItemOptions = {}
   ): void {
-    // const { priority = 0, viewPortPriority = 0, ...restOptions } = options;
-    const item: QueueItem<T> = {
-      cid,
-      callback,
-      source: options.initialSource || this.strategy.order[0], // initial method to fetch
-      status: 'pending',
-      ...options,
-    };
-
     const queue = this.queue$.value;
-    queue.set(cid, item);
-    this.queue$.next(queue);
+
+    const existingItem = queue.get(cid);
+
+    // In case if item already in queue,
+    // just attach one more callback to quieued item
+    if (existingItem) {
+      this.mutateQueueItem(cid, {
+        callbacks: [...existingItem.callbacks, callback],
+      });
+    } else {
+      const item: QueueItem<T> = {
+        cid,
+        callbacks: [callback],
+        source: options.initialSource || this.strategy.order[0], // initial method to fetch
+        status: 'pending',
+        ...options,
+      };
+
+      queue.set(cid, item);
+      this.queue$.next(queue);
+    }
   }
 
   public updateViewPortPriority(cid: string, viewPortPriority: number) {
@@ -306,8 +331,8 @@ class QueueManager<T> {
     const queue = this.queue$.value;
     const item = queue.get(cid);
     if (item) {
-      // If item has no abortController we can just remove it
-      // Otherwise abort&keep-to-finalize
+      // If item has no abortController we can just remove it,
+      // otherwise abort&keep-to-finalize
       if (!item.controller) {
         this.removeAndNext(cid);
       } else {
@@ -318,28 +343,16 @@ class QueueManager<T> {
 
   public cancelByParent(parent: string): void {
     const queue = this.queue$.value;
+
     queue.forEach((item, cid) => {
       if (item.parent === parent) {
+        this.releaseExecution(cid);
         item.controller?.abort('cancelled');
         queue.delete(cid);
       }
     });
+
     this.queue$.next(queue);
-
-    // const nextQueue: QueueMap<T> = new Map();
-
-    // this.queue$.value.forEach((item, cid) => {
-    //   // If item managed by abortController abort&keep-to-finalize
-    //   // Otherwise keep all non-parent items
-    //   if (item.parent !== parent) {
-    //     nextQueue.set(cid, item);
-    //   } else if (item.controller) {
-    //     item.controller.abort('cancelled');
-    //     nextQueue.set(cid, item);
-    //   }
-    // });
-
-    // this.queue$.next(nextQueue);
   }
 
   public getQueueMap(): QueueMap<T> {

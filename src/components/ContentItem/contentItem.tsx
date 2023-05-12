@@ -1,21 +1,14 @@
 // TODO: refactor needed
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import Iframe from 'react-iframe';
-import remarkGfm from 'remark-gfm';
-import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 
 import SearchItem from '../SearchItem/searchItem';
-import { CYBER } from '../../utils/config';
 
 import { getRankGrade } from '../../utils/search/utils';
-import styles from './contentItem.module.scss';
-import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import ContentIpfs from '../contentIpfs/contentIpfs';
 
 type ContentItemProps = {
@@ -26,23 +19,6 @@ type ContentItemProps = {
   parent?: string;
 };
 
-const getContentDetails = async (
-  cid: string,
-  content: IPFSContentMaybe
-): Promise<IPFSContentDetails> => {
-  if (content?.result) {
-    const details = await parseRawIpfsData(
-      content.result,
-      content.meta?.mime,
-      cid
-      // (progress: number) => console.log(`${cid} progress: ${progress}`)
-    );
-
-    return details;
-  }
-  return undefined;
-};
-
 function ContentItem({
   item,
   cid,
@@ -50,32 +26,10 @@ function ContentItem({
   parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  // const [ipfsDataDetails, setIpfsDatDetails] =
-  //   useState<IPFSContentDetails>(undefined);
-  const { status, content, source } = useQueueIpfsContent(
-    cid,
-    item.rank,
-    parentId
-  );
-
-  // useEffect(() => {
-  //   // TODO: cover case with content === 'availableDownload'
-  //   if (status === 'completed') {
-  //     getContentDetails(cid, content).then(setIpfsDatDetails);
-  //   }
-  // }, [content, status, cid]);
+  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
-      {/* DEBUG: */}
-      {/* <div
-        className={styles.contentLoadInfo}
-        onClick={async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          await navigator.clipboard.writeText(cid);
-        }}
-      >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid} stats(ms): ${content?.meta.statsTime} cat(ms): ${content?.meta.catTime}`}</div> */}
       <SearchItem
         key={cid}
         status={status}
