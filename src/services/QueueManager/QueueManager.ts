@@ -204,25 +204,31 @@ class QueueManager<T> {
     item: QueueItem<T>,
     nextSource: QueueSource
   ): void {
+    item.callbacks.map((callback) => callback(item.cid, 'pending', nextSource));
+
     this.queue$.next(
       this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource })
     );
   }
 
   private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
-    (['node', 'gateway'] as IpfsContentSource[]).forEach((source) =>
+    (['node', 'gateway'] as IpfsContentSource[]).forEach((source) => {
       Array.from(this.executing[source]).forEach((cid) => {
         const item = queue.get(cid);
 
         if (item && getQueueItemTotalPriority(item) < 0 && item.controller) {
           // abort request and move to pending
           item.controller.abort('cancelled');
+          item.callbacks.map((callback) =>
+            callback(item.cid, 'pending', item.source)
+          );
+
           queue.set(cid, { ...item, status: 'pending' });
 
           this.executing[source].delete(cid);
         }
-      })
-    );
+      });
+    });
 
     return queue;
   }
@@ -254,7 +260,7 @@ class QueueManager<T> {
         map((queue) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {
           const workItems = this.getItemBySourceAndPriority(queue);
-
+          // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
             reconnectToCyberSwarm(this.node, this.lastNodeCallTime);
@@ -310,13 +316,15 @@ class QueueManager<T> {
         callbacks: [...existingItem.callbacks, callback],
       });
     } else {
+      const source = options.initialSource || this.strategy.order[0];
       const item: QueueItem<T> = {
         cid,
         callbacks: [callback],
-        source: options.initialSource || this.strategy.order[0], // initial method to fetch
+        source, // initial method to fetch
         status: 'pending',
         ...options,
       };
+      callback(cid, 'pending', source);
 
       queue.set(cid, item);
       this.queue$.next(queue);

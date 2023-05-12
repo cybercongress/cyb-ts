@@ -19,6 +19,7 @@ const getContentDetails = async (
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
   // if (content?.result) {
+
   const details = await parseRawIpfsData(
     content?.result,
     content?.meta?.mime,
@@ -58,7 +59,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 }
 
 type ContentTabProps = {
-  content: IPFSContent;
+  content: IPFSContentMaybe;
   status: string | undefined;
   cid: string;
   search?: boolean;
@@ -93,7 +94,9 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
         <DownloadableItem search={search} cid={cid} />
       )}
 
-      {contentType === 'video' && <VideoPlayerGatewayOnly content={content} />}
+      {contentType === 'video' && content && (
+        <VideoPlayerGatewayOnly content={content} />
+      )}
 
       {ipfsDataDetails && (
         <>
