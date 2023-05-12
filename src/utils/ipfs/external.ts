@@ -7,13 +7,12 @@ export async function init(opts) {
     const api = IpfsHttpClient(opts.urlOpts);
     api.nodeType = 'external';
 
-    // getPeers(api, opts);
-    try {
-      const peers = await api.swarm.peers();
-      console.log('peers', peers.length);
-    } catch (err) {
-      throw new Error(`err swarm peers connect`);
-    }
+    // try {
+    //   const peers = await api.swarm.peers();
+    //   console.log('peers', peers.length);
+    // } catch (err) {
+    //   throw new Error(`err swarm peers connect`);
+    // }
     return api;
   } catch (err) {
     throw new Error(`err init IpfsHttpClient`);

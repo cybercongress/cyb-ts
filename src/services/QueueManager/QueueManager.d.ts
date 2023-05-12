@@ -47,7 +47,7 @@ export type QueueItem<T> = {
   cid: string;
   source: QueueSource;
   status: QueueItemStatus;
-  callback: QueueItemCallback<T>;
+  callbacks: QueueItemCallback<T>[];
   controller?: AbortController;
   executionTime?: number;
 } & Omit<QueueItemOptions, 'initialSource'>;

@@ -1,6 +1,5 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import { IPFSPath } from 'kubo-rpc-client/types';
 import {
   IPFSContentDetails,
   IpfsContentType,
@@ -55,7 +54,7 @@ export const chunksToBlob = (
 export const parseRawIpfsData = async (
   rawDataResponse: IpfsRawDataResponse,
   mime: string | undefined,
-  cid: IPFSPath,
+  cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
@@ -72,7 +71,9 @@ export const parseRawIpfsData = async (
       return response;
     }
 
-    const rawData = await getResponseResult(rawDataResponse, onProgress);
+    const rawData = rawDataResponse
+      ? await getResponseResult(rawDataResponse, onProgress)
+      : undefined;
 
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;

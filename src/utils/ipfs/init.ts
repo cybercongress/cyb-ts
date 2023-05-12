@@ -1,6 +1,6 @@
 import * as external from './external';
 import * as embedded from './embedded';
-import { reconnectToCyberSwarm } from './utils-ipfs';
+import { getNodeAutoDialInterval, reconnectToCyberSwarm } from './utils-ipfs';
 
 let client;
 
@@ -20,6 +20,7 @@ export async function initIpfsClient(opts) {
   }
 
   const instance = await backend.init(opts);
+  instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
   window.ipfs = instance;
 
   // Only for embedded node

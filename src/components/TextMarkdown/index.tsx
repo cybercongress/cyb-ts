@@ -5,12 +5,13 @@ import remarkGfm from 'remark-gfm';
 import cx from 'classnames';
 import { LinkWindow } from '../link/link';
 import styles from './styles.scss';
+import React from 'react';
 
 function TextMarkdown({
   children,
   fullWidth,
 }: {
-  children: string;
+  children: React.ReactNode;
   fullWidth?: boolean;
 }) {
   return (
