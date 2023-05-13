@@ -366,7 +366,7 @@ const addContenToIpfs = async (
     if (arrayBuffer) {
       const raw = new Uint8Array(arrayBuffer);
       const result = await addDataChunksToIpfsCluster(
-        cid.cid,
+        cid.cid.toString(),
         raw,
         node.nodeType === 'embedded'
       );

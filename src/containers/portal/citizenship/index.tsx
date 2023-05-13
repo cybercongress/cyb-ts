@@ -198,6 +198,7 @@ function GetCitizenship({ defaultAccount }) {
         if (node !== null && avatarImg !== null) {
           addContenToIpfs(node, avatarImg).then((cid) => {
             console.log('pin cid avatar', cid);
+            setAvatarIpfs(cid);
           });
         }
       } catch (error) {

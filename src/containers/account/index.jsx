@@ -95,8 +95,9 @@ function AccountDetails({ defaultAccount }) {
     const getKarma = async () => {
       if (queryClient && address.match(PATTERN_CYBER)) {
         const responseKarma = await queryClient.karma(address);
-        const karma = parseFloat(responseKarma.karma);
-        setKarmaNeuron(karma);
+        if (responseKarma.karma) {
+          setKarmaNeuron(parseFloat(responseKarma.karma));
+        }
       }
     };
     getKarma();
