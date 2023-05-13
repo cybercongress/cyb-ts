@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { PocketCard } from '../components';

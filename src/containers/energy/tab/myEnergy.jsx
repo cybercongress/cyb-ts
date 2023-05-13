@@ -1,24 +1,20 @@
-import React from 'react';
-import { Tablist, Pane, Tab } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { Card, TableSlots } from '../ui';
 import { Dots, LinkWindow } from '../../../components';
-import { convertResources, formatNumber } from '../../../utils/utils';
+import { formatNumber } from '../../../utils/utils';
 
 const voltImg = require('../../../image/lightning2.png');
 const amperImg = require('../../../image/light.png');
 
-const ValueImg = ({ text, img }) => (
-  <div style={{ display: 'flex' }}>
-    <span>{text}</span> <img style={{ width: 20 }} src={img} alt="text" />
-  </div>
-);
+function ValueImg({ text, img }) {
+  return (
+    <div style={{ display: 'flex' }}>
+      <span>{text}</span> <img style={{ width: 20 }} src={img} alt="text" />
+    </div>
+  );
+}
 
-function MyEnergy({
-  slotsData,
-  balacesResource,
-  loadingAuthAccounts,
-  traseDenom,
-}) {
+function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
@@ -72,11 +68,7 @@ function MyEnergy({
         />
       </Pane>
 
-      {loadingAuthAccounts ? (
-        <Dots big />
-      ) : (
-        <TableSlots data={slotsData} traseDenom={traseDenom} />
-      )}
+      {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
     </div>
   );
 }

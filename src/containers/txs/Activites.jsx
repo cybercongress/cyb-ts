@@ -1,83 +1,97 @@
-import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
+import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber } from '../../utils/search/utils';
-import {
-  Account,
-  MsgType,
-  LinkWindow,
-  ValueImg,
-  DenomArr,
-} from '../../components';
+import { Account, MsgType, DenomArr } from '../../components';
 import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
-import { AppContext } from '../../context';
 import { FormatNumberTokens } from '../nebula/components';
-
-const imgDropdown = require('../../image/arrow-dropdown.svg');
-const imgDropup = require('../../image/arrow-dropup.svg');
 
 const S_TO_MS = 1 * 10 ** 3;
 
-const Cid = ({ cid }) => <Link to={`/ipfs/${cid}`}>{cid}</Link>;
+function Cid({ cid }) {
+  return <Link to={`/ipfs/${cid}`}>{cid}</Link>;
+}
 
-export const ContainerMsgsType = ({ type, children }) => (
-  <Pane
-    borderRadius={5}
-    display="flex"
-    flexDirection="column"
-    // boxShadow="0 0 5px #3ab793"
-    marginBottom={20}
-  >
+function ContainerMsgsType({ type, children }) {
+  return (
     <Pane
+      borderRadius={5}
       display="flex"
-      gap="10px"
-      marginBottom={20}
-      fontSize="18px"
-      alignItems="center"
-    >
-      Type: <MsgType type={type} />
-    </Pane>
-    <Pane width="100%" paddingLeft={10} gap="20px">
-      {children}
-    </Pane>
-  </Pane>
-);
-
-export const Row = ({ value, title }) => (
-  <Pane key={`${value}-container`} className="txs-contaiter-row" display="flex">
-    <Text
-      key={`${title}-title`}
-      display="flex"
-      fontSize="16px"
-      textTransform="capitalize"
-      color="#fff"
-      whiteSpace="nowrap"
-      width="240px"
-      marginBottom="5px"
-      lineHeight="20px"
-    >
-      {title} :
-    </Text>
-    <Text
-      key={`${value}-value`}
-      display="flex"
-      color="#fff"
-      fontSize="16px"
-      wordBreak="break-all"
-      lineHeight="20px"
-      marginBottom="5px"
       flexDirection="column"
-      alignItems="flex-start"
+      // boxShadow="0 0 5px #3ab793"
+      marginBottom={20}
     >
-      {value}
-    </Text>
-  </Pane>
-);
+      <Pane
+        display="flex"
+        gap="10px"
+        marginBottom={20}
+        fontSize="18px"
+        alignItems="center"
+      >
+        Type: <MsgType type={type} />
+      </Pane>
+      <Pane width="100%" paddingLeft={10} gap="20px">
+        {children}
+      </Pane>
+    </Pane>
+  );
+}
 
-const MultiSend = ({ msg }) => {
+function Row({ value, title }) {
+  return (
+    <Pane
+      key={`${value}-container`}
+      className="txs-contaiter-row"
+      display="flex"
+    >
+      <Text
+        key={`${title}-title`}
+        display="flex"
+        fontSize="16px"
+        textTransform="capitalize"
+        color="#fff"
+        whiteSpace="nowrap"
+        width="240px"
+        marginBottom="5px"
+        lineHeight="20px"
+      >
+        {title} :
+      </Text>
+      <Text
+        key={`${value}-value`}
+        display="flex"
+        color="#fff"
+        fontSize="16px"
+        wordBreak="break-all"
+        lineHeight="20px"
+        marginBottom="5px"
+        flexDirection="column"
+        alignItems="flex-start"
+      >
+        {value}
+      </Text>
+    </Pane>
+  );
+}
+
+// eslint-disable-next-line import/no-unused-modules
+export function AmountDenom({ amountValue, denom }) {
+  const { traseDenom } = useIbcDenom();
+
+  let amount = 0;
+
+  if (amountValue && amountValue > 0) {
+    const [{ coinDecimals }] = traseDenom(denom);
+    amount = convertAmount(amountValue, coinDecimals);
+  }
+
+  return <FormatNumberTokens text={denom} value={amount} />;
+}
+
+function MultiSend({ msg }) {
   return (
     <ContainerMsgsType type={msg['@type']}>
       <Row
@@ -132,98 +146,97 @@ const MultiSend = ({ msg }) => {
       />
     </ContainerMsgsType>
   );
-};
+}
 
-const MsgLink = ({ msg }) => (
-  <ContainerMsgsType type={msg['@type']}>
-    <Row title="Neuron" value={<Account address={msg.neuron} />} />
-    {msg.links.map((item, index) => (
-      <div
-        key={`${item.from}-${index}`}
-        style={{
-          padding: '10px',
-          paddingBottom: 0,
-          marginBottom: '10px',
-          borderTop: '1px solid #3ab79366',
-        }}
-      >
-        <Row title="from" value={<Cid cid={item.from} />} />
-        <Row title="to" value={<Cid cid={item.to} />} />
-      </div>
-    ))}
-  </ContainerMsgsType>
-);
+function MsgLink({ msg }) {
+  return (
+    <ContainerMsgsType type={msg['@type']}>
+      <Row title="Neuron" value={<Account address={msg.neuron} />} />
+      {msg.links.map((item, index) => (
+        <div
+          key={`${item.from}-${index}`}
+          style={{
+            padding: '10px',
+            paddingBottom: 0,
+            marginBottom: '10px',
+            borderTop: '1px solid #3ab79366',
+          }}
+        >
+          <Row title="from" value={<Cid cid={item.from} />} />
+          <Row title="to" value={<Cid cid={item.to} />} />
+        </div>
+      ))}
+    </ContainerMsgsType>
+  );
+}
 
-const MsgInvestmint = ({ msg }) => (
-  <ContainerMsgsType type={msg['@type']}>
-    {msg.neuron && (
-      <Row title="neuron" value={<Account address={msg.neuron} />} />
-    )}
-    {msg.amount && (
-      <Row
-        title="amount"
-        value={
-          <AmountDenom
-            amountValue={msg.amount.amount}
-            denom={msg.amount.denom}
-          />
-        }
-      />
-    )}
-    {msg.resource && (
-      <Row
-        title="resource"
-        value={<DenomArr gap={8} denomValue={msg.resource} />}
-      />
-    )}
-    {msg.length && (
-      <Row title="length" value={timeSince(msg.length * S_TO_MS)} />
-    )}
-  </ContainerMsgsType>
-);
+function MsgInvestmint({ msg }) {
+  return (
+    <ContainerMsgsType type={msg['@type']}>
+      {msg.neuron && (
+        <Row title="neuron" value={<Account address={msg.neuron} />} />
+      )}
+      {msg.amount && (
+        <Row
+          title="amount"
+          value={
+            <AmountDenom
+              amountValue={msg.amount.amount}
+              denom={msg.amount.denom}
+            />
+          }
+        />
+      )}
+      {msg.resource && (
+        <Row
+          title="resource"
+          value={<DenomArr gap={8} denomValue={msg.resource} />}
+        />
+      )}
+      {msg.length && (
+        <Row title="length" value={timeSince(msg.length * S_TO_MS)} />
+      )}
+    </ContainerMsgsType>
+  );
+}
 
-const MsgCreateRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg['@type']}>
-    <Row title="source" value={<Account address={msg.source} />} />
-    <Row title="name" value={msg.name} />
-    <Row title="destination" value={<Account address={msg.destination} />} />
-  </ContainerMsgsType>
-);
+function MsgCreateRoute({ msg }) {
+  return (
+    <ContainerMsgsType type={msg['@type']}>
+      <Row title="source" value={<Account address={msg.source} />} />
+      <Row title="name" value={msg.name} />
+      <Row title="destination" value={<Account address={msg.destination} />} />
+    </ContainerMsgsType>
+  );
+}
 
-const MsgEditRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg['@type']}>
-    <Row title="source" value={<Account address={msg.source} />} />
-    {msg && (
-      <Row
-        title="amount"
-        value={<AmountDenom amountValue={msg.amount} denom={msg.denom} />}
-      />
-    )}
-    <Row title="destination" value={<Account address={msg.destination} />} />
-  </ContainerMsgsType>
-);
+function MsgEditRoute({ msg }) {
+  return (
+    <ContainerMsgsType type={msg['@type']}>
+      <Row title="source" value={<Account address={msg.source} />} />
+      {msg && (
+        <Row
+          title="amount"
+          value={<AmountDenom amountValue={msg.amount} denom={msg.denom} />}
+        />
+      )}
+      <Row title="destination" value={<Account address={msg.destination} />} />
+    </ContainerMsgsType>
+  );
+}
 
-const MsgDeleteRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg['@type']}>
-    <Row title="source" value={<Account address={msg.source} />} />
-    <Row title="destination" value={<Account address={msg.destination} />} />
-  </ContainerMsgsType>
-);
+function MsgDeleteRoute({ msg }) {
+  return (
+    <ContainerMsgsType type={msg['@type']}>
+      <Row title="source" value={<Account address={msg.source} />} />
+      <Row title="destination" value={<Account address={msg.destination} />} />
+    </ContainerMsgsType>
+  );
+}
 
-export const AmountDenom = ({ amountValue, denom }) => {
-  const { traseDenom } = useContext(AppContext);
-
-  let amount = 0;
-
-  if (amountValue && amountValue > 0) {
-    const { coinDecimals } = traseDenom(denom);
-    amount = convertAmount(amountValue, coinDecimals);
-  }
-
-  return <FormatNumberTokens text={denom} value={amount} />;
-};
-
-const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
+function MsgEditRouteName({ msg }) {
+  return <MsgCreateRoute msg={msg} />;
+}
 
 function Activites({ msg }) {
   let type = '';
@@ -257,7 +270,11 @@ function Activites({ msg }) {
                     );
                   }
                   return (
-                    <AmountDenom amountValue={amountValue} denom={denom} />
+                    <AmountDenom
+                      amountValue={amountValue}
+                      denom={denom}
+                      key={i}
+                    />
                   );
                 })
               : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
@@ -428,7 +445,11 @@ function Activites({ msg }) {
             >
               {msg.deposit_coins.map((data, i) => {
                 return (
-                  <AmountDenom amountValue={data.amount} denom={data.denom} />
+                  <AmountDenom
+                    amountValue={data.amount}
+                    key={i}
+                    denom={data.denom}
+                  />
                 );
               })}
             </div>

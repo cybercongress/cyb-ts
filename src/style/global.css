@@ -5,18 +5,16 @@
   font-style: normal;
 }
 
+html {
+  font-family: 'Play';
+}
+
 body {
   padding: 0;
   overflow-x: hidden;
   background-color: #000000;
   color: #fff;
   margin: 0 auto;
-}
-
-html {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  font-family: 'Play';
 }
 
 .rjsf fieldset {
@@ -193,7 +191,12 @@ p {
   margin-inline-end: 0px;
 }
 
+button {
+  cursor: pointer;
+}
+
 button:disabled {
+  cursor: not-allowed;
   color: darkgray;
 }
 
@@ -213,7 +216,7 @@ a {
   background-position: top left !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
-  padding: 10px 1em 110px 1em;
+  padding: 10px 1em 135px 1em;
   position: relative;
   background-color: #000000;
 }
@@ -381,11 +384,6 @@ input:active {
   color: #3ab793;
 }
 
-.trigger {
-  width: 100%;
-  display: flex;
-}
-
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -439,43 +437,6 @@ input:active {
 .btn:focus {
   border: none;
   outline: none;
-}
-
-.btn-disabled {
-  height: 42px;
-  white-space: nowrap;
-  background-color: #000;
-  border: none;
-  font-family: Play;
-  outline: none;
-  padding: 0 50px;
-  /* line-height: 42px; */
-  font-size: 18px;
-  border-radius: 3px;
-  box-shadow: 0 0 10px 0px #38d6ae;
-  text-shadow: 0 0 25px #36d6ae;
-  color: #36d6ae;
-  -webkit-text-stroke: 0.5px #36d6ae67;
-}
-
-.btn-disabled:hover {
-  box-shadow: 0 0 6px 0px #38d6ae;
-}
-
-.btn-disabled:active {
-  background-color: #3ab793;
-  color: #fff;
-  border: none;
-  outline: none;
-}
-
-.btn-disabled:focus {
-  border: none;
-  outline: none;
-}
-
-.btn-disabled:disabled {
-  box-shadow: 0 0 6px 0px #38d6ae;
 }
 
 .icons-size {
@@ -578,3 +539,6 @@ input:focus:-ms-input-placeholder {
   overflow: hidden !important;
 }
 
+.padded-text {
+  padding: 0.5rem;
+}

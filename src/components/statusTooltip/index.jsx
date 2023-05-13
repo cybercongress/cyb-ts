@@ -1,19 +1,17 @@
-import React from 'react';
 import { Pane, Text, Tooltip, Pill } from '@cybercongress/gravity';
 
-const statusHeroes = {
-  BOND_STATUS_UNSPECIFIED: 0,
-  /** BOND_STATUS_UNBONDED - UNBONDED defines a validator that is not bonded. */
-  BOND_STATUS_UNBONDED: 1,
-  /** BOND_STATUS_UNBONDING - UNBONDING defines a validator that is unbonding. */
-  BOND_STATUS_UNBONDING: 2,
-  /** BOND_STATUS_BONDED - BONDED defines a validator that is bonded. */
-  BOND_STATUS_BONDED: 3,
-};
+// const statusHeroes = {
+//   BOND_STATUS_UNSPECIFIED: 0,
+//   /** BOND_STATUS_UNBONDED - UNBONDED defines a validator that is not bonded. */
+//   BOND_STATUS_UNBONDED: 1,
+//   /** BOND_STATUS_UNBONDING - UNBONDING defines a validator that is unbonding. */
+//   BOND_STATUS_UNBONDING: 2,
+//   /** BOND_STATUS_BONDED - BONDED defines a validator that is bonded. */
+//   BOND_STATUS_BONDED: 3,
+// };
 
-const StatusTooltip = ({ status, size }) => {
+function StatusTooltip({ status, size }) {
   let statusColor;
-  console.log(`status`, status)
   switch (status) {
     case 1:
       statusColor = 'red';
@@ -57,6 +55,6 @@ const StatusTooltip = ({ status, size }) => {
       </Tooltip>
     </Pane>
   );
-};
+}
 
 export default StatusTooltip;

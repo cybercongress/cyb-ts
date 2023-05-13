@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Tooltip } from '../../../components';
 import { TextTable } from './ui';

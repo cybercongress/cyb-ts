@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import bech32 from 'bech32';
+import withRouter from 'src/components/helpers/withRouter';
+
 import InformationBlock from './informationBlock';
 import TableTxs from '../account/component/tableTxs';
 import { CardTemplate } from '../../components';
@@ -31,17 +32,15 @@ const initialState = {
   transactions: [],
 };
 
-function BlockDetails({ match }) {
-  const { idBlock } = match.params;
+function BlockDetails({ router }) {
+  const { idBlock } = router.params;
   const [blockInfo, setBlockInfo] = useState(initialState);
   const { loading, error, data } = useQuery(GET_CHARACTERS, {
     variables: {
       blockId: idBlock,
     },
   });
-
   useEffect(() => {
-    console.log(`data`, data);
     if (data && data.block && Object.keys(data.block).length > 0) {
       setBlockInfo(data.block[0]);
     } else {
@@ -51,7 +50,7 @@ function BlockDetails({ match }) {
   }, [data, idBlock]);
 
   if (loading) {
-    return 'Loading...';
+    return <div>Loading...</div>;
   }
 
   if (error) {
@@ -75,4 +74,4 @@ function BlockDetails({ match }) {
   );
 }
 
-export default BlockDetails;
+export default withRouter(BlockDetails);

@@ -1,33 +1,21 @@
-import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link as LinkRoute } from 'react-router-dom';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+/* eslint-disable */
+import React, { Component, useContext } from 'react';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { coins } from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   StartStageSearchActionBar,
-  Cyberlink,
   TransactionError,
   ActionBarContentText,
   CheckAddressInfo,
   Dots,
 } from '../../components';
 
-import {
-  getIpfsHash,
-  getPin,
-  statusNode,
-  getAccountBandwidth,
-  getCurrentBandwidthPrice,
-} from '../../utils/search/utils';
+import { getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
-
-import { AppContext } from '../../context';
 
 import {
   LEDGER,
@@ -36,6 +24,10 @@ import {
   POCKET,
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
+import { useIpfs } from 'src/contexts/ipfs';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import Button from 'src/components/btnGrd';
 
 const {
   MEMO,
@@ -92,7 +84,7 @@ class ActionBarTweet extends Component {
       placeholder: '',
     };
     this.timeOut = null;
-    this.ledger = null;
+
     this.inputOpenFileRef = React.createRef();
   }
 
@@ -100,7 +92,6 @@ class ActionBarTweet extends Component {
     await this.checkAddressLocalStorage();
     this.getNameBtn();
     console.warn('Looking for Ledger Nano');
-    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate(prevProps) {
@@ -179,9 +170,9 @@ class ActionBarTweet extends Component {
     }
 
     if (file !== null) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     }
 
     this.setState({
@@ -205,7 +196,7 @@ class ActionBarTweet extends Component {
       type = POCKET.STAGE_TWEET_ACTION_BAR.TWEET;
     }
 
-    const fromCid = await getPin(node, type);
+    const fromCid = await addContenToIpfs(node, type);
 
     this.setState({
       fromCid,
@@ -217,7 +208,7 @@ class ActionBarTweet extends Component {
   };
 
   generateTxKeplr = async () => {
-    const { keplr } = this.context;
+    const { signer, signingClient } = this.props;
     const { fromCid, toCid, addressLocalStor } = this.state;
 
     console.log('fromCid, toCid :>> ', fromCid, toCid);
@@ -225,15 +216,19 @@ class ActionBarTweet extends Component {
     this.setState({
       stage: STAGE_KEPLR_APPROVE,
     });
-    if (keplr !== null) {
-      await window.keplr.enable(CYBER.CHAIN_ID);
-      const { address } = (await keplr.signer.getAccounts())[0];
+    if (signer && signingClient) {
+      const { address } = (await signer.getAccounts())[0];
       const fee = {
         amount: [],
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
       if (addressLocalStor !== null && addressLocalStor.address === address) {
-        const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+        const result = await signingClient.cyberlink(
+          address,
+          fromCid,
+          toCid,
+          fee
+        );
         if (result.code === 0) {
           const hash = result.transactionHash;
           console.log('hash :>> ', hash);
@@ -264,26 +259,26 @@ class ActionBarTweet extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
-      console.log('status', status);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (update) {
-          update();
+      const data = await getTxs(this.state.txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (update) {
+            update();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
@@ -510,14 +505,26 @@ class ActionBarTweet extends Component {
   }
 }
 
-ActionBarTweet.contextType = AppContext;
-
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     stageTweetActionBar: store.pocket.actionBar.tweet,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(ActionBarTweet);
+// temp
+export const withIpfsAndKeplr = (Component) => (props) => {
+  const { node } = useIpfs();
+  const { signer, signingClient } = useSigningClient();
+
+  return (
+    <Component
+      {...props}
+      node={node}
+      signer={signer}
+      signingClient={signingClient}
+    />
+  );
+};
+
+export default withIpfsAndKeplr(connect(mapStateToProps)(ActionBarTweet));

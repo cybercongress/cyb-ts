@@ -1,17 +1,16 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 import DenomArr from '../denom';
 
-const NumberCurrency = ({
+function NumberCurrency({
   amount,
   fontSizeDecimal,
   currencyNetwork = CYBER.DENOM_CYBER,
   onlyImg,
   onlyText = true,
   ...props
-}) => {
+}) {
   // const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
   return (
     <Pane
@@ -34,6 +33,6 @@ const NumberCurrency = ({
       </div>
     </Pane>
   );
-};
+}
 
 export default NumberCurrency;

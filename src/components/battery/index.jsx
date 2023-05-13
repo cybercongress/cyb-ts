@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Pane } from '@cybercongress/gravity';
 
 function Battery({
@@ -61,4 +61,5 @@ function Battery({
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default Battery;

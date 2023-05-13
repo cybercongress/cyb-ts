@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { ContainerGradientText } from '../../../portal/components';
+import { ContainerGradientText } from '../../../../components';
 import styles from './styles.scss';
 
 import nebulaIcon from '../../../../image/temple/nebula.png';
@@ -78,12 +77,12 @@ const playContentItem = [
 
 function PlayContent() {
   return (
-    <ContainerGradientText>
+    <ContainerGradientText status="green">
       <div className={styles.containerPlayContent}>
         {playContentItem.map((item) => (
-          <Link to={item.to}>
+          <Link to={item.to} key={item.to}>
             <div className={styles.containerItemPlayContent}>
-              <div>
+              <div className={styles.containteImgItemPlayContent}>
                 <img
                   alt={item.title}
                   src={item.icon}

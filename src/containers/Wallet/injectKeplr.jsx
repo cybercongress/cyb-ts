@@ -1,11 +1,9 @@
-import React, { PureComponent } from 'react';
-import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-import { SigningCyberClient, SigningCyberClientOptions } from '@cybercongress/cyber-js';
-import { Decimal } from '@cosmjs/math';
+import { PureComponent } from 'react';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from '../../utils/config';
 import { Loading } from '../../components';
 
-const { DirectSecp256k1HdWallet, Registry } = require('@cosmjs/proto-signing');
+const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
 const { stringToPath } = require('@cosmjs/crypto');
 
 const configKeplr = () => {
@@ -66,7 +64,7 @@ const configKeplr = () => {
 };
 
 const injectKeplr = (InnerComponent) =>
-  class extends PureComponent {
+  class KeplrInject extends PureComponent {
     constructor(props) {
       super(props);
       this.state = {
@@ -90,8 +88,8 @@ const injectKeplr = (InnerComponent) =>
             const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
 
             const firstAddress = (await offlineSigner.getAccounts())[0].address;
-            const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
-            const gasLimits = { send: 100000, cyberlink: 150000 };
+            // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
+            // const gasLimits = { send: 100000, cyberlink: 150000 };
             // const cosmJS = new SigningCyberClient(
             //   CYBER.CYBER_NODE_URL_LCD,
             //   firstAddress,
@@ -103,9 +101,9 @@ const injectKeplr = (InnerComponent) =>
 
             const mnemonic =
               'diet tragic tell acquire one wash fiber reopen surprise duty discover inner kind ketchup guilt exit three elegant sausage utility slab banner yellow asset';
-            const rpcUrl = 'http://localhost:26657';
+            // const rpcUrl = 'http://localhost:26657';
             const prefix = 'cyber';
-            const tokenDenom = 'nick';
+            // const tokenDenom = 'nick';
             const hdPath = stringToPath("m/44'/118'/0'/0/0");
             const signer = await DirectSecp256k1HdWallet.fromMnemonic(
               mnemonic,
@@ -177,4 +175,5 @@ const injectKeplr = (InnerComponent) =>
     }
   };
 
+// eslint-disable-next-line import/no-unused-modules
 export default injectKeplr;

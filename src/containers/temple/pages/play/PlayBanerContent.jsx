@@ -1,15 +1,6 @@
 /* eslint-disable no-nested-ternary */
-import BigNumber from 'bignumber.js';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import useMediaQuery from 'src/hooks/useMediaQuery';
 import {
   formatCurrency,
   formatNumber,
@@ -46,12 +37,13 @@ const PREFIXES = [
   },
 ];
 
-const TypingText = ({ content, delay = 30 }) => {
+function TypingText({ content, delay = 30 }) {
   const [displayed, updateDisplay] = useState('');
   let animID;
 
   useEffect(() => {
     updateDisplay(content.charAt(0)); // call once to avoid empty element flash
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     animID = setInterval(typeLetter, delay);
     return () => {
       updateDisplay('');
@@ -61,15 +53,17 @@ const TypingText = ({ content, delay = 30 }) => {
 
   const typeLetter = () => {
     updateDisplay((prevText) => {
-      if (content.length <= prevText.length) clearInterval(animID);
+      if (content.length <= prevText.length) {
+        clearInterval(animID);
+      }
       return prevText.concat(content.charAt(prevText.length));
     });
   };
 
-  return <>{displayed}</>;
-};
+  return displayed;
+}
 
-const DeltaValue = ({ change }) => {
+function DeltaValue({ change }) {
   if (parseFloat(change.amount) > 0) {
     return (
       <div
@@ -93,7 +87,7 @@ const DeltaValue = ({ change }) => {
   }
 
   return null;
-};
+}
 
 const delay = 4000;
 
@@ -298,6 +292,7 @@ function PlayBanerContent() {
     return () => {
       resetTimeout();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, slideData]);
 
   const restartSlide = useCallback(() => {
@@ -305,10 +300,12 @@ function PlayBanerContent() {
       resetTimeout();
       setIndex(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, slideData]);
 
   const slideDataState = slideDataRef.current;
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className={styles.gatadienContainer} onClick={() => restartSlide()}>
       <div
         className={styles.containerTitle}

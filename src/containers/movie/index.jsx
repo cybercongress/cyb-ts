@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Iframe from 'react-iframe';
-import { Dots, Loading } from '../../components';
+import { Loading } from '../../components';
 
 // const linkMovie =
 //   'http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/';
@@ -12,10 +11,10 @@ const linkMovie =
 
 function Movie() {
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const redirect = () => {
-    history.push(`/oracle`);
+    navigate(`/oracle`);
   };
 
   useEffect(() => {
@@ -28,13 +27,14 @@ function Movie() {
     return () => {
       window.removeEventListener('message', handlerEventListener);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const iframeTag = document.querySelector('iframe');
 
     if (iframeTag) {
-      iframeTag.addEventListener('load', function (e) {
+      iframeTag.addEventListener('load', () => {
         setLoading(false);
       });
     } else {

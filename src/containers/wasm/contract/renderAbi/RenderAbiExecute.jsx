@@ -1,17 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
-import txs from '../../../../utils/txs';
+import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
-import { AppContext } from '../../../../context';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import txs from '../../../../utils/txs';
 import { CYBER } from '../../../../utils/config';
 import JsonSchemaParse from './JsonSchemaParse';
-import { FlexWrapCantainer } from '../../ui/ui';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+// const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 
 function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { signer, signingClient } = useSigningClient();
   const [contractResponse, setContractResponse] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [executing, setExecuting] = useState(false);
@@ -19,8 +20,8 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
-        const response = await jsCyber.getTx(txHash);
+      if (queryClient && txHash !== null) {
+        const response = await queryClient.getTx(txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           const { code, hash, height } = response;
@@ -59,10 +60,11 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash, activeKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryClient, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
-    if (keplr === null || !formData) {
+    if (!signer || !formData) {
       return;
     }
 
@@ -70,10 +72,9 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
     setExecuting(true);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-     
-      const executeResponseResult = await keplr.execute(
+      const executeResponseResult = await signingClient.execute(
         address,
         contractAddress,
         formData,
@@ -105,6 +106,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
       // const key = uuidv4();
       return (
         <JsonSchemaParse
+          key={key}
           executing={executing}
           activeKey={activeKey}
           schema={items}
@@ -116,7 +118,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderAbiExecute;

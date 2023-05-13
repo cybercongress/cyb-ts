@@ -1,9 +1,8 @@
-import React from 'react';
 import styles from './stylesIpfsLoader.scss';
 
-function ComponentLoader(props) {
+function ComponentLoader({ style, ...rest }) {
   return (
-    <div {...props} style={{ width: 300, margin: '10vh auto', ...props.style }}>
+    <div {...rest} style={{ width: 300, margin: '10vh auto', ...style }}>
       <svg
         className={styles.ComponentLoader}
         style={{ width: '100%' }}

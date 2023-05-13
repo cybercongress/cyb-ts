@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { useIpfs } from 'src/contexts/ipfs';
 import { PocketCard } from '../components';
-import { Copy, Dots, LinkWindow } from '../../../components';
+import { Dots, Account } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import {
   getAvatar,
@@ -14,13 +15,11 @@ import {
   getGraphQLQuery,
   getIpfsHash,
 } from '../../../utils/search/utils';
-import { setStageTweetActionBar } from '../../../redux/actions/pocket';
+import { setStageTweetActionBar } from '../../../redux/features/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
-const isSvg = require('is-svg');
 const dateFormat = require('dateformat');
-const img = require('../../../image/logo-cyb-v3.svg');
 
 const STAGE_ADD_AVATAR = 0;
 const STAGE_ADD_FIRST_FOLLOWER = 1;
@@ -99,12 +98,11 @@ function TweetCard({
   account,
   refresh,
   setStageTweetActionBarProps,
-  node,
   ...props
 }) {
-  const { count: countNewsToday, loading: loadingNewsToday } = useNewsToday(
-    account
-  );
+  const { node } = useIpfs();
+  const { count: countNewsToday, loading: loadingNewsToday } =
+    useNewsToday(account);
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
   const [loading, setLoading] = useState(true);
   const [avatar, setAvatar] = useState({
@@ -126,6 +124,7 @@ function TweetCard({
 
   useEffect(() => {
     feachData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, refresh]);
 
   const feachData = async () => {
@@ -154,6 +153,7 @@ function TweetCard({
       }
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar, myTweet, follows]);
 
   const getAvatarAccounts = async (address) => {
@@ -214,8 +214,8 @@ function TweetCard({
       <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
-          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link> right
-          now. Adding an avatar will help others recognize your content.
+          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link>{' '}
+          right now. Adding an avatar will help others recognize your content.
         </Text>
       </PocketCard>
     );
@@ -257,7 +257,7 @@ function TweetCard({
     return (
       <PocketCard display="flex" flexDirection="row" {...props}>
         <Pane display="flex" flex={1}>
-          <AvatarIpfs addressCyber={account} node={node} />
+          <Account address={account} avatar onlyAvatar sizeAvatar="80px" />
         </Pane>
         <Link style={{ margin: '0 10px' }} to="/sixthSense">
           <Pane
@@ -306,12 +306,6 @@ function TweetCard({
   return null;
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
 const mapDispatchprops = (dispatch) => {
   return {
     setStageTweetActionBarProps: (stage) =>
@@ -319,4 +313,4 @@ const mapDispatchprops = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(TweetCard);
+export default connect(null, mapDispatchprops)(TweetCard);

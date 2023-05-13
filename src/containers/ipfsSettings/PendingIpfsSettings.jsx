@@ -1,5 +1,5 @@
-import React from 'react';
-import { ContainerGradientText, MainContainer } from '../portal/components';
+import { ContainerGradientText } from '../../components';
+import { MainContainer } from '../portal/components';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 
 function PendingIpfsSettings() {

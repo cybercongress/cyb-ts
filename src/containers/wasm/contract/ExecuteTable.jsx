@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkTx, LinkCreator } from '../ui/ui';
 import {
@@ -6,11 +6,10 @@ import {
   trimString,
   parseMsgContract,
 } from '../../../utils/utils';
-import { Dots } from '../../../components';
+import Loader2 from 'src/components/ui/Loader2';
 
 function ExecuteTable({ executions }) {
   const [itemsToShow, setItemsToShow] = useState(40);
-  console.log(`executions`, executions);
 
   const setNextDisplayedPalettes = useCallback(() => {
     setTimeout(() => {
@@ -18,10 +17,10 @@ function ExecuteTable({ executions }) {
     }, 250);
   }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(() => executions.slice(0, itemsToShow), [
-    itemsToShow,
-    executions,
-  ]);
+  const displayedPalettes = useMemo(
+    () => executions.slice(0, itemsToShow),
+    [itemsToShow, executions]
+  );
 
   const itemTable = displayedPalettes.map((item) => {
     return (
@@ -47,11 +46,7 @@ function ExecuteTable({ executions }) {
       dataLength={Object.keys(displayedPalettes).length}
       next={setNextDisplayedPalettes}
       hasMore={itemsToShow < executions.length}
-      loader={
-        <h4>
-          Loading <Dots />
-        </h4>
-      }
+      loader={<Loader2 />}
     >
       <table style={{ width: '100%' }}>
         <thead>
@@ -62,16 +57,20 @@ function ExecuteTable({ executions }) {
             <th scope="col">Sender</th>
           </tr>
         </thead>
-        <tbody>
-          {itemTable.length > 0 ? (
-            itemTable
-          ) : (
-            <h4>
-              Loading <Dots />
-            </h4>
-          )}
-        </tbody>
+
+        {itemTable.length > 0 && <tbody>{itemTable}</tbody>}
       </table>
+
+      {!itemTable.length && (
+        <p
+          style={{
+            textAlign: 'center',
+            margin: '15px 0',
+          }}
+        >
+          No executions
+        </p>
+      )}
     </InfiniteScroll>
   );
 }

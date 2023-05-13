@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
 import { CYBER } from '../../../utils/config';
-import { AppContext } from '../../../context';
 
 const PAGE_SIZE = 50;
 
@@ -39,15 +39,11 @@ const GET_CHARACTERS = gql`
 const useGetContracts = (offset) => {
   const [dataContracts, setDataContracts] = useState([]);
   const [dataAggregate, setDataAggregate] = useState(null);
-  const { loading, error, data } = useQuery(GET_CHARACTERS, {
+  const { loading, data } = useQuery(GET_CHARACTERS, {
     variables: {
       offset: offset * PAGE_SIZE,
     },
   });
-
-  if (error) {
-    console.log(`Error!`, `Error! ${error.message}`);
-  }
 
   useEffect(() => {
     if (data && data.contracts && data.contracts_aggregate) {
@@ -62,14 +58,15 @@ const useGetContracts = (offset) => {
 };
 
 const useGetCodes = () => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [codes, setCodes] = useState(null);
 
   useEffect(() => {
     const getCodes = async () => {
       try {
-        if (jsCyber !== null) {
-          const resposeCodes = await jsCyber.getCodes();
+        if (queryClient) {
+          const resposeCodes = await queryClient.getCodes();
+
           if (resposeCodes && resposeCodes.length > 0) {
             setCodes(resposeCodes.length);
           } else {
@@ -82,7 +79,7 @@ const useGetCodes = () => {
       }
     };
     getCodes();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   return { codes };
 };

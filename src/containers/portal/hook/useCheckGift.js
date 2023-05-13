@@ -1,16 +1,11 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-import { useEffect, useState, useCallback, useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState, useCallback } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { checkGift, getClaimedAmount, getIsClaimed } from '../utils';
 
-const initValueGiftAmount = {
-  details: {},
-  amount: 0,
-};
-
 function useCheckGift(citizenship, addressActive, updateFunc) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [totalGift, setTotalGift] = useState(null);
   const [totalGiftAmount, setTotalGiftAmount] = useState(null);
   const [totalGiftClaimed, setTotalGiftClaimed] = useState(null);
@@ -18,7 +13,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   const [loadingGift, setLoadingGift] = useState(true);
 
   useEffect(() => {
-    // console.log('useEffect | useCheckGift');
     const createObjGift = async () => {
       if (citizenship !== null && addressActive !== null) {
         setLoadingGift(true);
@@ -27,8 +21,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
         const { owner } = citizenship;
         const { bech32 } = addressActive;
         if (owner === bech32) {
-          // console.log('useEffect | useCheckGift');
-
           const response = await funcCheckGiftLoop();
           if (Object.keys(response).length > 0) {
             const responseClaim = await checkIsClaim(response);
@@ -53,6 +45,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
       }
     };
     createObjGift();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [citizenship, addressActive, updateFunc]);
 
   useEffect(() => {
@@ -203,14 +196,17 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
 
   const checkIsClaim = useCallback(
     async (dataGift) => {
-      if (jsCyber !== null && dataGift !== null) {
+      if (queryClient && dataGift !== null) {
         const templGiftData = JSON.parse(JSON.stringify(dataGift));
         for (const key in dataGift) {
           if (Object.hasOwnProperty.call(dataGift, key)) {
             const element = dataGift[key];
             const { address, isClaimed } = element;
             if (isClaimed === undefined || isClaimed === false) {
-              const queryResponseResult = await getIsClaimed(jsCyber, address);
+              const queryResponseResult = await getIsClaimed(
+                queryClient,
+                address
+              );
 
               if (
                 queryResponseResult &&
@@ -223,7 +219,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
                   queryResponseResult.is_claimed;
                 if (queryResponseResult.is_claimed) {
                   const responseClaimedAmount = await getClaimedAmount(
-                    jsCyber,
+                    queryClient,
                     address
                   );
                   if (
@@ -246,7 +242,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
       }
       return null;
     },
-    [jsCyber]
+    [queryClient]
   );
 
   return {

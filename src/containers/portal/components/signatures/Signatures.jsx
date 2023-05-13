@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './styles.scss';
 import {
@@ -11,7 +11,7 @@ import {
 
 const classNames = require('classnames');
 
-const Signatures = ({ addressActive }) => {
+function Signatures({ addressActive }) {
   const [plaing, setPlaing] = useState(true);
 
   const address = useMemo(() => {
@@ -65,6 +65,7 @@ const Signatures = ({ addressActive }) => {
         setPlaing(true);
       }, 7000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, plaing]);
 
   return (
@@ -97,6 +98,6 @@ const Signatures = ({ addressActive }) => {
       </div>
     </button>
   );
-};
+}
 
 export default Signatures;

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
-import { SendLedger } from '../../components';
+import { useState } from 'react';
+import { ActionBarSend } from '../../components';
 import txs from '../../utils/txs';
 import { CYBER } from '../../utils/config';
 import { downloadObjectAsJson } from '../../utils/utils';
-import { deletPubkey } from './utils';
 
 const MEMO = 'cyb.ai, using CLI';
 const STAGE_INIT = 1;
@@ -45,7 +43,7 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
 
   if (stage === STAGE_SEND_TX) {
     return (
-      <SendLedger
+      <ActionBarSend
         onClickBtn={() => generateTx()}
         onChangeInputAmount={(e) => setAmount(e.target.value)}
         valueInputAmount={amount}

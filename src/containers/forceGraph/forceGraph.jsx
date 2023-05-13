@@ -1,30 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, useLocation, useHistory } from 'react-router-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
 
-// const CYBERLINK_SUBSCRIPTION = gql`
-//   subscription newCyberlinkLink {
-//     cyberlink(limit: 1, order_by: { height: desc }) {
-//       object_from
-//       object_to
-//       subject
-//       txhash
-//     }
-//   }
-// `;
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-const ForceGraph = () => {
-  const location = useLocation();
+function ForceGraph() {
   const params = useParams();
-  const history = useHistory();
   let graph;
 
   const [hasLoaded, setHasLoaded] = useState(true);
@@ -35,19 +16,10 @@ const ForceGraph = () => {
   const limit = 1024;
   let where;
 
-  // console.log(`location`, location);
-  // console.log(`params`, params);
-  // console.log(
-  //   `history`,
-  //   window.location.href.toString().split(window.location.host)
-  // );
-  // console.log('window.location.host', window.location.host)
-  // console.log('window.location', window.location.origin);
-  // console.log(`window.location.href`, window.location.href);
-
   useEffect(() => {
     const feachData = async () => {
       if (params.agent) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         where = `{neuron: {_eq: "${params.agent}"}}`;
       } else {
         where = '{}';
@@ -69,7 +41,7 @@ const ForceGraph = () => {
       const to = cyberlinks.map((a) => a.particle_to);
       const set = new Set(from.concat(to));
       const object = [];
-      set.forEach(function (value) {
+      set.forEach((value) => {
         object.push({ id: value });
       });
 
@@ -82,6 +54,7 @@ const ForceGraph = () => {
           // curvative: getRandomInt(20, 500) / 1000,
         };
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       graph = {
         nodes: object,
         links: cyberlinks,
@@ -125,6 +98,7 @@ const ForceGraph = () => {
     (node) => {
       window.open(`${window.location.origin}/ipfs/${node.id}`, '_blank');
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
@@ -135,9 +109,11 @@ const ForceGraph = () => {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleEngineStop = useCallback(() => {
     console.log('engine stopped!');
     setHasLoaded(false);
@@ -195,11 +171,11 @@ const ForceGraph = () => {
     );
   }
 
-  var pocket;
+  let pocket;
   if (localStorage.getItem('pocket') != null) {
-    var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
-    var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]['cyber'].bech32;
+    const localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
+    const keyPocket = Object.keys(localStoragePocketData)[0];
+    pocket = localStoragePocketData[keyPocket].cyber.bech32;
   }
 
   return (
@@ -237,8 +213,10 @@ const ForceGraph = () => {
         nodeOpacity={1.0}
         nodeRelSize={8}
         linkColor={(link) =>
+          // eslint-disable-next-line no-nested-ternary
           localStorage.getItem('pocket') != null
-            ? link.subject == pocket
+            ? // eslint-disable-next-line eqeqeq
+              link.subject == pocket
               ? 'red'
               : 'rgba(9,255,13,1)'
             : 'rgba(9,255,13,1)'
@@ -262,6 +240,6 @@ const ForceGraph = () => {
       />
     </div>
   );
-};
+}
 
 export default ForceGraph;

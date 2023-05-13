@@ -1,15 +1,14 @@
-import React, { useMemo } from 'react';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
-import { BOOT_ICON } from '../../utils';
-import { formatNumber } from '../../../../utils/utils';
+import { ContainerGradientText } from '../../../../components/containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
-const ItemRow = ({ value, title }) => (
-  <div className={styles.containerItemRow}>
-    <div>{title}</div>
-    <div>{value}</div>
-  </div>
-);
+function ItemRow({ value, title }) {
+  return (
+    <div className={styles.containerItemRow}>
+      <div>{title}</div>
+      <div>{value}</div>
+    </div>
+  );
+}
 
 function UnclaimedGift({ unClaimedGiftAmount = '' }) {
   try {
@@ -31,4 +30,5 @@ function UnclaimedGift({ unClaimedGiftAmount = '' }) {
   }
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default UnclaimedGift;

@@ -1,7 +1,3 @@
-import React, { Component } from 'react';
-
-import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
-
 import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
@@ -16,24 +12,19 @@ import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
-import zhdun from '../../image/temple/zhdun.png';
-import { routes } from '../../router';
+import { routes } from '../../routes';
 
 const itemsMenu = (address) => {
   let linkLog = '/robot';
   let linkBrain = '/graph';
   let linkSwarm = '/robot';
-  let linkSigma = '/robot';
   let linkSecurity = '/robot';
-  let linkCyberlinks = '/robot';
   let linkTimeline = '/robot';
   let linkBadges = '/robot';
   if (address !== null) {
     linkLog = `/network/bostrom/contract/${address.bech32}`;
     linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
-    linkSigma = `/network/bostrom/contract/${address.bech32}/sigma`;
     linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
-    linkCyberlinks = `/network/bostrom/contract/${address.bech32}/cyberlinks`;
     linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
     linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
     linkBrain = `/pgraph/${address.bech32}`;
@@ -175,13 +166,19 @@ const itemsMenu = (address) => {
   return listItemMenu;
 };
 
-const AppMenu = ({ addressActive }) => {
+function AppMenu({ addressActive }) {
   return (
-    <MenuContainer>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+      }}
+    >
       <Bookmarks items={itemsMenu(addressActive)} />
-      <ReportLinkContainer />
-    </MenuContainer>
+    </div>
   );
-};
+}
 
 export default AppMenu;

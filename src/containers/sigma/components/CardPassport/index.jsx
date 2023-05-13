@@ -1,13 +1,10 @@
-import React, { useMemo, useEffect, useContext } from 'react';
-import { Dots } from '../../../../components';
-import { AppContext } from '../../../../context';
-import { CYBER } from '../../../../utils/config';
-import { ContainerGradient } from '../../../portal/components';
+import { useMemo, useEffect, useContext } from 'react';
+import { Dots, ContainerGradient } from '../../../../components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
 
-const CardPassport = ({ accounts }) => {
+function CardPassport({ accounts }) {
   const { updateDataCap } = useContext(SigmaContext);
   const { passport } = useGetPassportByAddress(accounts);
   const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
@@ -22,6 +19,7 @@ const CardPassport = ({ accounts }) => {
 
       updateDataCap({ [bech32]: { ...totalAmountInLiquid } });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalAmountInLiquid, accounts]);
 
   const reduceDataBalanceTokenRow = useMemo(() => {
@@ -39,7 +37,12 @@ const CardPassport = ({ accounts }) => {
 
   const renderbalanceTokenRow = useMemo(() => {
     return Object.keys(reduceDataBalanceTokenRow).map((key) => {
-      return <RowBalancesDetails balance={reduceDataBalanceTokenRow[key]} />;
+      return (
+        <RowBalancesDetails
+          balance={reduceDataBalanceTokenRow[key]}
+          key={key}
+        />
+      );
     });
   }, [reduceDataBalanceTokenRow]);
 
@@ -73,6 +76,6 @@ const CardPassport = ({ accounts }) => {
       </div>
     </ContainerGradient>
   );
-};
+}
 
 export default CardPassport;

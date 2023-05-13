@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { AppContext } from '../../../../context';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { makeTags } from '../../../../utils/utils';
 import InstantiationContract from '../../contract/InstantiationContract';
 import CodeInfo from './CodeInfo';
 import TableInstance from './TableInstance';
 import styles from './styles.scss';
-import { FlexWrapCantainer, a } from '../../ui/ui';
+import { FlexWrapCantainer } from '../../ui/ui';
 
 const initDetails = {
   checksum: '',
@@ -16,37 +16,37 @@ const initDetails = {
 };
 
 const useGetContractsInfo = (codeId, updateFnc) => {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [details, setDetails] = useState(initDetails);
   const [contracts, setContracts] = useState([]);
   const [uploadTxHash, setUploadTxHash] = useState('');
 
   useEffect(() => {
     const getContracts = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.getContracts(codeId);
+      if (queryClient) {
+        const response = await queryClient.getContracts(codeId);
         console.log(`response getContracts`, response);
         setContracts(response);
       }
     };
     getContracts();
-  }, [jsCyber, codeId, updateFnc]);
+  }, [queryClient, codeId, updateFnc]);
 
   useEffect(() => {
     const getCodeDetails = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.getCodeDetails(codeId);
+      if (queryClient) {
+        const response = await queryClient.getCodeDetails(codeId);
         console.log(`response getCodeDetails`, response);
         setDetails(response);
       }
     };
     getCodeDetails();
-  }, [jsCyber, codeId]);
+  }, [queryClient, codeId]);
 
   useEffect(() => {
     const searchTx = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.searchTx({
+      if (queryClient) {
+        const response = await queryClient.searchTx({
           tags: makeTags(
             `message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgStoreCode&store_code.code_id=${codeId}`
           ),
@@ -59,7 +59,7 @@ const useGetContractsInfo = (codeId, updateFnc) => {
       }
     };
     searchTx();
-  }, [jsCyber, codeId]);
+  }, [queryClient, codeId]);
 
   return { uploadTxHash, contracts, details };
 };

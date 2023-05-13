@@ -1,30 +1,10 @@
-import React from 'react';
-import { Pane, Icon } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
+import { useNavigate } from 'react-router-dom';
 import Card from '../ui/card';
 import { formatNumber } from '../../../utils/utils';
 
-const PREFIXES = [
-  {
-    prefix: 't',
-    power: 10 ** 12,
-  },
-  {
-    prefix: 'g',
-    power: 10 ** 9,
-  },
-  {
-    prefix: 'm',
-    power: 10 ** 6,
-  },
-  {
-    prefix: 'k',
-    power: 10 ** 3,
-  },
-];
-
 function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const freeEnergy = myEnegy + income - outcome;
 
@@ -41,7 +21,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'myEnegy'}
         title="My Enegy"
         value={`${formatNumber(myEnegy)} W`}
-        onClick={() => history.push('/grid')}
+        onClick={() => navigate('/grid')}
       />
       <Pane marginX={5} fontSize="20px">
         +
@@ -50,7 +30,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'income'}
         title="Income"
         value={`${formatNumber(income)} W`}
-        onClick={() => history.push('/grid/income')}
+        onClick={() => navigate('/grid/income')}
       />
       <Pane marginX={5} fontSize="20px">
         -
@@ -59,7 +39,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'outcome'}
         title="Outcome"
         value={`${formatNumber(outcome)} W`}
-        onClick={() => history.push('/grid/outcome')}
+        onClick={() => navigate('/grid/outcome')}
       />
       <Pane marginX={5} fontSize="20px">
         =

@@ -1,27 +1,16 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  useGetLocalStoge,
-  useGetPassportByAddress,
-  useGetBalanceBostrom,
-} from './hooks';
-import {
-  ActionBarSteps,
-  BtnGrd,
-  ActionBarContainer,
-  MainContainer,
-  ContainerGradientText,
-} from '../portal/components';
-import ActionBar from './ActionBar';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { useSigmaContext, SigmaContext } from './SigmaContext';
+import BigNumber from 'bignumber.js';
+
+import { MainContainer } from '../portal/components';
+import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
-import BigNumber from 'bignumber.js';
 import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
+import { ContainerGradientText } from '../../components';
 
 const valueContext = {
   totalCap: 0,
@@ -32,7 +21,6 @@ const valueContext = {
 function Sigma({ defaultAccount }) {
   const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
-  const [updateState, setUpdateState] = useState(0);
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
 
   // const { accounts } = useGetLocalStoge(updateState);
@@ -82,6 +70,7 @@ function Sigma({ defaultAccount }) {
       updateChangeCap(changeCap);
       updateTotalCap(tempCap);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.dataCap]);
 
   // get local store
@@ -111,10 +100,6 @@ function Sigma({ defaultAccount }) {
     }));
   };
 
-  const updateStateFunc = () => {
-    setUpdateState((item) => item + 1);
-  };
-
   const renderItem = useMemo(() => {
     if (accountsData.length > 0) {
       return accountsData.map((item) => {
@@ -129,6 +114,7 @@ function Sigma({ defaultAccount }) {
 
   return (
     <SigmaContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
       <MainContainer width="100%">

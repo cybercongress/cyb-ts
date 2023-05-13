@@ -1,5 +1,6 @@
+/* eslint-disable */
 import React, { Component } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { coins } from '@cosmjs/launchpad';
 import {
@@ -20,10 +21,11 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 
-import { getTotalRewards, getPin } from '../../utils/search/utils';
+import { getTotalRewards, getTxs } from '../../utils/search/utils';
 
-import { AppContext } from '../../context';
-import { CosmosDelegateTool } from '../../utils/ledger';
+import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import Button from 'src/components/btnGrd';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -58,7 +60,6 @@ class ActionBarContainer extends Component {
       },
     };
     this.timeOut = null;
-    this.ledger = new CosmosDelegateTool();
     this.inputOpenFileRef = React.createRef();
   }
 
@@ -72,9 +73,9 @@ class ActionBarContainer extends Component {
     }
 
     if (file !== null) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      toCid = await getPin(node, toCid);
+      toCid = await addContenToIpfs(node, toCid);
     }
 
     return toCid;
@@ -82,16 +83,16 @@ class ActionBarContainer extends Component {
 
   generateTxSendKplr = async () => {
     const { contentHash, toSendAddres, toSend } = this.state;
-    const { keplr } = this.context;
-    const { type, addressSend, node, follow, tweets } = this.props;
+    const { type, addressSend, follow, tweets, signer, signingClient, node } =
+      this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
       amount: [],
       gas: DEFAULT_GAS_LIMITS.toString(),
     };
 
-    if (keplr !== null) {
-      const [{ address }] = await keplr.signer.getAccounts();
+    if (signer && signingClient) {
+      const [{ address }] = await signer.getAccounts();
       let response = null;
       const msg = [];
       if (type === 'security') {
@@ -112,7 +113,7 @@ class ActionBarContainer extends Component {
               amount: [],
               gas: gasLimitsRewards.toString(),
             };
-            response = await keplr.withdrawAllRewards(
+            response = await signingClient.withdrawAllRewards(
               address,
               validatorAddress,
               feeRewards
@@ -120,13 +121,13 @@ class ActionBarContainer extends Component {
           }
         }
       } else if (type === 'log' && follow) {
-        const fromCid = await getPin(node, 'follow');
-        const toCid = await getPin(node, addressSend);
-        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+        const fromCid = await addContenToIpfs(node, 'follow');
+        const toCid = await addContenToIpfs(node, addressSend);
+        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'log' && tweets) {
-        const fromCid = await getPin(node, 'tweet');
+        const fromCid = await addContenToIpfs(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
-        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else {
         msg.push({
           type: 'cosmos-sdk/MsgSend',
@@ -159,25 +160,26 @@ class ActionBarContainer extends Component {
     const { txHash } = this.state;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(txHash);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (updateAddress) {
-          updateAddress();
+      const data = await getTxs(txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (updateAddress) {
+            updateAddress();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
@@ -285,7 +287,6 @@ class ActionBarContainer extends Component {
         />
       );
     }
-    // console.log('rewards', rewards);
 
     if (
       stage === STAGE_INIT &&
@@ -306,11 +307,8 @@ class ActionBarContainer extends Component {
         </ActionBar>
       );
     }
-    // console.log('rewards', rewards);
 
-    // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
       if (type === 'security') {
         return (
           <RewardsDelegators
@@ -379,12 +377,4 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-ActionBarContainer.contextType = AppContext;
-
-export default connect(mapStateToProps)(ActionBarContainer);
+export default withIpfsAndKeplr(ActionBarContainer);

@@ -1,30 +1,36 @@
-import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
-import { formatNumber } from '../../utils/search/utils';
 import { Link } from 'react-router-dom';
-import { ContainerGradient } from '../portal/components';
+import { formatNumber } from '../../utils/search/utils';
+import { ContainerGradient } from '../../components';
 
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
-const InformationTxs = ({ data, messageError, ...props }) => {
-  console.log(data);
+function InformationTxs({ data, messageError, ...props }) {
   const value = Object.keys(data).map((key) => {
     let item = '';
-    switch (key) {
-      case 'height':
-        item = formatNumber(data[key]);
-        break;
-      case 'status':
-        item = data[key] ? 'Success' : 'Fail';
-        break;
-      case 'timestamp':
-        item = dateFormat(data[key], 'UTC: dd/mm/yyyy, hh:MM:ss tt "UTC"');
-        break;
-      default:
-        item = data[key];
-        break;
+
+    if (!data[key] && key !== 'status') {
+      item = '-';
+    } else {
+      switch (key) {
+        case 'height':
+          item = formatNumber(data[key]);
+          break;
+        case 'status':
+          item = data[key] ? 'Success' : 'Fail';
+          break;
+        case 'timestamp':
+          item = new Intl.DateTimeFormat(navigator.language, {
+            dateStyle: 'full',
+            timeStyle: 'medium',
+          }).format(new Date(data[key]));
+          break;
+        default:
+          item = data[key];
+          break;
+      }
     }
 
     return (
@@ -65,7 +71,7 @@ const InformationTxs = ({ data, messageError, ...props }) => {
             />
           )}
           {key === 'height' ? (
-            <Link to={`/network/bostrom/block/${data[key]}`}>{item}</Link>
+            <Link to={`/network/bostrom/blocks/${data[key]}`}>{item}</Link>
           ) : (
             item
           )}
@@ -84,7 +90,7 @@ const InformationTxs = ({ data, messageError, ...props }) => {
         </Text>
       }
       {...props}
-      styleLampContent={!data.status ? 'red' : 'blue'}
+      styleLampContent={!data.status ? 'red' : 'green'}
       txs={
         !data.status
           ? { rawLog: messageError, status: !data.status ? 'error' : '' }
@@ -108,6 +114,6 @@ const InformationTxs = ({ data, messageError, ...props }) => {
       </Pane>
     </ContainerGradient>
   );
-};
+}
 
 export default InformationTxs;

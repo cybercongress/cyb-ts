@@ -1,8 +1,8 @@
-import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import TableTxs from '../account/component/tableTxs';
 import { Dots } from '../../components';
+import Loader2 from 'src/components/ui/Loader2';
 
 const typeTx = `["cosmos.gov.v1beta1.MsgDeposit", "cosmos.gov.v1beta1.MsgVote", "cosmos.gov.v1beta1.MsgSubmitProposal" ]`;
 
@@ -43,26 +43,20 @@ function Leadership({ accountUser }) {
       }
     }
   `;
-  const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
-  if (loading) {
-    return <Dots />;
-  }
+  const { loading, error, data } = useSubscription(GET_CHARACTERS);
 
-  if (error) {
-    return `Error! ${error.message}`;
-  }
-
-  console.log('data wss', dataTxs);
-  const { _transaction: transaction } = dataTxs;
+  const { _transaction: transaction } = data || {};
 
   return (
     <div>
       {loading ? (
-        <div className="container-loading">
-          <Dots />
-        </div>
-      ) : (
+        <Loader2 />
+      ) : transaction ? (
         <TableTxs accountUser={accountUser} data={transaction} />
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        'No data'
       )}
     </div>
   );

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
-import txs from '../../../utils/txs';
+import { useEffect, useState } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
-import { AppContext } from '../../../context';
+import { useSigningClient } from 'src/contexts/signerClient';
+import txs from '../../../utils/txs';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
@@ -12,6 +12,8 @@ import { CardItem } from '../codes/code';
 import RenderInstantiateMsg from './RenderInstantiateMsg';
 import SelectFile from './renderAbi/SelectFile';
 import useParseJsonSchema from './renderAbi/useParseJsonSchema';
+import Button from 'src/components/btnGrd';
+import { Input } from 'src/components';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -32,22 +34,26 @@ const executePlaceholder = {
 const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
-export const JSONInputCard = ({ title, placeholder, setState, height }) => (
-  <div className={styles.containerJsonContractJSONInput}>
-    <span className={styles.containerJsonContractJSONInputTitle}>{title}:</span>
-    <JSONInput
-      width="100%"
-      height={height || '200px'}
-      placeholder={placeholder}
-      confirmGood={false}
-      style={jsonInputStyle}
-      onChange={({ jsObject }) => setState({ result: jsObject })}
-    />
-  </div>
-);
+export function JSONInputCard({ title, placeholder, setState, height }) {
+  return (
+    <div className={styles.containerJsonContractJSONInput}>
+      <span className={styles.containerJsonContractJSONInputTitle}>
+        {title}:
+      </span>
+      <JSONInput
+        width="100%"
+        height={height || '200px'}
+        placeholder={placeholder}
+        confirmGood={false}
+        style={jsonInputStyle}
+        onChange={({ jsObject }) => setState({ result: jsObject })}
+      />
+    </div>
+  );
+}
 
 function InstantiationContract({ codeId, updateFnc }) {
-  const { keplr } = useContext(AppContext);
+  const { signer, signingClient } = useSigningClient();
   const [error, setError] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [executeResponse, setExecuteResponse] = useState({});
@@ -88,16 +94,17 @@ function InstantiationContract({ codeId, updateFnc }) {
   }, [coinsObject, executeResponse, msgObject]);
 
   const executeContract = async () => {
-    if (!msgObject.result || !label || keplr === null) {
+    if (!msgObject.result || !label || !signer || !signingClient) {
+      setError('Some error');
       return;
     }
 
     setExecuting(true);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-      const executeResponseResult = await keplr.instantiate(
+      const executeResponseResult = await signingClient.instantiate(
         address,
         parseFloat(codeId),
         msgObject.result,
@@ -127,21 +134,12 @@ function InstantiationContract({ codeId, updateFnc }) {
   };
 
   if (fileAbiExecute === null) {
-    if (label.length === 0) {
-      content = (
-        <div style={{ fontSize: '18px' }}>
-          You must add a label{' '}
-          <button type="button" className="btn-disabled" disabled>
-            Upload schema
-          </button>
-        </div>
-      );
-    } else {
+    if (label.length) {
       content = (
         <div>
           <SelectFile
             text="Upload instantiate schema"
-            useStateCallback={setFileAbiExecute}
+            stateCallback={setFileAbiExecute}
           />
         </div>
       );
@@ -175,37 +173,29 @@ function InstantiationContract({ codeId, updateFnc }) {
       />
       <div className={styles.containerJsonContractInputContainer}>
         <div className={styles.containerJsonContractInputContainerItem}>
-          <span>Label</span>
-          <input
-            className={styles.containerJsonContractInputContainerItemInput}
+          <span>Label *</span>
+          <Input
             value={label}
             onChange={(event) => setLabel(event.target.value)}
           />
         </div>
         <div className={styles.containerJsonContractInputContainerItem}>
           <span>Memo</span>
-          <input
-            className={styles.containerJsonContractInputContainerItemInput}
+          <Input
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
           />
         </div>
       </div>
 
-      {executing ? (
-        <button className="btn btn-primary" type="button" disabled>
-          Executing...
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={executeContract}
-          disabled={!msgObject.result || keplr === null}
-        >
-          Instantiate contract
-        </button>
-      )}
+      <Button
+        pending={executing}
+        pendingText="Executing"
+        onClick={executeContract}
+        disabled={!msgObject.result || !signer || !label}
+      >
+        Instantiate contract
+      </Button>
 
       {executeResponse.result && (
         <div className={styles.containerJsonContractResult}>
@@ -231,11 +221,13 @@ function InstantiationContract({ codeId, updateFnc }) {
         </div>
       )}
 
-      <FlexWrapCantainer style={{ flexDirection: 'column' }}>
-        {content}
-      </FlexWrapCantainer>
+      {content && (
+        <FlexWrapCantainer style={{ flexDirection: 'column' }}>
+          {content}
+        </FlexWrapCantainer>
+      )}
 
-      {error !== null && (
+      {error && (
         <div>
           <div>{error}</div>
         </div>

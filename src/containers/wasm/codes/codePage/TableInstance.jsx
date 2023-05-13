@@ -1,4 +1,3 @@
-import React from 'react'
 import InstanceRow from './InstanceRow';
 
 function TableInstance({ contracts }) {
@@ -23,4 +22,4 @@ function TableInstance({ contracts }) {
   );
 }
 
-export default TableInstance
+export default TableInstance;

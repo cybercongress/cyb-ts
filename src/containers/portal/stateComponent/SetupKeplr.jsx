@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import Iframe from 'react-iframe';
-import { ContainerGradient } from '../components';
-import { Loading } from '../../../components';
+import { ContainerGradient } from '../../../components';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmW99p83AGb3Qa62iL6B24RNLcwRh9x9U2nqkF94dfvuze';
@@ -20,6 +17,7 @@ function SetupKeplr() {
           height: '100%',
         }}
       >
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video width="100%" height="100%" controls>
           <source src={linkMovie} type="video/mp4" />
         </video>

@@ -1,15 +1,15 @@
-import React, { useState, useContext, useEffect } from 'react';
-import txs from '../../../utils/txs';
+import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
-import { AppContext } from '../../../context';
-import { CYBER } from '../../../utils/config';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import txs from '../../../utils/txs';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
-import { FlexWrapCantainer } from '../ui/ui';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
 function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const { signer, signingClient } = useSigningClient();
   const [contractResponse, setContractResponse] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [executing, setExecuting] = useState(false);
@@ -17,8 +17,8 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
-        const response = await jsCyber.getTx(txHash);
+      if (queryClient && txHash !== null) {
+        const response = await queryClient.getTx(txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           const { code, hash, height } = response;
@@ -57,22 +57,23 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash, activeKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryClient, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
-    if (keplr === null || !formData) {
+    if (!signer || !formData) {
       return;
     }
 
     setActiveKey(key);
     setExecuting(true);
 
-    console.log(`formData`, formData)
+    console.log(`formData`, formData);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-      const executeResponseResult = await keplr.instantiate(
+      const executeResponseResult = await signingClient.instantiate(
         address,
         parseFloat(codeId),
         formData,
@@ -108,6 +109,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
         <JsonSchemaParse
           executing={executing}
           activeKey={activeKey}
+          key={key}
           schema={items}
           contractResponse={contractResponse}
           keyItem={key}
@@ -118,7 +120,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderInstantiateMsg;

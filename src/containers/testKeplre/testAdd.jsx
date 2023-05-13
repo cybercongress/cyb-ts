@@ -1,11 +1,12 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable */
+import { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 
 const getName = (file) => file.name;
 
-function AddTest({ nodeIpfs }) {
+function AddTest() {
   const inputOpenFileRef = useRef();
   const [totalSupply, setTotalSupply] = useState(null);
   const [file, setFile] = useState(null);
@@ -36,8 +37,7 @@ function AddTest({ nodeIpfs }) {
     try {
       const response = await axios({
         method: 'get',
-        url:
-          'https://gateway.ipfs.cybernode.ai/ipfs/QmVdVFZDsSTVCeVLgWLU1fWxmZnYLCM5yD5RS4NpZQmDBp',
+        url: 'https://gateway.ipfs.cybernode.ai/ipfs/QmVdVFZDsSTVCeVLgWLU1fWxmZnYLCM5yD5RS4NpZQmDBp',
       });
       console.log(`response`, response);
     } catch (error) {
@@ -70,14 +70,9 @@ function AddTest({ nodeIpfs }) {
         type="file"
         style={{ display: 'none' }}
       />
-      <button
-        type="button"
-        className={
-          file !== null && file !== undefined ? 'btn-add-close' : 'btn-add-file'
-        }
-        onClick={
-          file !== null && file !== undefined ? onClickClear : showOpenFileDlg
-        }
+      <AddFileButton
+        isRemove={file}
+        onClick={file ? onClickClear : showOpenFileDlg}
       />
       <button type="button" onClick={() => addPin()}>
         add
@@ -86,10 +81,4 @@ function AddTest({ nodeIpfs }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(AddTest);
+export default AddTest;
