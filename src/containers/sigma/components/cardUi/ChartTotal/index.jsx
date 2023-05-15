@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import React from 'react';
 import styles from './styles.scss';
 
 const getProcent = (curent, total) => {

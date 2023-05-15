@@ -1,61 +1,55 @@
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Route, Link, useParams, useLocation } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
+import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
-// import Balance fro./mainnce';
 import Heroes from './tabs/heroes';
-import { coinDecimals, formatNumber, asyncForEach } from '../../utils/utils';
+import { formatNumber } from '../../utils/utils';
 import {
-  Loading,
   Copy,
   ContainerCard,
   Card,
   Dots,
-  NoItems,
+  TabBtn,
+  ActionBar,
+  Account,
 } from '../../components';
 import ActionBarContainer from './actionBar';
-// import GetTxs from './tabs/txs';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
 import FollowsTab from './tabs/follows';
-import AvatarIpfs from './component/avatarIpfs';
-import CyberLinkCount from './component/cyberLinkCount';
-import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
-  <Link to={to}>
-    <Tab
-      key={text}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      paddingX={5}
-      paddingY={20}
-      marginX={3}
-      borderRadius={4}
-      color="#36d6ae"
-      boxShadow="0px 0px 5px #36d6ae"
-      fontSize="16px"
-      whiteSpace="nowrap"
-      width="100%"
-    >
-      {text}
-    </Tab>
-  </Link>
-);
+const getTabsMap = (address) => ({
+  security: {
+    text: 'Security',
+    to: `/network/bostrom/contract/${address}/security`,
+  },
+  sigma: { text: 'Sigma', to: `/network/bostrom/contract/${address}/sigma` },
+  cyberlinks: {
+    text: 'Cyberlinks',
+    to: `/network/bostrom/contract/${address}/cyberlinks`,
+  },
+  log: { text: 'Log', to: `/network/bostrom/contract/${address}` },
+  swarm: { text: 'Swarm', to: `/network/bostrom/contract/${address}/swarm` },
+  timeline: {
+    text: 'Timeline',
+    to: `/network/bostrom/contract/${address}/timeline`,
+  },
+  badges: { text: 'Badges', to: `/network/bostrom/contract/${address}/badges` },
+});
 
-function AccountDetails({ node, mobile, defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
-  const { address } = useParams();
-  const location = useLocation();
+function AccountDetails({ defaultAccount }) {
+  const queryClient = useQueryClient();
+  const { address, tab = 'log' } = useParams();
   const [updateAddress, setUpdateAddress] = useState(0);
   const { community } = useGetCommunity(address, updateAddress);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
@@ -67,50 +61,17 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     updateAddress
   );
   const dataGetTsxByAddress = useGetTsxByAddress(address);
-  const [selected, setSelected] = useState('log');
   const [dataTweet, setDataTweet] = useState([]);
   const [tweets, setTweets] = useState(false);
   const [loaderTweets, setLoaderTweets] = useState(true);
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
   const [karmaNeuron, setKarmaNeuron] = useState(0);
+  const { isMobile: mobile } = useDevice();
 
-  useEffect(() => {
-    const { pathname } = location;
-    if (
-      pathname.match(/timeline/gm) &&
-      pathname.match(/timeline/gm).length > 0
-    ) {
-      setSelected('timeline');
-    } else if (
-      pathname.match(/sigma/gm) &&
-      pathname.match(/sigma/gm).length > 0
-    ) {
-      setSelected('sigma');
-    } else if (
-      pathname.match(/security/gm) &&
-      pathname.match(/security/gm).length > 0
-    ) {
-      setSelected('security');
-    } else if (
-      pathname.match(/badges/gm) &&
-      pathname.match(/badges/gm).length > 0
-    ) {
-      setSelected('badges');
-    } else if (
-      pathname.match(/cyberlinks/gm) &&
-      pathname.match(/cyberlinks/gm).length > 0
-    ) {
-      setSelected('cyberlinks');
-    } else if (
-      pathname.match(/swarm/gm) &&
-      pathname.match(/swarm/gm).length > 0
-    ) {
-      setSelected('swarm');
-    } else {
-      setSelected('log');
-    }
-  }, [location.pathname]);
+  const tabs = useMemo(() => {
+    return getTabsMap(address);
+  }, [address]);
 
   useEffect(() => {
     const getFeeds = async () => {
@@ -132,14 +93,15 @@ function AccountDetails({ node, mobile, defaultAccount }) {
 
   useEffect(() => {
     const getKarma = async () => {
-      if (jsCyber !== null && address.match(PATTERN_CYBER)) {
-        const responseKarma = await jsCyber.karma(address);
-        const karma = parseFloat(responseKarma.karma);
-        setKarmaNeuron(karma);
+      if (queryClient && address.match(PATTERN_CYBER)) {
+        const responseKarma = await queryClient.karma(address);
+        if (responseKarma.karma) {
+          setKarmaNeuron(parseFloat(responseKarma.karma));
+        }
       }
     };
     getKarma();
-  }, [jsCyber, address]);
+  }, [queryClient, address]);
 
   useEffect(() => {
     const chekFollowAddress = async () => {
@@ -161,6 +123,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       }
     };
     chekFollowAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name, address, updateAddress]);
 
   useEffect(() => {
@@ -189,87 +152,16 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       }
     };
     chekAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name, address]);
 
-  let content;
-  if (selected === 'security') {
-    if (loadingHeroesInfo) {
-      content = <Dots />;
-    } else {
-      content = (
-        <Route
-          path="/network/bostrom/contract/:address/security"
-          render={() => <Heroes data={staking} />}
-        />
-      );
-    }
-  }
-  // console.log('balance', balance);
-  if (selected === 'sigma') {
-    if (loadingBalanceInfo) {
-      content = <Dots />;
-    } else {
-      content = <Main balance={balance} balanceToken={balanceToken} />;
-    }
-  }
-
-  if (selected === 'cyberlinks') {
-    content = <GetLink accountUser={address} />;
-  }
-
-  if (selected === 'timeline') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address/timeline"
-        render={() => (
-          <TxsTable
-            dataGetTsxByAddress={dataGetTsxByAddress}
-            accountUser={address}
-          />
-        )}
-      />
-    );
-  }
-
-  if (selected === 'badges') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address/badges"
-        render={() => <TableDiscipline address={address} />}
-      />
-    );
-  }
-
-  if (selected === 'log') {
-    if (loaderTweets) {
-      content = <Dots />;
-    } else {
-      content = (
-        <Route
-          path="/network/bostrom/contract/:address"
-          render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
-        />
-      );
-    }
-    // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
-  }
-
-  if (selected === 'swarm') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address/swarm"
-        render={() => <FollowsTab node={node} community={community} />}
-      />
-    );
-    // connect = <FollowsTab data={addressFollows} />;
-  }
-
+  const showLoadingDots =
+    (loadingHeroesInfo && ['security', 'sigma', ''].indexOf(tab) !== -1) ||
+    (loaderTweets && tab === 'log') ||
+    (loadingBalanceInfo && tab === 'sigma');
   return (
     <div>
       <main className="block-body">
-        {/* <button type="button" onClick={() => setOffset((item) => item + 1)}>
-          +
-        </button> */}
         <Pane
           marginBottom={20}
           display="flex"
@@ -290,7 +182,12 @@ function AccountDetails({ node, mobile, defaultAccount }) {
               margin: 0,
             }}
           />
-          <AvatarIpfs addressCyber={address} node={node} />
+          <Account
+            address={address}
+            avatar
+            styleUser={{ flexDirection: 'column' }}
+            sizeAvatar="80px"
+          />
           <Card
             title={`total, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={formatNumber(balance.total)}
@@ -306,41 +203,14 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
         >
-          <TabBtn
-            text="Security"
-            isSelected={selected === 'security'}
-            to={`/network/bostrom/contract/${address}/security`}
-          />
-          <TabBtn
-            text="Sigma"
-            isSelected={selected === 'sigma'}
-            to={`/network/bostrom/contract/${address}/sigma`}
-          />
-          <TabBtn
-            text="Cyberlinks"
-            isSelected={selected === 'cyberlinks'}
-            to={`/network/bostrom/contract/${address}/cyberlinks`}
-          />
-          <TabBtn
-            text="Log"
-            isSelected={selected === 'log'}
-            to={`/network/bostrom/contract/${address}`}
-          />
-          <TabBtn
-            text="Swarm"
-            isSelected={selected === 'swarm'}
-            to={`/network/bostrom/contract/${address}/swarm`}
-          />
-          <TabBtn
-            text="Timeline"
-            isSelected={selected === 'timeline'}
-            to={`/network/bostrom/contract/${address}/timeline`}
-          />
-          <TabBtn
-            text="Badges"
-            isSelected={selected === 'badges'}
-            to={`/network/bostrom/contract/${address}/badges`}
-          />
+          {Object.entries(tabs).map(([key, item]) => (
+            <TabBtn
+              key={`acc_tabs_${key}`}
+              text={item.text}
+              isSelected={tab === key}
+              to={item.to}
+            />
+          ))}
         </Tablist>
         <Pane
           display="flex"
@@ -349,7 +219,27 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           justifyContent="center"
           flexDirection="column"
         >
-          {content}
+          {showLoadingDots && <Dots />}
+
+          {!showLoadingDots && (
+            <>
+              {tab === 'security' && <Heroes data={staking} />}
+              {tab === 'sigma' && (
+                <Main balance={balance} balanceToken={balanceToken} />
+              )}
+              {tab === 'cyberlinks' && <GetLink accountUser={address} />}
+
+              {tab === 'timeline' && (
+                <TxsTable
+                  dataGetTsxByAddress={dataGetTsxByAddress}
+                  accountUser={address}
+                />
+              )}
+              {tab === 'badges' && <TableDiscipline address={address} />}
+              {tab === 'log' && <FeedsTab data={dataTweet} />}
+              {tab === 'swarm' && <FollowsTab community={community} />}
+            </>
+          )}
         </Pane>
       </main>
       {!mobile &&
@@ -357,28 +247,14 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           <ActionBarContainer
             updateAddress={() => setUpdateAddress(updateAddress + 1)}
             addressSend={address}
-            type={selected}
+            type={tab}
             follow={follow}
             tweets={tweets}
             defaultAccount={activeAddress}
             totalRewards={totalRewards}
           />
         ) : (
-          <ActionBar>
-            <Pane>
-              <Link
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  display: 'block',
-                }}
-                className="btn"
-                to="/gol"
-              >
-                add address to your pocket
-              </Link>
-            </Pane>
-          </ActionBar>
+          <ActionBar />
         ))}
     </div>
   );
@@ -386,8 +262,6 @@ function AccountDetails({ node, mobile, defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

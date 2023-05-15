@@ -1,25 +1,18 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useEffect, useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ContainerGradient,
-  Signatures,
-  ParseAddressesImg,
-} from '../components';
-import { AppContext } from '../../../context';
-import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import { activePassport } from '../utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { Signatures, ParseAddressesImg } from '../components';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
+import { ContainerGradient } from '../../../components';
 
 function PasportCitizenship({
   citizenship,
   txHash,
-  node,
   updateFunc,
   stateOpen,
   initStateCard,
@@ -29,7 +22,7 @@ function PasportCitizenship({
   onClickProveeAddress,
   onClickEditAvatar,
 }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
@@ -59,8 +52,8 @@ function PasportCitizenship({
   useEffect(() => {
     const getKarma = async () => {
       try {
-        if (owner !== null && owner.match(PATTERN_CYBER) && jsCyber !== null) {
-          const responseKarma = await jsCyber.karma(owner);
+        if (owner !== null && owner.match(PATTERN_CYBER) && queryClient) {
+          const responseKarma = await queryClient.karma(owner);
           if (responseKarma.karma) {
             setKarma(parseFloat(responseKarma.karma));
           }
@@ -70,7 +63,7 @@ function PasportCitizenship({
       }
     };
     getKarma();
-  }, [owner, jsCyber]);
+  }, [owner, queryClient]);
 
   useEffect(() => {
     const getPasport = async () => {
@@ -134,16 +127,13 @@ function PasportCitizenship({
           </div>
 
           <div style={{ width: '32px', height: '32px' }}>
-            <AvataImgIpfs
-              cidAvatar={citizenship.extension.avatar}
-              node={node}
-            />
+            <AvataImgIpfs cidAvatar={citizenship.extension.avatar} />
           </div>
         </div>
       );
     }
     return null;
-  }, [citizenship, addresses, active, node]);
+  }, [citizenship, addresses, active]);
 
   const checkClaimedAddress = (itemAddress, totalGiftArr) => {
     const statusAddress = {
@@ -225,7 +215,6 @@ function PasportCitizenship({
               cidAvatar={
                 citizenship !== null ? citizenship.extension.avatar : false
               }
-              node={node}
             />
             {onClickEditAvatar && (
               <BtnPasport onClick={onClickEditAvatar} typeBtn="blue">
@@ -278,10 +267,4 @@ function PasportCitizenship({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(PasportCitizenship);
+export default PasportCitizenship;

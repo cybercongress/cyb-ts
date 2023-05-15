@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ContainerGradientText } from '../../../containers/portal/components/containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../containerGradient/ContainerGradient';
 import { timeSince, trimString } from '../../../utils/utils';
 import Account from '../../account/account';
 

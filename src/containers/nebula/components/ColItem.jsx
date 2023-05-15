@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from '../styles.scss';
 
 function ColItem({ children, justifyContent = 'flex-start', ...props }) {

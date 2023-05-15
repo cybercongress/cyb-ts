@@ -1,5 +1,3 @@
-import React from 'react';
-
 function Vitalik() {
   return (
     <div className="clontainer-vitalik">

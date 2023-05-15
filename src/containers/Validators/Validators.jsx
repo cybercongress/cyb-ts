@@ -1,42 +1,37 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import {
-  TableHeroes,
-  TableItem,
-  TextBoard,
-  TabBtnList,
-  InfoBalance,
-} from './components';
-import { AppContext } from '../../context';
+import { TableHeroes, TableItem, InfoBalance } from './components';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
-function Validators({ mobile, defaultAccount }) {
-  const location = useLocation();
-  const { jsCyber } = useContext(AppContext);
+function Validators({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
+  const { status = 'active' } = useParams();
+
+  const queryClient = useQueryClient();
   const [updatePage, setUpdatePage] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
     addressActive,
     updatePage
   );
-  const { validators, countHeroes, loadingValidators } = getHeroes();
+  const { validators, loadingValidators } = getHeroes();
   const [loadingSelf, setLoadingSelf] = useState(true);
   const [loadingBond, setLoadingBond] = useState(true);
   const [bondedTokens, setBondedTokens] = useState(0);
   const [validatorSelect, setValidatorSelect] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState('');
-  const [selected, setSelected] = useState('active');
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
-  // console.log('balanceToken', balanceToken);
 
   useEffect(() => {
     setValidatorsData(validators);
@@ -56,35 +51,24 @@ function Validators({ mobile, defaultAccount }) {
   }, [addressActive]);
 
   useEffect(() => {
-    const { pathname } = location;
-
-    if (pathname.match(/jailed/gm) && pathname.match(/jailed/gm).length > 0) {
-      setSelected('jailed');
-    } else {
-      setSelected('active');
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
     const feachPool = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.stakingPool();
+      if (queryClient) {
+        const response = await queryClient.stakingPool();
         if (response.pool.bondedTokens) {
           setBondedTokens(response.pool.bondedTokens);
         }
       }
     };
     feachPool();
-  }, [jsCyber]);
+  }, [queryClient]);
 
   useEffect(() => {
     try {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
-        if (addressActive !== null && jsCyber !== null) {
-          const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
-            addressActive.bech32
-          );
+        if (addressActive !== null && queryClient) {
+          const responseDelegatorDelegations =
+            await queryClient.delegatorDelegations(addressActive.bech32);
           delegationsDataTemp =
             responseDelegatorDelegations.delegationResponses;
         }
@@ -95,7 +79,7 @@ function Validators({ mobile, defaultAccount }) {
       console.log(`e`, e);
       setDelegationsData([]);
     }
-  }, [addressActive, jsCyber, updatePage]);
+  }, [addressActive, queryClient, updatePage]);
 
   useEffect(() => {
     if (validators.length > 0 && delegationsData.length > 0) {
@@ -120,7 +104,7 @@ function Validators({ mobile, defaultAccount }) {
 
   useEffect(() => {
     const selfDelegation = async () => {
-      if (jsCyber !== null && validatorsData.length > 0) {
+      if (queryClient && validatorsData.length > 0) {
         await asyncForEach(
           Array.from(Array(validatorsData.length).keys()),
           async (item) => {
@@ -129,7 +113,7 @@ function Validators({ mobile, defaultAccount }) {
             );
             let shares = 0;
             try {
-              const getSelfDelegation = await jsCyber.delegation(
+              const getSelfDelegation = await queryClient.delegation(
                 delegatorAddress,
                 validatorsData[item].operatorAddress
               );
@@ -156,7 +140,7 @@ function Validators({ mobile, defaultAccount }) {
       }
     };
     selfDelegation();
-  }, [validatorsData, jsCyber]);
+  }, [validatorsData, queryClient]);
 
   const selectValidators = (validator, index) => {
     let selectValidator = {};
@@ -202,16 +186,15 @@ function Validators({ mobile, defaultAccount }) {
   return (
     <div>
       <main className="block-body" style={{ paddingTop: 0 }}>
-        {/* <TabBtnList selected={selected} countHeroes={countHeroes} /> */}
         <InfoBalance
           balance={balance}
           loadingBalanceInfo={loadingBalanceInfo}
           balanceToken={balanceToken}
         />
-        <TableHeroes mobile={mobile} showJailed={selected === 'jailed'}>
+        <TableHeroes mobile={mobile} showJailed={status === 'jailed'}>
           {validatorsData
             .filter((validator) =>
-              selected === 'jailed'
+              status === 'jailed'
                 ? BOND_STATUS[validator.status] < 3
                 : BOND_STATUS[validator.status] === 3
             )
@@ -234,7 +217,7 @@ function Validators({ mobile, defaultAccount }) {
                   selected={index === selectedIndex}
                   selectValidators={() => selectValidators(validator, index)}
                   mobile={mobile}
-                  showJailed={selected === 'jailed'}
+                  showJailed={status === 'jailed'}
                   loadingSelf={loadingSelf}
                   loadingBond={loadingBond}
                 />
@@ -260,7 +243,6 @@ function Validators({ mobile, defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

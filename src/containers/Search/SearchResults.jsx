@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { useState, useEffect } from 'react';
+import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useParams, useLocation, Link } from 'react-router-dom';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -12,32 +13,24 @@ import {
   trimString,
   coinDecimals,
   encodeSlash,
-  replaceSlash,
 } from '../../utils/utils';
 import {
   Loading,
   Account,
-  Copy,
-  Tooltip,
-  LinkWindow,
   Rank,
   NoItems,
   Dots,
-  Particle,
   SearchItem,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
-  PATTERN,
   PATTERN_CYBER,
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
   PATTERN_BLOCK,
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
-import { setQuery } from '../../redux/actions/query';
-import ContentItem from '../ipfs/contentItem';
-import { AppContext } from '../../context';
+import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 
 const textPreviewSparkApp = (text, value) => (
@@ -74,35 +67,34 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
-function SearchResults({ node, mobile, setQueryProps }) {
-  const { jsCyber } = useContext(AppContext);
+function SearchResults() {
+  const queryClient = useQueryClient();
   const { query } = useParams();
+
   const location = useLocation();
-  const history = useHistory();
+  // const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-  // const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(1);
   const [total, setTotal] = useState(0);
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  useEffect(() => {
-    if (query.match(/\//g)) {
-      history.push(`/search/${replaceSlash(query)}`);
-    }
-  }, [query]);
+  const { isMobile: mobile } = useDevice();
+
+  // useEffect(() => {
+  //   if (query.match(/\//g)) {
+  //     navigate(`/search/${replaceSlash(query)}`);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [query]);
 
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
-      setQueryProps(encodeSlash(query));
-      // setPage(0);
-      setAllPage(1);
-      if (jsCyber !== null) {
+      if (queryClient) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
         let searchResultsData = [];
@@ -112,7 +104,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
           keywordHashTemp = await getIpfsHash(encodeSlash(query));
         }
 
-        let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
+        let responseSearchResults = await search(
+          queryClient,
+          keywordHashTemp,
+          0
+        );
 
         if (
           responseSearchResults.length === 0 ||
@@ -121,7 +117,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         ) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(jsCyber, keywordHashNull, 0);
+          responseSearchResults = await search(queryClient, keywordHashNull, 0);
         }
 
         if (
@@ -132,9 +128,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
             responseSearchResults.result,
             query
           );
-          setAllPage(
-            Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
-          );
+
           setTotal(parseFloat(responseSearchResults.pagination.total));
           setHasMore(true);
           // setPage((item) => item + 1);
@@ -148,13 +142,14 @@ function SearchResults({ node, mobile, setQueryProps }) {
       }
     };
     getFirstItem();
-  }, [query, location, update, jsCyber]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, location, update, queryClient]);
 
   const fetchMoreData = async (page) => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(jsCyber, keywordHash, page);
+    const data = await search(queryClient, keywordHash, page);
     if (data && Object.keys(data).length > 0 && data.result) {
       links = reduceSearchResults(data.result, encodeSlash(query));
     } else {
@@ -213,14 +208,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER`}
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of contract',
               <Account avatar address={query} />
             )}
-            status="sparkApp"
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -238,15 +231,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER_VALOPER`}
-            text="Explore details of hero"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of hero',
               <Account address={query} />
             )}
-            status="sparkApp"
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -264,14 +254,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_TX`}
-            status="sparkApp"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of tx',
               trimString(query, 4, 4)
             )}
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -289,15 +277,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
         marginBottom="10px"
       >
         <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_BLOCK`}
-            text="Explore details of block "
-            status="sparkApp"
-            textPreview={textPreviewSparkApp(
+          <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
+            {textPreviewSparkApp(
               'Explore details of block ',
               formatNumber(parseFloat(query))
             )}
-          />
+          </SearchItem>
         </Link>
       </Pane>
     );
@@ -334,9 +319,9 @@ function SearchResults({ node, mobile, setQueryProps }) {
               </Pane>
             )}
             <ContentItem
-              nodeIpfs={node}
               cid={key}
               item={searchResults[key]}
+              parent={query}
               className="SearchItem"
             />
           </Pane>
@@ -372,6 +357,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
             </h4>
           }
         >
+          {/* <ContentItem
+            cid={'QmP2rY3uUn3TfBYJVFKc7nTjDY82YnAAn7Ui8EcWL1zr5Y'}
+            item={{ rank: 9999 }}
+            parent={query}
+            className="SearchItem"
+          /> */}
           {Object.keys(searchItems).length > 0 ? (
             searchItems
           ) : (
@@ -391,17 +382,4 @@ function SearchResults({ node, mobile, setQueryProps }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-    mobile: store.settings.mobile,
-  };
-};
-
-const mapDispatchprops = (dispatch) => {
-  return {
-    setQueryProps: (query) => dispatch(setQuery(query)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchprops)(SearchResults);
+export default SearchResults;

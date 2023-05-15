@@ -1,0 +1,4 @@
+/* https://github.com/mac-s-g/react-json-view/issues/443 */
+.react-json-view {
+  overflow-x: auto;
+}

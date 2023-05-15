@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Pane,
-  ActionBar as ActionBarGravity,
-  Button,
-} from '@cybercongress/gravity';
+import { useEffect, useState } from 'react';
+import { Pane, ActionBar as ActionBarGravity } from '@cybercongress/gravity';
+import { useSigningClient } from 'src/contexts/signerClient';
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
-import ActionBarWeb3 from './actionBarWeb3';
 import ActionBarUser from './actionBarUser';
-import ActionBarLedger from './actionBarLedger';
 import ActionBarConnect from './actionBarConnect';
 import waitForWeb3 from '../../components/web3/waitForWeb3';
 import { NETWORKSIDS } from '../../utils/config';
@@ -17,6 +11,7 @@ import { NETWORKSIDS } from '../../utils/config';
 import imgLedger from '../../image/ledger.svg';
 import imgKeplr from '../../image/keplr-icon.svg';
 import imgRead from '../../image/duplicate-outline.svg';
+import Button from 'src/components/btnGrd';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -24,28 +19,28 @@ const STAGE_SEND_LEDGER = 3.1;
 const STAGE_SEND_KEPLR = 4.1;
 const STAGE_SEND_READ_ONLY = 5.1;
 
-const ButtonImgText = ({ img, text = 'Send', ...props }) => (
-  <Button marginX={10} {...props}>
-    {text}{' '}
-    <img
-      style={{
-        width: 20,
-        height: 20,
-        marginLeft: '5px',
-        paddingTop: '2px',
-      }}
-      src={img}
-      alt="img"
-    />
-  </Button>
-);
+function ButtonImgText({ img, text = 'Send', ...props }) {
+  return (
+    <Button style={{ margin: '0 10px' }} {...props}>
+      {text}{' '}
+      <img
+        style={{
+          width: 20,
+          height: 20,
+          marginLeft: '5px',
+          paddingTop: '2px',
+        }}
+        src={img}
+        alt="img"
+      />
+    </Button>
+  );
+}
 
 function ActionBar({
   selectCard,
   selectAccount,
   hoverCard,
-  // actionBar keplr props
-  keplr,
   // actionBar web3
   accountsETH,
   // actionBar tweet
@@ -56,6 +51,7 @@ function ActionBar({
   defaultAccounts,
   defaultAccountsKeys,
 }) {
+  const { signer: keplr } = useSigningClient();
   const [typeActionBar, setTypeActionBar] = useState('');
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
@@ -94,6 +90,7 @@ function ActionBar({
           break;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectCard, hoverCard, selectAccount]);
 
   useEffect(() => {
@@ -104,6 +101,7 @@ function ActionBar({
         setMakeActive(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccounts, selectAccount]);
 
   useEffect(() => {
@@ -162,15 +160,34 @@ function ActionBar({
     setConnect(false);
   };
 
+  const buttonConnect = (
+    <Button
+      style={{ margin: '0 10px' }}
+      onClick={() => setStage(STAGE_CONNECT)}
+    >
+      Connect
+    </Button>
+  );
+
+  const buttonActivate = (
+    <Button
+      style={{ margin: '0 10px' }}
+      onClick={() => changeDefaultAccounts()}
+    >
+      Activate
+    </Button>
+  );
+
   if (typeActionBar === '' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
         <Pane display="flex">
-          <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
-            Connect
-          </Button>
+          {buttonConnect}
           {defaultAccounts !== null && defaultAccounts.cyber && (
-            <Button marginX={10} onClick={() => onClickDefaultAccountSend()}>
+            <Button
+              style={{ margin: '0 10px' }}
+              onClick={() => onClickDefaultAccountSend()}
+            >
               Send
             </Button>
           )}
@@ -184,10 +201,10 @@ function ActionBar({
       <ActionBarConnect
         web3={web3}
         accountsETH={accountsETH}
-        keplr={keplr}
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}
+        onClickBack={() => setStage(STAGE_INIT)}
       />
     );
   }
@@ -196,16 +213,8 @@ function ActionBar({
     return (
       <ActionBarGravity>
         <Pane>
-          {connect && (
-            <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
-              Connect
-            </Button>
-          )}
-          {makeActive && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Activate
-            </Button>
-          )}
+          {connect && buttonConnect}
+          {makeActive && buttonActivate}
         </Pane>
       </ActionBarGravity>
     );
@@ -215,45 +224,14 @@ function ActionBar({
     return (
       <ActionBarGravity>
         <Pane>
-          {connect && (
-            <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
-              Connect
-            </Button>
-          )}
+          {connect && buttonConnect}
           {keplr && (
             <ButtonImgText
               img={imgKeplr}
               onClick={() => setStage(STAGE_SEND_KEPLR)}
             />
           )}
-          {makeActive && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Activate
-            </Button>
-          )}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === 'ledger' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          {connect && (
-            <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
-              Connect
-            </Button>
-          )}
-          <ButtonImgText
-            img={imgLedger}
-            onClick={() => setStage(STAGE_SEND_LEDGER)}
-          />
-          {makeActive && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Activate
-            </Button>
-          )}
+          {makeActive && buttonActivate}
         </Pane>
       </ActionBarGravity>
     );
@@ -263,20 +241,12 @@ function ActionBar({
     return (
       <ActionBarGravity>
         <Pane>
-          {connect && (
-            <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
-              Connect
-            </Button>
-          )}
+          {connect && buttonConnect}
           <ButtonImgText
             img={imgRead}
             onClick={() => setStage(STAGE_SEND_READ_ONLY)}
           />
-          {makeActive && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Activate
-            </Button>
-          )}
+          {makeActive && buttonActivate}
         </Pane>
       </ActionBarGravity>
     );
@@ -307,20 +277,9 @@ function ActionBar({
         selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
         updateBalance={updateAddress}
+        onClickBack={() => setStage(STAGE_INIT)}
       />
     );
-  }
-
-  if (stage === STAGE_SEND_LEDGER) {
-    return (
-      <ActionBarLedger
-        selectAccount={selectAccount}
-        updateAddress={updateFuncActionBar}
-        defaultAccounts={defaultAccounts}
-        updateBalance={updateAddress}
-      />
-    );
-    // return <div />;u
   }
 
   if (stage === STAGE_SEND_READ_ONLY) {

@@ -52,13 +52,6 @@ const getHeight = (value) => {
   return number * (100 - 2) + 2;
 };
 
-// const lead10 = new Tone.Sampler({
-//   urls: {
-//     E3: 'E3.mp3',
-//   },
-//   baseUrl: 'https://el-nivvo.github.io/files/lead10/',
-// }).toDestination();
-
 const lead10pads = new Tone.Sampler({
   urls: {
     E3: 'pads.mp3',
@@ -92,40 +85,20 @@ const getNoteFromAdd = (addrr) => {
 
 const makeSound = (arrNote) => {
   try {
-    const gain = new Tone.Gain(0.9).toDestination();
     const lead = new Tone.Sampler({
       urls: {
         E3: 'E3.mp3',
       },
       baseUrl: 'https://el-nivvo.github.io/files/lead10/',
     }).toDestination();
-    // const leadObject = [];
-    // for (const key in arrNote) {
-    //   if (Object.hasOwnProperty.call(arrNote, key)) {
-    //     const element = arrNote[key];
-    //     const gain = new Tone.Gain(0.9).toDestination();
-    //     const lead = new Tone.Sampler({
-    //       urls: {
-    //         E3: 'E3.mp3',
-    //       },
-    //       baseUrl: 'https://el-nivvo.github.io/files/lead10/',
-    //     }).toDestination(gain);
-
-    //     leadObject.push(lead);
-    //   }
-    // }
-
     Tone.loaded().then(() => {
       let cout = 0;
       const now = Tone.now();
 
-      arrNote.forEach((item, index) => {
+      arrNote.forEach((item) => {
         if (item.note !== 'sustein') {
           const time = now + cout;
-          // Tone.loaded().then(() => {
-          // const templlead = leadObject[index];
           lead.triggerAttackRelease([item.note], 1, time);
-          // });
           cout += 0.2;
         } else {
           cout += 0.2;

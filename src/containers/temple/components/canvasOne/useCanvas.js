@@ -21,7 +21,6 @@ let projCenterY;
 let zMax;
 let turnAngle;
 let turnSpeed;
-let sphereCenterX;
 let sphereCenterY;
 let sphereCenterZ;
 let particleRad;
@@ -60,7 +59,6 @@ function useCanvas() {
   };
 
   useEffect(() => {
-    let animationFrameId;
     const theCanvas = canvasRef.current;
     const context = theCanvas.getContext('2d');
     function canvasApp() {
@@ -188,7 +186,7 @@ function useCanvas() {
           // before list is altered record next particle
           nextParticle = p.next;
           // update age
-          p.age++;
+          p.age += 1;
           // if the particle is past its "stuck" time, it will begin to move.
           if (p.age > p.stuckTime) {
             p.velX += p.accelX + randAccelX * (Math.random() * 2 - 1);
@@ -244,6 +242,7 @@ function useCanvas() {
             // depth-dependent darkening
             depthAlphaFactor = 1 - rotZ / zeroAlphaDepth;
             depthAlphaFactor =
+              // eslint-disable-next-line no-nested-ternary
               depthAlphaFactor > 1
                 ? 1
                 : depthAlphaFactor < 0
@@ -281,7 +280,6 @@ function useCanvas() {
         randAccelZ = 0.1;
         gravity = -0; // try changing to a positive number (not too large, for example 0.3), or negative for floating upwards.
         particleRad = 2.5;
-        sphereCenterX = 0;
         sphereCenterY = 0;
         sphereCenterZ = -3 - sphereRad;
         // alpha values will lessen as particles move further back, causing depth-based darkening:

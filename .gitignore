@@ -14,10 +14,11 @@ build
 # Prod Bundle
 *.xml
 *.iml
-yarn.lock
 
 .idea
-.vscode
+.vscode/*
+!.vscode/settings.json
+
 .circleci
 .DS_Store
 
@@ -26,3 +27,9 @@ yarn.lock
 yarn-debug.log*
 yarn-error.log*
 src/.DS_Store
+
+storybook-static
+.env
+
+# Local Netlify folder
+.netlify

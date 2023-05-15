@@ -1,7 +1,6 @@
-import React from 'react';
-import { Pane, Button, Input, Text } from '@cybercongress/gravity';
-import { trimString } from '../../../utils/utils';
+import { Pane, Input } from '@cybercongress/gravity';
 import { STEPS } from '../utils';
+import Button from 'src/components/btnGrd';
 
 const styleLog = {
   width: '720px',
@@ -12,26 +11,28 @@ const styleLog = {
   padding: '5px',
 };
 
-const MessageItem = ({ text = '' }) => (
-  <Pane
-    backgroundColor="#03cba029"
-    borderRadius="5px"
-    paddingX={5}
-    paddingY={5}
-    marginY={5}
-    width="70%"
-    marginX={5}
-  >
-    {/* <Pane overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
+function MessageItem({ text = '' }) {
+  return (
+    <Pane
+      backgroundColor="#03cba029"
+      borderRadius="5px"
+      paddingX={5}
+      paddingY={5}
+      marginY={5}
+      width="70%"
+      marginX={5}
+    >
+      {/* <Pane overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
       {name}
     </Pane> */}
-    <Pane>
-      <span style={{ whiteSpace: 'pre-wrap' }}>{text}</span>
+      <Pane>
+        <span style={{ whiteSpace: 'pre-wrap' }}>{text}</span>
+      </Pane>
     </Pane>
-  </Pane>
-);
+  );
+}
 
-const SetUpChain = ({ configChains, onChangeConfigChains, id }) => {
+function SetUpChain({ configChains, onChangeConfigChains, id }) {
   return (
     <>
       <hr />
@@ -88,13 +89,9 @@ const SetUpChain = ({ configChains, onChangeConfigChains, id }) => {
       )}
     </>
   );
-};
+}
 
-const SetUpConfigRelayerForm = ({
-  valueChannelsRelayer,
-  onChangeValue,
-  id,
-}) => {
+function SetUpConfigRelayerForm({ valueChannelsRelayer, onChangeValue, id }) {
   return (
     <>
       <hr />
@@ -124,13 +121,13 @@ const SetUpConfigRelayerForm = ({
       )}
     </>
   );
-};
+}
 
-const SetUpConfigRelayer = ({
+function SetUpConfigRelayer({
   valueChannelsRelayer,
   onChangeValueChannelsRelayer,
   setStep,
-}) => {
+}) {
   return (
     <>
       <SetUpConfigRelayerForm
@@ -149,14 +146,14 @@ const SetUpConfigRelayer = ({
       </Button>
     </>
   );
-};
+}
 
-const StateSetUpChain = ({
+function StateSetUpChain({
   step,
   onChangeConfigChains,
   configChains,
   setStep,
-}) => {
+}) {
   if (step === STEPS.ENTER_CHAIN_A) {
     return (
       <>
@@ -183,33 +180,28 @@ const StateSetUpChain = ({
     );
   }
   return null;
-};
+}
 
-const LogRelayer = ({ relayerLog }) => {
-  // console.log(`relayerLog`, relayerLog);
+function LogRelayer({ relayerLog }) {
   return (
     <div style={styleLog}>
       {relayerLog &&
         Object.keys(relayerLog).length > 0 &&
-        relayerLog.map((item) => <MessageItem text={item} />)}
+        relayerLog.map((item, i) => <MessageItem text={item} key={i} />)}
     </div>
   );
-};
+}
 
-const StartStopRelayer = ({ step, setStep }) => {
+function StartStopRelayer({ step, setStep }) {
   if (step === STEPS.RELAYER_READY || step === STEPS.STOP_RELAYER) {
-    return (
-      <>
-        <Button onClick={() => setStep(STEPS.RUN_RELAYER)}>run</Button>
-      </>
-    );
+    return <Button onClick={() => setStep(STEPS.RUN_RELAYER)}>run</Button>;
   }
 
   if (step === STEPS.RUN_RELAYER) {
     return <Button onClick={() => setStep(STEPS.STOP_RELAYER)}>stop</Button>;
   }
   return null;
-};
+}
 
 function Relayer({ step, state }) {
   const {

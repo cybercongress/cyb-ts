@@ -1,92 +1,22 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { connect } from 'react-redux';
-import { CYBER } from '../../utils/config';
-import { setBlock } from '../../redux/actions/block';
-import { AppContext } from '../../context';
-
-const { CYBER_WEBSOCKET_URL } = CYBER;
+import { useEffect, useState } from 'react';
+import { useAppData } from 'src/contexts/appData';
 
 const M = Math;
 const DOC = document;
-const F = 0;
 
-function Electricity({ setBlockProps }) {
+function Electricity() {
   const [data, setData] = useState('M0,0 L240,0');
   const [stage, setStage] = useState(false);
-  const [wsClient, setWsClient] = useState(null);
-
-  useEffect(() => {
-    let ws = null;
-    const closeHandler = () => {
-      console.log(`close WS`);
-      setTimeout(createConnect, 7000);
-    };
-
-    const createConnect = () => {
-      if (ws !== null) {
-        ws.removeEventListener('close', closeHandler);
-      }
-      ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
-      ws.addEventListener('close', closeHandler);
-      console.log(`open`);
-      setWsClient(ws);
-    };
-    createConnect();
-
-    return () => {
-      ws.removeEventListener('close', closeHandler);
-      ws.close();
-    };
-  }, []);
-
-  useEffect(() => {
-    const handlerOpen = () => {
-      wsClient.send(
-        JSON.stringify({
-          method: 'subscribe',
-          params: ["tm.event='NewBlockHeader'"],
-          id: '1',
-          jsonrpc: '2.0',
-        })
-      );
-    };
-
-    if (wsClient !== null) {
-      wsClient.addEventListener('open', handlerOpen);
-    }
-
-    return () => {
-      if (wsClient !== null) {
-        wsClient.removeEventListener('close', handlerOpen);
-      }
-    };
-  }, [wsClient]);
-
-  useEffect(() => {
-    const handlerMessage = (evt) => {
-      const message = JSON.parse(evt.data);
-      if (Object.keys(message.result).length > 0) {
-        const block = message.result.data.value.header.height;
-        setBlockProps(block);
-        run();
-      }
-    };
-
-    if (wsClient !== null) {
-      wsClient.addEventListener('message', handlerMessage);
-    }
-
-    return () => {
-      if (wsClient !== null) {
-        wsClient.removeEventListener('message', handlerMessage);
-      }
-    };
-  }, [wsClient]);
+  const { block } = useAppData();
 
   const At = (el, a, v) => {
     try {
-      el.setAttribute(a, v);
-    } catch (error) {}
+      if (el !== null) {
+        el.setAttribute(a, v);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const R = (min, max) => {
@@ -108,7 +38,6 @@ function Electricity({ setBlockProps }) {
     const A = [];
     const D = 10;
     let NP = 'M';
-    const S = R(1, 3) * 0.01;
     const B = R(-2, 5);
     const RF = 0.4;
     const yPos = 15;
@@ -144,17 +73,23 @@ function Electricity({ setBlockProps }) {
     // TwL.to([l2], S, { morphSVG: { d: NP }, delay: S, onComplete: T });
   };
 
-  const run = () => {
-    // setInterval(() => {
+  function run() {
     const timerId = setInterval(() => {
       setStage(true);
       T();
     }, 1000 / 30);
+
     setTimeout(() => {
       clearInterval(timerId);
       setStage(false);
     }, 600);
-  };
+  }
+
+  useEffect(() => {
+    if (block) {
+      run();
+    }
+  }, [block]);
 
   return (
     <div
@@ -220,10 +155,4 @@ function Electricity({ setBlockProps }) {
   );
 }
 
-const mapDispatchprops = (dispatch) => {
-  return {
-    setBlockProps: (block) => dispatch(setBlock(block)),
-  };
-};
-
-export default connect(null, mapDispatchprops)(Electricity);
+export default Electricity;

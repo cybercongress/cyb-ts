@@ -1,31 +1,27 @@
 const path = require('path');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
+require('dotenv').config();
 
-// const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
-//   template: path.join(__dirname, 'src', 'index.html'),
-//   favicon: 'src/image/favicon.ico',
-//   filename: 'index.html',
-//   inject: 'body',
-// });
-
+if (process.env.IPFS_DEPLOY) {
+  // eslint-disable-next-line no-console
+  console.log('*** IPFS Version ***');
+}
 module.exports = {
   devtool: false,
-  entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
+  entry: [path.join(__dirname, 'src', 'index.tsx')],
   output: {
     filename: '[name].js',
-    // filename: 'index.js',
     path: path.join(__dirname, '/build'),
-    publicPath: '/',
-    assetModuleFilename: '[name][hash:10][ext]',
+    publicPath: process.env.IPFS_DEPLOY ? './' : '/',
+    assetModuleFilename: '[name].[hash:10][ext]',
   },
-  // node: { fs: 'empty' },
   resolve: {
     fallback: {
       buffer: require.resolve('buffer'),
@@ -38,21 +34,26 @@ module.exports = {
       https: require.resolve('https-browserify'),
       os: require.resolve('os-browserify/browser'),
       http: require.resolve('stream-http'),
-      assert: require.resolve('assert/'),
       stream: require.resolve('stream-browserify'),
-      buffer: require.resolve('buffer/'),
-      // "path": require.resolve("path-browserify"),
-      // "zlib": require.resolve("browserify-zlib"),
       constants: require.resolve('constants-browserify'),
-      // "os": require.resolve("os-browserify")
     },
-    extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
+    extensions: [
+      '*',
+      '.js',
+      '.jsx',
+      '.scss',
+      '.svg',
+      '.css',
+      '.json',
+      '.ts',
+      '.tsx',
+    ],
     alias: {
-      'multicodec/src/base-table': path.dirname(
-        require.resolve('multicodec/src/base-table.json')
-      ),
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
       'react/jsx-runtime.js': 'react/jsx-runtime',
+      src: path.resolve(__dirname, 'src/'),
+      components: path.resolve(__dirname, 'src', 'components'),
+      images: path.resolve(__dirname, 'src', 'image'),
     },
   },
   plugins: [
@@ -61,39 +62,56 @@ module.exports = {
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
     // is fixed.
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
+    // new webpack.ProvidePlugin({
+    //   Buffer: ['buffer', 'Buffer'],
+    //   process: 'process/browser',
+    //   stream: 'readable-stream',
+    // }),
+    new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      const mod = resource.request.replace(/^node:/, '');
+      switch (mod) {
+        case 'buffer':
+          resource.request = 'buffer';
+          break;
+        case 'stream':
+          resource.request = 'readable-stream';
+          break;
+        default:
+          throw new Error(`Not found ${mod}`);
+      }
     }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
     }),
+    new ReactRefreshWebpackPlugin(),
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
+      ...(process.env.IPFS_DEPLOY ? { publicPath: './' } : {}),
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
-    new Dotenv({
-      systemvars: true,
+    new webpack.DefinePlugin({
+      'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
+      'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
     }),
   ],
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         include: /src/,
         use: {
           loader: 'esbuild-loader',
           options: {
-            loader: 'jsx', // Remove this if you're not using JSX
-            target: 'es2015', // Syntax to compile to (see options below for possible values)
+            loader: 'tsx',
+            target: 'es2018', // Syntax to compile to (see options below for possible values)
           },
         },
       },
@@ -138,30 +156,15 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        // use: ['file-loader'],
         type: 'asset/resource',
       },
       {
         test: /\.(ogg|mp3|wav|mpe?g)$/i,
         type: 'asset/resource',
-
-        // loader: 'file-loader',
-        // options: {
-        //   name: '[path][name].[ext]',
-        // },
       },
       {
         test: /\.(jpe?g|png|gif|svg|ico)$/i,
         type: 'asset/resource',
-        // use: {
-        //   loader: 'file-loader',
-        //   options: {
-        //     name: '[name].[hash:10].[ext]',
-        //     outputPath: '',
-        //     publicPath: '',
-        //     useRelativePath: false,
-        //   },
-        // },
       },
       {
         test: /\.m?js$/,

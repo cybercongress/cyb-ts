@@ -18,4 +18,5 @@ const steps = {
   STEP_CHECK_GIFT: 11,
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export { steps };

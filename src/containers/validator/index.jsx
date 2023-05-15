@@ -1,7 +1,10 @@
 import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import withRouter from 'src/components/helpers/withRouter';
+
+import withDevice from 'src/components/helpers/withDevice';
 import ValidatorInfo from './validatorInfo';
 import {
   getValidatorsInfo,
@@ -18,32 +21,34 @@ import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
-  <Link to={to}>
-    <Tab
-      key={text}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      paddingX={20}
-      paddingY={20}
-      marginX={3}
-      borderRadius={4}
-      color="#36d6ae"
-      boxShadow="0px 0px 5px #36d6ae"
-      fontSize="16px"
-      whiteSpace="nowrap"
-      width="100%"
-    >
-      {text}
-    </Tab>
-  </Link>
-);
+function TabBtn({ text, isSelected, onSelect, to }) {
+  return (
+    <Link to={to}>
+      <Tab
+        key={text}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        paddingX={20}
+        paddingY={20}
+        marginX={3}
+        borderRadius={4}
+        color="#36d6ae"
+        boxShadow="0px 0px 5px #36d6ae"
+        fontSize="16px"
+        whiteSpace="nowrap"
+        width="100%"
+      >
+        {text}
+      </Tab>
+    </Link>
+  );
+}
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      selected: 'main',
       validatorInfo: [],
+      // eslint-disable-next-line react/no-unused-state
       data: {},
       delegated: {},
       loader: true,
@@ -57,14 +62,18 @@ class ValidatorsDetails extends React.PureComponent {
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     this.init();
-    this.chekPathname();
+    // this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
-    const { location, defaultAccount } = this.props;
-    if (prevProps.location.pathname !== location.pathname) {
+    const {
+      router: {
+        location: { pathname },
+      },
+      defaultAccount,
+    } = this.props;
+    if (prevProps.router.location.pathname !== pathname) {
       this.init();
-      this.chekPathname();
     }
 
     if (prevProps.defaultAccount.name !== defaultAccount.name) {
@@ -76,30 +85,6 @@ class ValidatorsDetails extends React.PureComponent {
     this.setState({ loader: true, unStake: false });
     await this.checkAddressLocalStorage();
     await this.init();
-  };
-
-  chekPathname = () => {
-    const { location } = this.props;
-    const { pathname } = location;
-
-    if (
-      pathname.match(/leadership/gm) &&
-      pathname.match(/leadership/gm).length > 0
-    ) {
-      this.select('leadership');
-    } else if (
-      pathname.match(/fans/gm) &&
-      pathname.match(/fans/gm).length > 0
-    ) {
-      this.select('fans');
-    } else if (
-      pathname.match(/rumors/gm) &&
-      pathname.match(/rumors/gm).length > 0
-    ) {
-      this.select('rumors');
-    } else {
-      this.select('main');
-    }
   };
 
   init = async () => {
@@ -128,11 +113,13 @@ class ValidatorsDetails extends React.PureComponent {
     this.getDelegators();
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getSupply = async () => {
     const bondedTokens = await stakingPool();
     return bondedTokens.bonded_tokens;
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getDelegated = async (delegatorShares, delegateAddress, operatorAddress) => {
     const data = {
       self: 0,
@@ -159,8 +146,11 @@ class ValidatorsDetails extends React.PureComponent {
   };
 
   getValidatorInfo = async () => {
-    const { match } = this.props;
-    const { address } = match.params;
+    const {
+      router: {
+        params: { address },
+      },
+    } = this.props;
 
     const resultStakingPool = await this.getSupply();
     const result = await getValidatorsInfo(address);
@@ -198,8 +188,10 @@ class ValidatorsDetails extends React.PureComponent {
   };
 
   getDelegators = async () => {
-    const { match } = this.props;
-    const { address } = match.params;
+    const {
+      router: { params },
+    } = this.props;
+    const { address } = params;
     const { validatorInfo, addressPocket, unStake } = this.state;
 
     let fans = [];
@@ -208,6 +200,7 @@ class ValidatorsDetails extends React.PureComponent {
 
     if (data !== null) {
       fans = data.result;
+      // TODO: refactor
       Object.keys(fans).forEach((key) => {
         if (unStake === false) {
           if (addressPocket !== null) {
@@ -232,10 +225,6 @@ class ValidatorsDetails extends React.PureComponent {
     });
   };
 
-  select = (selected) => {
-    this.setState({ selected });
-  };
-
   render() {
     const {
       validatorInfo,
@@ -243,15 +232,15 @@ class ValidatorsDetails extends React.PureComponent {
       delegated,
       fans,
       error,
-      selected,
-      data,
       addressPocket,
       unStake,
     } = this.state;
-    const { match, mobile } = this.props;
-    const { address } = match.params;
-    console.log('validatorInfo', validatorInfo);
-    let content;
+    const {
+      mobile,
+      router: { params },
+    } = this.props;
+
+    const { address, tab } = params;
 
     if (loader) {
       return (
@@ -259,7 +248,6 @@ class ValidatorsDetails extends React.PureComponent {
           style={{
             height: '50vh',
           }}
-          className="container-loading"
         >
           <Loading />
         </div>
@@ -270,37 +258,6 @@ class ValidatorsDetails extends React.PureComponent {
       return <NotFound />;
     }
 
-    if (selected === 'main') {
-      content = <Delegated data={delegated} />;
-    }
-
-    if (selected === 'fans') {
-      content = (
-        <Route
-          path="/network/bostrom/hero/:address/fans"
-          render={() => <Fans data={fans} />}
-        />
-      );
-    }
-    if (selected === 'rumors') {
-      content = (
-        <Route
-          path="/network/bostrom/hero/:address/rumors"
-          render={() => <Rumors accountUser={validatorInfo.operator_address} />}
-        />
-      );
-    }
-    if (selected === 'leadership') {
-      content = (
-        <Route
-          path="/network/bostrom/hero/:address/leadership"
-          render={() => (
-            <Leadership accountUser={validatorInfo.delegateAddress} />
-          )}
-        />
-      );
-    }
-    console.log('addressPocket', addressPocket);
     return (
       <div>
         <main className="block-body">
@@ -311,6 +268,7 @@ class ValidatorsDetails extends React.PureComponent {
             alignItems="center"
           >
             <Text color="#fff" fontSize="18px">
+              {/* seems better use viewport width or css */}
               {mobile
                 ? trimString(validatorInfo.operator_address, 16, 5)
                 : validatorInfo.operator_address}{' '}
@@ -325,23 +283,23 @@ class ValidatorsDetails extends React.PureComponent {
           >
             <TabBtn
               text="Fans"
-              isSelected={selected === 'fans'}
+              isSelected={tab === 'fans'}
               to={`/network/bostrom/hero/${address}/fans`}
             />
             <TabBtn
               text="Main"
-              isSelected={selected === 'main'}
+              isSelected={!tab}
               to={`/network/bostrom/hero/${address}`}
             />
             <TabBtn
               text="Rumors"
-              isSelected={selected === 'rumors'}
+              isSelected={tab === 'rumors'}
               to={`/network/bostrom/hero/${address}/rumors`}
             />
 
             <TabBtn
               text="Leadership"
-              isSelected={selected === 'leadership'}
+              isSelected={tab === 'leadership'}
               to={`/network/bostrom/hero/${address}/leadership`}
             />
           </Tablist>
@@ -352,7 +310,14 @@ class ValidatorsDetails extends React.PureComponent {
             justifyContent="center"
             flexDirection="column"
           >
-            {content}
+            {!tab && <Delegated data={delegated} />}
+            {tab === 'fans' && <Fans data={fans} />}
+            {tab === 'rumors' && (
+              <Rumors accountUser={validatorInfo.operator_address} />
+            )}
+            {tab === 'leadership' && (
+              <Leadership accountUser={validatorInfo.delegateAddress} />
+            )}
           </Pane>
         </main>
         <ActionBarContainer
@@ -368,9 +333,10 @@ class ValidatorsDetails extends React.PureComponent {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(ValidatorsDetails);
+export default connect(mapStateToProps)(
+  withDevice(withRouter(ValidatorsDetails))
+);

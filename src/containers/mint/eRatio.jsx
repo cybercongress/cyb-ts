@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon, Pane } from '@cybercongress/gravity';
 import { Tooltip } from '../../components';
 
@@ -16,7 +15,10 @@ function ERatio({ eRatio }) {
       >
         E-Ratio{' '}
         <Pane marginLeft={5}>
-          <Tooltip placement="top" tooltip="Efficiency ratio show how much of your energy is not utilzed. Investmint H into A or V to improve your E-Ratio. The lower E-Ratio the more benefit you miss">
+          <Tooltip
+            placement="top"
+            tooltip="Efficiency ratio show how much of your energy is not utilzed. Investmint H into A or V to improve your E-Ratio. The lower E-Ratio the more benefit you miss"
+          >
             <Icon icon="info-sign" color="#3ab793d4" />
           </Tooltip>
         </Pane>

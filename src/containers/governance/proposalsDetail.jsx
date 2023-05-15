@@ -1,50 +1,32 @@
 /* eslint-disable react/no-children-prop */
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  ActionBar,
-} from '@cybercongress/gravity';
-import { fromAscii, fromBase64 } from '@cosmjs/encoding';
+import { useEffect, useState } from 'react';
+import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 
-import {
-  Votes,
-  Legend,
-  IconStatus,
-  Deposit,
-  ContainerPane,
-  Item,
-} from '../../components';
+import { ContainerGradientText, IconStatus, Item } from '../../components';
 
 import {
-  getProposals,
   getStakingPool,
   getTallying,
   getProposalsDetail,
   getProposer,
-  getProposalsDetailVotes,
   getMinDeposit,
-  getTableVoters,
   getTallyingProposals,
-  reduceTxsVoters,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
 
-import { formatNumber, makeTags } from '../../utils/utils';
+import { formatNumber } from '../../utils/utils';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import { CYBER, PROPOSAL_STATUS, VOTE_OPTION } from '../../utils/config';
+import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { AppContext } from '../../context';
-import { ContainerGradientText, MainContainer } from '../portal/components';
+import { MainContainer } from '../portal/components';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -72,12 +54,8 @@ const finalTallyResult = (item) => {
   return finalVotes;
 };
 
-const descriptionTest =
-  '\nSummary of the proposal:\n\n- Change Signed Blocks Window from 300 to 1200.\n\nCurrent Network slashing parameters define that each validator must sign at least 70% of blocks in 300-block window.\n\n Converting those parameters into time, implying average block time of 5.75 seconds, gives us around 8.5 minutes of continuous downtime for each validator without jailing. But assuming current state of the chain, with almost half-million links in it, simply restart the node requires from 10 to 15 minutes even on the most nodes. That simply means that validator cannot restart the node without being jailed.\n\nHereby i propose to change Signed Blocks Window key of slashing module to value 1200 blocks. That will allow ~35 minutes of continuous downtime for validator before being jailed.\n\nThus validator operator will get enough time to perform hardware of software upgrades without fine for jailing.';
-
 function ProposalsDetail({ defaultAccount }) {
   const { proposalId } = useParams();
-  const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [proposals, setProposals] = useState({});
   const [updateFunc, setUpdateFunc] = useState(0);
@@ -93,8 +71,6 @@ function ProposalsDetail({ defaultAccount }) {
     threshold: 0,
     veto_threshold: 0,
   });
-
-  const [votes, setVotes] = useState([]);
 
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [minDeposit, setMinDeposit] = useState(0);
@@ -180,6 +156,7 @@ function ProposalsDetail({ defaultAccount }) {
       setTally(tallyTemp);
     };
     getStatusVoting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
 
   useEffect(() => {
@@ -278,7 +255,7 @@ function ProposalsDetail({ defaultAccount }) {
               value={
                 <Pane className="container-description">
                   {proposals.changes.map((item) => (
-                    <Pane>
+                    <Pane key={item.key}>
                       {item.subspace}: {item.key} {item.value}
                     </Pane>
                   ))}

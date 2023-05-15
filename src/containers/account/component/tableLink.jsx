@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
+import { useState, useMemo, useCallback } from 'react';
+import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { trimString, formatNumber } from '../../../utils/utils';
-import { NoItems, Cid, Dots, TextTable, Tooltip } from '../../../components';
+import { trimString } from '../../../utils/utils';
+import { NoItems, Cid, Dots, TextTable } from '../../../components';
 
 const dateFormat = require('dateformat');
 
-const TableLink = ({ data }) => {
+function TableLink({ data }) {
   const [itemsToShow, setItemsToShow] = useState(40);
 
   const setNextDisplayedPalettes = useCallback(() => {
@@ -18,6 +18,7 @@ const TableLink = ({ data }) => {
 
   const displayedPalettes = useMemo(
     () => data.slice(0, itemsToShow),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemsToShow]
   );
 
@@ -114,6 +115,6 @@ const TableLink = ({ data }) => {
       </Table>
     </div>
   );
-};
+}
 
 export default TableLink;

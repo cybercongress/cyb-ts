@@ -1,10 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { CYBER } from '../../../utils/config';
-import { reduceBalances } from '../../../utils/utils';
 import useGetSlots from '../../mint/useGetSlots';
-import { reduceAmount } from './utils';
 
 const { DENOM_CYBER, DENOM_LIQUID_TOKEN } = CYBER;
 
@@ -29,7 +27,7 @@ const initValueToken = {
 const balanceFetcher = (options, client) => {
   const { address } = options;
 
-  if (client === null || address === null) {
+  if (!client || address === null) {
     return null;
   }
 
@@ -37,24 +35,16 @@ const balanceFetcher = (options, client) => {
 };
 
 const useQueryGetAllBalances = (options) => {
-  const { jsCyber } = useContext(AppContext);
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { address } = options;
 
   const { data } = useQuery(
     ['getAllBalances', address],
-    () => balanceFetcher(options, jsCyber),
+    () => balanceFetcher(options, queryClient),
     {
-      enabled: Boolean(jsCyber && address),
+      enabled: Boolean(queryClient && address),
       retry: 1,
       refetchOnWindowFocus: false,
-      // initialData: () => {
-      //   return queryClient
-      //     .getQueryData('getAllBalance')
-      //     ?.find((d) => d.id === address);
-      // },
-      // initialDataUpdatedAt: () =>
-      //   queryClient.getQueryState('getAllBalance')?.dataUpdatedAt,
     }
   );
 

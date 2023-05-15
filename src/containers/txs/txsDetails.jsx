@@ -1,17 +1,15 @@
 /* eslint-disable camelcase */
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Text, Pane } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
+import { useDevice } from 'src/contexts/device';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 
-export const getTxs = async (txs) => {
+const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',
@@ -32,8 +30,8 @@ const initValueInformation = {
   memo: '',
 };
 
-function TxsDetails({ mobile }) {
-  const { jsCyber } = useContext(AppContext);
+function TxsDetails() {
+  const { isMobile: mobile } = useDevice();
   const { txHash } = useParams();
   const [msgs, setMsgs] = useState(null);
   const [information, setInformation] = useState(initValueInformation);
@@ -70,7 +68,7 @@ function TxsDetails({ mobile }) {
     // return () => {
 
     // };
-  }, [txHash, jsCyber]);
+  }, [txHash]);
 
   console.log('msgs', msgs);
 
@@ -87,10 +85,4 @@ function TxsDetails({ mobile }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(TxsDetails);
+export default TxsDetails;

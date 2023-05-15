@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   bandwidth: {
     remained: 0,
     maxValue: 0,

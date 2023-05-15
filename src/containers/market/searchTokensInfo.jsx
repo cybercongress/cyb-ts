@@ -1,20 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Rank, NoItems, Dots } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
-import ContentItem from '../ipfs/contentItem';
+import ContentItem from '../../components/ContentItem/contentItem';
 
 function SearchTokenInfo({
   data,
-  node,
   mobile,
   selectedTokens,
   onClickRank,
   fetchMoreData,
   page,
   allPage,
+  parentId,
 }) {
   try {
     const apps = [];
@@ -46,10 +44,10 @@ function SearchTokenInfo({
                 </Pane>
               )}
               <ContentItem
-                nodeIpfs={node}
                 cid={key}
                 item={data[key]}
                 className="contentItem"
+                parent={parentId}
               />
             </Pane>
           );

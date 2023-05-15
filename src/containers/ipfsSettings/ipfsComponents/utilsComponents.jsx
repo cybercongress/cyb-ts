@@ -1,4 +1,3 @@
-import React from 'react';
 import { OptionSelect } from '../../../components';
 
 function ContainerKeyValue({ children }) {

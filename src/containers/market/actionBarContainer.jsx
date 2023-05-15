@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -16,7 +15,6 @@ function ActionBarCont({
     if (addressActive.keys !== 'read-only') {
       return (
         <ActionBarContainer
-          // placeholder={placeholder}
           keywordHash={keywordHash}
           update={updateFunc}
           rankLink={rankLink}

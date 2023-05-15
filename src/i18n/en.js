@@ -1,6 +1,6 @@
 import { CYBER } from '../utils/config';
 
-const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
+const { DENOM_CYBER } = CYBER;
 
 const i18n = {
   en: {
@@ -80,8 +80,8 @@ const i18n = {
         joinValidator: 'Join Cyberd Network As Validator',
         btnBecome: 'Become a validator',
         heroes: 'Hero',
-        delegate: 'delegate to',
-        unDelegateFrom: 'undelegate from ',
+        delegate: 'Delegate to',
+        unDelegateFrom: 'Undelegate from',
         yourDelegated: 'your staked tokens:',
         btnDelegate: 'DELEGATE',
         btnUnDelegate: 'UNDELEGATE',
@@ -142,4 +142,5 @@ const i18n = {
   },
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export { i18n };

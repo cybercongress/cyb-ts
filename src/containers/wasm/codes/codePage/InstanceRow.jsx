@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useQueryClient } from 'src/contexts/queryClient';
 import { Account } from '../../../../components';
-import { AppContext } from '../../../../context';
 import { trimString } from '../../../../utils/utils';
 
 const tags = (address) => [
@@ -24,25 +24,25 @@ const styleLable = {
 };
 
 function InstanceRow({ position, address }) {
-  const { jsCyber } = useContext(AppContext);
+  const queryClient = useQueryClient();
   const [executionCount, setExecutionCount] = useState(0);
   const [contract, setContractInfo] = useState({});
 
   useEffect(() => {
     const getContract = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.getContract(address);
+      if (queryClient) {
+        const response = await queryClient.getContract(address);
         // console.log(`response`, response);
         setContractInfo(response);
       }
     };
     getContract();
-  }, [jsCyber, address]);
+  }, [queryClient, address]);
 
   useEffect(() => {
     const searchTx = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.searchTx({
+      if (queryClient) {
+        const response = await queryClient.searchTx({
           tags: tags(address),
         });
 
@@ -52,29 +52,27 @@ function InstanceRow({ position, address }) {
       }
     };
     searchTx();
-  }, [jsCyber, address]);
+  }, [queryClient, address]);
 
   return (
-    <>
-      {Object.keys(contract).length > 0 && (
-        <tr style={{ textAlign: 'center' }}>
-          <th scope="row">{position}</th>
-          <td>
-            <div style={styleLable}>{contract.label}</div>
-          </td>
-          <td>
-            <Link to={`/contracts/${contract.address}`}>
-              {trimString(contract.address, 10, 6)}
-            </Link>
-          </td>
-          <td>
-            <Account address={contract.creator} />
-          </td>
-          <td>{contract.admin ? contract.admin : '-'}</td>
-          <td style={{ textAlign: 'end' }}>{executionCount}</td>
-        </tr>
-      )}
-    </>
+    Object.keys(contract).length > 0 && (
+      <tr style={{ textAlign: 'center' }}>
+        <th scope="row">{position}</th>
+        <td>
+          <div style={styleLable}>{contract.label}</div>
+        </td>
+        <td>
+          <Link to={`/contracts/${contract.address}`}>
+            {trimString(contract.address, 10, 6)}
+          </Link>
+        </td>
+        <td>
+          <Account address={contract.creator} />
+        </td>
+        <td>{contract.admin ? contract.admin : '-'}</td>
+        <td style={{ textAlign: 'end' }}>{executionCount}</td>
+      </tr>
+    )
   );
 }
 

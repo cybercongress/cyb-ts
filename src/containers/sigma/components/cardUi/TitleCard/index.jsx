@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useMemo } from 'react';
+import { useIpfs } from 'src/contexts/ipfs';
 import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
@@ -7,7 +7,8 @@ import { Signatures } from '../../../../portal/components';
 import { AvataImgIpfs } from '../../../../portal/components/avataIpfs';
 import styles from './styles.scss';
 
-function TitleCard({ accounts, passport, totalLiquid, node }) {
+function TitleCard({ accounts, passport, totalLiquid }) {
+  const { node } = useIpfs();
   const useGetName = useMemo(() => {
     if (passport && passport !== null) {
       return passport.extension.nickname;
@@ -25,7 +26,7 @@ function TitleCard({ accounts, passport, totalLiquid, node }) {
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <AvataImgIpfs cidAvatar={useGetCidAvatar} node={node} />
+        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
       </div>
       <div className={styles.name}>{useGetName}</div>
       <div className={styles.total}>
@@ -52,10 +53,4 @@ function TitleCard({ accounts, passport, totalLiquid, node }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(TitleCard);
+export default TitleCard;

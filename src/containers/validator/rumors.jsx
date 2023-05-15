@@ -1,4 +1,3 @@
-import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import TableTxs from '../account/component/tableTxs';
@@ -46,14 +45,11 @@ function Rumors({ accountUser }) {
     return `Error! ${error.message}`;
   }
 
-  console.log('data wss', dataTxs);
   if (dataTxs) {
     return (
       <div>
         {loading ? (
-          <div className="container-loading">
-            <Loading />
-          </div>
+          <Loading />
         ) : (
           <TableTxs
             accountUser={accountUser}

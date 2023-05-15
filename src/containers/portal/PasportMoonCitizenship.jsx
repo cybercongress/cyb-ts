@@ -1,36 +1,31 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { ActionBar, Button } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useDevice } from 'src/contexts/device';
+import { useQueryClient } from 'src/contexts/queryClient';
 import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
   MainContainer,
   ActionBarSteps,
-  BtnGrd,
   MoonAnimation,
   Stars,
 } from './components';
-import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport, parseRowLog } from './utils';
 import PasportCitizenship from './pasport';
-import GetCitizenship from './citizenship';
 import Info from './citizenship/Info';
 import { steps } from './citizenship/utils';
-import { STEP_INFO } from './gift/utils';
+import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
+import { Button } from '../../components';
+import { routes } from 'src/routes';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
 const STAGE_LOADING = 0;
-const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 const STATE_AVATAR = 15;
-const STATE_AVATAR_IN_PROCESS = 15.1;
 
 const portalAmbientObg = new Audio(portalAmbient);
 const playPortalAmbient = () => {
@@ -44,12 +39,14 @@ const stopPortalAmbient = () => {
   portalAmbientObg.currentTime = 0;
 };
 
-function PasportMoonCitizenship({ defaultAccount, mobile }) {
-  const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
+function PasportMoonCitizenship({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [updateFunc, setUpdateFunc] = useState(0);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
@@ -65,8 +62,8 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
-        const response = await jsCyber.getTx(txHash.txHash);
+      if (queryClient && txHash !== null && txHash.status === 'pending') {
+        const response = await queryClient.getTx(txHash.txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
@@ -94,16 +91,16 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
       }
     };
     confirmTx();
-  }, [jsCyber, txHash]);
+  }, [queryClient, txHash]);
 
   useEffect(() => {
     const getPasport = async () => {
-      if (jsCyber !== null) {
+      if (queryClient) {
         setStagePortal(STAGE_LOADING);
         const addressActiveData = getActiveAddress(defaultAccount);
         if (addressActiveData !== null) {
           const response = await activePassport(
-            jsCyber,
+            queryClient,
             addressActiveData.bech32
           );
           console.log('response', response);
@@ -116,7 +113,7 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
       }
     };
     getPasport();
-  }, [jsCyber, defaultAccount, updateFunc]);
+  }, [queryClient, defaultAccount, updateFunc]);
 
   const getActiveAddress = (address) => {
     const { account } = address;
@@ -168,7 +165,7 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>
-          <BtnGrd text="check gift" onClick={() => history.push('/gift')} />
+          <Button link={routes.gift.path}>Check gift</Button>
         </ActionBarSteps>
       )}
       {Math.floor(appStep) !== STEP_INFO.STATE_INIT &&
@@ -199,7 +196,6 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
-    mobile: store.settings.mobile,
   };
 };
 

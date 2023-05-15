@@ -1,6 +1,6 @@
-import { useEffect, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
-import { reduceBalances, convertResources } from '../../../utils/utils';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { reduceBalances } from '../../../utils/utils';
 import { authAccounts } from '../../../utils/search/utils';
 import { CYBER } from '../../../utils/config';
 
@@ -40,16 +40,16 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function getBalances(addressActive, updateAddress) {
-  const { jsCyber } = useContext(AppContext);
+function useGetBalances(addressActive, updateAddress) {
+  const queryClient = useQueryClient();
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
   const [liquidBalances, setLiquidBalances] = useState(null);
 
   useEffect(() => {
     const getAllBalances = async () => {
-      if (jsCyber !== null && addressActive !== null) {
-        const getAllBalancesPromise = await jsCyber.getAllBalances(
+      if (queryClient && addressActive !== null) {
+        const getAllBalancesPromise = await queryClient.getAllBalances(
           addressActive.bech32
         );
         const balances = reduceBalances(getAllBalancesPromise);
@@ -57,7 +57,7 @@ function getBalances(addressActive, updateAddress) {
       }
     };
     getAllBalances();
-  }, [addressActive, jsCyber, updateAddress]);
+  }, [addressActive, queryClient, updateAddress]);
 
   useEffect(() => {
     const getAuth = async () => {
@@ -73,9 +73,8 @@ function getBalances(addressActive, updateAddress) {
           getAccount.result.value.base_vesting_account.original_vesting
         ) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const {
-            original_vesting: originalVestingAmount,
-          } = getAccount.result.value.base_vesting_account;
+          const { original_vesting: originalVestingAmount } =
+            getAccount.result.value.base_vesting_account;
           const { start_time: startTime } = getAccount.result.value;
           const reduceOriginalVestingAmount = reduceBalances(
             originalVestingAmount
@@ -133,4 +132,4 @@ function getBalances(addressActive, updateAddress) {
   return { liquidBalances };
 }
 
-export default getBalances;
+export default useGetBalances;

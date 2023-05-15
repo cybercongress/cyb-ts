@@ -1,19 +1,9 @@
-import Welcome from './Welcome';
 import Rules from './Rules';
 import InputNickname from './InputNickname';
 import Avatar from './Avatar';
-import InitKeplr from './InitKeplr';
 import SetupKeplr from './SetupKeplr';
-import ConnectKeplr from './ConnectKeplr';
 import Passport from './Passport';
+import InitKeplr from './InitKeplr';
 
-export {
-  Welcome,
-  Rules,
-  InputNickname,
-  Avatar,
-  InitKeplr,
-  SetupKeplr,
-  ConnectKeplr,
-  Passport,
-};
+// eslint-disable-next-line import/no-unused-modules
+export { Rules, InputNickname, Avatar, SetupKeplr, Passport, InitKeplr };
