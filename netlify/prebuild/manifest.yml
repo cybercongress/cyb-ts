@@ -1,3 +1,1 @@
-# manifest.yml
-
-name: netlify-plugin-hello-world
+name: netlify-plugin-prebuild
