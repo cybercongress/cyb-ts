@@ -98,6 +98,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
+      'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
     }),
   ],
   module: {

@@ -1,3 +1,2 @@
 [build]
-  command = "yarn build"
   environment = { COMMIT_SHA = "$CACHED_COMMIT_REF" }
