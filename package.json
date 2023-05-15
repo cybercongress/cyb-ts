@@ -8,7 +8,7 @@
   },
   "packageManager": "yarn@1.22.19",
   "scripts": {
-    "start": "webpack serve --config=webpack.config.dev.js ",
+    "start": "webpack serve --config=webpack.config.dev.js",
     "build": "webpack --config=webpack.config.prod.js && yarn copy-public",
     "copy-public": "cp -r public/* build/",
     "build-ipfs": "IPFS_DEPLOY=1 webpack --config=webpack.config.prod.js --mode production &&  echo 'rebyc.cyber.page' > build/CNAME",

@@ -20,7 +20,7 @@ module.exports = {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
     publicPath: process.env.IPFS_DEPLOY ? './' : '/',
-    assetModuleFilename: '[name][hash:10][ext]',
+    assetModuleFilename: '[name].[hash:10][ext]',
   },
   resolve: {
     fallback: {
