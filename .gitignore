@@ -30,3 +30,6 @@ src/.DS_Store
 
 storybook-static
 .env
+
+# Local Netlify folder
+.netlify
