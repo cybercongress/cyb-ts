@@ -3,5 +3,8 @@ module.exports.onPreBuild = function ({ netlifyConfig }) {
 
   console.log(netlifyConfig);
 
-  netlifyConfig.build.environment.COMMIT_SHA = 123;
+  console.log(process.env);
+  console.log(process.env.COMMIT_REF);
+
+  netlifyConfig.build.environment.COMMIT_SHA = process.env.COMMIT_REF;
 };
