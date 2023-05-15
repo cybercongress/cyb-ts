@@ -25,6 +25,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import TextareaAutosize from 'react-textarea-autosize';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -246,25 +247,18 @@ export function StartStageSearchActionBar({
           color={Color.Pink}
           value={contentHash}
           disabled={file}
-          maxRows={20}
+          isTextarea
+          // maxRows={20}
           style={{
-            width: '100%',
             paddingLeft: '10px',
-            textAlign: 'left',
             paddingRight: '35px',
             paddingTop: '10px',
             paddingBottom: '10px',
           }}
-          className="resize-none minHeightTextarea"
           onChange={(e) => onChangeInputContentHash(e)}
-          title={placeholder}
+          placeholder={placeholder}
         />
-        <Pane
-          position="absolute"
-          right="0"
-          bottom="0"
-          transform="translate(0, -7px)"
-        >
+        <Pane position="absolute" right={10} bottom={10}>
           <input
             ref={inputOpenFileRef}
             onChange={() => onChangeInput(inputOpenFileRef)}
