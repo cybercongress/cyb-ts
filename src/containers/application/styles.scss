@@ -2,7 +2,6 @@
   position: fixed;
   top: 130px;
   left: 0;
-  bottom: 0;
   width: 218px;
   background: #000000;
   color: #fff;
@@ -14,23 +13,4 @@
 
 .sideBarHide {
   left: -250px;
-}
-
-.closeButton {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  width: 24px;
-  height: 24px;
-  font-size: 0;
-  border: none;
-  background: url(./close.svg);
-  cursor: pointer;
-}
-
-.containerKarma {
-  gap: 6px;
-  color: #fff;
-  font-size: 16px;
-  transition: 0.4s;
 }
