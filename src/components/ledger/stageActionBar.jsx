@@ -14,7 +14,6 @@ import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
-import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
@@ -25,6 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import { useIpfs } from 'src/contexts/ipfs';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -228,12 +228,20 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
+  const ipfs = useIpfs();
   return (
     <ActionBarContainer
       button={{
-        disabled: !contentHash.length,
+        disabled: !ipfs.isReady || !contentHash.length,
         onClick: onClickBtn,
-        text: textBtn,
+        text: !ipfs.isReady ? (
+          <>
+            Node is loading&nbsp;
+            <Dots />
+          </>
+        ) : (
+          textBtn
+        ),
       }}
     >
       <Pane
