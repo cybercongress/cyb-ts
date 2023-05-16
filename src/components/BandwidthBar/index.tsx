@@ -12,6 +12,9 @@ import {
   reduceBalances,
 } from '../../utils/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { Networks } from 'src/types/networks';
+import { routes } from 'src/routes';
 
 const PREFIXES = [
   {
@@ -33,6 +36,8 @@ const PREFIXES = [
 ];
 
 function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
+  const signer = useSigningClient();
+
   let text =
     'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
 
@@ -44,12 +49,19 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
       PREFIXES
     )} and can immediately submit ${Math.floor(countLink)} cyberlinks. `;
   }
+
   return (
     <Pane zIndex={4} paddingX={10} paddingY={10} maxWidth={200}>
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/search/get BOOT">
+          <Link
+            to={
+              signer.signer?.chainId === Networks.BOSTROM
+                ? routes.search.getLink('get BOOT')
+                : routes.teleport.path
+            }
+          >
             Get {CYBER.DENOM_CYBER.toUpperCase()}
           </Link>
         </Text>
@@ -168,7 +180,7 @@ function BandwidthBar(
   return (
     <Tooltip
       placement="bottom"
-      trigger="click"
+      // trigger="click"
       tooltip={
         <ContentTooltip
           bwRemained={bwRemained}
@@ -184,6 +196,7 @@ function BandwidthBar(
         height="10px"
         // // styleText={{ display: 'none' }}
         fontSize={12}
+        maxWidth={75}
         colorText="#000"
         bwPercent={bwPercent}
         bwRemained={bwRemained}
