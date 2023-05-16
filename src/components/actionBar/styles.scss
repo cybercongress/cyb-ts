@@ -20,8 +20,16 @@
     align-items: center;
     gap: 25px;
     justify-content: center;
-    padding: 0 3vw;
     position: relative;
+    padding: 0 70px;
+    padding-bottom: 10px;
+  }
+
+  @media (max-width: 540px) {
+    &Content {
+      flex-direction: column;
+      align-items: center;
+    }
   }
 }
 
