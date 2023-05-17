@@ -109,9 +109,10 @@ function AppRouter() {
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
 
-          <Route path="/robot" element={<Navigate to="/robot/passport" />} />
+          {/* <Route path="/robot" element={<Navigate to="/robot/passport" />} /> */}
 
           <Route path="/robot" element={<Layout />}>
+            <Route index element={<Wallet />} />
             <Route path="keys" element={<Keys />} />
             <Route path="drive" element={<IpfsSettings />} />
             <Route path="skills" element={<Skills />} />

@@ -11,7 +11,7 @@ const links = [
   },
   {
     text: 'Passport',
-    link: '/robot/passport',
+    link: '/robot',
   },
   {
     text: 'Drive',
@@ -82,6 +82,7 @@ function Layout() {
                   <span>{link.text}</span>
                 ) : (
                   <NavLink
+                    end
                     className={({ isActive }) => {
                       return cx({ [styles.active]: isActive });
                     }}
