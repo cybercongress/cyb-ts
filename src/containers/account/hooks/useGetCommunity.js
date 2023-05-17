@@ -7,7 +7,7 @@ import {
 } from '../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
 
-function useGetCommunity(address, updateAddress) {
+function useGetCommunity(address) {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [community, setCommunity] = useState({
@@ -103,7 +103,7 @@ function useGetCommunity(address, updateAddress) {
     }
   }, [following, followers]);
 
-  return { community, updateAddress };
+  return { community };
 }
 
 export default useGetCommunity;

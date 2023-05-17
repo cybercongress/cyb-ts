@@ -3,8 +3,11 @@ import RowTable from './components/row';
 import useGetGol from './getGolHooks';
 import { formatNumber } from '../../utils/utils';
 import { NoItems } from 'src/components';
+import useGetAddressTemp from '../account/hooks/useGetAddressTemp';
 
-const TableDiscipline = ({ address }) => {
+const TableDiscipline = () => {
+  const address = useGetAddressTemp();
+
   const { resultGol } = useGetGol(address);
 
   try {

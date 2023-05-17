@@ -1,12 +1,22 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
+import { useSelector } from 'react-redux';
 
 function ForceGraph() {
   const params = useParams();
+  const location = useLocation();
+
+  const { defaultAccount } = useSelector((state) => state.pocket);
   let graph;
+
+  // TODO: refactor
+  let address = params.agent || '';
+  if (location.pathname.includes('robot')) {
+    address = defaultAccount.account?.cyber.bech32;
+  }
 
   const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });
@@ -18,9 +28,9 @@ function ForceGraph() {
 
   useEffect(() => {
     const feachData = async () => {
-      if (params.agent) {
+      if (address) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        where = `{neuron: {_eq: "${params.agent}"}}`;
+        where = `{neuron: {_eq: "${address}"}}`;
       } else {
         where = '{}';
       }

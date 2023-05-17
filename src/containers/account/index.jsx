@@ -1,12 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState, useMemo } from 'react';
-import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
+import { Tablist, Pane, Text } from '@cybercongress/gravity';
 import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import GetLink from './tabs/link';
-import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
+import { getIpfsHash, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';
 import { formatNumber } from '../../utils/utils';
 import {
@@ -23,9 +23,8 @@ import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
 import FollowsTab from './tabs/follows';
-import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
+import { useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
-import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
 
 const getTabsMap = (address) => ({
@@ -51,19 +50,13 @@ function AccountDetails({ defaultAccount }) {
   const queryClient = useQueryClient();
   const { address, tab = 'log' } = useParams();
   const [updateAddress, setUpdateAddress] = useState(0);
-  const { community } = useGetCommunity(address, updateAddress);
-  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
+  const { balance, loadingBalanceInfo } = useGetBalance(address, updateAddress);
+  const { totalRewards, loadingHeroesInfo } = useGetHeroes(
     address,
     updateAddress
   );
-  const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(
-    address,
-    updateAddress
-  );
-  const dataGetTsxByAddress = useGetTsxByAddress(address);
-  const [dataTweet, setDataTweet] = useState([]);
+
   const [tweets, setTweets] = useState(false);
-  const [loaderTweets, setLoaderTweets] = useState(true);
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
   const [karmaNeuron, setKarmaNeuron] = useState(0);
@@ -72,24 +65,6 @@ function AccountDetails({ defaultAccount }) {
   const tabs = useMemo(() => {
     return getTabsMap(address);
   }, [address]);
-
-  useEffect(() => {
-    const getFeeds = async () => {
-      let responseTweet = null;
-      let dataTweets = [];
-      setDataTweet([]);
-      setLoaderTweets(true);
-
-      responseTweet = await getTweet(address);
-      console.log(`responseTweet`, responseTweet);
-      if (responseTweet && responseTweet.txs && responseTweet.total_count > 0) {
-        dataTweets = [...dataTweets, ...responseTweet.txs];
-      }
-      setDataTweet(dataTweets);
-      setLoaderTweets(false);
-    };
-    getFeeds();
-  }, [address, updateAddress]);
 
   useEffect(() => {
     const getKarma = async () => {
@@ -157,7 +132,6 @@ function AccountDetails({ defaultAccount }) {
 
   const showLoadingDots =
     (loadingHeroesInfo && ['security', 'sigma', ''].indexOf(tab) !== -1) ||
-    (loaderTweets && tab === 'log') ||
     (loadingBalanceInfo && tab === 'sigma');
   return (
     <div>
@@ -223,21 +197,13 @@ function AccountDetails({ defaultAccount }) {
 
           {!showLoadingDots && (
             <>
-              {tab === 'security' && <Heroes data={staking} />}
-              {tab === 'sigma' && (
-                <Main balance={balance} balanceToken={balanceToken} />
-              )}
-              {tab === 'cyberlinks' && <GetLink accountUser={address} />}
-
-              {tab === 'timeline' && (
-                <TxsTable
-                  dataGetTsxByAddress={dataGetTsxByAddress}
-                  accountUser={address}
-                />
-              )}
-              {tab === 'badges' && <TableDiscipline address={address} />}
-              {tab === 'log' && <FeedsTab data={dataTweet} />}
-              {tab === 'swarm' && <FollowsTab community={community} />}
+              {tab === 'security' && <Heroes />}
+              {tab === 'sigma' && <Main />}
+              {tab === 'cyberlinks' && <GetLink />}
+              {tab === 'timeline' && <TxsTable />}
+              {tab === 'badges' && <TableDiscipline />}
+              {tab === 'log' && <FeedsTab />}
+              {tab === 'swarm' && <FollowsTab />}
             </>
           )}
         </Pane>

@@ -11,8 +11,13 @@ import statusTrueImg from '../../../image/ionicons_svg_ios-checkmark-circle.svg'
 import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
 import { ContainerGradientText } from '../../../components/containerGradient/ContainerGradient';
+import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
-function TxsTable({ dataGetTsxByAddress, accountUser }) {
+function TxsTable() {
+  const accountUser = useGetAddressTemp();
+  const dataGetTsxByAddress = useGetTsxByAddress(accountUser);
+
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
     dataGetTsxByAddress;
 

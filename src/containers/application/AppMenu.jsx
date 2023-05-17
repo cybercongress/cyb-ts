@@ -15,50 +15,51 @@ import hub from '../../image/temple/hub.png';
 import { routes } from '../../routes';
 
 const itemsMenu = (address) => {
-  let linkLog = '/robot';
-  let linkBrain = '/graph';
-  let linkSwarm = '/robot';
-  let linkSecurity = '/robot';
-  let linkTimeline = '/robot';
-  let linkBadges = '/robot';
-  if (address !== null) {
-    linkLog = `/network/bostrom/contract/${address.bech32}`;
-    linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
-    linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
-    linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
-    linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
-    linkBrain = `/pgraph/${address.bech32}`;
-  }
+  // let linkLog = '/robot';
+  // let linkBrain = '/graph';
+  // let linkSwarm = '/robot';
+  // let linkSecurity = '/robot';
+  // let linkTimeline = '/robot';
+  // let linkBadges = '/robot';
+  // if (address !== null) {
+  //   linkLog = `/network/bostrom/contract/${address.bech32}`;
+  //   linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
+  //   linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
+  //   linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
+  //   linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
+  //   linkBrain = `/pgraph/${address.bech32}`;
+  // }
 
-  let myRobotLinks = [];
+  // let myRobotLinks = [];
 
-  if (address !== null) {
-    myRobotLinks = [
-      { name: 'Sigma', to: '/sigma' },
-      { name: 'Ipfs', to: '/ipfs' },
-      { name: 'Log', to: linkLog },
-      { name: 'Swarm', to: linkSwarm },
-      { name: 'Security', to: linkSecurity },
-      // { name: 'Cyberlinks', to: linkCyberlinks },
-      { name: 'Timeline', to: linkTimeline },
-      { name: 'Sense', to: '/sixthSense' },
-      { name: 'Brain', to: linkBrain },
-      { name: 'Energy', to: '/grid' },
-      { name: 'Badges', to: linkBadges },
-    ];
-  } else {
-    myRobotLinks = [{ name: 'Ipfs', to: '/ipfs' }];
-  }
+  // if (address !== null) {
+  //   myRobotLinks = [
+  //     { name: 'Sigma', to: '/sigma' },
+  //     { name: 'Ipfs', to: '/ipfs' },
+  //     { name: 'Log', to: linkLog },
+  //     { name: 'Swarm', to: linkSwarm },
+  //     { name: 'Security', to: linkSecurity },
+  //     // { name: 'Cyberlinks', to: linkCyberlinks },
+  //     { name: 'Timeline', to: linkTimeline },
+  //     { name: 'Sense', to: '/sixthSense' },
+  //     { name: 'Brain', to: linkBrain },
+  //     { name: 'Energy', to: '/grid' },
+  //     { name: 'Badges', to: linkBadges },
+  //   ];
+  // } else {
+  //   myRobotLinks = [{ name: 'Ipfs', to: '/ipfs' }];
+  // }
 
   const listItemMenu = [
-    { name: 'Temple', to: '/', subItems: [], icon: temple },
-    { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'My robot',
       icon: robot,
       to: '/robot',
-      subItems: myRobotLinks,
+      subItems: [],
+      // subItems: myRobotLinks,
     },
+    { name: 'Temple', to: '/', subItems: [], icon: temple },
+    { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Teleport',
       to: '/teleport',

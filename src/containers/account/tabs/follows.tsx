@@ -1,5 +1,7 @@
 import { Pane } from '@cybercongress/gravity';
 import { NoItems, Account } from '../../../components';
+import { useGetCommunity } from '../hooks';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
 type CommunityEntityProps = {
   items: string[];
@@ -38,17 +40,12 @@ function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
   );
 }
 
-type FollowsTabProps = {
-  community: {
-    following: string[];
-    followers: string[];
-    friends: string[];
-  };
-};
+function FollowsTab() {
+  const address = useGetAddressTemp();
 
-function FollowsTab({
-  community: { following, followers, friends },
-}: FollowsTabProps) {
+  const {
+    community: { friends, followers, following },
+  } = useGetCommunity(address);
   return (
     <Pane className="contentItem">
       <CommunityEntity

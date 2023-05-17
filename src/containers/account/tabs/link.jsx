@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import TableLink from '../component/tableLink';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
 // const GET_CHARACTERS = gql`
 //   query MyQuery($agent: String) {
@@ -17,10 +18,11 @@ import TableLink from '../component/tableLink';
 //   }
 // `;
 
-export default function GetLink({ accountUser }) {
+export default function GetLink() {
+  const address = useGetAddressTemp();
   const GET_CHARACTERS = gql`
     query MyQuery {
-      cyberlinks_aggregate(where: {neuron: {_eq: "${accountUser}"}}, order_by: {height: desc}) {
+      cyberlinks_aggregate(where: {neuron: {_eq: "${address}"}}, order_by: {height: desc}) {
     nodes {
       height
       particle_from

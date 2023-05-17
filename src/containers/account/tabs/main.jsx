@@ -4,6 +4,8 @@ import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 // import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
+import { useGetBalance } from '../hooks';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
 function Row({ text, number, color }) {
   return (
@@ -141,18 +143,16 @@ function Tokens({ balanceToken, balance }) {
   );
 }
 
-const Main = ({ balance, balanceToken, ...props }) => {
-  try {
-    return (
-      <Pane {...props} display="grid" gridGap="20px">
-        <DetailsMainToken balance={balance} />
-        <Tokens balanceToken={balanceToken} balance={balance} />
-      </Pane>
-    );
-  } catch (error) {
-    console.log(`error Main`, error);
-    return <div>oops...</div>;
-  }
-};
+function Main() {
+  const address = useGetAddressTemp();
+  const { balance, balanceToken } = useGetBalance(address);
+
+  return (
+    <Pane display="grid" gridGap="20px">
+      <DetailsMainToken balance={balance} />
+      <Tokens balanceToken={balanceToken} balance={balance} />
+    </Pane>
+  );
+}
 
 export default Main;

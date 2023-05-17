@@ -8,6 +8,8 @@ import {
 import { NoItems, Account, NumberCurrency } from '../../../components';
 import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
+import { useGetHeroes } from '../hooks';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -71,7 +73,10 @@ function Unbonding({ amount, stages, entries }) {
   );
 }
 
-function Heroes({ data, ...props }) {
+function Heroes() {
+  const address = useGetAddressTemp();
+  const { staking: data } = useGetHeroes(address);
+
   const delegationsItem = Object.keys(data).map((key) => {
     let amount = 0;
     if (data[key].entries !== undefined) {
@@ -122,7 +127,7 @@ function Heroes({ data, ...props }) {
   });
 
   return (
-    <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr" {...props}>
+    <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr">
       <Table>
         <Table.Head
           style={{

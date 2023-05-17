@@ -1,0 +1,26 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 100px minmax(200px, 600px) 100px;
+  padding: 50px 10%;
+  column-gap: 30px;
+
+  > :nth-child(2) {
+    overflow-x: auto;
+  }
+}
+
+.links {
+  list-style-type: none;
+
+  li {
+    margin: 30px 0;
+
+    span {
+      color: gray;
+    }
+
+    .active {
+      color: yellow;
+    }
+  }
+}

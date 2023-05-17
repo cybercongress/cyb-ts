@@ -62,6 +62,18 @@ import Sigma from './containers/sigma';
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
+import Layout from './pages/robot/Layout/Layout';
+import FollowsTab from './containers/account/tabs/follows';
+import GetLink from './containers/account/tabs/link';
+import Karma from './pages/Karma/Karma';
+import TxsTable from './containers/account/component/txsTable';
+import Heroes from './containers/account/tabs/heroes';
+import FeedsTab from './containers/account/tabs/feeds';
+import Keys from './pages/Keys/Keys';
+import Drive from './pages/Drive/Drive';
+import Skills from './pages/Skills/Skills';
+import Main from './containers/account/tabs/main';
+import TableDiscipline from './containers/gol/table';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -96,7 +108,26 @@ function AppRouter() {
       <Routes>
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
-          <Route path="/robot" element={<Wallet />} />
+
+          <Route path="/robot" element={<Navigate to="/robot/passport" />} />
+
+          <Route path="/robot" element={<Layout />}>
+            <Route path="keys" element={<Keys />} />
+            <Route path="drive" element={<IpfsSettings />} />
+            <Route path="skills" element={<Skills />} />
+            <Route path="passport" element={<Wallet />} />
+            <Route path="sigma" element={<Main />} />
+            <Route path="badges" element={<TableDiscipline />} />
+            <Route path="log" element={<FeedsTab />} />
+            <Route path="timeline" element={<TxsTable />} />
+            <Route path="security" element={<Heroes />} />
+            <Route path="energy" element={<RoutedEnergy />} />
+            <Route path="swarm" element={<FollowsTab />} />
+            <Route path="cyberlinks" element={<GetLink />} />
+            <Route path="brain" element={<ForceGraph />} />
+            <Route path="karma" element={<Karma />} />
+          </Route>
+
           <Route path="/oracle" element={<Home />} />
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
@@ -135,7 +166,6 @@ function AppRouter() {
           <Route path="/degenbox" element={<TrollBoxx />} />
           <Route path="/test" element={<TestKeplr />} />
           <Route path={routes.hfr.path} element={<Mint />} />
-          <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />
           <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />

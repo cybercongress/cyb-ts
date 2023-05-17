@@ -1,6 +1,34 @@
+import { useEffect, useState } from 'react';
 import { NoItems, SearchSnippet } from '../../../components';
+import { getTweet } from 'src/utils/search/utils';
+import useGetAddressTemp from '../hooks/useGetAddressTemp';
 
-function FeedsTab({ data, mobile, nodeIpfs }) {
+function FeedsTab({ mobile }) {
+  const address = useGetAddressTemp();
+
+  const [dataTweet, setDataTweet] = useState([]);
+  const [loaderTweets, setLoaderTweets] = useState(true);
+
+  const data = dataTweet;
+
+  useEffect(() => {
+    const getFeeds = async () => {
+      let responseTweet = null;
+      let dataTweets = [];
+      setDataTweet([]);
+      setLoaderTweets(true);
+
+      responseTweet = await getTweet(address);
+      console.log(`responseTweet`, responseTweet);
+      if (responseTweet && responseTweet.txs && responseTweet.total_count > 0) {
+        dataTweets = [...dataTweets, ...responseTweet.txs];
+      }
+      setDataTweet(dataTweets);
+      setLoaderTweets(false);
+    };
+    getFeeds();
+  }, [address]);
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onClickRank = () => {};
   if (data && data.length > 0) {
