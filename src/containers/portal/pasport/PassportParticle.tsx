@@ -7,7 +7,7 @@ import Tooltip from 'src/components/tooltip/tooltip';
 import { Input } from '../../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from '../utils';
 
-import styles from './Passportparticle.module.scss';
+import styles from './PassportParticle.module.scss';
 
 function PassportParticle({
   nickname,
