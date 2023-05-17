@@ -36,8 +36,6 @@ const PREFIXES = [
 ];
 
 function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
-  const signer = useSigningClient();
-
   let text =
     'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
 
@@ -57,7 +55,7 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
           {text}
           <Link
             to={
-              signer.signer?.chainId === Networks.BOSTROM
+              CYBER.CHAIN_ID === Networks.BOSTROM
                 ? routes.search.getLink('get BOOT')
                 : routes.teleport.path
             }
