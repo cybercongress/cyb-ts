@@ -32,27 +32,16 @@ function ActionBarContentText({ children, ...props }) {
 
 type Props = {
   children?: React.ReactNode;
-  btnText?: string | React.ReactNode;
-  onClickFnc?: $TsFixMeFunc;
   onClickBack?: $TsFixMeFunc;
-  disabled?: boolean;
   text?: string | React.ReactNode;
   button?: {
-    text: Props['btnText'];
+    text: string | React.ReactNode;
     onClick: () => void;
     disabled?: boolean;
   };
 };
 
-function ActionBar({
-  children,
-  btnText,
-  text,
-  onClickFnc,
-  onClickBack,
-  disabled,
-  button,
-}: Props) {
+function ActionBar({ children, text, onClickBack, button }: Props) {
   const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const { passport } = useGetPassportByAddress(defaultAccount);
   const location = useLocation();
@@ -92,12 +81,9 @@ function ActionBar({
 
       {content && <ActionBarContentText>{content}</ActionBarContentText>}
 
-      {(btnText || button?.text) && (
-        <Button
-          disabled={disabled || button?.disabled}
-          onClick={onClickFnc || button?.onClick}
-        >
-          {btnText || button?.text}
+      {button?.text && (
+        <Button disabled={button.disabled} onClick={button.onClick}>
+          {button.text}
         </Button>
       )}
       {/* <GitHub /> */}

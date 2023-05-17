@@ -897,10 +897,12 @@ export function Delegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <Text marginRight={20} fontSize="16px" color="#fff">
         {delegate
@@ -937,10 +939,12 @@ export function ReDelegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <IntupAutoSize
         value={toSend}
@@ -993,10 +997,12 @@ export function ActionBarSend({
 }) {
   return (
     <ActionBarContainer
-      btnText="Generate Tx"
       onClickBack={onClickBack}
-      onClickFnc={onClickBtn}
-      disabled={disabledBtn}
+      button={{
+        text: 'Generate Tx',
+        onClick: onClickBtn,
+        disabled: disabledBtn,
+      }}
     >
       <div style={{ display: 'flex', gap: '30px' }}>
         <Input
