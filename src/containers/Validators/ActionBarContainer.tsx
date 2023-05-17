@@ -501,6 +501,7 @@ function ActionBarContainer({
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
+        disabledBtn={!amount}
         delegate={txType === TXTYPE_DELEGATE}
         onClickBack={onClickBackToChoseHandler}
       />
