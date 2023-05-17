@@ -25,7 +25,6 @@ export const addDataChunksToIpfsCluster = async (
       const mime = await getMimeFromUint8Array(chunks);
       const blob = chunksToBlob([chunks], mime);
 
-      // result.cid is cidV1 - can we use that?
       if (saveToDb) {
         addIpfsContentToDb(cid, chunks);
       }

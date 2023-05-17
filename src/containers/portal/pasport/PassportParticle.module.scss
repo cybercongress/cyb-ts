@@ -1,0 +1,27 @@
+.particleWrapper {
+  display: flex;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > button {
+    padding: 3px;
+  }
+}
+
+.title {
+  white-space: nowrap;
+  align-items: center;
+  display: flex;
+}
+
+.input {
+  font-size: 1rem !important;
+}
+
+.message {
+  color: red;
+  padding-bottom: 0.5rem;
+}

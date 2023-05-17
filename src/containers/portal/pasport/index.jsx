@@ -9,6 +9,7 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
 import { ContainerGradient } from '../../../components';
+import PassportParticle from './PassportParticle';
 
 function PasportCitizenship({
   citizenship,
@@ -210,6 +211,12 @@ function PasportCitizenship({
           <div style={{ lineHeight: '18px' }}>
             karma {karma > 0 ? formatNumber(karma) : ''} 🔮
           </div>
+          {citizenship?.extension && (
+            <PassportParticle
+              nickname={citizenship.extension.nickname}
+              particle={citizenship.extension.particle}
+            />
+          )}
           <ContainerAvatar>
             <AvataImgIpfs
               cidAvatar={
