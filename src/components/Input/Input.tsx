@@ -4,6 +4,7 @@ import styles from './Input.module.scss';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
+import TextareaAutosize from 'react-textarea-autosize';
 
 export type Props = {
   color?: Color;
@@ -11,6 +12,7 @@ export type Props = {
   title?: string;
   className?: string;
   focusedProps?: boolean;
+  isTextarea?: boolean;
   type?: 'text' | 'password';
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -29,18 +31,22 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       autoFocus,
       className,
       focusedProps,
+      isTextarea,
       ...props
     },
     ref
   ) => {
     const [focused, setFocused] = useState(false);
 
+    const Tag = isTextarea ? TextareaAutosize : 'input';
+
     return (
       <div
         className={cx(
           styles.textbox,
           color && styles[color],
-          focused && styles.focused
+          focused && styles.focused,
+          isTextarea && styles.textarea
         )}
         style={{ width }}
       >
@@ -49,7 +55,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           color={color}
           title={!(focused || value) ? title : undefined}
         >
-          <input
+          <Tag
             type={type}
             ref={ref}
             value={value}

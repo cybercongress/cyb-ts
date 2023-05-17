@@ -1,4 +1,3 @@
-
 .textbox {
   width: 100%;
   height: 42px;
@@ -9,7 +8,8 @@
   display: flex;
   flex-direction: column;
 
-  input {
+  input,
+  textarea {
     width: 90%;
     margin: auto;
     height: 100%;
@@ -36,6 +36,17 @@
       outline: none;
     }
   }
-
 }
 
+.textarea {
+  height: unset;
+
+  textarea {
+    color: white;
+    resize: none;
+    box-shadow: unset;
+    text-align: left;
+    overflow-y: hidden;
+    min-height: unset;
+  }
+}
