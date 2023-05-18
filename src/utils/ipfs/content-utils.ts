@@ -142,39 +142,33 @@ export const parseRawIpfsData = async (
       response.content = uint8ArrayToAsciiString(rawData);
       return response;
     }
+    const dataBase64 = uint8ArrayToAsciiString(rawData);
 
+    if (contentType === 'particle') {
+      response.content = dataBase64;
+      response.gateway = true;
+      return response;
+    }
+    if (contentType === 'cid') {
+      response.gateway = true;
+      response.content = dataBase64;
+      return response;
+    }
+    if (contentType === 'link') {
+      response.content = dataBase64;
+      return response;
+    }
+    if (contentType === 'html') {
+      response.gateway = true;
+      response.content = cid;
+      return response;
+    }
     if (contentType === 'text') {
-      const dataBase64 = uint8ArrayToAsciiString(rawData);
-      const textContentType = detectTextContentType(dataBase64);
-      response.type = textContentType;
-
       response.link =
         dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
-
-      if (textContentType === 'particle') {
-        response.content = dataBase64;
-        response.gateway = true;
-        return response;
-      }
-      if (textContentType === 'cid') {
-        response.gateway = true;
-        response.content = dataBase64;
-        return response;
-      }
-      if (textContentType === 'link') {
-        response.content = dataBase64;
-        return response;
-      }
-      if (textContentType === 'html') {
-        response.gateway = true;
-        response.content = cid;
-        return response;
-      }
-
       response.content = dataBase64;
       response.text =
         dataBase64.length > 300 ? `${dataBase64.slice(0, 300)}...` : dataBase64;
-      return response;
     }
 
     return response;

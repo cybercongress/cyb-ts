@@ -62,7 +62,7 @@ const loadIPFSContentFromDb = async (
     const contentType = detectCybContentType(mime, chunk);
 
     const meta: IPFSContentMeta = {
-      type: 'file', // dir support ?
+      // type: 'file', // dir support ?
       size: data.length,
       mime,
     };
@@ -73,10 +73,8 @@ const loadIPFSContentFromDb = async (
 };
 
 const emptyMeta: IPFSContentMeta = {
-  type: 'file',
   size: -1,
   local: undefined,
-  hasStats: false,
 };
 
 const fetchIPFSContentMeta = async (
@@ -97,10 +95,30 @@ const fetchIPFSContentMeta = async (
       size: size || -1,
       local,
       blocks,
-      hasStats: true,
     };
   }
   return emptyMeta;
+};
+
+const fetchIPFSContentMetaFromGateway = async (
+  contentUrl: string,
+  controller?: AbortController
+): Promise<IPFSContentMeta> => {
+  try {
+    const response = await fetch(contentUrl, {
+      method: 'HEAD',
+      signal: controller?.signal,
+    });
+    // 'cache-control', 'content-length', 'content-type', 'x-ipfs-path', 'x-ipfs-roots'
+    return {
+      // type: 'file',
+      mime: response.headers.get('content-type') || undefined,
+      size: parseInt(response.headers.get('content-length') || '-1', 10),
+    };
+  } catch (e) {
+    console.error('fetchIPFSContentMetaFromGateway error', e, contentUrl);
+    return emptyMeta;
+  }
 };
 
 const fetchIPFSContentFromNode = async (
@@ -154,7 +172,8 @@ const fetchIPFSContentFromNode = async (
           .next();
 
         const mime = await getMimeFromUint8Array(firstChunk);
-        const fullyDownloaded = firstChunk.length >= meta.size;
+        const fullyDownloaded =
+          meta.size !== -1 && firstChunk.length >= meta.size;
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
@@ -208,29 +227,22 @@ const fetchIPFSContentFromGateway = async (
 
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
-  const meta = isExternalNode
-    ? await fetchIPFSContentMeta(node, cid, controller?.signal)
-    : emptyMeta;
-
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+
+  // const meta = isExternalNode
+  //   ? await fetchIPFSContentMeta(node, cid, controller?.signal)
+  //   : await fetchIPFSContentMetaFromGateway(contentUrl, controller);
+
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
   });
 
   if (response && response.body) {
-    // fetch doesn't provide any headers in our case :(
-
-    // const contentLength = parseInt(
-    //   response.headers['content-length'] || '-1',
-    //   10
-    // );
-    // const contentType = response.headers['content-type'];
-
-    // Extract meta if ipfs prob/node not started yet
-    // if (!meta.mime) {
-    //   meta = { ...meta, mime: contentType };
-    // }
+    const meta = {
+      mime: response.headers.get('content-type') || undefined,
+      size: parseInt(response.headers.get('content-length') || '-1', 10),
+    };
 
     // TODO: fix
     const flushResults = (chunks, mime) =>
@@ -242,13 +254,18 @@ const fetchIPFSContentFromGateway = async (
       response.body,
       flushResults
     );
-
     const contentType = detectCybContentType(mime, firstChunk);
+
+    const fullyDownloaded =
+      meta.size !== -1 && firstChunk && firstChunk.length >= meta.size;
+
+    // If all content fits in first chunk return byte-array instead ReadableStream
+    const stream = fullyDownloaded ? firstChunk : result;
 
     return {
       cid,
       meta: { ...meta, mime },
-      result,
+      result: stream,
       source: 'gateway',
       contentUrl,
       contentType,

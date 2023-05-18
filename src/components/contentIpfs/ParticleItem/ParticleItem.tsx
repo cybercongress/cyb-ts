@@ -9,6 +9,7 @@ import { IpfsRawDataResponse } from 'src/utils/ipfs/ipfs';
 import ContentIpfs from '../contentIpfs';
 
 import { ContentOptions } from '../contentIpfs.d';
+import { getResponseResult } from 'src/utils/ipfs/stream-utils';
 
 function ParticleItem({
   content,
@@ -41,7 +42,9 @@ function ParticleItem({
   useEffect(() => {
     const loadPassport = async () => {
       if (content) {
-        const nickname = uint8ArrayToString(content as Uint8Array).slice(1);
+        const nickname = uint8ArrayToString(
+          await getResponseResult(content)
+        ).slice(1);
         setNickname(nickname);
         const passport = await getPassportByNickname(queryClient, nickname);
         if (passport) {

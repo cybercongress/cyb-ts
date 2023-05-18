@@ -34,16 +34,9 @@ type ContentTabProps = {
   status: string | undefined;
   cid: string;
   search?: boolean;
-  options?: ContentOptions;
 };
 
-function ContentIpfs({
-  status,
-  content,
-  cid,
-  search,
-  options,
-}: ContentTabProps) {
+function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
@@ -60,7 +53,7 @@ function ContentIpfs({
   }
 
   const { contentType } = content;
-
+  console.log('---ContentIpfs', cid, content, contentType, ipfsDataDetails);
   return (
     <>
       <DebugContentInfo
@@ -71,7 +64,7 @@ function ContentIpfs({
       />
       {/* Default */}
       {(content?.contentType === 'directory' ||
-        (content?.contentType === 'html' && !content?.meta.hasStats)) && (
+        (content?.contentType === 'html' && !content?.meta.type)) && (
         <DirectoryItem cid={cid} search={search} />
       )}
 

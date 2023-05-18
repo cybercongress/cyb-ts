@@ -32,14 +32,13 @@ export type IpfsContentType =
   | 'unknown';
 
 export type IPFSContentMeta = {
-  type: 'file' | 'directory';
+  type?: 'file' | 'directory';
   size: number;
   blockSizes?: never[]; // ???
   blocks?: number;
   data?: string; // ???
   mime?: string;
   local?: boolean;
-  hasStats: boolean;
   statsTime?: number;
   catTime?: number;
   pinTime?: number;

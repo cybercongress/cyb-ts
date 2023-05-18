@@ -27,8 +27,8 @@ function DebugContentInfo({
         await navigator.clipboard.writeText(cid);
       }}
     >
-      <div>{`source: ${source} type: ${content?.contentType}  status: ${status} cid: ${cid}`}</div>
-      <div>{`blocks: ${meta?.blocks} mime: ${meta?.mime} size: ${meta?.size} local: ${meta?.local}`}</div>
+      <div>{`source: ${source} type: ${content?.contentType}  status: ${status} cid: ${cid} `}</div>
+      <div>{`blocks: ${meta?.blocks} mime: ${meta?.mime} size: ${meta?.size} local: ${meta?.local} download: ${content?.availableDownload}`}</div>
       {measurementInfo && <div>{measurementInfo}</div>}
     </div>
   );
