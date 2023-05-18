@@ -21,6 +21,7 @@ function ParticleItem({
 }) {
   const queryClient = useQueryClient();
   const [cid, setCid] = useState(undefined);
+  const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('');
   const { status, content: particleContent } = useQueueIpfsContent(
     cid,
@@ -28,7 +29,14 @@ function ParticleItem({
     options?.parentId
   );
 
-  console.log('---particleContent', cid, particleContent, status);
+  console.log(
+    '---particleContent',
+    cid,
+    particleContent,
+    status,
+    content,
+    search
+  );
 
   useEffect(() => {
     const loadPassport = async () => {
@@ -41,9 +49,12 @@ function ParticleItem({
         }
       }
     };
-    loadPassport();
+    loadPassport().finally(() => setLoading(false));
   }, [queryClient, content]);
 
+  if (loading) {
+    return <div>{`Loading particle for ${nickname}`}</div>;
+  }
   if (!cid) {
     return <div>{`No particle exist for ${nickname}`}</div>;
   }

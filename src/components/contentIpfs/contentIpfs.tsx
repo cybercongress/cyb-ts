@@ -63,12 +63,12 @@ function ContentIpfs({
 
   return (
     <>
-      {/* <DebugContentInfo
+      <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      /> */}
+      />
       {/* Default */}
       {content?.contentType === 'directory' && (
         <DirectoryItem cid={cid} search={search} />
