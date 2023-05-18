@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   ActionBar as ActionBarContainer,
-  Button,
   Input,
   Tab,
 } from '@cybercongress/gravity';
@@ -16,6 +15,7 @@ import {
   TransactionError,
   Account,
   ButtonIcon,
+  Button,
 } from '../../../components';
 import {
   LEDGER,
@@ -268,10 +268,20 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   ) {
     return (
       <ActionBarContainer>
-        <Button marginX={10} onClick={() => setStage(STAGE_SET_ROUTER)}>
+        <Button
+          style={{
+            margin: '0 10px',
+          }}
+          onClick={() => setStage(STAGE_SET_ROUTER)}
+        >
           Set Route
         </Button>
-        <Button marginX={10} onClick={() => setStage(STAGE_DELETE_ROUTER)}>
+        <Button
+          style={{
+            margin: '0 10px',
+          }}
+          onClick={() => setStage(STAGE_DELETE_ROUTER)}
+        >
           Delete Route
         </Button>
       </ActionBarContainer>

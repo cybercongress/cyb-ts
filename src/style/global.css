@@ -536,7 +536,6 @@ input:focus:-ms-input-placeholder {
 
 .infinite-scroll-component {
   padding-top: 3px !important;
-  overflow: hidden !important;
 }
 
 .padded-text {

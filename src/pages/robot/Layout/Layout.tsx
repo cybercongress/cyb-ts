@@ -1,78 +1,93 @@
 import React from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Navigate, Outlet, useParams } from 'react-router-dom';
 import { ContainerGradientText, Tooltip } from 'src/components';
 import styles from './Layout.module.scss';
 import cx from 'classnames';
+import useGetAddressTemp from 'src/containers/account/hooks/useGetAddressTemp';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 
 const links = [
   {
     text: 'Keys',
-    link: '/robot/keys',
+    link: './keys',
   },
   {
     text: 'Passport',
-    link: '/robot',
+    link: './',
+    onlyOwner: true,
   },
   {
     text: 'Drive',
-    link: '/robot/drive',
+    link: './drive',
+    onlyOwner: true,
   },
   {
     text: 'Timeline',
-    link: '/robot/timeline',
+    link: './timeline',
   },
   {
     text: 'Nft',
-    link: '/robot/nft',
+    link: './nft',
   },
   {
     text: 'Security',
-    link: '/robot/security',
+    link: './security',
   },
   {
     text: 'Skills',
-    link: '/robot/skills',
+    link: './skills',
   },
   {
     text: 'Sigma',
-    link: '/robot/sigma',
+    link: './sigma',
   },
 
   {
     text: 'Energy',
-    link: '/robot/energy',
+    link: './energy',
   },
   {
     text: 'Swarm',
-    link: '/robot/swarm',
+    link: './swarm',
   },
   {
     text: 'Log',
-    link: '/robot/log',
+    link: './log',
   },
   {
     text: 'Badges',
-    link: '/robot/badges',
+    link: './badges',
   },
   {
     text: 'Cyberlinks',
-    link: '/robot/cyberlinks',
+    link: './cyberlinks',
   },
   {
     text: 'Brain',
-    link: '/robot/brain',
+    link: './brain',
   },
   {
     text: 'Karma',
-    link: '/robot/karma',
+    link: './karma',
   },
 ];
 
 function Layout() {
+  const params = useParams();
+
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+
+  const isOwner = defaultAccount.account?.cyber.bech32 === params.address;
+
   function renderLinks(links) {
     return (
       <ul className={styles.links}>
         {links.map((link, index) => {
+          if (link.onlyOwner && !isOwner) {
+            return null;
+          }
+
           return (
             <li key={index}>
               {/* <Tooltip tooltip={link.text} placement="top"> */}
@@ -105,7 +120,17 @@ function Layout() {
       {renderLinks(links.slice(0, 7))}
 
       <ContainerGradientText>
-        <Outlet />
+        <p>{params.address}</p> (name)
+        <br />
+        <br />
+        <br />
+        <div
+          style={{
+            padding: '10px 30px',
+          }}
+        >
+          <Outlet />
+        </div>
       </ContainerGradientText>
       {renderLinks(links.slice(7, links.length))}
     </div>

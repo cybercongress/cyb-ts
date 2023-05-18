@@ -1,8 +1,12 @@
 .wrapper {
   display: grid;
-  grid-template-columns: 100px minmax(200px, 600px) 100px;
-  padding: 50px 10%;
-  column-gap: 30px;
+  margin-top: 40px;
+  justify-content: center;
+  // margin: 0 auto;
+  grid-template-columns: 100px minmax(200px, 700px) 100px;
+  // padding: 50px;
+  column-gap: 20px;
+  // padding-left: 10%;
 
   > :nth-child(2) {
     overflow-x: auto;
@@ -14,13 +18,40 @@
 
   li {
     margin: 30px 0;
+    position: relative;
+    font-size: 20px;
 
     span {
       color: gray;
     }
 
     .active {
-      color: yellow;
+      color: #fff;
+      padding-right: 10px;
+
+      &::before {
+        content: '';
+        // width: 46px;
+        // height: 46px;
+        display: block;
+        right: 0;
+        margin-left: 10px;
+        display: block;
+        height: 115%;
+        width: 3px;
+        background-color: #4ed6ae;
+        filter: blur(0.7px);
+        // background: linear-gradient(
+        //   180deg,
+        //   rgba(0, 237, 235, 0.0209) 0%,
+        //   rgba(0, 237, 235, 0.11) 100%
+        // );
+        // transform: matrix(0, 1, 1, 0, 0, 0);
+        box-shadow: -3px 0px 20px 1.5px #4ed6ae;
+        position: absolute;
+      }
+
+      // color: yellow;
     }
   }
 }

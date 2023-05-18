@@ -13,6 +13,7 @@ import RenderValue from './RenderValue';
 import { ContainerGradientText } from '../../../components/containerGradient/ContainerGradient';
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
 import useGetAddressTemp from '../hooks/useGetAddressTemp';
+import Loader2 from 'src/components/ui/Loader2';
 
 function TxsTable() {
   const accountUser = useGetAddressTemp();
@@ -152,14 +153,7 @@ function TxsTable() {
           next={fetchNextPageFnc}
           style={{ display: 'grid', gap: '15px' }}
           hasMore={hasNextPage}
-          loader={
-            isFetching && (
-              <h4>
-                Loading
-                <Dots />
-              </h4>
-            )
-          }
+          loader={isFetching && <Loader2 />}
         >
           {status === 'loading' ? (
             <Dots />

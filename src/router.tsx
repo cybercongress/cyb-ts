@@ -4,20 +4,17 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Outlet,
   Navigate,
   useParams,
 } from 'react-router-dom';
 import App from './containers/application/App';
 import SearchResults from './containers/Search/SearchResults';
-import Wallet from './containers/Wallet/Wallet';
 import Home from './containers/home/home';
 import Governance from './containers/governance/governance';
 import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
-import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Ipfs from './containers/ipfs/ipfs';
 import BlockDetails from './containers/blok/blockDetails';
@@ -29,7 +26,6 @@ import ForceGraph from './containers/forceGraph/forceGraph';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
 import TestKeplr from './containers/testKeplre';
 import Mint from './containers/mint';
-import RoutedEnergy from './containers/energy';
 import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
@@ -57,23 +53,10 @@ import {
   DetailsNetwork,
 } from './containers/network';
 
-import Sigma from './containers/sigma';
-
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
-import Layout from './pages/robot/Layout/Layout';
-import FollowsTab from './containers/account/tabs/follows';
-import GetLink from './containers/account/tabs/link';
-import Karma from './pages/Karma/Karma';
-import TxsTable from './containers/account/component/txsTable';
-import Heroes from './containers/account/tabs/heroes';
-import FeedsTab from './containers/account/tabs/feeds';
-import Keys from './pages/Keys/Keys';
-import Drive from './pages/Drive/Drive';
-import Skills from './pages/Skills/Skills';
-import Main from './containers/account/tabs/main';
-import TableDiscipline from './containers/gol/table';
+import Robot from './pages/robot/Robot';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -89,7 +72,11 @@ function WrappedRouter({ children }: WrappedRouterProps) {
 
 function PageNotExist() {
   return (
-    <div>
+    <div
+      style={{
+        textAlign: 'center',
+      }}
+    >
       page not exists
       <br />
       <Link to={routes.home.path}>Home</Link>
@@ -102,6 +89,11 @@ function ValidatorsRedirect() {
   return <Navigate to={`/sphere/${status}`} />;
 }
 
+function RedirectToRobot() {
+  const params = useParams();
+  return <Navigate to={`/robot/${params.address}`} />;
+}
+
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -109,25 +101,8 @@ function AppRouter() {
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
 
-          {/* <Route path="/robot" element={<Navigate to="/robot/passport" />} /> */}
-
-          <Route path="/robot" element={<Layout />}>
-            <Route index element={<Wallet />} />
-            <Route path="keys" element={<Keys />} />
-            <Route path="drive" element={<IpfsSettings />} />
-            <Route path="skills" element={<Skills />} />
-            <Route path="passport" element={<Wallet />} />
-            <Route path="sigma" element={<Main />} />
-            <Route path="badges" element={<TableDiscipline />} />
-            <Route path="log" element={<FeedsTab />} />
-            <Route path="timeline" element={<TxsTable />} />
-            <Route path="security" element={<Heroes />} />
-            <Route path="energy" element={<RoutedEnergy />} />
-            <Route path="swarm" element={<FollowsTab />} />
-            <Route path="cyberlinks" element={<GetLink />} />
-            <Route path="brain" element={<ForceGraph />} />
-            <Route path="karma" element={<Karma />} />
-          </Route>
+          <Route path="/robot" element={<Robot />} />
+          <Route path="/robot/:address/*" element={<Robot />} />
 
           <Route path="/oracle" element={<Home />} />
           <Route path="/search/:query" element={<SearchResults />} />
@@ -155,8 +130,13 @@ function AppRouter() {
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
-            <Route path="contract/:address" element={<AccountDetails />} />
-            <Route path="contract/:address/:tab" element={<AccountDetails />} />
+
+            <Route path="contract/:address" element={<RedirectToRobot />} />
+            <Route
+              path="contract/:address/:tab"
+              element={<RedirectToRobot />}
+            />
+
             <Route path="hero/:address/" element={<ValidatorsDetails />} />
             <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
@@ -195,7 +175,6 @@ function AppRouter() {
           <Route path="/networks/:networkId" element={<DetailsNetwork />} />
           <Route path="/help" element={<Help />} />
           {/* Sigma */}
-          <Route path="/sigma" element={<Sigma />} />
           <Route path="/nebula" element={<Nebula />} />
           <Route path="*" element={<PageNotExist />} />
         </Route>

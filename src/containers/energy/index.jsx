@@ -97,27 +97,34 @@ function RoutedEnergy({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
-        <Statistics
-          active={selected}
-          myEnegy={balacesResource.milliampere * balacesResource.millivolt}
-          outcome={
-            convertResources(sourceEnergy.milliampere) *
-            convertResources(sourceEnergy.millivolt)
-          }
-          income={
-            convertResources(destinationEnergy.milliampere) *
-            convertResources(destinationEnergy.millivolt)
-          }
-        />
-        {content}
-      </main>
-      <ActionBar
-        selected={selected}
-        addressActive={addressActive}
-        selectedRoute={selectedRoute}
-        updateFnc={() => setUpdateAddressFunc((item) => item + 1)}
+      {/* <main className="block-body"> */}
+      <Statistics
+        active={selected}
+        myEnegy={balacesResource.milliampere * balacesResource.millivolt}
+        outcome={
+          convertResources(sourceEnergy.milliampere) *
+          convertResources(sourceEnergy.millivolt)
+        }
+        income={
+          convertResources(destinationEnergy.milliampere) *
+          convertResources(destinationEnergy.millivolt)
+        }
       />
+      {content}
+      {/* </main> */}
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+        }}
+      >
+        <ActionBar
+          selected={selected}
+          addressActive={addressActive}
+          selectedRoute={selectedRoute}
+          updateFnc={() => setUpdateAddressFunc((item) => item + 1)}
+        />
+      </div>
     </>
   );
 }

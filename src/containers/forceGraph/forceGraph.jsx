@@ -1,22 +1,15 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
-import { useSelector } from 'react-redux';
 
 function ForceGraph() {
   const params = useParams();
-  const location = useLocation();
 
-  const { defaultAccount } = useSelector((state) => state.pocket);
   let graph;
 
-  // TODO: refactor
-  let address = params.agent || '';
-  if (location.pathname.includes('robot')) {
-    address = defaultAccount.account?.cyber.bech32;
-  }
+  const address = params.agent || params.address || '';
 
   const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });
@@ -210,6 +203,8 @@ function ForceGraph() {
         </div>
       )}
       <ForceGraph3D
+        width={500}
+        height={600}
         graphData={data}
         ref={fgRef}
         showNavInfo

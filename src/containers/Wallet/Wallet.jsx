@@ -543,7 +543,14 @@ class Wallet extends React.Component {
     if (!addAddress) {
       return (
         <>
-          <MainContainer>
+          {/* <MainContainer width={100}> */}
+          <div
+            style={{
+              display: 'grid',
+              gap: 20,
+              padding: '10px 30px 40px 20px',
+            }}
+          >
             <LinkWindow style={{ width: '100%' }} to="https://cyb.ai/portal">
               <InfoCard>
                 <div
@@ -625,22 +632,30 @@ class Wallet extends React.Component {
                 selectLink={this.selectLink}
               />
             )}
-          </MainContainer>
-          <ActionBar
-            selectCard={selectCard}
-            selectAccount={selectAccount}
-            hoverCard={hoverCard}
-            // actionBar web3
-            web3={web3}
-            accountsETH={accountsETH}
-            // actionBar tweet
-            refreshTweet={refreshTweet}
-            updateTweetFunc={this.refreshTweetFunc}
-            // global props
-            updateAddress={this.checkAddressLocalStorage}
-            defaultAccounts={defaultAccounts}
-            defaultAccountsKeys={defaultAccountsKeys}
-          />
+          </div>
+          {/* </MainContainer> */}
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+            }}
+          >
+            <ActionBar
+              selectCard={selectCard}
+              selectAccount={selectAccount}
+              hoverCard={hoverCard}
+              // actionBar web3
+              web3={web3}
+              accountsETH={accountsETH}
+              // actionBar tweet
+              refreshTweet={refreshTweet}
+              updateTweetFunc={this.refreshTweetFunc}
+              // global props
+              updateAddress={this.checkAddressLocalStorage}
+              defaultAccounts={defaultAccounts}
+              defaultAccountsKeys={defaultAccountsKeys}
+            />
+          </div>
         </>
       );
     }
