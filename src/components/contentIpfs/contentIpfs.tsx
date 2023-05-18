@@ -19,9 +19,8 @@ const getContentDetails = async (
   // if (content?.result) {
 
   const details = await parseRawIpfsData(
-    content?.result,
-    content?.meta?.mime,
-    cid
+    cid,
+    content
     // (progress: number) => console.log(`${cid} progress: ${progress}`)
   );
 
@@ -50,7 +49,7 @@ function ContentIpfs({
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed') {
+    if (status === 'completed' && content) {
       // && !content?.availableDownload
       getContentDetails(cid, content).then(setIpfsDatDetails);
     }
@@ -64,12 +63,12 @@ function ContentIpfs({
 
   return (
     <>
-      <DebugContentInfo
+      {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      />
+      /> */}
       {/* Default */}
       {content?.contentType === 'directory' && (
         <DirectoryItem cid={cid} search={search} />

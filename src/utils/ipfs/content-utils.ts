@@ -1,17 +1,7 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import {
-  IPFSContentDetails,
-  IpfsContentType,
-  IpfsRawDataResponse,
-} from './ipfs';
-import {
-  CYBER,
-  PATTERN_HTML,
-  PATTERN_PARTICLE,
-  PATTERN_HTTP,
-  PATTERN_IPFS_HASH,
-} from '../config';
+import { IPFSContent, IPFSContentDetails, IpfsContentType } from './ipfs';
+import { PATTERN_PARTICLE, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
 import { getResponseResult, onProgressCallback } from './stream-utils';
 
@@ -95,25 +85,24 @@ export const chunksToBlob = (
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseRawIpfsData = async (
-  rawDataResponse: IpfsRawDataResponse,
-  mime: string | undefined,
   cid: string,
+  content: IPFSContent,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
+    const { contentType, result, meta } = content;
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
       cid,
     };
 
-    if (!mime) {
+    if (!meta.mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;
       response.gateway = true;
       return response;
     }
 
-    const contentType = detectContentType(mime);
     response.type = contentType;
 
     // if (contentType === 'directory') {
@@ -129,18 +118,18 @@ export const parseRawIpfsData = async (
       return response;
     }
 
-    const rawData = rawDataResponse
-      ? await getResponseResult(rawDataResponse, onProgress)
+    const rawData = result
+      ? await getResponseResult(result, onProgress)
       : undefined;
 
     if (contentType === 'image') {
-      response.content = createImgData(rawData, mime);
+      response.content = createImgData(rawData, meta.mime);
       response.gateway = false;
       return response;
     }
 
     if (contentType === 'pdf') {
-      response.content = createObjectURL(rawData, mime);
+      response.content = createObjectURL(rawData, meta.mime);
       response.gateway = true;
       return response;
     }
@@ -190,7 +179,7 @@ export const parseRawIpfsData = async (
 
     return response;
   } catch (e) {
-    console.error('----parseRawIpfsData', e, cid, mime);
+    console.error('parseRawIpfsData error:', e, cid, content);
     return undefined;
   }
 };
