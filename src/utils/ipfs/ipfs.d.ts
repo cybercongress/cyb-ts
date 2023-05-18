@@ -39,6 +39,7 @@ export type IPFSContentMeta = {
   data?: string; // ???
   mime?: string;
   local?: boolean;
+  hasStats: boolean;
   statsTime?: number;
   catTime?: number;
   pinTime?: number;

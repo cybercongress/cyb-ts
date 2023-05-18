@@ -63,14 +63,15 @@ function ContentIpfs({
 
   return (
     <>
-      <DebugContentInfo
+      {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      />
+      /> */}
       {/* Default */}
-      {content?.contentType === 'directory' && (
+      {(content?.contentType === 'directory' ||
+        (content?.contentType === 'html' && !content?.meta.hasStats)) && (
         <DirectoryItem cid={cid} search={search} />
       )}
 

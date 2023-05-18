@@ -76,6 +76,7 @@ const emptyMeta: IPFSContentMeta = {
   type: 'file',
   size: -1,
   local: undefined,
+  hasStats: false,
 };
 
 const fetchIPFSContentMeta = async (
@@ -96,6 +97,7 @@ const fetchIPFSContentMeta = async (
       size: size || -1,
       local,
       blocks,
+      hasStats: true,
     };
   }
   return emptyMeta;
@@ -480,7 +482,11 @@ const getNodeAutoDialInterval = async (node: AppIPFS) => {
   }
 };
 
-const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
+const getIpfsGatewayUrl = async (node?: AppIPFS, cid: string) => {
+  if (!node) {
+    return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+  }
+
   if (node.nodeType === 'embedded') {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   }

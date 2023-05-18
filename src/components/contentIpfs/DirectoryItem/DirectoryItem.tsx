@@ -8,10 +8,8 @@ function DirectoryItem({ cid, search }: { cid: string; search?: boolean }) {
   const [url, setUrl] = useState('');
   useEffect(() => {
     const loadUrl = async () => {
-      if (node) {
-        const url = await getIpfsGatewayUrl(node, cid);
-        setUrl(url);
-      }
+      const url = await getIpfsGatewayUrl(node, cid);
+      setUrl(url);
     };
 
     loadUrl();
