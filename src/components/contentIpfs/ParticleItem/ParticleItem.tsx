@@ -29,6 +29,15 @@ function ParticleItem({
     options?.parentId
   );
 
+  console.log(
+    '---particleContent',
+    cid,
+    particleContent,
+    status,
+    content,
+    search
+  );
+
   useEffect(() => {
     const loadPassport = async () => {
       if (content) {
@@ -44,7 +53,7 @@ function ParticleItem({
   }, [queryClient, content]);
 
   if (loading) {
-    return <div>{`Loading particle for ${nickname}...`}</div>;
+    return <div>{`Loading particle for ${nickname} ...`}</div>;
   }
   if (!cid) {
     return <div>{`No particle exist for ${nickname}`}</div>;
