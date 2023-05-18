@@ -19,7 +19,6 @@ function ContentIpfsViewer({
   options,
 }: ContentIpfsWrapperProps) {
   if (content?.contentType === 'particle' && content?.result) {
-    console.log('---ContentIpfsViewer', cid, content);
     return (
       <ParticleItem
         content={content.result}

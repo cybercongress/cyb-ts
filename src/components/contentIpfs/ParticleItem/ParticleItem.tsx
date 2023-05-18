@@ -30,15 +30,6 @@ function ParticleItem({
     options?.parentId
   );
 
-  console.log(
-    '---particleContent',
-    cid,
-    particleContent,
-    status,
-    content,
-    search
-  );
-
   useEffect(() => {
     const loadPassport = async () => {
       if (content) {

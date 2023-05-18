@@ -53,15 +53,14 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   const { contentType } = content;
-  console.log('---ContentIpfs', cid, content, contentType, ipfsDataDetails);
   return (
     <>
-      <DebugContentInfo
+      {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      />
+      /> */}
       {/* Default */}
       {(content?.contentType === 'directory' ||
         (content?.contentType === 'html' && !content?.meta.type)) && (
