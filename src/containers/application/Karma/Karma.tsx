@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { formatNumber } from '../../utils/utils';
-import styles from './styles.scss';
+import { formatNumber } from '../../../utils/utils';
+import styles from './Karma.module.scss';
 import { Tooltip } from 'src/components';
 
 const KARMA_ICON = '🔮';
@@ -28,7 +28,7 @@ const PREFIXES = [
 ];
 
 const formatKarma = (value, prefixCustom = PREFIXES) => {
-  const { prefix = '', power = 1 } =
+  const { prefix = 1, power = 1 } =
     prefixCustom.find((powerItem) => value >= powerItem.power) || {};
 
   return {

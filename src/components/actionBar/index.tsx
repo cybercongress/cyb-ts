@@ -32,47 +32,33 @@ function ActionBarContentText({ children, ...props }) {
 
 type Props = {
   children?: React.ReactNode;
-  btnText?: string | React.ReactNode;
-  onClickFnc?: $TsFixMeFunc;
   onClickBack?: $TsFixMeFunc;
-  disabled?: boolean;
   text?: string | React.ReactNode;
   button?: {
-    text: string;
+    text: string | React.ReactNode;
     onClick: () => void;
     disabled?: boolean;
   };
 };
 
-function ActionBar({
-  children,
-  btnText,
-  text,
-  onClickFnc,
-  onClickBack,
-  disabled,
-  button,
-}: Props) {
+function ActionBar({ children, text, onClickBack, button }: Props) {
   const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const { passport } = useGetPassportByAddress(defaultAccount);
   const location = useLocation();
 
-  const accountWithPassport = defaultAccount.account && passport;
+  const noAccount = !defaultAccount.account;
+  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
 
   // TODO: not show while loading passport
 
-  if (!accountWithPassport && location.pathname !== routes.robot.path) {
+  if ((noAccount || noPassport) && location.pathname !== routes.robot.path) {
     return (
       <ActionBarContainer>
-        {!defaultAccount.account && (
-          <Button link={routes.robot.path}>Connect</Button>
-        )}
+        {noAccount && <Button link={routes.robot.path}>Connect</Button>}
 
-        {!passport &&
-          CYBER.CHAIN_ID === Networks.BOSTROM &&
-          location.pathname !== routes.citizenship.path && (
-            <Button link={routes.portal.path}>Get citizenship</Button>
-          )}
+        {noPassport && location.pathname !== routes.citizenship.path && (
+          <Button link={routes.portal.path}>Get citizenship</Button>
+        )}
       </ActionBarContainer>
     );
   }
@@ -95,12 +81,9 @@ function ActionBar({
 
       {content && <ActionBarContentText>{content}</ActionBarContentText>}
 
-      {(btnText || button?.text) && (
-        <Button
-          disabled={disabled || button?.disabled}
-          onClick={onClickFnc || button?.onClick}
-        >
-          {btnText || button?.text}
+      {button?.text && (
+        <Button disabled={button.disabled} onClick={button.onClick}>
+          {button.text}
         </Button>
       )}
       {/* <GitHub /> */}

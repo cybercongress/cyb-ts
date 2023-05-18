@@ -12,7 +12,7 @@ import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
-import Karma from '../../karma';
+import Karma from '../../Karma/Karma';
 import {
   setAccounts,
   setDefaultAccount,
