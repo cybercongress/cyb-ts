@@ -497,45 +497,50 @@ class Wallet extends React.Component {
     if (addAddress && stage === STAGE_INIT) {
       return (
         <>
-          <main className="block-body">
-            <div
-              style={{
-                margin: '0px auto 12px auto',
-                width: '60%',
-              }}
-            >
-              <LinkWindow to="https://cyb.ai/portal">
-                <InfoCard>
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: '10px 50px 0px 50px',
-                      gap: 20,
-                      display: 'grid',
-                      color: '#fff',
-                    }}
-                  >
-                    <div style={{ fontSize: '28px' }}>
-                      The portal is open! 🎉
-                    </div>
-                    <div>
-                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
-                      register your citizenship and <br /> check for your gift
-                    </div>
+          {/* <main className="block-body"> */}
+          <div
+            style={{
+              margin: '0px auto 12px auto',
+              // width: '60%',
+            }}
+          >
+            <LinkWindow to="https://cyb.ai/portal">
+              <InfoCard>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    padding: '10px 50px 0px 50px',
+                    gap: 20,
+                    display: 'grid',
+                    color: '#fff',
+                  }}
+                >
+                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
+                  <div>
+                    <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                    register your citizenship and <br /> check for your gift
                   </div>
-                </InfoCard>
-              </LinkWindow>
-            </div>
-            <BanerHelp />
-            {/* <NotFound text=" " /> */}
-          </main>
-          <ActionBarConnect
-            accountKeplr={accountKeplr}
-            updateAddress={this.checkAddressLocalStorage}
-            web3={web3}
-            accountsETH={accountsETH}
-            selectAccount={selectAccount}
-          />
+                </div>
+              </InfoCard>
+            </LinkWindow>
+          </div>
+          <BanerHelp />
+          {/* <NotFound text=" " /> */}
+          {/* </main> */}
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+            }}
+          >
+            <ActionBarConnect
+              accountKeplr={accountKeplr}
+              updateAddress={this.checkAddressLocalStorage}
+              web3={web3}
+              accountsETH={accountsETH}
+              selectAccount={selectAccount}
+            />
+          </div>
         </>
       );
     }

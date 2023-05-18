@@ -78,9 +78,14 @@ function Layout() {
 
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
-  const isOwner = defaultAccount.account?.cyber.bech32 === params.address;
+  const account = defaultAccount.account?.cyber.bech32;
+  const isOwner = account === params.address;
 
   function renderLinks(links) {
+    if (!params.address && !account) {
+      return <>&nbsp;</>; // temp
+    }
+
     return (
       <ul className={styles.links}>
         {links.map((link, index) => {
@@ -120,7 +125,7 @@ function Layout() {
       {renderLinks(links.slice(0, 7))}
 
       <ContainerGradientText>
-        <p>{params.address}</p> (name)
+        {params.address && <p>{params.address} (name)</p>}
         <br />
         <br />
         <br />

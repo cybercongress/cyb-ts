@@ -57,6 +57,7 @@ import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
+import Wallet from './containers/Wallet/Wallet';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -101,6 +102,7 @@ function AppRouter() {
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
 
+          {/* <Route path="/robot/passport" element={<Wallet />} /> */}
           <Route path="/robot" element={<Robot />} />
           <Route path="/robot/:address/*" element={<Robot />} />
 

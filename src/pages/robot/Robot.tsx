@@ -22,6 +22,10 @@ function IndexCheck() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const address = defaultAccount.account?.cyber.bech32;
 
+  if (!params.address && !address) {
+    return <Wallet />;
+  }
+
   const isOwner = address === params.address;
 
   if (!params.address) {
