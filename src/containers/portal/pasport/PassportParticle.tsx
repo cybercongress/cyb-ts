@@ -17,7 +17,6 @@ function PassportParticle({
   particle?: string;
 }) {
   const { signer, signingClient } = useSigningClient();
-  console.log('citizenship', nickname, particle);
   const [editParticle, setEditParticle] = useState(particle || '');
   const [resultMsg, setResultMsg] = useState('');
 

@@ -3,7 +3,7 @@ import rehypeStringify from 'rehype-stringify';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import cx from 'classnames';
-import { LinkWindow } from '../link/link';
+import { LinkWindow } from '../../../link/link';
 import styles from './styles.scss';
 import React from 'react';
 

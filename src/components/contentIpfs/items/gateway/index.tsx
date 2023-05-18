@@ -1,7 +1,7 @@
 import Iframe from 'src/components/Iframe/Iframe';
-import styles from './steles.scss';
+import styles from './styles.scss';
 
-function GatewayContent({ url }: { url: string }) {
+function GatewayContentItem({ url }: { url: string }) {
   return (
     <div className={styles.gatewayCantainer}>
       <Iframe url={url} />
@@ -9,4 +9,4 @@ function GatewayContent({ url }: { url: string }) {
   );
 }
 
-export default GatewayContent;
+export default GatewayContentItem;

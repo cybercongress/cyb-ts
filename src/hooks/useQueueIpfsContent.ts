@@ -12,14 +12,14 @@ const queueManager = new QueueManager<IPFSContentMaybe>();
 window.qm = queueManager;
 
 type UseIpfsContentReturn = {
-  status?: QueueItemStatus | undefined;
+  status?: QueueItemStatus;
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
 };
 
 function useQueueIpfsContent(
-  cid: string,
-  rank: number,
+  cid?: string,
+  rank?: number,
   parentId?: string
 ): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus | undefined>();
@@ -51,13 +51,13 @@ function useQueueIpfsContent(
         setPrevNodeType(node.nodeType);
       }
     }
-
-    queueManager.enqueue(cid, callback, {
-      parent: parentId,
-      priority: rank || 0,
-      viewPortPriority: 0,
-    });
-
+    if (cid) {
+      queueManager.enqueue(cid, callback, {
+        parent: parentId,
+        priority: rank || 0,
+        viewPortPriority: 0,
+      });
+    }
     if (prevParentIdRef.current !== parentId) {
       if (prevParentIdRef.current) {
         queueManager.cancelByParent(prevParentIdRef.current);

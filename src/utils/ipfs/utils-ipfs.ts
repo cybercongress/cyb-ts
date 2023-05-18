@@ -26,6 +26,7 @@ import { CYBER } from '../config';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
 import { convertTimeToMilliseconds } from '../helpers';
+import { detectCybContentType } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -56,14 +57,16 @@ const loadIPFSContentFromDb = async (
   const data = await getIpfsContentFromDb(cid);
   if (data && data.length) {
     // TODO: use cursor
-    const mime = await getMimeFromUint8Array(data);
+    const chunk = data.slice(0, 2048);
+    const mime = await getMimeFromUint8Array(chunk);
+    const contentType = detectCybContentType(mime, chunk);
 
     const meta: IPFSContentMeta = {
       type: 'file', // dir support ?
       size: data.length,
       mime,
     };
-    return { result: data, cid, meta, source: 'db' };
+    return { result: data, cid, meta, source: 'db', contentType };
   }
 
   return undefined;
@@ -133,7 +136,13 @@ const fetchIPFSContentFromNode = async (
     switch (meta.type) {
       case 'directory': {
         // TODO: return directory structure
-        return { cid, availableDownload: true, source: 'node', meta };
+        return {
+          cid,
+          availableDownload: false,
+          source: 'node',
+          meta,
+          contentType: 'directory',
+        };
       }
       default: {
         // Get sample of content
@@ -163,18 +172,27 @@ const fetchIPFSContentFromNode = async (
           meta.pinTime = -1;
         }
 
+        const contentType = detectCybContentType(mime, firstChunk);
+
         return {
           result: stream,
           cid,
           meta: { ...meta, mime },
           source: 'node',
+          contentType,
         };
         // }
       }
     }
   } catch (error) {
     console.log('error fetch stat', error);
-    return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
+    return {
+      cid,
+      availableDownload: true,
+      source: 'node',
+      meta: emptyMeta,
+      contentType: 'unknown',
+    };
   }
 };
 
@@ -218,10 +236,12 @@ const fetchIPFSContentFromGateway = async (
         ? addIpfsContentToDb(cid, uint8ArrayConcat(chunks))
         : Promise.resolve();
 
-    const { mime, result } = await toReadableStreamWithMime(
+    const { mime, result, firstChunk } = await toReadableStreamWithMime(
       response.body,
       flushResults
     );
+
+    const contentType = detectCybContentType(mime, firstChunk);
 
     return {
       cid,
@@ -229,6 +249,7 @@ const fetchIPFSContentFromGateway = async (
       result,
       source: 'gateway',
       contentUrl,
+      contentType,
     };
   }
 
@@ -463,11 +484,10 @@ const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
   if (node.nodeType === 'embedded') {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   }
-
-  const response = await node.config.get('Addresses.Gateway');
-  const address = multiaddr(response).nodeAddress();
-
   try {
+    const response = await node.config.get('Addresses.Gateway');
+    const address = multiaddr(response).nodeAddress();
+
     return `http://${address.address}:${address.port}/ipfs/${cid}`;
   } catch (error) {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;

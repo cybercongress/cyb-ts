@@ -16,6 +16,21 @@ export type getIpfsUserGatewanAndNodeType = {
   userGateway: string | undefined;
 };
 
+export type IpfsContentType =
+  | 'image'
+  | 'pdf'
+  | 'link'
+  | 'text'
+  | 'xml'
+  | 'video'
+  | 'html'
+  | 'cid'
+  | 'other'
+  | 'particle'
+  | 'html'
+  | 'directory'
+  | 'unknown';
+
 export type IPFSContentMeta = {
   type: 'file' | 'directory';
   size: number;
@@ -49,14 +64,6 @@ export type IpfsRawDataResponse =
   | AsyncIterator<Uint8Array>;
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
-export type IpfsContentType =
-  | 'image'
-  | 'pdf'
-  | 'link'
-  | 'text'
-  | 'video'
-  | 'html'
-  | 'other';
 
 export type IPFSContentDetails =
   | {
@@ -74,6 +81,7 @@ export type IPFSContent = {
   result?: IpfsRawDataResponse;
   cid: string;
   meta: IPFSContentMeta;
+  contentType: IpfsContentType;
   source: IpfsContentSource;
   contentUrl?: string;
 };

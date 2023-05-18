@@ -1,18 +1,16 @@
-import {
-  IPFSContent,
-  IPFSContentDetails,
-  IPFSContentMaybe,
-} from 'src/utils/ipfs/ipfs';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 import { useEffect, useState } from 'react';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-import { CYBER } from 'src/utils/config';
-import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
-import GatewayContent from './component/gateway';
-import TextMarkdown from '../TextMarkdown';
-import LinkHttp from './component/link';
-import Pdf from '../pdf';
-import Img from './component/img';
+import VideoPlayerGatewayOnly from './items/VideoPlayer/VideoPlayerGatewayOnly';
+import TextMarkdown from './items/TextMarkdown';
+import LinkHttp from './items/link';
+import Pdf from './items/pdf';
+import Img from './items/img';
 import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+import { ContentOptions } from './contentIpfs.d';
+import OtherItem from './items/OtherItem';
+import DownloadableItem from './items/DownloadableItem';
+import DirectoryItem from './DirectoryItem/DirectoryItem';
 
 const getContentDetails = async (
   cid: string,
@@ -32,40 +30,21 @@ const getContentDetails = async (
   // return undefined;
 };
 
-function OtherItem({
-  content,
-  cid,
-  search,
-}: {
-  cid: string;
-  search?: boolean;
-  content?: string;
-}) {
-  if (search) {
-    return (
-      <TextMarkdown fullWidth={search}>
-        {content || `${cid} (n/a)`}
-      </TextMarkdown>
-    );
-  }
-  return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
-}
-
-function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
-  if (search) {
-    return <div>{`${cid} (gateway)`}</div>;
-  }
-  return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
-}
-
 type ContentTabProps = {
   content: IPFSContentMaybe;
   status: string | undefined;
   cid: string;
   search?: boolean;
+  options?: ContentOptions;
 };
 
-function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  status,
+  content,
+  cid,
+  search,
+  options,
+}: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
@@ -77,34 +56,39 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
     }
   }, [content, status, cid]);
 
-  const contentType = ipfsDataDetails?.type;
+  if (!content) {
+    return <div>{cid}</div>;
+  }
+
+  const { contentType } = content;
 
   return (
     <>
-      {/* <DebugContentInfo
+      <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      /> */}
+      />
       {/* Default */}
-      {!content && <div>{cid.toString()}</div>}
+      {content?.contentType === 'directory' && (
+        <DirectoryItem cid={cid} search={search} />
+      )}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
       )}
 
-      {contentType === 'video' && content && (
-        <VideoPlayerGatewayOnly content={content} />
-      )}
+      {contentType === 'video' && <VideoPlayerGatewayOnly content={content} />}
+      {['text', 'html', 'xml', 'cid'].indexOf(contentType) !== -1 &&
+        ipfsDataDetails && (
+          <TextMarkdown fullWidth={search}>
+            {search ? ipfsDataDetails?.text : ipfsDataDetails?.content}
+          </TextMarkdown>
+        )}
 
-      {ipfsDataDetails && (
+      {ipfsDataDetails?.content && contentType && (
         <>
-          {contentType === 'text' && (
-            <TextMarkdown fullWidth={search}>
-              {search ? ipfsDataDetails.text : ipfsDataDetails.content}
-            </TextMarkdown>
-          )}
           {contentType === 'image' && <Img content={ipfsDataDetails.content} />}
           {contentType === 'pdf' && <Pdf content={ipfsDataDetails.content} />}
           {contentType === 'link' && (

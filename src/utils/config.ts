@@ -270,7 +270,7 @@ const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
 const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 const PATTERN_HTML = /<\/?[\w\d]+>/gi;
-
+const PATTERN_PARTICLE = /^\.[a-zA-Z0-9_-]{1,14}$/;
 export {
   TAKEOFF,
   COSMOS,
@@ -292,6 +292,7 @@ export {
   PATTERN_TERRA,
   PATTERN_OSMOS,
   PATTERN_BLOCK,
+  PATTERN_PARTICLE,
   TIME_START,
   TAKEOFF_SUPPLY,
   WP,

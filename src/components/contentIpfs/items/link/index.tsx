@@ -1,6 +1,12 @@
 import GatewayContent from '../gateway';
 
-function LinkHttp({ content, preview }) {
+function LinkHttp({
+  content,
+  preview,
+}: {
+  content: string;
+  preview?: boolean;
+}) {
   return (
     <>
       <div>{content}</div>

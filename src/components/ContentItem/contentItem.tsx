@@ -3,13 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 
 import SearchItem from '../SearchItem/searchItem';
 
 import { getRankGrade } from '../../utils/search/utils';
-import ContentIpfs from '../contentIpfs/contentIpfs';
+import ContentIpfsViewer from '../contentIpfs/ContentIpfsViewer/ContentIpfsViewer';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -39,7 +37,13 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        <ContentIpfs status={status} content={content} cid={cid} search />
+        <ContentIpfsViewer
+          status={status}
+          content={content}
+          cid={cid}
+          search
+          options={{ rank: grade, parentId }}
+        />
       </SearchItem>
     </Link>
   );

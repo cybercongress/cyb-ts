@@ -1,6 +1,6 @@
-import Iframe from '../Iframe/Iframe';
+import Iframe from 'src/components/Iframe/Iframe';
 
-function Pdf({ content, search }) {
+function Pdf({ content, search }: { content: string; search?: boolean }) {
   return (
     <Iframe
       height={search ? '400px' : '700px'}

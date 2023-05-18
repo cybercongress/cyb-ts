@@ -2,7 +2,6 @@
 import { useParams } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
-import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useCallback, useState } from 'react';
 import { TabBtn } from '../../components';
@@ -15,6 +14,7 @@ import useGetDiscussion from './hooks/useGetDiscussion';
 import useGetCommunity from './hooks/useGetCommunity';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import PaneWithPill from './components/PaneWithPill';
+import ContentIpfsViewer from 'src/components/contentIpfs/ContentIpfsViewer/ContentIpfsViewer';
 
 function Ipfs() {
   const { cid, tab = 'discussion' } = useParams();
@@ -44,7 +44,12 @@ function Ipfs() {
           <ContentIpfsCid loading status={status} />
         )}
         {status === 'completed' && (
-          <ContentIpfs status={status} content={content} cid={cid} />
+          <ContentIpfsViewer
+            status={status}
+            content={content}
+            cid={cid}
+            options={{ parentId: cid }}
+          />
         )}
 
         <Tablist

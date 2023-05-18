@@ -190,7 +190,7 @@ class QueueManager<T> {
       queue.set(cid, { ...item, ...changes });
     }
 
-    return queue;
+    return this.queue$.next(queue);
   }
 
   private removeAndNext(cid: string): void {
@@ -206,9 +206,7 @@ class QueueManager<T> {
   ): void {
     item.callbacks.map((callback) => callback(item.cid, 'pending', nextSource));
 
-    this.queue$.next(
-      this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource })
-    );
+    this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource });
   }
 
   private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
@@ -271,7 +269,8 @@ class QueueManager<T> {
         })
       )
       .subscribe(({ item, status, source, result }) => {
-        item.callbacks.map((callback) =>
+        // fix to process dublicated items
+        (this.queue$.value.get(item.cid)?.callbacks || []).map((callback) =>
           callback(item.cid, status, source, result)
         );
 
@@ -324,6 +323,7 @@ class QueueManager<T> {
         status: 'pending',
         ...options,
       };
+
       callback(cid, 'pending', source);
 
       queue.set(cid, item);
@@ -332,7 +332,7 @@ class QueueManager<T> {
   }
 
   public updateViewPortPriority(cid: string, viewPortPriority: number) {
-    this.queue$.next(this.mutateQueueItem(cid, { viewPortPriority }));
+    this.mutateQueueItem(cid, { viewPortPriority });
   }
 
   public cancel(cid: string): void {
