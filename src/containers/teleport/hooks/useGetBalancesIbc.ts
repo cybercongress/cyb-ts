@@ -26,6 +26,7 @@ function useGetBalancesIbc(client, denom) {
   const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [balanceIbc, setBalanceIbc] = useState(null);
   const [denomIbc, setDenomIbc] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -46,21 +47,27 @@ function useGetBalancesIbc(client, denom) {
               denom
             );
           }
-          const [{ address }] = await client.signer.getAccounts();
-          const responseBalance = await client.queryClient.bank.balance(
-            address,
-            coinMinimalDenom
-          );
-          setDenomIbc(coinMinimalDenom);
-          console.log('response', responseBalance);
-          setBalanceIbc({ [coinMinimalDenom]: responseBalance.amount });
+
+          try {
+            const [{ address }] = await client.signer.getAccounts();
+            const responseBalance = await client.queryClient.bank.balance(
+              address,
+              coinMinimalDenom
+            );
+
+            setDenomIbc(coinMinimalDenom);
+            setBalanceIbc({ [coinMinimalDenom]: responseBalance.amount });
+          } catch (error) {
+            console.error(error);
+            setError(error);
+          }
         }
       }
     };
     getBalance();
   }, [client, denom, ibcDataDenom]);
 
-  return { balanceIbc, denomIbc };
+  return { balanceIbc, denomIbc, error };
 }
 
 export default useGetBalancesIbc;

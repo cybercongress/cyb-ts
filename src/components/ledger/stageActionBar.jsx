@@ -14,7 +14,6 @@ import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
-import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
@@ -25,7 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
-import TextareaAutosize from 'react-textarea-autosize';
+import { useIpfs } from 'src/contexts/ipfs';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -229,12 +228,20 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
+  const ipfs = useIpfs();
   return (
     <ActionBarContainer
       button={{
-        disabled: !contentHash.length,
+        disabled: !ipfs.isReady || !contentHash.length,
         onClick: onClickBtn,
-        text: textBtn,
+        text: !ipfs.isReady ? (
+          <>
+            Node is loading&nbsp;
+            <Dots />
+          </>
+        ) : (
+          textBtn
+        ),
       }}
     >
       <Pane
@@ -883,10 +890,12 @@ export function Delegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <Text marginRight={20} fontSize="16px" color="#fff">
         {delegate
@@ -923,10 +932,12 @@ export function ReDelegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <IntupAutoSize
         value={toSend}
@@ -979,10 +990,12 @@ export function ActionBarSend({
 }) {
   return (
     <ActionBarContainer
-      btnText="Generate Tx"
       onClickBack={onClickBack}
-      onClickFnc={onClickBtn}
-      disabled={disabledBtn}
+      button={{
+        text: 'Generate Tx',
+        onClick: onClickBtn,
+        disabled: disabledBtn,
+      }}
     >
       <div style={{ display: 'flex', gap: '30px' }}>
         <Input
