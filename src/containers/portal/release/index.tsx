@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
@@ -28,16 +28,14 @@ import { formatNumber } from '../../../utils/search/utils';
 import STEP_INFO from './utils';
 import Info from './Info';
 
-import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 import { ContainerGradientText } from '../../../components';
+import ReleaseStatus from '../components/ReleaseStatus';
+import StateBeforeActivation from './stateBeforeActivation';
+import { RootState } from 'src/redux/store';
+import usePingTxs from './hooks/usePingTxs';
 
 const portalAmbientObg = new Audio(portalAmbient);
-const portalConfirmedObg = new Audio(portalConfirmed);
-
-const playPortalConfirmed = () => {
-  portalConfirmedObg.play();
-};
 
 const playPortalAmbient = () => {
   portalAmbientObg.loop = true;
@@ -59,37 +57,15 @@ const {
   STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
-function InfoBaner({ title, text, status }) {
-  return (
-    <ContainerGradientText status={status}>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '20px',
-          padding: '15px 0',
-        }}
-      >
-        <div style={{ color: '#36D6AE', fontSize: '22px' }}>{title}</div>
-        <div style={{ fontSize: '18px', color: '#fff', textAlign: 'center' }}>
-          {text}
-        </div>
-      </div>
-    </ContainerGradientText>
-  );
-}
-
 const initStateBonus = {
   current: 0,
 };
 
-function Release({ defaultAccount }) {
+function Release() {
   const { isMobile: mobile } = useDevice();
+  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(true);
-  const [updateFunc, setUpdateFunc] = useState(0);
-
+  const { txHash, updateFunc, updateTxHash } = usePingTxs();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { citizenship, loading: loadingCitizenship } =
     useGetActivePassport(defaultAccount);
@@ -105,7 +81,7 @@ function Release({ defaultAccount }) {
     timeNextFirstrelease,
   } = useCheckRelease(totalGift, loadingGift, updateFunc);
 
-  const [txHash, setTxHash] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
   const [activeReleases, setActiveReleases] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -148,20 +124,6 @@ function Release({ defaultAccount }) {
         }
       }
     }
-
-    // if (!loadingRelease) {
-    //   if (!activeReleases) {
-    //     setStateInfo(STATE_BEFORE_ACTIVATION);
-    //   } else if (currentRelease !== null) {
-    //     if (isRelease) {
-    //       setStateInfo(STATE_READY_TO_RELEASE);
-    //     } else {
-    //       setStateInfo(STATE_NEXT_UNFREEZE);
-    //     }
-    //   } else {
-    //     setStateInfo(STATE_PROVE_ADDRESS);
-    //   }
-    // }
   }, [
     loadingCitizenship,
     activeReleases,
@@ -170,47 +132,6 @@ function Release({ defaultAccount }) {
     citizenship,
     currentRelease,
   ]);
-
-  useEffect(() => {
-    if (txHash !== null && txHash.status !== 'pending') {
-      setTimeout(() => setTxHash(null), 35000);
-    }
-  }, [txHash]);
-
-  useEffect(() => {
-    const confirmTx = async () => {
-      if (queryClient && txHash !== null && txHash.status === 'pending') {
-        const response = await queryClient.getTx(txHash.txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
-          if (response.code === 0) {
-            setTxHash((item) => ({
-              ...item,
-              status: 'confirmed',
-            }));
-            setUpdateFunc((item) => item + 1);
-            try {
-              playPortalConfirmed();
-            } catch (error) {
-              console.log('error', error);
-            }
-            return;
-          }
-          if (response.code) {
-            setTxHash((item) => ({
-              ...item,
-              status: 'error',
-              rawLog: response.rawLog.toString(),
-            }));
-            // setErrorMessage(response.rawLog);
-            return;
-          }
-        }
-        setTimeout(confirmTx, 1500);
-      }
-    };
-    confirmTx();
-  }, [queryClient, txHash]);
 
   useEffect(() => {
     const cheeckStateRelease = async () => {
@@ -235,16 +156,18 @@ function Release({ defaultAccount }) {
             if (targetClaim && claims) {
               setCitizensClaim(claims);
               setCitizensTargetClaim(targetClaim);
-              if (parseFloat(targetClaim) > parseFloat(claims)) {
+              const releaseAmountForStart = new BigNumber(targetClaim)
+                .multipliedBy(0.01)
+                .toNumber();
+              const curentProgress = Math.floor(
+                (parseFloat(claims) / parseFloat(targetClaim)) * 100
+              );
+              if (parseFloat(releaseAmountForStart) > parseFloat(claims)) {
                 setActiveReleases(false);
-                setProgress(
-                  Math.floor(
-                    (parseFloat(claims) / parseFloat(targetClaim)) * 100
-                  )
-                );
+                setProgress(curentProgress);
               } else {
                 setActiveReleases(true);
-                setProgress(Math.floor(100));
+                setProgress(curentProgress);
               }
             }
             setLoading(false);
@@ -315,10 +238,6 @@ function Release({ defaultAccount }) {
     loadingRelease,
   ]);
 
-  const updateTxHash = (data) => {
-    setTxHash(data);
-  };
-
   const useSelectedGiftData = useMemo(() => {
     try {
       if (selectedAddress !== null) {
@@ -342,31 +261,32 @@ function Release({ defaultAccount }) {
     }
   }, [selectedAddress, totalGift, totalGiftClaimed]);
 
-  const useReleasedStage = useMemo(() => {
-    const statusRelease = {
-      progress: 0,
-      gift: 0,
-      leftRelease: 0,
-    };
 
-    if (useSelectedGiftData !== null && readyRelease !== null) {
-      const { amount, address } = readyRelease;
-      const { claim, address: addressGift } = useSelectedGiftData;
-      if (claim && address === addressGift) {
-        statusRelease.gift = claim;
-        statusRelease.leftRelease = formatNumber(amount);
-        const progressRelease = new BigNumber(amount).dividedBy(claim);
-        const curentProgressRelease = new BigNumber(1)
-          .minus(progressRelease)
-          .multipliedBy(100)
-          .dp(1, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        statusRelease.progress = curentProgressRelease;
-      }
-    }
+  // const useReleasedStage = useMemo(() => {
+  //   const statusRelease = {
+  //     progress: 0,
+  //     gift: 0,
+  //     leftRelease: 0,
+  //   };
 
-    return statusRelease;
-  }, [readyRelease, useSelectedGiftData]);
+  //   if (useSelectedGiftData !== null && readyRelease !== null) {
+  //     const { amount, address } = readyRelease;
+  //     const { claim, address: addressGift } = useSelectedGiftData;
+  //     if (claim && address === addressGift) {
+  //       statusRelease.gift = claim;
+  //       statusRelease.leftRelease = formatNumber(amount);
+  //       const progressRelease = new BigNumber(amount).dividedBy(claim);
+  //       const curentProgressRelease = new BigNumber(1)
+  //         .minus(progressRelease)
+  //         .multipliedBy(100)
+  //         .dp(1, BigNumber.ROUND_FLOOR)
+  //         .toNumber();
+  //       statusRelease.progress = curentProgressRelease;
+  //     }
+  //   }
+
+  //   return statusRelease;
+  // }, [readyRelease, useSelectedGiftData]);
 
   const useBeforeActivation = useMemo(() => {
     if (citizensClaim > 0 && citizensTargetClaim > 0) {
@@ -379,21 +299,26 @@ function Release({ defaultAccount }) {
     return '';
   }, [citizensTargetClaim, citizensClaim]);
 
-  const useUnClaimedGiftData = useMemo(() => {
-    if (
-      giftData !== null &&
-      citizenship !== null &&
-      Object.keys(giftData.unClaimed.addresses).length > 0
-    ) {
-      if (currentBonus?.current) {
-        giftData.unClaimed.claim = Math.floor(
-          giftData.unClaimed.amount * currentBonus.current
-        );
-        return { ...giftData.unClaimed, address: citizenship.owner };
-      }
-    }
-    return null;
-  }, [giftData, currentBonus, citizenship]);
+  const useReleaseStatus = useMemo(() => {
+    
+
+  }, []);
+
+  // const useUnClaimedGiftData = useMemo(() => {
+  //   if (
+  //     giftData !== null &&
+  //     citizenship !== null &&
+  //     Object.keys(giftData.unClaimed.addresses).length > 0
+  //   ) {
+  //     if (currentBonus?.current) {
+  //       giftData.unClaimed.claim = Math.floor(
+  //         giftData.unClaimed.amount * currentBonus.current
+  //       );
+  //       return { ...giftData.unClaimed, address: citizenship.owner };
+  //     }
+  //   }
+  //   return null;
+  // }, [giftData, currentBonus, citizenship]);
 
   if (loadingCitizenship) {
     return <div>...</div>;
@@ -414,46 +339,10 @@ function Release({ defaultAccount }) {
   if (!activeReleases && validstateInfoBEFORE) {
     content = (
       <>
-        <ProgressCard
-          titleValue={`${useBeforeActivation} addresses`}
-          headerText="before activation"
-          footerText="addresses registered"
+        <StateBeforeActivation
+          useBeforeActivation={useBeforeActivation}
           progress={progress}
         />
-        <ContainerGradientText status="green">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '20px',
-              padding: '15px 0',
-            }}
-          >
-            <div style={{ fontSize: '22px' }}>🚀 How to reach the target?</div>
-          </div>
-        </ContainerGradientText>
-        <Link to="/genesis">
-          <InfoBaner
-            title="📼 Watch the Genesis story"
-            text="An inspiring and comical 40 minutes diving into the birth of
-              Superintelligence."
-          />
-        </Link>
-        <Link to="/ipfs/QmbYDfhXr8y3DTqZggGumKHKDb6h7ChJr1bfSKZcY9eP96">
-          <InfoBaner
-            title="🗣 Share tweet"
-            text="Spread the word about Superintelligence! The more you share, the
-              quicker we reach our goal."
-          />
-        </Link>
-        <Link to="/teleport">
-          <InfoBaner
-            title={`${BOOT_ICON} Buy BOOT`}
-            text="Higher BOOT price = more attractive gift."
-            status="pink"
-          />
-        </Link>
       </>
     );
   }
@@ -474,7 +363,7 @@ function Release({ defaultAccount }) {
   if (activeReleases && stateInfo !== STATE_INIT_NULL_ACTIVE) {
     content = (
       <>
-        <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
+        {/* <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} /> */}
 
         <PasportCitizenship
           txHash={txHash}
@@ -484,7 +373,9 @@ function Release({ defaultAccount }) {
           totalGift={totalGift}
         />
 
-        {useSelectedGiftData !== null && (
+        <ReleaseStatus progress={progress} />
+
+        {/* {useSelectedGiftData !== null && (
           <CurrentGift
             title="Claimed"
             valueTextResult="claimed"
@@ -492,13 +383,13 @@ function Release({ defaultAccount }) {
             selectedAddress={selectedAddress}
             currentGift={useSelectedGiftData}
           />
-        )}
+        )} */}
 
         {/* {useUnClaimedGiftAmount !== false && (
           <UnclaimedGift unClaimedGiftAmount={useUnClaimedGiftAmount} />
         )} */}
 
-        {useUnClaimedGiftData !== null && (
+        {/* {useUnClaimedGiftData !== null && (
           <CurrentGift
             title="Unclaimed"
             valueTextResult="unclaimed"
@@ -506,9 +397,9 @@ function Release({ defaultAccount }) {
             selectedAddress={selectedAddress}
             currentGift={useUnClaimedGiftData}
           />
-        )}
+        )} */}
 
-        <ProgressCard
+        {/* <ProgressCard
           titleValue={`${useReleasedStage.leftRelease} ${BOOT_ICON}`}
           headerText="left to release"
           footerText="total gift released"
@@ -516,7 +407,7 @@ function Release({ defaultAccount }) {
           styleContainerTrack={
             useReleasedStage.progress === 0 ? { padding: '0px 25px' } : {}
           }
-        />
+        /> */}
       </>
     );
   }
@@ -526,11 +417,11 @@ function Release({ defaultAccount }) {
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
-        <Info
+        {/* <Info
           useReleasedStage={useReleasedStage}
           stepCurrent={stateInfo}
           citizensTargetClaim={citizensTargetClaim}
-        />
+        /> */}
         {content}
       </MainContainer>
 
@@ -550,10 +441,4 @@ function Release({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Release);
+export default Release;
