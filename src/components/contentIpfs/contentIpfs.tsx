@@ -72,7 +72,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
       )}
 
       {contentType === 'video' && <VideoPlayerGatewayOnly content={content} />}
-      {['text', 'html', 'xml', 'cid'].indexOf(contentType) !== -1 &&
+      {['text', 'html', 'xml', 'cid', 'particle'].indexOf(contentType) !== -1 &&
         ipfsDataDetails && (
           <TextMarkdown fullWidth={search}>
             {search ? ipfsDataDetails?.text : ipfsDataDetails?.content}

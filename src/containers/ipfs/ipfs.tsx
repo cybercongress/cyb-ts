@@ -14,7 +14,7 @@ import useGetDiscussion from './hooks/useGetDiscussion';
 import useGetCommunity from './hooks/useGetCommunity';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import PaneWithPill from './components/PaneWithPill';
-import ContentIpfsViewer from 'src/components/contentIpfs/ContentIpfsViewer/ContentIpfsViewer';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 
 function Ipfs() {
   const { cid, tab = 'discussion' } = useParams();
@@ -44,7 +44,7 @@ function Ipfs() {
           <ContentIpfsCid loading status={status} />
         )}
         {status === 'completed' && (
-          <ContentIpfsViewer
+          <ContentIpfs
             status={status}
             content={content}
             cid={cid}

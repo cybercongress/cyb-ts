@@ -15,10 +15,12 @@ function ParticleItem({
   content,
   search,
   options,
+  onCidChange,
 }: {
   content: IpfsRawDataResponse;
   search?: boolean;
   options?: ContentOptions;
+  onCidChange: (cid: string) => void;
 }) {
   const queryClient = useQueryClient();
   const [cid, setCid] = useState(undefined);
@@ -33,13 +35,16 @@ function ParticleItem({
   useEffect(() => {
     const loadPassport = async () => {
       if (content) {
-        const nickname = uint8ArrayToString(
+        const domainNickname = uint8ArrayToString(
           await getResponseResult(content)
-        ).slice(1);
+        );
+        const nickname = domainNickname.split('.')[0];
         setNickname(nickname);
         const passport = await getPassportByNickname(queryClient, nickname);
         if (passport) {
-          setCid(passport.extension.particle);
+          const particleCid = passport.extension.particle;
+          setCid(particleCid);
+          onCidChange(particleCid);
         }
       }
     };
