@@ -11,6 +11,8 @@ import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 import { ContainerGradientText } from '../../components';
+import { useParams } from 'react-router-dom';
+import { useGetPassportByAddress } from './hooks';
 
 const valueContext = {
   totalCap: 0,
@@ -18,45 +20,55 @@ const valueContext = {
   dataCap: {},
 };
 
-function Sigma({ defaultAccount }) {
-  const [accountsData, setAccountsData] = useState([]);
+function Sigma() {
+  // const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
+
+  const params = useParams();
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
+
+  const address = params.address;
+
+  const accountsData = [
+    {
+      bech32: address,
+    },
+  ];
 
   // const { accounts } = useGetLocalStoge(updateState);
 
-  useEffect(() => {
-    const pocketAccountLs = localStorage.getItem('pocketAccount');
-    const localStoragePocket = localStorage.getItem('pocket');
+  // useEffect(() => {
+  //   const pocketAccountLs = localStorage.getItem('pocketAccount');
+  //   const localStoragePocket = localStorage.getItem('pocket');
 
-    let accountsTemp = {};
+  //   let accountsTemp = {};
 
-    if (pocketAccountLs !== null && localStoragePocket !== null) {
-      const pocketAccountData = JSON.parse(pocketAccountLs);
-      const localStoragePocketData = JSON.parse(localStoragePocket);
+  //   if (pocketAccountLs !== null && localStoragePocket !== null) {
+  //     const pocketAccountData = JSON.parse(pocketAccountLs);
+  //     const localStoragePocketData = JSON.parse(localStoragePocket);
 
-      const keyPocket = Object.keys(localStoragePocketData)[0];
-      accountsTemp = {
-        [keyPocket]: pocketAccountData[keyPocket],
-        ...pocketAccountData,
-      };
-    }
+  //     const keyPocket = Object.keys(localStoragePocketData)[0];
+  //     accountsTemp = {
+  //       [keyPocket]: pocketAccountData[keyPocket],
+  //       ...pocketAccountData,
+  //     };
+  //   }
 
-    if (pocketAccountLs !== null) {
-      const data = [];
-      if (Object.keys(accountsTemp).length > 0) {
-        Object.keys(accountsTemp).forEach((key) => {
-          const { cyber } = accountsTemp[key];
-          if (cyber) {
-            data.push({ ...cyber });
-          }
-        });
-      }
-      if (data.length > 0) {
-        setAccountsData(data);
-      }
-    }
-  }, [defaultAccount]);
+  //   if (pocketAccountLs !== null) {
+  //     const data = [];
+  //     if (Object.keys(accountsTemp).length > 0) {
+  //       Object.keys(accountsTemp).forEach((key) => {
+  //         const { cyber } = accountsTemp[key];
+  //         if (cyber) {
+  //           data.push({ ...cyber });
+  //         }
+  //       });
+  //     }
+  //     if (data.length > 0) {
+  //       setAccountsData(data);
+  //     }
+  //   }
+  // }, [defaultAccount]);
 
   useEffect(() => {
     const { dataCap } = value;
@@ -110,50 +122,47 @@ function Sigma({ defaultAccount }) {
     }
 
     return null;
-  }, [accountsData]);
+  }, []);
 
   return (
     <SigmaContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
-      <MainContainer width="100%">
-        <div>
-          <ContainerGradientText>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '16px',
-              }}
-            >
-              <div>Total</div>
-              <div
-                style={{ display: 'flex', gap: '30px', alignItems: 'center' }}
-              >
-                {value.changeCap > 0 && (
-                  <div
-                    style={{
-                      color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
-                    }}
-                  >
-                    {value.changeCap > 0 ? '+' : ''}
-                    {formatNumber(value.changeCap)}
-                  </div>
-                )}
-                <FormatNumberTokens
-                  // styleValue={{ fontSize: '18px' }}
-                  text={CYBER.DENOM_LIQUID_TOKEN}
-                  value={value.totalCap}
-                />
-              </div>
+      <div>
+        <ContainerGradientText>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '16px',
+            }}
+          >
+            <div>Total</div>
+            <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
+              {value.changeCap > 0 && (
+                <div
+                  style={{
+                    color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
+                  }}
+                >
+                  {value.changeCap > 0 ? '+' : ''}
+                  {formatNumber(value.changeCap)}
+                </div>
+              )}
+              <FormatNumberTokens
+                // styleValue={{ fontSize: '18px' }}
+                text={CYBER.DENOM_LIQUID_TOKEN}
+                value={value.totalCap}
+              />
             </div>
-          </ContainerGradientText>
-        </div>
+          </div>
+        </ContainerGradientText>
+      </div>
 
-        {renderItem}
-      </MainContainer>
+      {renderItem}
+
       {/* <MainContainer width="82%">
         <CardPassport accounts={accounts} />
       </MainContainer> */}
@@ -162,13 +171,7 @@ function Sigma({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Sigma);
+export default Sigma;
 
 // базаво давать добавть адрес и все
 // для того что бы доваить космос , эфир , аватар надо создать паспорт

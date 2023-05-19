@@ -35,6 +35,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import { Helmet } from 'react-helmet';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -122,6 +123,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 root.render(
   <Providers>
     <>
+      <Helmet>
+        <title>cyb: your immortal robot for the great web</title>
+      </Helmet>
       <AppRouter />
       <ReactQueryDevtools />
     </>

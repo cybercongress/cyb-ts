@@ -15,6 +15,7 @@ import { RootState } from 'src/redux/store';
 import Main from 'src/containers/account/tabs/main';
 import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
+import Taverna from 'src/containers/taverna';
 
 function IndexCheck() {
   const params = useParams();
@@ -29,11 +30,13 @@ function IndexCheck() {
   const isOwner = address === params.address;
 
   if (!params.address) {
-    return <Navigate to={`/robot/${defaultAccount.account?.cyber.bech32}`} />;
+    return (
+      <Navigate to={`/robot/${defaultAccount.account?.cyber.bech32}`} replace />
+    );
   }
 
   if (!isOwner) {
-    return <Navigate to="./sigma" />;
+    return <Navigate to="./sigma" replace />;
   }
 
   return <Wallet />;
@@ -49,19 +52,21 @@ function Robot() {
         <Route
           path="sigma"
           element={
-            <div>
-              <Main />
+            // <div>
+            //   <Main />
 
-              <p>or this</p>
-              <Sigma />
-            </div>
+            //   <p>or this</p>
+            <Sigma />
+            // </div>
           }
         />
+        <Route path="sense" element={<Taverna />} />
+
         <Route path="badges" element={<TableDiscipline />} />
         <Route path="log" element={<FeedsTab />} />
         <Route path="timeline" element={<TxsTable />} />
         <Route path="security" element={<Heroes />} />
-        <Route path="energy" element={<RoutedEnergy />} />
+        <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="cyberlinks" element={<GetLink />} />
         <Route path="brain" element={<ForceGraph />} />

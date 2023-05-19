@@ -75,81 +75,83 @@ function IpfsSettings() {
 
   return (
     // <MainContainer>
-    <div style={{ width: '100%', display: 'grid', gap: '20px' }}>
-      <ContainerKeyValue>
-        <div>client</div>
+    <ContainerGradientText>
+      <div style={{ width: '100%', display: 'grid', gap: '20px' }}>
+        <ContainerKeyValue>
+          <div>client</div>
 
-        <Select
-          width="300px"
-          valueSelect={valueSelect}
-          textSelectValue={valueSelect !== '' ? valueSelect : ''}
-          onChangeSelect={(item) => onChangeSelect(item)}
-          custom
-          disabled={pending}
-        >
-          {renderOptions(dataOpts, valueSelect)}
-        </Select>
-      </ContainerKeyValue>
+          <Select
+            width="300px"
+            valueSelect={valueSelect}
+            textSelectValue={valueSelect !== '' ? valueSelect : ''}
+            onChangeSelect={(item) => onChangeSelect(item)}
+            custom
+            disabled={pending}
+          >
+            {renderOptions(dataOpts, valueSelect)}
+          </Select>
+        </ContainerKeyValue>
 
-      {valueSelect === 'external' && (
-        <>
-          <ContainerKeyValue>
-            <div>api</div>
+        {valueSelect === 'external' && (
+          <>
+            <ContainerKeyValue>
+              <div>api</div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '300px',
-                gap: '20px',
-                position: 'relative',
-              }}
-            >
-              <Input
-                value={valueInput}
-                onChange={(e) => setValueInput(e.target.value)}
-              />
-              <BtnPasport
-                style={{ maxWidth: '100px' }}
-                typeBtn="blue"
-                onClick={() => setNewUrl()}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '300px',
+                  gap: '20px',
+                  position: 'relative',
+                }}
               >
-                edit
-              </BtnPasport>
-            </div>
-          </ContainerKeyValue>
-          <ContainerKeyValue>
-            <div>gateway</div>
+                <Input
+                  value={valueInput}
+                  onChange={(e) => setValueInput(e.target.value)}
+                />
+                <BtnPasport
+                  style={{ maxWidth: '100px' }}
+                  typeBtn="blue"
+                  onClick={() => setNewUrl()}
+                >
+                  edit
+                </BtnPasport>
+              </div>
+            </ContainerKeyValue>
+            <ContainerKeyValue>
+              <div>gateway</div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '300px',
-                gap: '20px',
-                position: 'relative',
-              }}
-            >
-              <Input
-                value={valueInputGateway}
-                onChange={(e) => setValueInputGateway(e.target.value)}
-              />
-              <BtnPasport
-                style={{ maxWidth: '100px' }}
-                typeBtn="blue"
-                onClick={() => setNewUrlGateway()}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '300px',
+                  gap: '20px',
+                  position: 'relative',
+                }}
               >
-                edit
-              </BtnPasport>
-            </div>
-          </ContainerKeyValue>
-        </>
-      )}
+                <Input
+                  value={valueInputGateway}
+                  onChange={(e) => setValueInputGateway(e.target.value)}
+                />
+                <BtnPasport
+                  style={{ maxWidth: '100px' }}
+                  typeBtn="blue"
+                  onClick={() => setNewUrlGateway()}
+                >
+                  edit
+                </BtnPasport>
+              </div>
+            </ContainerKeyValue>
+          </>
+        )}
 
-      <InfoIpfsNode ipfs={ipfs} />
+        <InfoIpfsNode ipfs={ipfs} />
 
-      <Button style={{ maxWidth: '200px' }} onClick={onClickReConnect}>
-        reconnect
-      </Button>
-    </div>
+        <Button style={{ maxWidth: '200px' }} onClick={onClickReConnect}>
+          reconnect
+        </Button>
+      </div>
+    </ContainerGradientText>
     // </MainContainer>
   );
 }

@@ -6,6 +6,7 @@ import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
+import { ContainerGradientText } from 'src/components';
 
 function RoutedEnergy({ defaultAccount }) {
   const location = useLocation();
@@ -98,19 +99,31 @@ function RoutedEnergy({ defaultAccount }) {
   return (
     <>
       {/* <main className="block-body"> */}
-      <Statistics
-        active={selected}
-        myEnegy={balacesResource.milliampere * balacesResource.millivolt}
-        outcome={
-          convertResources(sourceEnergy.milliampere) *
-          convertResources(sourceEnergy.millivolt)
-        }
-        income={
-          convertResources(destinationEnergy.milliampere) *
-          convertResources(destinationEnergy.millivolt)
-        }
-      />
-      {content}
+
+      <div
+        style={{
+          display: 'grid',
+          rowGap: '20px',
+        }}
+      >
+        <ContainerGradientText>
+          <Statistics
+            active={selected}
+            myEnegy={balacesResource.milliampere * balacesResource.millivolt}
+            outcome={
+              convertResources(sourceEnergy.milliampere) *
+              convertResources(sourceEnergy.millivolt)
+            }
+            income={
+              convertResources(destinationEnergy.milliampere) *
+              convertResources(destinationEnergy.millivolt)
+            }
+          />
+        </ContainerGradientText>
+
+        <ContainerGradientText>{content}</ContainerGradientText>
+      </div>
+
       {/* </main> */}
       <div
         style={{

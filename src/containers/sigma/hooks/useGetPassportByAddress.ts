@@ -19,14 +19,16 @@ type Passport = {
   };
 };
 
-function useGetPassportByAddress(accounts: any) {
+// TODO: refactor
+function useGetPassportByAddress(accounts: any, address: string) {
   const queryClient = useQueryClient();
   const [passport, setPassport] = useState<Passport | null>(null);
-  const [addressBech32, setAddressBech32] = useState(null);
+  const [addressBech32, setAddressBech32] = useState(address || null);
   const { data } = useQuery(
     ['activePassport', addressBech32],
     async () => {
       const response = await activePassport(queryClient, addressBech32);
+
       if (response !== null) {
         return response;
       }
@@ -38,6 +40,10 @@ function useGetPassportByAddress(accounts: any) {
   );
 
   useEffect(() => {
+    if (address) {
+      return;
+    }
+
     if (
       accounts !== null &&
       Object.prototype.hasOwnProperty.call(accounts, 'account')
@@ -73,10 +79,12 @@ function useGetPassportByAddress(accounts: any) {
     if (accounts === null) {
       setAddressBech32(null);
     }
-  }, [accounts]);
+  }, [accounts, address]);
+
+  console.log(data);
 
   useEffect(() => {
-    if (data && accounts !== null) {
+    if (data) {
       setPassport(data);
     } else {
       setPassport(null);

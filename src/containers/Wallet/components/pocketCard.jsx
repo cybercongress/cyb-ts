@@ -1,5 +1,5 @@
 import { Pane } from '@cybercongress/gravity';
-import { Copy, Tooltip } from '../../../components';
+import { ContainerGradientText, Copy, Tooltip } from '../../../components';
 import { trimString, formatNumber, getDecimal } from '../../../utils/utils';
 
 import imgLedger from '../../../image/ledger.svg';
@@ -179,7 +179,7 @@ export function Address({
 
 export function PocketCard({ children, select, ...props }) {
   return (
-    <Pane
+    <ContainerGradientText
       boxShadow={select ? '0 0 8px 1px #00b0ff' : '0px 0px 5px #36d6ae'}
       className="container-card-pocket cursor-pointer"
       width="100%"
@@ -190,6 +190,6 @@ export function PocketCard({ children, select, ...props }) {
       {...props}
     >
       {children}
-    </Pane>
+    </ContainerGradientText>
   );
 }

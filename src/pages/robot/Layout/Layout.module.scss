@@ -3,7 +3,7 @@
   margin-top: 40px;
   justify-content: center;
   // margin: 0 auto;
-  grid-template-columns: 100px minmax(200px, 700px) 100px;
+  grid-template-columns: 110px minmax(200px, 700px) 110px;
   // padding: 50px;
   column-gap: 20px;
   // padding-left: 10%;
@@ -15,14 +15,24 @@
 
 .links {
   list-style-type: none;
+  position: sticky;
+  top: 0;
 
   li {
     margin: 30px 0;
     position: relative;
-    font-size: 20px;
+    font-size: 18px;
 
-    span {
+    > span {
       color: gray;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      span {
+        margin-left: 5px;
+      }
     }
 
     .active {

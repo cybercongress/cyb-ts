@@ -1,0 +1,31 @@
+.table {
+  border-collapse: collapse;
+
+  td,
+  th {
+    padding: 18px;
+  }
+
+  thead {
+    color: #777777;
+  }
+
+  tbody {
+    color: #ffffff;
+
+    tr {
+      td {
+      }
+
+      &:hover {
+        background: linear-gradient(
+            180deg,
+            #36d6ae 0%,
+            rgba(54, 214, 174, 0.72) 51.04%,
+            #36d6ae 100%
+          ),
+          linear-gradient(0deg, #ffffff, #ffffff);
+      }
+    }
+  }
+}

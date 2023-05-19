@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Text } from '@cybercongress/gravity';
 
-import { Loading, LinkWindow } from '../../components';
+import { Loading, LinkWindow, ContainerGradientText } from '../../components';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/features/pocket';
 import BanerHelp from '../help/banerHelp';
@@ -21,6 +21,7 @@ import ActionBar from './actionBar';
 import { InfoCard, MainContainer } from '../portal/components';
 
 import db from '../../db';
+import { Link } from 'react-router-dom';
 
 const { STAGE_INIT } = LEDGER;
 
@@ -494,6 +495,26 @@ class Wallet extends React.Component {
       );
     }
 
+    const portal = (
+      <ContainerGradientText>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '10px 50px 0px 50px',
+            gap: 20,
+            display: 'grid',
+            color: '#fff',
+          }}
+        >
+          <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
+          <div>
+            <Link to="/portal">Go to portal</Link> to register your citizenship
+            and <br /> check for your gift
+          </div>
+        </div>
+      </ContainerGradientText>
+    );
+
     if (addAddress && stage === STAGE_INIT) {
       return (
         <>
@@ -504,25 +525,7 @@ class Wallet extends React.Component {
               // width: '60%',
             }}
           >
-            <LinkWindow to="https://cyb.ai/portal">
-              <InfoCard>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '10px 50px 0px 50px',
-                    gap: 20,
-                    display: 'grid',
-                    color: '#fff',
-                  }}
-                >
-                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
-                  <div>
-                    <span style={{ color: '#36d6ae' }}>Go to portal</span> to
-                    register your citizenship and <br /> check for your gift
-                  </div>
-                </div>
-              </InfoCard>
-            </LinkWindow>
+            {portal}
           </div>
           <BanerHelp />
           {/* <NotFound text=" " /> */}
@@ -556,34 +559,14 @@ class Wallet extends React.Component {
               padding: '10px 30px 40px 20px',
             }}
           >
-            <LinkWindow style={{ width: '100%' }} to="https://cyb.ai/portal">
-              <InfoCard>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '10px 50px 0px 50px',
-                    gap: 20,
-                    display: 'grid',
-                    color: '#fff',
-                  }}
-                >
-                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
-                  <div>
-                    <span style={{ color: '#36d6ae' }}>Go to portal</span> to
-                    register your citizenship and <br /> check for your gift
-                  </div>
-                </div>
-              </InfoCard>
-            </LinkWindow>
-            <PocketCard
-              alignItems="flex-start"
-              onClick={() => this.routeChange()}
-            >
+            {portal}
+
+            <ContainerGradientText>
               <Text fontSize="16px" color="#fff">
-                Hi! I am Cyb! Your immortal robot of the Great Web. Click here
-                for help.
+                Hi! I am Cyb! Your immortal robot of the Great Web.{' '}
+                <Link to="/help">Click here</Link> for help.
               </Text>
-            </PocketCard>
+            </ContainerGradientText>
 
             {defaultAccounts !== null && defaultAccounts.cyber && (
               <TweetCard

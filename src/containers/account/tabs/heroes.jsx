@@ -5,7 +5,12 @@ import {
   TableEv as Table,
   Icon,
 } from '@cybercongress/gravity';
-import { NoItems, Account, NumberCurrency } from '../../../components';
+import {
+  NoItems,
+  Account,
+  NumberCurrency,
+  ContainerGradientText,
+} from '../../../components';
 import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import { useGetHeroes } from '../hooks';
@@ -127,7 +132,11 @@ function Heroes() {
   });
 
   return (
-    <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr">
+    <ContainerGradientText
+      display="grid"
+      gridGap="20px"
+      gridTemplateColumns="1fr"
+    >
       <Table>
         <Table.Head
           style={{
@@ -165,7 +174,7 @@ function Heroes() {
           )}
         </Table.Body>
       </Table>
-    </Pane>
+    </ContainerGradientText>
   );
 }
 

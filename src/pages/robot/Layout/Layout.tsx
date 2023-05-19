@@ -6,70 +6,85 @@ import cx from 'classnames';
 import useGetAddressTemp from 'src/containers/account/hooks/useGetAddressTemp';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
+import { Helmet } from 'react-helmet';
 
 const links = [
   {
     text: 'Keys',
     link: './keys',
+    icon: '🔑',
   },
   {
     text: 'Passport',
     link: './',
     onlyOwner: true,
+    icon: '🟢',
   },
   {
     text: 'Drive',
     link: './drive',
     onlyOwner: true,
+    icon: '🟥',
   },
   {
     text: 'Timeline',
     link: './timeline',
+    icon: '🚥',
   },
   {
     text: 'Nft',
     link: './nft',
+    icon: '🖼',
   },
   {
     text: 'Security',
     link: './security',
+    icon: '🧑🏼‍🚀',
   },
   {
     text: 'Skills',
     link: './skills',
+    icon: '🍄',
   },
   {
     text: 'Sigma',
     link: './sigma',
+    icon: '∑',
   },
 
   {
     text: 'Energy',
     link: './energy',
+    icon: '🚀',
   },
   {
     text: 'Swarm',
     link: './swarm',
+    icon: '💚',
   },
   {
     text: 'Log',
     link: './log',
+    icon: '🍀',
   },
   {
     text: 'Badges',
     link: './badges',
   },
   {
-    text: 'Cyberlinks',
-    link: './cyberlinks',
+    text: 'Sense',
+    link: './sense',
+    icon: '🧬',
   },
   {
     text: 'Brain',
     link: './brain',
+    icon: '🧠',
   },
   {
     text: 'Karma',
     link: './karma',
+    icon: '🔮',
   },
 ];
 
@@ -108,7 +123,7 @@ function Layout() {
                     }}
                     to={link.link}
                   >
-                    {link.text}
+                    {link.text} <span>{link.icon}</span>
                   </NavLink>
                 )
                 // {/* </Tooltip> */}
@@ -122,21 +137,34 @@ function Layout() {
 
   return (
     <div className={styles.wrapper}>
+      <Helmet>
+        <title>Robot: {account || ''}</title>
+      </Helmet>
       {renderLinks(links.slice(0, 7))}
 
-      <ContainerGradientText>
-        {params.address && <p>{params.address} (name)</p>}
-        <br />
-        <br />
-        <br />
-        <div
+      {/* <ContainerGradientText> */}
+      <div>
+        {params.address && (
+          <p
+            style={{
+              marginBottom: '20px',
+            }}
+          >
+            {params.address} (name)
+          </p>
+        )}
+
+        <Outlet />
+      </div>
+
+      {/* <div
           style={{
             padding: '10px 30px',
           }}
-        >
-          <Outlet />
-        </div>
-      </ContainerGradientText>
+        > */}
+
+      {/* </div> */}
+      {/* </ContainerGradientText> */}
       {renderLinks(links.slice(7, links.length))}
     </div>
   );

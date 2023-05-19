@@ -92,7 +92,7 @@ function ValidatorsRedirect() {
 
 function RedirectToRobot() {
   const params = useParams();
-  return <Navigate to={`/robot/${params.address}`} />;
+  return <Navigate to={`/robot/${params.address}`} replace />;
 }
 
 function AppRouter() {
@@ -153,7 +153,6 @@ function AppRouter() {
           <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
-          <Route path="/sixthSense" element={<Taverna />} />
           <Route path="/teleport" element={<TeleportTs />} />
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
