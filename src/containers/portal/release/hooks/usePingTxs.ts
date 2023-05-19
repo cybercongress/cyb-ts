@@ -8,7 +8,7 @@ const playPortalConfirmed = () => {
   portalConfirmedObg.play();
 };
 
-type TxHash = {
+export type TxHash = {
   txHash: string;
   status: 'pending' | 'confirmed' | 'error';
   rawLog?: string;

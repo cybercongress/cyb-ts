@@ -1,3 +1,6 @@
+import { useMemo } from 'react';
+import styles from './DonutChart.module.scss';
+
 type Item = {
   value: number;
   color: string;
@@ -30,20 +33,22 @@ function DonutChart({ data }: Props) {
 
   const ratio = 100 / sum;
 
-  const dataReduce = data.reduce<ItemReduce[]>((acc, obj) => {
-    const itemRatio = ratio * obj.value;
-    const angle = (filled * 360) / 100 + startAngle;
-    const offset = dashArray - (dashArray * itemRatio) / 100;
+  const dataReduce = useMemo(() => {
+    return data.reduce<ItemReduce[]>((acc, obj) => {
+      const itemRatio = ratio * obj.value;
+      const angle = (filled * 360) / 100 + startAngle;
+      const offset = dashArray - (dashArray * itemRatio) / 100;
 
-    const newObj = { ...obj, itemRatio, offset, angle, filled };
-    filled += itemRatio;
+      const newObj = { ...obj, itemRatio, offset, angle, filled };
+      filled += itemRatio;
 
-    return [...acc, newObj];
-  }, []);
+      return [...acc, newObj];
+    }, []);
+  }, [data]);
 
   return (
-    <div className="donut-chart">
-      <svg width="150px" height="150px" viewBox="35 35 135 135">
+    <div className={styles.donutChart}>
+      <svg width="100px" height="100px" viewBox="35 35 135 135">
         {dataReduce.map((item, index) => (
           <>
             <filter key={`filter_${index}`} id="dropshadow" height="130%">

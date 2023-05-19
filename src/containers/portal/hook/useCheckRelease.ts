@@ -3,24 +3,31 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { getReleaseState } from '../utils';
+import { Nullable } from 'src/types';
 
-const NS_TO_MS = 1 * 10 ** -6;
+type TotalRelease = {
+  stage: number;
+  balanceClaim: number;
+  address: string;
+};
 
-function useCheckRelease(totalGift, loadingGift, updateFunc) {
+type ArrayTotalRelease = {
+  [key: string]: TotalRelease;
+};
+
+function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
   const queryClient = useQueryClient();
   const [loadingRelease, setLoadingRelease] = useState(true);
-  const [totalRelease, setTotalRelease] = useState(null);
-  const [totalReadyRelease, setTotalReadyRelease] = useState(null);
+  const [totalRelease, setTotalRelease] =
+    useState<Nullable<ArrayTotalRelease>>(null);
+  const [totalReadyRelease, setTotalReadyRelease] =
+    useState<Nullable<TotalRelease[]>>(null);
   const [totalBalanceClaimAmount, setTotalBalanceClaimAmount] = useState(0);
-  const [timeNextFirstrelease, setTimeNextFirstrelease] = useState(null);
 
   useEffect(() => {
     const checkReleaseFunc = async () => {
       if (!loadingGift && totalGift !== undefined && totalGift === null) {
-        setLoadingRelease(false);
-        setTotalRelease(null);
-        setTotalBalanceClaimAmount(0);
-        setTimeNextFirstrelease(null);
+        initState();
       } else if (
         queryClient &&
         totalGift !== undefined &&
@@ -28,54 +35,35 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
         Object.keys(totalGift).length > 0
       ) {
         setLoadingRelease(true);
-        const result = {};
+        const result: ArrayTotalRelease = {};
         let balanceClaimAmount = 0;
-        const totalReady = [];
-        let timeFirstRelease = null;
+        const totalReady: TotalRelease[] = [];
         for (const key in totalGift) {
           if (Object.hasOwnProperty.call(totalGift, key)) {
-            const element = totalGift[key];
+            const element: { address: string; isClaimed: boolean } = totalGift[key];
             const { address, isClaimed } = element;
             if (isClaimed) {
               const queryResponseResultRelease = await getReleaseState(
                 queryClient,
                 address
               );
-              console.log(
-                'queryResponseResultRelease',
-                queryResponseResultRelease
-              );
 
-              if (
-                queryResponseResultRelease !== null &&
-                Object.prototype.hasOwnProperty.call(
-                  queryResponseResultRelease,
-                  'stage_expiration'
-                )
-              ) {
+              if (queryResponseResultRelease) {
                 const calculationState = calculationStateRelease(
                   queryResponseResultRelease
                 );
-                const { balanceClaim, isRelease, timeNext } = calculationState;
+                const { balanceClaim, stage } = calculationState;
                 if (balanceClaim !== undefined) {
                   balanceClaimAmount += balanceClaim;
                 }
-                if (isRelease) {
+                if (stage < currentStage) {
                   totalReady.push({ address, ...calculationState });
-                }
-                const tempTime = timeNext;
-                if (timeFirstRelease === null) {
-                  timeFirstRelease = tempTime;
-                }
-                if (tempTime < timeFirstRelease) {
-                  timeFirstRelease = tempTime;
                 }
                 result[address] = { address, ...calculationState };
               }
             }
           }
         }
-        setTimeNextFirstrelease(timeFirstRelease);
         setTotalBalanceClaimAmount(balanceClaimAmount);
         if (Object.keys(result).length > 0) {
           setTotalRelease(result);
@@ -95,43 +83,26 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalGift, loadingGift, updateFunc]);
 
+  const initState = () => {
+    setLoadingRelease(false);
+    setTotalRelease(null);
+    setTotalBalanceClaimAmount(0);
+  };
+
   const calculationStateRelease = (dataQuery) => {
-    const { stage_expiration: stageExpiration, balance_claim: balanceClaim } =
-      dataQuery;
+    const { stage, balance_claim: balanceClaim } = dataQuery;
 
     const releaseAddObj = {
-      isRelease: false,
-      timeNext: null,
       balanceClaim: 0,
+      stage: 0,
     };
 
-    if (Object.prototype.hasOwnProperty.call(stageExpiration, 'never')) {
-      releaseAddObj.isRelease = true;
-      releaseAddObj.timeNext = null;
+    if (balanceClaim) {
       releaseAddObj.balanceClaim = parseFloat(balanceClaim);
-
-      if (parseFloat(balanceClaim) === 0) {
-        releaseAddObj.isRelease = false;
-      }
     }
 
-    if (Object.prototype.hasOwnProperty.call(stageExpiration, 'at_time')) {
-      const { at_time: atTime } = stageExpiration;
-      const d = new Date();
-      const convertAtTime = atTime * NS_TO_MS;
-      const time = convertAtTime - Date.parse(d);
-
-      if (balanceClaim) {
-        releaseAddObj.balanceClaim = parseFloat(balanceClaim);
-      }
-
-      if (time > 0) {
-        releaseAddObj.isRelease = false;
-        releaseAddObj.timeNext = time;
-      } else {
-        releaseAddObj.isRelease = true;
-        releaseAddObj.timeNext = null;
-      }
+    if (stage) {
+      releaseAddObj.stage = parseFloat(stage);
     }
 
     return releaseAddObj;
@@ -142,7 +113,6 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
     totalBalanceClaimAmount,
     totalReadyRelease,
     loadingRelease,
-    timeNextFirstrelease,
   };
 }
 

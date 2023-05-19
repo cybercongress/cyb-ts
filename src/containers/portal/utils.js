@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useQueryClient } from 'src/contexts/queryClient';
 
+const AMOUNT_ALL_STAGE = 90;
+const NEW_RELEASE = 1000; // release 1% every 1k claims
 const CONSTITUTION_HASH = 'QmcHB9GKHAKCLQhmSj71qNJhENJJg8Gymd1PvvsCQBhG7M';
 
 // test root
@@ -141,8 +143,8 @@ const checkGift = async (address) => {
   try {
     const response = await axios({
       method: 'GET',
-      // url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`, // prod root
-      url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`, // test root
+      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`, // prod root
+      // url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`, // test root
     });
 
     if (response && response.data) {
@@ -315,6 +317,8 @@ export {
   CONTRACT_ADDRESS_GIFT,
   GIFT_ICON,
   BOOT_ICON,
+  AMOUNT_ALL_STAGE,
+  NEW_RELEASE,
   checkGift,
   getConfigGift,
   getStateGift,

@@ -5,29 +5,38 @@ import ContainerGradient from '../../../../components/containerGradient/Containe
 import { BOOT_ICON, GIFT_ICON } from '../../utils';
 import { ProgressBar } from '../progressCard';
 import styles from './ReleaseStatus.module.scss';
+import { useMemo } from 'react';
 
-const mockData = [
-  {
-    title: 'available for release',
-    color: '#ED2BE7',
-    value: 70,
-  },
-  {
-    title: 'released',
-    color: '#76FF03',
-    value: 65,
-  },
-  {
-    title: 'left to release',
-    color: '#525252',
-    value: 133,
-  },
-];
+const dataReleaseStatusMap = (data: DataReleaseStatus) => {
+  return [
+    {
+      title: 'available for release',
+      color: '#ED2BE7',
+      value: data.availableRelease,
+    },
+    {
+      title: 'released',
+      color: '#76FF03',
+      value: data.released,
+    },
+    {
+      title: 'left to release',
+      color: '#525252',
+      value: data.leftRelease,
+    },
+  ];
+};
 
 type Item = {
   title: string;
   color: string;
   value: number;
+};
+
+type DataReleaseStatus = {
+  availableRelease: number;
+  released: number;
+  leftRelease: number;
 };
 
 type Status = 'red' | 'green';
@@ -36,6 +45,8 @@ type Props = {
   amountGiftValue: number;
   status?: Status;
   progress: number;
+  data: DataReleaseStatus;
+  nextRelease: number;
 };
 
 function RowItem({ item }: { item: Item }) {
@@ -53,6 +64,8 @@ function ReleaseStatus({
   amountGiftValue = 0,
   status = 'green',
   progress = 0,
+  data,
+  nextRelease,
 }: Props) {
   const title = (
     <div className={styles.title}>
@@ -61,6 +74,11 @@ function ReleaseStatus({
         <FormatNumberTokens value={amountGiftValue} text={CYBER.DENOM_CYBER} />
       </div>
     </div>
+  );
+
+  const renderDataDonutChart = useMemo(
+    () => dataReleaseStatusMap(data),
+    [data]
   );
 
   return (
@@ -72,10 +90,10 @@ function ReleaseStatus({
     >
       <div className={styles.detailsReleaseStatus}>
         <div>
-          <DonutChart data={mockData} />
+          <DonutChart data={renderDataDonutChart} />
         </div>
         <div className={styles.containerRowItem}>
-          {mockData.map((item) => (
+          {renderDataDonutChart.map((item) => (
             <RowItem key={item.title} item={item} />
           ))}
         </div>
@@ -87,12 +105,16 @@ function ReleaseStatus({
       </div>
 
       <div>
-        <div className={styles.nextRelease}>
-          <span>next release after</span>
-          <span className={styles.nextReleaseValue}>149 addresses</span>
-        </div>
+        {nextRelease > 0 && (
+          <div className={styles.nextRelease}>
+            <span>next release after</span>
+            <span className={styles.nextReleaseValue}>
+              {nextRelease} addresses
+            </span>
+          </div>
+        )}
 
-        <ProgressBar progress={progress} />
+        <ProgressBar progress={progress}    />
         <div className={styles.containerProcentValue}>
           <div>0%</div>
           <div>100%</div>
