@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { CYBER } from '../../../../utils/config';
 import { FormatNumberTokens } from '../../../nebula/components';
 import DonutChart from '../../../../components/DonutChart';
@@ -5,7 +6,12 @@ import ContainerGradient from '../../../../components/containerGradient/Containe
 import { BOOT_ICON, GIFT_ICON } from '../../utils';
 import { ProgressBar } from '../progressCard';
 import styles from './ReleaseStatus.module.scss';
-import { useMemo } from 'react';
+
+type DataReleaseStatus = {
+  availableRelease: number;
+  released: number;
+  leftRelease: number;
+};
 
 const dataReleaseStatusMap = (data: DataReleaseStatus) => {
   return [
@@ -31,12 +37,6 @@ type Item = {
   title: string;
   color: string;
   value: number;
-};
-
-type DataReleaseStatus = {
-  availableRelease: number;
-  released: number;
-  leftRelease: number;
 };
 
 type Status = 'red' | 'green';
@@ -114,7 +114,7 @@ function ReleaseStatus({
           </div>
         )}
 
-        <ProgressBar progress={progress}    />
+        <ProgressBar progress={progress}  />
         <div className={styles.containerProcentValue}>
           <div>0%</div>
           <div>100%</div>
