@@ -213,7 +213,7 @@ function ActionBarRelease({
   if (isValidProve) {
     return (
       <ActionBar>
-        <BtnGrd onClick={() => navigate('gift')} text="go to prove address" />
+        <BtnGrd onClick={() => navigate('/gift')} text="go to prove address" />
       </ActionBar>
     );
   }
@@ -221,7 +221,7 @@ function ActionBarRelease({
   if (isValidClaime) {
     return (
       <ActionBar>
-        <BtnGrd onClick={() => navigate('gift')} text="go to claim" />
+        <BtnGrd onClick={() => navigate('/gift')} text="go to claim" />
       </ActionBar>
     );
   }
