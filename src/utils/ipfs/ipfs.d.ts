@@ -1,19 +1,20 @@
 /* eslint-disable import/no-unused-modules */
 import { IPFS } from 'kubo-rpc-client/types';
+import { IPFSHTTPClient } from 'kubo-rpc-client/dist/src';
 
 export type CallBackFuncStatus = (a: string) => void;
 
 export type NodeType = 'external' | 'embedded';
 
-export type AppIPFS = IPFS & { nodeType: NodeType; connMgrGracePeriod: number };
+export type IpfsOptsType = {
+  ipfsNodeType: NodeType;
+  urlOpts: string;
+};
 
-export type IPFSMaybe = IPFS | null;
-
-type IPFSNodeType = 'emdedded' | 'external';
-
-export type getIpfsUserGatewanAndNodeType = {
-  ipfsNodeType: IPFSNodeType | undefined;
-  userGateway: string | undefined;
+export type AppIPFS = (IPFS | IPFSHTTPClient) & {
+  nodeType: NodeType;
+  swarmConnTimeout: number;
+  gatewayAddr: string;
 };
 
 export type IpfsContentType =

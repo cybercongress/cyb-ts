@@ -7,7 +7,6 @@ import { AddResult } from 'kubo-rpc-client/types';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
 import {
-  getIpfsUserGatewanAndNodeType,
   IPFSContentMaybe,
   IPFSContentMeta,
   CallBackFuncStatus,
@@ -25,26 +24,9 @@ import { CYBER } from '../config';
 // import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
-import { convertTimeToMilliseconds } from '../helpers';
 import { detectCybContentType } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
-
-// Get IPFS node from local storage
-// TODO: refactor
-const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
-  const LS_IPFS_STATE = localStorage.getItem('ipfsState');
-
-  if (LS_IPFS_STATE !== null) {
-    const lsTypeIpfsData = JSON.parse(LS_IPFS_STATE);
-    if (lsTypeIpfsData?.userGateway) {
-      const { userGateway, ipfsNodeType } = lsTypeIpfsData;
-      return { userGateway, ipfsNodeType };
-    }
-  }
-
-  return { ipfsNodeType: undefined, userGateway: undefined };
-};
 
 // Get data by CID from local storage
 const loadIPFSContentFromDb = async (
@@ -222,9 +204,6 @@ const fetchIPFSContentFromGateway = async (
   cid: string,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
-  // TODO: Should we use Cyber Gateway?
-  // const { userGateway } = getIpfsUserGatewanAndNodeType();
-
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
@@ -427,14 +406,14 @@ const CYBERNODE_SWARM_ADDR_TCP =
   '/ip4/88.99.105.146/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 // '/dns4/swarm.io.cybernode.ai/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 
-const connectToSwarm = async (node, address) => {
+const connectToSwarm = async (node: AppIPFS, address: string) => {
   const multiaddrSwarm = multiaddr(address);
   // console.log(`Connecting to swarm ${address}`, node);
   await node.bootstrap.add(multiaddrSwarm);
 
   node?.swarm
     .connect(multiaddrSwarm)
-    .then((resp) => {
+    .then(() => {
       console.log(`Welcome to swarm ${address} 🐝🐝🐝`);
       // node.swarm.peers().then((peers) => console.log('---peeers', peers));
     })
@@ -458,7 +437,7 @@ const connectToSwarm = async (node, address) => {
 //   await connectToSwarm(node, cyberNodeAddr);
 // };
 
-const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
+const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime?: number) => {
   if (!node) {
     return;
   }
@@ -472,7 +451,8 @@ const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
   // console.log('autoDialTime', await getNodeAutoDialInterval(node));
   // console.log('lastCallTime', lastCallTime, Date.now() - lastCallTime);
   const isConnected =
-    Date.now() - lastCallTime < node.connMgrGracePeriod ||
+    !lastCallTime ||
+    Date.now() - lastCallTime < node.swarmConnTimeout ||
     peers.find((p) => p.peer.toString() === CYBER_NODE_SWARM_PEER_ID);
 
   // console.log('---isConnected', true, peers.length);
@@ -484,33 +464,41 @@ const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
 
 const DEFAULT_AUTO_DIAL_INTERVAL = 20000;
 const GET_CONFIG_TIMEOUT = 3000;
+const IPFS_CONFIG_SWARM_CONN_TIMEOUT = 'Swarm.ConnMgr.GracePeriod';
+const IPFS_CONFIG_GATEWAY_URL = 'Addresses.Gateway';
 
-const getNodeAutoDialInterval = async (node: AppIPFS) => {
+const getIpfsConfigSwarmConnTimeout = async (node: AppIPFS) =>
+  getIpfsConfig(
+    node,
+    IPFS_CONFIG_SWARM_CONN_TIMEOUT,
+    DEFAULT_AUTO_DIAL_INTERVAL
+  );
+
+const getIpfsConfigGatewayAddr = async (node: AppIPFS) =>
+  getIpfsConfig(node, IPFS_CONFIG_GATEWAY_URL);
+
+const getIpfsConfig = async (
+  node: AppIPFS,
+  name: string,
+  defaultValue?: string | number
+) => {
   try {
-    const autoDialTime = convertTimeToMilliseconds(
-      ((await node.config.get('Swarm.ConnMgr.GracePeriod', {
-        timeout: GET_CONFIG_TIMEOUT,
-      })) as string) || DEFAULT_AUTO_DIAL_INTERVAL
-    );
-
-    return autoDialTime;
-  } catch {
-    return DEFAULT_AUTO_DIAL_INTERVAL;
+    const response = await node.config.get(name, {
+      timeout: GET_CONFIG_TIMEOUT,
+    });
+    return response;
+  } catch (error) {
+    return defaultValue;
   }
 };
 
 const getIpfsGatewayUrl = async (node?: AppIPFS, cid: string) => {
-  if (!node) {
+  if (!node || node.nodeType === 'embedded') {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   }
 
-  if (node.nodeType === 'embedded') {
-    return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
-  }
   try {
-    const response = await node.config.get('Addresses.Gateway');
-    const address = multiaddr(response).nodeAddress();
-
+    const address = multiaddr(node.gatewayAddr).nodeAddress();
     return `http://${address.address}:${address.port}/ipfs/${cid}`;
   } catch (error) {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
@@ -519,11 +507,11 @@ const getIpfsGatewayUrl = async (node?: AppIPFS, cid: string) => {
 
 export {
   getIPFSContent,
-  getIpfsUserGatewanAndNodeType,
   catIPFSContentFromNode,
   fetchIpfsContent,
   addContenToIpfs,
   reconnectToCyberSwarm,
   getIpfsGatewayUrl,
-  getNodeAutoDialInterval,
+  getIpfsConfigSwarmConnTimeout,
+  getIpfsConfigGatewayAddr,
 };

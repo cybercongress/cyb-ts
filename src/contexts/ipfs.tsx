@@ -5,17 +5,16 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { AppIPFS, NodeType } from 'src/utils/ipfs/ipfs';
 
-import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
+import { destroyIpfsClient, ipfsClientFactory } from '../utils/ipfs/init';
 
-let ipfs = null;
+let ipfs: AppIPFS | undefined | null;
 
 const getOpts = () => {
-  let ipfsOpts = {
-    ipfsNodeType: 'embedded', // external || embedded
-    urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
-    userGateway: 'http://127.0.0.1:8080',
+  let ipfsOpts: ipfsOptsType = {
+    ipfsNodeType: 'embedded',
+    urlOpts: '/ip4/127.0.0.1/tcp/5001',
   };
 
   // get type ipfs
@@ -25,7 +24,7 @@ const getOpts = () => {
     ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
   }
 
-  localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
+  // localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
 
   return { ipfsOpts };
 };
@@ -59,7 +58,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     const { ipfsOpts } = getOpts();
 
     try {
-      ipfs = await initIpfsClient(ipfsOpts);
+      ipfs = await ipfsClientFactory(ipfsOpts);
     } catch (err) {
       setIpfsInitError(err instanceof Error ? err.message : (err as string));
     }
@@ -78,7 +77,8 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
   }, [startConnectionIpfs]);
 
   useEffect(() => {
-    const handlerEventListener = () => {
+    const handlerEventListener = async () => {
+      // await destroyIpfsClient();
       startConnectionIpfs();
     };
     document.addEventListener('reconnectIpfsClient', handlerEventListener);
@@ -95,7 +95,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             node: ipfs,
-            isReady: ipfs !== null,
+            isReady: !!ipfs,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),

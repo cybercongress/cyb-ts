@@ -53,6 +53,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   const { contentType } = content;
+
   return (
     <>
       {/* <DebugContentInfo
@@ -61,7 +62,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
         content={content}
         status={status}
       /> */}
-      {/* Default */}
+      {/* Directory or ipfs hosted site(index.html) */}
       {(content?.contentType === 'directory' ||
         (content?.contentType === 'html' && !content?.meta.type)) && (
         <DirectoryItem cid={cid} search={search} />
@@ -72,7 +73,8 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
       )}
 
       {contentType === 'video' && <VideoPlayerGatewayOnly content={content} />}
-      {['text', 'html', 'xml', 'cid', 'particle'].indexOf(contentType) !== -1 &&
+
+      {['text', 'xml', 'cid', 'particle'].indexOf(contentType) !== -1 &&
         ipfsDataDetails && (
           <TextMarkdown fullWidth={search}>
             {search ? ipfsDataDetails?.text : ipfsDataDetails?.content}

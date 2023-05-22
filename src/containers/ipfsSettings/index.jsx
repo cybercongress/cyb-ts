@@ -6,7 +6,7 @@ import Select from '../teleport/components/select';
 import {
   updateIpfsStateUrl,
   updateIpfsStateType,
-  updateUserGatewayUrl,
+  // updateUserGatewayUrl,
   renderOptions,
   ContainerKeyValue,
 } from './ipfsComponents/utilsComponents';
@@ -20,21 +20,24 @@ const dataOpts = ['external', 'embedded'];
 function IpfsSettings() {
   const [valueSelect, setValueSelec] = useState('external');
   const [valueInput, setValueInput] = useState('');
-  const [valueInputGateway, setValueInputGateway] = useState('');
+  // const [valueInputGateway, setValueInputGateway] = useState('');
   const { node: ipfs, isLoading: pending, error: failed } = useIpfs();
 
   useEffect(() => {
+    // getIpfsConfig(ipfs, IPFS_CONFIG_GATEWAY_ADDR).then((addr) =>
+    //   setValueInputGateway(addr)
+    // );
     const lsTypeIpfs = localStorage.getItem('ipfsState');
     if (lsTypeIpfs !== null) {
       const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
-      const { ipfsNodeType, urlOpts, userGateway } = lsTypeIpfsData;
+      const { ipfsNodeType, urlOpts } = lsTypeIpfsData;
       setValueSelec(ipfsNodeType);
       setValueInput(urlOpts);
-      if (userGateway) {
-        setValueInputGateway(userGateway);
-      }
+      // if (userGateway) {
+      //   setValueInputGateway(userGateway);
+      // }
     }
-  }, []);
+  }, [ipfs]);
 
   const onChangeSelect = (item) => {
     setValueSelec(item);
@@ -45,9 +48,10 @@ function IpfsSettings() {
     updateIpfsStateUrl(valueInput);
   }, [valueInput]);
 
-  const setNewUrlGateway = useCallback(() => {
-    updateUserGatewayUrl(valueInputGateway);
-  }, [valueInputGateway]);
+  // const setNewUrlGateway = useCallback(async () => {
+  //   await setIpfsConfig(ipfs, IPFS_CONFIG_GATEWAY_ADDR, valueInputGateway);
+  //   updateUserGatewayUrl(valueInputGateway);
+  // }, [valueInputGateway]);
 
   const onClickReConnect = () => {
     const event = new Event('reconnectIpfsClient');
@@ -127,7 +131,7 @@ function IpfsSettings() {
                 </BtnPasport>
               </div>
             </ContainerKeyValue>
-            <ContainerKeyValue>
+            {/* <ContainerKeyValue>
               <div>gateway</div>
 
               <div
@@ -150,7 +154,7 @@ function IpfsSettings() {
                   edit
                 </BtnPasport>
               </div>
-            </ContainerKeyValue>
+            </ContainerKeyValue> */}
           </>
         )}
 
