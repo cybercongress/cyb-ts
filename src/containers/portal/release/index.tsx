@@ -16,7 +16,7 @@ import {
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
-import useCheckRelease from '../hook/useCheckRelease';
+import useCheckRelease, { TotalRelease } from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import STEP_INFO from './utils';
@@ -41,6 +41,10 @@ const stopPortalAmbient = () => {
   portalAmbientObg.loop = false;
   portalAmbientObg.pause();
   portalAmbientObg.currentTime = 0;
+};
+
+const filterByOwner = (data: TotalRelease[], ownerAddress: string) => {
+  return data.filter((item) => item.addressOwner === ownerAddress);
 };
 
 const {
@@ -132,8 +136,9 @@ function Release() {
         });
       } else if (selectedAddress && selectedAddress.match(PATTERN_CYBER)) {
         if (totalReadyRelease) {
-          setCurrentRelease(totalReadyRelease);
-          setIsRelease(true);
+          const filterData = filterByOwner(totalReadyRelease, selectedAddress)
+          setCurrentRelease(filterData);
+          setIsRelease(filterData.length > 0);
           setReadyRelease({
             address: selectedAddress,
             amount: totalBalanceClaimAmount,

@@ -5,6 +5,7 @@ export type ReadyRelease = {
 
 export type CurrentRelease = {
   address: string;
+  addressOwner: string;
 };
 
 export type DataReleaseStatus = {

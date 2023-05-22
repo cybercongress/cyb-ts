@@ -1,15 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
-import { Dots, BtnGrd, ActionBar } from '../../../components';
+import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
-import STEP_INFO from './utils';
 import { TxHash } from './hooks/usePingTxs';
 import { CurrentRelease } from './type';
 
@@ -142,6 +140,21 @@ function ActionBarRelease({
     return '';
   }, [addressActive]);
 
+  const useValidOwner = useMemo(() => {
+    if (
+      selectedAddress &&
+      !selectedAddress.match(PATTERN_CYBER) &&
+      currentRelease &&
+      addressActive &&
+      currentRelease.length > 0 &&
+      currentRelease[0].addressOwner !== addressActive.bech32
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [addressActive, currentRelease, selectedAddress]);
+
   const isValidClaime = useMemo(() => {
     if (
       selectedAddress &&
@@ -193,6 +206,26 @@ function ActionBarRelease({
   const useSelectCyber = useMemo(() => {
     return selectedAddress && selectedAddress.match(PATTERN_CYBER);
   }, [selectedAddress]);
+
+  if (currentRelease && useValidOwner) {
+    return (
+      <ActionBar onClickBack={() => setStep(STEP_INIT)}>
+        <div
+          style={{
+            display: 'flex',
+            padding: '25px 0',
+          }}
+        >
+          choose
+          <Account
+            styleUser={{ margin: '0 5px' }}
+            address={currentRelease[0].addressOwner}
+          />
+          for release
+        </div>
+      </ActionBar>
+    );
+  }
 
   if (step === STATE_CHANGE_ACCOUNT) {
     return (

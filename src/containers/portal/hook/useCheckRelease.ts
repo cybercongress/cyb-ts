@@ -5,9 +5,10 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getReleaseState } from '../utils';
 import { Nullable } from 'src/types';
 
-type TotalRelease = {
+export type TotalRelease = {
   stage: number;
   balanceClaim: number;
+  addressOwner: string;
   address: string;
 };
 
@@ -90,11 +91,12 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
   };
 
   const calculationStateRelease = (dataQuery) => {
-    const { stage, balance_claim: balanceClaim } = dataQuery;
+    const { stage, balance_claim: balanceClaim, address } = dataQuery;
 
     const releaseAddObj = {
       balanceClaim: 0,
       stage: 0,
+      addressOwner: '',
     };
 
     if (balanceClaim) {
@@ -104,6 +106,11 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
     if (stage) {
       releaseAddObj.stage = parseFloat(stage);
     }
+
+    if (address) {
+      releaseAddObj.addressOwner = address;
+    }
+
 
     return releaseAddObj;
   };

@@ -31,10 +31,20 @@ function DonutChart({ data }: Props) {
     return sum + item.value;
   }, 0);
 
-  const ratio = 100 / sum;
+  const ratio = sum > 0 ? 100 / sum : 0;
 
   const dataReduce = useMemo(() => {
     return data.reduce<ItemReduce[]>((acc, obj) => {
+      if (ratio === 0) {
+        const newObj = {
+          ...obj,
+          itemRatio: 0,
+          offset: dashArray / 100,
+          angle: startAngle,
+          filled,
+        };
+        return [newObj];
+      }
       const itemRatio = ratio * obj.value;
       const angle = (filled * 360) / 100 + startAngle;
       const offset = dashArray - (dashArray * itemRatio) / 100;
