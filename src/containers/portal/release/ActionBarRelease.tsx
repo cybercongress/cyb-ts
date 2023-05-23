@@ -209,19 +209,19 @@ function ActionBarRelease({
 
   if (currentRelease && useValidOwner) {
     return (
-      <ActionBar onClickBack={() => setStep(STEP_INIT)}>
+      <ActionBar>
         <div
           style={{
             display: 'flex',
             padding: '25px 0',
           }}
         >
-          choose
+          already claimed by
           <Account
-            styleUser={{ margin: '0 5px' }}
+            styleUser={{ marginLeft: '5px' }}
             address={currentRelease[0].addressOwner}
           />
-          for release
+          . switch account to release choose
         </div>
       </ActionBar>
     );
