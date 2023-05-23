@@ -5,14 +5,14 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { AppIPFS, NodeType } from 'src/utils/ipfs/ipfs';
+import { AppIPFS, IpfsOptsType } from 'src/utils/ipfs/ipfs';
 
 import { destroyIpfsClient, ipfsClientFactory } from '../utils/ipfs/init';
 
 let ipfs: AppIPFS | undefined | null;
 
 const getOpts = () => {
-  let ipfsOpts: ipfsOptsType = {
+  let ipfsOpts: IpfsOptsType = {
     ipfsNodeType: 'embedded',
     urlOpts: '/ip4/127.0.0.1/tcp/5001',
   };
@@ -78,7 +78,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handlerEventListener = async () => {
-      // await destroyIpfsClient();
+      await destroyIpfsClient();
       startConnectionIpfs();
     };
     document.addEventListener('reconnectIpfsClient', handlerEventListener);

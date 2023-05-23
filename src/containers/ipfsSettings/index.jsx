@@ -14,6 +14,7 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import { ContainerGradientText, Input } from '../../components';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 const dataOpts = ['external', 'embedded'];
 
@@ -22,6 +23,7 @@ function IpfsSettings() {
   const [valueInput, setValueInput] = useState('');
   // const [valueInputGateway, setValueInputGateway] = useState('');
   const { node: ipfs, isLoading: pending, error: failed } = useIpfs();
+  const { clear } = useQueueIpfsContent();
 
   useEffect(() => {
     // getIpfsConfig(ipfs, IPFS_CONFIG_GATEWAY_ADDR).then((addr) =>
@@ -55,6 +57,7 @@ function IpfsSettings() {
 
   const onClickReConnect = () => {
     const event = new Event('reconnectIpfsClient');
+    clear();
     document.dispatchEvent(event);
   };
 

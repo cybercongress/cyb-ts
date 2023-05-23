@@ -363,6 +363,18 @@ class QueueManager<T> {
     this.queue$.next(queue);
   }
 
+  public clear(): void {
+    const queue = this.queue$.value;
+
+    queue.forEach((item, cid) => {
+      this.releaseExecution(cid);
+      item.controller?.abort('cancelled');
+      queue.delete(cid);
+    });
+
+    this.queue$.next(new Map());
+  }
+
   public getQueueMap(): QueueMap<T> {
     return this.queue$.value;
   }

@@ -15,6 +15,7 @@ type UseIpfsContentReturn = {
   status?: QueueItemStatus;
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
+  clear: () => void;
 };
 
 function useQueueIpfsContent(
@@ -30,6 +31,19 @@ function useQueueIpfsContent(
   const { node } = useIpfs();
 
   useEffect(() => {
+    if (node) {
+      if (prevNodeType !== node.nodeType) {
+        console.log(
+          `switch node from ${prevNodeType || 'none'} to ${node.nodeType}`
+        );
+
+        queueManager.setNode(node);
+        setPrevNodeType(node.nodeType);
+      }
+    }
+  }, [node, prevNodeType]);
+
+  useEffect(() => {
     const callback = (
       cid: string,
       status: QueueItemStatus,
@@ -43,14 +57,6 @@ function useQueueIpfsContent(
       }
     };
 
-    if (node) {
-      if (prevNodeType !== node.nodeType) {
-        // console.log(`switch node!!! from ${prevNodeType} to ${node.nodeType}`);
-
-        queueManager.setNode(node);
-        setPrevNodeType(node.nodeType);
-      }
-    }
     if (cid) {
       queueManager.enqueue(cid, callback, {
         parent: parentId,
@@ -64,9 +70,14 @@ function useQueueIpfsContent(
       }
       prevParentIdRef.current = parentId;
     }
-  }, [node, cid, rank, parentId]);
+  }, [cid, rank, parentId]);
 
-  return { status, source, content };
+  return {
+    status,
+    source,
+    content,
+    clear: queueManager.clear.bind(queueManager),
+  };
 }
 
 export default useQueueIpfsContent;
