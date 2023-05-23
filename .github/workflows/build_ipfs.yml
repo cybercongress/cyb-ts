@@ -33,7 +33,7 @@ jobs:
 
       - name: Deploy to IPFS 👽
         id: ipfs
-        uses: dasein108/ipfs-github-action@v1
+        uses: dasein108/ipfs-github-action@v1.1.1
         with:
           path_to_add: ./build
           cluster_host: ${{ secrets.IPFS_CLUSTER_HOST }}

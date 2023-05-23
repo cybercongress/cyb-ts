@@ -1,15 +1,12 @@
-
-
 name: build_cyb
 
 on:
   push:
-    branches: 
+    branches:
       - master
 
 jobs:
   build_cyb:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,26 +14,30 @@ jobs:
         node-version: [18.14.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: yarn install
-      
-    - name: Build cyb
-      run: yarn build
-      env:
-        NODE_OPTIONS: "--max-old-space-size=8192"
-        CHAIN_ID: "bostrom"
-      
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@3.7.1
-      with:
+      - name: Set environment variable with commit SHA
+        run: |
+          echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build cyb
+        run: yarn build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+          CHAIN_ID: 'bostrom'
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
           BRANCH: build
           FOLDER: build

@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 import styles from './Select.module.scss';
@@ -53,7 +53,7 @@ type SelectProps = {
   width?: string;
   disabled?: boolean;
   options?: SelectOption[];
-  placeholder?: string;
+  // placeholder?: string;
   currentValue: React.ReactNode;
   color?: Color;
 };
@@ -66,7 +66,7 @@ function Select({
   disabled,
   options,
   currentValue,
-  placeholder,
+  // placeholder,
   color = Color.Yellow,
 }: SelectProps) {
   const selectContainerRef = useRef(null);
@@ -79,8 +79,12 @@ function Select({
 
   const clickOutsideHandler = () => setIsOpen(false);
 
-  const updateSelectedOption = (option) => {
-    onChangeSelect(option);
+  const updateSelectedOption = (value: SelectOption['value']) => {
+    if (value === currentValue?.props.value) {
+      return;
+    }
+
+    onChangeSelect(value);
     setIsOpen(false);
   };
 

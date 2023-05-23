@@ -459,8 +459,10 @@ function ActionBarContainer({
   ) {
     return (
       <ActionBar
-        onClickFnc={() => funcSetTxType(TXTYPE_DELEGATE)}
-        btnText="Stake"
+        button={{
+          text: 'Stake',
+          onClick: () => funcSetTxType(TXTYPE_DELEGATE),
+        }}
       >
         <Text fontSize="18px" color="#fff" marginRight={20} fontWeight={600}>
           {validators.description.moniker}
@@ -499,6 +501,7 @@ function ActionBarContainer({
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
+        disabledBtn={!amount}
         delegate={txType === TXTYPE_DELEGATE}
         onClickBack={onClickBackToChoseHandler}
       />

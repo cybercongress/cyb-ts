@@ -5,7 +5,7 @@ export const routes = {
   },
   senateProposal: {
     path: '/senate/:proposalId',
-    getLink: (proposalId) => `/senate/${proposalId}`,
+    getLink: (proposalId: number) => `/senate/${proposalId}`,
   },
   sphere: {
     path: '/sphere',
@@ -30,5 +30,12 @@ export const routes = {
   },
   portal: {
     path: '/portal',
+  },
+  search: {
+    path: '/search',
+    getLink: (search: string) => `/search/${search}`,
+  },
+  teleport: {
+    path: '/teleport',
   },
 };

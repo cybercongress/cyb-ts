@@ -14,7 +14,6 @@ import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
-import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
@@ -25,6 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import { useIpfs } from 'src/contexts/ipfs';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -228,12 +228,20 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
+  const ipfs = useIpfs();
   return (
     <ActionBarContainer
       button={{
-        disabled: !contentHash.length,
+        disabled: !ipfs.isReady || !contentHash.length,
         onClick: onClickBtn,
-        text: textBtn,
+        text: !ipfs.isReady ? (
+          <>
+            Node is loading&nbsp;
+            <Dots />
+          </>
+        ) : (
+          textBtn
+        ),
       }}
     >
       <Pane
@@ -246,25 +254,18 @@ export function StartStageSearchActionBar({
           color={Color.Pink}
           value={contentHash}
           disabled={file}
-          maxRows={20}
+          isTextarea
+          // maxRows={20}
           style={{
-            width: '100%',
             paddingLeft: '10px',
-            textAlign: 'left',
             paddingRight: '35px',
             paddingTop: '10px',
             paddingBottom: '10px',
           }}
-          className="resize-none minHeightTextarea"
           onChange={(e) => onChangeInputContentHash(e)}
-          title={placeholder}
+          placeholder={placeholder}
         />
-        <Pane
-          position="absolute"
-          right="0"
-          bottom="0"
-          transform="translate(0, -7px)"
-        >
+        <Pane position="absolute" right={10} bottom={10}>
           <input
             ref={inputOpenFileRef}
             onChange={() => onChangeInput(inputOpenFileRef)}
@@ -889,10 +890,12 @@ export function Delegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <Text marginRight={20} fontSize="16px" color="#fff">
         {delegate
@@ -929,10 +932,12 @@ export function ReDelegate({
 }) {
   return (
     <ActionBarContainer
-      btnText={T.actionBar.delegate.generate}
       onClickBack={onClickBack}
-      onClickFnc={generateTx}
-      disabled={disabledBtn}
+      button={{
+        text: T.actionBar.delegate.generate,
+        onClick: generateTx,
+        disabled: disabledBtn,
+      }}
     >
       <IntupAutoSize
         value={toSend}
@@ -985,10 +990,12 @@ export function ActionBarSend({
 }) {
   return (
     <ActionBarContainer
-      btnText="Generate Tx"
       onClickBack={onClickBack}
-      onClickFnc={onClickBtn}
-      disabled={disabledBtn}
+      button={{
+        text: 'Generate Tx',
+        onClick: onClickBtn,
+        disabled: disabledBtn,
+      }}
     >
       <div style={{ display: 'flex', gap: '30px' }}>
         <Input
