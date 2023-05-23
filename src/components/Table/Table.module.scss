@@ -1,5 +1,6 @@
 .table {
   border-collapse: collapse;
+  width: 100%;
 
   td,
   th {
@@ -8,23 +9,18 @@
 
   thead {
     color: #777777;
+
+    th {
+      text-transform: lowercase;
+    }
   }
 
   tbody {
     color: #ffffff;
 
     tr {
-      td {
-      }
-
       &:hover {
-        background: linear-gradient(
-            180deg,
-            #36d6ae 0%,
-            rgba(54, 214, 174, 0.72) 51.04%,
-            #36d6ae 100%
-          ),
-          linear-gradient(0deg, #ffffff, #ffffff);
+        background: #36d6ae24;
       }
     }
   }

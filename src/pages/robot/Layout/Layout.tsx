@@ -70,6 +70,7 @@ const links = [
   {
     text: 'Badges',
     link: './badges',
+    icon: '🥇',
   },
   {
     text: 'Sense',
@@ -96,7 +97,7 @@ function Layout() {
   const account = defaultAccount.account?.cyber.bech32;
   const isOwner = account === params.address;
 
-  function renderLinks(links) {
+  function renderLinks(links, isMirror) {
     if (!params.address && !account) {
       return <>&nbsp;</>; // temp
     }
@@ -109,25 +110,25 @@ function Layout() {
           }
 
           return (
-            <li key={index}>
+            <li key={index} className={cx({ [styles.mirror]: isMirror })}>
               {/* <Tooltip tooltip={link.text} placement="top"> */}
-
-              {
-                ['Nft', 'Karma', 'Keys', 'Skills'].includes(link.text) ? (
+              {['Nft', 'Karma', 'Keys', 'Skills'].includes(link.text) ? (
+                <span className={styles.noLink}>{link.text}</span>
+              ) : (
+                <NavLink
+                  end
+                  className={({ isActive }) => {
+                    return cx({
+                      [styles.active]: isActive,
+                    });
+                  }}
+                  to={link.link}
+                >
                   <span>{link.text}</span>
-                ) : (
-                  <NavLink
-                    end
-                    className={({ isActive }) => {
-                      return cx({ [styles.active]: isActive });
-                    }}
-                    to={link.link}
-                  >
-                    {link.text} <span>{link.icon}</span>
-                  </NavLink>
-                )
-                // {/* </Tooltip> */}
-              }
+                  <span>{link.icon}</span>
+                </NavLink>
+              )}
+              {/* </Tooltip> */}
             </li>
           );
         })}
@@ -165,7 +166,7 @@ function Layout() {
 
       {/* </div> */}
       {/* </ContainerGradientText> */}
-      {renderLinks(links.slice(7, links.length))}
+      {renderLinks(links.slice(7, links.length), true)}
     </div>
   );
 }

@@ -556,7 +556,6 @@ class Wallet extends React.Component {
             style={{
               display: 'grid',
               gap: 20,
-              padding: '10px 30px 40px 20px',
             }}
           >
             {portal}

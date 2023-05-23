@@ -105,7 +105,7 @@ const activePassport = async (client, address) => {
     return response;
   } catch (error) {
     console.log('error', error);
-    return null;
+    throw error;
   }
 };
 

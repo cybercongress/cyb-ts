@@ -2,11 +2,8 @@
   display: grid;
   margin-top: 40px;
   justify-content: center;
-  // margin: 0 auto;
-  grid-template-columns: 110px minmax(200px, 700px) 110px;
-  // padding: 50px;
+  grid-template-columns: 105px minmax(200px, 62%) 105px;
   column-gap: 20px;
-  // padding-left: 10%;
 
   > :nth-child(2) {
     overflow-x: auto;
@@ -23,45 +20,62 @@
     position: relative;
     font-size: 18px;
 
-    > span {
+    .noLink {
       color: gray;
     }
 
     a {
       display: flex;
       align-items: center;
-      span {
-        margin-left: 5px;
+      gap: 7px;
+
+      span:first-of-type {
+        display: none;
+      }
+
+      &.active,
+      &:hover {
+        span {
+          display: block;
+        }
+      }
+
+      &.active {
+        color: #fff;
+
+        &::before {
+          content: '';
+          display: block;
+          right: 0;
+          height: 115%;
+          width: 3px;
+          background-color: #4ed6ae;
+          filter: blur(0.7px);
+          // background: linear-gradient(
+          //   180deg,
+          //   rgba(0, 237, 235, 0.0209) 0%,
+          //   rgba(0, 237, 235, 0.11) 100%
+          // );
+          // transform: matrix(0, 1, 1, 0, 0, 0);
+          box-shadow: -3px 0px 20px 1.5px #4ed6ae;
+          position: absolute;
+        }
       }
     }
 
-    .active {
-      color: #fff;
-      padding-right: 10px;
-
-      &::before {
-        content: '';
-        // width: 46px;
-        // height: 46px;
-        display: block;
-        right: 0;
-        margin-left: 10px;
-        display: block;
-        height: 115%;
-        width: 3px;
-        background-color: #4ed6ae;
-        filter: blur(0.7px);
-        // background: linear-gradient(
-        //   180deg,
-        //   rgba(0, 237, 235, 0.0209) 0%,
-        //   rgba(0, 237, 235, 0.11) 100%
-        // );
-        // transform: matrix(0, 1, 1, 0, 0, 0);
-        box-shadow: -3px 0px 20px 1.5px #4ed6ae;
-        position: absolute;
+    &.mirror {
+      .noLink {
+        float: right;
       }
+      a {
+        flex-direction: row-reverse;
 
-      // color: yellow;
+        &::before {
+          left: 0;
+          right: unset;
+          margin-right: 10px;
+        }
+      }
     }
   }
 }

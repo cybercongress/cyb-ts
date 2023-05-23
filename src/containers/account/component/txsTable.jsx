@@ -14,6 +14,7 @@ import { ContainerGradientText } from '../../../components/containerGradient/Con
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
 import useGetAddressTemp from '../hooks/useGetAddressTemp';
 import Loader2 from 'src/components/ui/Loader2';
+import Table from 'src/components/Table/Table';
 
 function TxsTable() {
   const accountUser = useGetAddressTemp();
@@ -22,90 +23,69 @@ function TxsTable() {
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
     dataGetTsxByAddress;
 
-  let validatorRows = [];
+  let validatorRows = [[]];
 
   if (data) {
-    validatorRows = data.pages.map((page) => (
-      <React.Fragment key={page.page}>
-        {page.data.map((item, index) => {
-          const key = uuidv4();
-          let timeAgoInMS = null;
-          const time =
-            getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
-          if (time > 0) {
-            timeAgoInMS = time;
-          }
+    validatorRows = data?.pages?.map((page) => {
+      return page.data.map((item) => {
+        let timeAgoInMS = null;
+        const time =
+          getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
+        if (time > 0) {
+          timeAgoInMS = time;
+        }
 
-          let typeTx = item.type;
-          if (
-            typeTx.includes('MsgSend') &&
-            item?.value?.to_address === accountUser
-          ) {
-            typeTx = 'Receive';
-          }
+        let typeTx = item.type;
+        if (
+          typeTx.includes('MsgSend') &&
+          item?.value?.to_address === accountUser
+        ) {
+          typeTx = 'Receive';
+        }
 
-          return (
-            <ContainerGradientText
-              key={index}
-              status={item.transaction.success ? 'blue' : 'red'}
+        return {
+          status: (
+            <TextTable>
+              <img
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  marginRight: '5px',
+                }}
+                src={item.transaction.success ? statusTrueImg : statusFalseImg}
+                alt="statusImg"
+              />
+            </TextTable>
+          ),
+          type: (
+            <div
+              style={{
+                maxWidth: '100px',
+              }}
             >
-              <Table.Row
-                // borderBottom="none"
-                paddingX={0}
-                paddingY={10}
-                borderBottom="none"
-                display="flex"
-                minHeight="48px"
-                height="fit-content"
-                key={`${item.transaction_hash}_${key}`}
-              >
-                <Table.TextCell flex={0.5} textAlign="center">
-                  <TextTable>
-                    <img
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        marginRight: '5px',
-                      }}
-                      src={
-                        item.transaction.success
-                          ? statusTrueImg
-                          : statusFalseImg
-                      }
-                      alt="statusImg"
-                    />
-                  </TextTable>
-                </Table.TextCell>
-                <Table.TextCell flex={1.2} textAlign="center">
-                  <TextTable>
-                    <MsgType type={typeTx} />
-                  </TextTable>
-                </Table.TextCell>
-                <Table.TextCell textAlign="center">
-                  <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
-                </Table.TextCell>
-                <Table.TextCell textAlign="center">
-                  <TextTable>
-                    <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
-                      {trimString(item.transaction_hash, 6, 6)}
-                    </Link>
-                  </TextTable>
-                </Table.TextCell>
-                <Table.TextCell flex={2} textAlign="end">
-                  <TextTable display="flex">
-                    <RenderValue
-                      value={item.value}
-                      type={item.type}
-                      accountUser={accountUser}
-                    />
-                  </TextTable>
-                </Table.TextCell>
-              </Table.Row>
-            </ContainerGradientText>
-          );
-        })}
-      </React.Fragment>
-    ));
+              <MsgType type={typeTx} />
+            </div>
+          ),
+          timestamp: <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>,
+          tx: (
+            <TextTable>
+              <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
+                {trimString(item.transaction_hash, 6, 6)}
+              </Link>
+            </TextTable>
+          ),
+          action: (
+            <TextTable display="flex">
+              <RenderValue
+                value={item.value}
+                type={item.type}
+                accountUser={accountUser}
+              />
+            </TextTable>
+          ),
+        };
+      });
+    });
   }
 
   const fetchNextPageFnc = () => {
@@ -114,40 +94,37 @@ function TxsTable() {
     }, 250);
   };
 
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Status',
+        accessor: 'status',
+      },
+      {
+        Header: 'Type',
+        accessor: 'type',
+      },
+      {
+        Header: 'Timestamp',
+        accessor: 'timestamp',
+      },
+      {
+        Header: 'Tx',
+        accessor: 'tx',
+      },
+      {
+        Header: 'Action',
+        accessor: 'action',
+      },
+    ],
+    []
+  );
+
+  const tableData = React.useMemo(() => [...validatorRows[0]], [validatorRows]);
+
   return (
-    <Table>
-      <Table.Head
-        style={{
-          backgroundColor: '#000',
-          border: 'none',
-          marginTop: '10px',
-          padding: 7,
-          paddingBottom: '10px',
-        }}
-      >
-        <Table.TextHeaderCell flex={0.5} textAlign="center">
-          <TextTable>status</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={1.2} textAlign="center">
-          <TextTable>type</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell textAlign="center">
-          <TextTable>timestamp</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell textAlign="center">
-          <TextTable>tx</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={2} textAlign="center">
-          <TextTable>action</TextTable>
-        </Table.TextHeaderCell>
-      </Table.Head>
-      <Table.Body
-        style={{
-          backgroundColor: '#000',
-          overflowY: 'hidden',
-          padding: 7,
-        }}
-      >
+    <ContainerGradientText>
+      <Table columns={columns} data={tableData} isLoading={isFetching}>
         <InfiniteScroll
           dataLength={Object.keys(validatorRows).length}
           next={fetchNextPageFnc}
@@ -165,8 +142,8 @@ function TxsTable() {
             <NoItems text="No txs" />
           )}
         </InfiniteScroll>
-      </Table.Body>
-    </Table>
+      </Table>
+    </ContainerGradientText>
   );
 }
 
