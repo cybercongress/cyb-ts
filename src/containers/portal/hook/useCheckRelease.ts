@@ -2,8 +2,9 @@
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getReleaseState } from '../utils';
 import { Nullable } from 'src/types';
+import { Citizenship } from 'src/types/citizenship';
+import { getReleaseState } from '../utils';
 
 export type TotalRelease = {
   stage: number;
@@ -16,7 +17,13 @@ type ArrayTotalRelease = {
   [key: string]: TotalRelease;
 };
 
-function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
+function useCheckRelease(
+  totalGift,
+  addressActive,
+  loadingGift,
+  updateFunc,
+  currentStage
+) {
   const queryClient = useQueryClient();
   const [loadingRelease, setLoadingRelease] = useState(true);
   const [totalRelease, setTotalRelease] =
@@ -24,6 +31,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
   const [totalReadyRelease, setTotalReadyRelease] =
     useState<Nullable<TotalRelease[]>>(null);
   const [totalBalanceClaimAmount, setTotalBalanceClaimAmount] = useState(0);
+  const [alreadyClaimed, setAlreadyClaimed] = useState(0);
 
   useEffect(() => {
     const checkReleaseFunc = async () => {
@@ -31,17 +39,20 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
         initState();
       } else if (
         queryClient &&
-        totalGift !== undefined &&
-        totalGift !== null &&
+        addressActive &&
+        totalGift &&
         Object.keys(totalGift).length > 0
       ) {
+        const { bech32 } = addressActive;
         setLoadingRelease(true);
         const result: ArrayTotalRelease = {};
         let balanceClaimAmount = 0;
+        let alreadyClaimedAmount = 0;
         const totalReady: TotalRelease[] = [];
         for (const key in totalGift) {
           if (Object.hasOwnProperty.call(totalGift, key)) {
-            const element: { address: string; isClaimed: boolean } = totalGift[key];
+            const element: { address: string; isClaimed: boolean } =
+              totalGift[key];
             const { address, isClaimed } = element;
             if (isClaimed) {
               const queryResponseResultRelease = await getReleaseState(
@@ -53,9 +64,13 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
                 const calculationState = calculationStateRelease(
                   queryResponseResultRelease
                 );
-                const { balanceClaim, stage } = calculationState;
-                if (balanceClaim !== undefined) {
+                const { balanceClaim, stage, addressOwner } = calculationState;
+                if (balanceClaim && bech32 === addressOwner) {
                   balanceClaimAmount += balanceClaim;
+                }
+
+                if (bech32 !== addressOwner && balanceClaim) {
+                  alreadyClaimedAmount += balanceClaim;
                 }
                 if (stage < currentStage) {
                   totalReady.push({ address, ...calculationState });
@@ -65,6 +80,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
             }
           }
         }
+        setAlreadyClaimed(alreadyClaimedAmount);
         setTotalBalanceClaimAmount(balanceClaimAmount);
         if (Object.keys(result).length > 0) {
           setTotalRelease(result);
@@ -81,8 +97,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
       }
     };
     checkReleaseFunc();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalGift, loadingGift, updateFunc]);
+  }, [queryClient, totalGift, loadingGift, updateFunc, addressActive]);
 
   const initState = () => {
     setLoadingRelease(false);
@@ -111,13 +126,13 @@ function useCheckRelease(totalGift, loadingGift, updateFunc, currentStage) {
       releaseAddObj.addressOwner = address;
     }
 
-
     return releaseAddObj;
   };
 
   return {
     totalRelease,
     totalBalanceClaimAmount,
+    alreadyClaimed,
     totalReadyRelease,
     loadingRelease,
   };

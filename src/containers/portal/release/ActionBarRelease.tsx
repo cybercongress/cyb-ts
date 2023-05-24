@@ -8,7 +8,7 @@ import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
-import { TxHash } from './hooks/usePingTxs';
+import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
 
 const releaseMsg = (giftAddress: string) => {
@@ -32,6 +32,7 @@ type Props = {
   loadingRelease: boolean;
   addressActive: Nullable<AccountValue>;
   currentRelease: Nullable<CurrentRelease[]>;
+  redirectFunc: (steps: 'claim' | 'prove') => void;
 };
 
 function ActionBarRelease({
@@ -44,6 +45,7 @@ function ActionBarRelease({
   totalRelease,
   loadingRelease,
   addressActive,
+  redirectFunc,
 }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
@@ -207,13 +209,23 @@ function ActionBarRelease({
     return selectedAddress && selectedAddress.match(PATTERN_CYBER);
   }, [selectedAddress]);
 
+  const redirectToGift = useCallback(
+    (key: 'claim' | 'prove') => {
+      if (redirectFunc) {
+        redirectFunc(key);
+      }
+
+      navigate('/gift');
+    },
+    [navigate, redirectFunc]
+  );
+
   if (currentRelease && useValidOwner) {
     return (
       <ActionBar>
         <div
           style={{
             display: 'flex',
-            padding: '25px 0',
           }}
         >
           already claimed by
@@ -221,7 +233,7 @@ function ActionBarRelease({
             styleUser={{ marginLeft: '5px' }}
             address={currentRelease[0].addressOwner}
           />
-          . switch account to release choose
+          . switch account to release
         </div>
       </ActionBar>
     );
@@ -246,7 +258,10 @@ function ActionBarRelease({
   if (isValidProve) {
     return (
       <ActionBar>
-        <BtnGrd onClick={() => navigate('/gift')} text="go to prove address" />
+        <BtnGrd
+          onClick={() => redirectToGift('prove')}
+          text="go to prove address"
+        />
       </ActionBar>
     );
   }
@@ -254,7 +269,7 @@ function ActionBarRelease({
   if (isValidClaime) {
     return (
       <ActionBar>
-        <BtnGrd onClick={() => navigate('/gift')} text="go to claim" />
+        <BtnGrd onClick={() => redirectToGift('claim')} text="go to claim" />
       </ActionBar>
     );
   }

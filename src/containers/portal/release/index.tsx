@@ -2,12 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { useDevice } from 'src/contexts/device';
+import { RootState } from 'src/redux/store';
+import { Nullable } from 'src/types';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import {
-  useGetActivePassport,
-  NEW_RELEASE,
-  AMOUNT_ALL_STAGE,
-} from '../utils';
+import { useGetActivePassport, NEW_RELEASE, AMOUNT_ALL_STAGE } from '../utils';
 import {
   CurrentGift,
   MainContainer,
@@ -24,10 +22,8 @@ import Info from './Info';
 
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 import ReleaseStatus from '../components/ReleaseStatus';
-import { RootState } from 'src/redux/store';
-import usePingTxs from './hooks/usePingTxs';
-import useGetStateReleaseGift from './hooks/useGetStateReleaseGift';
-import { Nullable } from 'src/types';
+import usePingTxs from '../hook/usePingTxs';
+import useGetStatGift from '../hook/useGetStatGift';
 import { CurrentRelease, ReadyRelease } from './type';
 
 const portalAmbientObg = new Audio(portalAmbient);
@@ -43,7 +39,7 @@ const stopPortalAmbient = () => {
   portalAmbientObg.currentTime = 0;
 };
 
-const filterByOwner = (data: TotalRelease[], ownerAddress: string) => {
+export const filterByOwner = (data: TotalRelease[], ownerAddress: string) => {
   return data.filter((item) => item.addressOwner === ownerAddress);
 };
 
@@ -65,20 +61,21 @@ function Release() {
     citizenship,
     addressActive
   );
-  const {
-    loading,
-    currentBonus,
-    citizensTargetClaim,
-    citizensClaim,
-    currentStage,
-    progress,
-  } = useGetStateReleaseGift();
+  const { loading, currentBonus, claimStat, currentStage, progressClaim } =
+    useGetStatGift();
   const {
     totalRelease,
     totalReadyRelease,
     totalBalanceClaimAmount,
     loadingRelease,
-  } = useCheckRelease(totalGift, loadingGift, updateFunc, currentStage);
+    alreadyClaimed,
+  } = useCheckRelease(
+    totalGift,
+    addressActive,
+    loadingGift,
+    updateFunc,
+    currentStage
+  );
 
   const [selectedAddress, setSelectedAddress] =
     useState<Nullable<string>>(null);
@@ -126,22 +123,27 @@ function Release() {
     if (selectedAddress && totalRelease && !loadingRelease) {
       initState();
       if (Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)) {
-        const { balanceClaim: readyReleaseAddrr, stage } =
-          totalRelease[selectedAddress];
+        const {
+          balanceClaim: readyReleaseAddrr,
+          stage,
+          addressOwner,
+        } = totalRelease[selectedAddress];
         setCurrentRelease([totalRelease[selectedAddress]]);
         setIsRelease(stage < currentStage);
         setReadyRelease({
           address: selectedAddress,
           amount: readyReleaseAddrr,
+          addressOwner,
         });
       } else if (selectedAddress && selectedAddress.match(PATTERN_CYBER)) {
         if (totalReadyRelease) {
-          const filterData = filterByOwner(totalReadyRelease, selectedAddress)
+          const filterData = filterByOwner(totalReadyRelease, selectedAddress);
           setCurrentRelease(filterData);
           setIsRelease(filterData.length > 0);
           setReadyRelease({
             address: selectedAddress,
             amount: totalBalanceClaimAmount,
+            addressOwner: selectedAddress,
           });
         } else {
           setCurrentRelease([]);
@@ -149,6 +151,7 @@ function Release() {
           setReadyRelease({
             address: selectedAddress,
             amount: totalBalanceClaimAmount,
+            addressOwner: selectedAddress,
           });
         }
       } else {
@@ -195,51 +198,72 @@ function Release() {
       availableRelease: 0,
       released: 0,
       leftRelease: 0,
+      alreadyClaimed: 0,
     };
 
-    if (useSelectedGiftData && readyRelease && !loading) {
+    if (useSelectedGiftData && readyRelease && !loading && selectedAddress) {
       const { amount, address } = readyRelease;
       const { claim, address: addressGift } = useSelectedGiftData;
       if (claim && address === addressGift) {
-        const released = new BigNumber(claim).minus(amount).toNumber();
-        const currentStageProcent = new BigNumber(currentStage).dividedBy(100);
-        const availableRelease = new BigNumber(claim)
+        let released = 0;
+        let claimAmount = new BigNumber(claim);
+
+        if (selectedAddress && selectedAddress.match(PATTERN_CYBER)) {
+          claimAmount = claimAmount.minus(alreadyClaimed);
+        }
+
+        released = new BigNumber(claimAmount).minus(amount).toNumber();
+        const currentStageProcent = new BigNumber(currentStage)
+          .dividedBy(100)
+          .toNumber();
+
+        const availableRelease = new BigNumber(claimAmount)
           .multipliedBy(currentStageProcent)
           .minus(released)
           .dp(0, BigNumber.ROUND_FLOOR)
           .toNumber();
+
+        const availableReleaseAmount =
+          availableRelease > 0 ? availableRelease : 0;
+
         statusRelease.gift = claim;
         statusRelease.leftRelease = amount;
         statusRelease.released = released;
-        statusRelease.availableRelease =
-          availableRelease > 0 ? availableRelease : 0;
+        statusRelease.availableRelease = availableReleaseAmount;
+
+        if (
+          selectedAddress &&
+          selectedAddress.match(PATTERN_CYBER) &&
+          alreadyClaimed
+        ) {
+          statusRelease.alreadyClaimed = alreadyClaimed;
+        }
       }
     }
 
     return statusRelease;
-  }, [readyRelease, useSelectedGiftData, currentStage]);
+  }, [
+    readyRelease,
+    useSelectedGiftData,
+    currentStage,
+    selectedAddress,
+    alreadyClaimed,
+    loading,
+  ]);
 
   const useNextRelease = useMemo(() => {
-    if (currentStage < AMOUNT_ALL_STAGE && citizensClaim) {
+    if (currentStage < AMOUNT_ALL_STAGE && claimStat) {
       const nextTarget = new BigNumber(1)
         .plus(currentStage)
         .multipliedBy(NEW_RELEASE);
-      return new BigNumber(nextTarget).minus(citizensClaim).toNumber();
+      return new BigNumber(nextTarget)
+        .minus(claimStat.citizensClaim)
+        .toNumber();
     }
 
     return 0;
-  }, [currentStage, citizensClaim]);
+  }, [currentStage, claimStat]);
 
-  const useBeforeActivation = useMemo(() => {
-    if (citizensClaim > 0 && citizensTargetClaim > 0) {
-      const left = citizensTargetClaim - citizensClaim;
-      if (left > 0) {
-        return left;
-      }
-      return citizensClaim;
-    }
-    return '';
-  }, [citizensTargetClaim, citizensClaim]);
 
   const useUnClaimedGiftData = useMemo(() => {
     if (
@@ -286,7 +310,7 @@ function Release() {
 
         <ReleaseStatus
           data={useReleasedStage}
-          progress={progress}
+          progress={progressClaim}
           amountGiftValue={useReleasedStage.gift}
           nextRelease={useNextRelease}
         />

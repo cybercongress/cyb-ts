@@ -1,20 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import BigNumber from 'bignumber.js';
-import { getConfigGift, getStateGift, AMOUNT_ALL_STAGE } from '../../utils';
+import { getConfigGift, getStateGift, AMOUNT_ALL_STAGE } from '../utils';
 
 const initStateBonus = {
+  up: 0,
+  down: 0,
   current: 0,
 };
 
-function useGetStateReleaseGift() {
+const initClaimStatus = {
+  targetClaim: 0,
+  citizensClaim: 0,
+};
+
+function useGetStatGift() {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
-  const [citizensTargetClaim, setCitizensTargetClaim] = useState(0);
-  const [citizensClaim, setCitizensClaim] = useState(0);
+  const [claimStat, setClaimStat] = useState(initClaimStatus);
   const [currentStage, setCurrentStage] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progressClaim, setProgressClaim] = useState(0);
 
   useEffect(() => {
     const cheeckStateRelease = async () => {
@@ -29,30 +35,43 @@ function useGetStateReleaseGift() {
             queryResponseResultConfig !== null;
 
           if (validResponse) {
-            const { target_claim: targetClaim } = queryResponseResultConfig;
+            const {
+              target_claim: targetClaim,
+              coefficient_down: down,
+              coefficient_up: up,
+            } = queryResponseResultConfig;
             const { claims, coefficient } = queryResponseResultState;
-            if (coefficient) {
+
+            if (coefficient && down && up) {
               setCurrentBonus({
                 current: parseFloat(coefficient),
+                down: parseFloat(down),
+                up: parseFloat(up),
               });
             }
+
             if (targetClaim && claims) {
-              setCitizensClaim(claims);
-              setCitizensTargetClaim(targetClaim);
+              setClaimStat({ citizensClaim: claims, targetClaim });
+
               const currentStageTemp = new BigNumber(claims)
                 .dividedBy(targetClaim)
                 .multipliedBy(100)
                 .dp(0, BigNumber.ROUND_FLOOR)
                 .toNumber();
+
               setCurrentStage(
                 currentStageTemp > AMOUNT_ALL_STAGE
                   ? AMOUNT_ALL_STAGE
                   : currentStageTemp
               );
-              const curentProgress = Math.floor(
-                (parseFloat(claims) / parseFloat(targetClaim)) * 100
-              );
-              setProgress(curentProgress);
+
+              const curentProgressClaim = new BigNumber(claims)
+                .dividedBy(targetClaim)
+                .multipliedBy(100)
+                .dp(0, BigNumber.ROUND_FLOOR)
+                .toNumber();
+
+              setProgressClaim(curentProgressClaim);
             }
             setLoading(false);
           }
@@ -67,11 +86,10 @@ function useGetStateReleaseGift() {
   return {
     loading,
     currentBonus,
-    citizensTargetClaim,
-    citizensClaim,
     currentStage,
-    progress,
+    claimStat,
+    progressClaim,
   };
 }
 
-export default useGetStateReleaseGift;
+export default useGetStatGift;

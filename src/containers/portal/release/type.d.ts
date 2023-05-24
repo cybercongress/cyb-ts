@@ -1,6 +1,7 @@
 export type ReadyRelease = {
   address: string;
   amount: number;
+  addressOwner: string;
 };
 
 export type CurrentRelease = {

@@ -11,10 +11,11 @@ type DataReleaseStatus = {
   availableRelease: number;
   released: number;
   leftRelease: number;
+  alreadyClaimed?: number;
 };
 
 const dataReleaseStatusMap = (data: DataReleaseStatus) => {
-  return [
+  const dataTotal = [
     {
       title: 'available for release',
       color: '#ED2BE7',
@@ -31,6 +32,15 @@ const dataReleaseStatusMap = (data: DataReleaseStatus) => {
       value: data.leftRelease,
     },
   ];
+
+  if (data.alreadyClaimed) {
+    dataTotal.splice(2, 0, {
+      title: 'already claimed',
+      color: '#FF5C00',
+      value: data.alreadyClaimed,
+    });
+  }
+  return dataTotal;
 };
 
 type Item = {
@@ -114,7 +124,7 @@ function ReleaseStatus({
           </div>
         )}
 
-        <ProgressBar progress={progress}  />
+        <ProgressBar progress={progress} />
         <div className={styles.containerProcentValue}>
           <div>0%</div>
           <div>100%</div>

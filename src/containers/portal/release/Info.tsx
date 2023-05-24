@@ -1,13 +1,13 @@
+import { formatNumber } from 'src/utils/utils';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 import { InfoCard } from '../components';
 import { BOOT_ICON } from '../utils';
 import { DataReleaseStatus } from './type';
 import STEP_INFO from './utils';
 
-const {
-  STATE_READY_TO_RELEASE,
-  STATE_NEXT_UNFREEZE,
-  STATE_PROVE_ADDRESS,
-} = STEP_INFO;
+const { STATE_READY_TO_RELEASE, STATE_NEXT_UNFREEZE, STATE_PROVE_ADDRESS } =
+  STEP_INFO;
 
 function Info({
   useReleasedStage,
@@ -25,8 +25,8 @@ function Info({
       case STATE_READY_TO_RELEASE:
         content = (
           <span>
-            release {useReleasedStage.availableRelease || ''} {BOOT_ICON} right
-            now! <br />
+            release {formatNumber(useReleasedStage.availableRelease) || ''}
+            {BOOT_ICON} right now! <br />
           </span>
         );
         break;
@@ -36,8 +36,10 @@ function Info({
           <span>
             Next release will be available in {nextRelease} new addresses.{' '}
             <br />
-            Hire hero and <br />
-            get H token for free
+            <Link to={routes.sphere.path}>Hire hero</Link> and get H token for
+            free
+            <br />
+            invite your friends to release faster
           </span>
         );
         break;
