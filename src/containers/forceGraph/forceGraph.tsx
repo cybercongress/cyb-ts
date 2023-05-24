@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
+import { createPortal } from 'react-dom';
 
 function ForceGraph() {
   const params = useParams();
@@ -154,25 +155,23 @@ function ForceGraph() {
   //   onSubscriptionData: handleNewLink
   // });
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-          receiving data
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '100%',
+  //         height: '50vh',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         flexDirection: 'column',
+  //       }}
+  //     >
+  //       <Loading />
+  //       <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}></div>
+  //     </div>
+  //   );
+  // }
 
   let pocket;
   if (localStorage.getItem('pocket') != null) {
@@ -183,7 +182,7 @@ function ForceGraph() {
 
   return (
     <div>
-      {hasLoaded && (
+      {(hasLoaded || loading) && (
         <div
           style={{
             width: '100%',
@@ -192,57 +191,62 @@ function ForceGraph() {
             justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'column',
-            position: 'absolute',
-            zIndex: 2,
+            // position: 'absolute',
+            // zIndex: 2,
           }}
         >
           <Loading />
           <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            rendering brain
+            {loading ? 'receiving data' : 'rendering brain'}
           </div>
         </div>
       )}
-      <ForceGraph3D
-        width={500}
-        height={600}
-        graphData={data}
-        ref={fgRef}
-        showNavInfo
-        backgroundColor="#000000"
-        warmupTicks={420}
-        cooldownTicks={0}
-        enableNodeDrag={false}
-        enablePointerInteraction
-        nodeLabel="id"
-        nodeColor={() => 'rgba(0,100,235,1)'}
-        nodeOpacity={1.0}
-        nodeRelSize={8}
-        linkColor={(link) =>
-          // eslint-disable-next-line no-nested-ternary
-          localStorage.getItem('pocket') != null
-            ? // eslint-disable-next-line eqeqeq
-              link.subject == pocket
-              ? 'red'
-              : 'rgba(9,255,13,1)'
-            : 'rgba(9,255,13,1)'
-        }
-        linkWidth={4}
-        linkCurvature={0.2}
-        linkOpacity={0.7}
-        linkDirectionalParticles={1}
-        linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
-        linkDirectionalParticleWidth={4}
-        linkDirectionalParticleSpeed={0.015}
-        // linkDirectionalArrowRelPos={1}
-        // linkDirectionalArrowLength={10}
-        // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
 
-        onNodeClick={handleNodeRightClick}
-        onNodeRightClick={handleNodeClick}
-        onLinkClick={handleLinkRightClick}
-        onLinkRightClick={handleLinkClick}
-        onEngineStop={handleEngineStop}
-      />
+      {!loading &&
+        createPortal(
+          <ForceGraph3D
+            // width={window.innerWidth * 0.62}
+            // height={600}
+            graphData={data}
+            ref={fgRef}
+            showNavInfo
+            backgroundColor="#000000"
+            warmupTicks={420}
+            cooldownTicks={0}
+            enableNodeDrag={false}
+            enablePointerInteraction
+            nodeLabel="id"
+            nodeColor={() => 'rgba(0,100,235,1)'}
+            nodeOpacity={1.0}
+            nodeRelSize={8}
+            linkColor={(link) =>
+              // eslint-disable-next-line no-nested-ternary
+              localStorage.getItem('pocket') != null
+                ? // eslint-disable-next-line eqeqeq
+                  link.subject == pocket
+                  ? 'red'
+                  : 'rgba(9,255,13,1)'
+                : 'rgba(9,255,13,1)'
+            }
+            linkWidth={4}
+            linkCurvature={0.2}
+            linkOpacity={0.7}
+            linkDirectionalParticles={1}
+            linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
+            linkDirectionalParticleWidth={4}
+            linkDirectionalParticleSpeed={0.015}
+            // linkDirectionalArrowRelPos={1}
+            // linkDirectionalArrowLength={10}
+            // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
+
+            onNodeClick={handleNodeRightClick}
+            onNodeRightClick={handleNodeClick}
+            onLinkClick={handleLinkRightClick}
+            onLinkRightClick={handleLinkClick}
+            onEngineStop={handleEngineStop}
+          />,
+          document.getElementById('portal')
+        )}
     </div>
   );
 }

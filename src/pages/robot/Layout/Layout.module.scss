@@ -11,9 +11,14 @@
 }
 
 .links {
+  &::before {
+    content: '';
+    filter: blur(15px);
+  }
   list-style-type: none;
   position: sticky;
   top: 0;
+  background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
 
   li {
     margin: 30px 0;
@@ -74,6 +79,16 @@
           left: 0;
           right: unset;
           margin-right: 10px;
+        }
+      }
+
+      .active {
+        &::before {
+          left: 15px;
+          height: 2px;
+          width: 100%;
+          right: 0;
+          bottom: -10px;
         }
       }
     }

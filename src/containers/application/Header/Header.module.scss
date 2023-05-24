@@ -4,6 +4,11 @@
   position: sticky;
   top: 0;
   padding: 15px;
-  background-color: #000000;
+  // background-color: #000000;
+  background: linear-gradient(180deg, #000000d7 82.81%, rgba(0, 0, 0, 0) 100%);
   z-index: 5;
+
+  &.scroll {
+    background-color: #000000;
+  }
 }

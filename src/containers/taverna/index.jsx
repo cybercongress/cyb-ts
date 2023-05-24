@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
-import { NoItems, Dots, SearchSnippet } from '../../components';
+import {
+  NoItems,
+  Dots,
+  SearchSnippet,
+  ContainerGradientText,
+} from '../../components';
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -102,39 +107,41 @@ function Taverna({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
-        <Pane
-          width="90%"
-          marginX="auto"
-          marginY={0}
-          display="flex"
-          flexDirection="column"
+      <ContainerGradientText>
+        <main className="block-body">
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
+          >
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {Object.keys(tweets).length > 0 ? (
+                searchItems
+              ) : (
+                <NoItems text="No feeds" />
+              )}
+            </div>
+          </Pane>
+        </main>
+        <div
+          style={{
+            position: 'fixed',
+            left: 0,
+            zIndex: 1,
+          }}
         >
-          <div className="container-contentItem" style={{ width: '100%' }}>
-            {Object.keys(tweets).length > 0 ? (
-              searchItems
-            ) : (
-              <NoItems text="No feeds" />
-            )}
-          </div>
-        </Pane>
-      </main>
-      <div
-        style={{
-          position: 'fixed',
-          left: 0,
-          zIndex: 1,
-        }}
-      >
-        <ActionBarCont
-          addressActive={addressActive}
-          mobile={mobile}
-          keywordHash={keywordHash}
-          updateFunc={() => setUpdate(update + 1)}
-          rankLink={rankLink}
-          textBtn="Tweet"
-        />
-      </div>
+          <ActionBarCont
+            addressActive={addressActive}
+            mobile={mobile}
+            keywordHash={keywordHash}
+            updateFunc={() => setUpdate(update + 1)}
+            rankLink={rankLink}
+            textBtn="Tweet"
+          />
+        </div>
+      </ContainerGradientText>
     </>
   );
 }
