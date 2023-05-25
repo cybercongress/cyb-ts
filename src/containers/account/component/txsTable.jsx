@@ -97,24 +97,29 @@ function TxsTable() {
   const columns = React.useMemo(
     () => [
       {
-        Header: 'Status',
-        accessor: 'status',
+        header: 'Status',
+        accessorKey: 'status',
+        cell: (info) => info.getValue(),
       },
       {
-        Header: 'Type',
-        accessor: 'type',
+        header: 'Type',
+        accessorKey: 'type',
+        cell: (info) => info.getValue(),
       },
       {
-        Header: 'Timestamp',
-        accessor: 'timestamp',
+        header: 'Timestamp',
+        accessorKey: 'timestamp',
+        cell: (info) => info.getValue(),
       },
       {
-        Header: 'Tx',
-        accessor: 'tx',
+        header: 'Tx',
+        accessorKey: 'tx',
+        cell: (info) => info.getValue(),
       },
       {
-        Header: 'Action',
-        accessor: 'action',
+        header: 'Action',
+        accessorKey: 'action',
+        cell: (info) => info.getValue(),
       },
     ],
     []

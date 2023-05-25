@@ -88,13 +88,11 @@ function useGetSlots(addressActive, updateAddress) {
     }
   );
 
-  useEffect(() => {
-    if (updateAddress && updateAddress !== 0 && addressActive !== null) {
-      refetchGetAllBalances();
-      refetchAuthAccounts();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateAddress]);
+  function update() {
+    refetchGetAllBalances();
+    refetchAuthAccounts();
+    getBalacesResource();
+  }
 
   useEffect(() => {
     const getAuth = async () => {
@@ -147,30 +145,31 @@ function useGetSlots(addressActive, updateAddress) {
     getAuth();
   }, [dataAuthAccounts]);
 
-  useEffect(() => {
-    const getBalacesResource = async () => {
-      setBalacesResource(initBalacesResource);
-      if (dataGetAllBalances && dataGetAllBalances !== null) {
-        const balacesAmount = {
-          millivolt: 0,
-          milliampere: 0,
-        };
+  async function getBalacesResource() {
+    setBalacesResource(initBalacesResource);
+    if (dataGetAllBalances && dataGetAllBalances !== null) {
+      const balacesAmount = {
+        millivolt: 0,
+        milliampere: 0,
+      };
 
-        const balances = getCalculationBalance(dataGetAllBalances);
-        if (balances.millivolt) {
-          balacesAmount.millivolt = convertResources(balances.millivolt);
-        }
-        if (balances.milliampere) {
-          balacesAmount.milliampere = convertResources(balances.milliampere);
-        }
-        setBalacesResource(balacesAmount);
-      } else {
-        setBalacesResource(initBalacesResource);
+      const balances = getCalculationBalance(dataGetAllBalances);
+      if (balances.millivolt) {
+        balacesAmount.millivolt = convertResources(balances.millivolt);
       }
-    };
+      if (balances.milliampere) {
+        balacesAmount.milliampere = convertResources(balances.milliampere);
+      }
+      setBalacesResource(balacesAmount);
+    } else {
+      setBalacesResource(initBalacesResource);
+    }
+  }
+
+  useEffect(() => {
     getBalacesResource();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateAddress, addressActive]);
+  }, [addressActive]);
 
   const getCalculationBalance = (data) => {
     const balances = {};
@@ -248,6 +247,7 @@ function useGetSlots(addressActive, updateAddress) {
     loadingAuthAccounts,
     balacesResource,
     vested,
+    update,
   };
 }
 

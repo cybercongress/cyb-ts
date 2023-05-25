@@ -38,8 +38,6 @@ function Table<T extends object>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  console.log(table);
-
   return (
     <>
       <table className={styles.table}>

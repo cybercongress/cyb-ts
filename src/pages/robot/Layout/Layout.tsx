@@ -103,36 +103,39 @@ function Layout() {
     }
 
     return (
-      <ul className={styles.links}>
-        {links.map((link, index) => {
-          if (link.onlyOwner && !isOwner) {
-            return null;
-          }
+      // div for sticky css working
+      <div>
+        <ul className={styles.links}>
+          {links.map((link, index) => {
+            if (link.onlyOwner && !isOwner) {
+              return null;
+            }
 
-          return (
-            <li key={index} className={cx({ [styles.mirror]: isMirror })}>
-              {/* <Tooltip tooltip={link.text} placement="top"> */}
-              {['Nft', 'Karma', 'Keys', 'Skills'].includes(link.text) ? (
-                <span className={styles.noLink}>{link.text}</span>
-              ) : (
-                <NavLink
-                  end
-                  className={({ isActive }) => {
-                    return cx({
-                      [styles.active]: isActive,
-                    });
-                  }}
-                  to={link.link}
-                >
-                  <span>{link.text}</span>
-                  <span>{link.icon}</span>
-                </NavLink>
-              )}
-              {/* </Tooltip> */}
-            </li>
-          );
-        })}
-      </ul>
+            return (
+              <li key={index} className={cx({ [styles.mirror]: isMirror })}>
+                {/* <Tooltip tooltip={link.text} placement="top"> */}
+                {['Nft', 'Karma', 'Keys', 'Skills'].includes(link.text) ? (
+                  <span className={styles.noLink}>{link.text}</span>
+                ) : (
+                  <NavLink
+                    end
+                    className={({ isActive }) => {
+                      return cx({
+                        [styles.active]: isActive,
+                      });
+                    }}
+                    to={link.link}
+                  >
+                    <span>{link.text}</span>
+                    <span>{link.icon}</span>
+                  </NavLink>
+                )}
+                {/* </Tooltip> */}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     );
   }
 
@@ -141,6 +144,7 @@ function Layout() {
       <Helmet>
         <title>Robot: {account || ''}</title>
       </Helmet>
+
       {renderLinks(links.slice(0, 7))}
 
       {/* <ContainerGradientText> */}
@@ -166,6 +170,7 @@ function Layout() {
 
       {/* </div> */}
       {/* </ContainerGradientText> */}
+
       {renderLinks(links.slice(7, links.length), true)}
     </div>
   );

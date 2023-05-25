@@ -17,7 +17,6 @@ import {
 } from '../../../utils/search/utils';
 import { setStageTweetActionBar } from '../../../redux/features/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
-import AvatarIpfs from '../../account/component/avatarIpfs';
 
 const dateFormat = require('dateformat');
 

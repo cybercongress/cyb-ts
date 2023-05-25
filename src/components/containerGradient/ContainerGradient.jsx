@@ -103,7 +103,7 @@ function TxsStatus({ data }) {
 
 export function ContainerGradientText({
   children,
-  userStyleContent,
+  userStyleContent = {},
   status = 'blue',
 }) {
   return (

@@ -4,6 +4,7 @@ import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import { createPortal } from 'react-dom';
+import { PORTAL_ID } from '../application/App';
 
 function ForceGraph() {
   const params = useParams();
@@ -245,7 +246,7 @@ function ForceGraph() {
             onLinkRightClick={handleLinkClick}
             onEngineStop={handleEngineStop}
           />,
-          document.getElementById('portal')
+          document.getElementById(PORTAL_ID)
         )}
     </div>
   );

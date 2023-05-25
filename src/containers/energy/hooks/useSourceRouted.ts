@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 
+// TODO: move to soft.js
+export type DestinationRoute = {
+  source: string;
+  destination: string;
+  name: string;
+  value: any[];
+  alias: string;
+  resource: {
+    milliampere?: number;
+    millivolt?: number;
+  };
+};
+
 const initValue = {
   millivolt: 0,
   milliampere: 0,
@@ -17,12 +30,18 @@ const getCalculationBalance = (data) => {
   return balances;
 };
 
-function useGetSourceRoutes(addressActive, updateAddressFunc) {
+// refactor this...
+function useGetSourceRoutes(addressActive: string) {
   const queryClient = useQueryClient();
   const [sourceRouted, setSourceRouted] = useState([]);
-  const [destinationRoutes, setDestinationRoutes] = useState([]);
+  const [destinationRoutes, setDestinationRoutes] = useState<
+    DestinationRoute[] | []
+  >([]);
   const [sourceEnergy, setSourceEnergy] = useState(initValue);
   const [destinationEnergy, setDestinationEnergy] = useState(initValue);
+
+  // temp to reduce refactoring
+  const [update, setUpdate] = useState(0);
 
   useEffect(() => {
     const sourceRoutedGet = async () => {
@@ -54,7 +73,7 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [queryClient, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, update]);
 
   useEffect(() => {
     const sourceRoutedGet = async () => {
@@ -87,7 +106,7 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [queryClient, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, update]);
 
   useEffect(() => {
     setDestinationRoutes([]);
@@ -95,7 +114,9 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       if (queryClient && addressActive !== null) {
         try {
           const queryResultdestinationRoutes =
-            await queryClient.destinationRoutes(addressActive);
+            (await queryClient.destinationRoutes(addressActive)) as {
+              routes: DestinationRoute[] | undefined;
+            };
           if (queryResultdestinationRoutes.routes) {
             queryResultdestinationRoutes.routes.forEach((item, index) => {
               queryResultdestinationRoutes.routes[index].resource = {
@@ -117,7 +138,7 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [queryClient, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, update]);
 
   useEffect(() => {
     const sourceRoutedGet = async () => {
@@ -149,9 +170,15 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       }
     };
     sourceRoutedGet();
-  }, [queryClient, addressActive, updateAddressFunc]);
+  }, [queryClient, addressActive, update]);
 
-  return { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy };
+  return {
+    sourceRouted,
+    sourceEnergy,
+    destinationRoutes,
+    destinationEnergy,
+    update: () => setUpdate(update + 1),
+  };
 }
 
 export default useGetSourceRoutes;

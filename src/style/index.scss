@@ -1,4 +1,7 @@
-
 :root {
-    --primary-color: #36D6AE;
+  --primary-color: #36d6ae;
+}
+
+:export {
+  primaryColor: var(--primary-color);
 }

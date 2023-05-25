@@ -19,7 +19,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
     >
       <Card
         active={active === 'myEnegy'}
-        title="My Enegy"
+        title="Enegy"
         value={`${formatNumber(myEnegy)} W`}
         onClick={() => navigate('./')}
       />

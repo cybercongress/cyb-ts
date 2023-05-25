@@ -1,45 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
 import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
+import { RootState } from 'src/redux/store';
+import useGetAddressTemp from '../account/hooks/useGetAddressTemp';
 
-function RoutedEnergy({ defaultAccount }) {
+function RoutedEnergy() {
   const location = useLocation();
-  const [addressActive, setAddressActive] = useState(null);
-  const [updateAddressFunc, setUpdateAddressFunc] = useState(0);
   const [selected, setSelected] = useState('myEnegy');
-  const [selectedRoute, setSelectedRoute] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState('');
-  const { slotsData, loadingAuthAccounts, balacesResource } = useGetSlots(
-    addressActive,
-    updateAddressFunc
-  );
-  const { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy } =
-    useGetSourceRoutes(addressActive, updateAddressFunc);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const address = useGetAddressTemp();
+  const {
+    slotsData,
+    loadingAuthAccounts,
+    balacesResource,
+    update: updateSlots,
+  } = useGetSlots(address);
+  const {
+    sourceRouted,
+    sourceEnergy,
+    destinationRoutes,
+    destinationEnergy,
+    update: updateSource,
+  } = useGetSourceRoutes(address);
 
-  useEffect(() => {
-    setSelectedRoute({});
-    setSelectedIndex('');
-  }, [updateAddressFunc]);
+  const selectedRoute = selectedIndex !== null && sourceRouted[selectedIndex];
 
-  useEffect(() => {
-    const { account } = defaultAccount;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { bech32 } = account.cyber;
-      addressPocket = bech32;
-    }
-    setAddressActive(addressPocket);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount.name]);
+  console.log(selectedIndex, selectedRoute);
 
   useEffect(() => {
     const { pathname } = location;
@@ -55,20 +47,6 @@ function RoutedEnergy({ defaultAccount }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
-
-  const selectRouteFunc = (route, index) => {
-    let selectRoute = {};
-
-    if (selectedIndex === index) {
-      setSelectedIndex('');
-    } else {
-      setSelectedIndex(index);
-    }
-    if (selectedRoute !== route) {
-      selectRoute = route;
-    }
-    setSelectedRoute(selectRoute);
-  };
 
   let content;
 
@@ -88,18 +66,12 @@ function RoutedEnergy({ defaultAccount }) {
 
   if (selected === 'outcome') {
     content = (
-      <Outcome
-        selected={selectedIndex}
-        sourceRouted={sourceRouted}
-        selectRouteFunc={selectRouteFunc}
-      />
+      <Outcome sourceRouted={sourceRouted} selectRouteFunc={setSelectedIndex} />
     );
   }
 
   return (
     <>
-      {/* <main className="block-body"> */}
-
       <div
         style={{
           display: 'grid',
@@ -124,7 +96,6 @@ function RoutedEnergy({ defaultAccount }) {
         <ContainerGradientText>{content}</ContainerGradientText>
       </div>
 
-      {/* </main> */}
       <div
         style={{
           position: 'fixed',
@@ -133,19 +104,17 @@ function RoutedEnergy({ defaultAccount }) {
       >
         <ActionBar
           selected={selected}
-          addressActive={addressActive}
+          addressActive={address}
           selectedRoute={selectedRoute}
-          updateFnc={() => setUpdateAddressFunc((item) => item + 1)}
+          updateFnc={() => {
+            setSelectedIndex(null);
+            updateSlots();
+            updateSource();
+          }}
         />
       </div>
     </>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(RoutedEnergy);
+export default RoutedEnergy;

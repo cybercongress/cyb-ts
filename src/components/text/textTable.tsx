@@ -12,6 +12,7 @@ function TextTable({
   fontSize,
   color,
   display,
+  style,
   ...props
 }: TextTableProps) {
   return (
@@ -20,6 +21,7 @@ function TextTable({
       color={`${color || '#fff'}`}
       display={`${display || 'inline-flex'}`}
       alignItems="center"
+      style={style}
       {...props}
     >
       {children}

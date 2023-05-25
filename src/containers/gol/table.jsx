@@ -14,16 +14,16 @@ function TableDiscipline() {
       <Table
         columns={[
           {
-            Header: 'Discipline',
-            accessor: 'discipline',
+            header: 'Discipline',
+            accessorKey: 'discipline',
           },
           {
-            Header: 'TOCYB',
-            accessor: 'tocyb',
+            header: 'TOCYB',
+            accessorKey: 'tocyb',
           },
           {
-            Header: 'BOOT',
-            accessor: 'boot',
+            header: 'BOOT',
+            accessorKey: 'boot',
           },
         ]}
         data={Object.keys(resultGol).map((key) => {

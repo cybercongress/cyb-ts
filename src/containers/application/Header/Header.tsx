@@ -17,20 +17,22 @@ function Header({ menuProps }: Props) {
   const [scroll, setScroll] = useState(false);
 
   useEffect(() => {
-    function onScroll(e) {
-      let s = false;
+    function onScroll() {
+      let updateScroll = false;
       if (window.scrollY > 40) {
-        s = true;
+        updateScroll = true;
       }
 
-      if (scroll !== s) {
-        setScroll(s);
+      if (scroll !== updateScroll) {
+        setScroll(updateScroll);
       }
     }
 
     document.addEventListener('scroll', onScroll);
 
-    return () => {};
+    return () => {
+      document.removeEventListener('scroll', onScroll);
+    };
   }, [scroll]);
 
   return (

@@ -110,20 +110,24 @@ function Heroes() {
       <Table
         columns={[
           {
-            Header: 'Validator',
-            accessor: 'validator',
+            header: 'Validator',
+            accessorKey: 'validator',
+            cell: (info) => info.getValue(),
           },
           {
-            Header: 'Unbondings',
-            accessor: 'unbondings',
+            header: 'Unbondings',
+            accessorKey: 'unbondings',
+            cell: (info) => info.getValue(),
           },
           {
-            Header: 'Rewards',
-            accessor: 'reward',
+            header: 'Rewards',
+            accessorKey: 'reward',
+            cell: (info) => info.getValue(),
           },
           {
-            Header: 'Amount',
-            accessor: 'amount',
+            header: 'Amount',
+            accessorKey: 'amount',
+            cell: (info) => info.getValue(),
           },
         ]}
         data={delegationsItem}

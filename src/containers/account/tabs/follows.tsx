@@ -2,6 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import { NoItems, Account, ContainerGradientText } from '../../../components';
 import { useGetCommunity } from '../hooks';
 import useGetAddressTemp from '../hooks/useGetAddressTemp';
+import styles from './Follows.module.scss';
 
 type CommunityEntityProps = {
   items: string[];
@@ -11,10 +12,8 @@ type CommunityEntityProps = {
 
 function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
   return (
-    <ContainerGradientText marginBottom="20px">
-      <Pane marginBottom="10px" fontSize="20px">
-        {title}
-      </Pane>
+    <ContainerGradientText marginBottom="20px" className={styles.wrapper}>
+      <header className={styles.header}>{title}</header>
       {items.length > 0 ? (
         <Pane
           display="grid"

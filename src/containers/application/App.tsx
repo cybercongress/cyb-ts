@@ -8,6 +8,9 @@ import { initPocket } from '../../redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 import IPFSConnectError from './IPFSConnectError/IPFSConnectError';
 import { routes } from 'src/routes';
+import styles from './styles.scss';
+
+export const PORTAL_ID = 'portal';
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
@@ -38,9 +41,9 @@ function App() {
           <IPFSConnectError />
         )}
 
-        <Outlet />
+        <div id={PORTAL_ID} className={styles.portal} />
 
-        <div id="portal" />
+        <Outlet />
       </>
     </MainLayout>
   );

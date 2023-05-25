@@ -4,6 +4,7 @@
   justify-content: center;
   grid-template-columns: 105px minmax(200px, 62%) 105px;
   column-gap: 20px;
+  padding-bottom: 130px; // actionbars space
 
   > :nth-child(2) {
     overflow-x: auto;
@@ -15,14 +16,16 @@
     content: '';
     filter: blur(15px);
   }
+
   list-style-type: none;
   position: sticky;
-  top: 0;
+  top: 180px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
 
   li {
     margin: 30px 0;
     position: relative;
+    display: flex;
     font-size: 18px;
 
     .noLink {
@@ -84,7 +87,7 @@
 
       .active {
         &::before {
-          left: 15px;
+          left: -15px;
           height: 2px;
           width: 100%;
           right: 0;
