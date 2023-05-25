@@ -28,7 +28,7 @@ const dataReleaseStatusMap = (data: DataReleaseStatus) => {
     },
     {
       title: 'left to release',
-      color: '#525252',
+      color: '#FF5C00',
       value: data.leftRelease,
     },
   ];
@@ -36,7 +36,7 @@ const dataReleaseStatusMap = (data: DataReleaseStatus) => {
   if (data.alreadyClaimed) {
     dataTotal.splice(2, 0, {
       title: 'already claimed',
-      color: '#FF5C00',
+      color: '#525252',
       value: data.alreadyClaimed,
     });
   }

@@ -417,8 +417,15 @@ function PortalGift() {
       alreadyClaimed: 0,
     };
 
-    if (useSelectedGiftData && readyRelease && !loading && selectedAddress) {
-      const { amount, address } = readyRelease;
+    if (
+      useSelectedGiftData &&
+      readyRelease &&
+      !loading &&
+      selectedAddress &&
+      addressActive
+    ) {
+      const { bech32 } = addressActive;
+      const { amount, address, addressOwner } = readyRelease;
       const { claim, address: addressGift } = useSelectedGiftData;
       if (claim && address === addressGift) {
         let released = 0;
@@ -454,6 +461,11 @@ function PortalGift() {
         ) {
           statusRelease.alreadyClaimed = alreadyClaimed;
         }
+
+        if (bech32 !== addressOwner) {
+          statusRelease.alreadyClaimed = amount;
+          statusRelease.leftRelease = 0;
+        }
       }
     }
 
@@ -465,6 +477,7 @@ function PortalGift() {
     selectedAddress,
     alreadyClaimed,
     loading,
+    addressActive,
   ]);
 
   const useNextRelease = useMemo(() => {
