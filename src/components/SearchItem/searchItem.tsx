@@ -1,5 +1,4 @@
 import styles from './styles.module.scss';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import Status, { StatusType } from './status';
 import { ContainerGradientText } from '../containerGradient2/ContainerGradient';
 
