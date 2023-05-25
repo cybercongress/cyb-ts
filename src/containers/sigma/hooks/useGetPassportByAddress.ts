@@ -27,7 +27,8 @@ function useGetPassportByAddress(accounts: any) {
   const addressBech32 =
     accounts?.account?.cyber?.bech32 ||
     accounts?.cyber?.bech32 ||
-    accounts?.bech32;
+    accounts?.bech32 ||
+    accounts;
 
   const { data } = useQuery(
     ['activePassport', addressBech32],

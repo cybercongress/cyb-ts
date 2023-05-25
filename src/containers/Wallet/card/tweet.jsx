@@ -17,6 +17,7 @@ import {
 } from '../../../utils/search/utils';
 import { setStageTweetActionBar } from '../../../redux/features/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
+import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 
 const dateFormat = require('dateformat');
 
@@ -99,7 +100,6 @@ function TweetCard({
   setStageTweetActionBarProps,
   ...props
 }) {
-  const { node } = useIpfs();
   const { count: countNewsToday, loading: loadingNewsToday } =
     useNewsToday(account);
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
@@ -121,13 +121,21 @@ function TweetCard({
     loading: true,
   });
 
+  const { passport } = useGetPassportByAddress(account);
+
+  useEffect(() => {
+    setAvatar({
+      stage: true,
+      loading: false,
+    });
+  }, [passport]);
+
   useEffect(() => {
     feachData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, refresh]);
 
   const feachData = async () => {
-    getAvatarAccounts(account);
     getFollowsCount(account);
     getMyTweet(account);
     getFollow(account);
@@ -154,15 +162,6 @@ function TweetCard({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar, myTweet, follows]);
-
-  const getAvatarAccounts = async (address) => {
-    const response = await getAvatar(address);
-    if (response !== null && response.total_count > 0) {
-      setAvatar({ stage: true, loading: false });
-    } else {
-      setAvatar({ stage: false, loading: false });
-    }
-  };
 
   const getFollow = async (address) => {
     let count = 0;
