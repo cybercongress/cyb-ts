@@ -254,49 +254,56 @@ function TweetCard({
   if (stage === STAGE_READY) {
     return (
       <PocketCard display="flex" flexDirection="row" {...props}>
-        <Pane display="flex" flex={1}>
-          <Account address={account} avatar onlyAvatar sizeAvatar="80px" />
-        </Pane>
-        <Link style={{ margin: '0 10px' }} to="/sixthSense">
-          <Pane
-            marginX={10}
-            alignItems="center"
-            display="flex"
-            flexDirection="column"
-          >
-            <Pane fontSize="20px">
-              {loadingNewsToday ? (
-                <Dots />
-              ) : (
-                formatNumber(parseFloat(countNewsToday))
-              )}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Pane display="flex" flex={1}>
+            <Account address={account} avatar onlyAvatar sizeAvatar="80px" />
+          </Pane>
+          <Link style={{ margin: '0 10px' }} to="/sixthSense">
+            <Pane
+              marginX={10}
+              alignItems="center"
+              display="flex"
+              flexDirection="column"
+            >
+              <Pane fontSize="20px">
+                {loadingNewsToday ? (
+                  <Dots />
+                ) : (
+                  formatNumber(parseFloat(countNewsToday))
+                )}
+              </Pane>
+              <Pane color="#fff">News today</Pane>
             </Pane>
-            <Pane color="#fff">News today</Pane>
-          </Pane>
-        </Link>
-        <Link
-          style={{ margin: '0 10px' }}
-          to={`/network/bostrom/contract/${account}`}
-        >
-          <Pane alignItems="center" display="flex" flexDirection="column">
-            <Pane fontSize="20px">{formatNumber(myTweet.count)}</Pane>
-            <Pane color="#fff">My tweet</Pane>
-          </Pane>
-        </Link>
-        <Link
-          style={{ margin: '0 10px' }}
-          to={`/network/bostrom/contract/${account}/follows`}
-        >
-          <Pane
-            marginX={10}
-            alignItems="center"
-            display="flex"
-            flexDirection="column"
+          </Link>
+          <Link
+            style={{ margin: '0 10px' }}
+            to={`/network/bostrom/contract/${account}`}
           >
-            <Pane fontSize="20px">{formatNumber(followers.count)}</Pane>
-            <Pane color="#fff">Followers</Pane>
-          </Pane>
-        </Link>
+            <Pane alignItems="center" display="flex" flexDirection="column">
+              <Pane fontSize="20px">{formatNumber(myTweet.count)}</Pane>
+              <Pane color="#fff">My tweet</Pane>
+            </Pane>
+          </Link>
+          <Link
+            style={{ margin: '0 10px' }}
+            to={`/network/bostrom/contract/${account}/follows`}
+          >
+            <Pane
+              marginX={10}
+              alignItems="center"
+              display="flex"
+              flexDirection="column"
+            >
+              <Pane fontSize="20px">{formatNumber(followers.count)}</Pane>
+              <Pane color="#fff">Followers</Pane>
+            </Pane>
+          </Link>
+        </div>
       </PocketCard>
     );
   }
