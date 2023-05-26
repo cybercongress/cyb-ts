@@ -106,7 +106,11 @@ function Heroes() {
   });
 
   return (
-    <ContainerGradientText>
+    <ContainerGradientText
+      userStyleContent={{
+        padding: '15px 0',
+      }}
+    >
       <Table
         columns={[
           {

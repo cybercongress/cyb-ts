@@ -26,36 +26,58 @@
     margin: 30px 0;
     position: relative;
     display: flex;
+    justify-content: flex-end;
+
     font-size: 18px;
 
     .noLink {
       color: gray;
+      margin-right: 15px;
     }
 
     a {
       display: flex;
       align-items: center;
-      gap: 7px;
+      padding-right: 15px;
 
-      span:first-of-type {
-        display: none;
+      gap: 10px;
+
+      .text {
+        // display: none;
+        // width: 0px;
+        // overflow: hidden;
+        opacity: 0;
       }
+      // transition: all 0.3s ease-in-out;
 
-      &.active,
       &:hover {
-        span {
-          display: block;
+        .text {
+          // display: block;
+          opacity: 1;
+
+          // width: 100px;
+        }
+        .count {
+          display: none;
         }
       }
 
       &.active {
         color: #fff;
 
+        .count {
+          display: none;
+        }
+
+        .text {
+          display: block;
+        }
+
         &::before {
           content: '';
           display: block;
           right: 0;
-          height: 115%;
+          height: 135%;
           width: 3px;
           background-color: #4ed6ae;
           filter: blur(0.7px);
@@ -72,26 +94,26 @@
     }
 
     &.mirror {
+      justify-content: flex-start;
+
       .noLink {
-        float: right;
+        margin-left: 15px;
+        margin-right: unset;
       }
+
       a {
+        padding-left: 15px;
+        padding-right: unset;
         flex-direction: row-reverse;
 
-        &::before {
-          left: 0;
-          right: unset;
-          margin-right: 10px;
-        }
-      }
-
-      .active {
-        &::before {
-          left: -15px;
-          height: 2px;
-          width: 100%;
-          right: 0;
-          bottom: -10px;
+        &.active {
+          &::before {
+            left: -18px;
+            height: 2px;
+            width: auto;
+            right: -20px;
+            bottom: -10px;
+          }
         }
       }
     }

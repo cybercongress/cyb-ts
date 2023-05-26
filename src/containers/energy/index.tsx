@@ -13,8 +13,13 @@ import useGetAddressTemp from '../account/hooks/useGetAddressTemp';
 function RoutedEnergy() {
   const location = useLocation();
   const [selected, setSelected] = useState('myEnegy');
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
   const address = useGetAddressTemp();
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+
+  const isOwner =
+    defaultAccount && defaultAccount.account?.cyber.bech32 === address;
+
   const {
     slotsData,
     loadingAuthAccounts,
@@ -29,9 +34,8 @@ function RoutedEnergy() {
     update: updateSource,
   } = useGetSourceRoutes(address);
 
-  const selectedRoute = selectedIndex !== null && sourceRouted[selectedIndex];
-
-  console.log(selectedIndex, selectedRoute);
+  const selectedRoute =
+    selectedIndex !== null && sourceRouted[Number(selectedIndex)];
 
   useEffect(() => {
     const { pathname } = location;
@@ -66,7 +70,10 @@ function RoutedEnergy() {
 
   if (selected === 'outcome') {
     content = (
-      <Outcome sourceRouted={sourceRouted} selectRouteFunc={setSelectedIndex} />
+      <Outcome
+        sourceRouted={sourceRouted}
+        selectRouteFunc={isOwner ? setSelectedIndex : undefined}
+      />
     );
   }
 
@@ -93,7 +100,13 @@ function RoutedEnergy() {
           />
         </ContainerGradientText>
 
-        <ContainerGradientText>{content}</ContainerGradientText>
+        <ContainerGradientText
+          userStyleContent={{
+            padding: '15px 0',
+          }}
+        >
+          {content}
+        </ContainerGradientText>
       </div>
 
       <div
@@ -102,16 +115,18 @@ function RoutedEnergy() {
           left: 0,
         }}
       >
-        <ActionBar
-          selected={selected}
-          addressActive={address}
-          selectedRoute={selectedRoute}
-          updateFnc={() => {
-            setSelectedIndex(null);
-            updateSlots();
-            updateSource();
-          }}
-        />
+        {isOwner && (
+          <ActionBar
+            selected={selected}
+            addressActive={address}
+            selectedRoute={selectedRoute}
+            updateFnc={() => {
+              setSelectedIndex(null);
+              updateSlots();
+              updateSource();
+            }}
+          />
+        )}
       </div>
     </>
   );

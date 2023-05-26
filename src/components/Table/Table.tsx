@@ -9,20 +9,26 @@ import {
 import styles from './Table.module.scss';
 import Loader2 from '../ui/Loader2';
 import NoItems from '../ui/noItems';
+import { useEffect, useState } from 'react';
+import cx from 'classnames';
 
 export type Props<T extends object> = {
   columns: ColumnDef<T>[];
   data: T[];
   isLoading?: boolean;
-  onSelect?: (id: number) => void;
+  onSelect?: (id: string | null) => void;
+  style: any;
 };
 
 function Table<T extends object>({
   columns,
   data,
   isLoading,
+  style,
   onSelect,
 }: Props<T>) {
+  const [selected, setSelected] = useState<string | null>(null);
+
   const table = useReactTable({
     columns,
     data,
@@ -40,7 +46,7 @@ function Table<T extends object>({
 
   return (
     <>
-      <table className={styles.table}>
+      <table className={styles.table} style={style}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -64,14 +70,25 @@ function Table<T extends object>({
               <tr
                 key={row.id}
                 data-id={row.id}
-                // style={{
-                //   color: row.getIsSelected() ? 'red' : 'black',
-                // }}
-                // onClick={(e) => {
-                //   // TODO: move to tbody
-                //   const id = Number(e.currentTarget.getAttribute('data-id'));
-                //   onSelect?.(id);
-                // }}
+                className={cx({ [styles.rowSelected]: row.id === selected })}
+                onClick={(e) => {
+                  // TODO: move to tbody
+
+                  if (!onSelect) {
+                    return;
+                  }
+
+                  const id = e.currentTarget.getAttribute('data-id');
+
+                  if (id === selected) {
+                    setSelected(null);
+                    onSelect(null);
+                    return;
+                  }
+
+                  setSelected(id);
+                  onSelect(id);
+                }}
               >
                 {row.getVisibleCells().map((cell) => {
                   return (

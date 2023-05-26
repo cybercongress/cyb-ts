@@ -128,7 +128,11 @@ function TxsTable() {
   const tableData = React.useMemo(() => [...validatorRows[0]], [validatorRows]);
 
   return (
-    <ContainerGradientText>
+    <ContainerGradientText
+      userStyleContent={{
+        padding: '15px 0',
+      }}
+    >
       <Table columns={columns} data={tableData} isLoading={isFetching}>
         <InfiniteScroll
           dataLength={Object.keys(validatorRows).length}

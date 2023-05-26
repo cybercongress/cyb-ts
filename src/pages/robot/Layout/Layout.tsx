@@ -7,6 +7,10 @@ import useGetAddressTemp from 'src/containers/account/hooks/useGetAddressTemp';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { Helmet } from 'react-helmet';
+import { useGetHeroes } from 'src/containers/account/hooks';
+import useGetMenuCounts from './useGetMenuCounts';
+
+import icon from './icon.svg';
 
 const links = [
   {
@@ -39,6 +43,7 @@ const links = [
   {
     text: 'Security',
     link: './security',
+    name: 'security',
     icon: '🧑🏼‍🚀',
   },
   {
@@ -49,27 +54,31 @@ const links = [
   {
     text: 'Sigma',
     link: './sigma',
-    icon: '∑',
+    icon: <img src={icon}></img>,
   },
 
   {
     text: 'Energy',
     link: './energy',
+    name: 'energy',
     icon: '🚀',
   },
   {
     text: 'Swarm',
     link: './swarm',
+    name: 'swarm',
     icon: '💚',
   },
   {
     text: 'Log',
     link: './log',
+    name: 'log',
     icon: '🍀',
   },
   {
     text: 'Badges',
     link: './badges',
+    name: 'badges',
     icon: '🥇',
   },
   {
@@ -94,11 +103,21 @@ function Layout() {
 
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
-  const account = defaultAccount.account?.cyber.bech32;
-  const isOwner = account === params.address;
+  const address = defaultAccount.account?.cyber.bech32;
+  const isOwner = address === params.address;
+
+  const c = params.address || address;
+
+  const counts = useGetMenuCounts(c);
+
+  console.log(counts);
+
+  // const n = {
+  //   'security': Object.keys(staking).length,
+  // }
 
   function renderLinks(links, isMirror) {
-    if (!params.address && !account) {
+    if (!params.address && !address) {
       return <>&nbsp;</>; // temp
     }
 
@@ -126,8 +145,11 @@ function Layout() {
                     }}
                     to={link.link}
                   >
-                    <span>{link.text}</span>
-                    <span>{link.icon}</span>
+                    <span className={styles.text}>{link.text}</span>
+                    <span className={styles.count}>
+                      {counts[link.name] || 0}
+                    </span>
+                    <span className={styles.icon}>{link.icon}</span>
                   </NavLink>
                 )}
                 {/* </Tooltip> */}
@@ -142,7 +164,7 @@ function Layout() {
   return (
     <div className={styles.wrapper}>
       <Helmet>
-        <title>Robot: {account || ''}</title>
+        <title>Robot: {address || ''}</title>
       </Helmet>
 
       {renderLinks(links.slice(0, 7))}

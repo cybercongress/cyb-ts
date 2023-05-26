@@ -263,7 +263,7 @@ function TweetCard({
           <Pane display="flex" flex={1}>
             <Account address={account} avatar onlyAvatar sizeAvatar="80px" />
           </Pane>
-          <Link style={{ margin: '0 10px' }} to="/sixthSense">
+          <Link style={{ margin: '0 10px' }} to="./sense">
             <Pane
               marginX={10}
               alignItems="center"
@@ -280,19 +280,13 @@ function TweetCard({
               <Pane color="#fff">News today</Pane>
             </Pane>
           </Link>
-          <Link
-            style={{ margin: '0 10px' }}
-            to={`/network/bostrom/contract/${account}`}
-          >
+          <Link style={{ margin: '0 10px' }} to={`./log`}>
             <Pane alignItems="center" display="flex" flexDirection="column">
               <Pane fontSize="20px">{formatNumber(myTweet.count)}</Pane>
               <Pane color="#fff">My tweet</Pane>
             </Pane>
           </Link>
-          <Link
-            style={{ margin: '0 10px' }}
-            to={`/network/bostrom/contract/${account}/follows`}
-          >
+          <Link style={{ margin: '0 10px' }} to={`./swarm`}>
             <Pane
               marginX={10}
               alignItems="center"

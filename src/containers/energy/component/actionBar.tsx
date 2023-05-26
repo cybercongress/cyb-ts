@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Input,
-  Tab,
-} from '@cybercongress/gravity';
+import { ActionBar as ActionBarContainer, Tab } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
@@ -16,6 +12,8 @@ import {
   Account,
   ButtonIcon,
   Button,
+  ActionBar as ActionBarCenter,
+  Input,
 } from '../../../components';
 import {
   LEDGER,
@@ -298,18 +296,18 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
       >
         <Input
           value={addressAddRouteInput}
-          height={42}
-          marginRight={10}
+          style={{
+            marginRight: 10,
+          }}
           width="300px"
           onChange={(e) => setAddressAddRouteInput(e.target.value)}
           placeholder="address"
-          isInvalid={recipientInputValid !== null}
-          message={recipientInputValid}
+          // isInvalid={recipientInputValid !== null}
+          error={recipientInputValid}
         />
-
+        &nbsp;
         <Input
           value={aliasInput}
-          height={42}
           width="24%"
           onChange={(e) => setAliasInput(e.target.value)}
           placeholder="alias"
@@ -320,11 +318,13 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
 
   if (stage === STAGE_SET_ROUTER) {
     return (
-      <ActionBarSteps
-        disabled={amountInput.length === 0}
-        onClickFnc={generationTxs}
+      <ActionBarCenter
+        button={{
+          text: 'Set Router',
+          disabled: amountInput.length === 0,
+          onClick: generationTxs,
+        }}
         onClickBack={() => setStage(STAGE_INIT)}
-        btnText="Set Router"
       >
         <Input
           value={amountInput}
@@ -344,7 +344,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           checkedSwitch={selectResource === 'millivolt'}
           onSelect={() => setSelectResource('millivolt')}
         />
-      </ActionBarSteps>
+      </ActionBarCenter>
     );
   }
 

@@ -59,6 +59,7 @@
   position: absolute;
   height: 100%;
   width: 100px;
+  z-index: -1;
   top: 0;
   bottom: 0;
 }
@@ -177,7 +178,6 @@
     padding: 17px 15px;
     min-height: 170px;
     height: 1px;
-    z-index: 1;
     transition: 1s ease-in-out;
 
     &entering {
