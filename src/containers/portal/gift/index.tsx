@@ -1,14 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
-import { useQueryClient } from 'src/contexts/queryClient';
+import portalAmbient from 'sounds/portalAmbient112.mp3';
+import { RootState } from 'src/redux/store';
+import BigNumber from 'bignumber.js';
+import { Nullable } from 'src/types';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import {
-  useGetActivePassport,
-  getStateGift,
-  getConfigGift,
-  parseRowLog,
-} from '../utils';
+import { useGetActivePassport, NEW_RELEASE, AMOUNT_ALL_STAGE } from '../utils';
 import PasportCitizenship from '../pasport';
 import ActionBarPortalGift from './ActionBarPortalGift';
 import {
@@ -23,15 +21,15 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import Carousel from './carousel1/Carousel';
 import STEP_INFO from './utils';
 import Info from './Info';
-import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
-import portalAmbient from '../../../sounds/portalAmbient112.mp3';
+import useGetStatGift from '../hook/useGetStatGift';
+import usePingTxs from '../hook/usePingTxs';
+import ReleaseStatus from '../components/ReleaseStatus';
+import { CurrentRelease, ReadyRelease } from '../release/type';
+import useCheckRelease from '../hook/useCheckRelease';
+import { filterByOwner } from '../release';
+import ActionBarRelease from '../release/ActionBarRelease';
 
 const portalAmbientObg = new Audio(portalAmbient);
-const portalConfirmedObg = new Audio(portalConfirmed);
-
-const playPortalConfirmed = () => {
-  portalConfirmedObg.play();
-};
 
 const playPortalAmbient = () => {
   portalAmbientObg.loop = true;
@@ -47,12 +45,7 @@ const stopPortalAmbient = () => {
 const STEP_GIFT_INFO = 1;
 const STEP_PROVE_ADD = 2;
 const STEP_CLAIME = 3;
-
-const initStateBonus = {
-  up: 0,
-  down: 0,
-  current: 0,
-};
+const STEP_RELEASE = 4;
 
 const itemsStep = [
   {
@@ -64,29 +57,52 @@ const itemsStep = [
     step: STEP_PROVE_ADD,
   },
   {
-    title: ' claim',
+    title: 'claim',
     step: STEP_CLAIME,
+  },
+  {
+    title: 'release',
+    step: STEP_RELEASE,
   },
 ];
 
-function PortalGift({ defaultAccount }) {
+function PortalGift() {
   const { isMobile: mobile } = useDevice();
-  const queryClient = useQueryClient();
+  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [updateFunc, setUpdateFunc] = useState(0);
-  const [currentBonus, setCurrentBonus] = useState(initStateBonus);
-  const [txHash, setTxHash] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const { txHash, updateFunc, updateTxHash } = usePingTxs();
   const { citizenship, loading, setLoading } = useGetActivePassport(
     defaultAccount,
     updateFunc
   );
-  const [currentGift, setCurrentGift] = useState(null);
-  const [isClaimed, setIsClaimed] = useState(null);
   const { totalGift, totalGiftClaimed, loadingGift, giftData, setLoadingGift } =
     useCheckGift(citizenship, addressActive, updateFunc);
+  const { currentBonus, claimStat, currentStage, progressClaim } =
+    useGetStatGift();
+  const {
+    totalRelease,
+    totalReadyRelease,
+    totalBalanceClaimAmount,
+    loadingRelease,
+    alreadyClaimed,
+  } = useCheckRelease(
+    totalGift,
+    addressActive,
+    loadingGift,
+    updateFunc,
+    currentStage
+  );
+
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [currentGift, setCurrentGift] = useState(null);
+  const [isClaimed, setIsClaimed] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
-  const [amountClaims, setAmountCaims] = useState(0);
+
+  const [isRelease, setIsRelease] = useState(false);
+  const [currentRelease, setCurrentRelease] =
+    useState<Nullable<CurrentRelease[]>>(null);
+  const [readyRelease, setReadyRelease] =
+    useState<Nullable<ReadyRelease>>(null);
 
   useEffect(() => {
     playPortalAmbient();
@@ -97,12 +113,12 @@ function PortalGift({ defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    if (txHash !== null && txHash.status !== 'pending') {
+    if (txHash && txHash.status !== 'pending') {
       if (
         appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
         txHash.status === 'confirmed' &&
         !loading &&
-        citizenship !== null
+        citizenship
       ) {
         setStepApp(STEP_INFO.STATE_CLAIME);
       }
@@ -118,7 +134,7 @@ function PortalGift({ defaultAccount }) {
         appStep === STEP_INFO.STATE_CLAIM_IN_PROCESS &&
         txHash.status === 'confirmed'
       ) {
-        setStepApp(STEP_INFO.STATE_RELEASE);
+        setStepApp(STEP_INFO.STATE_RELEASE_INIT);
       }
 
       if (
@@ -127,50 +143,15 @@ function PortalGift({ defaultAccount }) {
       ) {
         setStepApp(STEP_INFO.STATE_CLAIME);
       }
-      setTimeout(() => setTxHash(null), 35000);
+      setTimeout(() => updateTxHash(null), 35000);
     }
   }, [txHash, appStep, loading, citizenship]);
-
-  useEffect(() => {
-    const confirmTx = async () => {
-      if (queryClient && txHash !== null && txHash.status === 'pending') {
-        const response = await queryClient.getTx(txHash.txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
-          if (response.code === 0) {
-            setUpdateFunc((item) => item + 1);
-            setTxHash((item) => ({
-              ...item,
-              status: 'confirmed',
-            }));
-            try {
-              playPortalConfirmed();
-            } catch (error) {
-              console.log('error', error);
-            }
-
-            return;
-          }
-          if (response.code) {
-            setTxHash((item) => ({
-              ...item,
-              status: 'error',
-              rawLog: parseRowLog(response.rawLog.toString()),
-            }));
-            return;
-          }
-        }
-        setTimeout(confirmTx, 1500);
-      }
-    };
-    confirmTx();
-  }, [queryClient, txHash]);
 
   useEffect(() => {
     if (
       appStep === STEP_INFO.STATE_INIT &&
       selectedAddress === null &&
-      citizenship !== null &&
+      citizenship &&
       citizenship.owner
     ) {
       setSelectedAddress(citizenship.owner);
@@ -200,7 +181,11 @@ function PortalGift({ defaultAccount }) {
       if (!loadingGift) {
         if (citizenship === null) {
           setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
-        } else if (totalGift === null && selectedAddress.match(PATTERN_CYBER)) {
+        } else if (
+          totalGift === null &&
+          selectedAddress &&
+          selectedAddress.match(PATTERN_CYBER)
+        ) {
           setStepApp(STEP_INFO.STATE_GIFT_NULL_ALL);
         } else if (isClaimed === null) {
           setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
@@ -211,6 +196,18 @@ function PortalGift({ defaultAccount }) {
         }
       }
     }
+
+    if (Math.floor(appStep) === STEP_RELEASE && !loadingRelease) {
+      if (currentRelease !== null) {
+        if (isRelease) {
+          setStepApp(STEP_INFO.STATE_RELEASE_INIT);
+        } else {
+          setStepApp(STEP_INFO.STATE_RELEASE_ALL);
+        }
+      } else {
+        setStepApp(STEP_INFO.STATE_RELEASE_NULL);
+      }
+    }
   }, [
     appStep,
     citizenship,
@@ -219,34 +216,65 @@ function PortalGift({ defaultAccount }) {
     loadingGift,
     selectedAddress,
     loading,
+    loadingRelease,
+    isRelease,
+    currentRelease,
   ]);
 
-  useEffect(() => {
-    const cheeckStateFunc = async () => {
-      if (queryClient) {
-        const queryResponseResultConfig = await getConfigGift(queryClient);
-        const queryResponseResultState = await getStateGift(queryClient);
+  const initState = () => {
+    setReadyRelease(null);
+    setIsRelease(false);
+  };
 
-        if (
-          queryResponseResultConfig !== null &&
-          queryResponseResultState !== null
-        ) {
-          const { coefficient_down: down, coefficient_up: up } =
-            queryResponseResultConfig;
-          const { coefficient, claims } = queryResponseResultState;
-          if ((down && up && coefficient, claims)) {
-            setCurrentBonus({
-              down: parseFloat(down),
-              up: parseFloat(up),
-              current: parseFloat(coefficient),
-            });
-            setAmountCaims(claims);
-          }
+  useEffect(() => {
+    if (selectedAddress && totalRelease && !loadingRelease) {
+      initState();
+      if (Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)) {
+        const {
+          balanceClaim: readyReleaseAddrr,
+          stage,
+          addressOwner,
+        } = totalRelease[selectedAddress];
+        setCurrentRelease([totalRelease[selectedAddress]]);
+        setIsRelease(stage < currentStage);
+        setReadyRelease({
+          address: selectedAddress,
+          amount: readyReleaseAddrr,
+          addressOwner,
+        });
+      } else if (selectedAddress && selectedAddress.match(PATTERN_CYBER)) {
+        if (totalReadyRelease) {
+          const filterData = filterByOwner(totalReadyRelease, selectedAddress);
+          setCurrentRelease(filterData);
+          setIsRelease(filterData.length > 0);
+          setReadyRelease({
+            address: selectedAddress,
+            amount: totalBalanceClaimAmount,
+            addressOwner: selectedAddress,
+          });
+        } else {
+          setCurrentRelease([]);
+          setIsRelease(false);
+          setReadyRelease({
+            address: selectedAddress,
+            amount: totalBalanceClaimAmount,
+            addressOwner: selectedAddress,
+          });
         }
+      } else {
+        setCurrentRelease(null);
       }
-    };
-    cheeckStateFunc();
-  }, [queryClient]);
+    } else {
+      setCurrentRelease(null);
+    }
+  }, [
+    selectedAddress,
+    totalRelease,
+    totalBalanceClaimAmount,
+    totalReadyRelease,
+    loadingRelease,
+    currentStage,
+  ]);
 
   useEffect(() => {
     if (!loadingGift) {
@@ -305,10 +333,6 @@ function PortalGift({ defaultAccount }) {
       setIsClaimed(null);
     }
   }, [selectedAddress, loadingGift, totalGift]);
-
-  const updateTxHash = (data) => {
-    setTxHash(data);
-  };
 
   const useSelectedGiftData = useMemo(() => {
     try {
@@ -384,15 +408,117 @@ function PortalGift({ defaultAccount }) {
     return null;
   }, [giftData, currentBonus, citizenship]);
 
+  const useReleasedStage = useMemo(() => {
+    const statusRelease = {
+      gift: 0,
+      availableRelease: 0,
+      released: 0,
+      leftRelease: 0,
+      alreadyClaimed: 0,
+    };
+
+    if (
+      useSelectedGiftData &&
+      readyRelease &&
+      !loading &&
+      selectedAddress &&
+      addressActive
+    ) {
+      const { bech32 } = addressActive;
+      const { amount, address, addressOwner } = readyRelease;
+      const { claim, address: addressGift } = useSelectedGiftData;
+      if (claim && address === addressGift) {
+        let released = 0;
+        let claimAmount = new BigNumber(claim);
+
+        if (selectedAddress && selectedAddress.match(PATTERN_CYBER)) {
+          claimAmount = claimAmount.minus(alreadyClaimed);
+        }
+
+        released = new BigNumber(claimAmount).minus(amount).toNumber();
+        const currentStageProcent = new BigNumber(currentStage)
+          .dividedBy(100)
+          .toNumber();
+
+        const availableRelease = new BigNumber(claimAmount)
+          .multipliedBy(currentStageProcent)
+          .minus(released)
+          .dp(0, BigNumber.ROUND_FLOOR)
+          .toNumber();
+
+        const availableReleaseAmount =
+          availableRelease > 0 ? availableRelease : 0;
+
+        statusRelease.gift = claim;
+        statusRelease.leftRelease = amount;
+        statusRelease.released = released;
+        statusRelease.availableRelease = availableReleaseAmount;
+
+        if (
+          selectedAddress &&
+          selectedAddress.match(PATTERN_CYBER) &&
+          alreadyClaimed
+        ) {
+          statusRelease.alreadyClaimed = alreadyClaimed;
+        }
+
+        if (bech32 !== addressOwner) {
+          statusRelease.alreadyClaimed = amount;
+          statusRelease.leftRelease = 0;
+        }
+      }
+    }
+
+    return statusRelease;
+  }, [
+    readyRelease,
+    useSelectedGiftData,
+    currentStage,
+    selectedAddress,
+    alreadyClaimed,
+    loading,
+    addressActive,
+  ]);
+
+  const useNextRelease = useMemo(() => {
+    if (currentStage < AMOUNT_ALL_STAGE && claimStat) {
+      const nextTarget = new BigNumber(1)
+        .plus(currentStage)
+        .multipliedBy(NEW_RELEASE);
+      return new BigNumber(nextTarget)
+        .minus(claimStat.citizensClaim)
+        .toNumber();
+    }
+
+    return 0;
+  }, [currentStage, claimStat]);
+
+  const redirectFunc = (key: 'claim' | 'prove') => {
+    if (key === 'claim') {
+      setStepApp(STEP_INFO.STATE_CLAIME);
+    }
+
+    if (key === 'prove') {
+      setStepApp(STEP_INFO.STATE_PROVE_CONNECT);
+    }
+  };
+
   let content;
 
   if (Math.floor(appStep) === STEP_GIFT_INFO) {
     content = (
-      <AboutGift addressesClaimed={amountClaims} coefficient={currentBonus} />
+      <AboutGift
+        addressesClaimed={claimStat.citizensClaim}
+        coefficient={currentBonus}
+      />
     );
   }
 
-  if (Math.floor(appStep) !== STEP_GIFT_INFO) {
+  if (
+    Math.floor(appStep) === STEP_PROVE_ADD ||
+    Math.floor(appStep) === STEP_CLAIME ||
+    Math.floor(appStep) === STEP_RELEASE
+  ) {
     content = (
       <>
         <PasportCitizenship
@@ -415,13 +541,23 @@ function PortalGift({ defaultAccount }) {
             />
           )}
 
-        {useSelectedGiftData !== null && (
-          <CurrentGift
-            title="Claimed"
-            valueTextResult="claimed"
-            selectedAddress={selectedAddress}
-            currentGift={useSelectedGiftData}
-            currentBonus={currentBonus}
+        {useSelectedGiftData !== null &&
+          Math.floor(appStep) !== STEP_RELEASE && (
+            <CurrentGift
+              title="Claimed"
+              valueTextResult="claimed"
+              selectedAddress={selectedAddress}
+              currentGift={useSelectedGiftData}
+              currentBonus={currentBonus}
+            />
+          )}
+
+        {Math.floor(appStep) === STEP_RELEASE && (
+          <ReleaseStatus
+            data={useReleasedStage}
+            progress={progressClaim}
+            amountGiftValue={useReleasedStage.gift}
+            nextRelease={useNextRelease}
           />
         )}
       </>
@@ -436,8 +572,8 @@ function PortalGift({ defaultAccount }) {
         {appStep !== null && (
           <Info
             stepCurrent={appStep}
-            selectedAddress={selectedAddress}
-            amountClaims={amountClaims}
+            nextRelease={useNextRelease}
+            useReleasedStage={useReleasedStage}
           />
         )}
         <Carousel
@@ -448,27 +584,37 @@ function PortalGift({ defaultAccount }) {
         />
         {content}
       </MainContainer>
-      <ActionBarPortalGift
-        addressActive={addressActive}
-        citizenship={citizenship}
-        updateTxHash={updateTxHash}
-        isClaimed={isClaimed}
-        selectedAddress={selectedAddress}
-        currentGift={currentGift}
-        activeStep={appStep}
-        setStepApp={setStepApp}
-        setLoading={setLoading}
-        setLoadingGift={setLoadingGift}
-        loadingGift={loadingGift}
-      />
+      {Math.floor(appStep) !== STEP_RELEASE && (
+        <ActionBarPortalGift
+          addressActive={addressActive}
+          citizenship={citizenship}
+          updateTxHash={updateTxHash}
+          isClaimed={isClaimed}
+          selectedAddress={selectedAddress}
+          currentGift={currentGift}
+          activeStep={appStep}
+          setStepApp={setStepApp}
+          setLoading={setLoading}
+          setLoadingGift={setLoadingGift}
+          loadingGift={loadingGift}
+        />
+      )}
+      {Math.floor(appStep) === STEP_RELEASE && (
+        <ActionBarRelease
+          addressActive={addressActive}
+          updateTxHash={updateTxHash}
+          selectedAddress={selectedAddress}
+          txHash={txHash}
+          currentRelease={currentRelease}
+          totalGift={totalGift}
+          isRelease={isRelease}
+          totalRelease={totalRelease}
+          loadingRelease={loadingRelease}
+          redirectFunc={redirectFunc}
+        />
+      )}
     </>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(PortalGift);
+export default PortalGift;

@@ -1,5 +1,5 @@
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export function ProgressBar({
   progress = 0,

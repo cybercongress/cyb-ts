@@ -2,11 +2,13 @@ import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useQueryClient } from 'src/contexts/queryClient';
 
+const AMOUNT_ALL_STAGE = 90;
+const NEW_RELEASE = 1000; // release 1% every 1k claims
 const CONSTITUTION_HASH = 'QmcHB9GKHAKCLQhmSj71qNJhENJJg8Gymd1PvvsCQBhG7M';
 
 // test root
 // const CONTRACT_ADDRESS_GIFT =
-//   'bostrom1fkwjqyfdyktgu5f59jpwhvl23zh8aav7f98ml9quly62jx2sehys3xeq0u';
+//   'bostrom1kytv5yjkkszr2zs8937lp6kvqhxxx2e429qwqk2dr7rh99pklf9scxlrwx';
 // const CONTRACT_ADDRESS_PASSPORT =
 //   'bostrom1fzm6gzyccl8jvdv3qq6hp9vs6ylaruervs4m06c7k0ntzn2f8faq7ha2z2';
 
@@ -315,6 +317,8 @@ export {
   CONTRACT_ADDRESS_GIFT,
   GIFT_ICON,
   BOOT_ICON,
+  AMOUNT_ALL_STAGE,
+  NEW_RELEASE,
   checkGift,
   getConfigGift,
   getStateGift,
