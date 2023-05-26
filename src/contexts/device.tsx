@@ -16,8 +16,9 @@ export function useDevice() {
 }
 
 function DeviceProvider({ children }: { children: React.ReactNode }) {
-  const isMobile = isMobileTablet();
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
+
+  const isMobile = isMobileTablet() && viewportWidth < 768;
 
   useEffect(() => {
     function handleResize() {
