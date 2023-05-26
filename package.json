@@ -11,7 +11,7 @@
     "start": "webpack serve --config=webpack.config.dev.js",
     "build": "webpack --config=webpack.config.prod.js && yarn copy-public",
     "copy-public": "cp -r public/* build/",
-    "build-ipfs": "IPFS_DEPLOY=1 webpack --config=webpack.config.prod.js --mode production &&  echo 'rebyc.cyber.page' > build/CNAME",
+    "build-ipfs": "IPFS_DEPLOY=1 webpack --config=webpack.config.prod.js --mode production",
     "devserver": "yarn serve -s build",
     "upgradeDep": "yarn upgrade-interactive --latest",
     "build-report": "webpack --config=webpack.config.prod.js --profile --json > stats.json",

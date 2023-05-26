@@ -9,8 +9,14 @@ import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import txs from '../../../utils/txs';
-import { Dots, ButtonIcon, BtnGrd } from '../../../components';
+import {
+  Dots,
+  ButtonIcon,
+  ActionBar as ActionBarSteps,
+  BtnGrd,
+} from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
@@ -18,9 +24,9 @@ import {
   CONTRACT_ADDRESS_PASSPORT,
   CONTRACT_ADDRESS_GIFT,
   BOOT_ICON,
+  GIFT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
-import { ActionBarSteps } from '../components';
 import STEP_INFO from './utils';
 
 import imgKeplr from '../../../image/keplr-icon.svg';
@@ -29,7 +35,6 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
-import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -635,7 +640,10 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => navigate('/release')} text="go to release" />
+        <BtnGrd
+          onClick={() => setStepApp(STEP_INFO.STATE_RELEASE_INIT)}
+          text="go to release"
+        />
       </ActionBarSteps>
     );
   }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
@@ -101,11 +101,19 @@ function TxsStatus({ data }) {
   );
 }
 
+export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey';
+
+type ContainerGradientText = {
+  children: React.ReactNode;
+  userStyleContent?: object;
+  status?: ColorLamp;
+};
+
 export function ContainerGradientText({
   children,
   userStyleContent = {},
   status = 'blue',
-}) {
+}: ContainerGradientText) {
   return (
     <ContainerLamp style={status}>
       <div

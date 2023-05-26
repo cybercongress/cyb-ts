@@ -1,3 +1,4 @@
+import { Networks } from 'src/types/networks';
 import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
@@ -152,7 +153,10 @@ const itemsMenu = (address) => {
     // },
   ];
 
-  if (CYBER.CHAIN_ID === 'bostrom') {
+  if (
+    CYBER.CHAIN_ID === Networks.BOSTROM ||
+    CYBER.CHAIN_ID === Networks.SPACE_PUSSY
+  ) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,

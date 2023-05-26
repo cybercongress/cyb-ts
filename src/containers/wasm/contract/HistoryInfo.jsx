@@ -5,7 +5,7 @@ import { CardCantainer } from '../ui/ui';
 import styles from './stylesHistoryInfo.scss';
 
 function CodeLink({ codeId, text }) {
-  return <Link to={`/codes/${codeId}`}>{text || `Code #${codeId}`}</Link>;
+  return <Link to={`/libs/${codeId}`}>{text || `Lib #${codeId}`}</Link>;
 }
 
 function HistoryInfo({ contractCodeHistory }) {
