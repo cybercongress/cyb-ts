@@ -6,9 +6,9 @@
   column-gap: 20px;
   padding-bottom: 130px; // actionbars space
 
-  > :nth-child(2) {
-    overflow-x: auto;
-  }
+  // > :nth-child(2) {
+  //   overflow-x: auto;
+  // }
 }
 
 .links {
@@ -39,23 +39,15 @@
       display: flex;
       align-items: center;
       padding-right: 15px;
-
       gap: 10px;
 
       .text {
-        // display: none;
-        // width: 0px;
-        // overflow: hidden;
-        opacity: 0;
+        display: none;
       }
-      // transition: all 0.3s ease-in-out;
 
       &:hover {
         .text {
-          // display: block;
-          opacity: 1;
-
-          // width: 100px;
+          display: block;
         }
         .count {
           display: none;

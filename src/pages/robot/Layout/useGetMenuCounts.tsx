@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useGetCommunity, useGetHeroes } from 'src/containers/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getTweet } from 'src/utils/search/utils';
+import { getCyberlinks, getTweet } from 'src/utils/search/utils';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 
 function useGetMenuCounts(address: string) {
   const [tweetsCount, setTweetsCount] = useState();
+  const [cyberlinksCount, setCyberlinksCount] = useState();
   const [energy, setEnergy] = useState<number>();
 
   const queryClient = useQueryClient();
@@ -18,13 +19,22 @@ function useGetMenuCounts(address: string) {
     : 0;
 
   const {
-    community: { friends },
+    community: { followers },
   } = useGetCommunity(address);
 
   async function getTweetCount() {
     try {
       const response = await getTweet(address);
       setTweetsCount(response.total_count);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function getCyberlinksCount() {
+    try {
+      const response = await getCyberlinks(address);
+      setCyberlinksCount(response);
     } catch (error) {
       console.error(error);
     }
@@ -49,6 +59,8 @@ function useGetMenuCounts(address: string) {
       return;
     }
 
+    getCyberlinksCount();
+
     getTweetCount();
     getEnergy();
   }, [address]);
@@ -57,8 +69,10 @@ function useGetMenuCounts(address: string) {
     log: tweetsCount,
     security: Object.keys(staking).length,
     badges,
-    swarm: friends.length,
+    swarm: followers.length,
     energy,
+    cyberlinks: cyberlinksCount,
+    passport: 1,
   };
 }
 

@@ -20,6 +20,8 @@ import Taverna from 'src/containers/taverna';
 function IndexCheck() {
   const params = useParams();
 
+  console.log(params);
+
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const address = defaultAccount.account?.cyber.bech32;
 
@@ -31,7 +33,10 @@ function IndexCheck() {
 
   if (!params.address) {
     return (
-      <Navigate to={`/robot/${defaultAccount.account?.cyber.bech32}`} replace />
+      <Navigate
+        to={`/neuron/${defaultAccount.account?.cyber.bech32}`}
+        replace
+      />
     );
   }
 

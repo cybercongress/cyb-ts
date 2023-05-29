@@ -172,18 +172,13 @@ function ContainerGradient({
         closedTitle !== null &&
         state === 'exited'
       ) {
-        // setTimeout(() => {
-        //   console.log('first', first)
-        // }, 500);
         return closedTitle;
       }
-      // setTimeout(() => {
       if (state === 'entered') {
         return title;
       }
 
-      return undefined;
-      // }, 500);
+      return title;
     },
     [isOpen, closedTitle, title]
   );

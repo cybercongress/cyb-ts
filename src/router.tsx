@@ -57,7 +57,6 @@ import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
-import Wallet from './containers/Wallet/Wallet';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -92,7 +91,7 @@ function ValidatorsRedirect() {
 
 function RedirectToRobot() {
   const params = useParams();
-  return <Navigate to={`/robot/${params.address}`} replace />;
+  return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
 function AppRouter() {
@@ -104,7 +103,9 @@ function AppRouter() {
 
           {/* <Route path="/robot/passport" element={<Wallet />} /> */}
           <Route path="/robot" element={<Robot />} />
-          <Route path="/robot/:address/*" element={<Robot />} />
+          {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
+          <Route path="/neuron/:address/*" element={<Robot />} />
+          {/* <Route path="/@:passport" element={<Robot />} /> */}
 
           <Route path="/oracle" element={<Home />} />
           <Route path="/search/:query" element={<SearchResults />} />

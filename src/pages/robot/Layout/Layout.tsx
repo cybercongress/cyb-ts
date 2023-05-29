@@ -22,6 +22,7 @@ const links = [
     text: 'Passport',
     link: './',
     onlyOwner: true,
+    name: 'passport',
     icon: '🟢',
   },
   {
@@ -90,6 +91,7 @@ const links = [
     text: 'Brain',
     link: './brain',
     icon: '🧠',
+    name: 'cyberlinks',
   },
   {
     text: 'Karma',
@@ -106,15 +108,11 @@ function Layout() {
   const address = defaultAccount.account?.cyber.bech32;
   const isOwner = address === params.address;
 
-  const c = params.address || address;
+  const addr = params.address || address;
 
-  const counts = useGetMenuCounts(c);
+  const counts = useGetMenuCounts(addr);
 
   console.log(counts);
-
-  // const n = {
-  //   'security': Object.keys(staking).length,
-  // }
 
   function renderLinks(links, isMirror) {
     if (!params.address && !address) {
@@ -169,7 +167,6 @@ function Layout() {
 
       {renderLinks(links.slice(0, 7))}
 
-      {/* <ContainerGradientText> */}
       <div>
         {params.address && (
           <p
@@ -183,15 +180,6 @@ function Layout() {
 
         <Outlet />
       </div>
-
-      {/* <div
-          style={{
-            padding: '10px 30px',
-          }}
-        > */}
-
-      {/* </div> */}
-      {/* </ContainerGradientText> */}
 
       {renderLinks(links.slice(7, links.length), true)}
     </div>

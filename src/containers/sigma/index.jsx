@@ -129,44 +129,52 @@ function Sigma() {
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
-      <div>
-        <ContainerGradientText>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '16px',
-            }}
-          >
-            <div>Total</div>
-            <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
-              {value.changeCap > 0 && (
-                <div
-                  style={{
-                    color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
-                  }}
-                >
-                  {value.changeCap > 0 ? '+' : ''}
-                  {formatNumber(value.changeCap)}
-                </div>
-              )}
-              <FormatNumberTokens
-                // styleValue={{ fontSize: '18px' }}
-                text={CYBER.DENOM_LIQUID_TOKEN}
-                value={value.totalCap}
-              />
+      <div
+        style={{
+          overflowX: 'auto',
+        }}
+      >
+        <div>
+          <ContainerGradientText>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '16px',
+              }}
+            >
+              <div>Total</div>
+              <div
+                style={{ display: 'flex', gap: '30px', alignItems: 'center' }}
+              >
+                {value.changeCap > 0 && (
+                  <div
+                    style={{
+                      color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
+                    }}
+                  >
+                    {value.changeCap > 0 ? '+' : ''}
+                    {formatNumber(value.changeCap)}
+                  </div>
+                )}
+                <FormatNumberTokens
+                  // styleValue={{ fontSize: '18px' }}
+                  text={CYBER.DENOM_LIQUID_TOKEN}
+                  value={value.totalCap}
+                />
+              </div>
             </div>
-          </div>
-        </ContainerGradientText>
-      </div>
+          </ContainerGradientText>
+        </div>
 
-      {renderItem}
+        {renderItem}
 
-      {/* <MainContainer width="82%">
+        {/* <MainContainer width="82%">
         <CardPassport accounts={accounts} />
       </MainContainer> */}
-      {/* <ActionBar updateFunc={updateStateFunc} /> */}
+        {/* <ActionBar updateFunc={updateStateFunc} /> */}
+      </div>
     </SigmaContext.Provider>
   );
 }

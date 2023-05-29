@@ -23,7 +23,6 @@ function useGetCommunity(address) {
       if (address) {
         const addressHash = await getIpfsHash(address);
         responseFollows = await getFollowers(addressHash);
-        console.log('!!!responseFollows', responseFollows);
       }
 
       if (responseFollows !== null && responseFollows.txs) {
@@ -43,7 +42,6 @@ function useGetCommunity(address) {
       setFollowing([]);
       if (address) {
         responseFollows = await getFollows(address);
-        console.log('responseFollows', responseFollows);
       }
 
       if (responseFollows !== null && responseFollows.txs) {
