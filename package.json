@@ -213,6 +213,7 @@
     "readable-stream": "^4.3.0",
     "redux-thunk": "^2.4.2",
     "regenerator-runtime": "^0.13.7",
+    "remark-breaks": "^3.0.3",
     "ripemd160": "^2.0.2",
     "rxjs": "^7.8.0",
     "secp256k1": "^3.7.1",
