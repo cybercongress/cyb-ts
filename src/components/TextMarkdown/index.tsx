@@ -10,17 +10,17 @@ import styles from './styles.module.scss';
 
 function TextMarkdown({
   children,
-  fullWidth,
+  preview,
 }: {
   children: React.ReactNode;
-  fullWidth?: boolean;
+  preview?: boolean;
 }) {
   return (
     <div
       // className="container-text-SearchItem"
       className={cx({
-        [styles.markdownContainerPreview]: fullWidth,
-        [styles.markdownContainer]: !fullWidth,
+        [styles.markdownContainerPreview]: preview,
+        [styles.markdownContainer]: !preview,
       })}
     >
       <ReactMarkdown
