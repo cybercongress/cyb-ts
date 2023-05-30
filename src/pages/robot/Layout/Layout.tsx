@@ -1,5 +1,12 @@
-import React from 'react';
-import { Link, NavLink, Navigate, Outlet, useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {
+  Link,
+  NavLink,
+  Navigate,
+  Outlet,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { ContainerGradientText, Tooltip } from 'src/components';
 import styles from './Layout.module.scss';
 import cx from 'classnames';
@@ -27,6 +34,7 @@ const links = [
   },
   {
     text: 'Drive',
+    name: 'drive',
     link: './drive',
     onlyOwner: true,
     icon: '🟥',
@@ -55,6 +63,7 @@ const links = [
   {
     text: 'Sigma',
     link: './sigma',
+    name: 'sigma',
     icon: <img src={icon}></img>,
   },
 
@@ -86,6 +95,7 @@ const links = [
     text: 'Sense',
     link: './sense',
     icon: '🧬',
+    name: 'sense',
   },
   {
     text: 'Brain',
@@ -104,15 +114,19 @@ function Layout() {
   const params = useParams();
 
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const location = useLocation();
 
-  const address = defaultAccount.account?.cyber.bech32;
-  const isOwner = address === params.address;
+  const address = defaultAccount.account?.cyber?.bech32;
 
-  const addr = params.address || address;
+  const isOwner = address && address === params.address;
+
+  // temp
+  const addr =
+    params.address ||
+    address ||
+    'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t';
 
   const counts = useGetMenuCounts(addr);
-
-  console.log(counts);
 
   function renderLinks(links, isMirror) {
     if (!params.address && !address) {

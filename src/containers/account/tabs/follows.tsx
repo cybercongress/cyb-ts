@@ -7,7 +7,6 @@ import {
 } from '../../../components';
 import { useGetCommunity } from '../hooks';
 import useGetAddressTemp from '../hooks/useGetAddressTemp';
-import styles from './Follows.module.scss';
 
 type CommunityEntityProps = {
   items: string[];
@@ -18,11 +17,12 @@ type CommunityEntityProps = {
 function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
   return (
     <ContainerGradient
-      marginBottom="20px"
-      className={styles.wrapper}
+      userStyleContent={{
+        overflowY: 'auto',
+        minHeight: 260,
+      }}
       title={title}
     >
-      {/* <header className={styles.header}>{title}</header> */}
       {items.length > 0 ? (
         <Pane
           display="grid"
@@ -58,7 +58,7 @@ function FollowsTab() {
     <Pane
       style={{
         display: 'grid',
-        rowGap: '20px',
+        rowGap: 20,
       }}
     >
       <CommunityEntity

@@ -88,7 +88,14 @@ function Heroes() {
     const { entries, reward, balance } = data[key];
 
     return {
-      validator: <Account address={key} />,
+      validator: (
+        <Account
+          address={key}
+          styleUser={{
+            justifyContent: 'center',
+          }}
+        />
+      ),
       unbondings: entries && (
         <Unbonding amount={amount} stages={entries.length} entries={entries} />
       ),

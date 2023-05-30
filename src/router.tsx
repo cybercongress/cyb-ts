@@ -84,6 +84,16 @@ function PageNotExist() {
   );
 }
 
+function CheckPassportPage() {
+  const params = useParams();
+
+  if (params.username?.includes('@')) {
+    return <Robot />;
+  }
+
+  return <PageNotExist />;
+}
+
 function ValidatorsRedirect() {
   const { status } = useParams();
   return <Navigate to={`/sphere/${status}`} />;
@@ -178,7 +188,10 @@ function AppRouter() {
           <Route path="/help" element={<Help />} />
           {/* Sigma */}
           <Route path="/nebula" element={<Nebula />} />
-          <Route path="*" element={<PageNotExist />} />
+
+          {/* works as 404 also */}
+          <Route path=":username/*" element={<CheckPassportPage />} />
+          {/* <Route path="*" element={<PageNotExist />} /> */}
         </Route>
       </Routes>
     </WrappedRouter>

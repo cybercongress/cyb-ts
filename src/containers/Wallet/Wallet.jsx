@@ -567,7 +567,7 @@ class Wallet extends React.Component {
               </Text>
             </ContainerGradientText>
 
-            {defaultAccounts !== null && defaultAccounts.cyber && (
+            {/* {defaultAccounts !== null && defaultAccounts.cyber && (
               <TweetCard
                 refresh={refreshTweet}
                 select={selectCard === 'tweet'}
@@ -577,7 +577,7 @@ class Wallet extends React.Component {
                 account={defaultAccounts.cyber.bech32}
                 id="tweet"
               />
-            )}
+            )} */}
             {accounts !== null &&
               Object.keys(accounts)
                 .filter((item) => !!accounts[item])

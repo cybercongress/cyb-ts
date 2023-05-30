@@ -45,6 +45,10 @@
         display: none;
       }
 
+      .count {
+        white-space: nowrap;
+      }
+
       &:hover {
         .text {
           display: block;

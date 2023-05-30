@@ -35,7 +35,7 @@ const QueryCyberlink = (address, yesterday, time) =>
     }
   }`;
 
-const useNewsToday = (account) => {
+export const useNewsToday = (account) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [follows, setFollows] = useState([]);

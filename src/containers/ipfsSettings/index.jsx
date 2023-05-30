@@ -145,7 +145,7 @@ function IpfsSettings() {
           </>
         )}
 
-        <InfoIpfsNode ipfs={ipfs} />
+        <InfoIpfsNode />
 
         <Button style={{ maxWidth: '200px' }} onClick={onClickReConnect}>
           reconnect

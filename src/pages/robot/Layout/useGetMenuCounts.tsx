@@ -1,26 +1,39 @@
 import { useEffect, useState } from 'react';
-import { useGetCommunity, useGetHeroes } from 'src/containers/account/hooks';
+import { useSelector } from 'react-redux';
+import { useNewsToday } from 'src/containers/Wallet/card/tweet';
+import { useGetHeroes } from 'src/containers/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
+import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoIpfsNode';
+import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getCyberlinks, getTweet } from 'src/utils/search/utils';
+import { RootState } from 'src/redux/store';
+import {
+  getCyberlinks,
+  getFollowers,
+  getIpfsHash,
+  getTweet,
+} from 'src/utils/search/utils';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 
 function useGetMenuCounts(address: string) {
   const [tweetsCount, setTweetsCount] = useState();
   const [cyberlinksCount, setCyberlinksCount] = useState();
   const [energy, setEnergy] = useState<number>();
+  const [followers, setFollowers] = useState<number>();
+
+  const { accounts } = useSelector((state: RootState) => state.pocket);
 
   const queryClient = useQueryClient();
 
   const { staking } = useGetHeroes(address);
+  const { totalAmountInLiquid } = useGetBalanceBostrom(address);
+  const { repoSizeValue } = useGetIpfsInfo();
+  const news = useNewsToday(address);
+
   const { resultGol } = useGetGol(address);
   const badges = Object.keys(resultGol).length
     ? Object.keys(resultGol).length - 1
     : 0;
-
-  const {
-    community: { followers },
-  } = useGetCommunity(address);
 
   async function getTweetCount() {
     try {
@@ -54,12 +67,26 @@ function useGetMenuCounts(address: string) {
     }
   }
 
+  async function getFollow() {
+    try {
+      const addressHash = await getIpfsHash(address);
+      const response = await getFollowers(addressHash);
+
+      if (response.total_count) {
+        setFollowers(response.total_count);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     if (!address) {
       return;
     }
 
     getCyberlinksCount();
+    getFollow();
 
     getTweetCount();
     getEnergy();
@@ -69,10 +96,13 @@ function useGetMenuCounts(address: string) {
     log: tweetsCount,
     security: Object.keys(staking).length,
     badges,
-    swarm: followers.length,
+    swarm: followers,
     energy,
+    sigma: Number(totalAmountInLiquid.currentCap || 0).toLocaleString(),
     cyberlinks: cyberlinksCount,
-    passport: 1,
+    passport: accounts ? Object.keys(accounts).length : 0,
+    drive: repoSizeValue,
+    sense: news.count,
   };
 }
 
