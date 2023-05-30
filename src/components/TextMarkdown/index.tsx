@@ -6,7 +6,7 @@ import remarkBreaks from 'remark-breaks';
 import cx from 'classnames';
 import React from 'react';
 import { LinkWindow } from '../link/link';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 function TextMarkdown({
   children,
