@@ -519,15 +519,16 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_INIT_PROVE)}
-        onClickFnc={() =>
-          setStepApp(
-            selectMethod === 'keplr'
-              ? STEP_INFO.STATE_PROVE_SIGN_KEPLR
-              : STEP_INFO.STATE_PROVE_SIGN_MM
-          )
-        }
-        btnText="connect"
-        disabled={selectMethod === ''}
+        button={{
+          onClick: () =>
+            setStepApp(
+              selectMethod === 'keplr'
+                ? STEP_INFO.STATE_PROVE_SIGN_KEPLR
+                : STEP_INFO.STATE_PROVE_SIGN_MM
+            ),
+          text: 'connect',
+          disabled: selectMethod === '',
+        }}
       >
         <ButtonIcon
           onClick={() => setSelectMethod('keplr')}
@@ -549,9 +550,11 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
-        onClickFnc={() => signMsgKeplr()}
-        btnText="sign Moon Code in keplr"
-        disabled={selectNetwork === ''}
+        button={{
+          onClick: () => signMsgKeplr(),
+          text: 'sign Moon Code in keplr',
+          disabled: selectNetwork === '',
+        }}
       >
         <ButtonIcon
           onClick={() => setSelectNetwork('osmosis')}
@@ -579,8 +582,10 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
-        onClickFnc={() => signMsgETH()}
-        btnText="sign Moon Code in metamask"
+        button={{
+          onClick: () => signMsgETH(),
+          text: 'sign Moon Code in metamask',
+        }}
       >
         <ButtonIcon
           onClick={() => setSelectNetwork('eth')}
@@ -650,7 +655,7 @@ function ActionBarPortalGift({
 
   if (activeStep === STEP_INFO.STATE_CLAIME) {
     return (
-      <ActionBarSteps gridGap="35px">
+      <ActionBarSteps>
         <BtnGrd
           disabled={isProve}
           onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
@@ -664,8 +669,7 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_INIT)}
-        onClickFnc={useDeleteAddress}
-        btnText="delete"
+        button={{ onClick: useDeleteAddress, text: 'delete' }}
       >
         you want to delete {useGetSelectAddress} from your passport
       </ActionBarSteps>
