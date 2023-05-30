@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
-import { getCoinDecimals } from '../utils';
 
 function useGetSwapPrice(
   tokenA: string,
@@ -14,12 +13,8 @@ function useGetSwapPrice(
     let orderPrice = new BigNumber(0);
     setSwapPrice(0);
 
-    const poolAmountA = new BigNumber(
-      getCoinDecimals(tokenAPoolAmount, tokenA)
-    );
-    const poolAmountB = new BigNumber(
-      getCoinDecimals(tokenBPoolAmount, tokenB)
-    );
+    const poolAmountA = new BigNumber(tokenAPoolAmount);
+    const poolAmountB = new BigNumber(tokenBPoolAmount);
 
     if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
       if ([tokenA, tokenB].sort()[0] !== tokenA) {
