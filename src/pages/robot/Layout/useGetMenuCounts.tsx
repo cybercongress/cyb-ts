@@ -7,6 +7,7 @@ import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoI
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
+
 import {
   getCyberlinks,
   getFollowers,
@@ -98,7 +99,7 @@ function useGetMenuCounts(address: string) {
     badges,
     swarm: followers,
     energy,
-    sigma: Number(totalAmountInLiquid.currentCap || 0).toLocaleString(),
+    sigma: Number(totalAmountInLiquid.currentCap || 0),
     cyberlinks: cyberlinksCount,
     passport: accounts ? Object.keys(accounts).length : 0,
     drive: repoSizeValue,

@@ -1,23 +1,13 @@
-import React, { useEffect } from 'react';
-import {
-  Link,
-  NavLink,
-  Navigate,
-  Outlet,
-  useLocation,
-  useParams,
-} from 'react-router-dom';
-import { ContainerGradientText, Tooltip } from 'src/components';
+import { NavLink, Outlet, useParams } from 'react-router-dom';
 import styles from './Layout.module.scss';
 import cx from 'classnames';
-import useGetAddressTemp from 'src/containers/account/hooks/useGetAddressTemp';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { Helmet } from 'react-helmet';
-import { useGetHeroes } from 'src/containers/account/hooks';
 import useGetMenuCounts from './useGetMenuCounts';
 
 import icon from './icon.svg';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 const links = [
   {
@@ -64,7 +54,7 @@ const links = [
     text: 'Sigma',
     link: './sigma',
     name: 'sigma',
-    icon: <img src={icon}></img>,
+    icon: <img src={icon} />,
   },
 
   {
@@ -114,7 +104,6 @@ function Layout() {
   const params = useParams();
 
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-  const location = useLocation();
 
   const address = defaultAccount.account?.cyber?.bech32;
 
@@ -128,7 +117,7 @@ function Layout() {
 
   const counts = useGetMenuCounts(addr);
 
-  function renderLinks(links, isMirror) {
+  function renderLinks(links, isMirror?: boolean) {
     if (!params.address && !address) {
       return <>&nbsp;</>; // temp
     }
@@ -159,7 +148,14 @@ function Layout() {
                   >
                     <span className={styles.text}>{link.text}</span>
                     <span className={styles.count}>
-                      {counts[link.name] || 0}
+                      {['karma', 'sigma'].includes(link.name) ? (
+                        <IconsNumber
+                          value={counts[link.name]}
+                          type={link.name === 'sigma' ? 'hydrogen' : link.name}
+                        />
+                      ) : (
+                        counts[link.name] || 0
+                      )}
                     </span>
                     <span className={styles.icon}>{link.icon}</span>
                   </NavLink>
