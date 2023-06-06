@@ -1,0 +1,38 @@
+.wrapper {
+  &::before {
+    content: '';
+    filter: blur(15px);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -15px;
+    height: 110%;
+    background-color: black;
+  }
+  margin-bottom: 20px;
+  position: sticky;
+  top: 90px;
+  z-index: 1;
+}
+
+.inner {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  .name {
+    color: #1fcbff;
+    font-size: 30px;
+    margin-bottom: 15px;
+  }
+
+  > img {
+    height: 112px;
+    width: 112px;
+  }
+
+  > div {
+    text-align: right;
+  }
+}

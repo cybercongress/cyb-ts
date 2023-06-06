@@ -225,7 +225,7 @@ function SwitchAccount() {
             {useGetAddress && <Karma address={useGetAddress} />}
           </div>
         )}
-        <Link to="/robot">
+        <Link to={`/@${passport?.extension.nickname}`}>
           <div
             className={cx(styles.containerAvatarConnect, {
               [styles.containerAvatarConnectFalse]: !ipfsStatus,

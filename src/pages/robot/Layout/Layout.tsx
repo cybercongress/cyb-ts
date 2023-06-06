@@ -8,26 +8,15 @@ import useGetMenuCounts from './useGetMenuCounts';
 
 import icon from './icon.svg';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import RobotHeader from '../RobotHeader/RobotHeader';
+import { useRobotContext } from '../Robot';
 
 const links = [
   {
-    text: 'Keys',
-    link: './keys',
-    icon: '🔑',
-  },
-  {
-    text: 'Passport',
+    text: 'Sigma',
     link: './',
-    onlyOwner: true,
-    name: 'passport',
-    icon: '🟢',
-  },
-  {
-    text: 'Drive',
-    name: 'drive',
-    link: './drive',
-    onlyOwner: true,
-    icon: '🟥',
+    name: 'sigma',
+    icon: <img src={icon} />,
   },
   {
     text: 'Timeline',
@@ -35,9 +24,22 @@ const links = [
     icon: '🚥',
   },
   {
-    text: 'Nft',
+    text: 'Chat',
+    link: './chat',
+    icon: '💬',
+    isDisabled: true,
+  },
+  {
+    text: 'Badges',
+    link: './badges',
+    name: 'badges',
+    icon: '🥇',
+  },
+  {
+    text: 'Items',
     link: './nft',
     icon: '🖼',
+    isDisabled: true,
   },
   {
     text: 'Security',
@@ -48,14 +50,16 @@ const links = [
   {
     text: 'Skills',
     link: './skills',
+    isDisabled: true,
     icon: '🍄',
   },
   {
-    text: 'Sigma',
-    link: './sigma',
-    name: 'sigma',
-    icon: <img src={icon} />,
+    text: 'Rights',
+    isDisabled: true,
+    icon: '📜',
   },
+
+  // second menu
 
   {
     text: 'Energy',
@@ -64,23 +68,19 @@ const links = [
     icon: '🚀',
   },
   {
+    text: 'Drive',
+    name: 'drive',
+    link: './drive',
+    onlyOwner: true,
+    icon: '🟥',
+  },
+  {
     text: 'Swarm',
     link: './swarm',
     name: 'swarm',
     icon: '💚',
   },
-  {
-    text: 'Log',
-    link: './log',
-    name: 'log',
-    icon: '🍀',
-  },
-  {
-    text: 'Badges',
-    link: './badges',
-    name: 'badges',
-    icon: '🥇',
-  },
+
   {
     text: 'Sense',
     link: './sense',
@@ -94,33 +94,34 @@ const links = [
     name: 'cyberlinks',
   },
   {
+    text: 'Log',
+    link: './log',
+    name: 'log',
+    icon: '🍀',
+  },
+  {
     text: 'Karma',
     link: './karma',
     icon: '🔮',
+    isDisabled: true,
   },
 ];
 
 function Layout() {
-  const params = useParams();
-
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
-  const address = defaultAccount.account?.cyber?.bech32;
+  const addressLocal = defaultAccount.account?.cyber?.bech32;
 
-  const isOwner = address && address === params.address;
+  const { address } = useRobotContext();
 
-  // temp
-  const addr =
-    params.address ||
-    address ||
-    'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t';
+  const isOwner = address && address === addressLocal;
 
-  const counts = useGetMenuCounts(addr);
-
+  const counts = useGetMenuCounts(address);
+  // const counts = {};
   function renderLinks(links, isMirror?: boolean) {
-    if (!params.address && !address) {
-      return <>&nbsp;</>; // temp
-    }
+    // if (!params.address && !address) {
+    //   return <>&nbsp;</>; // temp
+    // }
 
     return (
       // div for sticky css working
@@ -134,7 +135,7 @@ function Layout() {
             return (
               <li key={index} className={cx({ [styles.mirror]: isMirror })}>
                 {/* <Tooltip tooltip={link.text} placement="top"> */}
-                {['Nft', 'Karma', 'Keys', 'Skills'].includes(link.text) ? (
+                {link.isDisabled ? (
                   <span className={styles.noLink}>{link.text}</span>
                 ) : (
                   <NavLink
@@ -169,29 +170,29 @@ function Layout() {
     );
   }
 
+  const splitIndex = 8;
+
   return (
     <div className={styles.wrapper}>
       <Helmet>
         <title>Robot: {address || ''}</title>
       </Helmet>
 
-      {renderLinks(links.slice(0, 7))}
+      {renderLinks(links.slice(0, splitIndex))}
 
       <div>
-        {params.address && (
-          <p
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            {params.address} (name)
-          </p>
-        )}
+        {address ? (
+          <>
+            <RobotHeader />
 
-        <Outlet />
+            <Outlet />
+          </>
+        ) : (
+          'address loading'
+        )}
       </div>
 
-      {renderLinks(links.slice(7, links.length), true)}
+      {renderLinks(links.slice(splitIndex, links.length), true)}
     </div>
   );
 }

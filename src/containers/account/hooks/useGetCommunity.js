@@ -16,22 +16,30 @@ function useGetCommunity(address) {
     friends: [],
   });
 
+  // TODO: maybe refactor
+  const [loading, setLoading] = useState({
+    following: false,
+    followers: false,
+    friends: false,
+  });
+
   useEffect(() => {
     const getFollowersFunc = async () => {
       let responseFollows = null;
       setFollowers([]);
+      setLoading((state) => ({ ...state, followers: true }));
       if (address) {
         const addressHash = await getIpfsHash(address);
         responseFollows = await getFollowers(addressHash);
       }
 
-      if (responseFollows !== null && responseFollows.txs) {
+      if (responseFollows?.txs) {
         responseFollows.txs.forEach(async (item) => {
           const addressFollowers = item.tx.value.msg[0].value.neuron;
-          // console.log(`addressFollowers`, addressFollowers)
           setFollowers((items) => [...items, addressFollowers]);
         });
       }
+      setLoading((state) => ({ ...state, followers: false }));
     };
     getFollowersFunc();
   }, [address]);
@@ -40,6 +48,7 @@ function useGetCommunity(address) {
     const getFollowersAddress = async () => {
       let responseFollows = null;
       setFollowing([]);
+      setLoading((state) => ({ ...state, following: true }));
       if (address) {
         responseFollows = await getFollows(address);
       }
@@ -57,6 +66,7 @@ function useGetCommunity(address) {
           }
         });
       }
+      setLoading((state) => ({ ...state, following: false }));
     };
     getFollowersAddress();
   }, [address]);
@@ -67,6 +77,8 @@ function useGetCommunity(address) {
       followers: [],
       friends: [],
     });
+    setLoading((state) => ({ ...state, friends: true }));
+
     if (following.length > 0 && followers.length > 0) {
       const followingArr = [];
       const followersArr = followers.slice();
@@ -99,9 +111,16 @@ function useGetCommunity(address) {
         }));
       }
     }
+    setLoading((state) => ({ ...state, friends: false }));
   }, [following, followers]);
 
-  return { community };
+  return {
+    community,
+    loading: {
+      ...loading,
+      friends: loading.friends || loading.followers || loading.following,
+    },
+  };
 }
 
 export default useGetCommunity;

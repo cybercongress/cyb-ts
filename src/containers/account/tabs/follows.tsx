@@ -6,24 +6,34 @@ import {
   ContainerGradient,
 } from '../../../components';
 import { useGetCommunity } from '../hooks';
-import useGetAddressTemp from '../hooks/useGetAddressTemp';
+import Loader2 from 'src/components/ui/Loader2';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 type CommunityEntityProps = {
   items: string[];
   title: string;
+  loading?: boolean;
   noItemsTitle: string;
 };
 
-function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
+function CommunityEntity({
+  items,
+  title,
+  noItemsTitle,
+  loading,
+}: CommunityEntityProps) {
   return (
     <ContainerGradient
+      togglingDisable
       userStyleContent={{
-        overflowY: 'auto',
+        // overflowY: 'auto',
         minHeight: 260,
       }}
       title={title}
     >
-      {items.length > 0 ? (
+      {loading ? (
+        <Loader2 />
+      ) : items.length > 0 ? (
         <Pane
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(100px, 100px))"
@@ -49,10 +59,11 @@ function CommunityEntity({ items, title, noItemsTitle }: CommunityEntityProps) {
 }
 
 function FollowsTab() {
-  const address = useGetAddressTemp();
+  const { address } = useRobotContext();
 
   const {
     community: { friends, followers, following },
+    loading,
   } = useGetCommunity(address);
   return (
     <Pane
@@ -63,16 +74,19 @@ function FollowsTab() {
     >
       <CommunityEntity
         title="Friends"
+        loading={loading.friends}
         noItemsTitle="No Friends"
         items={friends}
       />
       <CommunityEntity
         title="Following"
+        loading={loading.following}
         noItemsTitle="No Following"
         items={following}
       />
       <CommunityEntity
         title="Followers"
+        loading={loading.followers}
         noItemsTitle="No Followers"
         items={followers}
       />

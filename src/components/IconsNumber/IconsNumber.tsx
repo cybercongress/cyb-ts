@@ -22,7 +22,20 @@ const icons = {
   ),
 };
 
+// TODO: refactor
 const PREFIXES = [
+  {
+    prefix: 7,
+    power: 10 ** 21,
+  },
+  {
+    prefix: 6,
+    power: 10 ** 18,
+  },
+  {
+    prefix: 5,
+    power: 10 ** 15,
+  },
   {
     prefix: 4,
     power: 10 ** 12,

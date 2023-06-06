@@ -188,6 +188,7 @@ function ContainerGradient({
       <ContainerLampAfter style={styleLampContent}>
         <div
           className={classNames(styles.containerContainerGradient, {
+            [styles.togglingDisable]: togglingDisable,
             [styles.containerContainerGradientPrimary]: !styleLampContent,
             [styles.containerContainerGradientPrimary]:
               styleLampContent === 'blue',

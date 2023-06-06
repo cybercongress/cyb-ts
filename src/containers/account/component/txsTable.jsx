@@ -12,12 +12,12 @@ import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
 import { ContainerGradientText } from '../../../components/containerGradient/ContainerGradient';
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
-import useGetAddressTemp from '../hooks/useGetAddressTemp';
 import Loader2 from 'src/components/ui/Loader2';
 import Table from 'src/components/Table/Table';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 function TxsTable() {
-  const accountUser = useGetAddressTemp();
+  const { address: accountUser } = useRobotContext();
   const dataGetTsxByAddress = useGetTsxByAddress(accountUser);
 
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =

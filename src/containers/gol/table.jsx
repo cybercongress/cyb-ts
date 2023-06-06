@@ -1,11 +1,11 @@
 import useGetGol from './getGolHooks';
 import { formatNumber } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
-import useGetAddressTemp from '../account/hooks/useGetAddressTemp';
 import Table from 'src/components/Table/Table';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 function TableDiscipline() {
-  const address = useGetAddressTemp();
+  const { address } = useRobotContext();
 
   const { resultGol } = useGetGol(address);
 

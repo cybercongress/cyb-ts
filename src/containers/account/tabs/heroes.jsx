@@ -1,6 +1,5 @@
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import {
-  NoItems,
   Account,
   NumberCurrency,
   ContainerGradientText,
@@ -8,8 +7,8 @@ import {
 import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import { useGetHeroes } from '../hooks';
-import useGetAddressTemp from '../hooks/useGetAddressTemp';
 import Table from 'src/components/Table/Table';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -74,7 +73,7 @@ function Unbonding({ amount, stages, entries }) {
 }
 
 function Heroes() {
-  const address = useGetAddressTemp();
+  const { address } = useRobotContext();
   const { staking: data } = useGetHeroes(address);
 
   const delegationsItem = Object.keys(data).map((key) => {

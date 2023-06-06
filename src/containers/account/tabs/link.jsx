@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import TableLink from '../component/tableLink';
-import useGetAddressTemp from '../hooks/useGetAddressTemp';
 import Table from 'src/components/Table/Table';
 
 // const GET_CHARACTERS = gql`
@@ -20,7 +19,6 @@ import Table from 'src/components/Table/Table';
 // `;
 
 export default function GetLink() {
-  const address = useGetAddressTemp();
   const GET_CHARACTERS = gql`
     query MyQuery {
       cyberlinks_aggregate(where: {neuron: {_eq: "${address}"}}, order_by: {height: desc}) {
@@ -42,16 +40,5 @@ export default function GetLink() {
     return `Error! ${error.message}`;
   }
 
-  return (
-    <TableLink data={dataLink.cyberlinks_aggregate.nodes} />
-
-    // {/* <Table
-    // columns={["Tx", "Timestamp, UTC", "From", "To"]}
-    // data={dataLink.cyberlinks_aggregate.nodes.map((item, i) => {
-    //   return {
-
-    //     })}
-
-    // /> */}
-  );
+  return <TableLink data={dataLink.cyberlinks_aggregate.nodes} />;
 }

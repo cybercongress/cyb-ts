@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
 
@@ -13,6 +13,8 @@ import { formatNumber } from '../../utils/utils';
 import { ContainerGradientText } from '../../components';
 import { useParams } from 'react-router-dom';
 import { useGetPassportByAddress } from './hooks';
+import { useRobotContext } from 'src/pages/robot/Robot';
+import { RootState } from 'src/redux/store';
 
 const valueContext = {
   totalCap: 0,
@@ -24,16 +26,41 @@ function Sigma() {
   // const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
 
-  const params = useParams();
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
+  const { address, passport } = useRobotContext();
 
-  const address = params.address;
+  const { accounts, defaultAccount } = useSelector(
+    (state: RootState) => state.pocket
+  );
+  const { passport: defaultPassport } = useGetPassportByAddress(
+    defaultAccount?.account
+  );
 
-  const accountsData = [
-    {
+  const isOwner = defaultPassport?.owner === passport?.owner;
+
+  const accountsData = [];
+
+  if (address) {
+    accountsData.push({
       bech32: address,
-    },
-  ];
+    });
+  }
+
+  console.log(accounts);
+
+  isOwner &&
+    accounts &&
+    Object.keys(accounts).forEach((item) => {
+      const { bech32 } = accounts[item]?.cyber || {};
+      if (bech32 && !accountsData.find((item) => item.bech32 === bech32)) {
+        accountsData.push({
+          bech32,
+        });
+      }
+    });
+  console.log(accountsData);
+
+  console.log(address, passport);
 
   // const { accounts } = useGetLocalStoge(updateState);
 

@@ -643,3 +643,13 @@
     overflow: auto;
   }
 }
+
+.togglingDisable {
+  .containerContainerGradientTitle {
+    cursor: default;
+  }
+
+  .containerContainerGradientContent {
+    height: auto;
+  }
+}

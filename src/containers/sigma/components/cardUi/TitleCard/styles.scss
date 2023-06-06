@@ -1,14 +1,16 @@
 .container {
   width: 100%;
-  display: grid;
-  grid-template-columns: 120px 1fr 1fr;
-  grid-template-rows: repeat(2, 1fr);
+  display: flex;
+  // grid-template-columns: 120px 1fr 1fr;
+  // grid-template-rows: repeat(2, 1fr);
   gap: 0px 20px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    'avatar name total'
-    'avatar address address';
+  padding: 30px 0;
+  // grid-auto-flow: row;
+  // grid-template-areas:
+  // 'avatar name total'
+  // 'avatar address address';
   align-items: center;
+  justify-content: space-between;
   font-size: 20px;
 }
 

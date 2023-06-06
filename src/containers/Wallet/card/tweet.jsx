@@ -41,7 +41,7 @@ export const useNewsToday = (account) => {
   const [follows, setFollows] = useState([]);
 
   useEffect(() => {
-    if (account.match(PATTERN_CYBER)) {
+    if (account?.match(PATTERN_CYBER)) {
       const feachData = async () => {
         const responseFollows = await getFollows(account);
         if (responseFollows !== null && responseFollows.total_count > 0) {

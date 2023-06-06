@@ -13,47 +13,103 @@ import { RootState } from 'src/redux/store';
 import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
+import Chat from '../Chat/Chat';
+import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import { Citizenship } from 'src/types/citizenship';
+import React from 'react';
+
+const RobotContext = React.createContext<{
+  passport: Citizenship | null;
+  address: undefined | string;
+}>({
+  passport: null,
+  address: null,
+});
+
+export const useRobotContext = () => React.useContext(RobotContext);
 
 function IndexCheck() {
-  const params = useParams();
+  // const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  // const address = defaultAccount.account?.cyber?.bech32;
 
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-  const address = defaultAccount.account?.cyber?.bech32;
-
-  const username = params.username && params.username.includes('@');
-
-  if (username) {
-    return <div>robot page with passport</div>;
-  }
-
-  if (!params.address && !address) {
-    return <Wallet />;
-  }
-
-  const isOwner = address === params.address;
-
-  if (!params.address) {
-    return <Navigate to={`/neuron/${address}`} replace />;
-  }
-
-  if (!isOwner) {
-    return <Navigate to="./sigma" replace />;
-  }
-
-  return <Wallet />;
+  return <Sigma />;
 }
 
 function Robot() {
+  const params = useParams();
+  const queryClient = useQueryClient();
+
+  const [passport, setPassport] = useState({});
+  const { username, address } = params;
+
+  useEffect(() => {
+    const nickname =
+      username?.includes('@') && username.substring(1, username.length);
+
+    if (!queryClient) {
+      return;
+    }
+
+    let query = {};
+
+    if (address) {
+      query = {
+        active_passport: {
+          address,
+        },
+      };
+    } else if (nickname) {
+      query = {
+        passport_by_nickname: {
+          nickname,
+        },
+      };
+    }
+
+    (async () => {
+      try {
+        const response = (await queryClient.queryContractSmart(
+          CONTRACT_ADDRESS_PASSPORT,
+          query
+        )) as Citizenship;
+
+        setPassport(response);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [username, address, queryClient]);
+
+  console.log(address, passport);
+
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route
+        path="/"
+        element={
+          <RobotContext.Provider
+            value={useMemo(
+              () => ({
+                passport,
+                address: address || passport.owner || null,
+              }),
+              [address, passport]
+            )}
+          >
+            <Layout />
+          </RobotContext.Provider>
+        }
+      >
         <Route index element={<IndexCheck />} />
-        <Route path="passport" element={<Navigate to="../" />} />
+        {/* <Route path="passport" element={<Navigate to="../" />} /> */}
         <Route path="drive" element={<IpfsSettings />} />
         <Route path="security" element={<Heroes />} />
+        <Route path="chat" element={<Chat />} />
         <Route path="timeline" element={<TxsTable />} />
 
-        <Route path="sigma" element={<Sigma />} />
+        {/* <Route path="sigma" element={<Sigma />} /> */}
         <Route path="sense" element={<Taverna />} />
         <Route path="badges" element={<TableDiscipline />} />
         <Route path="log" element={<FeedsTab />} />
@@ -65,6 +121,8 @@ function Robot() {
         {/* <Route path="keys" element={<Keys />} /> */}
         {/* <Route path="skills" element={<Skills />} /> */}
         {/* <Route path="karma" element={<Karma />} /> */}
+
+        <Route path="*" element={<p>Page should not exist</p>} />
       </Route>
     </Routes>
   );

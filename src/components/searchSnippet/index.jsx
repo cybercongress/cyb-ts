@@ -75,7 +75,7 @@ function SearchSnippet({ cid, data, mobile, onClickRank }) {
       className="hover-rank"
       display="flex"
       alignItems="center"
-      marginBottom="10px"
+      marginBottom="-2px"
     >
       {!mobile && (
         <Pane className="time-discussion rank-contentItem" position="absolute">

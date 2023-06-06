@@ -49,6 +49,11 @@ function RowBalancesDetails({ balance }) {
   const getTypeDenomKey = (key) => {
     const denom = traseDenom(key);
 
+    // TODO: fix
+    if (!denom[0] || !denom[1]) {
+      return;
+    }
+
     if (denom[0].denom.includes('ibc')) {
       return replaceSlash(denom[0].denom);
     }

@@ -137,7 +137,7 @@ function Account({
       {!onlyAvatar && (
         <Link
           style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
-          to={linkAddress}
+          to={moniker ? `/@${moniker}` : linkAddress}
         >
           {moniker === null ? trimAddress : moniker}
         </Link>

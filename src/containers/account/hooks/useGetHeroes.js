@@ -9,6 +9,8 @@ function useGetHeroes(address, updateAddress) {
   const [loadingHeroesInfo, setLoadingHeroesInfo] = useState(true);
 
   useEffect(() => {
+    if (!address) return;
+
     const getStaking = async () => {
       setStaking([]);
       setTotalRewards([]);

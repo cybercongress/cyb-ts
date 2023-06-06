@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
@@ -15,9 +15,10 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
-function Taverna({ defaultAccount }) {
+function Taverna() {
   const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
+  const { defaultAccount } = useSelector((state) => state.pocket);
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [rankLink, setRankLink] = useState(null);
@@ -108,48 +109,42 @@ function Taverna({ defaultAccount }) {
   return (
     <>
       <ContainerGradientText>
-        <main className="block-body">
-          <Pane
+        {/* <main className="block-body"> */}
+        {/* <Pane
             width="90%"
             marginX="auto"
             marginY={0}
             display="flex"
             flexDirection="column"
-          >
-            <div className="container-contentItem" style={{ width: '100%' }}>
-              {Object.keys(tweets).length > 0 ? (
-                searchItems
-              ) : (
-                <NoItems text="No feeds" />
-              )}
-            </div>
-          </Pane>
-        </main>
-        <div
-          style={{
-            position: 'fixed',
-            left: 0,
-            zIndex: 1,
-          }}
-        >
-          <ActionBarCont
-            addressActive={addressActive}
-            mobile={mobile}
-            keywordHash={keywordHash}
-            updateFunc={() => setUpdate(update + 1)}
-            rankLink={rankLink}
-            textBtn="Tweet"
-          />
+          > */}
+        <div className="container-contentItem" style={{ width: '100%' }}>
+          {Object.keys(tweets).length > 0 ? (
+            searchItems
+          ) : (
+            <NoItems text="No feeds" />
+          )}
         </div>
+        {/* </Pane> */}
+        {/* </main> */}
       </ContainerGradientText>
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          zIndex: 1,
+        }}
+      >
+        <ActionBarCont
+          addressActive={addressActive}
+          mobile={mobile}
+          keywordHash={keywordHash}
+          updateFunc={() => setUpdate(update + 1)}
+          rankLink={rankLink}
+          textBtn="Tweet"
+        />
+      </div>
     </>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Taverna);
+export default Taverna;

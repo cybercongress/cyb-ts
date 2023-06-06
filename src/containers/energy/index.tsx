@@ -8,13 +8,13 @@ import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
 import { RootState } from 'src/redux/store';
-import useGetAddressTemp from '../account/hooks/useGetAddressTemp';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 function RoutedEnergy() {
   const location = useLocation();
   const [selected, setSelected] = useState('myEnegy');
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
-  const address = useGetAddressTemp();
+  const { address } = useRobotContext();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
   const isOwner =

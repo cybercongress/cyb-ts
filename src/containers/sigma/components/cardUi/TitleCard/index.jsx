@@ -25,10 +25,13 @@ function TitleCard({ accounts, passport, totalLiquid }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.avatar}>
-        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
+      <div className={styles.address}>
+        <Signatures addressActive={accounts} />
       </div>
-      <div className={styles.name}>{useGetName}</div>
+      {/* <div className={styles.avatar}>
+        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
+      </div> */}
+      {/* <div className={styles.name}>{useGetName}</div> */}
       <div className={styles.total}>
         {totalLiquid.change !== 0 && (
           <div
@@ -45,9 +48,6 @@ function TitleCard({ accounts, passport, totalLiquid }) {
           text={CYBER.DENOM_LIQUID_TOKEN}
           // styleValue={{ fontSize: '18px' }}
         />
-      </div>
-      <div className={styles.address}>
-        <Signatures addressActive={accounts} />
       </div>
     </div>
   );

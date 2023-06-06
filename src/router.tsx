@@ -29,7 +29,6 @@ import Mint from './containers/mint';
 import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
-import Taverna from './containers/taverna';
 import TeleportTs from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
@@ -191,7 +190,7 @@ function AppRouter() {
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />
-          {/* <Route path="*" element={<PageNotExist />} /> */}
+          <Route path="*" element={<PageNotExist />} />
         </Route>
       </Routes>
     </WrappedRouter>
