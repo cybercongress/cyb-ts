@@ -292,7 +292,8 @@ class ActionBarContainer extends Component {
       stage === STAGE_INIT &&
       type === 'security' &&
       defaultAccount !== null &&
-      defaultAccount.keys === 'keplr'
+      defaultAccount.keys === 'keplr' &&
+      addressSend === defaultAccount.bech32
     ) {
       return (
         <ActionBar>

@@ -67,7 +67,7 @@ function Commander() {
         color={Color.Pink}
         value={search}
         onChange={onChange}
-        autoFocus
+        autoFocus={window.self === window.top}
         className={styles.input}
         autoComplete="off"
       />

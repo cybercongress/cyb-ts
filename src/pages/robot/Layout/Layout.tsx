@@ -10,39 +10,47 @@ import icon from './icon.svg';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import RobotHeader from '../RobotHeader/RobotHeader';
 import { useRobotContext } from '../Robot';
+import ActionBar from 'src/containers/account/actionBar';
+import WrappedActionBar from './WrappedActionBar';
 
 const links = [
   {
     text: 'Sigma',
     link: './',
+    description: 'hydrogen',
     name: 'sigma',
     icon: <img src={icon} />,
   },
   {
     text: 'Timeline',
     link: './timeline',
+    description: 'txs',
     icon: '🚥',
   },
   {
     text: 'Chat',
     link: './chat',
     icon: '💬',
+    description: 'msg',
     isDisabled: true,
   },
   {
     text: 'Badges',
     link: './badges',
     name: 'badges',
+    description: 'badges',
     icon: '🥇',
   },
   {
     text: 'Items',
     link: './nft',
     icon: '🖼',
+    description: 'items',
     isDisabled: true,
   },
   {
     text: 'Security',
+    description: 'heroes',
     link: './security',
     name: 'security',
     icon: '🧑🏼‍🚀',
@@ -51,6 +59,7 @@ const links = [
     text: 'Skills',
     link: './skills',
     isDisabled: true,
+    description: 'active',
     icon: '🍄',
   },
   {
@@ -65,11 +74,13 @@ const links = [
     text: 'Energy',
     link: './energy',
     name: 'energy',
+    description: 'watt',
     icon: '🚀',
   },
   {
     text: 'Drive',
     name: 'drive',
+    description: 'mb',
     link: './drive',
     onlyOwner: true,
     icon: '🟥',
@@ -77,6 +88,7 @@ const links = [
   {
     text: 'Swarm',
     link: './swarm',
+    description: 'mates',
     name: 'swarm',
     icon: '💚',
   },
@@ -85,23 +97,27 @@ const links = [
     text: 'Sense',
     link: './sense',
     icon: '🧬',
+    description: 'news',
     name: 'sense',
   },
   {
     text: 'Brain',
     link: './brain',
     icon: '🧠',
+    description: 'cyberlinks',
     name: 'cyberlinks',
   },
   {
     text: 'Log',
     link: './log',
     name: 'log',
+    description: 'tweets',
     icon: '🍀',
   },
   {
     text: 'Karma',
     link: './karma',
+    description: 'points',
     icon: '🔮',
     isDisabled: true,
   },
@@ -147,7 +163,7 @@ function Layout() {
                     }}
                     to={link.link}
                   >
-                    <span className={styles.text}>{link.text}</span>
+                    {/* <span className={styles.text}>{link.text}</span> */}
                     <span className={styles.count}>
                       {['karma', 'sigma'].includes(link.name) ? (
                         <IconsNumber
@@ -158,7 +174,13 @@ function Layout() {
                         counts[link.name] || 0
                       )}
                     </span>
+
+                    <span className={styles.new}>+2</span>
+
                     <span className={styles.icon}>{link.icon}</span>
+                    <span className={styles.description}>
+                      {link.description}
+                    </span>
                   </NavLink>
                 )}
                 {/* </Tooltip> */}
@@ -186,6 +208,8 @@ function Layout() {
             <RobotHeader />
 
             <Outlet />
+
+            <WrappedActionBar />
           </>
         ) : (
           'address loading'

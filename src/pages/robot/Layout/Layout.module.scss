@@ -23,7 +23,7 @@
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
 
   li {
-    margin: 52px 0;
+    margin: 20px 0;
     position: relative;
     display: flex;
     justify-content: flex-end;
@@ -32,59 +32,113 @@
 
     .noLink {
       color: gray;
+      opacity: 0.7;
       margin-right: 15px;
     }
 
     a {
-      display: flex;
-      align-items: center;
       padding-right: 15px;
-      gap: 10px;
+      gap: 3px 10px;
+      min-height: 60px;
 
-      .text {
-        display: none;
+      display: grid;
+      grid-auto-rows: 1fr;
+      grid-template-areas:
+        '. . .'
+        'new count icon'
+        'description description .';
+
+      .description {
+        grid-area: description;
+        color: rgba(221, 255, 255, 0.2);
+      }
+
+      .description,
+      .count {
+        justify-self: flex-end;
+      }
+
+      .count {
+        grid-area: count;
+        align-self: center;
+      }
+
+      .new {
+        grid-area: new;
+        color: #7afaa1;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 5px;
+      }
+
+      .icon {
+        grid-area: icon;
+      }
+
+      .description {
+        transition: all 0.3s ease-in-out;
+      }
+
+      .description,
+      .count {
+        color: gray;
+        font-size: 14px;
       }
 
       .count {
         white-space: nowrap;
       }
 
+      &::after,
+      &::before {
+        content: '';
+        opacity: 0;
+        display: block;
+        right: 0;
+        height: 100%;
+        position: absolute;
+        transition: opacity 0.3s;
+      }
+
       &:hover {
-        .text {
-          display: block;
+        grid-template-areas:
+          '. description .'
+          'count count icon'
+          'new new .';
+
+        .description {
+          color: #36d6ae;
         }
+
         .count {
-          display: none;
+          color: white;
+        }
+
+        .count,
+        .new {
+          justify-self: flex-end;
         }
       }
 
       &.active {
-        color: #fff;
-
-        .count {
-          display: none;
-        }
-
-        .text {
-          display: block;
-        }
-
+        &::after,
         &::before {
-          content: '';
-          display: block;
-          right: 0;
-          height: 135%;
+          opacity: 1;
+        }
+
+        &::after {
+          background: #00edeb;
           width: 3px;
-          background-color: #4ed6ae;
-          filter: blur(0.7px);
-          // background: linear-gradient(
-          //   180deg,
-          //   rgba(0, 237, 235, 0.0209) 0%,
-          //   rgba(0, 237, 235, 0.11) 100%
-          // );
-          // transform: matrix(0, 1, 1, 0, 0, 0);
-          box-shadow: -3px 0px 20px 1.5px #4ed6ae;
-          position: absolute;
+          box-shadow: 0px 0px 5px 1px rgba(54, 214, 174, 0.5);
+          border-radius: 1px 1px 0px 0px;
+        }
+        &::before {
+          background: linear-gradient(
+            90deg,
+            rgba(0, 237, 235, 0.0209) 0%,
+            rgba(0, 237, 235, 0.11) 100%
+          );
+
+          width: 60px;
         }
       }
     }
@@ -100,15 +154,24 @@
       a {
         padding-left: 15px;
         padding-right: unset;
-        flex-direction: row-reverse;
+
+        grid-template-areas:
+          '. . .'
+          'icon count new'
+          '. description description';
+
+        .description,
+        .count {
+          justify-self: flex-start;
+        }
 
         &.active {
+          &::after,
           &::before {
-            left: -18px;
-            height: 2px;
-            width: auto;
-            right: -20px;
-            bottom: -10px;
+            left: 0;
+          }
+          &::before {
+            transform: rotate(180deg);
           }
         }
       }

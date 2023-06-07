@@ -5,13 +5,16 @@ import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import { createPortal } from 'react-dom';
 import { PORTAL_ID } from '../application/App';
+import { useRobotContext } from 'src/pages/robot/Robot';
 
 function ForceGraph() {
   const params = useParams();
 
   let graph;
 
-  const address = params.agent || params.address || '';
+  const { address: robotAddress } = useRobotContext();
+
+  const address = params.agent || robotAddress;
 
   const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });

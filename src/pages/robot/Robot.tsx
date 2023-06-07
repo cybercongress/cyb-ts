@@ -14,7 +14,7 @@ import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
 import Chat from '../Chat/Chat';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { Citizenship } from 'src/types/citizenship';
@@ -23,6 +23,8 @@ import React from 'react';
 const RobotContext = React.createContext<{
   passport: Citizenship | null;
   address: undefined | string;
+  refetchData: () => void;
+  addRefetch: (func: () => void) => void;
 }>({
   passport: null,
   address: null,
@@ -43,6 +45,8 @@ function Robot() {
 
   const [passport, setPassport] = useState({});
   const { username, address } = params;
+
+  const [refetchFuncs, setRefetch] = useState([]);
 
   useEffect(() => {
     const nickname =
@@ -82,7 +86,12 @@ function Robot() {
     })();
   }, [username, address, queryClient]);
 
-  console.log(address, passport);
+  const handleAddRefetch = useCallback(
+    (func: () => void) => {
+      setRefetch((items) => [...items, func]);
+    },
+    [setRefetch]
+  );
 
   return (
     <Routes>
@@ -94,8 +103,12 @@ function Robot() {
               () => ({
                 passport,
                 address: address || passport.owner || null,
+                refetchData: () => {
+                  refetchFuncs.map((func) => func());
+                },
+                addRefetch: handleAddRefetch,
               }),
-              [address, passport]
+              [address, passport, handleAddRefetch, refetchFuncs]
             )}
           >
             <Layout />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useNewsToday } from 'src/containers/Wallet/card/tweet';
 import { useGetHeroes } from 'src/containers/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
@@ -15,12 +16,36 @@ import {
   getTweet,
 } from 'src/utils/search/utils';
 import { convertResources, reduceBalances } from 'src/utils/utils';
+import { useRobotContext } from '../Robot';
 
 function useGetMenuCounts(address: string) {
   const [tweetsCount, setTweetsCount] = useState();
   const [cyberlinksCount, setCyberlinksCount] = useState();
   const [energy, setEnergy] = useState<number>();
   const [followers, setFollowers] = useState<number>();
+
+  const location = useLocation();
+  const { addRefetch } = useRobotContext();
+
+  async function getTweetCount() {
+    try {
+      const response = await getTweet(address);
+      setTweetsCount(response.total_count);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+    const type = location.pathname.split('/')[2];
+
+    if (type === 'log') {
+      addRefetch(getTweetCount);
+    }
+  }, [location.pathname, address]);
 
   const { accounts } = useSelector((state: RootState) => state.pocket);
 
@@ -35,15 +60,6 @@ function useGetMenuCounts(address: string) {
   const badges = Object.keys(resultGol).length
     ? Object.keys(resultGol).length - 1
     : 0;
-
-  async function getTweetCount() {
-    try {
-      const response = await getTweet(address);
-      setTweetsCount(response.total_count);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   async function getCyberlinksCount() {
     try {

@@ -5,7 +5,7 @@ import { ContainerGradientText } from 'src/components/containerGradient/Containe
 import { useRobotContext } from 'src/pages/robot/Robot';
 
 function FeedsTab({ mobile }) {
-  const { address } = useRobotContext();
+  const { address, addRefetch } = useRobotContext();
 
   const [dataTweet, setDataTweet] = useState([]);
   const [loaderTweets, setLoaderTweets] = useState(true);
@@ -28,6 +28,8 @@ function FeedsTab({ mobile }) {
       setLoaderTweets(false);
     };
     getFeeds();
+
+    addRefetch(getFeeds);
   }, [address]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

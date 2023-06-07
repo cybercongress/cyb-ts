@@ -9,6 +9,7 @@ import { CYBER } from '../../../utils/config';
 import { useGetHeroes } from '../hooks';
 import Table from 'src/components/Table/Table';
 import { useRobotContext } from 'src/pages/robot/Robot';
+import { useEffect } from 'react';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -73,8 +74,12 @@ function Unbonding({ amount, stages, entries }) {
 }
 
 function Heroes() {
-  const { address } = useRobotContext();
-  const { staking: data } = useGetHeroes(address);
+  const { address, addRefetch } = useRobotContext();
+  const { staking: data, refetch } = useGetHeroes(address);
+
+  useEffect(() => {
+    addRefetch(refetch);
+  }, [addRefetch]);
 
   const delegationsItem = Object.keys(data).map((key) => {
     let amount = 0;
