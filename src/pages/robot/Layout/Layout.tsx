@@ -89,7 +89,7 @@ const links = [
   {
     text: 'Swarm',
     link: './swarm',
-    description: 'mates',
+    description: 'learners',
     name: 'swarm',
     icon: '💚',
   },

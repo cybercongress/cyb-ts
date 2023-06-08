@@ -205,7 +205,14 @@ function Robot() {
                   if (
                     accounts &&
                     Object.keys(accounts).find((acc) => {
-                      const { bech32, keys } = accounts[acc].cyber;
+                      const { cyber } = accounts[acc];
+
+                      // only bostrom for now
+                      if (!cyber) {
+                        return false;
+                      }
+
+                      const { bech32, keys } = cyber;
 
                       return bech32 === address && keys !== 'read-only';
                     })
