@@ -111,7 +111,7 @@ function AppRouter() {
           <Route index element={<Temple />} />
 
           {/* <Route path="/robot/passport" element={<Wallet />} /> */}
-          <Route path="/robot" element={<Robot />} />
+          <Route path="/robot/*" element={<Robot />} />
           {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
           <Route path="/neuron/:address/*" element={<Robot />} />
           {/* <Route path="/@:passport" element={<Robot />} /> */}

@@ -12,11 +12,12 @@ import RobotHeader from '../RobotHeader/RobotHeader';
 import { useRobotContext } from '../Robot';
 import ActionBar from 'src/containers/account/actionBar';
 import WrappedActionBar from './WrappedActionBar';
+import Loader2 from 'src/components/ui/Loader2';
 
 const links = [
   {
     text: 'Sigma',
-    link: './',
+    link: '.',
     description: 'hydrogen',
     name: 'sigma',
     icon: <img src={icon} />,
@@ -124,16 +125,10 @@ const links = [
 ];
 
 function Layout() {
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-
-  const addressLocal = defaultAccount.account?.cyber?.bech32;
-
-  const { address } = useRobotContext();
-
-  const isOwner = address && address === addressLocal;
+  const { address, isOwner } = useRobotContext();
 
   const counts = useGetMenuCounts(address);
-  // const counts = {};
+
   function renderLinks(links, isMirror?: boolean) {
     // if (!params.address && !address) {
     //   return <>&nbsp;</>; // temp
@@ -150,7 +145,6 @@ function Layout() {
 
             return (
               <li key={index} className={cx({ [styles.mirror]: isMirror })}>
-                {/* <Tooltip tooltip={link.text} placement="top"> */}
                 {link.isDisabled ? (
                   <span className={styles.noLink}>{link.text}</span>
                 ) : (
@@ -175,7 +169,7 @@ function Layout() {
                       )}
                     </span>
 
-                    <span className={styles.new}>+2</span>
+                    {/* <span className={styles.new}>+123</span> */}
 
                     <span className={styles.icon}>{link.icon}</span>
                     <span className={styles.description}>
@@ -183,7 +177,6 @@ function Layout() {
                     </span>
                   </NavLink>
                 )}
-                {/* </Tooltip> */}
               </li>
             );
           })}
@@ -205,14 +198,14 @@ function Layout() {
       <div>
         {address ? (
           <>
-            <RobotHeader />
+            {!isOwner && <RobotHeader />}
 
             <Outlet />
 
             <WrappedActionBar />
           </>
         ) : (
-          'address loading'
+          <Loader2 />
         )}
       </div>
 

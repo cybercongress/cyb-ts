@@ -8,11 +8,13 @@ import {
   makeSound,
   cutAddress,
 } from './utils';
+import { useNavigate } from 'react-router-dom';
 
 const classNames = require('classnames');
 
 function Signatures({ addressActive }) {
   const [plaing, setPlaing] = useState(true);
+  const navigate = useNavigate();
 
   const address = useMemo(() => {
     if (addressActive !== null) {
@@ -51,6 +53,10 @@ function Signatures({ addressActive }) {
   }, [addressActive]);
 
   const onClickMusicalAddress = useCallback(() => {
+    navigate(`/neuron/${addressActive.bech32}`);
+
+    return;
+
     if (!plaing) {
       return;
     }

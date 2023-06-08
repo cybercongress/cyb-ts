@@ -13,7 +13,7 @@ function WrappedActionBar() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
   const location = useLocation();
-  const tab = location.pathname.split('/')[2] || 'log';
+  const tab = location.pathname.split('/')[2];
 
   const { address, refetchData } = useRobotContext();
 

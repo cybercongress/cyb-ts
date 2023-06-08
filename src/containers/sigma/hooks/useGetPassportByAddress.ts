@@ -1,23 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { activePassport } from '../../portal/utils';
-
-type Passport = {
-  owner: string;
-  approvals: any[];
-  token_uri: string | null;
-  extension: {
-    addresses: {
-      label: string | null;
-      address: string;
-    }[];
-    avatar: string;
-    nickname: string;
-    data: any | null;
-    particle: any | null;
-  };
-};
+import { Citizenship } from 'src/types/citizenship';
 
 function useGetPassportByAddress(accounts: any) {
   const queryClient = useQueryClient();
@@ -52,7 +37,7 @@ function useGetPassportByAddress(accounts: any) {
     passport: data,
     loading: isLoading,
     error,
-  } as { passport: Passport | null };
+  } as { passport: Citizenship | null };
 }
 
 export default useGetPassportByAddress;

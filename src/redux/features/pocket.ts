@@ -10,7 +10,7 @@ type SliceState = {
     tweet: string;
   };
   defaultAccount: DefaultAccount;
-  accounts: null | Account[];
+  accounts: null | { [key: string]: Account };
 };
 
 const initialState: SliceState = {

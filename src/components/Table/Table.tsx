@@ -35,7 +35,7 @@ function Table<T extends object>({
     state: {
       rowSelection: {},
     },
-    debugTable: true,
+    // debugTable: true,
     enableRowSelection: true,
     onRowSelectionChange: (state) => {
       console.log(state);

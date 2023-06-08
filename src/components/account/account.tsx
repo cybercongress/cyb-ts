@@ -6,6 +6,7 @@ import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
+import { routes } from 'src/routes';
 
 function useGetValidatorInfo(address) {
   const queryClient = useQueryClient();
@@ -102,8 +103,12 @@ function Account({
       return `/network/bostrom/hero/${address}`;
     }
 
+    if (moniker) {
+      return routes.robotPassport.getLink(moniker);
+    }
+
     return `/network/bostrom/contract/${address}`;
-  }, [address]);
+  }, [address, moniker]);
 
   const cidAvatar = useMemo(() => {
     if (dataPassport !== undefined && dataPassport !== null) {
@@ -137,7 +142,7 @@ function Account({
       {!onlyAvatar && (
         <Link
           style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
-          to={moniker ? `/@${moniker}` : linkAddress}
+          to={linkAddress}
         >
           {moniker === null ? trimAddress : moniker}
         </Link>

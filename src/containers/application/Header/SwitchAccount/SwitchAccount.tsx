@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -17,6 +17,7 @@ import {
   setAccounts,
   setDefaultAccount,
 } from '../../../../redux/features/pocket';
+import { setPassport, setPassportLoading } from 'src/redux/features/passport';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -117,6 +118,18 @@ function SwitchAccount() {
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setPassportLoading());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!passport) {
+      return;
+    }
+
+    dispatch(setPassport(passport));
+  }, [passport, dispatch]);
 
   const onClickChangeActiveAcc = async (key: string) => {
     if (
@@ -225,7 +238,8 @@ function SwitchAccount() {
             {useGetAddress && <Karma address={useGetAddress} />}
           </div>
         )}
-        <Link to={`/@${passport?.extension.nickname}`}>
+        {/* <Link to={`/@${passport?.extension.nickname}`}> */}
+        <Link to={`/robot`}>
           <div
             className={cx(styles.containerAvatarConnect, {
               [styles.containerAvatarConnectFalse]: !ipfsStatus,

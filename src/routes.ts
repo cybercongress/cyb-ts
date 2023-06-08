@@ -28,6 +28,10 @@ export const routes = {
   robot: {
     path: '/robot',
   },
+  robotPassport: {
+    path: '/:username',
+    getLink: (username: string) => `/@${username}`,
+  },
   portal: {
     path: '/portal',
   },
