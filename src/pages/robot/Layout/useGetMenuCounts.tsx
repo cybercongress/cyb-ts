@@ -17,6 +17,7 @@ import {
 } from 'src/utils/search/utils';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useRobotContext } from '../Robot';
+import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 
 function useGetMenuCounts(address: string) {
   const [tweetsCount, setTweetsCount] = useState();
@@ -55,6 +56,8 @@ function useGetMenuCounts(address: string) {
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
   const { repoSizeValue } = useGetIpfsInfo();
   const news = useNewsToday(address);
+
+  const { data: karma } = useGetKarma(address);
 
   const { resultGol } = useGetGol(address);
   const badges = Object.keys(resultGol).length
@@ -120,6 +123,7 @@ function useGetMenuCounts(address: string) {
     passport: accounts ? Object.keys(accounts).length : 0,
     drive: repoSizeValue,
     sense: news.count,
+    karma,
   };
 }
 

@@ -24,6 +24,7 @@ function RobotHeader() {
               }}
             />
           </div>
+          <div>keplr</div>
         </div>
       </ContainerGradientText>
     </header>

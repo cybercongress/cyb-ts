@@ -1,12 +1,10 @@
 import {
-  Navigate,
   Route,
   Routes,
   useLocation,
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import Wallet from 'src/containers/Wallet/Wallet';
 import TxsTable from 'src/containers/account/component/txsTable';
 import FeedsTab from 'src/containers/account/tabs/feeds';
 import FollowsTab from 'src/containers/account/tabs/follows';
@@ -20,13 +18,16 @@ import { RootState } from 'src/redux/store';
 import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
-import Chat from '../Chat/Chat';
+import Chat from './Chat/Chat';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { Citizenship } from 'src/types/citizenship';
 import React from 'react';
 import { routes } from 'src/routes';
+import Items from './Items/Items';
+import Skills from './Skills/Skills';
+import Karma from './Karma/Karma';
 
 const RobotContext = React.createContext<{
   passport: Citizenship | null;
@@ -240,23 +241,23 @@ function Robot() {
       >
         <Route index element={<IndexCheck />} />
         {/* <Route path="passport" element={<Navigate to="../" />} /> */}
-        <Route path="drive" element={<IpfsSettings />} />
-        <Route path="security" element={<Heroes />} />
-        <Route path="chat" element={<Chat />} />
         <Route path="timeline" element={<TxsTable />} />
+        <Route path="chat" element={<Chat />} />
+        <Route path="badges" element={<TableDiscipline />} />
+        <Route path="items" element={<Items />} />
+        <Route path="security" element={<Heroes />} />
+        <Route path="skills" element={<Skills />} />
 
         {/* <Route path="sigma" element={<Sigma />} /> */}
         <Route path="sense" element={<Taverna />} />
-        <Route path="badges" element={<TableDiscipline />} />
+        <Route path="drive" element={<IpfsSettings />} />
         <Route path="log" element={<FeedsTab />} />
         <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<ForceGraph />} />
+        <Route path="karma" element={<Karma />} />
 
-        {/* <Route path="cyberlinks" element={<GetLink />} /> */}
         {/* <Route path="keys" element={<Keys />} /> */}
-        {/* <Route path="skills" element={<Skills />} /> */}
-        {/* <Route path="karma" element={<Karma />} /> */}
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

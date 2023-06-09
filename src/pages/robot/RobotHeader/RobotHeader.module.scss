@@ -16,14 +16,15 @@
 }
 
 .inner {
-  display: flex;
-
+  display: grid;
   align-items: center;
-  justify-content: space-between;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 10px;
 
   .name {
     color: #1fcbff;
     font-size: 30px;
+    font-weight: 400;
     margin-bottom: 15px;
   }
 
@@ -33,6 +34,6 @@
   }
 
   > div {
-    text-align: right;
+    text-align: center;
   }
 }

@@ -33,7 +33,6 @@ const links = [
     link: './chat',
     icon: '💬',
     description: 'msg',
-    isDisabled: true,
   },
   {
     text: 'Badges',
@@ -44,10 +43,9 @@ const links = [
   },
   {
     text: 'Items',
-    link: './nft',
+    link: './items',
     icon: '🖼',
     description: 'items',
-    isDisabled: true,
   },
   {
     text: 'Security',
@@ -59,7 +57,6 @@ const links = [
   {
     text: 'Skills',
     link: './skills',
-    isDisabled: true,
     description: 'active',
     icon: '🍄',
   },
@@ -118,9 +115,16 @@ const links = [
   {
     text: 'Karma',
     link: './karma',
+    name: 'karma',
     description: 'points',
     icon: '🔮',
+  },
+  {
+    text: 'Soul',
+    // link: './soul',
     isDisabled: true,
+    description: 'bytes',
+    icon: '👻',
   },
 ];
 

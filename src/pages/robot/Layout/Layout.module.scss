@@ -1,7 +1,8 @@
 .wrapper {
   display: grid;
-  margin-top: 40px;
   justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
   grid-template-columns: 105px minmax(200px, 62%) 105px;
   column-gap: 20px;
   padding-bottom: 130px; // actionbars space
@@ -17,13 +18,15 @@
     filter: blur(15px);
   }
 
+  padding-top: 30px;
+
   list-style-type: none;
   position: sticky;
   top: 180px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
 
   li {
-    margin: 20px 0;
+    margin-bottom: 20px;
     position: relative;
     display: flex;
     justify-content: flex-end;
@@ -38,7 +41,7 @@
 
     a {
       padding-right: 15px;
-      gap: 3px 10px;
+      gap: 1px 10px;
       min-height: 60px;
 
       display: grid;
@@ -73,7 +76,7 @@
       .icon {
         grid-area: icon;
         position: relative;
-        top: 2px;
+        top: 1.5px;
       }
 
       .description {
@@ -82,11 +85,11 @@
 
       .description,
       .count {
-        color: gray;
         font-size: 14px;
       }
 
       .count {
+        color: rgba(255, 255, 255, 0.5);
         white-space: nowrap;
       }
 
