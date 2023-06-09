@@ -1,0 +1,42 @@
+[package]
+name = "rune-wasm"
+version = "0.12.3"
+authors = ["John-John Tedro <udoprog@tedro.se>"]
+edition = "2021"
+rust-version = "1.65"
+description = "A WASM module for the Rune Language, an embeddable dynamic programming language for Rust."
+documentation = "https://docs.rs/rune"
+readme = "README.md"
+homepage = "https://github.com/rune-rs/rune"
+repository = "https://github.com/rune-rs/rune"
+license = "MIT/Apache-2.0"
+keywords = ["language", "scripting", "scripting-language"]
+categories = ["parser-implementations"]
+
+
+[dependencies]
+rune = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune", features = ["capture-io"] }
+rune-macros = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune-macros" }
+rune-modules = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune-modules", features = ["core", "test", "json", "toml", "rand", "experiments"] }
+
+serde = { version = "1.0.163", features = ["derive"] }
+wasm-bindgen = { version = "0.2.85", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.35"
+serde-wasm-bindgen = "0.4"
+serde_json = "1.0"
+js-sys = "0.3.62"
+anyhow = "1.0.71"
+gloo-utils = "0.1.6"
+once_cell = "1.17.2"
+
+[dependencies.web-sys]
+version = "0.3.62"
+features = ["Request", "Response", "Window", "RequestInit", "RequestMode"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[package.metadata.wasm-pack.profile.release]
+# Note: doesn't work
+wasm-opt = false

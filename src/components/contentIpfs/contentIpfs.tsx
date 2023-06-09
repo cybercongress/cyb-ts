@@ -6,8 +6,6 @@ import TextMarkdown from './items/TextMarkdown';
 import LinkHttp from './items/link';
 import Pdf from './items/pdf';
 import Img from './items/img';
-import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
-import { ContentOptions } from './contentIpfs.d';
 import OtherItem from './items/OtherItem';
 import DownloadableItem from './items/DownloadableItem';
 import DirectoryItem from './DirectoryItem/DirectoryItem';

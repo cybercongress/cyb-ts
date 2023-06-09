@@ -22,6 +22,9 @@ function isHtml(string: string) {
   return basic.test(newString);
 }
 
+export const isTextContent = (mime: String) =>
+  mime.indexOf('text/plain') !== -1;
+
 // eslint-disable-next-line import/no-unused-modules
 export const detectContentType = (
   mime: string | undefined
@@ -30,7 +33,7 @@ export const detectContentType = (
     if (mime.indexOf('video') !== -1) {
       return 'video';
     }
-    if (mime.indexOf('text/plain') !== -1) {
+    if (isTextContent(mime)) {
       return 'text';
     }
     if (mime.indexOf('xml') !== -1) {

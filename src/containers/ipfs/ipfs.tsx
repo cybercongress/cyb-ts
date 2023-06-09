@@ -4,6 +4,8 @@ import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useCallback, useState } from 'react';
+import useCyberScriptRunner from 'src/hooks/useCyberScriptRunner';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import { TabBtn } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -14,7 +16,6 @@ import useGetDiscussion from './hooks/useGetDiscussion';
 import useGetCommunity from './hooks/useGetCommunity';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import PaneWithPill from './components/PaneWithPill';
-import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 
 function Ipfs() {
   const { cid, tab = 'discussion' } = useParams();
@@ -24,8 +25,10 @@ function Ipfs() {
   const dataAnswer = useGetAnswers(cid);
   const dataDiscussion = useGetDiscussion(cid);
   const { community } = useGetCommunity(cid);
+  const { status: pyStatus, result } = useCyberScriptRunner('1+1=');
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
+  console.log('----python', pyStatus, result);
   const { isMobile: mobile } = useDevice();
   const queryParamsId = `${cid}.${tab}`;
 

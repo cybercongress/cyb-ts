@@ -35,6 +35,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import CyberScriptsProvider from './contexts/cyberScripts';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -89,7 +90,7 @@ if (container === null) {
 const root = createRoot(container);
 
 // for Storybook, WIP
-export function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <IpfsProvider>
@@ -102,9 +103,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <DeviceProvider>
-                          <ErrorBoundary fallback={<ErrorScreen />}>
-                            {children}
-                          </ErrorBoundary>
+                          <CyberScriptsProvider>
+                            <ErrorBoundary fallback={<ErrorScreen />}>
+                              {children}
+                            </ErrorBoundary>
+                          </CyberScriptsProvider>
                         </DeviceProvider>
                       </ApolloProvider>
                     </DataProvider>

@@ -6,6 +6,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 require('dotenv').config();
 
@@ -54,6 +55,11 @@ module.exports = {
       src: path.resolve(__dirname, 'src/'),
       components: path.resolve(__dirname, 'src', 'components'),
       images: path.resolve(__dirname, 'src', 'image'),
+      // rustpython: path.resolve(__dirname, './rustpython_pkg'),
+      // rune: path.resolve(__dirname, './src/rune-wasm/pkg'),
+      rune: path.resolve(__dirname, './rune_build'),
+      //      rune: path.resolve(__dirname, './src/wasm/rune/pkg'),
+      // rhai: path.resolve(__dirname, './rhai_wasm'),
     },
   },
   plugins: [
@@ -99,6 +105,12 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
+    }),
+    new WasmPackPlugin({
+      crateDirectory: path.join(__dirname, './src/wasm/rune'),
+      outDir: path.resolve(__dirname, './rune_build'),
+      extraArgs: '--target web',
+      forceWatch: true,
     }),
   ],
   module: {
@@ -172,6 +184,14 @@ module.exports = {
           fullySpecified: false,
         },
       },
+      // {
+      //   test: /\.wasm$/,
+      //   type: 'webassembly/sync',
+      // },
     ],
+  },
+  experiments: {
+    asyncWebAssembly: true,
+    syncWebAssembly: true,
   },
 };

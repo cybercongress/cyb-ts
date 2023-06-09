@@ -1,0 +1,29 @@
+pub fn pass() {
+    #{ "cid": cyb::context.cid, "action": "pass" }
+}
+
+pub fn update_cid(cid) {
+    #{ "cid": cid, "action": "update" }
+}
+
+pub fn update_content(content) {
+    #{ "content": content, "action": "update" }
+}
+
+pub async fn react_to_particle(cid, content_type, preview) {
+    println!("Particle: {} {} {}", cid, content_type, preview);
+    let object = #{ "cid": cid, "action": "pass" };
+
+    if content_type == "particle" {
+        let data = preview.split(".").next().unwrap();
+        let result = cyb::get_passport_by_nickname(data).await;
+        cyb::log("particle " + result + " " +data + " " + preview + " " + cyb::context.cid);
+        let result1 = cyb::get_passport_by_nickname1(data).await;
+        dbg(result1);
+        cyb::log("particleLong " + result1["extension"]["particle"]);
+        return update_content(result)
+    }
+
+    pass()
+}
+
