@@ -56,6 +56,7 @@ import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
+import UnderConstruction from './pages/robot/UnderConstruction/UnderConstruction';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -187,6 +188,8 @@ function AppRouter() {
           <Route path="/help" element={<Help />} />
           {/* Sigma */}
           <Route path="/nebula" element={<Nebula />} />
+
+          <Route path="/keys" element={<UnderConstruction />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

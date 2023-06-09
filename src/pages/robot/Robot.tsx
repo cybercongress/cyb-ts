@@ -18,16 +18,17 @@ import { RootState } from 'src/redux/store';
 import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
-import Chat from './Chat/Chat';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { Citizenship } from 'src/types/citizenship';
 import React from 'react';
 import { routes } from 'src/routes';
-import Items from './Items/Items';
-import Skills from './Skills/Skills';
-import Karma from './Karma/Karma';
+import UnderConstruction from './UnderConstruction/UnderConstruction';
+// import Chat from './Chat/Chat';
+// import Items from './Items/Items';
+// import Skills from './Skills/Skills';
+// import Karma from './Karma/Karma';
 
 const RobotContext = React.createContext<{
   passport: Citizenship | null;
@@ -242,11 +243,12 @@ function Robot() {
         <Route index element={<IndexCheck />} />
         {/* <Route path="passport" element={<Navigate to="../" />} /> */}
         <Route path="timeline" element={<TxsTable />} />
-        <Route path="chat" element={<Chat />} />
+        <Route path="chat" element={<UnderConstruction />} />
         <Route path="badges" element={<TableDiscipline />} />
-        <Route path="items" element={<Items />} />
+        <Route path="items" element={<UnderConstruction />} />
         <Route path="security" element={<Heroes />} />
-        <Route path="skills" element={<Skills />} />
+        <Route path="skills" element={<UnderConstruction />} />
+        <Route path="rights" element={<UnderConstruction />} />
 
         {/* <Route path="sigma" element={<Sigma />} /> */}
         <Route path="sense" element={<Taverna />} />
@@ -255,7 +257,8 @@ function Robot() {
         <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<ForceGraph />} />
-        <Route path="karma" element={<Karma />} />
+        <Route path="karma" element={<UnderConstruction />} />
+        <Route path="soul" element={<UnderConstruction />} />
 
         {/* <Route path="keys" element={<Keys />} /> */}
 

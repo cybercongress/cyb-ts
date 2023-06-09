@@ -38,18 +38,18 @@ const links = [
     text: 'Badges',
     link: './badges',
     name: 'badges',
-    description: 'badges',
+    description: 'tokens',
     icon: '🥇',
   },
   {
     text: 'Items',
     link: './items',
     icon: '🖼',
-    description: 'items',
+    description: 'tokens',
   },
   {
     text: 'Security',
-    description: 'heroes',
+    description: 'reward',
     link: './security',
     name: 'security',
     icon: '🧑🏼‍🚀',
@@ -62,8 +62,8 @@ const links = [
   },
   {
     text: 'Rights',
-    isDisabled: true,
-    icon: '📜',
+    link: './rights',
+    icon: '🙌',
   },
 
   // second menu
@@ -95,7 +95,7 @@ const links = [
     text: 'Sense',
     link: './sense',
     icon: '🧬',
-    description: 'news',
+    description: 'news today',
     name: 'sense',
   },
   {
@@ -121,9 +121,8 @@ const links = [
   },
   {
     text: 'Soul',
-    // link: './soul',
-    isDisabled: true,
-    description: 'bytes',
+    link: './soul',
+    // description: 'bytes',
     icon: '👻',
   },
 ];
@@ -161,7 +160,7 @@ function Layout() {
                     }}
                     to={link.link}
                   >
-                    {/* <span className={styles.text}>{link.text}</span> */}
+                    <span className={styles.text}>{link.text}</span>
                     <span className={styles.count}>
                       {['karma', 'sigma'].includes(link.name) ? (
                         <IconsNumber

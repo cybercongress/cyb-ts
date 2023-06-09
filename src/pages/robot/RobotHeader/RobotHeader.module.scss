@@ -28,6 +28,18 @@
     margin-bottom: 15px;
   }
 
+  .keys {
+    margin-top: 10px;
+    img {
+      height: 42px;
+      width: 42px;
+    }
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
   > img {
     height: 112px;
     width: 112px;
