@@ -39,7 +39,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      <AppSideBar openMenu={openMenu}>
+      <AppSideBar openMenu={openMenu} closeMenu={() => toggleMenu(false)}>
         <AppMenu addressActive={addressActive} />
       </AppSideBar>
 

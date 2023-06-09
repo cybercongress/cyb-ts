@@ -9,6 +9,8 @@ import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 
+export const menuButtonId = 'menu-button';
+
 const forEachObjbech32 = (data, prefix) => {
   const newObj = {};
   Object.keys(data).forEach((key) => {
@@ -121,6 +123,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         }}
       >
         <button
+          id={menuButtonId}
           type="button"
           onClick={onClickOpenMenu}
           className={styles.networkBtn}
