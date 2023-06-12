@@ -136,12 +136,9 @@ function Robot() {
     [currentPassport, accounts, nickname]
   );
 
-  if (isOwner === undefined) {
+  if (!isOwner) {
     isOwner = checkIsOwner(currentRobotAddress);
   }
-
-  // don't understand why not working after checkIsOwner
-  // isOwner = isOwner as boolean;
 
   useEffect(() => {
     if (robotUrl && currentPassport) {
