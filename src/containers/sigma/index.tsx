@@ -27,7 +27,7 @@ function Sigma() {
   const [value, setValue] = useState(valueContext);
 
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
-  const { address, passport } = useRobotContext();
+  const { address, isOwner } = useRobotContext();
 
   const { accounts, defaultAccount } = useSelector(
     (state: RootState) => state.pocket
@@ -36,8 +36,6 @@ function Sigma() {
     defaultAccount?.account
   );
 
-  const isOwner = defaultPassport?.owner === passport?.owner;
-
   const accountsData = [];
 
   if (address) {
@@ -45,8 +43,6 @@ function Sigma() {
       bech32: address,
     });
   }
-
-  console.log(accounts);
 
   isOwner &&
     accounts &&
@@ -58,9 +54,6 @@ function Sigma() {
         });
       }
     });
-  console.log(accountsData);
-
-  console.log(address, passport);
 
   // const { accounts } = useGetLocalStoge(updateState);
 

@@ -24,9 +24,10 @@ function useGetMenuCounts(address: string) {
   const [cyberlinksCount, setCyberlinksCount] = useState();
   const [energy, setEnergy] = useState<number>();
   const [followers, setFollowers] = useState<number>();
+  const [sequence, setSequence] = useState<number>();
 
   const location = useLocation();
-  const { addRefetch } = useRobotContext();
+  const { addRefetch, isOwner } = useRobotContext();
 
   async function getTweetCount() {
     try {
@@ -73,6 +74,15 @@ function useGetMenuCounts(address: string) {
     }
   }
 
+  async function getSequence() {
+    try {
+      const response = await queryClient?.getSequence(address);
+      setSequence(response?.sequence || 0);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function getEnergy() {
     try {
       const allBalances = await queryClient?.getAllBalances(address);
@@ -107,7 +117,7 @@ function useGetMenuCounts(address: string) {
 
     getCyberlinksCount();
     getFollow();
-
+    getSequence();
     getTweetCount();
     getEnergy();
   }, [address]);
@@ -121,9 +131,10 @@ function useGetMenuCounts(address: string) {
     sigma: Number(totalAmountInLiquid.currentCap || 0),
     cyberlinks: cyberlinksCount,
     passport: accounts ? Object.keys(accounts).length : 0,
-    drive: repoSizeValue,
+    drive: (isOwner && repoSizeValue) || '-',
     sense: news.count,
     karma,
+    txs: sequence,
   };
 }
 

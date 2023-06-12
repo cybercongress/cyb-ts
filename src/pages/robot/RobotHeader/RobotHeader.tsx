@@ -3,7 +3,7 @@ import styles from './RobotHeader.module.scss';
 import { useRobotContext } from '../Robot';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { Signatures } from 'src/containers/portal/components';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 function RobotHeader() {
   const { address, passport } = useRobotContext();
@@ -25,9 +25,9 @@ function RobotHeader() {
               }}
             />
           </div>
-          <Link to="/keys" className={styles.keys}>
+          {/* <Link to="/keys" className={styles.keys}>
             <img src={require('../../../image/keplr-icon.svg')} alt="Keplr" />
-          </Link>
+          </Link> */}
         </div>
       </ContainerGradientText>
     </header>

@@ -1,4 +1,5 @@
 import {
+  Navigate,
   Route,
   Routes,
   useLocation,
@@ -12,56 +13,53 @@ import Heroes from 'src/containers/account/tabs/heroes';
 import ForceGraph from 'src/containers/forceGraph/forceGraph';
 import TableDiscipline from 'src/containers/gol/table';
 import IpfsSettings from 'src/containers/ipfsSettings';
-import Layout from './Layout/Layout';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import RoutedEnergy from '../../containers/energy/index';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { Citizenship } from 'src/types/citizenship';
-import React from 'react';
 import { routes } from 'src/routes';
+import Layout from './Layout/Layout';
+import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 // import Chat from './Chat/Chat';
 // import Items from './Items/Items';
 // import Skills from './Skills/Skills';
 // import Karma from './Karma/Karma';
+import Wallet from '../../containers/Wallet/Wallet';
 
 const RobotContext = React.createContext<{
-  passport: Citizenship | null;
-  address: undefined | string;
-  refetchData: () => void;
-  addRefetch: (func: () => void) => void;
+  address: string | null;
+  passport: Citizenship | undefined;
   isOwner: boolean;
+  addRefetch: (func: () => void) => void;
+  refetchData: () => void;
 }>({
-  passport: null,
   address: null,
+  passport: undefined,
   isOwner: false,
+  addRefetch: () => {},
+  refetchData: () => {},
 });
 
 export const useRobotContext = () => React.useContext(RobotContext);
 
 function IndexCheck() {
   // const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-  // const address = defaultAccount.account?.cyber?.bech32;
-
   return <Sigma />;
 }
 
 function Robot() {
   const params = useParams();
-  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const robotUrl = location.pathname.includes('/robot');
-
-  const { username } = params;
-  const nickname =
-    username?.includes('@') && username.substring(1, username.length);
+  const [passport, setPassport] = useState<Citizenship>();
+  const [refetchFuncs, setRefetch] = useState<(() => void)[]>([]);
 
   const {
     pocket: { defaultAccount, accounts },
@@ -69,42 +67,100 @@ function Robot() {
   } = useSelector(({ pocket, passport }: RootState) => {
     return {
       pocket,
-      passport,
+      passport: passport.data,
     };
   });
 
-  const [passport, setPassport] = useState<Citizenship | null>(
-    currentPassport.data &&
-      (currentPassport.data.extension.nickname === nickname || robotUrl)
-      ? currentPassport.data
-      : null
-  );
+  const { username } = params;
+  const nickname =
+    username?.includes('@') && username.substring(1, username.length);
 
   let { address } = params;
 
+  const robotUrl = location.pathname.includes(routes.robot.path);
+  let isOwner: boolean | undefined = false;
+
   if (robotUrl) {
-    address = defaultAccount.account?.cyber?.bech32;
+    address = defaultAccount.account?.cyber?.bech32 || currentPassport?.owner;
+    isOwner = true;
+  } else if (nickname && currentPassport?.extension.nickname === nickname) {
+    address = currentPassport.owner;
   }
 
-  const [refetchFuncs, setRefetch] = useState([]);
+  const currentRobotAddress = address || passport?.owner || null;
+
+  const checkIsOwner = useCallback(
+    (address: string | null) => {
+      if (!address) {
+        return false;
+      }
+
+      const ownedAddresses: string[] = [];
+
+      if (currentPassport) {
+        const { owner, extension } = currentPassport;
+
+        if (owner === address || extension.nickname === nickname) {
+          return true;
+        }
+        extension.addresses.forEach(({ address: addr }) => {
+          if (addr === address) {
+            ownedAddresses.push(addr);
+          }
+        });
+      }
+
+      if (accounts) {
+        Object.keys(accounts).forEach((account) => {
+          const { cyber } = accounts[account];
+
+          // only bostrom for now
+          if (!cyber) {
+            return false;
+          }
+
+          const { bech32, keys } = cyber;
+
+          if (bech32 === address && keys !== 'read-only') {
+            ownedAddresses.push(bech32);
+          }
+        });
+      }
+
+      if (ownedAddresses.includes(address)) {
+        return true;
+      }
+
+      return false;
+    },
+    [currentPassport, accounts, nickname]
+  );
+
+  if (isOwner === undefined) {
+    isOwner = checkIsOwner(currentRobotAddress);
+  }
+
+  // don't understand why not working after checkIsOwner
+  // isOwner = isOwner as boolean;
 
   useEffect(() => {
-    if (robotUrl && passport) {
+    if (robotUrl && currentPassport) {
       navigate(
         location.pathname.replace(
-          '/robot',
-          routes.robotPassport.getLink(passport.extension.nickname)
+          routes.robot.path,
+          routes.robotPassport.getLink(currentPassport.extension.nickname)
         ),
         {
           replace: true,
         }
       );
     }
-  }, [robotUrl, passport, navigate, location.pathname]);
+  }, [robotUrl, currentPassport, navigate, location.pathname]);
 
   useEffect(() => {
     if (
       !queryClient ||
+      isOwner ||
       // redirect from /robot to /@nickname
       (passport && passport.extension.nickname === nickname) ||
       (!address && !nickname)
@@ -147,15 +203,35 @@ function Robot() {
     navigate,
     robotUrl,
     passport,
+    isOwner,
     location.pathname,
   ]);
 
-  const handleAddRefetch = useCallback(
+  const addRefetch = useCallback(
     (func: () => void) => {
       setRefetch((items) => [...items, func]);
     },
     [setRefetch]
   );
+
+  const refetchData = useCallback(() => {
+    refetchFuncs.forEach((func) => func());
+  }, [refetchFuncs]);
+
+  const contextValue = useMemo(
+    () => ({
+      address: currentRobotAddress,
+      passport,
+      isOwner,
+      addRefetch,
+      refetchData,
+    }),
+    [passport, addRefetch, refetchData, isOwner, currentRobotAddress]
+  );
+
+  if (robotUrl && !address) {
+    return <Navigate to={routes.portal.path} />;
+  }
 
   // useEffect(() => {
   //   if (robotUrl && !(address || passport || currentPassport.loading)) {
@@ -164,84 +240,18 @@ function Robot() {
   //   }
   // }, [passport, address, navigate, robotUrl, currentPassport.loading]);
 
-  const currentRobotAddress = address || passport?.owner || null;
-
   return (
     <Routes>
       <Route
         path="/"
         element={
-          <RobotContext.Provider
-            value={useMemo(
-              () => ({
-                passport,
-                address: currentRobotAddress,
-                refetchData: () => {
-                  refetchFuncs.map((func) => func());
-                },
-                addRefetch: handleAddRefetch,
-                isOwner: ((address) => {
-                  // maybe better to refactor this to find user addresses first and then check by .includes()
-                  let isOwner = false;
-
-                  if (!address) {
-                    return false;
-                  }
-
-                  if (currentPassport.data) {
-                    if (currentPassport.data.owner === address) {
-                      isOwner = true;
-                    } else if (
-                      currentPassport.data.extension.nickname === nickname
-                    ) {
-                      isOwner = true;
-                    } else if (
-                      currentPassport.data.extension.addresses.find(
-                        (add) => add.address === address
-                      )
-                    ) {
-                      isOwner = true;
-                    }
-                  }
-
-                  if (
-                    accounts &&
-                    Object.keys(accounts).find((acc) => {
-                      const { cyber } = accounts[acc];
-
-                      // only bostrom for now
-                      if (!cyber) {
-                        return false;
-                      }
-
-                      const { bech32, keys } = cyber;
-
-                      return bech32 === address && keys !== 'read-only';
-                    })
-                  ) {
-                    isOwner = true;
-                  }
-
-                  return isOwner;
-                })(currentRobotAddress),
-              }),
-              [
-                passport,
-                handleAddRefetch,
-                refetchFuncs,
-                currentPassport.data,
-                nickname,
-                accounts,
-                currentRobotAddress,
-              ]
-            )}
-          >
+          <RobotContext.Provider value={contextValue}>
             <Layout />
           </RobotContext.Provider>
         }
       >
         <Route index element={<IndexCheck />} />
-        {/* <Route path="passport" element={<Navigate to="../" />} /> */}
+        <Route path="passport" element={<Wallet />} />
         <Route path="timeline" element={<TxsTable />} />
         <Route path="chat" element={<UnderConstruction />} />
         <Route path="badges" element={<TableDiscipline />} />
@@ -250,9 +260,11 @@ function Robot() {
         <Route path="skills" element={<UnderConstruction />} />
         <Route path="rights" element={<UnderConstruction />} />
 
-        {/* <Route path="sigma" element={<Sigma />} /> */}
         <Route path="sense" element={<Taverna />} />
-        <Route path="drive" element={<IpfsSettings />} />
+        <Route
+          path="drive"
+          element={isOwner ? <IpfsSettings /> : <UnderConstruction />}
+        />
         <Route path="log" element={<FeedsTab />} />
         <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />

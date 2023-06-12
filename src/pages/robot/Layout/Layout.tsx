@@ -25,6 +25,7 @@ const links = [
   {
     text: 'Timeline',
     link: './timeline',
+    name: 'txs',
     description: 'txs',
     icon: '🚥',
   },
@@ -80,7 +81,7 @@ const links = [
     name: 'drive',
     description: 'mb',
     link: './drive',
-    onlyOwner: true,
+    // onlyOwner: true,
     icon: '🟥',
   },
   {
@@ -138,53 +139,48 @@ function Layout() {
     // }
 
     return (
-      // div for sticky css working
-      <div>
-        <ul className={styles.links}>
-          {links.map((link, index) => {
-            if (link.onlyOwner && !isOwner) {
-              return null;
-            }
+      <ul className={styles.links}>
+        {links.map((link, index) => {
+          if (link.onlyOwner && !isOwner) {
+            return null;
+          }
 
-            return (
-              <li key={index} className={cx({ [styles.mirror]: isMirror })}>
-                {link.isDisabled ? (
-                  <span className={styles.noLink}>{link.text}</span>
-                ) : (
-                  <NavLink
-                    end
-                    className={({ isActive }) => {
-                      return cx({
-                        [styles.active]: isActive,
-                      });
-                    }}
-                    to={link.link}
-                  >
-                    <span className={styles.text}>{link.text}</span>
-                    <span className={styles.count}>
-                      {['karma', 'sigma'].includes(link.name) ? (
-                        <IconsNumber
-                          value={counts[link.name]}
-                          type={link.name === 'sigma' ? 'hydrogen' : link.name}
-                        />
-                      ) : (
-                        counts[link.name] || 0
-                      )}
-                    </span>
+          return (
+            <li key={index} className={cx({ [styles.mirror]: isMirror })}>
+              {link.isDisabled ? (
+                <span className={styles.noLink}>{link.text}</span>
+              ) : (
+                <NavLink
+                  end
+                  className={({ isActive }) => {
+                    return cx({
+                      [styles.active]: isActive,
+                    });
+                  }}
+                  to={link.link}
+                >
+                  <span className={styles.text}>{link.text}</span>
+                  <span className={styles.count}>
+                    {['karma', 'sigma'].includes(link.name) ? (
+                      <IconsNumber
+                        value={counts[link.name]}
+                        type={link.name === 'sigma' ? 'hydrogen' : link.name}
+                      />
+                    ) : (
+                      counts[link.name] || 0
+                    )}
+                  </span>
 
-                    {/* <span className={styles.new}>+123</span> */}
+                  {/* <span className={styles.new}>+123</span> */}
 
-                    <span className={styles.icon}>{link.icon}</span>
-                    <span className={styles.description}>
-                      {link.description}
-                    </span>
-                  </NavLink>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+                  <span className={styles.icon}>{link.icon}</span>
+                  <span className={styles.description}>{link.description}</span>
+                </NavLink>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     );
   }
 

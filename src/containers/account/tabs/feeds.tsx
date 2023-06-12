@@ -3,30 +3,30 @@ import { NoItems, SearchSnippet } from '../../../components';
 import { getTweet } from 'src/utils/search/utils';
 import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
 import { useRobotContext } from 'src/pages/robot/Robot';
+import Loader2 from 'src/components/ui/Loader2';
 
-function FeedsTab({ mobile }) {
-  const { address, addRefetch } = useRobotContext();
-
+function FeedsTab() {
   const [dataTweet, setDataTweet] = useState([]);
-  const [loaderTweets, setLoaderTweets] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const { address, addRefetch } = useRobotContext();
 
   const data = dataTweet;
 
   useEffect(() => {
-    const getFeeds = async () => {
+    async function getFeeds() {
       let responseTweet = null;
       let dataTweets = [];
       setDataTweet([]);
-      setLoaderTweets(true);
+      setLoading(true);
 
       responseTweet = await getTweet(address);
-      console.log(`responseTweet`, responseTweet);
       if (responseTweet && responseTweet.txs && responseTweet.total_count > 0) {
         dataTweets = [...dataTweets, ...responseTweet.txs];
       }
       setDataTweet(dataTweets);
-      setLoaderTweets(false);
-    };
+      setLoading(false);
+    }
     getFeeds();
 
     addRefetch(getFeeds);
@@ -34,11 +34,14 @@ function FeedsTab({ mobile }) {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onClickRank = () => {};
-  if (data && data.length > 0) {
-    return (
-      <ContainerGradientText>
-        <div className="container-contentItem" style={{ width: '100%' }}>
-          {data
+
+  return (
+    <ContainerGradientText>
+      <div className="container-contentItem" style={{ width: '100%' }}>
+        {loading ? (
+          <Loader2 />
+        ) : data.length > 0 ? (
+          data
             .sort((a, b) => {
               const x = Date.parse(a.timestamp);
               const y = Date.parse(b.timestamp);
@@ -51,19 +54,15 @@ function FeedsTab({ mobile }) {
                   key={i}
                   cid={cid}
                   data={item}
-                  mobile={mobile}
                   onClickRank={onClickRank}
                 />
               );
-            })}
-        </div>
-      </ContainerGradientText>
-    );
-  }
-  return (
-    <div className="container-contentItem">
-      <NoItems text="No feeds" />
-    </div>
+            })
+        ) : (
+          <NoItems text="No feeds" />
+        )}
+      </div>
+    </ContainerGradientText>
   );
 }
 

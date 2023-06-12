@@ -4,12 +4,8 @@ $activeLineWidth: 2px;
   display: grid;
   justify-content: center;
   align-items: flex-start;
-  grid-template-columns: 105px minmax(200px, 62%) 105px;
+  grid-template-columns: 1fr minmax(200px, 62%) 1fr;
   padding-bottom: 130px; // actionbars space
-
-  // > :nth-child(2) {
-  //   overflow-x: auto;
-  // }
 }
 
 .links {
@@ -18,11 +14,10 @@ $activeLineWidth: 2px;
     filter: blur(15px);
   }
 
-  padding-top: 30px;
-
   list-style-type: none;
   position: sticky;
-  top: 180px;
+  padding-top: 30px;
+  top: 120px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
   z-index: 1; // for active state overflow
 
