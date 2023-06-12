@@ -51,10 +51,10 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   // TODO: not show while loading passport
 
-  if ((noAccount || noPassport) && location.pathname !== routes.robot.path) {
+  if ((noAccount || noPassport) && location.pathname !== '/passport') {
     return (
       <ActionBarContainer>
-        {noAccount && <Button link={routes.robot.path}>Connect</Button>}
+        {noAccount && <Button link={'/passport'}>Connect</Button>}
 
         {noPassport && location.pathname !== routes.citizenship.path && (
           <Button link={routes.portal.path}>Get citizenship</Button>
