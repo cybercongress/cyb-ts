@@ -229,9 +229,9 @@ function Robot() {
     [passport, addRefetch, refetchData, isOwner, currentRobotAddress]
   );
 
-  if (robotUrl && !address) {
-    return <Navigate to={routes.portal.path} />;
-  }
+  // if (robotUrl && !address) {
+  //   return <Navigate to={routes.portal.path} />;
+  // }
 
   // useEffect(() => {
   //   if (robotUrl && !(address || passport || currentPassport.loading)) {
