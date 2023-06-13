@@ -130,10 +130,10 @@ function Send() {
     [accountBalances, tokenSelect, traseDenom]
   );
 
-  const updateFunc = () => {
+  const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
     dataSendTxs.refetch();
-  };
+  }, [dataSendTxs]);
 
   const stateActionBar = {
     tokenAmount,

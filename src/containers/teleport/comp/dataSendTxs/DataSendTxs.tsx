@@ -67,7 +67,7 @@ function DataSendTxs({
                 >
                   <div
                     style={{
-                      color: typeTx === 'Receive' ? '#FF5C00' : '#76FF03',
+                      color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
                     }}
                   >
                     {item.value.amount.map((item, i) => {
