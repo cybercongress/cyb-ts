@@ -20,6 +20,7 @@ import BigNumber from 'bignumber.js';
 import { Col, GridContainer } from './comp/grid';
 import Slider from './components/slider';
 import { getBalances } from './hooks';
+import ActionBar from './actionBar.send';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -38,6 +39,7 @@ function Send() {
   const [recipient, setRecipient] = useState<string>('');
   const [recipientBalances, setRecipientBalances] = useState(undefined);
   const [memoValue, setMemoValue] = useState('');
+  const [isExceeded, setIsExceeded] = useState<boolean>(false);
 
   useEffect(() => {
     setTokenAmount('');
@@ -95,75 +97,91 @@ function Send() {
     [accountBalances, tokenSelect, traseDenom]
   );
 
+  const updateFunc = () => {
+    setUpdate((item) => item + 1);
+  };
+
+  const stateActionBar = {
+    tokenAmount,
+    tokenSelect,
+    recipient,
+    updateFunc,
+    isExceeded,
+    memoValue,
+  };
+
   return (
-    <MainContainer width="62%">
-      <div
-        style={{
-          width: '375px',
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
-        <Input
-          value={recipient}
-          onChange={(e) => setRecipient(e.target.value)}
-          title="choose recipient"
-          color={Color.Yellow}
-        />
-        <GridContainer>
-          <Col>
-            <InputNumber
-              value={tokenAmount}
-              onValueChange={(value) => setTokenAmount(value)}
-              title="choose amount to send"
-            />
-            <AvailableAmount
-              accountBalances={accountBalances}
-              token={tokenSelect}
-              title="you have"
-            />
-          </Col>
-          <Col>
-            <Select
-              valueSelect={tokenSelect}
-              currentValue={
-                <OptionSelect
-                  text="choose"
-                  img={<DenomArr denomValue="choose" onlyImg />}
-                  value=""
-                  bgrImg
-                />
-              }
-              onChangeSelect={(item: string) => setTokenSelect(item)}
-              width="180px"
-              options={reduceOptions}
-              title="choose token to send"
-            />
-            <AvailableAmount
-              title="recipient have"
-              accountBalances={recipientBalances}
-              token={tokenSelect}
-            />
-          </Col>
-        </GridContainer>
+    <>
+      <MainContainer width="62%">
+        <div
+          style={{
+            width: '375px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          <Input
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+            title="choose recipient"
+            color={Color.Yellow}
+          />
+          <GridContainer>
+            <Col>
+              <InputNumber
+                value={tokenAmount}
+                onValueChange={(value) => setTokenAmount(value)}
+                title="choose amount to send"
+              />
+              <AvailableAmount
+                accountBalances={accountBalances}
+                token={tokenSelect}
+                title="you have"
+              />
+            </Col>
+            <Col>
+              <Select
+                valueSelect={tokenSelect}
+                currentValue={
+                  <OptionSelect
+                    text="choose"
+                    img={<DenomArr denomValue="choose" onlyImg />}
+                    value=""
+                    bgrImg
+                  />
+                }
+                onChangeSelect={(item: string) => setTokenSelect(item)}
+                width="180px"
+                options={reduceOptions}
+                title="choose token to send"
+              />
+              <AvailableAmount
+                title="recipient have"
+                accountBalances={recipientBalances}
+                token={tokenSelect}
+              />
+            </Col>
+          </GridContainer>
 
-        <Slider
-          tokenA={tokenSelect}
-          tokenAAmount={tokenAmount}
-          setPercentageBalanceHook={setPercentageBalanceHook}
-          accountBalances={accountBalances}
-        />
+          <Slider
+            tokenA={tokenSelect}
+            tokenAAmount={tokenAmount}
+            setPercentageBalanceHook={setPercentageBalanceHook}
+            accountBalances={accountBalances}
+          />
 
-        <Input
-          value={memoValue}
-          onChange={(e) => setMemoValue(e.target.value)}
-          title="type public message"
-          color={Color.Pink}
-        />
-      </div>
-    </MainContainer>
+          <Input
+            value={memoValue}
+            onChange={(e) => setMemoValue(e.target.value)}
+            title="type public message"
+            color={Color.Pink}
+          />
+        </div>
+      </MainContainer>
+      <ActionBar stateActionBar={stateActionBar} />
+    </>
   );
 }
 

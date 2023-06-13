@@ -30,6 +30,8 @@ function useGetBalancesIbc(client, denom) {
 
   useEffect(() => {
     const getBalance = async () => {
+      setBalanceIbc(null);
+      setDenomIbc(null);
       if (client && denom !== null) {
         const responseChainId = client.signer.chainId;
         if (responseChainId !== CYBER.CHAIN_ID) {

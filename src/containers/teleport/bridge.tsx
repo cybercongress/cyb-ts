@@ -5,19 +5,22 @@ import {
   MainContainer,
 } from 'src/components';
 import Select, { OptionSelect, SelectOption } from 'src/components/Select';
-import { Col, GridContainer } from './comp/grid';
-import Slider from './components/slider';
 import { CYBER } from 'src/utils/config';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { getBalances, useSetupIbcClient } from './hooks';
-import { networkList } from './utils';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmount } from 'src/utils/utils';
+import { networkList } from './utils';
+import { getBalances, useSetupIbcClient } from './hooks';
+import Slider from './components/slider';
+import { Col, GridContainer } from './comp/grid';
+import { TypeTxsT } from './type';
+import networks from '../../utils/networkListIbc';
+import ActionBar from './actionBar.bridge';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -34,11 +37,38 @@ function Bridge() {
   const [tokenAmount, setTokenAmount] = useState<string>('');
   const [networkA, setNetworkA] = useState<string>('');
   const [networkB, setNetworkB] = useState<string>(CYBER.CHAIN_ID);
+  const [typeTxs, setTypeTxs] = useState<TypeTxsT>('deposit');
+  const [sourceChannel, setSourceChannel] = useState<string | null>(null);
+  const [isExceeded, setIsExceeded] = useState<boolean>(false);
 
   const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
     tokenSelect,
-    networkA
+    typeTxs === 'deposit' ? networkA : networkB
   );
+
+  useEffect(() => {
+    if (
+      networkA &&
+      networkB &&
+      networkA !== CYBER.CHAIN_ID &&
+      networkB === CYBER.CHAIN_ID
+    ) {
+      setTypeTxs('deposit');
+      const { sourceChannelId } = networks[networkA];
+      setSourceChannel(sourceChannelId);
+    }
+
+    if (
+      networkA &&
+      networkB &&
+      networkA === CYBER.CHAIN_ID &&
+      networkB !== CYBER.CHAIN_ID
+    ) {
+      setTypeTxs('withdraw');
+      const { destChannelId } = networks[networkB];
+      setSourceChannel(destChannelId);
+    }
+  }, [networkB, networkA]);
 
   const reduceOptionsNetwork = (selected: string) => {
     const tempList: SelectOption[] = [];
@@ -146,87 +176,106 @@ function Bridge() {
     [accountBalances, balanceIbc, denomIbc, tokenSelect, traseDenom, networkA]
   );
 
+  const updateFunc = () => {
+    setUpdate((item) => item + 1);
+  };
+
+  const stateActionBar = {
+    tokenAmount,
+    tokenSelect,
+    updateFunc,
+    isExceeded,
+    typeTxs,
+    ibcClient,
+    denomIbc,
+    sourceChannel,
+    networkB,
+  };
+
   return (
-    <MainContainer width="62%">
-      <div
-        style={{
-          width: '375px',
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
-        <GridContainer>
-          <Col>
-            <InputNumber
-              value={tokenAmount}
-              onValueChange={(value) => setTokenAmount(value)}
-              title="choose amount to send"
-            />
+    <>
+      <MainContainer width="62%">
+        <div
+          style={{
+            width: '375px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          <GridContainer>
+            <Col>
+              <InputNumber
+                value={tokenAmount}
+                onValueChange={(value) => setTokenAmount(value)}
+                title="choose amount to send"
+              />
+              <AvailableAmount
+                accountBalances={useGetAccountBalancesToken(networkA)}
+                token={useGetDenomToken(networkA)}
+              />
+            </Col>
+            <Col>
+              <Select
+                valueSelect={tokenSelect}
+                currentValue={
+                  <OptionSelect
+                    text="choose"
+                    img={<DenomArr denomValue="choose" onlyImg />}
+                    value=""
+                    bgrImg
+                  />
+                }
+                onChangeSelect={(item: string) => setTokenSelect(item)}
+                width="180px"
+                options={reduceOptions}
+                title="choose token to send"
+              />
+              <Select
+                valueSelect={networkA}
+                currentValue={
+                  <OptionSelect
+                    text="choose"
+                    img={<DenomArr denomValue="choose" onlyImg />}
+                    value=""
+                    bgrImg
+                  />
+                }
+                onChangeSelect={(item: string) => setNetworkA(item)}
+                width="180px"
+                title="choose source network"
+                options={reduceOptionsNetwork(networkB)}
+              />
+            </Col>
+          </GridContainer>
+
+          <Slider
+            tokenA={useGetDenomToken(networkA)}
+            tokenAAmount={tokenAmount}
+            setPercentageBalanceHook={setPercentageBalanceHook}
+            // coinReverseAction={() => tokenChange()}
+            accountBalances={useGetAccountBalancesToken(networkA)}
+          />
+
+          <GridContainer>
             <AvailableAmount
-              accountBalances={useGetAccountBalancesToken(networkA)}
-              token={useGetDenomToken(networkA)}
+              accountBalances={useGetAccountBalancesToken(networkB)}
+              token={useGetDenomToken(networkB)}
             />
-          </Col>
-          <Col>
+
             <Select
-              valueSelect={tokenSelect}
-              currentValue={
-                <OptionSelect
-                  text="choose"
-                  img={<DenomArr denomValue="choose" onlyImg />}
-                  value=""
-                  bgrImg
-                />
-              }
-              onChangeSelect={(item: string) => setTokenSelect(item)}
+              valueSelect={networkB}
+              onChangeSelect={(item: string) => setNetworkB(item)}
               width="180px"
-              options={reduceOptions}
-              title="choose token to send"
+              options={reduceOptionsNetwork(networkA)}
+              title="destination network"
             />
-            <Select
-              valueSelect={networkA}
-              currentValue={
-                <OptionSelect
-                  text="choose"
-                  img={<DenomArr denomValue="choose" onlyImg />}
-                  value=""
-                  bgrImg
-                />
-              }
-              onChangeSelect={(item: string) => setNetworkA(item)}
-              width="180px"
-              title="choose source network"
-              options={reduceOptionsNetwork(networkB)}
-            />
-          </Col>
-        </GridContainer>
-
-        <Slider
-          tokenA={useGetDenomToken(networkA)}
-          tokenAAmount={tokenAmount}
-          setPercentageBalanceHook={setPercentageBalanceHook}
-          // coinReverseAction={() => tokenChange()}
-          accountBalances={useGetAccountBalancesToken(networkA)}
-        />
-
-        <GridContainer>
-          <AvailableAmount
-            accountBalances={useGetAccountBalancesToken(networkB)}
-            token={useGetDenomToken(networkB)}
-          />
-
-          <Select
-            valueSelect={networkB}
-            onChangeSelect={(item: string) => setNetworkB(item)}
-            width="180px"
-            options={reduceOptionsNetwork(networkA)}
-            title="destination network"
-          />
-        </GridContainer>
-      </div>
-    </MainContainer>
+          </GridContainer>
+        </div>
+      </MainContainer>
+      <ActionBar stateActionBar={stateActionBar} />
+    </>
   );
 }
 

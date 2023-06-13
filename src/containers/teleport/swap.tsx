@@ -16,9 +16,10 @@ import {
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import TokenSetterSwap from './comp/TokenSetterSwap';
-import { getBalances, useGetSwapPrice } from './hooks';
+import { getBalances, useGetParams, useGetSwapPrice } from './hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
 import Slider from './components/slider';
+import ActionBar from './actionBar.swap';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -31,6 +32,7 @@ function Swap() {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const poolsData = usePoolListInterval({ refetchInterval: 50000 });
   const [update, setUpdate] = useState(0);
+  const params = useGetParams();
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
@@ -131,8 +133,6 @@ function Swap() {
     [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount, traseDenom]
   );
 
-  console.log('swapPrice', poolPrice);
-
   const useGetSlippage = useMemo(() => {
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
@@ -150,9 +150,7 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  // console.log('useGetSlippage', useGetSlippage);
-
-  console.log('poolPrice', poolPrice);
+  console.log('useGetSlippage', useGetSlippage);
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {
@@ -213,50 +211,64 @@ function Swap() {
     [accountBalances, tokenA, traseDenom]
   );
 
+  const stateActionBar = {
+    tokenAAmount,
+    tokenA,
+    tokenB,
+    params,
+    selectedPool,
+    updateFunc,
+    isExceeded,
+    swapPrice,
+  };
+
   return (
-    <MainContainer width="62%">
-      <div
-        style={{
-          width: '375px',
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
-        <TokenSetterSwap
-          id="tokenAAmount"
-          listTokens={totalSupply}
-          accountBalances={accountBalances}
-          tokenAmountValue={tokenAAmount}
-          valueSelect={tokenA}
-          selected={tokenB}
-          onChangeSelect={setTokenA}
-          amountChangeHandler={amountChangeHandler}
-        />
+    <>
+      <MainContainer width="62%">
+        <div
+          style={{
+            width: '375px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          <TokenSetterSwap
+            id="tokenAAmount"
+            listTokens={totalSupply}
+            accountBalances={accountBalances}
+            tokenAmountValue={tokenAAmount}
+            valueSelect={tokenA}
+            selected={tokenB}
+            onChangeSelect={setTokenA}
+            amountChangeHandler={amountChangeHandler}
+          />
 
-        <Slider
-          tokenA={tokenA}
-          tokenB={tokenB}
-          tokenAAmount={tokenAAmount}
-          setPercentageBalanceHook={setPercentageBalanceHook}
-          coinReverseAction={() => tokenChange()}
-          accountBalances={accountBalances}
-          getPrice={getPrice}
-        />
+          <Slider
+            tokenA={tokenA}
+            tokenB={tokenB}
+            tokenAAmount={tokenAAmount}
+            setPercentageBalanceHook={setPercentageBalanceHook}
+            coinReverseAction={() => tokenChange()}
+            accountBalances={accountBalances}
+            getPrice={getPrice}
+          />
 
-        <TokenSetterSwap
-          id="tokenBAmount"
-          listTokens={totalSupply}
-          accountBalances={accountBalances}
-          tokenAmountValue={tokenBAmount}
-          valueSelect={tokenB}
-          selected={tokenA}
-          onChangeSelect={setTokenB}
-          amountChangeHandler={amountChangeHandler}
-        />
-      </div>
-    </MainContainer>
+          <TokenSetterSwap
+            id="tokenBAmount"
+            listTokens={totalSupply}
+            accountBalances={accountBalances}
+            tokenAmountValue={tokenBAmount}
+            valueSelect={tokenB}
+            selected={tokenA}
+            onChangeSelect={setTokenB}
+            amountChangeHandler={amountChangeHandler}
+          />
+        </div>
+      </MainContainer>
+      <ActionBar stateActionBar={stateActionBar} />
+    </>
   );
 }
 
