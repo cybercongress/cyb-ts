@@ -55,11 +55,7 @@ module.exports = {
       src: path.resolve(__dirname, 'src/'),
       components: path.resolve(__dirname, 'src', 'components'),
       images: path.resolve(__dirname, 'src', 'image'),
-      // rustpython: path.resolve(__dirname, './rustpython_pkg'),
-      // rune: path.resolve(__dirname, './src/rune-wasm/pkg'),
       rune: path.resolve(__dirname, './rune_build'),
-      //      rune: path.resolve(__dirname, './src/wasm/rune/pkg'),
-      // rhai: path.resolve(__dirname, './rhai_wasm'),
     },
   },
   plugins: [

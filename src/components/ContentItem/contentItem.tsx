@@ -38,8 +38,8 @@ function ContentItem({
       if (
         pyStatus === 'pending' &&
         status === 'completed' &&
-        isTextContent(content?.meta.mime) &&
-        content?.contentType === 'particle'
+        isTextContent(content?.meta.mime)
+        //&& content?.contentType === 'particle'
         // content?.meta.mime.indexOf('text/plain') !== -1
       ) {
         const text = (await parseRawIpfsData(cid, content))?.content;

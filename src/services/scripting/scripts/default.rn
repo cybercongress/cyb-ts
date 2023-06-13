@@ -3,27 +3,30 @@ pub fn pass() {
 }
 
 pub fn update_cid(cid) {
-    #{ "cid": cid, "action": "update" }
+    #{ "cid": cid, "action": "update_cid" }
 }
 
 pub fn update_content(content) {
-    #{ "content": content, "action": "update" }
+    #{ "content": content, "action": "update_content" }
 }
 
-pub async fn react_to_particle(cid, content_type, preview) {
-    println!("Particle: {} {} {}", cid, content_type, preview);
+
+pub async fn react_to_particle(cid, content_type, content) {
     let object = #{ "cid": cid, "action": "pass" };
 
-    if content_type == "particle" {
-        let data = preview.split(".").next().unwrap();
-        let result = cyb::get_passport_by_nickname(data).await;
-        cyb::log("particle " + result + " " +data + " " + preview + " " + cyb::context.cid);
-        let result1 = cyb::get_passport_by_nickname1(data).await;
-        dbg(result1);
-        cyb::log("particleLong " + result1["extension"]["particle"]);
-        return update_content(result)
+    if (content_type == "particle" || content_type == "text")  && content.contains(".") {
+        let content_iter = content.split(".");
+        let username = content_iter.next().unwrap();
+        let ext = content_iter.next().unwrap();
+        if ext == "moon" {
+        let result = cyb::get_passport_by_nickname(username).await;
+        let particleCid = result["extension"]["particle"];
+
+        //cyb::log("particle " + " " + username + " " + cid + " to " + particleCid);
+        cyb::log(`Change ${cid} to ${particleCid} based on ${username} particle`);
+        return update_cid(particleCid)
+        }
     }
 
     pass()
 }
-
