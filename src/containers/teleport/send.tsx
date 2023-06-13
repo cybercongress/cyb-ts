@@ -13,14 +13,21 @@ import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getDisplayAmount, reduceBalances } from 'src/utils/utils';
+import {
+  getDisplayAmount,
+  getDisplayAmountReverce,
+  reduceBalances,
+} from 'src/utils/utils';
 import { OptionSelect, SelectOption } from 'src/components/Select';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
-import { Col, GridContainer } from './comp/grid';
+import { Option } from 'src/types';
+import { ObjKeyValue } from 'src/types/data';
+import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import Slider from './components/slider';
 import { getBalances } from './hooks';
 import ActionBar from './actionBar.send';
+import { getMyTokenBalanceNumber } from './utils';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -34,16 +41,39 @@ function Send() {
     addressActive,
     update
   );
-  const [tokenSelect, setTokenSelect] = useState<string>('');
+  const [tokenSelect, setTokenSelect] = useState<string>(tokenDefaultValue);
   const [tokenAmount, setTokenAmount] = useState<string>('');
   const [recipient, setRecipient] = useState<string>('');
-  const [recipientBalances, setRecipientBalances] = useState(undefined);
-  const [memoValue, setMemoValue] = useState('');
+  const [recipientBalances, setRecipientBalances] =
+    useState<Option<ObjKeyValue>>(undefined);
+  const [memoValue, setMemoValue] = useState<string>('');
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
 
   useEffect(() => {
     setTokenAmount('');
   }, [tokenSelect]);
+
+  useEffect(() => {
+    // valid send
+    let exceeded = true;
+    const myATokenBalance = getMyTokenBalanceNumber(
+      tokenSelect,
+      accountBalances
+    );
+
+    const [{ coinDecimals }] = traseDenom(tokenSelect);
+
+    const validTokenAmount =
+      parseFloat(getDisplayAmountReverce(tokenAmount, coinDecimals)) <=
+        myATokenBalance && myATokenBalance > 0;
+    const validRecipient = recipient.match(PATTERN_CYBER);
+
+    if (validRecipient && validTokenAmount) {
+      exceeded = false;
+    }
+
+    setIsExceeded(exceeded);
+  }, [recipient, tokenSelect, accountBalances, tokenAmount, traseDenom]);
 
   useEffect(() => {
     const getBalancesRecipient = async () => {
@@ -113,15 +143,7 @@ function Send() {
   return (
     <>
       <MainContainer width="62%">
-        <div
-          style={{
-            width: '375px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-          }}
-        >
+        <TeleportContainer>
           <Input
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
@@ -178,7 +200,7 @@ function Send() {
             title="type public message"
             color={Color.Pink}
           />
-        </div>
+        </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />
     </>

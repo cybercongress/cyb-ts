@@ -20,6 +20,7 @@ import { getBalances, useGetParams, useGetSwapPrice } from './hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
 import Slider from './components/slider';
 import ActionBar from './actionBar.swap';
+import { TeleportContainer } from './comp/grid';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -225,15 +226,7 @@ function Swap() {
   return (
     <>
       <MainContainer width="62%">
-        <div
-          style={{
-            width: '375px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-          }}
-        >
+        <TeleportContainer>
           <TokenSetterSwap
             id="tokenAAmount"
             listTokens={totalSupply}
@@ -265,7 +258,7 @@ function Swap() {
             onChangeSelect={setTokenB}
             amountChangeHandler={amountChangeHandler}
           />
-        </div>
+        </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />
     </>

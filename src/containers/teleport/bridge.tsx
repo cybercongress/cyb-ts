@@ -17,7 +17,7 @@ import { getDisplayAmount } from 'src/utils/utils';
 import { networkList } from './utils';
 import { getBalances, useSetupIbcClient } from './hooks';
 import Slider from './components/slider';
-import { Col, GridContainer } from './comp/grid';
+import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import { TypeTxsT } from './type';
 import networks from '../../utils/networkListIbc';
 import ActionBar from './actionBar.bridge';
@@ -195,15 +195,7 @@ function Bridge() {
   return (
     <>
       <MainContainer width="62%">
-        <div
-          style={{
-            width: '375px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-          }}
-        >
+        <TeleportContainer>
           <GridContainer>
             <Col>
               <InputNumber
@@ -272,7 +264,7 @@ function Bridge() {
               title="destination network"
             />
           </GridContainer>
-        </div>
+        </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />
     </>

@@ -23,8 +23,19 @@ export const checkInactiveFunc = (
   return true;
 };
 
+function getMyTokenBalance(token, indexer) {
+  if (indexer === null) {
+    return 0;
+  }
+  const balance = Number(Number(indexer[token])).toFixed(2);
+  if (balance !== 'NaN') {
+    return balance;
+  }
+  return 0;
+}
+
 export function getMyTokenBalanceNumber(denom: string, indexer) {
-  return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
+  return Number(getMyTokenBalance(denom, indexer));
 }
 
 function pow(a) {
@@ -33,17 +44,6 @@ function pow(a) {
     result *= 10;
   }
   return result;
-}
-
-export function getMyTokenBalance(token, indexer) {
-  if (indexer === null) {
-    return `My Balance: 0`;
-  }
-  const balance = Number(Number(indexer[token])).toFixed(2);
-  if (balance !== 'NaN') {
-    return `My Balance: ${balance}`;
-  }
-  return `My Balance: 0`;
 }
 
 export const getCoinDecimals = (amount, token) => {

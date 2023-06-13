@@ -9,4 +9,8 @@ function Col({ children }: { children: React.ReactNode }) {
   return <div className={styles.containerCol}>{children}</div>;
 }
 
-export { GridContainer, Col };
+function TeleportContainer({ children }: { children: React.ReactNode }) {
+  return <div className={styles.teleportContainer}>{children}</div>;
+}
+
+export { GridContainer, Col, TeleportContainer };
