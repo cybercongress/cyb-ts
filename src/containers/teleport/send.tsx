@@ -28,6 +28,8 @@ import Slider from './components/slider';
 import { getBalances } from './hooks';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from './utils';
+import useGetSendTxsByAddress from './hooks/useGetSendTxsByAddress';
+import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -37,6 +39,7 @@ function Send() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
+  const dataSendTxs = useGetSendTxsByAddress(addressActive);
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
@@ -129,6 +132,7 @@ function Send() {
 
   const updateFunc = () => {
     setUpdate((item) => item + 1);
+    dataSendTxs.refetch();
   };
 
   const stateActionBar = {
@@ -200,6 +204,9 @@ function Send() {
             title="type public message"
             color={Color.Pink}
           />
+        </TeleportContainer>
+        <TeleportContainer>
+          <DataSendTxs dataSendTxs={dataSendTxs} accountUser={addressActive} />
         </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />
