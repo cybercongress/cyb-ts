@@ -5,6 +5,7 @@ import { Option } from 'src/types';
 import { IbcDenomsArr } from 'src/types/ibc';
 import coinDecimalsConfig from '../../utils/configToken';
 import { MyPoolsT } from './type';
+import { getDisplayAmount } from 'src/utils/utils';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
@@ -70,7 +71,7 @@ const getCounterPairAmount = (amount, decimals, swapPrice) => {
   return inputAmountBN
     .dividedBy(swapPrice)
     .dp(decimals, BigNumber.ROUND_FLOOR)
-    .toString();
+    .toNumber();
 };
 
 export function calculateCounterPairAmount(values, e, state) {
@@ -202,6 +203,77 @@ export function getPoolToken(
   });
 
   return myPools;
+}
+
+export function calculateSlippage(swapAmount: number, poolReserve: number) {
+  let slippage = new BigNumber(2)
+    .multipliedBy(swapAmount)
+    .dividedBy(poolReserve)
+    .toNumber();
+
+  if (slippage > 0.997) {
+    slippage = 0.997;
+  }
+
+  return slippage;
+}
+
+export function calculatePairAmount(inputAmount: string, state) {
+  const {
+    tokenB,
+    tokenA,
+    tokenBPoolAmount,
+    tokenAPoolAmount,
+    coinDecimalsA,
+    coinDecimalsB,
+    isReverse,
+  } = state;
+
+  let counterPairAmount = new BigNumber(0);
+  let swapPrice = new BigNumber(0);
+  let price = new BigNumber(0);
+  const swapFeeRatio = new BigNumber(1).minus(0.003); // TO DO get params
+
+  const poolAmountA = new BigNumber(
+    getDisplayAmount(tokenAPoolAmount, coinDecimalsA)
+  );
+  const poolAmountB = new BigNumber(
+    getDisplayAmount(tokenBPoolAmount, coinDecimalsB)
+  );
+
+  const powA = new BigNumber(1).multipliedBy(
+    new BigNumber(10).pow(coinDecimalsA)
+  );
+  const powB = new BigNumber(1).multipliedBy(
+    new BigNumber(10).pow(coinDecimalsB)
+  );
+
+  const amount = new BigNumber(inputAmount);
+  const amount2 = amount.multipliedBy(2);
+
+  if (!isReverse) {
+    swapPrice = poolAmountA.plus(amount2).dividedBy(poolAmountB);
+    counterPairAmount = amount
+      .dividedBy(swapPrice.multipliedBy(swapFeeRatio))
+      .dp(coinDecimalsB, BigNumber.ROUND_FLOOR);
+  } else {
+    swapPrice = poolAmountB.plus(amount2).dividedBy(poolAmountA);
+    counterPairAmount = amount
+      .multipliedBy(new BigNumber(1).dividedBy(swapFeeRatio))
+      .dividedBy(swapPrice)
+      .dp(coinDecimalsA, BigNumber.ROUND_FLOOR);
+  }
+
+  if ([tokenA, tokenB].sort()[0] !== tokenA || isReverse) {
+    price = new BigNumber(1)
+      .dividedBy(swapPrice)
+      .dividedBy(powA)
+      .dividedBy(powB);
+  } else {
+    price = new BigNumber(swapPrice).dividedBy(powA).dividedBy(powB);
+  }
+
+  return { counterPairAmount, price };
 }
 
 export const networkList = {

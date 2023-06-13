@@ -62,6 +62,9 @@ import Sigma from './containers/sigma';
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
+import Swap from './containers/teleport/swap';
+import Send from './containers/teleport/send';
+import Bridge from './containers/teleport/bridge';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -141,7 +144,12 @@ function AppRouter() {
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/sixthSense" element={<Taverna />} />
-          <Route path="/teleport" element={<TeleportTs />} />
+          {/* <Route path="/teleport" element={<TeleportTs />} /> */}
+          <Route path="/teleport">
+            <Route path="swap" element={<Swap />} />
+            <Route path="send" element={<Send />} />
+            <Route path="bridge" element={<Bridge />} />
+          </Route>
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />

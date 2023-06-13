@@ -1,0 +1,11 @@
+.containerGridContainer {
+  display: grid;
+  grid-template-columns: 180px 180px;
+  gap: 20px;
+}
+
+.containerCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

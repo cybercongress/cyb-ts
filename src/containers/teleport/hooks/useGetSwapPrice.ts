@@ -19,10 +19,10 @@ function useGetSwapPrice(
     if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
       if ([tokenA, tokenB].sort()[0] !== tokenA) {
         orderPrice = poolAmountB.dividedBy(poolAmountA);
-        orderPrice = orderPrice.multipliedBy(0.97);
+        // orderPrice = orderPrice.multipliedBy(0.97);
       } else {
         orderPrice = poolAmountA.dividedBy(poolAmountB);
-        orderPrice = orderPrice.multipliedBy(1.03);
+        // orderPrice = orderPrice.multipliedBy(1.03);
       }
     }
 

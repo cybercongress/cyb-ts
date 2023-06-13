@@ -1,8 +1,7 @@
 import { NumericFormat } from 'react-number-format';
 import BigNumber from 'bignumber.js';
-import Input from '../Input';
-import LinearGradientContainer from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { useState } from 'react';
+import Input from '../Input';
 
 export type Props = {
   value: string;
@@ -10,13 +9,14 @@ export type Props = {
   onChange?: Props['onValueChange'];
   // TODO: delete
   onValueChange: (val: string, event: any) => void;
+  id?: string;
+  title?: string;
 };
 
 function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
   const [focused, setFocused] = useState(false);
 
   return (
-    // <LinearGradientContainer active={focused}>
     <NumericFormat
       value={new BigNumber(value).toNumber()}
       onValueChange={(values, sourceInfo) => {
@@ -34,7 +34,6 @@ function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
       focusedProps={focused}
       {...props}
     />
-    // </LinearGradientContainer>
   );
 }
 

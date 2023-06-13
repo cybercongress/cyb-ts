@@ -14,6 +14,7 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { Option } from 'src/types';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { RootState } from 'src/redux/store';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
@@ -30,7 +31,6 @@ import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
 import { TypeTab } from './type';
-import { RootState } from 'src/redux/store';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -48,7 +48,7 @@ function Warp() {
     update
   );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
-  const poolsData = usePoolListInterval({ refetchInterval: 50000 });
+  const { poolsData } = usePoolListInterval({ refetchInterval: 50000 });
 
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
@@ -63,12 +63,7 @@ function Warp() {
     useState<Option<{ [key: string]: MyPoolsT }>>(undefined);
   const [selectMyPool, setSelectMyPool] = useState('');
 
-  const swapPrice = useGetSwapPrice(
-    tokenA,
-    tokenB,
-    tokenAPoolAmount,
-    tokenBPoolAmount
-  );
+  const { swapPrice } = useGetSwapPrice(tokenA, tokenB, selectedPool, update);
   const firstEffectOccured = useRef(false);
 
   useEffect(() => {
