@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import styles from '../styles.scss';
+import { CSSProperties } from 'react';
 
 const getDecimal = (number, float) => {
   const nstring = new BigNumber(number).toString();
@@ -15,6 +16,17 @@ const getDecimal = (number, float) => {
   return result;
 };
 
+type Props = {
+  text: string;
+  value: number;
+  tooltipStatusImg?: boolean;
+  styleValue?: object;
+  float?: boolean;
+  customText?: string;
+  marginContainer?: string;
+  styleContainer?: CSSProperties;
+};
+
 function FormatNumberTokens({
   text,
   value,
@@ -23,14 +35,16 @@ function FormatNumberTokens({
   float,
   customText,
   marginContainer,
-  ...props
-}) {
+  styleContainer,
+}: Props) {
   const decimal = getDecimal(value, float);
   return (
     <div
-      style={{ gridTemplateColumns: text || customText ? '1fr 20px' : '1fr' }}
+      style={{
+        gridTemplateColumns: text || customText ? '1fr 20px' : '1fr',
+        ...styleContainer,
+      }}
       className={styles.containerFormatNumberTokens}
-      {...props}
     >
       <div
         style={styleValue}

@@ -78,7 +78,7 @@ function Row({ value, title }) {
 }
 
 // eslint-disable-next-line import/no-unused-modules
-export function AmountDenom({ amountValue, denom }) {
+export function AmountDenom({ amountValue, denom, styleValue }) {
   const { traseDenom } = useIbcDenom();
 
   let amount = 0;
@@ -88,7 +88,9 @@ export function AmountDenom({ amountValue, denom }) {
     amount = convertAmount(amountValue, coinDecimals);
   }
 
-  return <FormatNumberTokens text={denom} value={amount} />;
+  return (
+    <FormatNumberTokens text={denom} value={amount} styleValue={styleValue} />
+  );
 }
 
 function MultiSend({ msg }) {

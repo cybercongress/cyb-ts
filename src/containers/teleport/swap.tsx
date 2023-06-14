@@ -21,6 +21,8 @@ import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
 import Slider from './components/slider';
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from './comp/grid';
+import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
+import DataSwapTxs from './comp/dataSwapTxs/DataSwapTxs';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -28,11 +30,14 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 function Swap() {
   const { traseDenom } = useIbcDenom();
   const queryClient = useQueryClient();
-
+  const [update, setUpdate] = useState(0);
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const poolsData = usePoolListInterval({ refetchInterval: 50000 });
-  const [update, setUpdate] = useState(0);
+  const dataSwapTxs = useGetSendTxsByAddressByType(
+    addressActive,
+    'tendermint.liquidity.v1beta1.MsgSwapWithinBatch'
+  );
+  const poolsData = usePoolListInterval({  });
   const params = useGetParams();
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
@@ -151,7 +156,7 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  console.log('useGetSlippage', useGetSlippage);
+  // console.log('useGetSlippage', useGetSlippage);
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {
@@ -178,7 +183,6 @@ function Swap() {
   }, [poolPrice, tokenA, tokenB, traseDenom]);
 
   function tokenChange() {
-    console.log('tokenChange');
     const A = tokenB;
     const B = tokenA;
 
@@ -188,9 +192,10 @@ function Swap() {
     setTokenBAmount('');
   }
 
-  const updateFunc = () => {
+  const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-  };
+    // dataSwapTxs.refetch();
+  }, []);
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
@@ -258,6 +263,9 @@ function Swap() {
             onChangeSelect={setTokenB}
             amountChangeHandler={amountChangeHandler}
           />
+        </TeleportContainer>
+        <TeleportContainer>
+          <DataSwapTxs dataTxs={dataSwapTxs} />
         </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />

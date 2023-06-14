@@ -28,8 +28,8 @@ import Slider from './components/slider';
 import { getBalances } from './hooks';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from './utils';
-import useGetSendTxsByAddress from './hooks/useGetSendTxsByAddress';
 import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
+import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -39,7 +39,10 @@ function Send() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const dataSendTxs = useGetSendTxsByAddress(addressActive);
+  const dataSendTxs = useGetSendTxsByAddressByType(
+    addressActive,
+    'cosmos.bank.v1beta1.MsgSend'
+  );
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update

@@ -10,8 +10,8 @@ import { CYBER } from '../../../utils/config';
 const { CYBER_INDEX_HTTPS } = CYBER;
 
 const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: "{cosmos.bank.v1beta1.MsgSend}"}, 
+  query MyQuery($address: _text, $limit: bigint, $offset: bigint, $type: _text) {
+  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: $type}, 
     order_by: {transaction: {block: {height: desc}}}) {
     transaction_hash
     value
@@ -29,7 +29,10 @@ const messagesByAddress = gql(`
 
 const limit = '5';
 
-function useGetSendTxsByAddress(address: Nullable<AccountValue>) {
+function useGetSendTxsByAddressByType(
+  address: Nullable<AccountValue>,
+  type: string
+) {
   const [addressBech32, setAddressBech32] = useState<Option<string>>();
   const {
     status,
@@ -40,17 +43,21 @@ function useGetSendTxsByAddress(address: Nullable<AccountValue>) {
     hasNextPage,
     refetch,
   } = useInfiniteQuery(
-    ['messagesByAddressGql', addressBech32],
+    ['messagesByAddressGql', addressBech32, type],
     async ({ pageParam = 0 }) => {
       const res = await request(CYBER_INDEX_HTTPS, messagesByAddress, {
         address: `{${addressBech32}}`,
         limit,
         offset: new BigNumber(limit).multipliedBy(pageParam).toString(),
+        type: `{${type}}`,
       });
       return { data: res.messages_by_address, page: pageParam };
     },
     {
-      enabled: Boolean(addressBech32),
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnMount: false,
+      enabled: Boolean(addressBech32) && Boolean(type),
       getNextPageParam: (lastPage) => {
         if (lastPage.data && lastPage.data.length === 0) {
           return undefined;
@@ -61,6 +68,8 @@ function useGetSendTxsByAddress(address: Nullable<AccountValue>) {
       },
     }
   );
+
+  console.log('data', data)
 
   useEffect(() => {
     if (address) {
@@ -79,4 +88,4 @@ function useGetSendTxsByAddress(address: Nullable<AccountValue>) {
   };
 }
 
-export default useGetSendTxsByAddress;
+export default useGetSendTxsByAddressByType;
