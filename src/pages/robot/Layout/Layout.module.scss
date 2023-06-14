@@ -14,9 +14,20 @@ $activeLineWidth: 2px;
     filter: blur(15px);
   }
 
+  $headerHeight: 120px;
+  $actionBarHeight: 110px;
+
   list-style-type: none;
   position: sticky;
-  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - $headerHeight - $actionBarHeight);
+  max-height: 900px; // macbook 15'
+
+  // overflow-y: auto;
+  // overflow-x: hidden;
+
   top: 120px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
   z-index: 1; // for active state overflow
@@ -47,7 +58,7 @@ $activeLineWidth: 2px;
       .text {
         grid-area: text;
         display: none;
-        color: rgba(54, 214, 174, 0.38);
+        color: #36d6ae;
         text-transform: lowercase;
         justify-self: flex-end;
       }
@@ -85,8 +96,9 @@ $activeLineWidth: 2px;
 
       .icon {
         grid-area: icon;
-        position: relative;
-        top: 1.5px;
+        line-height: 100%;
+        color: white;
+        font-size: 20px;
       }
 
       &::after,

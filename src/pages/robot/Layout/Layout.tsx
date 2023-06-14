@@ -20,7 +20,8 @@ const links = [
     link: '.',
     description: 'hydrogen',
     name: 'sigma',
-    icon: <img src={icon} />,
+    icon: 'Σ',
+    // icon: <img src={icon} />,
   },
   {
     text: 'Timeline',
