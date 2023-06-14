@@ -180,6 +180,10 @@ module.exports = {
           fullySpecified: false,
         },
       },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
+      },
       // {
       //   test: /\.wasm$/,
       //   type: 'webassembly/sync',

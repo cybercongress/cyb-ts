@@ -21,7 +21,12 @@ import {
   fetchIpfsContent,
   reconnectToCyberSwarm,
 } from 'src/utils/ipfs/utils-ipfs';
-import { AppIPFS, IpfsContentSource } from 'src/utils/ipfs/ipfs';
+import {
+  AppIPFS,
+  IPFSContent,
+  IPFSContentMaybe,
+  IpfsContentSource,
+} from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -37,12 +42,55 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import { reactToParticle } from '../scripting/engine';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
 
 function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
+}
+
+async function postProcessIpfContent<T>(
+  item: QueueItem<T>,
+  content: IPFSContentMaybe,
+  node: AppIPFS
+): Promise<IPFSContentMaybe> {
+  const { cid, controller, source } = item;
+
+  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
+    console.log('---content MOON', content, item);
+  }
+
+  // Preload data for text items
+  const isTextData =
+    (content?.contentType === 'text' || content?.contentType === 'particle') &&
+    content?.result instanceof Uint8Array;
+
+  const text = isTextData ? uint8ArrayToAsciiString(content.result) : '';
+
+  const mutation = await reactToParticle(cid, content?.contentType, text);
+  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
+    console.log('---mutation', mutation, cid, content, text);
+  }
+
+  if (mutation.action === 'update_cid') {
+    console.log('update_cid', mutation, mutation.cid);
+    // refectch content from new cid
+    const contentUpdated = await fetchIpfsContent<T>(mutation!.cid, source, {
+      controller,
+      node,
+    });
+    console.log('update_cid', contentUpdated);
+    return { ...contentUpdated, modified: true };
+  }
+  if (mutation.action === 'update_content') {
+    // TODO: NEED to fix content result uint8array vs string
+    return content; // { ...content, result: mutation.content, modified: true };
+  }
+
+  return content;
 }
 
 const strategies = {
@@ -137,13 +185,15 @@ class QueueManager<T> {
 
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(() =>
+    return promiseToObservable(async () => {
       // fetch by item source
-      fetchIpfsContent<T>(cid, source, {
+      const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      })
-    ).pipe(
+      }).then((c) => postProcessIpfContent(item, c, this.node!));
+
+      return content; // pass
+    }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>

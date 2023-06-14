@@ -14,7 +14,7 @@ pub fn update_content(content) {
 pub async fn react_to_particle(cid, content_type, content) {
     let object = #{ "cid": cid, "action": "pass" };
 
-    if (content_type == "particle" || content_type == "text")  && content.contains(".") {
+    if (content_type == "particle" || content_type == "text") && content.contains(".") {
         let content_iter = content.split(".");
         let username = content_iter.next().unwrap();
         let ext = content_iter.next().unwrap();
@@ -22,7 +22,6 @@ pub async fn react_to_particle(cid, content_type, content) {
         let result = cyb::get_passport_by_nickname(username).await;
         let particleCid = result["extension"]["particle"];
 
-        //cyb::log("particle " + " " + username + " " + cid + " to " + particleCid);
         cyb::log(`Change ${cid} to ${particleCid} based on ${username} particle`);
         return update_cid(particleCid)
         }

@@ -83,8 +83,8 @@ type ScriptExecutionData = {
   result?: any;
   diagnosticsOutput?: string;
   output?: string;
-  // diagnostics: Object[];
-  // instructions: string;
+  diagnostics: Object[];
+  instructions: string;
 };
 
 export const runScript = async (
@@ -99,16 +99,20 @@ export const runScript = async (
   callback && scriptCallbacks.set(paramRefId, callback);
 
   // input: String, config: JsValue, ref_id: String, scripts:  String, params: JsValue
-  const outputData = await compile(
-    code,
-    compileConfig,
-    paramRefId,
-    defaultScripts,
-    params
-  );
-  const { result, output, error, diagnostics_output } = outputData;
+  const outputData = await compile(code, compileConfig, defaultScripts, {
+    ...params,
+    refId: paramRefId,
+  });
+  const {
+    result,
+    output,
+    error,
+    diagnostics_output,
+    instructions,
+    diagnostics,
+  } = outputData;
 
-  console.log('runeRun result', result, code);
+  // console.log('runeRun result', result, code);
   // if (result.error) {
   //   console.log('runeRun error', result.error);
   //   throw Error(result.error);
@@ -121,11 +125,13 @@ export const runScript = async (
     output,
     error,
     diagnosticsOutput: diagnostics_output,
+    instructions,
+    diagnostics,
   };
 };
 
 type ReactToParticleResult = {
-  action: 'pass' | 'update' | 'skip' | 'error';
+  action: 'pass' | 'update_cid' | 'update_content' | 'skip' | 'error';
   cid?: string;
   content?: string;
 };
@@ -136,13 +142,24 @@ export const reactToParticle = async (
   content: string
 ): Promise<ReactToParticleResult> => {
   // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
+
+  if (!cyberClient) {
+    throw Error('CyberClient is not set');
+  }
+
   const scriptCode = `
-  pub async fn main(refId) {
+  pub async fn main() {
     let ctx = cyb::context;
+    dbg(ctx);
+    // cyb::log(\`- \${ctx.cid} - \${ctx.contentType} - \${ctx.content} \`);
     react_to_particle(ctx.cid, ctx.contentType, ctx.content).await
   }`;
 
-  const result = await runScript(scriptCode, { cid, contentType, content });
+  const result = await runScript(scriptCode, {
+    cid,
+    contentType: contentType || '',
+    content,
+  });
   if (result.error) {
     console.log('---error', result);
     return { action: 'error' };

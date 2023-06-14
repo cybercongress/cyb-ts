@@ -50,6 +50,9 @@ function useQueueIpfsContent(
       source: IpfsContentSource,
       result: IPFSContentMaybe
     ): void => {
+      // if (!node) {
+      //   return;
+      // }
       setStatus(status);
       setSource(source);
       if (status === 'completed') {
@@ -70,7 +73,7 @@ function useQueueIpfsContent(
       }
       prevParentIdRef.current = parentId;
     }
-  }, [cid, rank, parentId]);
+  }, [cid, rank, parentId, node]);
 
   return {
     status,

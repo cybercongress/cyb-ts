@@ -41,7 +41,7 @@ describe('Script executor', () => {
 
   it('should execute 1+1 script', async () => {
     const scriptCode = `
-    pub async fn main(refId) {
+    pub async fn main() {
       1+1
     }`;
     const result = await runScript(scriptCode, {}, console.log);

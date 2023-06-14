@@ -85,6 +85,7 @@ export type IPFSContent = {
   contentType: IpfsContentType;
   source: IpfsContentSource;
   contentUrl?: string;
+  modified?: boolean;
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;

@@ -9,6 +9,7 @@ import Img from './items/img';
 import OtherItem from './items/OtherItem';
 import DownloadableItem from './items/DownloadableItem';
 import DirectoryItem from './DirectoryItem/DirectoryItem';
+import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
 const getContentDetails = async (
   cid: string,
@@ -37,12 +38,16 @@ type ContentTabProps = {
 function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
-
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
+    //  && !content.details
     if (status === 'completed' && content) {
+      // console.log('-----', status, content, cid);
+
       // && !content?.availableDownload
       getContentDetails(cid, content).then(setIpfsDatDetails);
+    } else {
+      setIpfsDatDetails(content?.details);
     }
   }, [content, status, cid]);
 
@@ -54,12 +59,12 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   return (
     <>
-      {/* <DebugContentInfo
+      <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      /> */}
+      />
       {/* Directory or ipfs hosted site(index.html) */}
       {(content?.contentType === 'directory' ||
         (content?.contentType === 'html' && !content?.meta.type)) && (

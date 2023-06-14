@@ -187,7 +187,6 @@ async fn inner_compile(
     input: String,
     config: JsValue,
     io: &CaptureIo,
-    ref_id: String,
     scripts: String,
     params: JsValue
 ) -> Result<WasmCompileResult, anyhow::Error> {
@@ -320,13 +319,13 @@ async fn inner_compile(
 
     let mut vm = rune::Vm::new(Arc::new(context.runtime()), unit);
 
-    let mut params:  Vec<Value> = Vec::new();
+    // let mut params:  Vec<Value> = Vec::new();
 
-    if ref_id.len() > 0 {
-        params.push(Value::from(ref_id));
-    }
+    // if ref_id.len() > 0 {
+    //     params.push(Value::from(ref_id));
+    // }
 
-    let mut execution = match vm.execute(["main"], params) {
+    let mut execution = match vm.execute(["main"], ()) {
         Ok(execution) => execution,
         Err(error) => {
             error
@@ -407,10 +406,10 @@ fn diagnostics_output(writer: rune::termcolor::Buffer) -> Option<String> {
 }
 
 #[wasm_bindgen]
-pub async fn compile(input: String, config: JsValue, ref_id: String, scripts:  String, params: JsValue) -> JsValue {
+pub async fn compile(input: String, config: JsValue, scripts:  String, params: JsValue) -> JsValue {
     let io = CaptureIo::new();
 
-    let result = match inner_compile(input, config, &io, ref_id, scripts, params).await {
+    let result = match inner_compile(input, config, &io, scripts, params).await {
         Ok(result) => result,
         Err(error) => WasmCompileResult::from_error(&io, error, None, Vec::new(), None),
     };
