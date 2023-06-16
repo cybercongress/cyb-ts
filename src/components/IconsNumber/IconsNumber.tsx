@@ -4,9 +4,10 @@ import hydrogen from '../../image/hydrogen.svg';
 enum TypesEnum {
   'karma' = 'karma',
   'hydrogen' = 'hydrogen',
+  'energy' = 'energy',
 }
 
-type Types = TypesEnum.karma | TypesEnum.hydrogen;
+type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
 
 const icons = {
   [TypesEnum.karma]: '🔮',
@@ -20,6 +21,7 @@ const icons = {
       alt="hydrogen"
     />
   ),
+  [TypesEnum.energy]: '🔋',
 };
 
 // TODO: refactor

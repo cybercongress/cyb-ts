@@ -3,11 +3,7 @@ import styles from './UnderConstruction.module.scss';
 
 function UnderConstruction() {
   return (
-    <ContainerGradientText
-      userStyleContent={{
-        minHeight: 550,
-      }}
-    >
+    <ContainerGradientText>
       <div className={styles.wrapper}>
         <img src={require('./image.png')} alt="" />
 

@@ -162,7 +162,7 @@ function Layout() {
                 >
                   <span className={styles.text}>{link.text}</span>
                   <span className={styles.count}>
-                    {['karma', 'sigma'].includes(link.name) ? (
+                    {['karma', 'sigma', 'energy'].includes(link.name) ? (
                       <IconsNumber
                         value={counts[link.name]}
                         type={link.name === 'sigma' ? 'hydrogen' : link.name}

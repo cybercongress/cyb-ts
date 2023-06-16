@@ -1,11 +1,12 @@
 $activeLineWidth: 2px;
+$actionBarSpace: 130px;
 
 .wrapper {
   display: grid;
   justify-content: center;
   align-items: flex-start;
   grid-template-columns: 1fr minmax(200px, 62%) 1fr;
-  padding-bottom: 130px; // actionbars space
+  padding-bottom: $actionBarSpace;
 }
 
 .links {
@@ -22,7 +23,7 @@ $activeLineWidth: 2px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: calc(100vh - $headerHeight - $actionBarHeight);
+  height: calc(100vh - $headerHeight - $actionBarHeight - $actionBarSpace);
   max-height: 900px; // macbook 15'
 
   // overflow-y: auto;

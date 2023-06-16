@@ -120,6 +120,7 @@ function Heroes() {
     <ContainerGradientText
       userStyleContent={{
         padding: '15px 0',
+        minHeight: '70vh',
       }}
     >
       <Table
