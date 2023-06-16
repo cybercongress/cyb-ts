@@ -15,17 +15,14 @@ const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
-  // if (content?.result) {
-
-  const details = await parseRawIpfsData(
-    cid,
-    content
-    // (progress: number) => console.log(`${cid} progress: ${progress}`)
-  );
-
-  return details;
-  // }
-  // return undefined;
+  if (content?.result) {
+    return parseRawIpfsData(
+      cid,
+      content
+      // (progress: number) => console.log(`${cid} progress: ${progress}`)
+    );
+  }
+  return undefined;
 };
 
 type ContentTabProps = {
@@ -40,14 +37,17 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
     useState<IPFSContentDetails>(undefined);
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    //  && !content.details
-    if (status === 'completed' && content) {
-      // console.log('-----', status, content, cid);
-
-      // && !content?.availableDownload
-      getContentDetails(cid, content).then(setIpfsDatDetails);
-    } else {
-      setIpfsDatDetails(content?.details);
+    if (
+      status === 'completed' &&
+      content &&
+      (!content.mutation || content.mutation !== 'hidden')
+    ) {
+      parseRawIpfsData(
+        cid,
+        content
+        // (progress: number) => console.log(`${cid} progress: ${progress}`)
+      ).then(setIpfsDatDetails);
+      // getContentDetails(cid, content).then(setIpfsDatDetails);
     }
   }, [content, status, cid]);
 
@@ -56,6 +56,11 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   const { contentType } = content;
+
+  // Item was hidden by 'particle' script
+  if (content && content.mutation === 'hidden') {
+    return null;
+  }
 
   return (
     <>
@@ -77,7 +82,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
       {contentType === 'video' && <VideoPlayerGatewayOnly content={content} />}
 
-      {['text', 'xml', 'cid', 'particle'].indexOf(contentType) !== -1 &&
+      {['text', 'xml', 'cid'].indexOf(contentType) !== -1 &&
         ipfsDataDetails && (
           <TextMarkdown fullWidth={search}>
             {search ? ipfsDataDetails?.text : ipfsDataDetails?.content}

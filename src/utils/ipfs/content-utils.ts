@@ -3,7 +3,8 @@ import isSvg from 'is-svg';
 import { IPFSContent, IPFSContentDetails, IpfsContentType } from './ipfs';
 import { PATTERN_PARTICLE, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
-import { getResponseResult, onProgressCallback } from './stream-utils';
+import { responseToPlainData, onProgressCallback } from './stream-utils';
+import { string } from 'prop-types';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
@@ -22,8 +23,8 @@ function isHtml(string: string) {
   return basic.test(newString);
 }
 
-export const isTextContent = (mime: String) =>
-  mime.indexOf('text/plain') !== -1;
+// export const isTextContent = (mime: String) =>
+//   mime.indexOf('text/plain') !== -1;
 
 // eslint-disable-next-line import/no-unused-modules
 export const detectContentType = (
@@ -33,7 +34,7 @@ export const detectContentType = (
     if (mime.indexOf('video') !== -1) {
       return 'video';
     }
-    if (isTextContent(mime)) {
+    if (mime.indexOf('text/plain') !== -1) {
       return 'text';
     }
     if (mime.indexOf('xml') !== -1) {
@@ -52,9 +53,6 @@ export const detectContentType = (
 const detectTextContentType = (dataBase64?: string): IpfsContentType => {
   if (!dataBase64) {
     return 'other';
-  }
-  if (dataBase64.match(PATTERN_PARTICLE)) {
-    return 'particle';
   }
   if (dataBase64.match(PATTERN_IPFS_HASH)) {
     return 'cid';
@@ -118,40 +116,49 @@ export const parseRawIpfsData = async (
     if (contentType === 'video') {
       // This type of content uses AsyncIterator<Uint8Array>
       // response.content = await getResponseResult(rawDataResponse);
+      response.gateway = true;
       return response;
     }
 
-    const rawData = result
-      ? await getResponseResult(result, onProgress)
+    // If data is string, it's already was parsed by scripting engine,
+    // use it as is
+
+    if (cid === 'QmQXogueutG5YCjTbCQyCCKLg1ASQ2hbeb6heqXwDDVs2H') {
+      console.log(
+        '-parse',
+        cid,
+        contentType,
+        result,
+        typeof result === 'string'
+      );
+    }
+    const data = result
+      ? await responseToPlainData(result, onProgress)
       : undefined;
 
     if (contentType === 'image') {
-      response.content = createImgData(rawData, meta.mime);
+      response.content = createImgData(data, meta.mime);
       response.gateway = false;
       return response;
     }
 
     if (contentType === 'pdf') {
-      response.content = createObjectURL(rawData, meta.mime);
+      response.content = createObjectURL(data, meta.mime);
       response.gateway = true;
       return response;
     }
 
     if (contentType === 'xml') {
-      if (isSvg(Buffer.from(rawData))) {
-        response.content = createImgData(rawData, 'image/svg+xml');
+      if (isSvg(Buffer.from(data))) {
+        response.content = createImgData(data, 'image/svg+xml');
         return response;
       }
-      response.content = uint8ArrayToAsciiString(rawData);
+      response.content = uint8ArrayToAsciiString(data);
       return response;
     }
-    const dataBase64 = uint8ArrayToAsciiString(rawData);
+    const dataBase64 =
+      typeof result === 'string' ? data : uint8ArrayToAsciiString(data);
 
-    if (contentType === 'particle') {
-      response.content = dataBase64;
-      response.gateway = true;
-      return response;
-    }
     if (contentType === 'cid') {
       response.gateway = true;
       response.content = dataBase64;

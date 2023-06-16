@@ -27,6 +27,7 @@ import {
   IPFSContentMaybe,
   IpfsContentSource,
 } from 'src/utils/ipfs/ipfs';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -43,7 +44,6 @@ import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { reactToParticle } from '../scripting/engine';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -52,11 +52,18 @@ function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
+/**
+ * Execute 'particle' script to post process item: modify cid or content, or hide from view
+ * @param item
+ * @param content
+ * @param node
+ * @returns
+ */
 async function postProcessIpfContent<T>(
   item: QueueItem<T>,
-  content: IPFSContentMaybe,
+  content: IPFSContent,
   node: AppIPFS
-): Promise<IPFSContentMaybe> {
+): Promise<IPFSContent> {
   const { cid, controller, source } = item;
 
   if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
@@ -65,8 +72,7 @@ async function postProcessIpfContent<T>(
 
   // Preload data for text items
   const isTextData =
-    (content?.contentType === 'text' || content?.contentType === 'particle') &&
-    content?.result instanceof Uint8Array;
+    content?.contentType === 'text' && content?.result instanceof Uint8Array;
 
   const text = isTextData ? uint8ArrayToAsciiString(content.result) : '';
 
@@ -83,11 +89,20 @@ async function postProcessIpfContent<T>(
       node,
     });
     console.log('update_cid', contentUpdated);
-    return { ...contentUpdated, modified: true };
+    return { ...contentUpdated, mutation: 'modified' };
   }
   if (mutation.action === 'update_content') {
+    return { ...content, result: mutation.content, mutation: 'modified' };
+  }
+
+  if (mutation.action === 'hide') {
     // TODO: NEED to fix content result uint8array vs string
-    return content; // { ...content, result: mutation.content, modified: true };
+    return { ...content, mutation: 'hidden' }; // { ...content, result: mutation.content, modified: true };
+  }
+
+  if (mutation.action === 'error') {
+    // TODO: NEED to fix content result uint8array vs string
+    return { ...content, mutation: 'error' }; // { ...content, result: mutation.content, modified: true };
   }
 
   return content;
@@ -190,7 +205,9 @@ class QueueManager<T> {
       const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      }).then((c) => postProcessIpfContent(item, c, this.node!));
+      }).then((content) =>
+        content ? postProcessIpfContent(item, content, this.node!) : undefined
+      );
 
       return content; // pass
     }).pipe(

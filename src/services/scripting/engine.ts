@@ -4,7 +4,44 @@ import initAsync, { compile } from 'rune';
 
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
 import { v4 as uuidv4 } from 'uuid';
-import defaultScripts from './scripts/default.rn';
+import scriptParticleDefault from './scripts/default/particle.rn';
+import scriptParticleRuntime from './scripts/runtime/particle.rn';
+
+type ScriptNames = 'particle'; // | 'search';
+type ScriptItem = { name: string; runtime: string; user: string };
+
+type ScriptCallbackStatus =
+  | 'pending'
+  | 'running'
+  | 'completed'
+  | 'canceled'
+  | 'error';
+
+export type ScriptCallback = (
+  refId: string,
+  status: ScriptCallbackStatus,
+  result: any
+) => void;
+
+type ScriptResult = {
+  data: any;
+};
+
+type ScriptScopeParams = {
+  cid?: string;
+  contentType?: string;
+  content?: string;
+  refId?: string;
+};
+
+type ScriptExecutionData = {
+  error?: string;
+  result?: any;
+  diagnosticsOutput?: string;
+  output?: string;
+  diagnostics: Object[];
+  instructions: string;
+};
 
 const compileConfig = {
   budget: 1_000_000,
@@ -39,18 +76,28 @@ export const loadCyberScripingEngine = async () => {
   return rune;
 };
 
-type ScriptCallbackStatus =
-  | 'pending'
-  | 'running'
-  | 'completed'
-  | 'canceled'
-  | 'error';
+// Scripts cached to use on demand
+// Runtime - cyber scripts to hide extra functionality
+// User - user written scripts(or default)
+export const scriptItemStorage: Record<ScriptNames, ScriptItem> = {
+  particle: {
+    name: 'Particle post processor',
+    runtime: scriptParticleRuntime,
+    user: scriptParticleDefault,
+  },
+};
 
-export type ScriptCallback = (
-  refId: string,
-  status: ScriptCallbackStatus,
-  result: any
-) => void;
+const loadScript = (scriptName: ScriptNames) => {
+  return (
+    localStorage.getItem(`script_${scriptName}`) ||
+    scriptItemStorage[scriptName]
+  );
+};
+
+const saveScript = (scriptName: ScriptNames, scriptCode: string) => {
+  localStorage.setItem(`script_${scriptName}`, scriptCode);
+  scriptItemStorage[scriptName].user = scriptCode;
+};
 
 const scriptCallbacks = new Map<string, ScriptCallback>();
 
@@ -67,31 +114,11 @@ export const executeCallback = (
   // }
 };
 
-type ScriptResult = {
-  data: any;
-};
-
-type ScriptScopeParams = {
-  cid?: string;
-  contentType?: string;
-  content?: string;
-  refId?: string;
-};
-
-type ScriptExecutionData = {
-  error?: string;
-  result?: any;
-  diagnosticsOutput?: string;
-  output?: string;
-  diagnostics: Object[];
-  instructions: string;
-};
-
 export const runScript = async (
   code: string,
   params: ScriptScopeParams = {},
-  callback?: ScriptCallback,
-  runtimeScript?: defaultScripts
+  runtimeScript?: string,
+  callback?: ScriptCallback
 ): Promise<ScriptExecutionData> => {
   // console.log('runeRun before', code, refId, callback);
   const paramRefId = params.refId || uuidv4().toString();
@@ -99,7 +126,7 @@ export const runScript = async (
   callback && scriptCallbacks.set(paramRefId, callback);
 
   // input: String, config: JsValue, ref_id: String, scripts:  String, params: JsValue
-  const outputData = await compile(code, compileConfig, defaultScripts, {
+  const outputData = await compile(code, compileConfig, runtimeScript || '', {
     ...params,
     refId: paramRefId,
   });
@@ -131,7 +158,7 @@ export const runScript = async (
 };
 
 type ReactToParticleResult = {
-  action: 'pass' | 'update_cid' | 'update_content' | 'skip' | 'error';
+  action: 'pass' | 'update_cid' | 'update_content' | 'hide' | 'error';
   cid?: string;
   content?: string;
 };
@@ -150,16 +177,20 @@ export const reactToParticle = async (
   const scriptCode = `
   pub async fn main() {
     let ctx = cyb::context;
-    dbg(ctx);
+    // dbg(ctx);
     // cyb::log(\`- \${ctx.cid} - \${ctx.contentType} - \${ctx.content} \`);
     react_to_particle(ctx.cid, ctx.contentType, ctx.content).await
   }`;
 
-  const result = await runScript(scriptCode, {
-    cid,
-    contentType: contentType || '',
-    content,
-  });
+  const result = await runScript(
+    scriptParticleDefault,
+    {
+      cid,
+      contentType: contentType || '',
+      content,
+    },
+    scriptParticleRuntime
+  );
   if (result.error) {
     console.log('---error', result);
     return { action: 'error' };

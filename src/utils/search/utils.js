@@ -4,7 +4,7 @@ import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
-import { getResponseResult } from '../ipfs/stream-utils';
+import { responseToPlainData } from '../ipfs/stream-utils';
 import { detectContentType, createImgData } from '../ipfs/content-utils';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -771,7 +771,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
     const response = await getIPFSContent(ipfs, cid);
 
     if (response?.result) {
-      const rawData = await getResponseResult(response.result);
+      const rawData = await responseToPlainData(response.result);
       if (detectContentType(response.meta.mime) === 'image') {
         return createImgData(rawData, response.meta.mime);
       }

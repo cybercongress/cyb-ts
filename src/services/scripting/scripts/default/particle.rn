@@ -1,0 +1,29 @@
+pub async fn react_to_particle(cid, content_type, content) {
+    if content_type == "text" {
+        if content.contains(".") {
+            let content_iter = content.split(".");
+            let username = content_iter.next().unwrap();
+            let ext = content_iter.next().unwrap();
+            if username.len() <= 14 && ext == "moon" {
+                let result = cyb::get_passport_by_nickname(username).await;
+                let particle_cid = result["extension"]["particle"];
+
+                cyb::log(`Change ${cid} to ${particle_cid} based on ${username} particle`);
+                return update_cid(particle_cid)
+            }
+        }
+
+        if content.contains("dasein") {
+            cyb::log(`Update ${cid} that contains dasein to Dasein the Great`);
+
+            return update_content(content.replace("dasein", "Dasein the Great"))
+        }
+
+        if content.contains("хуярта") {
+            cyb::log(`Hide items with хуярта in ${cid}`);
+            return hide()
+        }
+    }
+
+    pass() // Pass as is
+}

@@ -1,0 +1,22 @@
+pub fn pass() {
+    #{ "cid": cyb::context.cid, "action": "pass" }
+}
+
+pub fn hide() {
+    #{ "cid": cyb::context.cid, "action": "hide" }
+}
+
+pub fn update_cid(cid) {
+    #{ "cid": cid, "action": "update_cid" }
+}
+
+pub fn update_content(content) {
+    #{ "content": content, "action": "update_content" }
+}
+
+pub async fn main() {
+    let ctx = cyb::context;
+    // dbg(ctx);
+    // cyb::log(\`- \${ctx.cid} - \${ctx.contentType} - \${ctx.content} \`);
+    react_to_particle(ctx.cid, ctx.contentType, ctx.content).await
+}

@@ -25,7 +25,7 @@ import { CYBER } from '../config';
 // import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { addDataChunksToIpfsCluster } from './cluster-utils';
-import { detectCybContentType, parseRawIpfsData } from './content-utils';
+import { detectCybContentType } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -266,24 +266,17 @@ async function fetchIpfsContent<T>(
   options: fetchContentOptions
 ): Promise<T | undefined> {
   const { node, controller } = options;
-  let promise;
   try {
     switch (source) {
       case 'db':
-        promise = loadIPFSContentFromDb(cid) as T;
-        break;
+        return loadIPFSContentFromDb(cid) as T;
       case 'node':
-        promise = fetchIPFSContentFromNode(node, cid, controller) as T;
-        break;
+        return fetchIPFSContentFromNode(node, cid, controller) as T;
       case 'gateway':
-        promise = fetchIPFSContentFromGateway(node, cid, controller) as T;
-        break;
+        return fetchIPFSContentFromGateway(node, cid, controller) as T;
       default:
         return undefined;
     }
-    const content = (await promise) as IPFSContent;
-
-    return content;
   } catch (e) {
     console.log('----fetchIpfsContent error', e);
     return undefined;

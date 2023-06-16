@@ -24,7 +24,7 @@ export const getMimeFromUint8Array = async (
 ): Promise<string | undefined> => {
   const fileType = await fileTypeFromBuffer(raw);
 
-  return fileType?.mime || 'text/plain';
+  return fileType?.mime.split(' ')[0] || 'text/plain';
 };
 
 export async function toAsyncIterableWithMime(
@@ -89,12 +89,16 @@ export async function toReadableStreamWithMime(
 }
 export type onProgressCallback = (progress: number) => void;
 
-export const getResponseResult = async (
+export const responseToPlainData = async (
   response: IpfsRawDataResponse,
   onProgress?: onProgressCallback
 ) => {
   let bytesDownloaded = 0;
   try {
+    if (typeof response === 'string') {
+      onProgress && onProgress(response.byteLength);
+      return response; // no need trasform
+    }
     if (response instanceof Uint8Array) {
       onProgress && onProgress(response.byteLength);
       return response;

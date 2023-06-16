@@ -52,7 +52,7 @@ describe('Script executor', () => {
   it('should execute react to particle script and return <username>.moon particle content', async () => {
     const newCid = 'new_cid';
     const cid = 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1';
-    const contentType = 'particle';
+    const contentType = 'text';
     const preview = 'dasein.moon';
     setCyberClient({} as CyberClient);
 

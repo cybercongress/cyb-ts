@@ -27,7 +27,6 @@ export type IpfsContentType =
   | 'html'
   | 'cid'
   | 'other'
-  | 'particle'
   | 'html'
   | 'directory'
   | 'unknown';
@@ -62,7 +61,8 @@ export type Uint8ArrayWithMime = {
 export type IpfsRawDataResponse =
   | ReadableStream<Uint8Array>
   | Uint8Array
-  | AsyncIterator<Uint8Array>;
+  | AsyncIterator<Uint8Array>
+  | string;
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
 
@@ -85,7 +85,7 @@ export type IPFSContent = {
   contentType: IpfsContentType;
   source: IpfsContentSource;
   contentUrl?: string;
-  modified?: boolean;
+  mutation?: 'hidden' | 'modified' | 'error';
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;
