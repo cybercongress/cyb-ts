@@ -30,6 +30,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
     }
   }, []);
 
+  function closeMenu() {
+    toggleMenu(false);
+  }
+
   return (
     <div>
       <Header
@@ -39,8 +43,8 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      <AppSideBar openMenu={openMenu} closeMenu={() => toggleMenu(false)}>
-        <AppMenu addressActive={addressActive} />
+      <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
+        <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
       </AppSideBar>
 
       {children}

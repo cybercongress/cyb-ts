@@ -15,42 +15,7 @@ import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
 import { routes } from '../../routes';
 
-const itemsMenu = (address) => {
-  // let linkLog = '/robot';
-  // let linkBrain = '/graph';
-  // let linkSwarm = '/robot';
-  // let linkSecurity = '/robot';
-  // let linkTimeline = '/robot';
-  // let linkBadges = '/robot';
-  // if (address !== null) {
-  //   linkLog = `/network/bostrom/contract/${address.bech32}`;
-  //   linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
-  //   linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
-  //   linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
-  //   linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
-  //   linkBrain = `/pgraph/${address.bech32}`;
-  // }
-
-  // let myRobotLinks = [];
-
-  // if (address !== null) {
-  //   myRobotLinks = [
-  //     { name: 'Sigma', to: '/sigma' },
-  //     { name: 'Ipfs', to: '/ipfs' },
-  //     { name: 'Log', to: linkLog },
-  //     { name: 'Swarm', to: linkSwarm },
-  //     { name: 'Security', to: linkSecurity },
-  //     // { name: 'Cyberlinks', to: linkCyberlinks },
-  //     { name: 'Timeline', to: linkTimeline },
-  //     { name: 'Sense', to: '/sixthSense' },
-  //     { name: 'Brain', to: linkBrain },
-  //     { name: 'Energy', to: '/grid' },
-  //     { name: 'Badges', to: linkBadges },
-  //   ];
-  // } else {
-  //   myRobotLinks = [{ name: 'Ipfs', to: '/ipfs' }];
-  // }
-
+const itemsMenu = () => {
   const listItemMenu = [
     {
       name: 'My robot',
@@ -171,7 +136,10 @@ const itemsMenu = (address) => {
   return listItemMenu;
 };
 
-function AppMenu({ addressActive }) {
+export type MenuItems = ReturnType<typeof itemsMenu>;
+export type MenuItem = MenuItems[0];
+
+function AppMenu({ addressActive, closeMenu }) {
   return (
     <div
       style={{
@@ -181,7 +149,7 @@ function AppMenu({ addressActive }) {
         height: '100%',
       }}
     >
-      <Bookmarks items={itemsMenu(addressActive)} />
+      <Bookmarks items={itemsMenu(addressActive)} closeMenu={closeMenu} />
     </div>
   );
 }
