@@ -27,6 +27,12 @@ export const routes = {
   },
   robot: {
     path: '/robot',
+    routes: {
+      karma: {
+        // TODO: reuse parent
+        path: '/robot/karma',
+      },
+    },
   },
   robotPassport: {
     path: '/:username',
