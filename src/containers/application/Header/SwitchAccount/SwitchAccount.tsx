@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -18,6 +18,8 @@ import {
   setDefaultAccount,
 } from '../../../../redux/features/pocket';
 import { setPassport, setPassportLoading } from 'src/redux/features/passport';
+import useOnClickOutside from 'src/hooks/useOnClickOutside';
+import { routes } from 'src/routes';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -61,38 +63,24 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
       onClick={() => hadleOnClick()}
       className={cx(
         styles.containerSwichAccount,
-        networkStyles.btnContainerText,
-        styles.containerSwichAccountHover
+        networkStyles.btnContainerText
       )}
-      style={{ marginTop: -10 }}
     >
       <div className={networkStyles.containerKrmaName}>
         {useGetName && (
-          <span
-            className={cx(
-              networkStyles.btnContainerText,
-              networkStyles.btnContainerTextHover
-            )}
-          >
+          <span className={cx(networkStyles.btnContainerText)}>
             {useGetName}
           </span>
         )}
         {useGetAddress && <Karma address={useGetAddress} />}
       </div>
-      <div
-        className={cx(
-          styles.containerAvatarConnect,
-          styles.containerAvatarConnectHover
-        )}
-      >
-        <div className={styles.containerAvatarConnectHoverAbsolute}>
-          <div className={styles.containerAvatarConnectTrue}>
-            <AvataImgIpfs
-              style={{ position: 'relative' }}
-              cidAvatar={useGetCidAvatar}
-              addressCyber={useGetAddress}
-            />
-          </div>
+      <div className={cx(styles.containerAvatarConnect)}>
+        <div className={styles.containerAvatarConnectTrue}>
+          <AvataImgIpfs
+            style={{ position: 'relative' }}
+            cidAvatar={useGetCidAvatar}
+            addressCyber={useGetAddress}
+          />
         </div>
       </div>
     </button>
@@ -115,9 +103,16 @@ function SwitchAccount() {
     onVisibleChange: setControlledVisible,
     placement: 'bottom',
   });
+
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const dispatch = useDispatch();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(containerRef, () => {
+    setControlledVisible(false);
+  });
 
   useEffect(() => {
     dispatch(setPassportLoading());
@@ -212,10 +207,10 @@ function SwitchAccount() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, defaultAccount, node]);
 
-  // return items;
+  const multipleAccounts = renderItem && Object.keys(renderItem).length > 0;
 
   return (
-    <div style={{ position: 'relative', fontSize: '20px' }}>
+    <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
       <div
         className={styles.containerSwichAccount}
         style={{
@@ -232,14 +227,16 @@ function SwitchAccount() {
                 type="button"
                 style={{ fontSize: '20px' }}
               >
-                {useGetName}
+                {useGetName} {multipleAccounts && '>'}
               </button>
             )}
             {useGetAddress && <Karma address={useGetAddress} />}
           </div>
         )}
-        {/* <Link to={`/@${passport?.extension.nickname}`}> */}
-        <Link to={`/robot`}>
+        <Link
+          to={routes.robot.path}
+          onClick={() => setControlledVisible(!controlledVisible)}
+        >
           <div
             className={cx(styles.containerAvatarConnect, {
               [styles.containerAvatarConnectFalse]: !ipfsStatus,
@@ -258,7 +255,7 @@ function SwitchAccount() {
           </div>
         </Link>
       </div>
-      {renderItem && Object.keys(renderItem).length > 0 && (
+      {multipleAccounts && (
         <Transition in={visible} timeout={300}>
           {(state) => {
             return (
@@ -270,7 +267,7 @@ function SwitchAccount() {
               >
                 <div
                   className={cx(styles.containerSwichAccountList, [
-                    styles[`containerSwichAccountList${state}`],
+                    styles[`containerSwichAccountList_${state}`],
                   ])}
                 >
                   {renderItem}
