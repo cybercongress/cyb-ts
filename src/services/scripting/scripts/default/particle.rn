@@ -1,9 +1,9 @@
 pub async fn react_to_particle(cid, content_type, content) {
     if content_type == "text" {
         if content.contains(".") {
-            let content_iter = content.split(".");
-            let username = content_iter.next().unwrap();
-            let ext = content_iter.next().unwrap();
+            let items = content.split(".").collect::<Vec>();
+            let username = items[0];
+            let ext = items[1];
             if username.len() <= 14 && ext == "moon" {
                 let result = cyb::get_passport_by_nickname(username).await;
                 let particle_cid = result["extension"]["particle"];
@@ -22,6 +22,13 @@ pub async fn react_to_particle(cid, content_type, content) {
         if content.contains("хуярта") {
             cyb::log(`Hide items with хуярта in ${cid}`);
             return hide()
+        }
+
+        if content.contains("@NOW") {
+            let left_part = content.split("@NOW").next().unwrap();
+            let symbol = left_part.split(" ").rev().next().unwrap();
+            let json = http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
+            return update_content(content.replace(`${symbol}@NOW`, json["lastPrice"]))
         }
     }
 

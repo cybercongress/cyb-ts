@@ -77,9 +77,6 @@ async function postProcessIpfContent<T>(
   const text = isTextData ? uint8ArrayToAsciiString(content.result) : '';
 
   const mutation = await reactToParticle(cid, content?.contentType, text);
-  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
-    console.log('---mutation', mutation, cid, content, text);
-  }
 
   if (mutation.action === 'update_cid') {
     console.log('update_cid', mutation, mutation.cid);
@@ -92,6 +89,7 @@ async function postProcessIpfContent<T>(
     return { ...contentUpdated, mutation: 'modified' };
   }
   if (mutation.action === 'update_content') {
+    console.log('update_content', mutation);
     return { ...content, result: mutation.content, mutation: 'modified' };
   }
 

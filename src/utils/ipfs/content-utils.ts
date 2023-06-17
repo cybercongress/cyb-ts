@@ -122,16 +122,6 @@ export const parseRawIpfsData = async (
 
     // If data is string, it's already was parsed by scripting engine,
     // use it as is
-
-    if (cid === 'QmQXogueutG5YCjTbCQyCCKLg1ASQ2hbeb6heqXwDDVs2H') {
-      console.log(
-        '-parse',
-        cid,
-        contentType,
-        result,
-        typeof result === 'string'
-      );
-    }
     const data = result
       ? await responseToPlainData(result, onProgress)
       : undefined;

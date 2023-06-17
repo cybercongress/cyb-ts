@@ -170,9 +170,10 @@ fn setup_context(experimental: bool, io: &CaptureIo, params: SerdeValue) -> Resu
 
     context.install(rune::modules::capture_io::module(io)?)?;
     context.install(time::module()?)?;
-    context.install(http::module()?)?;
+    // context.install(http::module()?)?;
     context.install(cyb::module(params)?)?;
-    context.install(rune_modules::json::module(false)?)?;
+    context.install(rune_modules::http::module(true)?)?;
+    context.install(rune_modules::json::module(true)?)?;
     context.install(rune_modules::toml::module(false)?)?;
     context.install(rune_modules::rand::module(false)?)?;
 

@@ -146,15 +146,18 @@ export const runScript = async (
   // }
 
   scriptCallbacks.delete(paramRefId);
-
-  return {
-    result: result ? JSON.parse(result) : null,
-    output,
-    error,
-    diagnosticsOutput: diagnostics_output,
-    instructions,
-    diagnostics,
-  };
+  try {
+    return {
+      result: result ? JSON.parse(result) : null,
+      output,
+      error,
+      diagnosticsOutput: diagnostics_output,
+      instructions,
+      diagnostics,
+    };
+  } catch (e) {
+    console.log('runeRun error', e, outputData);
+  }
 };
 
 type ReactToParticleResult = {
@@ -173,14 +176,6 @@ export const reactToParticle = async (
   if (!cyberClient) {
     throw Error('CyberClient is not set');
   }
-
-  const scriptCode = `
-  pub async fn main() {
-    let ctx = cyb::context;
-    // dbg(ctx);
-    // cyb::log(\`- \${ctx.cid} - \${ctx.contentType} - \${ctx.content} \`);
-    react_to_particle(ctx.cid, ctx.contentType, ctx.content).await
-  }`;
 
   const result = await runScript(
     scriptParticleDefault,

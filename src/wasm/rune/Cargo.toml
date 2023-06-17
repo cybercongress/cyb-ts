@@ -17,7 +17,7 @@ categories = ["parser-implementations"]
 [dependencies]
 rune = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune", features = ["capture-io"] }
 rune-macros = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune-macros" }
-rune-modules = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune-modules", features = ["core", "test", "json", "toml", "rand", "experiments"] }
+rune-modules = { version = "0.12.3",  git = "https://github.com/rune-rs/rune.git", branch = "main", package = "rune-modules", features = ["core", "test", "json", "toml", "rand", "experiments", "http"] }
 
 serde = { version = "1.0.163", features = ["derive"] }
 wasm-bindgen = { version = "0.2.85", features = ["serde-serialize"] }
