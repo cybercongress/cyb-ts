@@ -6,29 +6,27 @@
   border-radius: 2px;
   overflow: hidden;
 
+  > div {
+    height: inherit;
+  }
 
   &Liquid {
-    background-color: #1de9b6;
-    height: inherit;
+    background-color: var(--yellow);
   }
 
   &Frozen {
     background-color: #00e5ff;
-    height: inherit;
   }
 
   &Melting {
     background-color: #2979ff;
-    height: inherit;
   }
 
   &Growth {
     background-color: #76ff03;
-    height: inherit;
   }
 
   &Commission {
-    background-color: #ffea00;
-    height: inherit;
+    background-color: purple;
   }
 }

@@ -136,6 +136,20 @@ export function ContainerGradientText({
   );
 }
 
+interface Props {
+  title?: string;
+  closedTitle?: string;
+  children?: React.ReactNode;
+  txs?: any;
+  danger?: boolean;
+  userStyleContent?: React.CSSProperties;
+  stateOpen?: boolean;
+  initState?: boolean;
+  styleLampContent?: string;
+  styleLampTitle?: any;
+  togglingDisable?: any;
+}
+
 function ContainerGradient({
   title = 'Moon Citizenship',
   closedTitle,
@@ -148,7 +162,7 @@ function ContainerGradient({
   styleLampContent = 'blue',
   styleLampTitle,
   togglingDisable,
-}) {
+}: Props) {
   const [isOpen, setIsOpen] = useState(initState);
 
   useEffect(() => {

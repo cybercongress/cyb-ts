@@ -10,8 +10,12 @@
   // 'avatar name total'
   // 'avatar address address';
   align-items: center;
-  justify-content: space-between;
+  // justify-content: space-between;
   font-size: 20px;
+
+  &:hover {
+    background-color: var(--primary-color);
+  }
 }
 
 .avatar {

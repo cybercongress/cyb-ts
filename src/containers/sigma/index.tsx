@@ -10,11 +10,13 @@ import { CardPassport } from './components';
 import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
-import { ContainerGradientText } from '../../components';
+import { ActionBar, ContainerGradientText } from '../../components';
 import { useParams } from 'react-router-dom';
 import { useGetPassportByAddress } from './hooks';
 import { useRobotContext } from 'src/pages/robot/Robot';
 import { RootState } from 'src/redux/store';
+import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
+import STEP_INFO from '../portal/gift/utils';
 
 const valueContext = {
   totalCap: 0,
@@ -22,18 +24,20 @@ const valueContext = {
   dataCap: {},
 };
 
-function Sigma() {
+function Sigma({ address: preAddr }) {
   // const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
 
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
   const { address, isOwner } = useRobotContext();
+  const [step, setStep] = useState(STEP_INFO.STATE_PROVE);
+  const [selectedAddress, setSelectedAddress] = useState<string>();
 
   const { accounts, defaultAccount } = useSelector(
     (state: RootState) => state.pocket
   );
   const { passport: defaultPassport } = useGetPassportByAddress(
-    defaultAccount?.account
+    preAddr || defaultAccount?.account
   );
 
   const accountsData = [];
@@ -44,16 +48,23 @@ function Sigma() {
     });
   }
 
-  isOwner &&
-    accounts &&
-    Object.keys(accounts).forEach((item) => {
-      const { bech32 } = accounts[item]?.cyber || {};
-      if (bech32 && !accountsData.find((item) => item.bech32 === bech32)) {
-        accountsData.push({
-          bech32,
-        });
-      }
+  // if (isO)
+  // isOwner &&
+  //   accounts &&
+  // Object.keys(accounts).forEach((item) => {
+  //   const { bech32 } = accounts[item]?.cyber || {};
+  //   if (bech32 && !accountsData.find((item) => item.bech32 === bech32)) {
+  //     accountsData.push({
+  //       bech32,
+  //     });
+  //   }
+  // });
+
+  if (preAddr) {
+    accountsData.push({
+      bech32: preAddr,
     });
+  }
 
   // const { accounts } = useGetLocalStoge(updateState);
 
@@ -132,12 +143,20 @@ function Sigma() {
     }));
   };
 
+  function selectAddress(address) {
+    setSelectedAddress(address);
+  }
+
   const renderItem = useMemo(() => {
     if (accountsData.length > 0) {
-      return accountsData.map((item) => {
-        const key = uuidv4();
-
-        return <CardPassport key={`${item.bech32}_${key}`} accounts={item} />;
+      return accountsData.map(({ bech32: address }) => {
+        return (
+          <CardPassport
+            key={address}
+            address={address}
+            selectAddress={selectAddress}
+          />
+        );
       });
     }
 
@@ -195,6 +214,28 @@ function Sigma() {
       </MainContainer> */}
         {/* <ActionBar updateFunc={updateStateFunc} /> */}
       </div>
+
+      {selectedAddress && (
+        <ActionBar
+          button={{
+            text: 'Action',
+            onClick: () => {},
+            disabled: true,
+          }}
+          text={selectedAddress}
+        />
+      )}
+
+      {!selectedAddress && defaultPassport && (
+        <ActionBarPortalGift
+          setStepApp={setStep}
+          activeStep={step}
+          citizenship={defaultPassport}
+          addressActive={{
+            bech32: defaultAccount?.account,
+          }}
+        />
+      )}
     </SigmaContext.Provider>
   );
 }

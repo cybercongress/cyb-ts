@@ -58,6 +58,8 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import UnderConstruction from './pages/robot/UnderConstruction/UnderConstruction';
 import Wallet from './containers/Wallet/Wallet';
+import Sigma from './containers/sigma';
+import SigmaWrapper from './containers/sigma/SigmaWrapper';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -187,7 +189,9 @@ function AppRouter() {
           <Route path="/networks/add" element={<CustomNetwork />} />
           <Route path="/networks/:networkId" element={<DetailsNetwork />} />
           <Route path="/help" element={<Help />} />
-          {/* Sigma */}
+
+          <Route path="/sigma" element={<SigmaWrapper />} />
+
           <Route path="/nebula" element={<Nebula />} />
 
           <Route path="/keys" element={<UnderConstruction />} />

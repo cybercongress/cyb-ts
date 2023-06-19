@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 import networkList from '../utils/networksList';
+import { Networks } from 'src/types/networks';
 
-export function isNativeChainId(chainId) {
-  if (chainId) {
-    if (chainId.includes('bostrom')) {
-      return true;
-    }
-
-    if (chainId.includes('space-pussy')) {
-      return true;
-    }
+export function isNativeChainId(chain: string) {
+  // temp
+  if (chain && Networks[chain.toUpperCase()]) {
+    return true;
   }
   return false;
 }

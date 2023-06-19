@@ -271,6 +271,10 @@ function SwitchAccount() {
                   ])}
                 >
                   {renderItem}
+
+                  <Link style={{ color: 'red' }} to={'/sigma'}>
+                    Sigma
+                  </Link>
                 </div>
               </div>
             );
