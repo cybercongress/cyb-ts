@@ -27,7 +27,8 @@ pub async fn react_to_particle(cid, content_type, content) {
         if content.contains("@NOW") {
             let left_part = content.split("@NOW").next().unwrap();
             let symbol = left_part.split(" ").rev().next().unwrap();
-            let json = http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
+            let response = http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?;
+            let json = response.json().await?;
             return update_content(content.replace(`${symbol}@NOW`, json["lastPrice"]))
         }
     }

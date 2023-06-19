@@ -189,10 +189,10 @@ async fn inner_compile(
     config: JsValue,
     io: &CaptureIo,
     scripts: String,
-    params: JsValue
+    params: JsValue,
+    no_execute: bool
 ) -> Result<WasmCompileResult, anyhow::Error> {
     let instructions = None;
-
     let config: Config = JsValueSerdeExt::into_serde(&config)?;
     let params: SerdeValue = JsValueSerdeExt::into_serde(&params)?;
     let budget = config.budget.unwrap_or(1_000_000);
@@ -200,10 +200,9 @@ async fn inner_compile(
     let mut sources = rune::Sources::new();
 
     sources.insert(rune::Source::new("entry", input));
-    sources.insert(rune::Source::memory("pub fn callback() { 42 }"));
 
     if scripts.len() > 0 {
-        sources.insert(rune::Source::memory(scripts));
+        sources.insert(rune::Source::new("entry", scripts));
     }
 
     let context = setup_context(config.experimental, io, params)?;
@@ -216,13 +215,11 @@ async fn inner_compile(
 
     let mut d = rune::Diagnostics::new();
     let mut diagnostics = Vec::new();
-
     let result = rune::prepare(&mut sources)
         .with_context(&context)
         .with_diagnostics(&mut d)
         .with_options(&options)
         .build();
-
     for diagnostic in d.diagnostics() {
         match diagnostic {
             Diagnostic::Fatal(error) => {
@@ -288,12 +285,21 @@ async fn inner_compile(
             _ => {}
         }
     }
-
     let mut writer = rune::termcolor::Buffer::no_color();
 
     if !config.suppress_text_warnings {
         d.emit(&mut writer, &sources)
             .context("emitting to buffer should never fail")?;
+    }
+
+    if no_execute {
+        return Ok(WasmCompileResult::output(
+            io,
+            Value::from(String::from("")),
+            diagnostics_output(writer),
+            diagnostics,
+            instructions,
+        ))
     }
 
     let unit = match result {
@@ -308,7 +314,6 @@ async fn inner_compile(
             ));
         }
     };
-
     let instructions = if config.instructions {
         let mut out = rune::termcolor::Buffer::no_color();
         unit.emit_instructions(&mut out, &sources, false)
@@ -407,13 +412,47 @@ fn diagnostics_output(writer: rune::termcolor::Buffer) -> Option<String> {
 }
 
 #[wasm_bindgen]
-pub async fn compile(input: String, config: JsValue, scripts:  String, params: JsValue) -> JsValue {
+pub async fn compile(input: String, config: JsValue, scripts:  String, params: JsValue, no_execute: bool) -> JsValue {
     let io = CaptureIo::new();
 
-    let result = match inner_compile(input, config, &io, scripts, params).await {
+    let result = match inner_compile(input, config, &io, scripts, params, no_execute).await {
         Ok(result) => result,
         Err(error) => WasmCompileResult::from_error(&io, error, None, Vec::new(), None),
     };
 
     <JsValue as JsValueSerdeExt>::from_serde(&result).unwrap()
 }
+
+
+// pub async fn execute() -> JsValue {
+//     let context = rune_modules::default_context()?;
+
+//     let mut sources = rune::sources!(
+//         entry => {
+//             pub fn main(number) {
+//                 number + 10
+//             }
+//         }
+//     );
+
+//     let mut diagnostics = Diagnostics::new();
+
+//     let result = rune::prepare(&mut sources)
+//         .with_context(&context)
+//         .with_diagnostics(&mut diagnostics)
+//         .build();
+
+//     if !diagnostics.is_empty() {
+//         let mut writer = rune::termcolor::Buffer::no_color();
+//         diagnostics.emit(&mut writer, &sources)?;
+//     }
+
+//     let unit = result?;
+
+//     let mut vm = Vm::new(Arc::new(context.runtime()), Arc::new(unit));
+//     let output = vm.execute(["main"], (33i64,))?.complete().into_result()?;
+//     let output: i64 = rune::from_value(output)?;
+
+//     println!("output: {}", output);
+//     <JsValue as JsValueSerdeExt>::from_serde(&result).unwrap()
+// }

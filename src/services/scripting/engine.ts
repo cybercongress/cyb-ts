@@ -115,10 +115,11 @@ export const executeCallback = (
 };
 
 export const runScript = async (
-  code: string,
+  scriptCode: string,
   params: ScriptScopeParams = {},
   runtimeScript?: string,
-  callback?: ScriptCallback
+  callback?: ScriptCallback,
+  noExecute: boolean
 ): Promise<ScriptExecutionData> => {
   // console.log('runeRun before', code, refId, callback);
   const paramRefId = params.refId || uuidv4().toString();
@@ -126,10 +127,16 @@ export const runScript = async (
   callback && scriptCallbacks.set(paramRefId, callback);
 
   // input: String, config: JsValue, ref_id: String, scripts:  String, params: JsValue
-  const outputData = await compile(code, compileConfig, runtimeScript || '', {
-    ...params,
-    refId: paramRefId,
-  });
+  const outputData = await compile(
+    scriptCode,
+    compileConfig,
+    runtimeScript || '',
+    {
+      ...params,
+      refId: paramRefId,
+    },
+    noExecute
+  );
   const {
     result,
     output,
@@ -184,7 +191,9 @@ export const reactToParticle = async (
       contentType: contentType || '',
       content,
     },
-    scriptParticleRuntime
+    scriptParticleRuntime,
+    undefined,
+    false
   );
   if (result.error) {
     console.log('---error', result);
