@@ -6,7 +6,7 @@ import {
 } from 'src/components';
 import Select, { OptionSelect, SelectOption } from 'src/components/Select';
 import { CYBER } from 'src/utils/config';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -22,6 +22,7 @@ import { TypeTxsT } from './type';
 import networks from '../../utils/networkListIbc';
 import ActionBar from './actionBar.bridge';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -33,6 +34,7 @@ function Bridge() {
     addressActive,
     update
   );
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [tokenSelect, setTokenSelect] = useState<string>('');
   const [tokenAmount, setTokenAmount] = useState<string>('');
@@ -46,6 +48,30 @@ function Bridge() {
     tokenSelect,
     typeTxs === 'deposit' ? networkA : networkB
   );
+
+  const firstEffectOccured = useRef(false);
+
+  useEffect(() => {
+    if (firstEffectOccured.current) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const query = {
+        networkFrom: networkA,
+        networkTo: networkB,
+        token: tokenSelect,
+      };
+
+      setSearchParams(createSearchParams(query));
+    } else {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { networkFrom, networkTo, token } = param;
+        setNetworkA(networkFrom);
+        setNetworkB(networkTo);
+        setTokenSelect(token);
+      }
+    }
+  }, [networkA, networkB, tokenSelect, setSearchParams, searchParams]);
 
   useEffect(() => {
     if (
