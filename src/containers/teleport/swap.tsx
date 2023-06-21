@@ -1,7 +1,7 @@
 import { MainContainer } from 'src/components';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { CYBER } from 'src/utils/config';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -15,6 +15,7 @@ import {
   reduceBalances,
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
 import TokenSetterSwap, { TokenSetterId } from './comp/TokenSetterSwap';
 import { getBalances, useGetParams, useGetSwapPrice } from './hooks';
 import {
@@ -48,6 +49,7 @@ function Swap() {
     update
   );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
   const [tokenAAmount, setTokenAAmount] = useState<string>('');
@@ -63,6 +65,27 @@ function Swap() {
     tokenAPoolAmount,
     tokenBPoolAmount
   );
+  const firstEffectOccured = useRef(false);
+
+  useEffect(() => {
+    if (firstEffectOccured.current) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const query = {
+        from: tokenA,
+        to: tokenB,
+      };
+
+      setSearchParams(createSearchParams(query));
+    } else {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { from, to } = param;
+        setTokenA(from);
+        setTokenB(to);
+      }
+    }
+  }, [tokenA, tokenB, setSearchParams, searchParams]);
 
   useEffect(() => {
     // find pool for current pair
