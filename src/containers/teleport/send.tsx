@@ -10,7 +10,7 @@ import { Color } from 'src/components/LinearGradientContainer/LinearGradientCont
 import { RootState } from 'src/redux/store';
 import { useSelector } from 'react-redux';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
@@ -23,6 +23,7 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import Slider from './components/slider';
 import { getBalances } from './hooks';
@@ -39,6 +40,7 @@ function Send() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const dataSendTxs = useGetSendTxsByAddressByType(
     addressActive,
     'cosmos.bank.v1beta1.MsgSend'
@@ -54,6 +56,27 @@ function Send() {
     useState<Option<ObjKeyValue>>(undefined);
   const [memoValue, setMemoValue] = useState<string>('');
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
+  const firstEffectOccured = useRef(false);
+
+  useEffect(() => {
+    if (firstEffectOccured.current) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const query = {
+        token: tokenSelect,
+        recipient,
+      };
+
+      setSearchParams(createSearchParams(query));
+    } else {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { token, recipient } = param;
+        setTokenSelect(token);
+        setRecipient(recipient);
+      }
+    }
+  }, [tokenSelect, recipient, setSearchParams, searchParams]);
 
   useEffect(() => {
     setTokenAmount('');
