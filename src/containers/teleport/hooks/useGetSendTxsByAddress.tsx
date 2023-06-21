@@ -69,8 +69,6 @@ function useGetSendTxsByAddressByType(
     }
   );
 
-  console.log('data', data)
-
   useEffect(() => {
     if (address) {
       setAddressBech32(address.bech32);

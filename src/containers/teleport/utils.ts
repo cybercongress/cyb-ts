@@ -218,7 +218,7 @@ export function calculateSlippage(swapAmount: number, poolReserve: number) {
   return slippage;
 }
 
-export function calculatePairAmount(inputAmount: string, state) {
+export function calculatePairAmount(inputAmount: string | number, state) {
   const {
     tokenB,
     tokenA,

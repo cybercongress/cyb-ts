@@ -15,9 +15,13 @@ import {
   reduceBalances,
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
-import TokenSetterSwap from './comp/TokenSetterSwap';
+import TokenSetterSwap, { TokenSetterId } from './comp/TokenSetterSwap';
 import { getBalances, useGetParams, useGetSwapPrice } from './hooks';
-import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
+import {
+  sortReserveCoinDenoms,
+  calculatePairAmount,
+  getMyTokenBalanceNumber,
+} from './utils';
 import Slider from './components/slider';
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from './comp/grid';
@@ -37,7 +41,7 @@ function Swap() {
     addressActive,
     'tendermint.liquidity.v1beta1.MsgSwapWithinBatch'
   );
-  const poolsData = usePoolListInterval({  });
+  const poolsData = usePoolListInterval({ refetchInterval: 5 * 60 * 1000 });
   const params = useGetParams();
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
@@ -59,8 +63,6 @@ function Swap() {
     tokenAPoolAmount,
     tokenBPoolAmount
   );
-
-  // console.log('selectedPool', selectedPool)
 
   useEffect(() => {
     // find pool for current pair
@@ -101,11 +103,11 @@ function Swap() {
   }, [queryClient, tokenA, tokenB, selectedPool, update]);
 
   const amountChangeHandler = useCallback(
-    (values: string, e: React.ChangeEvent) => {
+    (values: string | number, id: TokenSetterId) => {
       const inputAmount = values;
       let counterPairAmount = new BigNumber(0);
 
-      const isReverse = e.target.id !== 'tokenAAmount';
+      const isReverse = id !== TokenSetterId.tokenAAmount;
 
       if (tokenAPoolAmount && tokenAPoolAmount && traseDenom) {
         const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
@@ -138,6 +140,44 @@ function Swap() {
     },
     [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount, traseDenom]
   );
+
+  useEffect(() => {
+    // update swap price for current amount tokenA
+    if (update) {
+      amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
+    }
+  }, [update, amountChangeHandler]);
+
+  const validInputAmountTokenA = useMemo(() => {
+    if (traseDenom) {
+      const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
+
+      if (Number(tokenAAmount) > 0) {
+        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+
+        const amountToken = parseFloat(
+          getDisplayAmountReverce(tokenAAmount, coinDecimalsA)
+        );
+
+        return amountToken > myATokenBalance;
+      }
+    }
+    return false;
+  }, [tokenAAmount, tokenA, traseDenom, accountBalances]);
+
+  useEffect(() => {
+    // validation swap
+    let exceeded = true;
+
+    const validTokenAmountA =
+      !validInputAmountTokenA && Number(tokenAAmount) > 0;
+
+    if (poolPrice !== 0 && validTokenAmountA) {
+      exceeded = false;
+    }
+
+    setIsExceeded(exceeded);
+  }, [poolPrice, tokenAAmount, validInputAmountTokenA]);
 
   const useGetSlippage = useMemo(() => {
     if (poolPrice && swapPrice) {
@@ -194,8 +234,8 @@ function Swap() {
 
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-    // dataSwapTxs.refetch();
-  }, []);
+    dataSwapTxs.refetch();
+  }, [dataSwapTxs]);
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
@@ -210,11 +250,12 @@ function Swap() {
           .dividedBy(100)
           .dp(coinDecimals, BigNumber.ROUND_FLOOR)
           .toNumber();
-        const amount1 = getDisplayAmount(amount, coinDecimals);
-        setTokenAAmount(amount1);
+        const amountDecimals = getDisplayAmount(amount, coinDecimals);
+        amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
+        setTokenAAmount(amountDecimals);
       }
     },
-    [accountBalances, tokenA, traseDenom]
+    [accountBalances, tokenA, traseDenom, amountChangeHandler]
   );
 
   const stateActionBar = {
@@ -226,6 +267,7 @@ function Swap() {
     updateFunc,
     isExceeded,
     swapPrice,
+    poolPrice,
   };
 
   return (
@@ -233,7 +275,7 @@ function Swap() {
       <MainContainer width="62%">
         <TeleportContainer>
           <TokenSetterSwap
-            id="tokenAAmount"
+            id={TokenSetterId.tokenAAmount}
             listTokens={totalSupply}
             accountBalances={accountBalances}
             tokenAmountValue={tokenAAmount}
@@ -241,6 +283,8 @@ function Swap() {
             selected={tokenB}
             onChangeSelect={setTokenA}
             amountChangeHandler={amountChangeHandler}
+            validInputAmount={validInputAmountTokenA}
+            autoFocus
           />
 
           <Slider
@@ -254,7 +298,7 @@ function Swap() {
           />
 
           <TokenSetterSwap
-            id="tokenBAmount"
+            id={TokenSetterId.tokenBAmount}
             listTokens={totalSupply}
             accountBalances={accountBalances}
             tokenAmountValue={tokenBAmount}

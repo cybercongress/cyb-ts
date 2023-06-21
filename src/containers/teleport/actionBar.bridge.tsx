@@ -197,11 +197,12 @@ function ActionBar({ stateActionBar }) {
     [TxsType.Deposit]: {
       text: 'Deposit',
       onClick: depositOnClick,
-      disabled: ibcClient === null,
+      disabled: isExceeded,
     },
     [TxsType.Withdraw]: {
       text: 'withdraw',
       onClick: withdrawOnClick,
+      disabled: isExceeded,
     },
   };
 

@@ -13,14 +13,15 @@ import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
-import { getDisplayAmount } from 'src/utils/utils';
-import { networkList } from './utils';
+import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
+import { getMyTokenBalanceNumber, networkList } from './utils';
 import { getBalances, useSetupIbcClient } from './hooks';
 import Slider from './components/slider';
 import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import { TypeTxsT } from './type';
 import networks from '../../utils/networkListIbc';
 import ActionBar from './actionBar.bridge';
+import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -121,7 +122,7 @@ function Bridge() {
     return tempList;
   }, [totalSupply]);
 
-  const useGetAccountBalancesToken = useCallback(
+  const getAccountBalancesToken = useCallback(
     (selectNetwork: string) => {
       if (selectNetwork !== CYBER.CHAIN_ID) {
         return balanceIbc;
@@ -132,7 +133,7 @@ function Bridge() {
     [accountBalances, balanceIbc]
   );
 
-  const useGetDenomToken = useCallback(
+  const getDenomToken = useCallback(
     (selectNetwork: string) => {
       if (selectNetwork !== CYBER.CHAIN_ID && denomIbc) {
         return denomIbc;
@@ -142,6 +143,57 @@ function Bridge() {
     },
     [tokenSelect, denomIbc]
   );
+
+  const validInputAmountToken = useMemo(() => {
+    if (traseDenom && networkA) {
+      const tokenA = getDenomToken(networkA);
+      const tokenABalance = getAccountBalancesToken(networkA);
+      const myATokenBalance = getMyTokenBalanceNumber(tokenA, tokenABalance);
+
+      if (Number(tokenAmount) > 0) {
+        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+
+        const amountToken = parseFloat(
+          getDisplayAmountReverce(tokenAmount, coinDecimalsA)
+        );
+
+        return amountToken > myATokenBalance;
+      }
+    }
+    return false;
+  }, [
+    tokenAmount,
+    networkA,
+    getDenomToken,
+    traseDenom,
+    getAccountBalancesToken,
+  ]);
+
+  useEffect(() => {
+    // validation bridge
+    let exceeded = true;
+
+    const validNetwork =
+      networkA.length > 0 && networkB.length > 0 && networkA !== networkB;
+
+    // check set up ibc cliet for deposit
+    const validIbcClient = typeTxs === 'deposit' ? ibcClient !== null : true;
+
+    const validTokenAmount = !validInputAmountToken && Number(tokenAmount) > 0;
+
+    if (validNetwork && validIbcClient && validTokenAmount) {
+      exceeded = false;
+    }
+
+    setIsExceeded(exceeded);
+  }, [
+    networkA,
+    networkB,
+    typeTxs,
+    ibcClient,
+    tokenAmount,
+    validInputAmountToken,
+  ]);
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
@@ -202,10 +254,11 @@ function Bridge() {
                 value={tokenAmount}
                 onValueChange={(value) => setTokenAmount(value)}
                 title="choose amount to send"
+                color={validInputAmountToken ? Color.Pink : undefined}
               />
               <AvailableAmount
-                accountBalances={useGetAccountBalancesToken(networkA)}
-                token={useGetDenomToken(networkA)}
+                accountBalances={getAccountBalancesToken(networkA)}
+                token={getDenomToken(networkA)}
               />
             </Col>
             <Col>
@@ -220,7 +273,7 @@ function Bridge() {
                   />
                 }
                 onChangeSelect={(item: string) => setTokenSelect(item)}
-                width="180px"
+                width="100%"
                 options={reduceOptions}
                 title="choose token to send"
               />
@@ -235,7 +288,7 @@ function Bridge() {
                   />
                 }
                 onChangeSelect={(item: string) => setNetworkA(item)}
-                width="180px"
+                width="100%"
                 title="choose source network"
                 options={reduceOptionsNetwork(networkB)}
               />
@@ -243,23 +296,23 @@ function Bridge() {
           </GridContainer>
 
           <Slider
-            tokenA={useGetDenomToken(networkA)}
+            tokenA={getDenomToken(networkA)}
             tokenAAmount={tokenAmount}
             setPercentageBalanceHook={setPercentageBalanceHook}
             // coinReverseAction={() => tokenChange()}
-            accountBalances={useGetAccountBalancesToken(networkA)}
+            accountBalances={getAccountBalancesToken(networkA)}
           />
 
           <GridContainer>
             <AvailableAmount
-              accountBalances={useGetAccountBalancesToken(networkB)}
-              token={useGetDenomToken(networkB)}
+              accountBalances={getAccountBalancesToken(networkB)}
+              token={getDenomToken(networkB)}
             />
 
             <Select
               valueSelect={networkB}
               onChangeSelect={(item: string) => setNetworkB(item)}
-              width="180px"
+              width="100%"
               options={reduceOptionsNetwork(networkA)}
               title="destination network"
             />

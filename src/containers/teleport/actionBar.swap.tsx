@@ -32,6 +32,8 @@ import ActionBarStaps from './actionBarSteps';
 import { TxsType } from './type';
 import { RootState } from 'src/redux/store';
 import ActionBarPingTxs from './actionBarPingTxs';
+import { useNavigate } from 'react-router-dom';
+import { sortReserveCoinDenoms } from './utils';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -55,6 +57,7 @@ const coinFunc = (amount: number, denom: string): Coin => {
 };
 
 function ActionBar({ stateActionBar }) {
+  const navigate = useNavigate();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { signingClient, signer } = useSigningClient();
@@ -73,6 +76,7 @@ function ActionBar({ stateActionBar }) {
     updateFunc,
     isExceeded,
     swapPrice,
+    poolPrice,
   } = stateActionBar;
 
   const swapWithinBatch = async () => {
@@ -145,6 +149,22 @@ function ActionBar({ stateActionBar }) {
     setTxHash(undefined);
     setErrorMessage(undefined);
   };
+
+  const createPool = useCallback(() => {
+    const sortCoin = sortReserveCoinDenoms(tokenA, tokenB);
+    navigate(`/warp/create-pool?from=${sortCoin[0]}&to=${sortCoin[1]}`);
+  }, [tokenA, tokenB, navigate]);
+
+  if (!poolPrice) {
+    return (
+      <ActionBarCenter
+        button={{
+          text: 'Create pool',
+          onClick: createPool,
+        }}
+      />
+    );
+  }
 
   if (stage === STAGE_INIT) {
     return (

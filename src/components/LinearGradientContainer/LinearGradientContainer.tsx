@@ -6,6 +6,7 @@ export const enum Color {
   Yellow = 'yellow',
   Red = 'red',
   Black = 'black',
+  Green = 'green',
 }
 
 export type Props = {

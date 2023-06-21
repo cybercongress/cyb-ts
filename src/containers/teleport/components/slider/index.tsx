@@ -182,7 +182,7 @@ function Slider({
 
         <div style={{ width: '100%' }}>
           <input
-            style={{ width: '100%', padding: '0 30px' }}
+            style={{ width: '100%', padding: '0 25px' }}
             type="range"
             min="0"
             max="100"

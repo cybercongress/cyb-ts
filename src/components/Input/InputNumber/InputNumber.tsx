@@ -1,6 +1,7 @@
 import { NumericFormat } from 'react-number-format';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
+import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import Input from '../Input';
 
 export type Props = {
@@ -11,6 +12,7 @@ export type Props = {
   onValueChange: (val: string, event: any) => void;
   id?: string;
   title?: string;
+  color?: Color;
 };
 
 function InputNumber({ value, onValueChange, onChange, ...props }: Props) {

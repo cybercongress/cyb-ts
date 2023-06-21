@@ -87,7 +87,7 @@ $col-width: math.div(100%, $number-of-options);
       margin-top: -4px;
       //top:-2%;
       appearance: none;
-      z-index: 1;
+      z-index: 2;
       -webkit-appearance: none;
 
 
@@ -98,26 +98,31 @@ $col-width: math.div(100%, $number-of-options);
         border: 0;
         //background: red;
         //z-index: 200000;
-
         cursor: pointer;
-        z-index: 1;
+        z-index: 2;
         //display: none
       }
 
       &::-webkit-slider-thumb {
-
         background: transparent;
         -webkit-appearance: none;
         appearance: none;
         //width: 23px;
         //height: 25px;
         width: 25px;
-        height: 65px;
-        z-index: 1;
+        height: 25px;
+        z-index: 2;
         margin-top: 15px;
-
-
-
+        //background: transparent;
+        //background:  ;;
+        //https://localhost:3001/exchange-arrows.2cba7bc0f9.svg
+        // background-image: url(../../../../image/exchange-arrows.svg);
+        //radial-gradient(50% 50% at 50% 50%, #ffffff 0%, rgba(255, 255, 255, 0) 60.42%)
+        //background: url('https://localhost:3001/exchange-arrows.2cba7bc0f9.svg');
+        background-repeat: no-repeat;
+        //border-radius: 50%;
+        cursor: pointer;
+        //display: none
       }
 
 

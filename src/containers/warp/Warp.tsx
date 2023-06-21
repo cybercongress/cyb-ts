@@ -48,7 +48,7 @@ function Warp() {
     update
   );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
-  const { poolsData } = usePoolListInterval({ refetchInterval: 50000 });
+  const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
@@ -63,7 +63,12 @@ function Warp() {
     useState<Option<{ [key: string]: MyPoolsT }>>(undefined);
   const [selectMyPool, setSelectMyPool] = useState('');
 
-  const { swapPrice } = useGetSwapPrice(tokenA, tokenB, selectedPool, update);
+  const swapPrice = useGetSwapPrice(
+    tokenA,
+    tokenB,
+    tokenAPoolAmount,
+    tokenBPoolAmount
+  );
   const firstEffectOccured = useRef(false);
 
   useEffect(() => {

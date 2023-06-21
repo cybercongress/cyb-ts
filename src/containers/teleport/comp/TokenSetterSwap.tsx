@@ -2,17 +2,25 @@ import React, { useMemo } from 'react';
 import { DenomArr, InputNumber, AvailableAmount } from 'src/components';
 import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
+import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { Col, GridContainer } from './grid';
 
+export const enum TokenSetterId {
+  tokenAAmount = 'tokenAAmount',
+  tokenBAmount = 'tokenBAmount',
+}
+
 type Props = {
-  id: 'tokenAAmount' | 'tokenBAmount';
+  id: TokenSetterId;
   listTokens: undefined | ObjKeyValue;
   valueSelect: string;
   accountBalances: ObjKeyValue | null;
   selected: string;
   tokenAmountValue: string;
+  validInputAmount?: boolean;
+  autoFocus?: boolean;
   onChangeSelect: React.Dispatch<React.SetStateAction<string>>;
-  amountChangeHandler: (values: string, e: React.ChangeEvent) => void;
+  amountChangeHandler: (values: string, id: TokenSetterId) => void;
 };
 
 function TokenSetterSwap({
@@ -24,6 +32,8 @@ function TokenSetterSwap({
   id,
   listTokens,
   accountBalances,
+  validInputAmount,
+  autoFocus,
 }: Props) {
   const reduceOptions = useMemo(() => {
     const tempList: SelectOption[] = [];
@@ -46,7 +56,7 @@ function TokenSetterSwap({
   }, [listTokens, selected]);
 
   const textAction = useMemo(() => {
-    if (id === 'tokenBAmount') {
+    if (id === TokenSetterId.tokenBAmount) {
       return 'receive';
     }
     return 'swap';
@@ -58,8 +68,10 @@ function TokenSetterSwap({
         <InputNumber
           id={id}
           value={tokenAmountValue}
-          onValueChange={amountChangeHandler}
+          onValueChange={(value, e) => amountChangeHandler(value, e.target.id)}
           title={`choose amount to ${textAction}`}
+          color={validInputAmount ? Color.Pink : undefined}
+          autoFocus={autoFocus}
         />
         <AvailableAmount
           accountBalances={accountBalances}
@@ -70,7 +82,7 @@ function TokenSetterSwap({
         valueSelect={valueSelect}
         currentValue={valueSelect}
         onChangeSelect={(item: string) => onChangeSelect(item)}
-        width="180px"
+        width="100%"
         options={reduceOptions}
         title={`choose token to ${textAction}`}
       />

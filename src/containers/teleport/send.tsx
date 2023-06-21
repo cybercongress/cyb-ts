@@ -59,19 +59,31 @@ function Send() {
     setTokenAmount('');
   }, [tokenSelect]);
 
+  const validInputAmountToken = useMemo(() => {
+    if (traseDenom) {
+      const myATokenBalance = getMyTokenBalanceNumber(
+        tokenSelect,
+        accountBalances
+      );
+
+      if (Number(tokenAmount) > 0) {
+        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
+
+        const amountToken = parseFloat(
+          getDisplayAmountReverce(tokenAmount, coinDecimalsA)
+        );
+
+        return amountToken > myATokenBalance;
+      }
+    }
+    return false;
+  }, [tokenAmount, tokenSelect, traseDenom, accountBalances]);
+
   useEffect(() => {
     // valid send
     let exceeded = true;
-    const myATokenBalance = getMyTokenBalanceNumber(
-      tokenSelect,
-      accountBalances
-    );
 
-    const [{ coinDecimals }] = traseDenom(tokenSelect);
-
-    const validTokenAmount =
-      parseFloat(getDisplayAmountReverce(tokenAmount, coinDecimals)) <=
-        myATokenBalance && myATokenBalance > 0;
+    const validTokenAmount = !validInputAmountToken && Number(tokenAmount) > 0;
     const validRecipient = recipient.match(PATTERN_CYBER);
 
     if (validRecipient && validTokenAmount) {
@@ -79,7 +91,7 @@ function Send() {
     }
 
     setIsExceeded(exceeded);
-  }, [recipient, tokenSelect, accountBalances, tokenAmount, traseDenom]);
+  }, [recipient, validInputAmountToken, tokenAmount]);
 
   useEffect(() => {
     const getBalancesRecipient = async () => {
@@ -155,7 +167,7 @@ function Send() {
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
             title="choose recipient"
-            color={Color.Yellow}
+            color={Color.Green}
           />
           <GridContainer>
             <Col>
@@ -163,6 +175,7 @@ function Send() {
                 value={tokenAmount}
                 onValueChange={(value) => setTokenAmount(value)}
                 title="choose amount to send"
+                color={validInputAmountToken ? Color.Pink : undefined}
               />
               <AvailableAmount
                 accountBalances={accountBalances}
@@ -182,7 +195,7 @@ function Send() {
                   />
                 }
                 onChangeSelect={(item: string) => setTokenSelect(item)}
-                width="180px"
+                width="100%"
                 options={reduceOptions}
                 title="choose token to send"
               />

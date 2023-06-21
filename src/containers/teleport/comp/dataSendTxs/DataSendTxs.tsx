@@ -1,5 +1,5 @@
 import { UseInfiniteQueryResult } from '@tanstack/react-query';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getNowUtcTime, timeSince } from 'src/utils/utils';
 import { ContainerGradientText, Dots } from 'src/components';
@@ -19,82 +19,83 @@ function DataSendTxs({
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
     dataSendTxs;
 
-  let itemRows: React.ReactNode[] = [];
+  const itemRows = useMemo(() => {
+    if (data) {
+      return data.pages.map((page) => (
+        <React.Fragment key={page.page}>
+          {page.data.map((item) => {
+            const key = uuidv4();
+            let timeAgoInMS = null;
+            const { memo } = item.transaction;
+            const time =
+              getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
+            if (time > 0) {
+              timeAgoInMS = time;
+            }
 
-  if (data) {
-    itemRows = data.pages.map((page) => (
-      <React.Fragment key={page.page}>
-        {page.data.map((item) => {
-          const key = uuidv4();
-          let timeAgoInMS = null;
-          const { memo } = item.transaction;
-          const time =
-            getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
-          if (time > 0) {
-            timeAgoInMS = time;
-          }
+            let typeTx = item.type;
+            if (
+              typeTx.includes('MsgSend') &&
+              item?.value?.to_address === accountUser?.bech32
+            ) {
+              typeTx = 'Receive';
+            }
 
-          let typeTx = item.type;
-          if (
-            typeTx.includes('MsgSend') &&
-            item?.value?.to_address === accountUser?.bech32
-          ) {
-            typeTx = 'Receive';
-          }
-
-          return (
-            <Link
-              to={`/network/bostrom/tx/${item.transaction_hash}`}
-              key={`${item.transaction_hash}_${key}`}
-            >
-              <ContainerGradientText
-                status={item.transaction.success ? 'blue' : 'red'}
-                userStyleContent={{ display: 'grid', gap: '10px' }}
+            return (
+              <Link
+                to={`/network/bostrom/tx/${item.transaction_hash}`}
+                key={`${item.transaction_hash}_${key}`}
               >
-                <div
-                  style={{
-                    color: '#fff',
-                  }}
-                >
-                  {memo}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    justifyContent: 'space-between',
-                  }}
+                <ContainerGradientText
+                  status={item.transaction.success ? 'blue' : 'red'}
+                  userStyleContent={{ display: 'grid', gap: '10px' }}
                 >
                   <div
                     style={{
-                      color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
+                      color: '#fff',
                     }}
                   >
-                    {item.value.amount.map((item, i) => {
-                      return (
-                        <AmountDenom
-                          denom={item.denom}
-                          amountValue={item.amount}
-                          key={i}
-                        />
-                      );
-                    })}
+                    {memo}
                   </div>
                   <div
                     style={{
-                      color: '#777',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      justifyContent: 'space-between',
                     }}
                   >
-                    {timeSince(timeAgoInMS)} ago
+                    <div
+                      style={{
+                        color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
+                      }}
+                    >
+                      {item.value.amount.map((item, i) => {
+                        return (
+                          <AmountDenom
+                            denom={item.denom}
+                            amountValue={item.amount}
+                            key={i}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div
+                      style={{
+                        color: '#777',
+                      }}
+                    >
+                      {timeSince(timeAgoInMS)} ago
+                    </div>
                   </div>
-                </div>
-              </ContainerGradientText>
-            </Link>
-          );
-        })}
-      </React.Fragment>
-    ));
-  }
+                </ContainerGradientText>
+              </Link>
+            );
+          })}
+        </React.Fragment>
+      ));
+    }
+    return [];
+  }, [data, accountUser]);
 
   const fetchNextPageFnc = () => {
     setTimeout(() => {
