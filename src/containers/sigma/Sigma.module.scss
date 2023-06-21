@@ -1,0 +1,16 @@
+.totalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .image {
+    display: flex;
+    align-items: center;
+    gap: 0 10px;
+
+    h3 {
+      text-transform: lowercase;
+      font-weight: 400;
+    }
+  }
+}

@@ -138,14 +138,6 @@ function useGetBalanceBostrom(address) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useGetCapTokens]);
 
-  console.log(
-    totalAmountInLiquid,
-    balanceMainToken,
-    balanceToken,
-    balances,
-    totalAmountInLiquidOld
-  );
-
   return {
     totalAmountInLiquid,
     balanceMainToken,

@@ -1,19 +1,29 @@
 .containerSignaturesBtnPlay {
   width: fit-content;
-  // height: 100%;
   background: transparent;
-  border: none;
-  cursor: pointer;
+  border: unset;
   height: 20px;
+  font-size: 16px;
+  color: var(--primary-color);
+
+  &.disabled {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  &:hover:not(.disabled) {
+    text-decoration: underline;
+  }
+}
+
+.containerSignatures,
+.music {
+  display: flex;
+
+  align-items: center;
+  gap: 3px;
 }
 
 .containerSignatures {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  color: #36d6ae;
-  font-size: 16px;
-
   &ItemNote {
     width: 7px;
     border-radius: 2px;

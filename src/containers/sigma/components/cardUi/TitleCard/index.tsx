@@ -6,6 +6,7 @@ import styles from './styles.scss';
 import { Citizenship } from 'src/types/citizenship';
 import { DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';
+import { Networks } from 'src/types/networks';
 
 interface Props {
   address: string;
@@ -15,19 +16,19 @@ interface Props {
 }
 
 function TitleCard({ address, passport, totalLiquid, selectAddress }: Props) {
-  console.log(selectAddress);
+  const addressNetwork = getTypeFromAddress(address);
 
   return (
     <div className={styles.container} onClick={() => selectAddress(address)}>
-      <DenomArr
-        denomValue={getTypeFromAddress(address)}
-        onlyImg
-        type="network"
-        size={30}
-      />
+      <DenomArr denomValue={addressNetwork} onlyImg type="network" size={30} />
 
       <div className={styles.address}>
-        <Signatures addressActive={{ bech32: address }} />
+        <Signatures
+          addressActive={{ bech32: address }}
+          disabled={
+            ![Networks.BOSTROM, Networks.SPACE_PUSSY].includes(addressNetwork)
+          }
+        />
       </div>
 
       {/* <div className={styles.avatar}>

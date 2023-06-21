@@ -1,3 +1,5 @@
+@import '../../style/mixins.scss';
+
 .table {
   border-collapse: collapse;
   width: 100%;
@@ -30,14 +32,7 @@
       }
 
       &:hover {
-        // background: #36d6ae24;
-        background: linear-gradient(
-          90deg,
-          rgba(54, 214, 174, 0.15) -3.3%,
-          rgba(54, 214, 174, 0.072) 32.75%,
-          rgba(54, 214, 174, 0.0765) 62.88%,
-          rgba(54, 214, 174, 0.15) 100%
-        );
+        @include tableHover;
       }
     }
   }

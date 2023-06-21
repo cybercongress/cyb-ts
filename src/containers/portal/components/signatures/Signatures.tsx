@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import styles from './styles.scss';
+import styles from './Signatures.module.scss';
 import {
   DICTIONARY_ABC,
   getHeight,
@@ -8,21 +8,23 @@ import {
   makeSound,
   cutAddress,
 } from './utils';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const classNames = require('classnames');
 
-function Signatures({ addressActive }) {
-  const [plaing, setPlaing] = useState(true);
-  const navigate = useNavigate();
+type Props = {
+  addressActive: { bech32: string };
+  disabled: boolean;
+};
+
+function Signatures({ addressActive, disabled }: Props) {
+  const [playing, setPlaying] = useState(true);
+
+  const bech32 = addressActive?.bech32;
 
   const address = useMemo(() => {
-    if (addressActive !== null) {
-      const { bech32 } = addressActive;
-      return cutAddress(bech32);
-    }
-    return null;
-  }, [addressActive]);
+    return cutAddress(bech32);
+  }, [bech32]);
 
   const useGetItems = useMemo(() => {
     const items = [];
@@ -53,11 +55,7 @@ function Signatures({ addressActive }) {
   }, [addressActive]);
 
   const onClickMusicalAddress = useCallback(() => {
-    navigate(`/neuron/${addressActive.bech32}`);
-
-    return;
-
-    if (!plaing) {
+    if (!playing) {
       return;
     }
 
@@ -65,44 +63,60 @@ function Signatures({ addressActive }) {
       copyAddress();
       const { address: sliceAddress } = address;
       const arrNote = getNoteFromAdd(sliceAddress);
-      setPlaing(false);
+      setPlaying(false);
       makeSound(arrNote);
       setTimeout(() => {
-        setPlaing(true);
+        setPlaying(true);
       }, 7000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, plaing]);
+  }, [address, playing]);
+
+  function renderAddressPart(text: string) {
+    if (disabled) {
+      return text;
+    }
+
+    return <Link to={`/neuron/${addressActive.bech32}`}>{text}</Link>;
+  }
 
   return (
-    <button
-      type="button"
-      onClick={() => onClickMusicalAddress()}
-      className={styles.containerSignaturesBtnPlay}
+    <div
+      className={classNames(styles.containerSignaturesBtnPlay, {
+        [styles.disabled]: disabled,
+      })}
     >
       <div
         className={classNames(styles.containerSignatures, {
-          [styles.containerSignaturesPlaing]: !plaing,
+          [styles.containerSignaturesPlaying]: !playing,
         })}
       >
-        {address !== null && address.prefix}
-        {useGetItems.map((item) => {
-          const key = uuidv4();
-          return (
-            <div
-              key={key}
-              className={styles.containerSignaturesItemNote}
-              style={{
-                background: item.color,
-                color: item.color,
-                height: `${getHeight(item.code)}px`,
-              }}
-            />
-          );
-        })}
-        {address !== null && address.end}
+        {address && renderAddressPart(address.prefix)}
+
+        <button
+          className={styles.music}
+          onClick={onClickMusicalAddress}
+          type="button"
+        >
+          {useGetItems.map((item) => {
+            const key = uuidv4();
+            return (
+              <div
+                key={key}
+                className={styles.containerSignaturesItemNote}
+                style={{
+                  background: item.color,
+                  color: item.color,
+                  height: `${getHeight(item.code)}px`,
+                }}
+              />
+            );
+          })}
+        </button>
+
+        {address && renderAddressPart(address.end)}
       </div>
-    </button>
+    </div>
   );
 }
 

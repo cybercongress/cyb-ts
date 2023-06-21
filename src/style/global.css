@@ -194,6 +194,8 @@ p {
 
 button {
   cursor: pointer;
+  border: unset;
+  background-color: transparent;
 }
 
 button:disabled {

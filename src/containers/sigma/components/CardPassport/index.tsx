@@ -7,14 +7,17 @@ import {
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
+import { useSelector } from 'react-redux';
+import { Citizenship } from 'src/types/citizenship';
 
 type Props = {
   address: string; // bostrom address
+  passport: Citizenship | null;
+  selectAddress: (address: string) => void;
 };
 
-function CardPassport({ address, selectAddress }: Props) {
+function CardPassport({ address, selectAddress, passport }: Props) {
   const { updateDataCap } = useContext(SigmaContext);
-  const { passport } = useGetPassportByAddress(address);
   const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
     useGetBalanceBostrom(address);
 
@@ -47,8 +50,6 @@ function CardPassport({ address, selectAddress }: Props) {
       );
     });
   }, [reduceDataBalanceTokenRow]);
-
-  console.log(selectAddress);
 
   return (
     <ContainerGradientText userStyleContent={{ height: 'auto' }}>

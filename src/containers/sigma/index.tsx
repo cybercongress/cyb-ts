@@ -17,6 +17,7 @@ import { useRobotContext } from 'src/pages/robot/Robot';
 import { RootState } from 'src/redux/store';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
+import styles from './Sigma.module.scss';
 
 const valueContext = {
   totalCap: 0,
@@ -33,12 +34,19 @@ function Sigma({ address: preAddr }) {
   const [step, setStep] = useState(STEP_INFO.STATE_PROVE);
   const [selectedAddress, setSelectedAddress] = useState<string>();
 
-  const { accounts, defaultAccount } = useSelector(
-    (state: RootState) => state.pocket
-  );
-  const { passport: defaultPassport } = useGetPassportByAddress(
-    preAddr || defaultAccount?.account
-  );
+  const {
+    pocket: { accounts, defaultAccount },
+    passport: defaultPassport,
+  } = useSelector((state: RootState) => {
+    return {
+      pocket: state.pocket,
+      passport: state.passport,
+    };
+  });
+
+  const currentAddress = address || preAddr;
+
+  const { passport } = useGetPassportByAddress(currentAddress);
 
   const accountsData = [];
 
@@ -60,46 +68,18 @@ function Sigma({ address: preAddr }) {
   //   }
   // });
 
+  // console.log(address, preAddr, isOwner);
+
+  const currentOwner =
+    isOwner ||
+    (defaultPassport.data && defaultPassport.data.owner === currentAddress);
+  const currentPassport = currentOwner ? defaultPassport.data : passport;
+
   if (preAddr) {
     accountsData.push({
       bech32: preAddr,
     });
   }
-
-  // const { accounts } = useGetLocalStoge(updateState);
-
-  // useEffect(() => {
-  //   const pocketAccountLs = localStorage.getItem('pocketAccount');
-  //   const localStoragePocket = localStorage.getItem('pocket');
-
-  //   let accountsTemp = {};
-
-  //   if (pocketAccountLs !== null && localStoragePocket !== null) {
-  //     const pocketAccountData = JSON.parse(pocketAccountLs);
-  //     const localStoragePocketData = JSON.parse(localStoragePocket);
-
-  //     const keyPocket = Object.keys(localStoragePocketData)[0];
-  //     accountsTemp = {
-  //       [keyPocket]: pocketAccountData[keyPocket],
-  //       ...pocketAccountData,
-  //     };
-  //   }
-
-  //   if (pocketAccountLs !== null) {
-  //     const data = [];
-  //     if (Object.keys(accountsTemp).length > 0) {
-  //       Object.keys(accountsTemp).forEach((key) => {
-  //         const { cyber } = accountsTemp[key];
-  //         if (cyber) {
-  //           data.push({ ...cyber });
-  //         }
-  //       });
-  //     }
-  //     if (data.length > 0) {
-  //       setAccountsData(data);
-  //     }
-  //   }
-  // }, [defaultAccount]);
 
   useEffect(() => {
     const { dataCap } = value;
@@ -115,12 +95,6 @@ function Sigma({ address: preAddr }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.dataCap]);
-
-  // get local store
-
-  // check passport
-
-  // check or set active
 
   const updateTotalCap = (cap) => {
     setValue((item) => ({
@@ -143,8 +117,9 @@ function Sigma({ address: preAddr }) {
     }));
   };
 
-  function selectAddress(address) {
+  function selectAddress(address: string) {
     setSelectedAddress(address);
+    setStep(STEP_INFO.STATE_DELETE_ADDRESS);
   }
 
   const renderItem = useMemo(() => {
@@ -154,6 +129,7 @@ function Sigma({ address: preAddr }) {
           <CardPassport
             key={address}
             address={address}
+            passport={currentPassport}
             selectAddress={selectAddress}
           />
         );
@@ -173,69 +149,56 @@ function Sigma({ address: preAddr }) {
           overflowX: 'auto',
         }}
       >
-        <div>
-          <ContainerGradientText>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '16px',
-              }}
-            >
-              <div>Total</div>
-              <div
-                style={{ display: 'flex', gap: '30px', alignItems: 'center' }}
-              >
-                {value.changeCap > 0 && (
-                  <div
-                    style={{
-                      color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
-                    }}
-                  >
-                    {value.changeCap > 0 ? '+' : ''}
-                    {formatNumber(value.changeCap)}
-                  </div>
-                )}
-                <FormatNumberTokens
-                  // styleValue={{ fontSize: '18px' }}
-                  text={CYBER.DENOM_LIQUID_TOKEN}
-                  value={value.totalCap}
-                />
-              </div>
+        <ContainerGradientText>
+          <header className={styles.totalHeader}>
+            <div className={styles.image}>
+              <img src={require('../../image/temple/nebula.png')} />
+              <h3>Sigma</h3>
             </div>
-          </ContainerGradientText>
-        </div>
+
+            <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
+              {value.changeCap > 0 && (
+                <div
+                  style={{
+                    color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
+                  }}
+                >
+                  {value.changeCap > 0 ? '+' : ''}
+                  {formatNumber(value.changeCap)}
+                </div>
+              )}
+              <FormatNumberTokens
+                // styleValue={{ fontSize: '18px' }}
+                text={CYBER.DENOM_LIQUID_TOKEN}
+                value={value.totalCap}
+              />
+            </div>
+          </header>
+        </ContainerGradientText>
 
         {renderItem}
-
-        {/* <MainContainer width="82%">
-        <CardPassport accounts={accounts} />
-      </MainContainer> */}
-        {/* <ActionBar updateFunc={updateStateFunc} /> */}
       </div>
 
-      {selectedAddress && (
+      {selectedAddress && false ? (
         <ActionBar
           button={{
-            text: 'Action',
+            text: 'Delete',
             onClick: () => {},
             disabled: true,
           }}
-          text={selectedAddress}
+          // text={selectedAddress}
         />
-      )}
-
-      {!selectedAddress && defaultPassport && (
+      ) : passport ? (
         <ActionBarPortalGift
           setStepApp={setStep}
           activeStep={step}
-          citizenship={defaultPassport}
+          selectedAddress={selectedAddress}
+          citizenship={passport}
           addressActive={{
-            bech32: defaultAccount?.account,
+            bech32: defaultAccount?.account?.cyber.bech32,
           }}
         />
-      )}
+      ) : null}
     </SigmaContext.Provider>
   );
 }

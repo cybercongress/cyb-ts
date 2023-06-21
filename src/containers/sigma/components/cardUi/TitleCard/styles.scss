@@ -1,3 +1,5 @@
+@import '../../../../../style/mixins.scss';
+
 .container {
   width: 100%;
   display: flex;
@@ -14,7 +16,8 @@
   font-size: 20px;
 
   &:hover {
-    background-color: var(--primary-color);
+    cursor: pointer;
+    @include tableHover;
   }
 }
 
