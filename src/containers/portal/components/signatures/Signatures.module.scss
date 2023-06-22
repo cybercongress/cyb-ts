@@ -11,7 +11,9 @@
   }
 
   &:hover:not(.disabled) {
-    text-decoration: underline;
+    a {
+      color: #00ffbf;
+    }
   }
 }
 
@@ -41,7 +43,7 @@
 
 $items: 32;
 
-.containerSignaturesPlaing {
+.containerSignaturesPlaying {
   .containerSignaturesItemNote {
     opacity: 1;
     animation: blink 0.3s;

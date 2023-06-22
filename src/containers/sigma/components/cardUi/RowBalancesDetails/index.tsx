@@ -50,7 +50,7 @@ function RowBalancesDetails({ balance }) {
     const denom = traseDenom(key);
 
     // TODO: fix
-    if (!denom[0] || !denom[1]) {
+    if (!denom[0]) {
       return;
     }
 
@@ -58,7 +58,7 @@ function RowBalancesDetails({ balance }) {
       return replaceSlash(denom[0].denom);
     }
 
-    if (key.includes('pool')) {
+    if (key.includes('pool') && denom[1]) {
       return `${getTypeDenomKey(denom[0].denom)}-${getTypeDenomKey(
         denom[1].denom
       )}`;

@@ -80,7 +80,7 @@ const links = [
   {
     text: 'Drive',
     name: 'drive',
-    description: 'mb',
+    description: '',
     link: './drive',
     // onlyOwner: true,
     icon: '🟥',
@@ -146,6 +146,15 @@ function Layout() {
             return null;
           }
 
+          let description = link.description;
+          let count = counts[link.name] || 0;
+
+          if (link.name === 'drive' && counts.drive) {
+            const [value, measurement] = counts.drive.split(' ');
+            description = measurement;
+            count = value;
+          }
+
           return (
             <li key={index} className={cx({ [styles.mirror]: isMirror })}>
               {link.isDisabled ? (
@@ -168,14 +177,14 @@ function Layout() {
                         type={link.name === 'sigma' ? 'hydrogen' : link.name}
                       />
                     ) : (
-                      counts[link.name] || 0
+                      count
                     )}
                   </span>
 
                   {/* <span className={styles.new}>+123</span> */}
 
                   <span className={styles.icon}>{link.icon}</span>
-                  <span className={styles.description}>{link.description}</span>
+                  <span className={styles.description}>{description}</span>
                 </NavLink>
               )}
             </li>

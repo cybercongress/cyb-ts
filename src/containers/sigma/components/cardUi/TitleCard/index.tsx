@@ -7,20 +7,34 @@ import { Citizenship } from 'src/types/citizenship';
 import { DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
+import cx from 'classnames';
 
 interface Props {
   address: string;
   passport: Citizenship;
   totalLiquid?: any;
-  selectAddress: any;
+  selectAddress?: (address: string) => void;
+  selected: boolean;
 }
 
-function TitleCard({ address, passport, totalLiquid, selectAddress }: Props) {
+function TitleCard({
+  address,
+  passport,
+  totalLiquid,
+  selectAddress,
+  selected,
+}: Props) {
   const addressNetwork = getTypeFromAddress(address);
 
   return (
-    <div className={styles.container} onClick={() => selectAddress(address)}>
-      <DenomArr denomValue={addressNetwork} onlyImg type="network" size={30} />
+    <div
+      className={cx(styles.container, {
+        [styles.select]: selectAddress,
+        [styles.selected]: selected,
+      })}
+      onClick={selectAddress ? () => selectAddress(address) : undefined}
+    >
+      <DenomArr denomValue={addressNetwork} onlyImg type="network" size={37} />
 
       <div className={styles.address}>
         <Signatures
@@ -32,7 +46,7 @@ function TitleCard({ address, passport, totalLiquid, selectAddress }: Props) {
       </div>
 
       {/* <div className={styles.avatar}>
-        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
+      <AvataImgIpfs cidAvatar={useGetCidAvatar} />
       </div> */}
       {/* <div className={styles.name}>{useGetName}</div> */}
 

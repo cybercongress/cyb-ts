@@ -23,11 +23,11 @@ $actionBarSpace: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: calc(100vh - $headerHeight - $actionBarHeight - $actionBarSpace);
+  height: calc(100vh - $headerHeight - $actionBarHeight);
   max-height: 900px; // macbook 15'
 
-  // overflow-y: auto;
-  // overflow-x: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   top: 120px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);

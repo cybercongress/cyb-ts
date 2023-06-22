@@ -13,7 +13,7 @@ const icons = {
   [TypesEnum.karma]: '🔮',
   [TypesEnum.hydrogen]: (
     <img
-      height={20}
+      height={17}
       style={{
         verticalAlign: 'middle',
       }}

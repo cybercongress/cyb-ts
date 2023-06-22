@@ -25,7 +25,7 @@ const PREFIXES = [
 
 export function useGetIpfsInfo() {
   const { node: ipfs } = useIpfs();
-  const [repoSizeValue, setRepoSizeValue] = useState(0);
+  const [repoSizeValue, setRepoSizeValue] = useState<number | string>(0);
   const [idIpfs, setIdIpfs] = useState({ id: '', agentVersion: '' });
   const [loading, setLoading] = useState(true);
 

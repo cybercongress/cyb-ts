@@ -1,22 +1,23 @@
 import { useMemo, useEffect, useContext } from 'react';
-import {
-  Dots,
-  ContainerGradient,
-  ContainerGradientText,
-} from '../../../../components';
-import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
+import { Dots, ContainerGradientText } from '../../../../components';
+import { useGetBalanceBostrom } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
-import { useSelector } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
 
 type Props = {
   address: string; // bostrom address
   passport: Citizenship | null;
-  selectAddress: (address: string) => void;
+  selectAddress?: (address: string) => void;
+  selectedAddress?: string;
 };
 
-function CardPassport({ address, selectAddress, passport }: Props) {
+function CardPassport({
+  address,
+  selectAddress,
+  passport,
+  selectedAddress,
+}: Props) {
   const { updateDataCap } = useContext(SigmaContext);
   const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
     useGetBalanceBostrom(address);
@@ -52,11 +53,14 @@ function CardPassport({ address, selectAddress, passport }: Props) {
   }, [reduceDataBalanceTokenRow]);
 
   return (
-    <ContainerGradientText userStyleContent={{ height: 'auto' }}>
+    <ContainerGradientText
+      userStyleContent={{ height: 'auto', padding: '0 20px' }}
+    >
       <TitleCard
         address={address}
         passport={passport}
         selectAddress={selectAddress}
+        selected={selectedAddress ? selectedAddress === address : false}
         totalLiquid={
           totalAmountInLiquid.currentCap > 0
             ? totalAmountInLiquid
@@ -75,8 +79,10 @@ function CardPassport({ address, selectAddress, passport }: Props) {
       {passport?.extension?.addresses.map(({ address }) => {
         return (
           <TitleCard
+            key={address}
             address={address}
             passport={null}
+            selected={selectedAddress ? selectedAddress === address : false}
             selectAddress={selectAddress}
           />
         );

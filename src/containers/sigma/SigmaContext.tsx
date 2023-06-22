@@ -7,6 +7,7 @@ const SigmaContext = createContext({
   updateTotalCap: () => {},
   updateChangeCap: () => {},
   updateDataCap: () => {},
+  isOwner: false,
 });
 
 const useSigmaContext = () => {

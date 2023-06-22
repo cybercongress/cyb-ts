@@ -32,7 +32,7 @@ function Sigma({ address: preAddr }) {
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
   const { address, isOwner } = useRobotContext();
   const [step, setStep] = useState(STEP_INFO.STATE_PROVE);
-  const [selectedAddress, setSelectedAddress] = useState<string>();
+  const [selectedAddress, setSelectedAddress] = useState<string | null>();
 
   const {
     pocket: { accounts, defaultAccount },
@@ -44,42 +44,33 @@ function Sigma({ address: preAddr }) {
     };
   });
 
+  const superSigma = !address;
+
   const currentAddress = address || preAddr;
 
   const { passport } = useGetPassportByAddress(currentAddress);
 
-  const accountsData = [];
+  const accountsData = useMemo(() => {
+    if (!superSigma) {
+      return [
+        {
+          bech32: currentAddress,
+        },
+      ];
+    }
 
-  if (address) {
-    accountsData.push({
-      bech32: address,
+    return Object.keys(accounts).map((key) => {
+      return {
+        bech32: accounts[key]?.cyber.bech32,
+      };
     });
-  }
-
-  // if (isO)
-  // isOwner &&
-  //   accounts &&
-  // Object.keys(accounts).forEach((item) => {
-  //   const { bech32 } = accounts[item]?.cyber || {};
-  //   if (bech32 && !accountsData.find((item) => item.bech32 === bech32)) {
-  //     accountsData.push({
-  //       bech32,
-  //     });
-  //   }
-  // });
-
-  // console.log(address, preAddr, isOwner);
+  }, [currentAddress, accounts, superSigma]);
 
   const currentOwner =
     isOwner ||
-    (defaultPassport.data && defaultPassport.data.owner === currentAddress);
+    (defaultPassport.data && defaultPassport.data.owner === currentAddress) ||
+    false;
   const currentPassport = currentOwner ? defaultPassport.data : passport;
-
-  if (preAddr) {
-    accountsData.push({
-      bech32: preAddr,
-    });
-  }
 
   useEffect(() => {
     const { dataCap } = value;
@@ -118,31 +109,22 @@ function Sigma({ address: preAddr }) {
   };
 
   function selectAddress(address: string) {
-    setSelectedAddress(address);
-    setStep(STEP_INFO.STATE_DELETE_ADDRESS);
+    const isRemove = selectedAddress === address;
+
+    setSelectedAddress(!isRemove ? address : null);
+    setStep(!isRemove ? STEP_INFO.STATE_DELETE_ADDRESS : STEP_INFO.STATE_PROVE);
   }
-
-  const renderItem = useMemo(() => {
-    if (accountsData.length > 0) {
-      return accountsData.map(({ bech32: address }) => {
-        return (
-          <CardPassport
-            key={address}
-            address={address}
-            passport={currentPassport}
-            selectAddress={selectAddress}
-          />
-        );
-      });
-    }
-
-    return null;
-  }, []);
 
   return (
     <SigmaContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
+      value={{
+        ...value,
+        updateTotalCap,
+        updateChangeCap,
+        updateDataCap,
+        isOwner: currentOwner,
+      }}
     >
       <div
         style={{
@@ -176,19 +158,20 @@ function Sigma({ address: preAddr }) {
           </header>
         </ContainerGradientText>
 
-        {renderItem}
+        {accountsData.map(({ bech32: address }) => {
+          return (
+            <CardPassport
+              key={address}
+              address={address}
+              passport={currentPassport}
+              selectAddress={currentOwner ? selectAddress : undefined}
+              selectedAddress={selectedAddress}
+            />
+          );
+        })}
       </div>
 
-      {selectedAddress && false ? (
-        <ActionBar
-          button={{
-            text: 'Delete',
-            onClick: () => {},
-            disabled: true,
-          }}
-          // text={selectedAddress}
-        />
-      ) : passport ? (
+      {currentOwner && currentPassport && (
         <ActionBarPortalGift
           setStepApp={setStep}
           activeStep={step}
@@ -198,7 +181,7 @@ function Sigma({ address: preAddr }) {
             bech32: defaultAccount?.account?.cyber.bech32,
           }}
         />
-      ) : null}
+      )}
     </SigmaContext.Provider>
   );
 }
