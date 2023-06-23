@@ -54,9 +54,6 @@ function useGetSendTxsByAddressByType(
       return { data: res.messages_by_address, page: pageParam };
     },
     {
-      refetchInterval: false,
-      refetchIntervalInBackground: false,
-      refetchOnMount: false,
       enabled: Boolean(addressBech32) && Boolean(type),
       getNextPageParam: (lastPage) => {
         if (lastPage.data && lastPage.data.length === 0) {

@@ -31,6 +31,8 @@ import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from './utils';
 import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
 import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
+import AccountInput from './comp/AccountInput/AccountInput';
+import useGetSendTxsByAddressByLcd from './hooks/useGetSendTxsByAddressByLcd';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -40,18 +42,20 @@ function Send() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
+  const [recipient, setRecipient] = useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams();
   const dataSendTxs = useGetSendTxsByAddressByType(
     addressActive,
     'cosmos.bank.v1beta1.MsgSend'
   );
+  // const dataSendTxs = useGetSendTxsByAddressByLcd(addressActive, recipient);
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
   );
   const [tokenSelect, setTokenSelect] = useState<string>(tokenDefaultValue);
   const [tokenAmount, setTokenAmount] = useState<string>('');
-  const [recipient, setRecipient] = useState<string>('');
+
   const [recipientBalances, setRecipientBalances] =
     useState<Option<ObjKeyValue>>(undefined);
   const [memoValue, setMemoValue] = useState<string>('');
@@ -186,11 +190,9 @@ function Send() {
     <>
       <MainContainer width="62%">
         <TeleportContainer>
-          <Input
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
-            title="choose recipient"
-            color={Color.Green}
+          <AccountInput
+            recipient={recipient}
+            onChangeRecipient={setRecipient}
           />
           <GridContainer>
             <Col>

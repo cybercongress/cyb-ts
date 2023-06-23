@@ -16,6 +16,7 @@ export type Props = {
   type?: 'text' | 'password';
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlurFnc?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = React.forwardRef<HTMLInputElement, Props>(
@@ -32,6 +33,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       className,
       focusedProps,
       isTextarea,
+      onBlurFnc,
       ...props
     },
     ref
@@ -39,6 +41,14 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
     const [focused, setFocused] = useState(false);
 
     const Tag = isTextarea ? TextareaAutosize : 'input';
+
+    const handlerOnBlur = () => {
+      setFocused(false);
+
+      if (onBlurFnc) {
+        onBlurFnc();
+      }
+    };
 
     return (
       <div
@@ -64,7 +74,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={autoFocus}
             onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            onBlur={() => handlerOnBlur()}
             placeholder={placeholder}
             {...props}
           />
