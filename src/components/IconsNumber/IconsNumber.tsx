@@ -1,16 +1,19 @@
 import BigNumber from 'bignumber.js';
 import hydrogen from '../../image/hydrogen.svg';
+import { boot } from 'images/large-green.png';
 
 enum TypesEnum {
   'karma' = 'karma',
   'hydrogen' = 'hydrogen',
   'energy' = 'energy',
+  'boot' = 'boot',
 }
 
 type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
 
 const icons = {
   [TypesEnum.karma]: '🔮',
+  [TypesEnum.boot]: '🟢',
   [TypesEnum.hydrogen]: (
     <img
       height={17}

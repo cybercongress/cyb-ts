@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useNewsToday } from 'src/containers/Wallet/card/tweet';
-import { useGetHeroes } from 'src/containers/account/hooks';
+import { useGetBalance, useGetHeroes } from 'src/containers/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
 import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoIpfsNode';
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
@@ -53,10 +53,11 @@ function useGetMenuCounts(address: string) {
 
   const queryClient = useQueryClient();
 
-  const { staking } = useGetHeroes(address);
+  // const { staking } = useGetHeroes(address);
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
   const { repoSizeValue } = useGetIpfsInfo();
   const news = useNewsToday(address);
+  const { balance } = useGetBalance(address);
 
   const { data: karma } = useGetKarma(address);
 
@@ -124,7 +125,7 @@ function useGetMenuCounts(address: string) {
 
   return {
     log: tweetsCount,
-    security: Object.keys(staking).length,
+    // security: Object.keys(staking).length,
     badges,
     swarm: followers,
     energy,
@@ -135,6 +136,7 @@ function useGetMenuCounts(address: string) {
     sense: news.count,
     karma,
     txs: sequence,
+    rewards: balance.rewards,
   };
 }
 

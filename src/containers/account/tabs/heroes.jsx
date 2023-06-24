@@ -75,7 +75,7 @@ function Unbonding({ amount, stages, entries }) {
 
 function Heroes() {
   const { address, addRefetch } = useRobotContext();
-  const { staking: data, refetch } = useGetHeroes(address);
+  const { staking: data, refetch, loadingHeroesInfo } = useGetHeroes(address);
 
   useEffect(() => {
     addRefetch(refetch);
@@ -124,6 +124,7 @@ function Heroes() {
       }}
     >
       <Table
+        isLoading={loadingHeroesInfo}
         columns={[
           {
             header: 'Validator',

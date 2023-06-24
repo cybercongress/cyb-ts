@@ -103,9 +103,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <DeviceProvider>
-                          <ErrorBoundary fallback={<ErrorScreen />}>
-                            {children}
-                          </ErrorBoundary>
+                          <ErrorBoundary>{children}</ErrorBoundary>
                         </DeviceProvider>
                       </ApolloProvider>
                     </DataProvider>

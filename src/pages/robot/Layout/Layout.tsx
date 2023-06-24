@@ -53,7 +53,7 @@ const links = [
     text: 'Security',
     description: 'reward',
     link: './security',
-    name: 'security',
+    name: 'rewards',
     icon: '🧑🏼‍🚀',
   },
   {
@@ -171,10 +171,23 @@ function Layout() {
                 >
                   <span className={styles.text}>{link.text}</span>
                   <span className={styles.count}>
-                    {['karma', 'sigma', 'energy'].includes(link.name) ? (
+                    {['karma', 'sigma', 'energy', 'rewards'].includes(
+                      link.name
+                    ) ? (
                       <IconsNumber
                         value={counts[link.name]}
-                        type={link.name === 'sigma' ? 'hydrogen' : link.name}
+                        type={(() => {
+                          switch (link.name) {
+                            case 'sigma':
+                              return 'hydrogen';
+
+                            case 'rewards':
+                              return 'boot';
+
+                            default:
+                              return link.name;
+                          }
+                        })()}
                       />
                     ) : (
                       count

@@ -3,7 +3,7 @@ import styles from './ErrorScreen.module.scss';
 
 import robot from '../../../image/robot.svg';
 
-function ErrorScreen() {
+function ErrorScreen({ error }) {
   return (
     <div className={styles.wrapper}>
       <img src={robot} alt="Robot" />
@@ -12,6 +12,9 @@ function ErrorScreen() {
         something went wrong, <br />
         go back or reload the page
       </p>
+
+      <p>{error.message}</p>
+      <p>{error.stack}</p>
 
       {window.history.length > 0 && (
         <BtnGrd

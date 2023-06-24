@@ -59,16 +59,20 @@ function Sigma({ address: preAddr }) {
       ];
     }
 
-    return Object.keys(accounts).map((key) => {
-      return {
-        bech32: accounts[key]?.cyber.bech32,
-      };
-    });
+    return (
+      accounts &&
+      Object.keys(accounts).map((key) => {
+        return {
+          bech32: accounts[key]?.cyber.bech32,
+        };
+      })
+    );
   }, [currentAddress, accounts, superSigma]);
 
   const currentOwner =
     isOwner ||
     (defaultPassport.data && defaultPassport.data.owner === currentAddress) ||
+    superSigma ||
     false;
   const currentPassport = currentOwner ? defaultPassport.data : passport;
 
@@ -158,17 +162,25 @@ function Sigma({ address: preAddr }) {
           </header>
         </ContainerGradientText>
 
-        {accountsData.map(({ bech32: address }) => {
-          return (
-            <CardPassport
-              key={address}
-              address={address}
-              passport={currentPassport}
-              selectAddress={currentOwner ? selectAddress : undefined}
-              selectedAddress={selectedAddress}
-            />
-          );
-        })}
+        <div
+          style={{
+            display: 'grid',
+            gap: '20px 0',
+            gridTemplateColumns: 'minmax(0, 1fr)',
+          }}
+        >
+          {accountsData?.map(({ bech32: address }) => {
+            return (
+              <CardPassport
+                key={address}
+                address={address}
+                passport={currentPassport}
+                selectAddress={currentOwner ? selectAddress : undefined}
+                selectedAddress={selectedAddress}
+              />
+            );
+          })}
+        </div>
       </div>
 
       {currentOwner && currentPassport && (
@@ -176,7 +188,7 @@ function Sigma({ address: preAddr }) {
           setStepApp={setStep}
           activeStep={step}
           selectedAddress={selectedAddress}
-          citizenship={passport}
+          citizenship={currentPassport}
           addressActive={{
             bech32: defaultAccount?.account?.cyber.bech32,
           }}
