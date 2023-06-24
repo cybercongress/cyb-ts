@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useCyberScripts } from 'src/contexts/cyberScripts';
+import { useCyberScriptEngine } from 'src/contexts/cyberScriptEngine';
 
 type cyberScriptStatus = 'pending' | 'running' | 'done' | 'error';
 export type scriptType = 'particle' | 'search';
@@ -14,7 +14,7 @@ function useCyberScriptRunner(): UseCyberScriptReturn {
   const [status, setStatus] = useState<cyberScriptStatus>('pending');
   const [scriptType, setScriptType] = useState<string | undefined>();
   const [params, setParams] = useState<{}>();
-  const { isLoaded, runScript } = useCyberScripts();
+  const { isLoaded, runScript } = useCyberScriptEngine();
 
   useEffect(() => {
     try {

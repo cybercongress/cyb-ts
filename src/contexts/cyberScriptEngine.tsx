@@ -4,21 +4,17 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import {
   loadCyberScripingEngine,
   // isCyberScriptingLoaded,
-  setCyberClient,
-  setIpfs,
   runScript,
 } from 'src/services/scripting/engine';
 
+import { appBus } from 'src/services/scripting/bus';
+
 type DependecyState = {
   isCyberScriptingLoaded: boolean;
-  isIpfNodeReady: boolean;
-  isQueryClientReady: boolean;
 };
 
 const getEmptyDependecyState = (): DependecyState => ({
   isCyberScriptingLoaded: false,
-  isIpfNodeReady: false,
-  isQueryClientReady: false,
 });
 
 type CyberScriptsContextType = {
@@ -36,12 +32,18 @@ const CyberScriptsContext = React.createContext<CyberScriptsContextType>({
   isLoaded: false,
 });
 
-export function useCyberScripts() {
+export function useCyberScriptEngine() {
   const cyberScripts = useContext(CyberScriptsContext);
   return cyberScripts;
 }
 
-function CyberScriptsProvider({ children }: { children: React.ReactNode }) {
+function CyberScriptEngineProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // let params = useParams();
+  // let location = useLocation();
   const queryClient = useQueryClient();
   const [dependecyState, setDependecyState] = useState<DependecyState>(
     getEmptyDependecyState()
@@ -63,28 +65,19 @@ function CyberScriptsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (node) {
-      setIpfs(node);
-      setDependecyState((prevState) => ({
-        ...prevState,
-        isIpfNodeReady: true,
-      }));
+      appBus.emit('init', { name: 'ipfs', item: node });
     }
   }, [node]);
 
   useEffect(() => {
     if (queryClient) {
-      setCyberClient(queryClient);
-      setDependecyState((prevState) => ({
-        ...prevState,
-        isQueryClientReady: true,
-      }));
+      appBus.emit('init', { name: 'cyberClient', item: queryClient });
     }
   }, [queryClient]);
 
   useEffect(() => {
-    const { isCyberScriptingLoaded, isIpfNodeReady, isQueryClientReady } =
-      dependecyState;
-    setIsLoaded(isCyberScriptingLoaded && isIpfNodeReady && isQueryClientReady);
+    const { isCyberScriptingLoaded } = dependecyState;
+    setIsLoaded(isCyberScriptingLoaded);
   }, [dependecyState]);
 
   const value = useMemo(
@@ -99,4 +92,4 @@ function CyberScriptsProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default CyberScriptsProvider;
+export default CyberScriptEngineProvider;

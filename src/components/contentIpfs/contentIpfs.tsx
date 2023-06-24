@@ -37,11 +37,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
     useState<IPFSContentDetails>(undefined);
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    if (
-      status === 'completed' &&
-      content &&
-      (!content.mutation || content.mutation !== 'hidden')
-    ) {
+    if (status === 'completed' && content) {
       parseRawIpfsData(
         cid,
         content
@@ -56,11 +52,6 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   }
 
   const { contentType } = content;
-
-  // Item was hidden by 'particle' script
-  if (content && content.mutation === 'hidden') {
-    return null;
-  }
 
   return (
     <>

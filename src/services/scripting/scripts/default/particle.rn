@@ -1,4 +1,5 @@
 pub async fn react_to_particle(cid, content_type, content) {
+    dbg(`react_to_particle ${cid} ${content_type} ${content}`);
     if content_type == "text" {
         if content.contains(".") {
             let items = content.split(".").collect::<Vec>();
@@ -27,9 +28,25 @@ pub async fn react_to_particle(cid, content_type, content) {
         if content.contains("@NOW") {
             let left_part = content.split("@NOW").next().unwrap();
             let symbol = left_part.split(" ").rev().next().unwrap();
-            let response = http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?;
-            let json = response.json().await?;
+            let json =  http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
             return update_content(content.replace(`${symbol}@NOW`, json["lastPrice"]))
+        }
+
+        if content.contains("openai@me") {
+            dbg("Inside openai@me");
+            let path =  cyb::context.app.params.path;
+            //dbg(cyb::context);
+            dbg(path);
+            dbg("Inside openai@me2", path.len() >= 2 && path[0] == "ipfs");
+            if path.len() >= 2 && path[0] == "ipfs" {
+                dbg(path);
+                dbg("Inside");
+                let cid = path[1];
+                cyb::log(`feed ${cid} to openai`);
+                let main_item = cyb::get_text_from_cid(cid).await;
+                let result = cyb::open_ai_prompt(`${main_item}\r\n What is this text about?`).await;
+                return update_content(`OpenAI say: ${result}`);
+            }
         }
     }
 

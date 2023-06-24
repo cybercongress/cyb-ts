@@ -6,7 +6,7 @@ import { Color } from 'src/components/LinearGradientContainer/LinearGradientCont
 import Tooltip from 'src/components/tooltip/tooltip';
 import { Input } from '../../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from '../utils';
-
+import { updatePassportParticle } from '../utils';
 import styles from './PassportParticle.module.scss';
 
 function PassportParticle({
@@ -30,20 +30,10 @@ function PassportParticle({
   };
   const onUpdate = async () => {
     if (isCID(editParticle)) {
-      const [{ address }] = await signer.getAccounts();
-
-      const msgObject = {
-        update_particle: {
-          nickname,
-          particle: editParticle,
-        },
-      };
-      const result = await signingClient.execute(
-        address,
-        CONTRACT_ADDRESS_PASSPORT,
-        msgObject,
-        'auto'
-      );
+      const result = await updatePassportParticle(nickname, editParticle, {
+        signer,
+        signingClient,
+      });
       console.log('---res', result);
 
       setResultMsg(

@@ -307,6 +307,48 @@ const parseRowLog = (rawlog) => {
   return rawlog;
 };
 
+const updatePassportParticle = async (
+  nickname,
+  particle,
+  { signer, signingClient }
+) => {
+  const [{ address }] = await signer.getAccounts();
+
+  const msgObject = {
+    update_particle: {
+      nickname,
+      particle,
+    },
+  };
+  return signingClient.execute(
+    address,
+    CONTRACT_ADDRESS_PASSPORT,
+    msgObject,
+    'auto'
+  );
+};
+
+const updatePassportData = async (
+  nickname,
+  data,
+  { signer, signingClient }
+) => {
+  const [{ address }] = await signer.getAccounts();
+
+  const msgObject = {
+    update_data: {
+      nickname,
+      data,
+    },
+  };
+  return signingClient.execute(
+    address,
+    CONTRACT_ADDRESS_PASSPORT,
+    msgObject,
+    'auto'
+  );
+};
+
 export {
   activePassport,
   CONTRACT_ADDRESS_PASSPORT,
@@ -324,4 +366,6 @@ export {
   getPassportByNickname,
   parseRowLog,
   getNumTokens,
+  updatePassportParticle,
+  updatePassportData,
 };

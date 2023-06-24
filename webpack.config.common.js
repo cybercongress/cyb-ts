@@ -105,7 +105,9 @@ module.exports = {
     new WasmPackPlugin({
       crateDirectory: path.join(__dirname, './src/wasm/rune'),
       outDir: path.resolve(__dirname, './rune_build'),
-      extraArgs: '--target web',
+      args: '--verbose',
+      extraArgs: ' --target web',
+      forceMode: 'production',
       forceWatch: true,
     }),
   ],

@@ -158,6 +158,7 @@
     "@types/ramda": "^0.28.23",
     "@types/react-dom": "^18.0.11",
     "@types/react-router-dom": "^5.3.3",
+    "@uiw/codemirror-theme-github": "^4.21.3",
     "@uiw/react-codemirror": "^4.21.3",
     "@uniswap/sdk": "^3.0.3",
     "apollo-boost": "^0.4.7",

@@ -26,9 +26,11 @@ function ContentItem({
   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
   const [itemCid, setItemCid] = useState(cid);
+  const [isHidden, setIsHidden] = useState(false);
   useEffect(() => {
     if (status === 'completed' && content?.cid) {
       setItemCid(content?.cid);
+      setIsHidden(content?.mutation === 'hidden');
     }
   }, [status, content]);
 
@@ -39,6 +41,10 @@ function ContentItem({
         : grade || { from: 'n/a', to: 'n/a', value: 'n/a' },
     [item.rank, grade]
   );
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <Link

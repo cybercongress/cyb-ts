@@ -1,11 +1,10 @@
 /* eslint-disable import/no-unused-modules */
-import { CyberClient } from '@cybercongress/cyber-js';
 import initAsync, { compile } from 'rune';
 
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
 import { v4 as uuidv4 } from 'uuid';
 import scriptParticleDefault from './scripts/default/particle.rn';
 import scriptParticleRuntime from './scripts/runtime/particle.rn';
+import { appContextManager } from './bus';
 
 type ScriptNames = 'particle'; // | 'search';
 type ScriptItem = { name: string; runtime: string; user: string };
@@ -23,10 +22,6 @@ export type ScriptCallback = (
   result: any
 ) => void;
 
-type ScriptResult = {
-  data: any;
-};
-
 type ScriptScopeParams = {
   cid?: string;
   contentType?: string;
@@ -39,8 +34,8 @@ type ScriptExecutionData = {
   result?: any;
   diagnosticsOutput?: string;
   output?: string;
-  diagnostics: Object[];
-  instructions: string;
+  diagnostics?: Object[];
+  instructions?: string;
 };
 
 const compileConfig = {
@@ -51,21 +46,8 @@ const compileConfig = {
 };
 
 let rune;
-let ipfs: AppIPFS;
-let cyberClient: CyberClient;
 
 export let isCyberScriptingLoaded = false;
-
-export const setIpfs = (appIPFS: AppIPFS) => {
-  ipfs = appIPFS;
-};
-
-export const setCyberClient = (cyber: CyberClient) => {
-  cyberClient = cyber;
-};
-
-export const getIpfs = () => ipfs;
-export const getCyberClient = () => cyberClient;
 
 export const loadCyberScripingEngine = async () => {
   console.time('⚡️ Rune initialized! 🔋');
@@ -133,6 +115,7 @@ export const runScript = async (
     runtimeScript || '',
     {
       ...params,
+      app: appContextManager.context,
       refId: paramRefId,
     },
     noExecute
@@ -164,6 +147,9 @@ export const runScript = async (
     };
   } catch (e) {
     console.log('runeRun error', e, outputData);
+    return {
+      diagnosticsOutput: e.toString(),
+    };
   }
 };
 
@@ -180,16 +166,18 @@ export const reactToParticle = async (
 ): Promise<ReactToParticleResult> => {
   // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
 
-  if (!cyberClient) {
+  if (!appContextManager.deps.cyberClient) {
     throw Error('CyberClient is not set');
   }
 
   const result = await runScript(
     scriptParticleDefault,
     {
-      cid,
-      contentType: contentType || '',
-      content,
+      particle: {
+        cid,
+        contentType: contentType || '',
+        content,
+      },
     },
     scriptParticleRuntime,
     undefined,
@@ -199,6 +187,6 @@ export const reactToParticle = async (
     console.log('---error', result);
     return { action: 'error' };
   }
-
+  console.log('----react to parc', cid, contentType, content, result);
   return result.result;
 };

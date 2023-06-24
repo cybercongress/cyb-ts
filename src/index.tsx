@@ -35,7 +35,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
-import CyberScriptsProvider from './contexts/cyberScripts';
+import CyberScriptEngineProvider from './contexts/cyberScriptEngine';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -103,11 +103,11 @@ function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <DeviceProvider>
-                          <CyberScriptsProvider>
+                          <CyberScriptEngineProvider>
                             <ErrorBoundary fallback={<ErrorScreen />}>
                               {children}
                             </ErrorBoundary>
-                          </CyberScriptsProvider>
+                          </CyberScriptEngineProvider>
                         </DeviceProvider>
                       </ApolloProvider>
                     </DataProvider>

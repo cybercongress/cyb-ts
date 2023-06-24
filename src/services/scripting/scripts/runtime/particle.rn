@@ -15,8 +15,6 @@ pub fn update_content(content) {
 }
 
 pub async fn main() {
-    let ctx = cyb::context;
-    // dbg(ctx);
-    // cyb::log(\`- \${ctx.cid} - \${ctx.contentType} - \${ctx.content} \`);
-    react_to_particle(ctx.cid, ctx.contentType, ctx.content).await
+    let particle_ctx = cyb::context.particle;
+    react_to_particle(particle_ctx.cid, particle_ctx.contentType, particle_ctx.content).await
 }
