@@ -1,5 +1,6 @@
-use rune::runtime::{Shared, Object, Value as VmValue, Vec as VmVec};
+use rune::runtime::{Shared, Object, VmResult, Value as VmValue, Vec as VmVec};
 use serde_json::Value as SerdeValue;
+use wasm_bindgen_futures::JsFuture;
 
 pub fn map_to_rune_value(serde_value: &SerdeValue) -> VmValue {
     match serde_value {
@@ -32,5 +33,19 @@ pub fn map_to_rune_value(serde_value: &SerdeValue) -> VmValue {
 
             VmValue::Object(Shared::new(std_object))
         },
+    }
+}
+
+pub async fn execute_promise<F>(f: F) -> VmResult<VmValue>
+where
+    F: Fn() -> js_sys::Promise,
+{
+    let js_value = JsFuture::from(f()).await;
+    match  js_value {
+        Ok(js_value) => {
+            let v: SerdeValue = serde_wasm_bindgen::from_value(js_value).unwrap();
+            VmResult::Ok(map_to_rune_value(&v))
+        },
+        Err(_) => VmResult::Ok(VmValue::Unit),
     }
 }

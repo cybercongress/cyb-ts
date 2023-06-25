@@ -5,7 +5,8 @@ import { getPassportByNickname } from 'src/containers/portal/utils';
 // import { getCyberClient } from 'src/services/scripting/engine';
 import { appContextManager } from 'src/services/scripting/bus';
 import { promptToOpenAI } from 'src/services/scripting/openai';
-import { getIpfsTextContent } from 'src/services/scripting/api';
+import { getIpfsTextContent } from 'src/services/scripting/helpers';
+import { getFromLink, getToLink } from 'src/utils/search/utils';
 // export function js_detectCybContentType(mime) {
 //   return detectCybContentType(mime);
 // }
@@ -24,5 +25,15 @@ export async function js_promptToOpenAI(prompt) {
 export async function js_getIpfsTextContent(cid) {
   const ipfs = appContextManager.deps.ipfs;
   const result = await getIpfsTextContent(ipfs, cid);
+  return result;
+}
+
+export async function js_cyberLinksFrom(cid) {
+  const result = await getFromLink(cid);
+  return result;
+}
+
+export async function js_cyberLinksTo(cid) {
+  const result = await getToLink(cid);
   return result;
 }

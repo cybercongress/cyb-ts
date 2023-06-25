@@ -1,10 +1,9 @@
 use rune::{ContextError, Module};
 use js_sys::Promise;
 use rune::runtime::{VmResult, Value as VmValue};
-use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen::prelude::*;
 use serde_json::Value as SerdeValue;
-use crate::helpers::map_to_rune_value;
+use crate::helpers::{map_to_rune_value, execute_promise};
 
 #[wasm_bindgen(module = "/scripting.js")]
 extern "C" {
@@ -12,6 +11,8 @@ extern "C" {
     fn js_getPassportByNickname(nickname: &str)-> Promise;
     fn js_promptToOpenAI(prompt: &str)-> Promise;
     fn js_getIpfsTextContent(cid: &str)-> Promise;
+    fn js_cyberLinksFrom(cid: &str)-> Promise;
+    fn js_cyberLinksTo(cid: &str)-> Promise;
 }
 
 #[wasm_bindgen]
@@ -27,36 +28,23 @@ extern "C" {
 //  }
 
 pub async fn get_passport_by_nickname(nickname: &str) ->  VmResult<VmValue> {
-    let js_value = JsFuture::from(js_getPassportByNickname(nickname)).await;
-    match  js_value {
-        Ok(js_value) => {
-            let v: SerdeValue = serde_wasm_bindgen::from_value(js_value).unwrap();
-            VmResult::Ok(map_to_rune_value(&v))
-        },
-        Err(_) => VmResult::Ok(VmValue::Unit),
-    }
+    execute_promise(|| js_getPassportByNickname(nickname)).await
 }
 
 pub async fn open_ai_prompt(prompt: &str) ->  VmResult<VmValue> {
-    let js_value = JsFuture::from(js_promptToOpenAI(prompt)).await;
-    match  js_value {
-        Ok(js_value) => {
-            let v: SerdeValue = serde_wasm_bindgen::from_value(js_value).unwrap();
-            VmResult::Ok(map_to_rune_value(&v))
-        },
-        Err(_) => VmResult::Ok(VmValue::Unit),
-    }
+    execute_promise(|| js_promptToOpenAI(prompt)).await
 }
 
 pub async fn get_text_from_cid(cid: &str) ->  VmResult<VmValue> {
-    let js_value = JsFuture::from(js_getIpfsTextContent(cid)).await;
-    match  js_value {
-        Ok(js_value) => {
-            let v: SerdeValue = serde_wasm_bindgen::from_value(js_value).unwrap();
-            VmResult::Ok(map_to_rune_value(&v))
-        },
-        Err(_) => VmResult::Ok(VmValue::Unit),
-    }
+    execute_promise(|| js_getIpfsTextContent(cid)).await
+}
+
+pub async fn get_cyberlinks_from_cid(cid: &str) ->  VmResult<VmValue> {
+    execute_promise(|| js_cyberLinksFrom(cid)).await
+}
+
+pub async fn get_cyberlinks_to_cid(cid: &str) ->  VmResult<VmValue> {
+    execute_promise(|| js_cyberLinksTo(cid)).await
 }
 
 /// The wasm 'cyb' module.
@@ -66,6 +54,8 @@ pub fn module(params: SerdeValue) -> Result<Module, ContextError> {
     module.function(["get_passport_by_nickname"], get_passport_by_nickname)?;
     module.function(["open_ai_prompt"], open_ai_prompt)?;
     module.function(["get_text_from_cid"], get_text_from_cid)?;
+    module.function(["get_cyberlinks_from_cid"], get_cyberlinks_from_cid)?;
+    module.function(["get_cyberlinks_to_cid"], get_cyberlinks_to_cid)?;
     module.function(["log"], log)?;
     module.constant(["context"], map_to_rune_value(&params))?;
     Ok(module)
