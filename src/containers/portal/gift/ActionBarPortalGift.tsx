@@ -435,6 +435,7 @@ function ActionBarPortalGift({
       return;
     }
 
+    // not possible to delete cyber address
     if (selectedAddress.match(PATTERN_CYBER)) {
       return;
     }

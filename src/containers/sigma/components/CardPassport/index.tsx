@@ -59,7 +59,7 @@ function CardPassport({
       <TitleCard
         address={address}
         passport={passport}
-        selectAddress={selectAddress}
+        // selectAddress={selectAddress}
         selected={selectedAddress ? selectedAddress === address : false}
         totalLiquid={
           totalAmountInLiquid.currentCap > 0

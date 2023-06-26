@@ -185,7 +185,16 @@ function Sigma({ address: preAddr }) {
 
       {currentOwner && currentPassport && (
         <ActionBarPortalGift
-          setStepApp={setStep}
+          setStepApp={(step) => {
+            if (
+              [STEP_INFO.STATE_INIT, STEP_INFO.STATE_PROVE_DONE].includes(step)
+            ) {
+              setSelectedAddress(null);
+              setStep(STEP_INFO.STATE_PROVE);
+            } else {
+              setStep(step);
+            }
+          }}
           activeStep={step}
           selectedAddress={selectedAddress}
           citizenship={currentPassport}

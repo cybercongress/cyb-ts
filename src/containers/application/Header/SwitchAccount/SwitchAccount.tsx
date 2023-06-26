@@ -218,7 +218,7 @@ function SwitchAccount() {
             !useGetName || !mediaQuery || !useGetAddress ? '1fr' : '1fr 105px',
         }}
       >
-        {mediaQuery && useGetAddress !== null && (
+        {mediaQuery && useGetAddress && (
           <div className={networkStyles.containerKrmaName}>
             {useGetName && (
               <button
@@ -227,15 +227,16 @@ function SwitchAccount() {
                 type="button"
                 style={{ fontSize: '20px' }}
               >
-                {useGetName} {multipleAccounts && '>'}
+                {useGetName}
+                {/* {multipleAccounts && '>'} */}
               </button>
             )}
-            {useGetAddress && <Karma address={useGetAddress} />}
+            <Karma address={useGetAddress} />
           </div>
         )}
         <Link
           to={routes.robot.path}
-          onClick={() => setControlledVisible(!controlledVisible)}
+          // onClick={() => setControlledVisible(!controlledVisible)}
         >
           <div
             className={cx(styles.containerAvatarConnect, {
@@ -274,6 +275,10 @@ function SwitchAccount() {
 
                   <Link style={{ color: 'red' }} to={'/sigma'}>
                     Sigma
+                  </Link>
+
+                  <Link style={{ color: 'red' }} to={'/keys'}>
+                    Keys
                   </Link>
                 </div>
               </div>

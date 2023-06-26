@@ -128,7 +128,7 @@ function useGetMenuCounts(address: string) {
     // security: Object.keys(staking).length,
     badges,
     swarm: followers,
-    energy,
+    energy: energy || 0,
     sigma: Number(totalAmountInLiquid.currentCap || 0),
     cyberlinks: cyberlinksCount,
     passport: accounts ? Object.keys(accounts).length : 0,

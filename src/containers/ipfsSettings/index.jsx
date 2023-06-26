@@ -13,7 +13,12 @@ import {
 import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
-import { Button, ContainerGradientText, Input } from '../../components';
+import {
+  Button,
+  ContainerGradientText,
+  Input,
+  ActionBar,
+} from 'src/components';
 
 const dataOpts = ['external', 'embedded'];
 
@@ -147,9 +152,12 @@ function IpfsSettings() {
 
         <InfoIpfsNode />
 
-        <Button style={{ maxWidth: '200px' }} onClick={onClickReConnect}>
-          reconnect
-        </Button>
+        <ActionBar
+          button={{
+            text: 'Reconnect',
+            onClick: onClickReConnect,
+          }}
+        />
       </div>
     </ContainerGradientText>
     // </MainContainer>

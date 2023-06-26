@@ -60,6 +60,7 @@ import UnderConstruction from './pages/robot/UnderConstruction/UnderConstruction
 import Wallet from './containers/Wallet/Wallet';
 import Sigma from './containers/sigma';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
+import Keys from './pages/Keys/Keys';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -194,7 +195,7 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          <Route path="/keys" element={<UnderConstruction />} />
+          <Route path="/keys" element={<Keys />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />
