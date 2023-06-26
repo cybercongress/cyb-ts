@@ -44,7 +44,7 @@ describe('Script executor', () => {
     pub async fn main() {
       1+1
     }`;
-    const result = await runScript(scriptCode, {}, console.log);
+    const result = await runScript(scriptCode, {}, console.log, true);
     expect(result.error).toBeNull();
     expect(result.result).toEqual(2);
   });

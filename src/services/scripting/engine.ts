@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import initAsync, { compile } from 'rune';
+import initAsync, { compile } from 'cyb-rune-wasm';
 
 import { v4 as uuidv4 } from 'uuid';
 import scriptParticleDefault from './scripts/default/particle.rn';
@@ -101,7 +101,7 @@ export const runScript = async (
   params: ScriptScopeParams = {},
   runtimeScript?: string,
   callback?: ScriptCallback,
-  noExecute: boolean
+  executeAfterCompile: boolean
 ): Promise<ScriptExecutionData> => {
   // console.log('runeRun before', code, refId, callback);
   const paramRefId = params.refId || uuidv4().toString();
@@ -118,7 +118,7 @@ export const runScript = async (
       app: appContextManager.context,
       refId: paramRefId,
     },
-    noExecute
+    executeAfterCompile
   );
   const {
     result,
@@ -181,7 +181,7 @@ export const reactToParticle = async (
     },
     scriptParticleRuntime,
     undefined,
-    false
+    true
   );
   if (result.error) {
     console.log('---error', result);

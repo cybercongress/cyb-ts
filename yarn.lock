@@ -10196,6 +10196,11 @@ cwise-compiler@^1.0.0, cwise-compiler@^1.1.2:
   dependencies:
     uniq "^1.0.0"
 
+cyb-rune-wasm@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/cyb-rune-wasm/-/cyb-rune-wasm-0.0.4.tgz#e243ff63b5120f2a412a02d7565afc5f6bf484cc"
+  integrity sha512-AuIJOc+NNmlzi765V0fGL0MWf7BOe0PMe9Pn3emTiNpoNuHALVkhukleFGUnVhOHBU1CtLFZ/zRR0UJrNpDfQw==
+
 d3-array@1, d3-array@^1.1.1, d3-array@^1.2.0, d3-array@^1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-1.2.4.tgz#635ce4d5eea759f6f605863dbcfc30edc737f71f"

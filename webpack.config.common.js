@@ -55,7 +55,7 @@ module.exports = {
       src: path.resolve(__dirname, 'src/'),
       components: path.resolve(__dirname, 'src', 'components'),
       images: path.resolve(__dirname, 'src', 'image'),
-      rune: path.resolve(__dirname, './rune_build'),
+      rune: path.resolve(__dirname, '../cyb_external_modules/pkg'),
     },
   },
   plugins: [
@@ -102,14 +102,14 @@ module.exports = {
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
     }),
-    new WasmPackPlugin({
-      crateDirectory: path.join(__dirname, './src/wasm/rune'),
-      outDir: path.resolve(__dirname, './rune_build'),
-      args: '--verbose',
-      extraArgs: ' --target web',
-      forceMode: 'production',
-      forceWatch: true,
-    }),
+    // new WasmPackPlugin({
+    //   crateDirectory: path.join(__dirname, './src/wasm/rune'),
+    //   outDir: path.resolve(__dirname, './rune_build'),
+    //   args: '--verbose',
+    //   extraArgs: ' --target web',
+    //   forceMode: 'production',
+    //   forceWatch: true,
+    // }),
   ],
   module: {
     rules: [
