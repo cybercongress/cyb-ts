@@ -58,7 +58,8 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   };
 
   return (
-    <button
+    <Link
+      to={routes.robot.path}
       type="button"
       onClick={() => hadleOnClick()}
       className={cx(
@@ -83,7 +84,7 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
           />
         </div>
       </div>
-    </button>
+    </Link>
   );
 }
 
@@ -119,10 +120,6 @@ function SwitchAccount() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!passport) {
-      return;
-    }
-
     dispatch(setPassport(passport));
   }, [passport, dispatch]);
 

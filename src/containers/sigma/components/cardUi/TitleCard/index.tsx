@@ -4,7 +4,7 @@ import { FormatNumberTokens } from '../../../../nebula/components';
 import { Signatures } from '../../../../portal/components';
 import styles from './styles.scss';
 import { Citizenship } from 'src/types/citizenship';
-import { DenomArr } from 'src/components';
+import { ContainerGradientText, DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
@@ -27,6 +27,12 @@ function TitleCard({
   const addressNetwork = getTypeFromAddress(address);
 
   return (
+    // <ContainerGradientText
+    // status="grey"
+    // userStyleContent={{
+    // margin: '-15px',
+    // }}
+    // >
     <div
       className={cx(styles.container, {
         [styles.select]: selectAddress,
@@ -34,7 +40,13 @@ function TitleCard({
       })}
       onClick={selectAddress ? () => selectAddress(address) : undefined}
     >
-      <DenomArr denomValue={addressNetwork} onlyImg type="network" size={37} />
+      <DenomArr
+        denomValue={addressNetwork}
+        onlyImg
+        tooltipStatusImg={false}
+        type="network"
+        size={37}
+      />
 
       <div className={styles.address}>
         <Signatures
@@ -70,6 +82,7 @@ function TitleCard({
         </div>
       )}
     </div>
+    // </ContainerGradientText>
   );
 }
 

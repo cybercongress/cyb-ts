@@ -135,10 +135,12 @@ function Sigma({ address: preAddr }) {
           overflowX: 'auto',
         }}
       >
-        <ContainerGradientText>
+        <ContainerGradientText status="grey">
           <header className={styles.totalHeader}>
             <div className={styles.image}>
-              <img src={require('../../image/temple/nebula.png')} />
+              <div className={styles.circle}>
+                <img src={require('./sigma.png')} />
+              </div>
               <h3>Sigma</h3>
             </div>
 

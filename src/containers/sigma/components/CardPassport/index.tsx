@@ -54,6 +54,7 @@ function CardPassport({
 
   return (
     <ContainerGradientText
+      status="green"
       userStyleContent={{ height: 'auto', padding: '0 20px' }}
     >
       <TitleCard

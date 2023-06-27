@@ -16,7 +16,7 @@ $actionBarSpace: 130px;
   }
 
   $headerHeight: 120px;
-  $actionBarHeight: 110px;
+  $actionBarHeight: 80px;
 
   list-style-type: none;
   position: sticky;
@@ -29,7 +29,7 @@ $actionBarSpace: 130px;
   overflow-y: auto;
   overflow-x: hidden;
 
-  top: 120px;
+  top: 140px;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
   z-index: 1; // for active state overflow
 
@@ -73,7 +73,7 @@ $actionBarSpace: 130px;
       .description {
         grid-area: description;
         transition: all 0.3s ease-in-out;
-        color: rgba(221, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.38);
       }
 
       .text,
@@ -83,7 +83,7 @@ $actionBarSpace: 130px;
       }
 
       .count {
-        color: white;
+        color: rgba(255, 255, 255, 0.78);
         font-size: 14px;
         grid-area: count;
       }

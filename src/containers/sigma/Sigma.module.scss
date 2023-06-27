@@ -8,9 +8,24 @@
     align-items: center;
     gap: 0 10px;
 
+    .circle {
+      display: flex;
+      padding: 5px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 67px;
+      background: rgba(255, 255, 255, 0.05);
+
+      img {
+        position: relative;
+        top: 3px;
+      }
+    }
+
     h3 {
       text-transform: lowercase;
       font-weight: 400;
+      font-size: 20px;
     }
   }
 }

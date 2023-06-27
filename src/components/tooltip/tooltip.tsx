@@ -39,7 +39,7 @@ function Tooltip({
 
   return (
     <>
-      <span ref={setTriggerRef}>{children}</span>
+      <div ref={setTriggerRef}>{children}</div>
 
       {mounted && (
         <div

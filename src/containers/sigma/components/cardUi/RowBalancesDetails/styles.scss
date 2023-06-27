@@ -2,6 +2,7 @@
   position: relative;
   min-height: 0px;
   height: 0px;
+  padding: 0 25px;
   transition: 0.5s ease-in-out;
   opacity: 0;
 
@@ -15,7 +16,6 @@
     min-height: 110px;
     height: 1px;
     margin-top: 30px;
-
   }
 
   &exiting {
