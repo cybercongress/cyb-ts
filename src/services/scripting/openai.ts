@@ -5,7 +5,7 @@ import axios from 'axios';
 // https://platform.openai.com/docs/models/overview
 // gpt-3.5-turbo
 
-const API_KEY = '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';
+const API_KEY = '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';
 
 // https://platform.openai.com/docs/api-reference/chat/create
 export const promptToOpenAI = async (

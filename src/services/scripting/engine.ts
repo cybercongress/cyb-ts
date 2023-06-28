@@ -166,8 +166,8 @@ export const reactToParticle = async (
 ): Promise<ReactToParticleResult> => {
   // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
 
-  if (!appContextManager.deps.cyberClient) {
-    throw Error('CyberClient is not set');
+  if (!appContextManager.deps.queryClient) {
+    throw Error('Cyber queryClient is not set');
   }
 
   const result = await runScript(
@@ -187,6 +187,6 @@ export const reactToParticle = async (
     console.log('---error', result);
     return { action: 'error' };
   }
-  console.log('----react to parc', cid, contentType, content, result);
+  // console.log('----react to particle', cid, contentType, content, result);
   return result.result;
 };

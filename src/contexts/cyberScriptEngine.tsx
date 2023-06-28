@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useIpfs } from './ipfs';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from './signerClient';
 import {
   loadCyberScripingEngine,
   // isCyberScriptingLoaded,
@@ -45,6 +46,8 @@ function CyberScriptEngineProvider({
   // let params = useParams();
   // let location = useLocation();
   const queryClient = useQueryClient();
+  const { signer, signingClient } = useSigningClient();
+
   const [dependecyState, setDependecyState] = useState<DependecyState>(
     getEmptyDependecyState()
   );
@@ -71,9 +74,15 @@ function CyberScriptEngineProvider({
 
   useEffect(() => {
     if (queryClient) {
-      appBus.emit('init', { name: 'cyberClient', item: queryClient });
+      appBus.emit('init', { name: 'queryClient', item: queryClient });
     }
   }, [queryClient]);
+
+  useEffect(() => {
+    if (signingClient) {
+      appBus.emit('init', { name: 'signer', item: { signer, signingClient } });
+    }
+  }, [signer, signingClient]);
 
   useEffect(() => {
     const { isCyberScriptingLoaded } = dependecyState;

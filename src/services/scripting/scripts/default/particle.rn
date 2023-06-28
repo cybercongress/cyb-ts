@@ -43,7 +43,7 @@ pub async fn react_to_particle(cid, content_type, content) {
                 dbg("Inside");
                 let cid = path[1];
                 cyb::log(`feed ${cid} to openai`);
-                let main_item = cyb::get_text_from_cid(cid).await;
+                let main_item = cyb::get_text_from_ipfs(cid).await;
                 let result = cyb::open_ai_prompt(`${main_item}\r\n What is this text about?`).await;
                 return update_content(`OpenAI say: ${result}`);
             }

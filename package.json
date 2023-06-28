@@ -144,7 +144,7 @@
     "@cosmjs/tendermint-rpc": "^0.28.4",
     "@cybercongress/cyber-js": "0.3.5",
     "@cybercongress/gravity": "0.0.15",
-    "cyb-rune-wasm": "0.0.4",
+    "cyb-rune-wasm": "0.0.5",
     "@jest/transform": "^29.5.0",
     "@ledgerhq/hw-transport-webusb": "5.53.0",
     "@libp2p/websockets": "^5.0.8",

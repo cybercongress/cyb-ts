@@ -2,10 +2,12 @@
 /* eslint-disable import/no-unused-modules */
 import { CyberClient } from '@cybercongress/cyber-js';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { eventbus } from '../eventbus';
 
 type AppDependencies = CyberClient | AppIPFS;
-type AppDependencyNames = 'ipfs' | 'cyberClient';
+type AppDependencyNames = 'ipfs' | 'queryClient' | 'signer';
 
 // private executing: Record<QueueSource, Set<string>> = {
 //     db: new Set(),
@@ -17,7 +19,11 @@ type ContextItemType = string | Record<string, string> | string[];
 
 type BusInitPayload =
   | { name: 'ipfs'; item: AppIPFS }
-  | { name: 'cyberClient'; item: CyberClient };
+  | { name: 'queryClient'; item: CyberClient }
+  | {
+      name: 'signer';
+      item: { signer: OfflineSigner; signerClient: SigningCyberClient };
+    };
 
 type BusContextPayload = {
   name: 'params';
