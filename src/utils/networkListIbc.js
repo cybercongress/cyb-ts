@@ -90,6 +90,17 @@ const networkList = {
     prefix: 'chihuahua',
     explorerUrlToTx: 'https://www.mintscan.io/chihuahua/txs/{txHash}',
   },
+  'axelar-dojo-1': {
+    chainId: 'axelar-dojo-1',
+    coinDecimals: 6,
+    denom: 'AXL',
+    coinMinimalDenom: 'uaxl',
+    rpc: 'https://rpc-1.axelar.nodes.guru',
+    sourceChannelId: 'channel-14',
+    destChannelId: 'channel-52',
+    prefix: 'axelar',
+    explorerUrlToTx: 'https://mintscan.io/axelar/txs/{txHash}',
+  },
 };
 
 export default networkList;

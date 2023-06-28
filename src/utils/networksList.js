@@ -63,6 +63,14 @@ const networkList = [
     explorerUrlToTx: 'https://www.mintscan.io/chihuahua/txs/{txHash}',
     chainIdImageCid: 'QmdmPzgP3sps9Qbc23VsoaBjBR9cVegonHapTBpN96tjmh',
   },
+  {
+    chainId: 'axelar-dojo-1',
+    chainName: 'axelar',
+    prefix: 'axelar',
+    rpc: 'https://rpc-1.axelar.nodes.guru',
+    explorerUrlToTx: 'https://mintscan.io/axelar/txs/{txHash}',
+    chainIdImageCid: 'QmdmPzgP3sps9Qbc23VsoaBjBR9cVegonHapTBpN96tjmh',
+  },
 ];
 
 export default networkList;

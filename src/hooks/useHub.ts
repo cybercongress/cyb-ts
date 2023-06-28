@@ -47,7 +47,9 @@ export function useNetworks() {
         objectMappedResult[row.chain_id] = row;
       });
     }
-    setNetworks(objectMappedResult);
+    if (Object.keys(objectMappedResult).length > 0) {
+      setNetworks(objectMappedResult);
+    }
   }, [data]);
 
   return { networks };
@@ -78,7 +80,9 @@ export function useTokens() {
         }
       });
 
-      console.log('Contract tokens ', objectMappedResult);
+      if (Object.keys(objectMappedResult).length > 0) {
+        setTokens(objectMappedResult);
+      }
     }
   }, [data]);
 
@@ -105,7 +109,10 @@ export function useChannels() {
           objectMappedResult[row.destination_chain_id] = row;
         }
       });
-      setChannels(objectMappedResult);
+
+      if (Object.keys(objectMappedResult).length > 0) {
+        setChannels(objectMappedResult);
+      }
     }
   }, [data]);
 
