@@ -22,6 +22,16 @@ const AUCTION = {
   TOKEN_ALOCATION: 15 * 10 ** 3,
 };
 
+const HUB_CONTRACTS = {
+  TOKENS: 'bostrom15phze6xnvfnpuvvgs2tw58xnnuf872wlz72sv0j2yauh6zwm7cmqqpmc42',
+  NETWORKS:
+    'bostrom1lpn69a74ftv04upfej8f9ay56pe2zyk48vzlk49kp3grysc7u56qq363nr',
+  CHANNELS:
+    'bostrom15tx5z779rdks07sg774ufn8q0a9x993c9uwmr6ycec78z6lfrmkqyjnfge',
+  PROTOCOLS:
+    'bostrom12yqsxh82qy3dz6alnmjhupyk85skgeqznzxv92q99hqtyu7vvdsqgwjgv',
+};
+
 const ADD_ARAGON_FINANCE = '0xa0a55e68dc52b47f8a9d5d05329fab5bdabffb14';
 
 const NETWORKSIDS = {
@@ -307,4 +317,5 @@ export {
   BOND_STATUS,
   CID_AVATAR,
   PATTERN_HTML,
+  HUB_CONTRACTS,
 };

@@ -19,17 +19,18 @@ import { getBalances, useSetupIbcClient } from './hooks';
 import Slider from './components/slider';
 import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import { TypeTxsT } from './type';
-import networks from '../../utils/networkListIbc';
 import ActionBar from './actionBar.bridge';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { useChannels } from 'src/hooks/useHub';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
+  const { channels } = useChannels();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
+  const { totalSupplyAll: totalSupply } = useGetTotalSupply();
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
@@ -75,61 +76,66 @@ function Bridge() {
 
   useEffect(() => {
     if (
+      channels &&
       networkA &&
       networkB &&
       networkA !== CYBER.CHAIN_ID &&
       networkB === CYBER.CHAIN_ID
     ) {
       setTypeTxs('deposit');
-      const { sourceChannelId } = networks[networkA];
+      const { source_channel_id: sourceChannelId } = channels[networkA];
       setSourceChannel(sourceChannelId);
     }
 
     if (
+      channels &&
       networkA &&
       networkB &&
       networkA === CYBER.CHAIN_ID &&
       networkB !== CYBER.CHAIN_ID
     ) {
       setTypeTxs('withdraw');
-      const { destChannelId } = networks[networkB];
+      const { destination_channel_id: destChannelId } = channels[networkB];
       setSourceChannel(destChannelId);
     }
-  }, [networkB, networkA]);
+  }, [networkB, networkA, channels]);
 
-  const reduceOptionsNetwork = (selected: string) => {
-    const tempList: SelectOption[] = [];
-    let reduceData = {};
+  const reduceOptionsNetwork = useCallback(
+    (selected: string) => {
+      const tempList: SelectOption[] = [];
+      let reduceData: string[] = [];
 
-    if (selected !== CYBER.CHAIN_ID) {
-      reduceData = { [CYBER.CHAIN_ID]: CYBER.CHAIN_ID };
-    } else {
-      reduceData = { ...networkList };
-    }
+      if (selected !== CYBER.CHAIN_ID) {
+        reduceData = [CYBER.CHAIN_ID];
+      } else if (channels) {
+        reduceData = [...Object.keys(channels)];
+      }
 
-    Object.keys(reduceData).forEach((key) => {
-      tempList.push({
-        value: key,
-        text: (
-          <DenomArr
-            type="network"
-            denomValue={key}
-            onlyText
-            tooltipStatusText={false}
-          />
-        ),
-        img: (
-          <DenomArr
-            type="network"
-            denomValue={key}
-            onlyImg
-            tooltipStatusImg={false}
-          />
-        ),
+      reduceData.forEach((key) => {
+        tempList.push({
+          value: key,
+          text: (
+            <DenomArr
+              type="network"
+              denomValue={key}
+              onlyText
+              tooltipStatusText={false}
+            />
+          ),
+          img: (
+            <DenomArr
+              type="network"
+              denomValue={key}
+              onlyImg
+              tooltipStatusImg={false}
+            />
+          ),
+        });
       });
-    });
-    return tempList;
-  };
+      return tempList;
+    },
+    [channels]
+  );
 
   const reduceOptions = useMemo(() => {
     const tempList: SelectOption[] = [];
@@ -139,7 +145,7 @@ function Bridge() {
         tempList.push({
           value: key,
           text: (
-            <DenomArr denomValue={key} onlyText tooltipStatusText={false} />
+            <DenomArr denomValue={key} onlyText  />
           ),
           img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
         });
