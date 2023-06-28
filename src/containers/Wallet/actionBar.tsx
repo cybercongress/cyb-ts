@@ -37,6 +37,24 @@ function ButtonImgText({ img, text = 'Send', ...props }) {
   );
 }
 
+type Props = {
+  selectCard: string;
+  selectAccount: CyberAccount | null;
+
+  hoverCard?: string;
+  accountsETH: any;
+  refreshTweet?: any;
+  updateTweetFunc?: any;
+  updateAddress: () => void;
+
+  defaultAccounts: {
+    cyber: {
+      keys: string;
+    };
+  } | null;
+  defaultAccountsKeys: string | null;
+};
+
 function ActionBar({
   selectCard,
   selectAccount,
@@ -50,7 +68,7 @@ function ActionBar({
   updateAddress,
   defaultAccounts,
   defaultAccountsKeys,
-}) {
+}: Props) {
   const { signer: keplr } = useSigningClient();
   const [typeActionBar, setTypeActionBar] = useState('');
   const [stage, setStage] = useState(STAGE_INIT);

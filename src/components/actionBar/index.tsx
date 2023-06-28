@@ -51,7 +51,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   // TODO: not show while loading passport
 
-  if ((noAccount || noPassport) && location.pathname !== '/passport') {
+  if ((noAccount || noPassport) && location.pathname !== '/keys') {
     return (
       <ActionBarContainer>
         {noAccount && <Button link={'/passport'}>Connect</Button>}

@@ -1,0 +1,42 @@
+.pill {
+  padding: 2px 7px;
+  color: #fff;
+  border-radius: 10px;
+  display: inline-flex;
+  gap: 7px;
+  white-space: nowrap;
+
+  &.--withImage {
+    padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    img {
+      height: 20px;
+      border-radius: 50%;
+    }
+  }
+
+  &.white {
+    background-color: #fff;
+    color: #000;
+  }
+
+  &.black {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffffc7;
+  }
+
+  &.blue {
+    background-color: var(--blue);
+  }
+
+  &.green {
+    background-color: var(--green-light);
+    color: #000;
+  }
+
+  &.red {
+    background-color: #c80000;
+  }
+}

@@ -14,7 +14,7 @@ const classNames = require('classnames');
 
 type Props = {
   addressActive: { bech32: string };
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 function Signatures({ addressActive, disabled }: Props) {

@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import '../src/style/main.css';
+import '../src/style/index.scss';
 import './styles.scss';
 
 // storybook error that React not defined, may be fixed in future
@@ -13,7 +14,7 @@ const preview: Preview = {
     actions: { argTypesRegex: '^on[A-Z].*' },
     backgrounds: {
       default: true,
-      value: '#000'
+      value: '#000',
     },
     controls: {
       matchers: {
