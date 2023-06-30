@@ -1,4 +1,27 @@
 .wrapper {
   display: flex;
   gap: 0 28px;
+  overflow-x: auto;
+  align-items: center;
+
+  > img {
+    height: auto;
+  }
+
+  .content {
+    line-height: 30px;
+
+    > * {
+      line-height: initial;
+    }
+
+    a {
+      margin-top: 5px;
+      display: inline-block;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
 }

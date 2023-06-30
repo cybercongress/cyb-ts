@@ -22,7 +22,15 @@ function Keys() {
 
   return (
     <>
-      <MainContainer>
+      <div
+        style={{
+          width: '62%',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20,
+        }}
+      >
         {acc
           ? Object.values(acc)
               .filter((account) => account?.cyber)
@@ -30,7 +38,7 @@ function Keys() {
                 return <KeyItem key={account.bech32} account={account} />;
               })
           : 'No accounts'}
-      </MainContainer>
+      </div>
 
       <ActionBar
         selectCard="pubkey"

@@ -29,6 +29,10 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
       return passport.extension.nickname;
     }
 
+    if (data?.cyber?.name) {
+      return data.cyber.name;
+    }
+
     if (name) {
       return name;
     }

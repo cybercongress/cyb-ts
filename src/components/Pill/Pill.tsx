@@ -13,10 +13,7 @@ export enum Colors {
 export type Props = {
   text: string | React.ReactNode;
   color?: Colors;
-  image?: {
-    src: string;
-    alt: string;
-  };
+  image?: React.ReactNode;
 };
 
 function Pill({ color = Colors.black, text, image }: Props) {
@@ -26,7 +23,7 @@ function Pill({ color = Colors.black, text, image }: Props) {
         [styles['--withImage']]: image,
       })}
     >
-      {image && <img src={image.src} alt={image.alt} />}
+      {image}
       {text}
     </div>
   );
