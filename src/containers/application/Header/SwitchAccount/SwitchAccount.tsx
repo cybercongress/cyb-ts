@@ -237,7 +237,7 @@ function SwitchAccount() {
         )}
         <Link
           to={routes.robot.path}
-          // onClick={() => setControlledVisible(!controlledVisible)}
+          onClick={() => setControlledVisible(!controlledVisible)}
         >
           <div
             className={cx(styles.containerAvatarConnect, {

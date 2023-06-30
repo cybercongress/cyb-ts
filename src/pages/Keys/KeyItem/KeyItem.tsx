@@ -8,6 +8,8 @@ import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import usePassportContract from 'src/hooks/usePassportContract';
 import { Citizenship } from 'src/types/citizenship';
+import { equals } from 'ramda';
+import Loader2 from 'src/components/ui/Loader2';
 
 type Props = {
   account: AccountValue;
@@ -38,7 +40,7 @@ function PassportLoader({
 function KeyItem({ account }: Props) {
   const { name, bech32, keys, path } = account;
 
-  const { data: activePassport } = usePassportContract<Citizenship>({
+  const activePassport = usePassportContract<Citizenship>({
     query: {
       active_passport: {
         address: bech32,
@@ -46,13 +48,15 @@ function KeyItem({ account }: Props) {
     },
   });
 
-  const { data: passportIds } = usePassportContract<{ tokens: string[] }>({
+  const passportIds = usePassportContract<{ tokens: string[] }>({
     query: {
       tokens: {
         owner: bech32,
       },
     },
   });
+
+  const passportsLoading = activePassport.loading && passportIds.loading;
 
   const isReadOnly = keys === 'read-only';
   const isHardware = keys === 'ledger';
@@ -97,23 +101,25 @@ function KeyItem({ account }: Props) {
             text={isReadOnly ? 'read' : 'write'}
           />{' '}
           access
-          {(passportIds?.tokens.length || activePassport) && (
+          {(passportsLoading ||
+            passportIds.data?.tokens.length ||
+            activePassport.data) && (
             <>
               {' '}
               to avatars: <br />
             </>
           )}
-          {activePassport && renderPassportPill(activePassport)}
-          {passportIds?.tokens?.map((tokenId) => {
+          {passportsLoading && <Loader2 />}
+          {activePassport.data && renderPassportPill(activePassport.data)}
+          {passportIds.data?.tokens?.map((tokenId) => {
             return (
               <PassportLoader
                 key={tokenId}
                 tokenId={tokenId}
                 render={(passport) => {
                   if (
-                    activePassport &&
-                    JSON.stringify(passport.extension) ===
-                      JSON.stringify(activePassport.extension)
+                    activePassport.data &&
+                    equals(activePassport.data.extension, passport.extension)
                   ) {
                     return null;
                   }

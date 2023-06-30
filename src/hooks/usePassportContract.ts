@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import { equals } from 'ramda';
 
 // TODO: add type
 // https://github.com/cybercongress/cw-cybergift/tree/main/contracts/cw-cyber-passport/schema
@@ -47,7 +48,7 @@ function usePassportContract<DataType>({ query, skip }: Props) {
       return;
     }
 
-    if (JSON.stringify(lastQuery.current) === JSON.stringify(query)) {
+    if (equals(lastQuery.current, query)) {
       return;
     }
 

@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import hydrogen from '../../image/hydrogen.svg';
 import { boot } from 'images/large-green.png';
+import React from 'react';
 
 enum TypesEnum {
   'karma' = 'karma',
@@ -68,7 +69,15 @@ export default function IconsNumber({ value, type }) {
     .dp(0, BigNumber.ROUND_FLOOR)
     .toNumber();
 
-  const i = new Array(prefix).fill(icons[type]);
+  const i = new Array(prefix).fill(icons[type]).map((el, i) => {
+    // maybe fix
+    if (typeof el === 'object') {
+      return React.cloneElement(el, { key: i });
+    }
+
+    return el;
+  });
+
   return (
     <>
       {number} {i}

@@ -25,8 +25,10 @@ function useGetPassportByAddress(accounts: any) {
         return response;
       } catch (error) {
         setError(error.message);
+        return null;
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     },
     {
       enabled: Boolean(queryClient && addressBech32),
