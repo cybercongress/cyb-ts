@@ -177,6 +177,7 @@
     "classnames": "^2.3.1",
     "core-js": "^3.30.0",
     "crypto": "^1.0.1",
+    "cyb-rune-wasm": "0.0.6",
     "dateformat": "^3.0.3",
     "detectrtc": "^1.4.0",
     "dexie": "^3.0.2",

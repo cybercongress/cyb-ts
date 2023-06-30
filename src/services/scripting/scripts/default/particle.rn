@@ -1,5 +1,8 @@
+
 pub async fn react_to_particle(cid, content_type, content) {
+
     dbg(`react_to_particle ${cid} ${content_type} ${content}`);
+
     if content_type == "text" {
         if content.contains(".") {
             let items = content.split(".").collect::<Vec>();
@@ -9,14 +12,13 @@ pub async fn react_to_particle(cid, content_type, content) {
                 let result = cyb::get_passport_by_nickname(username).await;
                 let particle_cid = result["extension"]["particle"];
 
-                cyb::log(`Change ${cid} to ${particle_cid} based on ${username} particle`);
+                cyb::log(`Change ${cid} to ${particle_cid} based on ${username} passport particle`);
                 return update_cid(particle_cid)
             }
         }
 
         if content.contains("dasein") {
-            cyb::log(`Update ${cid} that contains dasein to Dasein the Great`);
-
+            cyb::log(`Update ${cid} all the content with 'dasein' to 'Dasein the Great'`);
             return update_content(content.replace("dasein", "Dasein the Great"))
         }
 
@@ -33,18 +35,13 @@ pub async fn react_to_particle(cid, content_type, content) {
         }
 
         if content.contains("openai@me") {
-            dbg("Inside openai@me");
             let path =  cyb::context.app.params.path;
-            //dbg(cyb::context);
-            dbg(path);
-            dbg("Inside openai@me2", path.len() >= 2 && path[0] == "ipfs");
             if path.len() >= 2 && path[0] == "ipfs" {
-                dbg(path);
-                dbg("Inside");
+                let open_ai_key = "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";
                 let cid = path[1];
-                cyb::log(`feed ${cid} to openai`);
-                let main_item = cyb::get_text_from_ipfs(cid).await;
-                let result = cyb::open_ai_prompt(`${main_item}\r\n What is this text about?`).await;
+                cyb::log(`feed ${cid} content to openai`);
+                let main_text = cyb::get_text_from_ipfs(cid).await;
+                let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, open_ai_key).await;
                 return update_content(`OpenAI say: ${result}`);
             }
         }

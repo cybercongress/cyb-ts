@@ -9,8 +9,13 @@ import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { ContainerGradientText } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 import { rust } from '@codemirror/lang-rust';
-import { scriptItemStorage, runScript } from 'src/services/scripting/engine';
+import {
+  scriptItemStorage,
+  runScript,
+  saveScript,
+} from 'src/services/scripting/engine';
 import { useSigningClient } from 'src/contexts/signerClient';
+// import * as webllm from '@mlc-ai/web-llm';
 
 import { MainContainer } from '..';
 import { updatePassportData } from '../../utils';
@@ -22,41 +27,70 @@ function ScriptEditor() {
 
   const [log, setLog] = useState('');
   const [code, setCode] = useState(scriptItemStorage.particle.user);
+  console.log('------aaaa', scriptItemStorage.particle);
+  // useEffect(() => {
+  //   const chat = new webllm.ChatModule();
+  //   const run = async () => {
+  //     chat.setInitProgressCallback((report: webllm.InitProgressReport) => {
+  //       console.log('init-label', report.text);
+  //     });
 
-  useEffect(() => {
-    setCode(passport?.extension.data || scriptItemStorage.particle.user);
-  }, [passport]);
+  //     await chat.reload('vicuna-v1-7b-q4f32_0');
+
+  //     const generateProgressCallback = (_step: number, message: string) => {
+  //       console.log('generate-label', message);
+  //     };
+
+  //     const prompt0 = 'What is the capital of Canada?';
+  //     console.log('prompt-label', prompt0);
+  //     const reply0 = await chat.generate(prompt0, generateProgressCallback);
+  //     console.log(reply0);
+
+  //     const prompt1 = 'Can you write a poem about it?';
+  //     console.log('prompt-label', prompt1);
+  //     const reply1 = await chat.generate(prompt1, generateProgressCallback);
+  //     console.log(reply1);
+
+  //     console.log(await chat.runtimeStatsText());
+  //   };
+  //   run();
+  // }, []);
+
+  // useEffect(() => {
+  //   setCode(passport?.extension.data || scriptItemStorage.particle.user);
+  // }, [passport]);
 
   const onChange = useCallback((value, viewUpdate) => {
     setCode(value);
-    // console.log('value:', value, viewUpdate);
+    setLog('');
   }, []);
 
   const onSave = () => {
     runScript(
       code,
       {
-        cid: 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1',
-        contentType: 'text',
-        content: 'dasein.moon',
+        cid: '',
+        contentType: '',
+        content: '',
       },
       scriptItemStorage.particle.runtime,
       undefined,
-      true
+      false
     ).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
       console.log('----result', result, isOk);
-
       const msg = !isOk ? `Errors:\r\n${result.diagnosticsOutput}` : 'Success!';
       setLog(msg);
-      if (isOk) {
-        return updatePassportData(passport?.extension.nickname, code, {
-          signer,
-          signingClient,
-        }).then((res) =>
-          setLog((log) => `${log}\r\nSaved, tx: ${res.transactionHash}`)
-        );
-      }
+      saveScript('particle', code);
+      setLog((log) => `${log}\r\nSaved to local storage.`);
+      // if (isOk) {
+      //   return updatePassportData(passport?.extension.nickname, code, {
+      //     signer,
+      //     signingClient,
+      //   }).then((res) =>
+      //     setLog((log) => `${log}\r\nSaved, tx: ${res.transactionHash}`)
+      //   );
+      // }
     });
   };
 

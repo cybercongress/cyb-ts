@@ -1,8 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/no-unused-modules */
-import { CyberClient } from '@cybercongress/cyber-js';
+import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
-import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { eventbus } from '../eventbus';
 
@@ -22,7 +21,7 @@ type BusInitPayload =
   | { name: 'queryClient'; item: CyberClient }
   | {
       name: 'signer';
-      item: { signer: OfflineSigner; signerClient: SigningCyberClient };
+      item: { signer?: OfflineSigner; signingClient: SigningCyberClient };
     };
 
 type BusContextPayload = {

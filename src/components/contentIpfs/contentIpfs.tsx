@@ -55,12 +55,12 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   return (
     <>
-      <DebugContentInfo
+      {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
         content={content}
         status={status}
-      />
+      /> */}
       {/* Directory or ipfs hosted site(index.html) */}
       {(content?.contentType === 'directory' ||
         (content?.contentType === 'html' && !content?.meta.type)) && (

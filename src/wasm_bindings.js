@@ -22,8 +22,8 @@ export async function js_getPassportByNickname(nickname) {
   return result;
 }
 
-export async function js_promptToOpenAI(prompt) {
-  const result = await promptToOpenAI(prompt);
+export async function js_promptToOpenAI(prompt, apiKey) {
+  const result = await promptToOpenAI(prompt, apiKey);
   return result;
 }
 

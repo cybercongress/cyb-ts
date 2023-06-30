@@ -23,9 +23,11 @@ export type ScriptCallback = (
 ) => void;
 
 type ScriptScopeParams = {
-  cid?: string;
-  contentType?: string;
-  content?: string;
+  particle: {
+    cid?: string;
+    contentType?: string;
+    content?: string;
+  };
   refId?: string;
 };
 
@@ -58,6 +60,14 @@ export const loadCyberScripingEngine = async () => {
   return rune;
 };
 
+export const loadScript = (scriptName: ScriptNames) =>
+  localStorage.getItem(`script_${scriptName}`);
+
+export const saveScript = (scriptName: ScriptNames, scriptCode: string) => {
+  localStorage.setItem(`script_${scriptName}`, scriptCode);
+  scriptItemStorage[scriptName].user = scriptCode;
+};
+
 // Scripts cached to use on demand
 // Runtime - cyber scripts to hide extra functionality
 // User - user written scripts(or default)
@@ -65,20 +75,8 @@ export const scriptItemStorage: Record<ScriptNames, ScriptItem> = {
   particle: {
     name: 'Particle post processor',
     runtime: scriptParticleRuntime,
-    user: scriptParticleDefault,
+    user: loadScript('particle') || scriptParticleDefault,
   },
-};
-
-const loadScript = (scriptName: ScriptNames) => {
-  return (
-    localStorage.getItem(`script_${scriptName}`) ||
-    scriptItemStorage[scriptName]
-  );
-};
-
-const saveScript = (scriptName: ScriptNames, scriptCode: string) => {
-  localStorage.setItem(`script_${scriptName}`, scriptCode);
-  scriptItemStorage[scriptName].user = scriptCode;
 };
 
 const scriptCallbacks = new Map<string, ScriptCallback>();
@@ -170,8 +168,8 @@ export const reactToParticle = async (
     throw Error('Cyber queryClient is not set');
   }
 
-  const result = await runScript(
-    scriptParticleDefault,
+  const scriptResult = await runScript(
+    scriptItemStorage.particle.user,
     {
       particle: {
         cid,
@@ -179,14 +177,19 @@ export const reactToParticle = async (
         content,
       },
     },
-    scriptParticleRuntime,
+    scriptItemStorage.particle.runtime,
     undefined,
     true
   );
-  if (result.error) {
-    console.log('---error', result);
+  if (scriptResult.error) {
+    console.log(`---reactToParticle ${cid} error: `, scriptResult);
     return { action: 'error' };
   }
+
+  if (scriptResult.result?.action !== 'pass') {
+    console.log(`---reactToParticle ${cid} output: `, scriptResult);
+  }
+
   // console.log('----react to particle', cid, contentType, content, result);
-  return result.result;
+  return scriptResult.result;
 };
