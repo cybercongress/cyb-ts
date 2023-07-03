@@ -103,7 +103,7 @@ function Robot() {
         if (owner === address || extension.nickname === nickname) {
           return true;
         }
-        extension.addresses.forEach(({ address: addr }) => {
+        extension.addresses?.forEach(({ address: addr }) => {
           if (addr === address) {
             ownedAddresses.push(addr);
           }

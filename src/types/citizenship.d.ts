@@ -3,10 +3,12 @@ export type Citizenship = {
   approvals: any[];
   token_uri: string | null;
   extension: {
-    addresses: {
-      label: string | null;
-      address: string;
-    }[];
+    addresses:
+      | {
+          label: string | null;
+          address: string;
+        }[]
+      | null;
     avatar: string;
     nickname: string;
     data: any | null;
