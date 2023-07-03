@@ -5,8 +5,9 @@ import { githubDark } from '@uiw/codemirror-theme-github';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-
-import { ContainerGradientText } from 'src/components';
+import { Pane } from '@cybercongress/gravity';
+// import { ContainerGradientText } from 'src/components';
+import { Button, Input } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 import { rust } from '@codemirror/lang-rust';
 import {
@@ -15,7 +16,7 @@ import {
   saveScript,
 } from 'src/services/scripting/engine';
 import { useSigningClient } from 'src/contexts/signerClient';
-// import * as webllm from '@mlc-ai/web-llm';
+import styles from './ScriptEditor.module.scss';
 
 import { MainContainer } from '..';
 import { updatePassportData } from '../../utils';
@@ -26,35 +27,9 @@ function ScriptEditor() {
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [log, setLog] = useState('');
+  const [isChanged, setIsChanged] = useState(false);
+  const [testCid, seTestCid] = useState('');
   const [code, setCode] = useState(scriptItemStorage.particle.user);
-  console.log('------aaaa', scriptItemStorage.particle);
-  // useEffect(() => {
-  //   const chat = new webllm.ChatModule();
-  //   const run = async () => {
-  //     chat.setInitProgressCallback((report: webllm.InitProgressReport) => {
-  //       console.log('init-label', report.text);
-  //     });
-
-  //     await chat.reload('vicuna-v1-7b-q4f32_0');
-
-  //     const generateProgressCallback = (_step: number, message: string) => {
-  //       console.log('generate-label', message);
-  //     };
-
-  //     const prompt0 = 'What is the capital of Canada?';
-  //     console.log('prompt-label', prompt0);
-  //     const reply0 = await chat.generate(prompt0, generateProgressCallback);
-  //     console.log(reply0);
-
-  //     const prompt1 = 'Can you write a poem about it?';
-  //     console.log('prompt-label', prompt1);
-  //     const reply1 = await chat.generate(prompt1, generateProgressCallback);
-  //     console.log(reply1);
-
-  //     console.log(await chat.runtimeStatsText());
-  //   };
-  //   run();
-  // }, []);
 
   // useEffect(() => {
   //   setCode(passport?.extension.data || scriptItemStorage.particle.user);
@@ -62,6 +37,7 @@ function ScriptEditor() {
 
   const onChange = useCallback((value, viewUpdate) => {
     setCode(value);
+    setIsChanged(true);
     setLog('');
   }, []);
 
@@ -82,6 +58,7 @@ function ScriptEditor() {
       const msg = !isOk ? `Errors:\r\n${result.diagnosticsOutput}` : 'Success!';
       setLog(msg);
       saveScript('particle', code);
+      setIsChanged(false);
       setLog((log) => `${log}\r\nSaved to local storage.`);
       // if (isOk) {
       //   return updatePassportData(passport?.extension.nickname, code, {
@@ -103,11 +80,11 @@ function ScriptEditor() {
   }
 
   return (
-    <MainContainer>
-      <ContainerGradientText
-        userStyleContent={{ width: '100%', display: 'grid', gap: '20px' }}
-      >
-        <div>Particle post-processor script</div>
+    <div>
+      <main className="block-body">
+        <Pane marginBottom="10px" fontSize="20px">
+          Particle post-processor script
+        </Pane>
         <CodeMirror
           value={code}
           height="500px"
@@ -115,25 +92,26 @@ function ScriptEditor() {
           theme={githubDark}
           onChange={onChange}
         />
-        {/* <Tooltip tooltip="Compile and save"> */}
-        <button
-          type="button"
-          onClick={() => onSave()}
-          style={{ width: 'fit-content', padding: '5px 10px' }}
+        <Pane
+          marginBottom="10px"
+          marginTop="25px"
+          alignItems="center"
+          justifyContent="center"
+          className={styles.actionPanel}
         >
-          Save
-        </button>
-        {/* </Tooltip> */}
-        <textarea
-          value={log}
-          className="resize-none"
-          rows={18}
-          style={{
-            width: 'calc(100% - 40px)',
-          }}
-        />
-      </ContainerGradientText>
-    </MainContainer>
+          <div className={styles.testPanel}>
+            <Input
+              value={testCid}
+              onChange={(e) => seTestCid(e.target.value)}
+              placeholder="Enter particle CID to apply script...."
+            />
+            <Button onClick={onSave}>Test</Button>
+          </div>
+          {isChanged && <Button onClick={onSave}>Save</Button>}
+        </Pane>
+        <textarea value={log} className="resize-none" rows={18} />
+      </main>
+    </div>
   );
 }
 

@@ -30,6 +30,8 @@ module.exports = {
       zlib: false,
       path: false,
       url: false,
+      module: false,
+      perf_hooks: false,
       crypto: require.resolve('crypto-browserify'),
       assert: require.resolve('assert'),
       https: require.resolve('https-browserify'),

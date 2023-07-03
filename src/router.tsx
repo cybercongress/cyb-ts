@@ -62,7 +62,8 @@ import Sigma from './containers/sigma';
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
-import ScriptEditor from './containers/portal/components/ScriptEditor';
+import ScriptEditor from './containers/portal/components/ScriptEditor/ScriptEditor';
+import ChatBotConfig from './containers/portal/components/ChatBotConfig/ChatBotConfig';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -169,6 +170,7 @@ function AppRouter() {
           <Route path="/nebula" element={<Nebula />} />
           {/* TMP */}
           <Route path="/scripts" element={<ScriptEditor />} />
+          <Route path="/chatbot" element={<ChatBotConfig />} />
           {/*  */}
           <Route path="*" element={<PageNotExist />} />
         </Route>

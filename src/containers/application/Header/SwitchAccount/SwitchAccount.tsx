@@ -17,6 +17,7 @@ import {
   setAccounts,
   setDefaultAccount,
 } from '../../../../redux/features/pocket';
+import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -223,8 +224,10 @@ function SwitchAccount() {
               </button>
             )}
             {useGetAddress && <Karma address={useGetAddress} />}
+            <ChatBotPanel />
           </div>
         )}
+
         <Link to="/robot">
           <div
             className={cx(styles.containerAvatarConnect, {

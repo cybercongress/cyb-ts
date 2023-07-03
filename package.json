@@ -144,10 +144,10 @@
     "@cosmjs/tendermint-rpc": "^0.28.4",
     "@cybercongress/cyber-js": "0.3.5",
     "@cybercongress/gravity": "0.0.15",
-    "cyb-rune-wasm": "0.0.5",
     "@jest/transform": "^29.5.0",
     "@ledgerhq/hw-transport-webusb": "5.53.0",
     "@libp2p/websockets": "^5.0.8",
+    "@mlc-ai/web-llm": "^0.2.1",
     "@multiformats/multiaddr": "^11.4.0",
     "@nftstorage/ipfs-cluster": "^5.0.1",
     "@reduxjs/toolkit": "^1.9.3",
@@ -230,7 +230,8 @@
     "ts-jest-resolver": "^2.0.1",
     "videostream": "^3.2.2",
     "web3": "1.2.4",
-    "web3-utils": "^1.2.4"
+    "web3-utils": "^1.2.4",
+    "worker-loader": "^3.0.8"
   },
   "prec-commit": [
     "lint"
