@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import golReducer from './gol';
 import bandwidthReducer from './bandwidth';
 import pocketReducer from '../features/pocket';
-import passportReducer from '../features/passport';
+import passportReducer from '../../features/passport/passport.redux';
 
 const rootReducer = combineReducers({
   gol: golReducer,

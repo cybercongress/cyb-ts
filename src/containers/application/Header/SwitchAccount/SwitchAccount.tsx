@@ -17,7 +17,10 @@ import {
   setAccounts,
   setDefaultAccount,
 } from '../../../../redux/features/pocket';
-import { setPassport, setPassportLoading } from 'src/redux/features/passport';
+import {
+  setPassport,
+  setPassportLoading,
+} from 'src/features/passport/passport.redux';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
 

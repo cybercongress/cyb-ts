@@ -6,7 +6,7 @@ import styles from './KeyItem.module.scss';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import usePassportContract from 'src/hooks/usePassportContract';
+import usePassportContract from 'src/features/passport/usePassportContract';
 import { Citizenship } from 'src/types/citizenship';
 import { equals } from 'ramda';
 import Loader2 from 'src/components/ui/Loader2';

@@ -37,7 +37,11 @@ import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { useDispatch } from 'react-redux';
-import { addAddress, deleteAddress } from '../../../redux/features/passport';
+import {
+  addAddress,
+  deleteAddress,
+} from '../../../features/passport/passport.redux';
+import { Citizenship } from 'src/types/citizenship';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -75,7 +79,7 @@ type Props = {
   addressActive?: {
     bech32: string;
   };
-  citizenship: any;
+  citizenship: Citizenship | null;
   updateTxHash?: () => void;
   isClaimed: any;
   selectedAddress?: string;
@@ -170,7 +174,7 @@ function ActionBarPortalGift({
       const { addresses } = extension;
 
       if (selectNetwork === 'columbus-5') {
-        if (window.keplr.experimentalSuggestChain) {
+        if (window.keplr?.experimentalSuggestChain) {
           await window.keplr.experimentalSuggestChain(configTerraKeplr());
         }
       }
@@ -411,12 +415,14 @@ function ActionBarPortalGift({
   ]);
 
   const isProve = useMemo(() => {
-    if (citizenship !== null && citizenship.extension.addresses === null) {
+    if (citizenship !== null && !citizenship.extension.addresses) {
       return false;
     }
-    const validObj =
-      citizenship !== null && citizenship.extension.addresses !== null;
-    if (validObj && Object.keys(citizenship.extension.addresses).length <= 8) {
+
+    if (
+      !!citizenship?.extension.addresses &&
+      Object.keys(citizenship.extension.addresses).length <= 8
+    ) {
       return false;
     }
 

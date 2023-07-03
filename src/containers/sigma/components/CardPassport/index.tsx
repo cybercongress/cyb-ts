@@ -77,7 +77,7 @@ function CardPassport({
         )}
       </div>
 
-      {passport?.extension?.addresses.map(({ address }) => {
+      {passport?.extension.addresses?.map(({ address }) => {
         return (
           <TitleCard
             key={address}

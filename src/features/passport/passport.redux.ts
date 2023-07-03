@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Citizenship } from 'src/types/citizenship';
 
@@ -18,12 +19,16 @@ const slice = createSlice({
     setPassportLoading: (state) => {
       state.loading = true;
     },
-    setPassport: (state, { payload }: PayloadAction<Citizenship>) => {
+    setPassport: (state, { payload }: PayloadAction<Citizenship | null>) => {
       state.data = payload;
       state.loading = false;
     },
 
     addAddress: (state, { payload }: PayloadAction<string>) => {
+      if (!(state.data && state.data.extension.addresses)) {
+        return;
+      }
+
       state.data.extension.addresses.push({
         label: null,
         address: payload,
@@ -31,6 +36,10 @@ const slice = createSlice({
     },
 
     deleteAddress: (state, { payload }: PayloadAction<string>) => {
+      if (!(state.data && state.data.extension.addresses)) {
+        return;
+      }
+
       state.data.extension.addresses = state.data.extension.addresses.filter(
         (item) => item.address !== payload
       );

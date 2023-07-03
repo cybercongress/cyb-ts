@@ -141,6 +141,7 @@
     "@cosmjs/tendermint-rpc": "^0.28.4",
     "@cybercongress/cyber-js": "0.3.5",
     "@cybercongress/gravity": "0.0.15",
+    "@ethersproject/providers": "^5.7.2",
     "@jest/transform": "^29.5.0",
     "@ledgerhq/hw-transport-webusb": "5.53.0",
     "@libp2p/websockets": "^5.0.8",
