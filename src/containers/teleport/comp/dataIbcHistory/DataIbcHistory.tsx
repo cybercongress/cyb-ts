@@ -27,11 +27,15 @@ function DataIbcHistory() {
     });
   }, [displayedPalettes]);
 
+  const hasMore = useMemo(() => {
+    return Boolean(ibcHistory && itemsToShow < ibcHistory.length);
+  }, [ibcHistory, itemsToShow]);
+
   return (
     <InfiniteScroll
       dataLength={ItemRows.length}
       next={setNextDisplayed}
-      hasMore={Boolean(ibcHistory && itemsToShow < ibcHistory.length)}
+      hasMore={hasMore}
       style={{ display: 'grid', gap: '15px', marginTop: '20px' }}
       loader={
         <h4>

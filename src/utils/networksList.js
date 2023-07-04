@@ -27,7 +27,7 @@ const networkList = [
     chainId: 'juno-1',
     chainName: 'juno',
     prefix: 'juno',
-    rpc: 'https://rpc-juno.itastakers.com',
+    rpc: 'https://rpc.uni.junonetwork.io',
     explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
     chainIdImageCid: 'QmW3ePrLoTFQd7SqbKSZyiV429VBrXpvAYS5Xa4Nt1kVYe',
   },
