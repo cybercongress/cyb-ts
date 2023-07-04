@@ -8,11 +8,15 @@ import { ContainerGradientText, DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
+import TokenChange from 'src/components/TokenChange/TokenChange';
 
 interface Props {
   address: string;
   passport: Citizenship;
-  totalLiquid?: any;
+  totalLiquid?: {
+    currentCap: number;
+    change: number;
+  };
   selectAddress?: (address: string) => void;
   selected: boolean;
 }
@@ -63,23 +67,11 @@ function TitleCard({
       {/* <div className={styles.name}>{useGetName}</div> */}
 
       {totalLiquid && (
-        <div className={styles.total}>
-          {totalLiquid.change !== 0 && (
-            <div
-              style={{
-                color: totalLiquid.change > 0 ? '#7AFAA1' : '#FF0000',
-              }}
-            >
-              {totalLiquid.change > 0 ? '+' : ''}
-              {formatNumber(totalLiquid.change)}
-            </div>
-          )}
-          <FormatNumberTokens
-            value={totalLiquid.currentCap}
-            text={CYBER.DENOM_LIQUID_TOKEN}
-            // styleValue={{ fontSize: '18px' }}
-          />
-        </div>
+        <TokenChange
+          className={styles.total}
+          total={totalLiquid.currentCap}
+          change={totalLiquid.change}
+        />
       )}
     </div>
     // </ContainerGradientText>

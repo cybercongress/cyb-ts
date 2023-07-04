@@ -1,18 +1,12 @@
 @import '../../../../../style/mixins.scss';
 
 .container {
-  width: 100%;
-  display: flex;
-  // grid-template-columns: 120px 1fr 1fr;
-  // grid-template-rows: repeat(2, 1fr);
+  display: grid;
   gap: 0px 20px;
   padding: 30px 0;
   // grid-auto-flow: row;
-  // grid-template-areas:
-  // 'avatar name total'
-  // 'avatar address address';
+  grid-template-areas: '. address total';
   align-items: center;
-  // justify-content: space-between;
   font-size: 20px;
 
   &.selected,
@@ -25,8 +19,8 @@
       position: absolute;
       z-index: -1;
 
-      left: -15px;
-      right: -15px;
+      left: -20px;
+      right: -20px;
 
       height: 100%;
 
@@ -35,33 +29,12 @@
   }
 }
 
-.avatar {
-  grid-area: avatar;
-  width: 120px;
-  height: 120px;
-}
-
-.name {
-  grid-area: name;
-  color: #1fcbff;
-}
-
 .total {
   grid-area: total;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  gap: 30px;
-  justify-self: flex-end;
-  white-space: nowrap;
 }
 
 .address {
   grid-area: address;
-  justify-self: flex-end;
-
-  img {
-  }
 }
 
 // @media all and (-ms-high-contrast: none) {

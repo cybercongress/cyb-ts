@@ -13,8 +13,9 @@ if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
 }
-module.exports = {
-  devtool: false,
+
+const config = {
+  devtool: 'cheap-module-source-map',
   entry: [path.join(__dirname, 'src', 'index.tsx')],
   output: {
     filename: '[name].js',
@@ -177,3 +178,5 @@ module.exports = {
     ],
   },
 };
+
+module.exports = config;

@@ -1,0 +1,19 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.change {
+  color: #ff0000;
+
+  &.increase {
+    color: var(--green-2);
+
+    &::before {
+      content: '+';
+    }
+  }
+}

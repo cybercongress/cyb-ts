@@ -18,6 +18,7 @@ import { RootState } from 'src/redux/store';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
+import TokenChange from 'src/components/TokenChange/TokenChange';
 
 const valueContext = {
   totalCap: 0,
@@ -135,7 +136,13 @@ function Sigma({ address: preAddr }) {
           overflowX: 'auto',
         }}
       >
-        <ContainerGradientText status="grey">
+        <ContainerGradientText
+          status="grey"
+          userStyleContent={{
+            paddingRight: 25,
+            paddingLeft: 10,
+          }}
+        >
           <header className={styles.totalHeader}>
             <div className={styles.image}>
               <div className={styles.circle}>
@@ -144,23 +151,7 @@ function Sigma({ address: preAddr }) {
               <h3>Sigma</h3>
             </div>
 
-            <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
-              {value.changeCap > 0 && (
-                <div
-                  style={{
-                    color: value.changeCap > 0 ? '#7AFAA1' : '#FF0000',
-                  }}
-                >
-                  {value.changeCap > 0 ? '+' : ''}
-                  {formatNumber(value.changeCap)}
-                </div>
-              )}
-              <FormatNumberTokens
-                // styleValue={{ fontSize: '18px' }}
-                text={CYBER.DENOM_LIQUID_TOKEN}
-                value={value.totalCap}
-              />
-            </div>
+            <TokenChange total={value.totalCap} change={value.changeCap} />
           </header>
         </ContainerGradientText>
 

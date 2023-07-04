@@ -78,7 +78,8 @@ function RowBalancesDetails({ balance }) {
           display: 'grid',
           gridTemplateColumns: '140px 270px 0.9fr 1fr',
           height: '40px',
-          padding: '0 25px',
+          paddingLeft: 25,
+          // padding: '0 25px',
           gap: '10px',
           alignItems: 'flex-start',
         }}

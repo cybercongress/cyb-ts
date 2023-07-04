@@ -14,8 +14,13 @@ import {
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
+import TokenChange from 'src/components/TokenChange/TokenChange';
 
-function Title({ capData }) {
+function Title({
+  capData,
+}: {
+  capData: { currentCap: number; change: number };
+}) {
   return (
     <div
       style={{
@@ -29,25 +34,7 @@ function Title({ capData }) {
       <div style={{ fontSize: '22px', width: '112px', height: '112px' }}>
         <NebulaImg />
       </div>
-      {capData.currentCap !== 0 && (
-        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
-          {capData.change !== 0 && (
-            <div
-              style={{
-                color: capData.change > 0 ? '#7AFAA1' : '#FF0000',
-              }}
-            >
-              {capData.change > 0 ? '+' : ''}
-              {formatNumber(capData.change)}
-            </div>
-          )}
-          <FormatNumberTokens
-            text={CYBER.DENOM_LIQUID_TOKEN}
-            value={capData.currentCap}
-            tooltipStatusImg={false}
-          />
-        </div>
-      )}
+      <TokenChange total={capData.currentCap} change={capData.change} />
     </div>
   );
 }

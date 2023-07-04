@@ -1,13 +1,16 @@
 import { DenomArr } from '../../../../../components';
 import { formatNumber } from '../../../../../utils/utils';
-import styles from './styles.scss';
+import styles from './FormatNumberTokens.module.scss';
 
-function FormatNumberTokens({ text, value, ...props }) {
+type Props = {
+  text?: string;
+  value: string;
+};
+
+function FormatNumberTokens({ text, value, ...props }: Props) {
   return (
     <div className={styles.containerFormatNumberTokens} {...props}>
-      <div className={styles.containerFormatNumberTokensValue}>
-        <span>{formatNumber(parseFloat(value))}</span>
-      </div>
+      <span>{formatNumber(parseFloat(value))}</span>
       {text && <DenomArr denomValue={text} onlyImg />}
     </div>
   );

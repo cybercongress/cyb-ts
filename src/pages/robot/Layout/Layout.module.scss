@@ -90,7 +90,7 @@ $actionBarSpace: 130px;
 
       .new {
         grid-area: new;
-        color: #7afaa1;
+        color: var(--green-2);
         background: rgba(255, 255, 255, 0.08);
         border-radius: 5px;
       }

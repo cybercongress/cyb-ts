@@ -104,40 +104,31 @@ function ImgDenom({
     }
   }, [node, coinDenom, infoDenom, getImgFromIpfsByCid]);
 
+  const img = (
+    <img
+      style={{
+        margin: marginImg || 0,
+        width: size || 20,
+        height: size || 20,
+        zIndex: zIndexImg || 0,
+        verticalAlign: 'middle',
+      }}
+      src={imgDenom || defaultImg}
+      alt="text"
+    />
+  );
+
   if (tooltipStatus) {
     return (
       <div>
         <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
-          <img
-            style={{
-              margin: marginImg || 0,
-              width: size || 20,
-              height: size || 20,
-              zIndex: zIndexImg || 0,
-            }}
-            src={imgDenom || defaultImg}
-            alt="text"
-          />
+          {img}
         </Tooltip>
       </div>
     );
   }
 
-  return (
-    <div style={{ display: 'flex' }}>
-      <img
-        style={{
-          margin: marginImg || 0,
-          width: size || 20,
-          height: size || 20,
-          zIndex: zIndexImg || 0,
-        }}
-        src={imgDenom || defaultImg}
-        alt="text"
-      />
-    </div>
-  );
+  return <div style={{ display: 'flex' }}>{img}</div>;
 }
 
-// eslint-disable-next-line import/no-unused-modules
 export default ImgDenom;
