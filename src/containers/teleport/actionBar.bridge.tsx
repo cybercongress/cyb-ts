@@ -20,11 +20,13 @@ import {
   fromBech32,
   trimString,
   convertAmountReverce,
+  getNowUtcTime,
 } from '../../utils/utils';
 import networks from '../../utils/networkListIbc';
 
 import { TxsType } from './type';
 import ActionBarPingTxs from './actionBarPingTxs';
+import { useIbcHistory } from './ibc-history/historyContext';
 
 const {
   STAGE_INIT,
@@ -45,7 +47,24 @@ const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
+const testItem = {
+  address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
+  txHash: 'string',
+  sourceChainId: 'string',
+  sourceChannelId: 'string',
+  destChainId: 'string',
+  destChannelId: 'string',
+  sequence: 'number',
+  sender: 'string',
+  recipient: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
+  amount: 'Coin',
+  timeoutHeight: 'number',
+  createdAt: 'number',
+  status: 'pending',
+};
+
 function ActionBar({ stateActionBar }) {
+  const { pingTxsIbc } = useIbcHistory();
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -114,8 +133,11 @@ function ActionBar({ stateActionBar }) {
           feeIbc,
           ''
         );
+
+        console.log('response', response);
+
         if (response.code === 0) {
-          const responseChainId = ibcClient.signer.chainId;
+          const responseChainId = await ibcClient.getChainId();
           setTxHashIbc(response.transactionHash);
           setLinkIbcTxs(
             `${networks[responseChainId].explorerUrlToTx.replace(
@@ -123,6 +145,23 @@ function ActionBar({ stateActionBar }) {
               response.transactionHash.toUpperCase()
             )}`
           );
+          const [{ coinDecimals: coinDecimalsSelect }] =
+            traseDenom(tokenSelect);
+          const amountSelect = convertAmountReverce(
+            tokenAmount,
+            coinDecimalsSelect
+          );
+          const transferData = {
+            txHash: response.transactionHash,
+            address: counterpartyAccount,
+            sourceChainId: responseChainId,
+            destChainId: networkB,
+            sender: address,
+            recipient: counterpartyAccount,
+            createdAt: getNowUtcTime(),
+            amount: coinFunc(amountSelect, tokenSelect),
+          };
+          pingTxsIbc(ibcClient, transferData);
           setStage(STAGE_CONFIRMED_IBC);
           // if (response.rawLog.length > 0) {
           //   parseRawLog(response.rawLog);
@@ -140,7 +179,7 @@ function ActionBar({ stateActionBar }) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ibcClient, tokenAmount, denomIbc, signingClient]);
+  }, [ibcClient, tokenAmount, denomIbc, signingClient, networkB]);
 
   const withdrawOnClick = useCallback(async () => {
     if (signer && signingClient && traseDenom) {
@@ -178,6 +217,18 @@ function ActionBar({ stateActionBar }) {
         );
         if (response.code === 0) {
           setTxHash(response.transactionHash);
+          const ChainId = await signingClient.getChainId();
+          const transferData = {
+            txHash: response.transactionHash,
+            address,
+            sourceChainId: ChainId,
+            destChainId: networkB,
+            sender: address,
+            recipient: counterpartyAccount,
+            createdAt: getNowUtcTime(),
+            amount: transferAmount,
+          };
+          pingTxsIbc(signingClient, transferData);
         } else {
           setTxHash(undefined);
           setErrorMessage(response.rawLog.toString());
@@ -196,6 +247,7 @@ function ActionBar({ stateActionBar }) {
   const buttonConfigs = {
     [TxsType.Deposit]: {
       text: 'Deposit',
+      // onClick: () => addHistoriesItem(testItem),
       onClick: depositOnClick,
       disabled: isExceeded,
     },

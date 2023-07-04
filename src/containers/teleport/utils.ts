@@ -6,6 +6,7 @@ import { IbcDenomsArr } from 'src/types/ibc';
 import coinDecimalsConfig from '../../utils/configToken';
 import { MyPoolsT } from './type';
 import { getDisplayAmount } from 'src/utils/utils';
+import { Log } from '@cosmjs/stargate/build/logs';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
@@ -275,6 +276,63 @@ export function calculatePairAmount(inputAmount: string | number, state) {
 
   return { counterPairAmount, price };
 }
+
+export const parseEvents = (rawLog: readonly Log[]) => {
+  try {
+    if (rawLog && Object.keys(rawLog).length > 0) {
+      const { events } = rawLog[0];
+      if (events) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const event of events) {
+          if (event.type === 'send_packet') {
+            const { attributes } = event;
+            const sourceChannelAttr = attributes.find(
+              (attr) => attr.key === 'packet_src_channel'
+            );
+            const sourceChannelValue = sourceChannelAttr
+              ? sourceChannelAttr.value
+              : undefined;
+            const destChannelAttr = attributes.find(
+              (attr) => attr.key === 'packet_dst_channel'
+            );
+            const destChannelValue = destChannelAttr
+              ? destChannelAttr.value
+              : undefined;
+            const sequenceAttr = attributes.find(
+              (attr) => attr.key === 'packet_sequence'
+            );
+            const sequence = sequenceAttr ? sequenceAttr.value : undefined;
+            const timeoutHeightAttr = attributes.find(
+              (attr) => attr.key === 'packet_timeout_height'
+            );
+            const timeoutHeight = timeoutHeightAttr
+              ? timeoutHeightAttr.value
+              : undefined;
+            const timeoutTimestampAttr = attributes.find(
+              (attr) => attr.key === 'packet_timeout_timestamp'
+            );
+            const timeoutTimestamp = timeoutTimestampAttr
+              ? timeoutTimestampAttr.value
+              : undefined;
+            if (sequence && destChannelValue && sourceChannelValue) {
+              return {
+                destChannelId: destChannelValue,
+                sourceChannelId: sourceChannelValue,
+                sequence,
+                timeoutHeight,
+                timeoutTimestamp,
+              };
+            }
+          }
+        }
+      }
+    }
+    return null;
+  } catch (e) {
+    console.log('error parseLog', e);
+    return null;
+  }
+};
 
 export const networkList = {
   bostrom: 'bostrom',

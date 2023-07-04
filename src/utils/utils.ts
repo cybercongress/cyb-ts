@@ -343,7 +343,10 @@ function convertAmountReverce(rawAmount, precision) {
     .toNumber();
 }
 
-function getDisplayAmount(rawAmount: number, precision: number): number {
+function getDisplayAmount(
+  rawAmount: number | string,
+  precision: number
+): number {
   return parseFloat(
     new BigNumber(rawAmount)
       .shiftedBy(-precision)

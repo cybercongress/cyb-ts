@@ -23,6 +23,8 @@ import ActionBar from './actionBar.bridge';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
+import HistoryContextProvider from './ibc-history/historyContext';
+import DataIbcHistory from './comp/dataIbcHistory/DataIbcHistory';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -83,8 +85,8 @@ function Bridge() {
       networkB === CYBER.CHAIN_ID
     ) {
       setTypeTxs('deposit');
-      const { source_channel_id: sourceChannelId } = channels[networkA];
-      setSourceChannel(sourceChannelId);
+      const { destination_channel_id: destChannelId } = channels[networkA];
+      setSourceChannel(destChannelId);
     }
 
     if (
@@ -95,8 +97,9 @@ function Bridge() {
       networkB !== CYBER.CHAIN_ID
     ) {
       setTypeTxs('withdraw');
-      const { destination_channel_id: destChannelId } = channels[networkB];
-      setSourceChannel(destChannelId);
+
+      const { source_channel_id: sourceChannelId } = channels[networkB];
+      setSourceChannel(sourceChannelId);
     }
   }, [networkB, networkA, channels]);
 
@@ -144,9 +147,7 @@ function Bridge() {
       Object.keys(totalSupply).forEach((key) => {
         tempList.push({
           value: key,
-          text: (
-            <DenomArr denomValue={key} onlyText  />
-          ),
+          text: <DenomArr denomValue={key} onlyText />,
           img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
         });
       });
@@ -264,6 +265,14 @@ function Bridge() {
     setUpdate((item) => item + 1);
   };
 
+  function tokenChange() {
+    const A = networkB;
+    const B = networkA;
+
+    setNetworkA(A);
+    setNetworkB(B);
+  }
+
   const stateActionBar = {
     tokenAmount,
     tokenSelect,
@@ -277,7 +286,7 @@ function Bridge() {
   };
 
   return (
-    <>
+    <HistoryContextProvider>
       <MainContainer width="62%">
         <TeleportContainer>
           <GridContainer>
@@ -331,7 +340,7 @@ function Bridge() {
             tokenA={getDenomToken(networkA)}
             tokenAAmount={tokenAmount}
             setPercentageBalanceHook={setPercentageBalanceHook}
-            // coinReverseAction={() => tokenChange()}
+            coinReverseAction={() => tokenChange()}
             accountBalances={getAccountBalancesToken(networkA)}
           />
 
@@ -350,9 +359,12 @@ function Bridge() {
             />
           </GridContainer>
         </TeleportContainer>
+        <TeleportContainer>
+          <DataIbcHistory />
+        </TeleportContainer>
       </MainContainer>
       <ActionBar stateActionBar={stateActionBar} />
-    </>
+    </HistoryContextProvider>
   );
 }
 

@@ -1,0 +1,36 @@
+.containerRouteAddress {
+  display: flex;
+  align-items: center;
+
+  .fromToIbcImg {
+    width: 40px;
+    height: 30px;
+    margin-left: -10px;
+    z-index: -1;
+  }
+
+  .containerAddressChainId {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+}
+
+.containerDataIbc {
+  display: grid;
+  gap: 20px;
+  color: #777777;
+
+  &FlexBetween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &TimeStatus {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}

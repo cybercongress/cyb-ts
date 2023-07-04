@@ -1,7 +1,20 @@
+import { ObjectKey } from 'src/types/data';
 import { CYBER } from './config';
 
-const networkList = {
-  bostrom: { chainId: 'bostrom', rpc: CYBER.CYBER_NODE_URL_API },
+type NetworkCons = {
+  chainId: string;
+  sourceChannelId: string;
+  destChannelId: string;
+  coinMinimalDenom: string;
+  coinDecimals: number;
+  denom: string;
+  rpc: string;
+  prefix: string;
+  explorerUrlToTx: string;
+};
+
+const networkList: ObjectKey<NetworkCons> = {
+  bostrom: { chainId: 'bostrom', rpc: CYBER.CYBER_NODE_URL_API  },
   'osmosis-1': {
     chainId: 'osmosis-1',
     sourceChannelId: 'channel-95',
