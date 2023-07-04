@@ -39,7 +39,8 @@ $actionBarSpace: 130px;
     display: flex;
     justify-content: flex-end;
 
-    a {
+    a,
+    button {
       padding-right: 25px;
       gap: 0 10px;
       min-height: 60px;
@@ -155,10 +156,16 @@ $actionBarSpace: 130px;
       }
     }
 
+    button {
+      cursor: not-allowed;
+      opacity: 0.38;
+    }
+
     &.mirror {
       justify-content: flex-start;
 
-      a {
+      a,
+      button {
         padding-left: 25px;
         padding-right: unset;
 
@@ -186,4 +193,12 @@ $actionBarSpace: 130px;
       }
     }
   }
+}
+
+.container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }

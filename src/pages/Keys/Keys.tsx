@@ -28,6 +28,7 @@ function Keys() {
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
+          paddingBottom: 130,
           gap: 20,
         }}
       >

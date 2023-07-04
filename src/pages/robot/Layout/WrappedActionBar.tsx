@@ -23,6 +23,9 @@ function WrappedActionBar() {
   const [activeAddress, setActiveAddress] = useState(null);
 
   const chekFollowAddress = async () => {
+    if (!address) {
+      return;
+    }
     const addressFromIpfs = await getIpfsHash(address);
     if (defaultAccount.account !== null && defaultAccount.account.cyber) {
       const response = await chekFollow(

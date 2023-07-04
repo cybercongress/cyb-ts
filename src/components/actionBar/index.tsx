@@ -42,19 +42,24 @@ type Props = {
 };
 
 function ActionBar({ children, text, onClickBack, button }: Props) {
-  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
-  const { passport } = useGetPassportByAddress(defaultAccount);
   const location = useLocation();
+
+  const { passport, defaultAccount } = useSelector((store: RootState) => {
+    return {
+      passport: store.passport,
+      defaultAccount: store.pocket.defaultAccount,
+    };
+  });
 
   const noAccount = !defaultAccount.account;
   const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
 
   // TODO: not show while loading passport
 
-  if ((noAccount || noPassport) && location.pathname !== '/keys') {
+  if ((noAccount || noPassport) && location.pathname !== routes.keys.path) {
     return (
       <ActionBarContainer>
-        {noAccount && <Button link={'/passport'}>Connect</Button>}
+        {noAccount && <Button link={routes.keys.path}>Connect</Button>}
 
         {noPassport && location.pathname !== routes.citizenship.path && (
           <Button link={routes.portal.path}>Get citizenship</Button>

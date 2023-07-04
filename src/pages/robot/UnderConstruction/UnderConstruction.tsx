@@ -1,9 +1,10 @@
 import { ContainerGradientText, ActionBar } from 'src/components';
 import styles from './UnderConstruction.module.scss';
+import layoutStyles from '../Layout/Layout.module.scss';
 
 function UnderConstruction() {
   return (
-    <ContainerGradientText>
+    <ContainerGradientText className={layoutStyles.container}>
       <div className={styles.wrapper}>
         <img src={require('./image.png')} alt="" />
 

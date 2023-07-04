@@ -7,14 +7,15 @@ import { CYBER } from '../../utils/config';
 import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import { routes } from 'src/routes';
+import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 
-function useGetValidatorInfo(address) {
+function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
 
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      const response = await queryClient.validator(address);
+      const response = await queryClient!.validator(address);
       if (response !== null) {
         return response;
       }
@@ -29,30 +30,6 @@ function useGetValidatorInfo(address) {
   );
 
   return { data };
-}
-
-function useGetPassportByAddress(address) {
-  const queryClient = useQueryClient();
-  const { data } = useQuery(
-    ['activePassport', address],
-    async () => {
-      const response = await activePassport(queryClient, address);
-      if (response !== null) {
-        return response;
-      }
-      return null;
-    },
-    {
-      enabled: Boolean(
-        queryClient &&
-          !address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
-      ),
-    }
-  );
-
-  return {
-    data,
-  };
 }
 
 type Props = {
@@ -78,9 +55,9 @@ function Account({
   styleUser,
   trimAddressParam = [9, 3],
 }: Props) {
-  const [moniker, setMoniker] = useState(null);
+  const [moniker, setMoniker] = useState<string | null>(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
-  const { data: dataPassport } = useGetPassportByAddress(address);
+  const { passport: dataPassport } = useGetPassportByAddress(address);
 
   useEffect(() => {
     if (dataValidInfo !== undefined) {

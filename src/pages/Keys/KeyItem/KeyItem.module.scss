@@ -25,3 +25,16 @@
     }
   }
 }
+
+.passports {
+  display: flex;
+  gap: 0 15px;
+
+  .passportName {
+    color: var(--primary-color);
+  }
+
+  .passportMain {
+    color: var(--green-light);
+  }
+}

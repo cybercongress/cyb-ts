@@ -82,7 +82,6 @@ const links = [
     name: 'drive',
     description: '',
     link: './drive',
-    // onlyOwner: true,
     icon: '🟥',
   },
   {
@@ -130,7 +129,7 @@ const links = [
 ];
 
 function Layout() {
-  const { address, isOwner } = useRobotContext();
+  const { address, isOwner, isLoading } = useRobotContext();
 
   const counts = useGetMenuCounts(address);
 
@@ -142,10 +141,6 @@ function Layout() {
     return (
       <ul className={styles.links}>
         {links.map((link, index) => {
-          if (link.onlyOwner && !isOwner) {
-            return null;
-          }
-
           let description = link.description;
           let count = counts[link.name] || 0;
 
@@ -155,20 +150,36 @@ function Layout() {
             count = value;
           }
 
+          function selectTag(content: React.ReactNode) {
+            const newUser = !isLoading && !address;
+            if (newUser && !['sigma', 'drive'].includes(link.name)) {
+              return <button className={styles.disabled}>{content}</button>;
+            }
+
+            return (
+              <NavLink
+                className={({ isActive }) => {
+                  return cx({
+                    [styles.active]: isActive,
+                  });
+                }}
+                to={link.link}
+                end
+              >
+                {content}
+              </NavLink>
+            );
+          }
+
           return (
-            <li key={index} className={cx({ [styles.mirror]: isMirror })}>
-              {link.isDisabled ? (
-                <span className={styles.noLink}>{link.text}</span>
-              ) : (
-                <NavLink
-                  end
-                  className={({ isActive }) => {
-                    return cx({
-                      [styles.active]: isActive,
-                    });
-                  }}
-                  to={link.link}
-                >
+            <li
+              key={index}
+              className={cx({
+                [styles.mirror]: isMirror,
+              })}
+            >
+              {selectTag(
+                <>
                   <span className={styles.text}>{link.text}</span>
                   <span className={styles.count}>
                     {['karma', 'sigma', 'energy', 'rewards'].includes(
@@ -198,7 +209,7 @@ function Layout() {
 
                   <span className={styles.icon}>{link.icon}</span>
                   <span className={styles.description}>{description}</span>
-                </NavLink>
+                </>
               )}
             </li>
           );
@@ -218,7 +229,9 @@ function Layout() {
       {renderLinks(links.slice(0, splitIndex))}
 
       <div>
-        {address ? (
+        {isLoading ? (
+          <Loader2 />
+        ) : (
           <>
             {!isOwner && <RobotHeader />}
 
@@ -226,8 +239,6 @@ function Layout() {
 
             <WrappedActionBar />
           </>
-        ) : (
-          <Loader2 />
         )}
       </div>
 

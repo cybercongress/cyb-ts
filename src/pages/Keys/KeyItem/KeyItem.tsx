@@ -61,12 +61,23 @@ function KeyItem({ account }: Props) {
   const isReadOnly = keys === 'read-only';
   const isHardware = keys === 'ledger';
 
-  function renderPassportPill({
-    extension: { nickname, avatar },
-  }: Citizenship) {
+  function renderPassportPill(
+    { extension: { nickname, avatar } }: Citizenship,
+    isMainPassport?: boolean
+  ) {
     return (
       <Link to={routes.robotPassport.getLink(nickname)}>
-        <Pill image={<AvataImgIpfs cidAvatar={avatar} />} text={nickname} />
+        <Pill
+          image={<AvataImgIpfs cidAvatar={avatar} />}
+          text={
+            <>
+              <span className={styles.passportName}>{nickname}</span>
+              {isMainPassport && (
+                <span className={styles.passportMain}>main</span>
+              )}
+            </>
+          }
+        />
       </Link>
     );
   }
@@ -110,24 +121,32 @@ function KeyItem({ account }: Props) {
             </>
           )}
           {passportsLoading && <Loader2 />}
-          {activePassport.data && renderPassportPill(activePassport.data)}
-          {passportIds.data?.tokens?.map((tokenId) => {
-            return (
-              <PassportLoader
-                key={tokenId}
-                tokenId={tokenId}
-                render={(passport) => {
-                  if (
-                    activePassport.data &&
-                    equals(activePassport.data.extension, passport.extension)
-                  ) {
-                    return null;
-                  }
-                  return renderPassportPill(passport);
-                }}
-              />
-            );
-          })}
+          {(activePassport.data || !!passportIds.data?.tokens?.length) && (
+            <div className={styles.passports}>
+              {activePassport.data &&
+                renderPassportPill(activePassport.data, true)}
+              {passportIds.data?.tokens?.map((tokenId) => {
+                return (
+                  <PassportLoader
+                    key={tokenId}
+                    tokenId={tokenId}
+                    render={(passport) => {
+                      if (
+                        activePassport.data &&
+                        equals(
+                          activePassport.data.extension,
+                          passport.extension
+                        )
+                      ) {
+                        return null;
+                      }
+                      return renderPassportPill(passport);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </ContainerGradientText>

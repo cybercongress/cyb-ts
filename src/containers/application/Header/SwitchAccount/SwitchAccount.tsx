@@ -24,70 +24,45 @@ import {
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
 
-function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
+function AccountItem({
+  data,
+  onClickSetActive,
+  setControlledVisible,
+  name: accountName,
+}) {
   const { passport } = useGetPassportByAddress(data);
 
-  const useGetName = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.nickname;
-    }
+  const name =
+    passport?.extension?.nickname || data?.cyber?.name || accountName;
 
-    if (data?.cyber?.name) {
-      return data.cyber.name;
-    }
+  const address = data?.cyber?.bech32;
 
-    if (name) {
-      return name;
-    }
-
-    return null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [passport]);
-
-  const useGetCidAvatar = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.avatar;
-    }
-    return '';
-  }, [passport]);
-
-  const useGetAddress = useMemo(() => {
-    if (data !== null && Object.prototype.hasOwnProperty.call(data, 'cyber')) {
-      const { bech32 } = data.cyber;
-      return bech32;
-    }
-    return null;
-  }, [data]);
-
-  const hadleOnClick = () => {
+  function handleClick() {
     onClickSetActive();
     setControlledVisible(false);
-  };
+  }
 
   return (
     <Link
       to={routes.robot.path}
-      type="button"
-      onClick={() => hadleOnClick()}
+      onClick={handleClick}
       className={cx(
         styles.containerSwichAccount,
         networkStyles.btnContainerText
       )}
     >
       <div className={networkStyles.containerKrmaName}>
-        {useGetName && (
-          <span className={cx(networkStyles.btnContainerText)}>
-            {useGetName}
-          </span>
+        {name && (
+          <span className={cx(networkStyles.btnContainerText)}>{name}</span>
         )}
-        {useGetAddress && <Karma address={useGetAddress} />}
+        {address && <Karma address={address} />}
       </div>
       <div className={cx(styles.containerAvatarConnect)}>
         <div className={styles.containerAvatarConnectTrue}>
           <AvataImgIpfs
             style={{ position: 'relative' }}
-            cidAvatar={useGetCidAvatar}
-            addressCyber={useGetAddress}
+            cidAvatar={passport?.extension?.avatar}
+            addressCyber={address}
           />
         </div>
       </div>
@@ -112,7 +87,9 @@ function SwitchAccount() {
     placement: 'bottom',
   });
 
-  const { passport } = useGetPassportByAddress(defaultAccount);
+  const { passport } = useGetPassportByAddress(
+    defaultAccount?.account?.cyber?.bech32
+  );
 
   const dispatch = useDispatch();
 
@@ -277,11 +254,11 @@ function SwitchAccount() {
                 >
                   {renderItem}
 
-                  <Link style={{ color: 'red' }} to={'/sigma'}>
+                  <Link style={{ color: 'red' }} to={routes.sigma.path}>
                     Sigma
                   </Link>
 
-                  <Link style={{ color: 'red' }} to={'/keys'}>
+                  <Link style={{ color: 'red' }} to={routes.keys.path}>
                     Keys
                   </Link>
                 </div>

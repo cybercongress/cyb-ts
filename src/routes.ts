@@ -32,6 +32,10 @@ export const routes = {
         // TODO: reuse parent
         path: '/robot/karma',
       },
+      drive: {
+        // TODO: reuse parent
+        path: '/robot/drive',
+      },
     },
   },
   robotPassport: {
@@ -47,5 +51,11 @@ export const routes = {
   },
   teleport: {
     path: '/teleport',
+  },
+  keys: {
+    path: '/keys',
+  },
+  sigma: {
+    path: '/sigma',
   },
 };

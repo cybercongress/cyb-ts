@@ -6,7 +6,15 @@ import { equals } from 'ramda';
 // TODO: add type
 // https://github.com/cybercongress/cw-cybergift/tree/main/contracts/cw-cyber-passport/schema
 type Query = {
-  [key: string]: any;
+  active_passport:
+    | {
+        address: string;
+      }
+    | {
+        passport_by_nickname: {
+          nickname: string;
+        };
+      };
 };
 
 type Props = {

@@ -134,7 +134,7 @@ function useGetMenuCounts(address: string) {
     passport: accounts ? Object.keys(accounts).length : 0,
     drive: (isOwner && repoSizeValue) || '-',
     sense: news.count,
-    karma,
+    karma: karma || 0,
     txs: sequence,
     rewards: balance.rewards,
   };

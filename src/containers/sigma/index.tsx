@@ -11,7 +11,7 @@ import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 import { ActionBar, ContainerGradientText } from '../../components';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useGetPassportByAddress } from './hooks';
 import { useRobotContext } from 'src/pages/robot/Robot';
 import { RootState } from 'src/redux/store';
@@ -19,6 +19,7 @@ import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import { routes } from 'src/routes';
 
 const valueContext = {
   totalCap: 0,
@@ -26,12 +27,13 @@ const valueContext = {
   dataCap: {},
 };
 
-function Sigma({ address: preAddr }) {
+function Sigma() {
   // const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
+  const location = useLocation();
 
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
-  const { address, isOwner } = useRobotContext();
+  const { address, isOwner, passport } = useRobotContext();
   const [step, setStep] = useState(STEP_INFO.STATE_PROVE);
   const [selectedAddress, setSelectedAddress] = useState<string | null>();
 
@@ -45,17 +47,13 @@ function Sigma({ address: preAddr }) {
     };
   });
 
-  const superSigma = !address;
-
-  const currentAddress = address || preAddr;
-
-  const { passport } = useGetPassportByAddress(currentAddress);
+  const superSigma = location.pathname === routes.sigma.path;
 
   const accountsData = useMemo(() => {
     if (!superSigma) {
       return [
         {
-          bech32: currentAddress,
+          bech32: address,
         },
       ];
     }
@@ -68,13 +66,9 @@ function Sigma({ address: preAddr }) {
         };
       })
     );
-  }, [currentAddress, accounts, superSigma]);
+  }, [address, accounts, superSigma]);
 
-  const currentOwner =
-    isOwner ||
-    (defaultPassport.data && defaultPassport.data.owner === currentAddress) ||
-    superSigma ||
-    false;
+  const currentOwner = isOwner || superSigma;
   const currentPassport = currentOwner ? defaultPassport.data : passport;
 
   useEffect(() => {

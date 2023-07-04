@@ -1,45 +1,34 @@
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { activePassport } from '../../portal/utils';
 import { Citizenship } from 'src/types/citizenship';
+import usePassportContract from 'src/features/passport/usePassportContract';
+import { PATTERN_CYBER } from 'src/utils/config';
 
 function useGetPassportByAddress(accounts: any) {
-  const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const addressBech32 =
+  let address =
     accounts?.account?.cyber?.bech32 ||
     accounts?.cyber?.bech32 ||
     accounts?.bech32 ||
     accounts;
 
-  const { data } = useQuery(
-    ['activePassport', addressBech32],
-    async () => {
-      try {
-        setIsLoading(true);
-        const response = await activePassport(queryClient, addressBech32);
+  // temp for debug
+  if (typeof address === 'object') {
+    address = '';
+    debugger;
+  }
 
-        return response;
-      } catch (error) {
-        setError(error.message);
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
+  const { data, loading, error } = usePassportContract<Citizenship>({
+    query: {
+      active_passport: {
+        address,
+      },
     },
-    {
-      enabled: Boolean(queryClient && addressBech32),
-    }
-  );
+    skip: !address || !address.match(PATTERN_CYBER),
+  });
 
   return {
     passport: data,
-    loading: isLoading,
+    loading,
     error,
-  } as { passport: Citizenship | null };
+  };
 }
 
 export default useGetPassportByAddress;

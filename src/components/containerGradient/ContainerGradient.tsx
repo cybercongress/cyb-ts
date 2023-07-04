@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
+import cx from 'classnames';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
@@ -107,11 +108,13 @@ type ContainerGradientText = {
   children: React.ReactNode;
   userStyleContent?: object;
   status?: ColorLamp;
+  className?: string;
 };
 
 export function ContainerGradientText({
   children,
   userStyleContent = {},
+  className,
   status = 'blue',
 }: ContainerGradientText) {
   return (
@@ -127,7 +130,7 @@ export function ContainerGradientText({
       >
         <div
           style={userStyleContent}
-          className={styles.containerGradientTextContent}
+          className={cx(styles.containerGradientTextContent, className)}
         >
           {children}
         </div>
