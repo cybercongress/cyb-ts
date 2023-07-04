@@ -1,15 +1,10 @@
-import React, { useCallback, useState, useMemo } from 'react';
-
-import CodeMirror from '@uiw/react-codemirror';
-import { githubDark } from '@uiw/codemirror-theme-github';
+import React, { useCallback, useState, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { Pane } from '@cybercongress/gravity';
-// import { ContainerGradientText } from 'src/components';
 import { Button, Input } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
-import { rust } from '@codemirror/lang-rust';
 import {
   scriptItemStorage,
   runScript,
@@ -17,18 +12,40 @@ import {
   ScriptParticleParams,
 } from 'src/services/scripting/engine';
 import { useSigningClient } from 'src/contexts/signerClient';
-import {
-  getIpfsTextContent,
-  getTextFromIpfsContent,
-} from 'src/services/scripting/helpers';
+import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
-import styles from './ScriptEditor.module.scss';
+import { isCID } from 'src/utils/ipfs/helpers';
 
-import { MainContainer } from '..';
+import { Controlled as CodeMirror } from 'react-codemirror2';
+import styles from './ScriptEditor.module.scss';
+import 'codemirror/lib/codemirror.css';
+// import 'codemirror/theme/tomorrow-night-bright.css';
+import 'codemirror/theme/tomorrow-night-eighties.css';
+// import 'codemirror/theme/the-matrix.css';
+import 'codemirror/mode/rust/rust';
+
 import { updatePassportData } from '../../utils';
 
+const highlightErrors = (codeMirrorRef, diagnostics) => {
+  const cm = codeMirrorRef.editor;
+
+  cm.getAllMarks().forEach((mark) => mark.clear());
+
+  diagnostics.forEach((error) => {
+    const { start, end } = error;
+    cm.scrollIntoView({ line: start.line, ch: start.character });
+    cm.markText(
+      { line: start.line, ch: start.character },
+      { line: end.line, ch: end.character },
+      {
+        className: styles.errorHighlight,
+        clearOnEnter: true,
+      }
+    );
+  });
+};
 const compileScript = (
   code: string,
   executeAfterCompile: boolean,
@@ -45,6 +62,8 @@ const compileScript = (
   );
 
 function ScriptEditor() {
+  const codeMirrorRef = useRef();
+
   const { signer, signingClient } = useSigningClient();
   const { node } = useIpfs();
 
@@ -67,15 +86,13 @@ function ScriptEditor() {
   //   setCode(passport?.extension.data || scriptItemStorage.particle.user);
   // }, [passport]);
 
-  const onChange = useCallback((value, viewUpdate) => {
-    setCode(value);
-    setIsChanged(true);
-  }, []);
-
   const onTestClick = async () => {
     setLog([]);
-
-    addToLog(['Prepare data....', '', `Fetching particle '${testCid}'`]);
+    if (!isCID(testCid)) {
+      addToLog([`'${testCid}' - is not correct CID.`]);
+      return;
+    }
+    addToLog(['Prepare data....', '', `Fetching particle '${testCid}'...`]);
     const response = await getIPFSContent(node, testCid);
     const contentType = detectContentType(response?.meta.mime);
 
@@ -88,10 +105,8 @@ function ScriptEditor() {
       content.length > 144 ? `${content.slice(1, 144)}....` : content;
 
     addToLog([
-      '',
-      'Done:',
-      `   Content-type: ${contentType}`,
-      `    Preview: ${preview}`,
+      `   - Content-type: ${contentType}`,
+      `   - Preview: ${preview}`,
       '',
       'Execute script....',
     ]);
@@ -103,7 +118,8 @@ function ScriptEditor() {
 
     compileScript(code, true, particleParams).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
-      console.log('-----res', result);
+      highlightErrors(codeMirrorRef.current, result.diagnostics);
+
       if (!isOk) {
         addToLog(['Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
@@ -124,6 +140,8 @@ function ScriptEditor() {
 
     compileScript(code, false).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
+      highlightErrors(codeMirrorRef.current, result.diagnostics);
+
       if (!isOk) {
         addToLog(['Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
@@ -147,16 +165,23 @@ function ScriptEditor() {
   return (
     <div>
       <main className="block-body">
-        <Pane marginBottom="10px" fontSize="20px">
+        <Pane marginBottom="25px" fontSize="20px">
           Particle post-processor script
         </Pane>
         <CodeMirror
+          ref={codeMirrorRef}
           value={code}
-          height="500px"
-          extensions={[rust()]}
-          theme={githubDark}
-          onChange={onChange}
+          options={{
+            mode: 'rust',
+            theme: 'tomorrow-night-eighties',
+            lineNumbers: true,
+          }}
+          onBeforeChange={(editor, data, value) => {
+            setCode(value);
+            setIsChanged(true);
+          }}
         />
+
         <Pane
           marginBottom="10px"
           marginTop="25px"
@@ -174,7 +199,7 @@ function ScriptEditor() {
           </div>
           {isChanged && <Button onClick={onSaveClick}>Save</Button>}
         </Pane>
-        <textarea value={logText} className="resize-none" rows={18} />
+        <textarea value={logText} className={styles.logArea} rows={18} />
       </main>
     </div>
   );
