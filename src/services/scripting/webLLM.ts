@@ -1,10 +1,13 @@
+/* eslint-disable no-underscore-dangle */
 // import {
 //   LLMEngine,
 //   ResFromWorkerMessageEventData,
 //   SendToWorkerMessageEventData,
 // } from '@/types/web-llm';
 import * as webllm from '@mlc-ai/web-llm';
+import type { GenerateProgressCallback } from '@mlc-ai/web-llm/types';
 import Worker from 'worker-loader!src/services/scripting/worker.ts';
+import { from } from 'apollo-link';
 
 // const prebuiltAppConfig = {
 //   model_list: [
@@ -56,16 +59,18 @@ class WebLLM {
 
   public async chat(
     prompt: string,
-    progressCallback?: Function
+    progressCallback?: GenerateProgressCallback
   ): Promise<string> {
     if (!this.isInitialized || !this._chat) {
       throw new Error('WebLLM not initialized');
     }
 
-    const generateProgressCallback = (_step: number, message: string) => {
-      console.log('generate-label', message);
+    const generateProgressCallback = (step: number, message: string) => {
+      console.log('generate', step, message);
+      progressCallback?.(step, message);
     };
 
+    console.log('------chat', this._chat, prompt);
     // const prompt0 = 'What is the capital of Canada?';
     const reply = await this._chat.generate(prompt, generateProgressCallback);
     return reply;
@@ -80,9 +85,10 @@ class WebLLM {
   }
 
   public async runtimeStatsText(): Promise<string | undefined> {
-    return await this._chat?.runtimeStatsText();
+    return this._chat?.runtimeStatsText();
   }
 }
 
 const WebLLMInstance = new WebLLM();
+window.webLLM = WebLLMInstance;
 export { WebLLMInstance };

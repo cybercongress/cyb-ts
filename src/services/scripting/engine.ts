@@ -22,12 +22,14 @@ export type ScriptCallback = (
   result: any
 ) => void;
 
+export type ScriptParticleParams = {
+  cid?: string;
+  contentType?: string;
+  content?: string;
+};
+
 type ScriptScopeParams = {
-  particle: {
-    cid?: string;
-    contentType?: string;
-    content?: string;
-  };
+  particle?: ScriptParticleParams;
   refId?: string;
 };
 
