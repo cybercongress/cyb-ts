@@ -1,20 +1,24 @@
-import { NavLink, Outlet, useParams } from 'react-router-dom';
-import styles from './Layout.module.scss';
+import { NavLink, Outlet } from 'react-router-dom';
 import cx from 'classnames';
-import { useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
 import { Helmet } from 'react-helmet';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import Loader2 from 'src/components/ui/Loader2';
 import useGetMenuCounts from './useGetMenuCounts';
 
-import icon from './icon.svg';
-import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import RobotHeader from '../RobotHeader/RobotHeader';
 import { useRobotContext } from '../Robot';
-import ActionBar from 'src/containers/account/actionBar';
 import WrappedActionBar from './WrappedActionBar';
-import Loader2 from 'src/components/ui/Loader2';
+import styles from './Layout.module.scss';
 
-const links = [
+type MenuItem = {
+  text: string;
+  link: string;
+  description?: string;
+  name?: string;
+  icon: string;
+};
+
+const links: MenuItem[] = [
   {
     text: 'Sigma',
     link: '.',
@@ -129,11 +133,11 @@ const links = [
 ];
 
 function Layout() {
-  const { address, isOwner, isLoading } = useRobotContext();
+  const { address, isOwner, isLoading, nickname } = useRobotContext();
 
   const counts = useGetMenuCounts(address);
 
-  function renderLinks(links, isMirror?: boolean) {
+  function renderLinks(links: MenuItem[], isMirror?: boolean) {
     // if (!params.address && !address) {
     //   return <>&nbsp;</>; // temp
     // }
@@ -141,7 +145,7 @@ function Layout() {
     return (
       <ul className={styles.links}>
         {links.map((link, index) => {
-          let description = link.description;
+          let { description, text, icon } = link;
           let count = counts[link.name] || 0;
 
           if (link.name === 'drive' && counts.drive) {
@@ -149,11 +153,22 @@ function Layout() {
             description = measurement;
             count = value;
           }
+          const newUser = !isLoading && !address;
+
+          if (newUser && link.name === 'sigma') {
+            description = '';
+            count = '-';
+            icon = '🤖';
+            text = 'Robot';
+          }
 
           function selectTag(content: React.ReactNode) {
-            const newUser = !isLoading && !address;
             if (newUser && !['sigma', 'drive'].includes(link.name)) {
-              return <button className={styles.disabled}>{content}</button>;
+              return (
+                <button type="button" className={styles.disabled}>
+                  {content}
+                </button>
+              );
             }
 
             return (
@@ -180,7 +195,7 @@ function Layout() {
             >
               {selectTag(
                 <>
-                  <span className={styles.text}>{link.text}</span>
+                  <span className={styles.text}>{text}</span>
                   <span className={styles.count}>
                     {['karma', 'sigma', 'energy', 'rewards'].includes(
                       link.name
@@ -207,7 +222,7 @@ function Layout() {
 
                   {/* <span className={styles.new}>+123</span> */}
 
-                  <span className={styles.icon}>{link.icon}</span>
+                  <span className={styles.icon}>{icon}</span>
                   <span className={styles.description}>{description}</span>
                 </>
               )}
@@ -223,7 +238,7 @@ function Layout() {
   return (
     <div className={styles.wrapper}>
       <Helmet>
-        <title>Robot: {address || ''}</title>
+        <title>Robot {nickname || address || ''}</title>
       </Helmet>
 
       {renderLinks(links.slice(0, splitIndex))}

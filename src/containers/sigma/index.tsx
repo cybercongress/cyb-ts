@@ -1,25 +1,19 @@
 import { useEffect, useState, useMemo } from 'react';
-import { connect, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
+import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
-import { MainContainer } from '../portal/components';
+import { useLocation } from 'react-router-dom';
+import { useRobotContext } from 'src/pages/robot/Robot';
+import { RootState } from 'src/redux/store';
+import TokenChange from 'src/components/TokenChange/TokenChange';
+import { routes } from 'src/routes';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
-import { FormatNumberTokens } from '../nebula/components';
-import { CYBER } from '../../utils/config';
-import { formatNumber } from '../../utils/utils';
-import { ActionBar, ContainerGradientText } from '../../components';
-import { useLocation, useParams } from 'react-router-dom';
-import { useGetPassportByAddress } from './hooks';
-import { useRobotContext } from 'src/pages/robot/Robot';
-import { RootState } from 'src/redux/store';
+import { ContainerGradientText } from '../../components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
-import TokenChange from 'src/components/TokenChange/TokenChange';
-import { routes } from 'src/routes';
 
 const valueContext = {
   totalCap: 0,
@@ -60,16 +54,18 @@ function Sigma() {
 
     return (
       accounts &&
-      Object.keys(accounts).map((key) => {
-        return {
-          bech32: accounts[key]?.cyber.bech32,
-        };
-      })
+      Object.values(accounts)
+        .filter((account) => account?.cyber?.bech32)
+        .map((account) => {
+          return {
+            bech32: account?.cyber?.bech32,
+          };
+        })
     );
   }, [address, accounts, superSigma]);
 
-  const currentOwner = isOwner || superSigma;
-  const currentPassport = currentOwner ? defaultPassport.data : passport;
+  const isCurrentOwner = isOwner || superSigma;
+  const currentPassport = isCurrentOwner ? defaultPassport.data : passport;
 
   useEffect(() => {
     const { dataCap } = value;
@@ -122,7 +118,7 @@ function Sigma() {
         updateTotalCap,
         updateChangeCap,
         updateDataCap,
-        isOwner: currentOwner,
+        isOwner: isCurrentOwner,
       }}
     >
       <div
@@ -140,7 +136,7 @@ function Sigma() {
           <header className={styles.totalHeader}>
             <div className={styles.image}>
               <div className={styles.circle}>
-                <img src={require('./sigma.png')} />
+                <img src={require('../../image/sigma.png')} />
               </div>
               <h3>Sigma</h3>
             </div>
@@ -162,7 +158,7 @@ function Sigma() {
                 key={address}
                 address={address}
                 passport={currentPassport}
-                selectAddress={currentOwner ? selectAddress : undefined}
+                selectAddress={isCurrentOwner ? selectAddress : undefined}
                 selectedAddress={selectedAddress}
               />
             );
@@ -170,7 +166,7 @@ function Sigma() {
         </div>
       </div>
 
-      {currentOwner && currentPassport && (
+      {isCurrentOwner && currentPassport && (
         <ActionBarPortalGift
           setStepApp={(step) => {
             if (

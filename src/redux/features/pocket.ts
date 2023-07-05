@@ -37,11 +37,65 @@ const slice = createSlice({
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {
       state.actionBar.tweet = payload;
     },
+
+    // bullshit
+    deleteAddress: (state, { payload }: PayloadAction<string>) => {
+      if (state.accounts) {
+        Object.keys(state.accounts).forEach((accountKey) => {
+          Object.keys(state.accounts[accountKey]).forEach((networkKey) => {
+            if (state.accounts[accountKey][networkKey].bech32 === payload) {
+              delete state.accounts[accountKey][networkKey];
+
+              if (Object.keys(state.accounts[accountKey]).length === 0) {
+                delete state.accounts[accountKey];
+              }
+
+              if (state.defaultAccount?.account?.cyber?.bech32 === payload) {
+                if (Object.keys(state.accounts).length) {
+                  state.defaultAccount = {
+                    name: Object.keys(state.accounts)[0],
+                    account: state.accounts[Object.keys(state.accounts)[0]],
+                  };
+                } else {
+                  state.defaultAccount = {
+                    name: null,
+                    account: null,
+                  };
+                }
+              }
+
+              saveToLocalStorage(state);
+            }
+          });
+        });
+      }
+    },
   },
 });
 
-export const { setDefaultAccount, setAccounts, setStageTweetActionBar } =
-  slice.actions;
+function saveToLocalStorage(state) {
+  const { defaultAccount, accounts } = state;
+
+  defaultAccount &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET,
+      JSON.stringify({
+        [defaultAccount.name]: defaultAccount.account,
+      })
+    );
+  accounts &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET_ACCOUNT,
+      JSON.stringify(accounts)
+    );
+}
+
+export const {
+  setDefaultAccount,
+  setAccounts,
+  setStageTweetActionBar,
+  deleteAddress,
+} = slice.actions;
 
 export default slice.reducer;
 

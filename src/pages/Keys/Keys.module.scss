@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 62%;
+  margin: 0 auto;
+  padding-bottom: 130px;
+  gap: 20px;
+  min-height: 70vh;
+
+  > p {
+    margin-top: 50%;
+    text-align: center;
+    line-height: 26px;
+  }
+}

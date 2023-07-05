@@ -26,6 +26,7 @@ function PortalCitizenship() {
 
       try {
         if (!addressActive) {
+          setStagePortal(STAGE_INIT);
           return;
         }
 

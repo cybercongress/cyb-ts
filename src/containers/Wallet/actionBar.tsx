@@ -12,6 +12,9 @@ import imgLedger from '../../image/ledger.svg';
 import imgKeplr from '../../image/keplr-icon.svg';
 import imgRead from '../../image/duplicate-outline.svg';
 import Button from 'src/components/btnGrd';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
+import { deleteAddress } from 'src/redux/features/pocket';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -39,13 +42,15 @@ function ButtonImgText({ img, text = 'Send', ...props }) {
 
 type Props = {
   selectCard: string;
-  selectAccount: CyberAccount | null;
+  selectAccount: any;
 
   hoverCard?: string;
   accountsETH: any;
   refreshTweet?: any;
   updateTweetFunc?: any;
   updateAddress: () => void;
+
+  selectedAddress: string;
 
   defaultAccounts: {
     cyber: {
@@ -64,6 +69,7 @@ function ActionBar({
   // actionBar tweet
   refreshTweet,
   updateTweetFunc,
+  selectedAddress,
   // global props
   updateAddress,
   defaultAccounts,
@@ -75,6 +81,8 @@ function ActionBar({
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
   const [web3, setWeb3] = useState(null);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     //
@@ -183,7 +191,7 @@ function ActionBar({
       style={{ margin: '0 10px' }}
       onClick={() => setStage(STAGE_CONNECT)}
     >
-      Connect
+      add new key
     </Button>
   );
 
@@ -201,14 +209,23 @@ function ActionBar({
       <ActionBarGravity>
         <Pane display="flex">
           {buttonConnect}
-          {defaultAccounts !== null && defaultAccounts.cyber && (
+          {selectedAddress && (
+            <Button
+              onClick={() => {
+                dispatch(deleteAddress(selectedAddress));
+              }}
+            >
+              Delete
+            </Button>
+          )}
+          {/* {defaultAccounts !== null && defaultAccounts.cyber && (
             <Button
               style={{ margin: '0 10px' }}
               onClick={() => onClickDefaultAccountSend()}
             >
               Send
             </Button>
-          )}
+          )} */}
         </Pane>
       </ActionBarGravity>
     );

@@ -24,6 +24,10 @@
       }
     }
   }
+
+  &.selected {
+    background-color: var(--green-light);
+  }
 }
 
 .passports {

@@ -10,6 +10,7 @@ import usePassportContract from 'src/features/passport/usePassportContract';
 import { Citizenship } from 'src/types/citizenship';
 import { equals } from 'ramda';
 import Loader2 from 'src/components/ui/Loader2';
+import cx from 'classnames';
 
 type Props = {
   account: AccountValue;
@@ -37,7 +38,7 @@ function PassportLoader({
   return render(passport);
 }
 
-function KeyItem({ account }: Props) {
+function KeyItem({ account, selected, selectKey }: Props) {
   const { name, bech32, keys, path } = account;
 
   const activePassport = usePassportContract<Citizenship>({
@@ -84,7 +85,12 @@ function KeyItem({ account }: Props) {
 
   return (
     <ContainerGradientText status="green">
-      <div className={styles.wrapper}>
+      <div
+        className={cx(styles.wrapper, {
+          [styles.selected]: selected,
+        })}
+        onClick={() => selectKey(bech32)}
+      >
         <img src={require('./images/1.png')} alt="" />
 
         <div className={styles.content}>

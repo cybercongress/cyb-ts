@@ -14,6 +14,11 @@ type Query = {
         passport_by_nickname: {
           nickname: string;
         };
+      }
+    | {
+        nft_info: {
+          token_id: string;
+        };
       };
 };
 

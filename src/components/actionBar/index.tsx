@@ -1,16 +1,14 @@
-import Button from '../btnGrd';
-import styles from './styles.scss';
-
-import ButtonIcon from '../buttons/ButtonIcon';
 import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { routes } from 'src/routes';
 import { CYBER } from 'src/utils/config';
 import { useLocation } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
+import ButtonIcon from '../buttons/ButtonIcon';
+import styles from './styles.scss';
+import Button from '../btnGrd';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -52,7 +50,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   });
 
   const noAccount = !defaultAccount.account;
-  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
+  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport.data;
 
   // TODO: not show while loading passport
 

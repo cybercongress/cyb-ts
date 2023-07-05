@@ -35,6 +35,10 @@
   align-items: center;
   height: 105px;
 
+  .noAccount {
+    color: var(--primary-color);
+  }
+
   & + & {
     margin-top: -30px;
   }
@@ -55,6 +59,10 @@
       }
     }
   }
+}
+
+.content {
+  justify-content: center;
 }
 
 .containerSwichAccountList {
@@ -91,12 +99,20 @@
 .containerAvatarConnect {
   width: 100px;
   height: 100px;
-  padding: 5px;
+  // padding: 5px;
   transition: all 0.2s;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  .image {
+    object-fit: contain;
+    width: inherit;
+    height: inherit;
+    position: relative;
+    z-index: 1;
+  }
 
   &False {
     &::before {

@@ -19,17 +19,17 @@ import Taverna from 'src/containers/taverna';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Citizenship } from 'src/types/citizenship';
 import { routes } from 'src/routes';
+import usePassportContract from 'src/features/passport/usePassportContract';
 import Layout from './Layout/Layout';
 import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
-import Wallet from '../../containers/Wallet/Wallet';
 import ZeroUser from './ZeroUser/ZeroUser';
-import usePassportContract from 'src/features/passport/usePassportContract';
 
 const RobotContext = React.createContext<{
   address: string | null;
   passport: Citizenship | undefined;
   isOwner: boolean;
+  nickname: string | undefined;
   isLoading: boolean;
   addRefetch: (func: () => void) => void;
   refetchData: () => void;
@@ -38,6 +38,7 @@ const RobotContext = React.createContext<{
   passport: undefined,
   isOwner: false,
   isLoading: false,
+  nickname: undefined,
   addRefetch: () => {},
   refetchData: () => {},
 });
@@ -152,7 +153,8 @@ function Robot() {
     skip: isOwner,
   });
 
-  const currentRobotAddress = address || passportContract.data?.owner || null;
+  const currentPassport = isOwner ? currentUserPassport : passportContract;
+  const currentRobotAddress = address || currentPassport.data?.owner || null;
 
   // redirect from /robot to /@nickname
   // (passport && passport.extension.nickname === nickname) ||
@@ -166,6 +168,8 @@ function Robot() {
   useEffect(() => {
     if (
       newUser &&
+      location.pathname.includes(routes.robot.path) &&
+      // allowed routes
       ![routes.robot.path, routes.robot.routes.drive.path].includes(
         location.pathname
       )
@@ -187,11 +191,11 @@ function Robot() {
       );
     }
   }, [
+    location.pathname,
     robotUrl,
     currentUserPassport.data,
-    navigate,
-    location.pathname,
     newUser,
+    navigate,
   ]);
 
   const addRefetch = useCallback(
@@ -208,15 +212,18 @@ function Robot() {
   const contextValue = useMemo(
     () => ({
       address: currentRobotAddress,
-      passport: isOwner ? currentUserPassport.data : passportContract.data,
+      passport: currentPassport.data,
       isOwner,
       addRefetch,
+      nickname: nickname || currentPassport.data?.extension.nickname,
       refetchData,
       isLoading: isOwner
         ? currentUserPassport.loading
         : passportContract.loading,
     }),
     [
+      currentPassport.data,
+      nickname,
       currentUserPassport,
       addRefetch,
       refetchData,

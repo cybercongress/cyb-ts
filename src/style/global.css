@@ -208,6 +208,11 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  color: #00ffbf;
+  text-decoration: none;
+}
+
 .block-body {
   width: calc(100% - 1em);
   /* min-height: calc(100vh - 190px); */
