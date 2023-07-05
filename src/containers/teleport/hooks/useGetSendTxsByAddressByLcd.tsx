@@ -1,111 +1,157 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { getSendBySenderRecipient } from 'src/utils/search/utils';
 import { Nullable, Option } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { SearchTxsResponse, TxsResponse } from '@cosmjs/launchpad';
 import { PATTERN_CYBER } from '../../../utils/config';
 
 const limit = 5;
 
-//  два запроса  отправленные и полученные токкены
-
-// проверка посленей и первой транзы если последняя
-//      транза больше первый то не делать мерж и увеличевать счечтчик для бльшего
-
-// если последня транза меньше , то делать мерж
-
-// надо проверять границы первая и последня транза
-
-const diff = (key, ...arrays) =>
-  [].concat(
-    ...arrays.map((arr, i) => {
-      const others = arrays.slice(0);
-      others.splice(i, 1);
-      const unique = [...new Set([].concat(...others))];
-      return arr.filter(
-        (x) => !unique.some((y) => parseFloat(x[key]) === parseFloat(y[key]))
-      );
+const concatResponse = (arr: InfiniteData<{ data: any }>) => {
+  return [].concat(
+    ...arr.pages.map((item) => {
+      return item.data;
     })
   );
+};
+
+function useGetSendBySenderRecipient(
+  addressSender: Option<string>,
+  addressRecipient: Option<string>,
+  callBack?: React.Dispatch<React.SetStateAction<number>>
+) {
+  const data = useInfiniteQuery(
+    ['getSendBySenderRecipient', addressSender, addressRecipient],
+    async ({ pageParam = 0 }) => {
+      const address = {
+        sender: addressSender,
+        recipient: addressRecipient,
+      };
+
+      const offset = new BigNumber(limit).multipliedBy(pageParam).toNumber();
+
+      const response = await getSendBySenderRecipient(address, offset, limit);
+
+      if (callBack && offset === 0 && response) {
+        callBack(response.pagination.total);
+      }
+
+      return {
+        data: response ? response.tx_responses : [],
+        page: pageParam,
+      };
+    },
+    {
+      enabled:
+        Boolean(addressSender) &&
+        Boolean(addressSender?.match(PATTERN_CYBER)) &&
+        Boolean(addressRecipient) &&
+        Boolean(addressRecipient?.match(PATTERN_CYBER)),
+      getNextPageParam: (lastPage) => {
+        if (lastPage.data && lastPage.data.length === 0) {
+          return undefined;
+        }
+
+        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
+        return nextPage;
+      },
+    }
+  );
+
+  return { ...data };
+}
 
 function useGetSendTxsByAddressByLcd(
   sender: Nullable<AccountValue>,
   addressRecipient: string
 ) {
   const [addressSender, setAddressSender] = useState<Option<string>>();
+  const [data, setData] = useState<Option<TxsResponse[]>>(undefined);
+  const [totalSend, setTotalSend] = useState(0);
+  const [totalReceive, setTotalReceive] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
 
-  // const {
-  //   status,
-  //   data,
-  //   error,
-  //   isFetching,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   refetch,
-  // } = useInfiniteQuery(
-  //   ['getSendBySenderRecipient', addressSender, addressRecipient],
-  //   async ({ pageParam = 0 }) => {
-  //     const addressSend = {
-  //       recipient: addressRecipient,
-  //       sender: addressSender,
-  //     };
-  //     const addressRecive = {
-  //       recipient: addressSender,
-  //       sender: addressRecipient,
-  //     };
-  //     const offset = new BigNumber(limit).multipliedBy(pageParam).toNumber();
+  const dataSend = useGetSendBySenderRecipient(
+    addressSender,
+    addressRecipient,
+    setTotalSend
+  );
 
-  //     const resSend = await getSendBySenderRecipient(
-  //       addressSend,
-  //       offset,
-  //       limit
-  //     );
-  //     const resRecive = await getSendBySenderRecipient(
-  //       addressRecive,
-  //       offset,
-  //       limit
-  //     );
+  const dataReceive = useGetSendBySenderRecipient(
+    addressRecipient,
+    addressSender,
+    setTotalReceive
+  );
 
-  //     const lastSendItem =
-  //       resSend.tx_responses[resSend.tx_responses.length - 1];
-  //     const firstReciveItem = resRecive.tx_responses[0];
-  //     console.log('lastSend', lastSendItem);
-  //     console.log('firstRecive', firstReciveItem);
+  useEffect(() => {
+    setHasNextPage(true);
+    let firstSendItem = '0';
+    let lastSendItem = '0';
+    let dataSendArr: TxsResponse[] = [];
+    let dataReceiveArr: TxsResponse[] = [];
 
-  //     const diffArr = diff(
-  //       'height',
-  //       resSend.tx_responses,
-  //       resRecive.tx_responses
-  //     );
+    let dataTxs: TxsResponse[] = [];
 
-  //     console.log('resSend', resSend);
-  //     console.log('resRecive', resRecive);
-  //     console.log('diffArr', diffArr);
-  //     return { data: [], page: pageParam };
-  //   },
-  //   {
-  //     enabled:
-  //       Boolean(addressSender) &&
-  //       Boolean(addressSender?.match(PATTERN_CYBER)) &&
-  //       Boolean(addressRecipient) &&
-  //       Boolean(addressRecipient?.match(PATTERN_CYBER)),
-  //     getNextPageParam: (lastPage) => {
-  //       if (lastPage.data && lastPage.data.length === 0) {
-  //         return undefined;
-  //       }
+    if (dataSend.data && dataSend.data.pages.length) {
+      dataSendArr = concatResponse(dataSend.data);
+      lastSendItem = dataSendArr[dataSendArr.length - 1].height;
+      firstSendItem = dataSendArr[0].height;
+    }
 
-  //       const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-  //       return nextPage;
-  //     },
-  //   }
-  // );
+    if (dataReceive.data && dataReceive.data.pages.length) {
+      dataReceiveArr = concatResponse(dataReceive.data);
+      // firstReceiveItem = dataReceiveArr[0].height;
+    }
+
+    if (dataSendArr.length && dataReceiveArr.length) {
+      dataReceiveArr.forEach((item) => {
+        const height = parseFloat(item.height);
+        if (height > parseFloat(firstSendItem)) {
+          dataTxs.push(item);
+        }
+
+        if (height > parseFloat(lastSendItem)) {
+          dataTxs.push(item);
+        }
+
+        if (
+          height < parseFloat(lastSendItem) &&
+          totalSend === dataSendArr.length
+        ) {
+          dataTxs.push(item);
+        }
+      });
+      dataTxs = [...dataTxs, ...dataSendArr];
+      dataTxs = dataTxs.sort(
+        (itemA, itemB) => parseFloat(itemB.height) - parseFloat(itemA.height)
+      );
+    } else {
+      dataTxs = [...dataSendArr, ...dataReceiveArr];
+    }
+
+    setData(dataTxs);
+
+    const total = new BigNumber(totalReceive).plus(totalSend).toNumber();
+
+    if (total === dataTxs.length) {
+      setHasNextPage(false);
+    }
+  }, [dataSend.data, dataReceive.data, totalSend, totalReceive]);
 
   useEffect(() => {
     if (sender) {
       setAddressSender(sender.bech32);
     }
   }, [sender]);
+
+  const fetchNextPage = useCallback(() => {
+    dataSend.fetchNextPage();
+    dataReceive.fetchNextPage();
+  }, [dataSend, dataReceive]);
+
+  return { data, fetchNextPage, hasNextPage };
 }
 
 export default useGetSendTxsByAddressByLcd;

@@ -44,11 +44,11 @@ function Send() {
   const [update, setUpdate] = useState(0);
   const [recipient, setRecipient] = useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const dataSendTxs = useGetSendTxsByAddressByType(
-    addressActive,
-    'cosmos.bank.v1beta1.MsgSend'
-  );
-  // const dataSendTxs = useGetSendTxsByAddressByLcd(addressActive, recipient);
+  // const dataSendTxs = useGetSendTxsByAddressByType(
+  //   addressActive,
+  //   'cosmos.bank.v1beta1.MsgSend'
+  // );
+  const dataSendTxs = useGetSendTxsByAddressByLcd(addressActive, recipient);
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
@@ -174,8 +174,8 @@ function Send() {
 
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-    dataSendTxs.refetch();
-  }, [dataSendTxs]);
+    // dataSendTxs.refetch();
+  }, []);
 
   const stateActionBar = {
     tokenAmount,
