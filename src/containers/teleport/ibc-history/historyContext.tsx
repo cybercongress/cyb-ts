@@ -17,6 +17,7 @@ import { CYBER } from 'src/utils/config';
 import { TxsType } from '../type';
 import TracerTx from '../tx/TracerTx';
 import networkList from 'src/utils/networkListIbc';
+import PollingStatusSubscription from './polling-status-subscription';
 
 const findRpc = (chainId: string): Option<string> => {
   if (Object.prototype.hasOwnProperty.call(networkList, chainId)) {
@@ -77,12 +78,58 @@ type UncommitedTx = {
   amount: Coin;
 };
 
+const blockSubscriberMap: Map<string, PollingStatusSubscription> = new Map();
+
 function HistoryContextProvider({ children }: { children: React.ReactNode }) {
   const [ibcHistory, setIbcHistory] =
     useState<Option<HistoriesItem[]>>(undefined);
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const [update, setUpdate] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
+
+  function getBlockSubscriber(chainId: string): PollingStatusSubscription {
+    if (!blockSubscriberMap.has(chainId)) {
+      const chainInfo = findRpc(chainId);
+      if (chainInfo) {
+        blockSubscriberMap.set(
+          chainId,
+          new PollingStatusSubscription(chainInfo)
+        );
+      }
+    }
+
+    // eslint-disable-next-line
+    return blockSubscriberMap.get(chainId)!;
+  }
+
+  function traceTimeoutTimestamp(
+    statusSubscriber: PollingStatusSubscription,
+    timeoutTimestamp: string
+  ): {
+    unsubscriber: () => void;
+    promise: Promise<void>;
+  } {
+    let resolver: (value: PromiseLike<void> | void) => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+    const unsubscriber = statusSubscriber.subscribe((data) => {
+      const blockTime = data?.result?.sync_info?.latest_block_time;
+      if (
+        blockTime &&
+        new Date(blockTime).getTime() >
+          Math.floor(parseInt(timeoutTimestamp) / 1000000)
+      ) {
+        resolver();
+        return;
+      }
+    });
+
+    return {
+      unsubscriber,
+      promise,
+    };
+  }
 
   const traceHistoryStatus = async (item: HistoriesItem): Promise<StatusTx> => {
     if (
@@ -107,7 +154,33 @@ function HistoryContextProvider({ children }: { children: React.ReactNode }) {
       return StatusTx.REFUNDED;
     }
 
+    const blockSubscriber = getBlockSubscriber(item.destChainId);
+
+    let timeoutUnsubscriber: (() => void) | undefined;
+
     const promises: Promise<any>[] = [];
+
+    if (item.timeoutTimestamp && item.timeoutTimestamp !== '0') {
+      promises.push(
+        (async () => {
+          const { promise, unsubscriber } = traceTimeoutTimestamp(
+            blockSubscriber,
+            // eslint-disable-next-line
+            item.timeoutTimestamp!
+          );
+          timeoutUnsubscriber = unsubscriber;
+          await promise;
+
+          // Even though the block is reached to the timeout height,
+          // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+          // This it not the chain issue itself, jsut the issue from the frontend, it it impossible to ensure the network status entirely.
+          // To reduce this problem, just wait 10 second more even if the block is reached to the timeout height.
+          await new Promise((resolve) => {
+            setTimeout(resolve, 10000);
+          });
+        })()
+      );
+    }
 
     const destChainId = findRpc(item.destChainId);
 
@@ -124,15 +197,17 @@ function HistoryContextProvider({ children }: { children: React.ReactNode }) {
 
     const result = await Promise.race(promises);
 
+    if (timeoutUnsubscriber) {
+      timeoutUnsubscriber();
+    }
+
+     txTracer.close();
+
     if (result) {
       return StatusTx.COMPLETE;
     }
 
     return StatusTx.TIMEOUT;
-
-    // if (item.timeoutTimestamp && item.timeoutTimestamp !== '0') {
-
-    // }
   };
 
   const useGetHistoriesItems = useCallback(() => {
