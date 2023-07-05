@@ -89,10 +89,14 @@ function ScriptEditor() {
   const onTestClick = async () => {
     setLog([]);
     if (!isCID(testCid)) {
-      addToLog([`'${testCid}' - is not correct CID.`]);
+      addToLog([`🚫 '${testCid}' - is not correct CID.`]);
       return;
     }
-    addToLog(['Prepare data....', '', `Fetching particle '${testCid}'...`]);
+    addToLog([
+      '💡 Prepare data....',
+      '',
+      `🚧 Fetching particle '${testCid}'...`,
+    ]);
     const response = await getIPFSContent(node, testCid);
     const contentType = detectContentType(response?.meta.mime);
 
@@ -105,10 +109,10 @@ function ScriptEditor() {
       content.length > 144 ? `${content.slice(1, 144)}....` : content;
 
     addToLog([
-      `   - Content-type: ${contentType}`,
-      `   - Preview: ${preview}`,
+      `   ☑️ Content-type: ${contentType}`,
+      `   ☑️ Preview: ${preview}`,
       '',
-      'Execute script....',
+      '💭 Execute script....',
     ]);
     const particleParams = {
       cid: testCid,
@@ -121,16 +125,9 @@ function ScriptEditor() {
       highlightErrors(codeMirrorRef.current, result.diagnostics);
 
       if (!isOk) {
-        addToLog(['Errors:', `   ${result.diagnosticsOutput}`]);
+        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
-        addToLog([
-          '',
-          '----------------------------',
-          '',
-          'Result:',
-          '',
-          `   ${JSON.stringify(result.result)}`,
-        ]);
+        addToLog(['', '🏁 Result:', '', `   ${JSON.stringify(result.result)}`]);
       }
     });
   };
@@ -143,14 +140,13 @@ function ScriptEditor() {
       highlightErrors(codeMirrorRef.current, result.diagnostics);
 
       if (!isOk) {
-        addToLog(['Errors:', `   ${result.diagnosticsOutput}`]);
+        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
-        addToLog(['Compiled!']);
+        addToLog(['🏁 Compiled!']);
+        saveScript('particle', code);
+        setIsChanged(false);
+        addToLog(['', '☑️ Saved to local storage.']);
       }
-
-      saveScript('particle', code);
-      setIsChanged(false);
-      addToLog(['', 'Saved to local storage.']);
     });
   };
 

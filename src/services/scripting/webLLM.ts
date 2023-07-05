@@ -7,7 +7,12 @@
 import * as webllm from '@mlc-ai/web-llm';
 import type { GenerateProgressCallback } from '@mlc-ai/web-llm/types';
 import Worker from 'worker-loader!src/services/scripting/worker.ts';
-import { from } from 'apollo-link';
+
+export type BotConfig = {
+  name: string;
+  model: string;
+  params: string;
+};
 
 // const prebuiltAppConfig = {
 //   model_list: [
@@ -27,12 +32,37 @@ import { from } from 'apollo-link';
 // };
 class WebLLM {
   private _worker?: Worker = undefined;
+
   private _chat?: webllm.ChatWorkerClient = undefined;
+
   private isInitialized = false;
+
+  private _config: BotConfig = {} as BotConfig;
+
+  public get config() {
+    return this._config;
+  }
 
   constructor() {
     this._worker = new Worker();
     this._chat = new webllm.ChatWorkerClient(this._worker);
+    this.loadConfig();
+  }
+
+  private loadConfig() {
+    const config = localStorage.getItem('chat_bot_config');
+    this._config = config
+      ? (JSON.parse(config) as BotConfig)
+      : {
+          name: 'Trotsky Bot',
+          model: '',
+          params: '',
+        };
+  }
+
+  public updateConfig(config: BotConfig) {
+    this._config = config;
+    localStorage.setItem('chat_bot_config', JSON.stringify(config));
   }
 
   public async load(
