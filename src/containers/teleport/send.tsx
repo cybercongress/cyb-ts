@@ -174,8 +174,8 @@ function Send() {
 
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-    // dataSendTxs.refetch();
-  }, []);
+    dataSendTxs.refetch();
+  }, [dataSendTxs]);
 
   const stateActionBar = {
     tokenAmount,

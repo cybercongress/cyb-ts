@@ -151,7 +151,12 @@ function useGetSendTxsByAddressByLcd(
     dataReceive.fetchNextPage();
   }, [dataSend, dataReceive]);
 
-  return { data, fetchNextPage, hasNextPage };
+  const refetch = useCallback(() => {
+    dataSend.refetch();
+    dataReceive.refetch();
+  }, [dataSend, dataReceive]);
+
+  return { data, fetchNextPage, refetch, hasNextPage };
 }
 
 export default useGetSendTxsByAddressByLcd;

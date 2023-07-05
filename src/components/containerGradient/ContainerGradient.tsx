@@ -25,7 +25,7 @@ function ContainerLamp({ style, children }) {
   );
 }
 
-function ContainerLampAfter({ style, children }) {
+export function ContainerLampAfter({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLampAfter, {
@@ -42,7 +42,7 @@ function ContainerLampAfter({ style, children }) {
   );
 }
 
-function ContainerLampBefore({ style, children }) {
+export function ContainerLampBefore({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLampBefore, {
@@ -133,6 +133,42 @@ export function ContainerGradientText({
         </div>
       </div>
     </ContainerLamp>
+  );
+}
+
+type ContainerGradientBeforeOrAfter = {
+  children: React.ReactNode;
+  userStyleContent?: object;
+  status?: ColorLamp;
+  type: 'before' | 'after';
+};
+
+export function ContainerGradientBeforeOrAfter({
+  children,
+  userStyleContent,
+  status = 'blue',
+  type = 'before',
+}: ContainerGradientBeforeOrAfter) {
+  const Tag = type === 'before' ? ContainerLampBefore : ContainerLampAfter;
+  return (
+    <Tag style={status}>
+      <div
+        className={classNames(styles.containerGradientText, {
+          [styles.containerGradientTextPrimary]: status === 'blue',
+          [styles.containerGradientTextDanger]: status === 'red',
+          [styles.containerGradientTextGreen]: status === 'green',
+          [styles.containerGradientTextPink]: status === 'pink',
+          [styles.containerGradientTextGrey]: status === 'grey',
+        })}
+      >
+        <div
+          style={userStyleContent}
+          className={styles.containerGradientTextContent}
+        >
+          {children}
+        </div>
+      </div>
+    </Tag>
   );
 }
 

@@ -10,6 +10,11 @@ import { AmountDenom } from 'src/containers/txs/Activites';
 import { Link } from 'react-router-dom';
 import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { TxsResponse } from '@cosmjs/launchpad';
+import {
+  ContainerGradientBeforeOrAfter,
+  ContainerLampAfter,
+  ContainerLampBefore,
+} from 'src/components/containerGradient/ContainerGradient';
 
 type TxsResponseCustom = {
   code: number;
@@ -60,49 +65,56 @@ function DataSendTxs({
           <Link
             to={`/network/bostrom/tx/${item.txhash}`}
             key={`${item.txhash}_${key}`}
+            style={{
+              display: 'flex',
+              justifyContent: typeTx === 'Receive' ? 'flex-start' : 'flex-end',
+            }}
           >
-            <ContainerGradientText
-              status={item.code === 0 ? 'blue' : 'red'}
-              userStyleContent={{ display: 'grid', gap: '10px' }}
-            >
-              <div
-                style={{
-                  color: '#fff',
-                }}
-              >
-                {memo}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'space-between',
-                }}
+            <div style={{ width: '90%' }}>
+              <ContainerGradientBeforeOrAfter
+                type={typeTx === 'Receive' ? 'before' : 'after'}
+                status={item.code === 0 ? 'blue' : 'red'}
+                userStyleContent={{ display: 'grid', gap: '10px' }}
               >
                 <div
                   style={{
-                    color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
+                    color: '#fff',
                   }}
                 >
-                  {item.tx.body.messages[0].amount.map((item, i) => {
-                    return (
-                      <AmountDenom
-                        denom={item.denom}
-                        amountValue={item.amount}
-                        key={i}
-                      />
-                    );
-                  })}
+                  {memo}
                 </div>
                 <div
                   style={{
-                    color: '#777',
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  {timeSince(timeAgoInMS)} ago
+                  <div
+                    style={{
+                      color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
+                    }}
+                  >
+                    {item.tx.body.messages[0].amount.map((item, i) => {
+                      return (
+                        <AmountDenom
+                          denom={item.denom}
+                          amountValue={item.amount}
+                          key={i}
+                        />
+                      );
+                    })}
+                  </div>
+                  <div
+                    style={{
+                      color: '#777',
+                    }}
+                  >
+                    {timeSince(timeAgoInMS)} ago
+                  </div>
                 </div>
-              </div>
-            </ContainerGradientText>
+              </ContainerGradientBeforeOrAfter>
+            </div>
           </Link>
         );
       });
