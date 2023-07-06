@@ -2,8 +2,8 @@ import React, { useCallback, useState, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import { Pane } from '@cybercongress/gravity';
-import { Button, Input } from 'src/components';
+import { Pane, TableEv as Table, Text, Tablist } from '@cybercongress/gravity';
+import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 import {
   scriptItemStorage,
@@ -27,6 +27,7 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 import 'codemirror/mode/rust/rust';
 
 import { updatePassportData } from '../../utils';
+import { useParams } from 'react-router-dom';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -63,7 +64,8 @@ const compileScript = (
 
 function ScriptEditor() {
   const codeMirrorRef = useRef();
-
+  const { tab } = useParams();
+  console.log('----tab', tab);
   const { signer, signingClient } = useSigningClient();
   const { node } = useIpfs();
 
@@ -161,41 +163,96 @@ function ScriptEditor() {
   return (
     <div>
       <main className="block-body">
-        <Pane marginBottom="25px" fontSize="20px">
-          Particle post-processor script
-        </Pane>
-        <CodeMirror
-          ref={codeMirrorRef}
-          value={code}
-          options={{
-            mode: 'rust',
-            theme: 'tomorrow-night-eighties',
-            lineNumbers: true,
-          }}
-          onBeforeChange={(editor, data, value) => {
-            setCode(value);
-            setIsChanged(true);
-          }}
-        />
-
-        <Pane
-          marginBottom="10px"
-          marginTop="25px"
-          alignItems="center"
-          justifyContent="center"
-          className={styles.actionPanel}
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+          gridGap="10px"
+          marginTop={25}
+          marginBottom={50}
+          width="100%"
+          marginX="auto"
         >
-          <div className={styles.testPanel}>
-            <Input
-              value={testCid}
-              onChange={(e) => seTestCid(e.target.value)}
-              placeholder="Enter particle CID to apply script...."
+          <TabBtn text="Scripts" isSelected={!tab} to="/plugins" />
+          <TabBtn
+            text="Secrets"
+            isSelected={tab === 'secrets'}
+            to="/plugins/secrets"
+          />
+        </Tablist>
+        {tab === 'secrets' && (
+          <>
+            <Table>
+              <Table.Head
+                style={{
+                  backgroundColor: '#000',
+                  borderBottom: '1px solid #ffffff80',
+                  paddingBottom: '15px',
+                  height: 'auto',
+                }}
+              >
+                <Table.TextHeaderCell textAlign="center">
+                  <Text>KEY</Text>
+                </Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="center">
+                  <Text>VALUE</Text>
+                </Table.TextHeaderCell>
+              </Table.Head>
+              <Table.Body overflowY="none">
+                <Table.Row borderBottom="none" padding="15px 0">
+                  <Table.TextCell textAlign="center">
+                    <Text fontSize="16px" color="#fff">
+                      <Input placeholder="" />
+                    </Text>
+                  </Table.TextCell>
+                  <Table.TextCell textAlign="start">
+                    <Input placeholder="" />
+                  </Table.TextCell>
+                </Table.Row>
+              </Table.Body>
+            </Table>
+            {/* <Pane marginTop="25px" width="25%">
+          <Button>Save</Button>
+        </Pane> */}
+          </>
+        )}
+        {!tab && (
+          <>
+            <Pane marginBottom="25px" fontSize="20px">
+              Particle post-processor script
+            </Pane>
+            <CodeMirror
+              ref={codeMirrorRef}
+              value={code}
+              options={{
+                mode: 'rust',
+                theme: 'tomorrow-night-eighties',
+                lineNumbers: true,
+              }}
+              onBeforeChange={(editor, data, value) => {
+                setCode(value);
+                setIsChanged(true);
+              }}
             />
-            <Button onClick={onTestClick}>Test</Button>
-          </div>
-          {isChanged && <Button onClick={onSaveClick}>Save</Button>}
-        </Pane>
-        <textarea value={logText} className={styles.logArea} rows={18} />
+            <Pane
+              marginBottom="10px"
+              marginTop="25px"
+              alignItems="center"
+              justifyContent="center"
+              className={styles.actionPanel}
+            >
+              <div className={styles.testPanel}>
+                <Input
+                  value={testCid}
+                  onChange={(e) => seTestCid(e.target.value)}
+                  placeholder="Enter particle CID to apply script...."
+                />
+                <Button onClick={onTestClick}>Test</Button>
+              </div>
+              {isChanged && <Button onClick={onSaveClick}>Save</Button>}
+            </Pane>
+            <textarea value={logText} className={styles.logArea} rows={18} />
+          </>
+        )}
       </main>
     </div>
   );

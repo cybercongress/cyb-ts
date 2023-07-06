@@ -5,8 +5,35 @@
 //   SendToWorkerMessageEventData,
 // } from '@/types/web-llm';
 import * as webllm from '@mlc-ai/web-llm';
-import type { GenerateProgressCallback } from '@mlc-ai/web-llm/types';
+// import { prebuiltAppConfig } from '@mlc-ai/web-llm/config';
+
+import { GenerateProgressCallback, AppConfig } from '@mlc-ai/web-llm/types';
 import Worker from 'worker-loader!src/services/scripting/worker.ts';
+
+const chatOpts = {
+  repetition_penalty: 1.01,
+};
+
+const prebuiltAppConfig: AppConfig = {
+  model_list: [
+    {
+      model_url:
+        'https://huggingface.co/mlc-ai/mlc-chat-RedPajama-INCITE-Chat-3B-v1-q4f32_0/resolve/main/',
+      local_id: 'RedPajama-INCITE-Chat-3B-v1-q4f32_0',
+    },
+    {
+      model_url:
+        'https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/',
+      local_id: 'vicuna-v1-7b-q4f32_0',
+    },
+  ],
+  model_lib_map: {
+    'vicuna-v1-7b-q4f32_0':
+      'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm',
+    'RedPajama-INCITE-Chat-3B-v1-q4f32_0':
+      'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/RedPajama-INCITE-Chat-3B-v1-q4f32_0-webgpu.wasm',
+  },
+};
 
 export type BotConfig = {
   name: string;
@@ -14,22 +41,6 @@ export type BotConfig = {
   params: string;
 };
 
-// const prebuiltAppConfig = {
-//   model_list: [
-//       {
-//           "model_url": "https://huggingface.co/mlc-ai/mlc-chat-RedPajama-INCITE-Chat-3B-v1-q4f32_0/resolve/main/",
-//           "local_id": "RedPajama-INCITE-Chat-3B-v1-q4f32_0"
-//       },
-//       {
-//           "model_url": "https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/",
-//           "local_id": "vicuna-v1-7b-q4f32_0"
-//       }
-//   ],
-//   model_lib_map: {
-//       "vicuna-v1-7b-q4f32_0": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm",
-//       "RedPajama-INCITE-Chat-3B-v1-q4f32_0": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/RedPajama-INCITE-Chat-3B-v1-q4f32_0-webgpu.wasm"
-//   }
-// };
 class WebLLM {
   private _worker?: Worker = undefined;
 
@@ -55,8 +66,10 @@ class WebLLM {
       ? (JSON.parse(config) as BotConfig)
       : {
           name: 'Trotsky Bot',
-          model: '',
-          params: '',
+          model:
+            'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm',
+          params:
+            'https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/',
         };
   }
 
@@ -74,6 +87,23 @@ class WebLLM {
     });
 
     await this._chat?.reload('vicuna-v1-7b-q4f32_0');
+
+    // const { name, params, model } = this._config;
+    // await this._chat?.reload(
+    //   // 'vicuna-v1-7b-q4f32_0',
+    //   name,
+    //   chatOpts,
+    //   {
+    //     model_list: [
+    //       {
+    //         model_url: model,
+    //         local_id: name,
+    //       },
+    //     ],
+    //     model_lib_map: { [name]: params },
+    //   }
+    // );
+
     this.isInitialized = true;
   }
 
@@ -108,6 +138,10 @@ class WebLLM {
 
   public async resetChat(): Promise<void> {
     await this._chat?.resetChat();
+  }
+
+  public async interruptGenerate() {
+    await this._chat?.interruptGenerate();
   }
 
   public async getChatHistory(): Promise<string[]> {

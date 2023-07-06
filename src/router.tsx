@@ -169,7 +169,8 @@ function AppRouter() {
           <Route path="/sigma" element={<Sigma />} />
           <Route path="/nebula" element={<Nebula />} />
           {/* TMP */}
-          <Route path="/scripts" element={<ScriptEditor />} />
+          <Route path="/plugins" element={<ScriptEditor />} />
+          <Route path="/plugins/:tab" element={<ScriptEditor />} />
           <Route path="/chatbot" element={<ChatBotConfig />} />
           {/*  */}
           <Route path="*" element={<PageNotExist />} />

@@ -38,6 +38,7 @@ function ChatBotConfig() {
 
   const [config, setConfig] = useState(WebLLMInstance.config);
   const [inProgress, setIsProgress] = useState(false);
+  const [statsText, setStatsText] = useState<string | undefined>(undefined);
   const [chatHistory, setChatHistory] = useState<ChatReply[]>(
     loadChatHistory()
   );
@@ -88,8 +89,9 @@ function ChatBotConfig() {
     });
     setUserMessage('');
     setIsProgress(true);
-    WebLLMInstance.chat(userMessage, (step, message) => {
+    WebLLMInstance.chat(userMessage, async (step, message) => {
       setChatReply({ name: botName, message, date: Date.now() });
+      setStatsText(await WebLLMInstance.runtimeStatsText());
     })
       .then((replyMessage) => {
         addToChatHistory(botName, replyMessage);
@@ -127,11 +129,22 @@ function ChatBotConfig() {
       >
         <div>Chat with {config.name} </div>
         <div>{messagesItems}</div>
+        {inProgress && <div className={styles.statsText}>{statsText}</div>}
+        {inProgress && (
+          <button
+            type="button"
+            className={styles.btnClear}
+            onClick={async () => WebLLMInstance.interruptGenerate()}
+          >
+            ⛔️ Interrupt ⛔️
+          </button>
+        )}
         <Input
           placeholder="message..."
           value={userMessage}
           onChange={(e) => setUserMessage(e.target.value)}
         />
+
         <Button onClick={onMessage} disabled={inProgress}>
           Say
         </Button>

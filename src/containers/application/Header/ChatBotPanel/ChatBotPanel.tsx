@@ -39,7 +39,7 @@ function ChatBotPanel() {
       )}
       <div className={styles.pluginsButton}>
         <Tooltip placement="bottom" tooltip="Click to edit plugins">
-          <Link to="/scripts" className={styles.titleButton}>
+          <Link to="/plugins" className={styles.titleButton}>
             <span>🔌 </span>Plugins
           </Link>
         </Tooltip>
