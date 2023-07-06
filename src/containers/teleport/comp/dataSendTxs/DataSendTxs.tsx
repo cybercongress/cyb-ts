@@ -74,6 +74,7 @@ function DataSendTxs({
               <div
                 style={{
                   color: '#fff',
+                  paddingLeft: typeTx === 'Receive' ? '0px' : '50px',
                 }}
               >
                 {memo}

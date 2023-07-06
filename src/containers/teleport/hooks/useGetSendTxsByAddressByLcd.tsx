@@ -114,7 +114,10 @@ function useGetSendTxsByAddressByLcd(
           dataTxs.push(item);
         }
 
-        if (height > parseFloat(lastSendItem)) {
+        if (
+          height > parseFloat(lastSendItem) &&
+          height < parseFloat(firstSendItem)
+        ) {
           dataTxs.push(item);
         }
 

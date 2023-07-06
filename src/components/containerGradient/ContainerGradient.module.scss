@@ -1,57 +1,43 @@
 @mixin linear-gradient-green($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(54, 214, 174, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(54, 214, 174, 1) 100%);
 }
 
 @mixin linear-gradient-pink($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(246, 43, 253, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(246, 43, 253, 1) 100%);
 }
 
 @mixin linear-gradient-blue($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(31, 203, 255, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(31, 203, 255, 1) 100%);
 }
 
 @mixin linear-gradient-grey($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(255, 255, 255, 1) 100%);
 }
 
 @mixin linear-gradient-yellow($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgba(255, 217, 0, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) -3.3%,
+      rgba(255, 217, 0, 1) 100%);
 }
 
 @mixin linear-gradient-danger($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgb(255, 0, 0) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) -3.3%,
+      rgb(255, 0, 0) 100%);
 }
 
 @mixin linear-gradient-purple($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 10, 255, 1) 100%
-  );
+  background: linear-gradient($route,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 10, 255, 1) 100%);
 }
 
 @mixin styleGradientPseudoEl {
@@ -292,6 +278,7 @@
       box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
     }
   }
+
   &Green {
     &::before {
       @include ion-lamp;
@@ -299,6 +286,7 @@
       box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
+
     &::after {
       @include ion-lamp;
       right: 0;
@@ -306,6 +294,7 @@
       box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
     }
   }
+
   &Blue {
     &::before {
       @include ion-lamp;
@@ -313,6 +302,7 @@
       box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
+
     &::after {
       @include ion-lamp;
       right: 0;
@@ -320,6 +310,7 @@
       box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
     }
   }
+
   &Yellow {
     &::before {
       @include ion-lamp;
@@ -327,6 +318,7 @@
       box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
+
     &::after {
       @include ion-lamp;
       right: 0;
@@ -342,6 +334,7 @@
       box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
+
     &::after {
       @include ion-lamp;
       right: 0;
@@ -357,6 +350,7 @@
       box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
       left: 0;
     }
+
     &::after {
       @include ion-lamp;
       right: 0;
@@ -377,6 +371,7 @@
       left: 0;
     }
   }
+
   &Red {
     &::before {
       @include ion-lamp;
@@ -385,6 +380,7 @@
       left: 0;
     }
   }
+
   &Green {
     &::before {
       @include ion-lamp;
@@ -393,6 +389,7 @@
       left: 0;
     }
   }
+
   &Blue {
     &::before {
       @include ion-lamp;
@@ -401,6 +398,7 @@
       left: 0;
     }
   }
+
   &Yellow {
     &::before {
       @include ion-lamp;
@@ -409,6 +407,7 @@
       left: 0;
     }
   }
+
   &Purple {
     &::before {
       @include ion-lamp;
@@ -430,6 +429,7 @@
       right: 0;
     }
   }
+
   &Red {
     &::after {
       @include ion-lamp;
@@ -438,6 +438,7 @@
       right: 0;
     }
   }
+
   &Green {
     &::after {
       @include ion-lamp;
@@ -446,6 +447,7 @@
       right: 0;
     }
   }
+
   &Blue {
     &::after {
       @include ion-lamp;
@@ -454,6 +456,7 @@
       right: 0;
     }
   }
+
   &Yellow {
     &::after {
       @include ion-lamp;
@@ -462,6 +465,7 @@
       right: 0;
     }
   }
+
   &Purple {
     &::after {
       @include ion-lamp;
@@ -511,6 +515,7 @@
       opacity: 11%;
     }
   }
+
   &Pending {
     position: relative;
 
@@ -634,6 +639,88 @@
       opacity: 11%;
     }
   }
+
+  &Content {
+    position: relative;
+    margin: 0px -5px;
+    padding: 15px;
+    z-index: 1;
+  }
+}
+
+@mixin container-container-gradient($pseudo, $position, $deg) {
+  &Primary {
+    &:#{$pseudo} {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-blue($deg);
+      #{$position}: 0;
+      opacity: 11%;
+    }
+  }
+
+  &Danger {
+    &:#{$pseudo} {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-danger($deg);
+      #{$position}: 0;
+      opacity: 11%;
+    }
+  }
+
+  &Green {
+    &:#{$pseudo} {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-green($deg);
+      #{$position}: 0;
+      opacity: 11%;
+    }
+  }
+
+  &Pink {
+    &:#{$pseudo} {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-pink($deg);
+      #{$position}: 0;
+      opacity: 11%;
+    }
+  }
+
+  &Grey {
+    &:#{$pseudo} {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-grey($deg);
+      #{$position}: 0;
+      opacity: 11%;
+    }
+  }
+}
+
+
+.containerGradientTextBefore {
+  width: 100%;
+  min-height: 50px;
+  position: relative;
+  padding: 0px 5px;
+  height: 100%;
+
+  @include container-container-gradient(before, left, -90deg);
+
+  &Content {
+    position: relative;
+    margin: 0px -5px;
+    padding: 15px;
+    z-index: 1;
+  }
+}
+
+.containerGradientTextAfter {
+  width: 100%;
+  min-height: 50px;
+  position: relative;
+  padding: 0px 5px;
+  height: 100%;
+
+  @include container-container-gradient(after, right, 90deg);
 
   &Content {
     position: relative;

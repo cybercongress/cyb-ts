@@ -136,6 +136,60 @@ export function ContainerGradientText({
   );
 }
 
+function ContainerGradientBefore({
+  children,
+  userStyleContent,
+  status = 'blue',
+}: ContainerGradientText) {
+  return (
+    <ContainerLampBefore style={status}>
+      <div
+        className={classNames(styles.containerGradientTextBefore, {
+          [styles.containerGradientTextBeforePrimary]: status === 'blue',
+          [styles.containerGradientTextBeforeDanger]: status === 'red',
+          [styles.containerGradientTextBeforeGreen]: status === 'green',
+          [styles.containerGradientTextBeforePink]: status === 'pink',
+          [styles.containerGradientTextBeforeGrey]: status === 'grey',
+        })}
+      >
+        <div
+          style={userStyleContent}
+          className={styles.containerGradientTextBeforeContent}
+        >
+          {children}
+        </div>
+      </div>
+    </ContainerLampBefore>
+  );
+}
+
+function ContainerGradientAfter({
+  children,
+  userStyleContent,
+  status = 'blue',
+}: ContainerGradientText) {
+  return (
+    <ContainerLampAfter style={status}>
+      <div
+        className={classNames(styles.containerGradientTextAfter, {
+          [styles.containerGradientTextAfterPrimary]: status === 'blue',
+          [styles.containerGradientTextAfterDanger]: status === 'red',
+          [styles.containerGradientTextAfterGreen]: status === 'green',
+          [styles.containerGradientTextAfterPink]: status === 'pink',
+          [styles.containerGradientTextAfterGrey]: status === 'grey',
+        })}
+      >
+        <div
+          style={userStyleContent}
+          className={styles.containerGradientTextAfterContent}
+        >
+          {children}
+        </div>
+      </div>
+    </ContainerLampAfter>
+  );
+}
+
 type ContainerGradientBeforeOrAfter = {
   children: React.ReactNode;
   userStyleContent?: object;
@@ -149,25 +203,11 @@ export function ContainerGradientBeforeOrAfter({
   status = 'blue',
   type = 'before',
 }: ContainerGradientBeforeOrAfter) {
-  const Tag = type === 'before' ? ContainerLampBefore : ContainerLampAfter;
+  const Tag =
+    type === 'before' ? ContainerGradientBefore : ContainerGradientAfter;
   return (
-    <Tag style={status}>
-      <div
-        className={classNames(styles.containerGradientText, {
-          [styles.containerGradientTextPrimary]: status === 'blue',
-          [styles.containerGradientTextDanger]: status === 'red',
-          [styles.containerGradientTextGreen]: status === 'green',
-          [styles.containerGradientTextPink]: status === 'pink',
-          [styles.containerGradientTextGrey]: status === 'grey',
-        })}
-      >
-        <div
-          style={userStyleContent}
-          className={styles.containerGradientTextContent}
-        >
-          {children}
-        </div>
-      </div>
+    <Tag status={status} userStyleContent={userStyleContent}>
+      {children}
     </Tag>
   );
 }
