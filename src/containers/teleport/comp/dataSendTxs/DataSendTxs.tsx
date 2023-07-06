@@ -65,56 +65,50 @@ function DataSendTxs({
           <Link
             to={`/network/bostrom/tx/${item.txhash}`}
             key={`${item.txhash}_${key}`}
-            style={{
-              display: 'flex',
-              justifyContent: typeTx === 'Receive' ? 'flex-start' : 'flex-end',
-            }}
           >
-            <div style={{ width: '90%' }}>
-              <ContainerGradientBeforeOrAfter
-                type={typeTx === 'Receive' ? 'before' : 'after'}
-                status={item.code === 0 ? 'blue' : 'red'}
-                userStyleContent={{ display: 'grid', gap: '10px' }}
+            <ContainerGradientBeforeOrAfter
+              type={typeTx === 'Receive' ? 'before' : 'after'}
+              status={item.code === 0 ? 'blue' : 'red'}
+              userStyleContent={{ display: 'grid', gap: '10px' }}
+            >
+              <div
+                style={{
+                  color: '#fff',
+                }}
+              >
+                {memo}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                }}
               >
                 <div
                   style={{
-                    color: '#fff',
+                    color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
                   }}
                 >
-                  {memo}
+                  {item.tx.body.messages[0].amount.map((item, i) => {
+                    return (
+                      <AmountDenom
+                        denom={item.denom}
+                        amountValue={item.amount}
+                        key={i}
+                      />
+                    );
+                  })}
                 </div>
                 <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    justifyContent: 'space-between',
+                    color: '#777',
                   }}
                 >
-                  <div
-                    style={{
-                      color: typeTx === 'Receive' ? '#76FF03' : '#FF5C00',
-                    }}
-                  >
-                    {item.tx.body.messages[0].amount.map((item, i) => {
-                      return (
-                        <AmountDenom
-                          denom={item.denom}
-                          amountValue={item.amount}
-                          key={i}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div
-                    style={{
-                      color: '#777',
-                    }}
-                  >
-                    {timeSince(timeAgoInMS)} ago
-                  </div>
+                  {timeSince(timeAgoInMS)} ago
                 </div>
-              </ContainerGradientBeforeOrAfter>
-            </div>
+              </div>
+            </ContainerGradientBeforeOrAfter>
           </Link>
         );
       });

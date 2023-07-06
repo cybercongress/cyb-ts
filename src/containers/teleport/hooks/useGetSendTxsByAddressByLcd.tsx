@@ -96,8 +96,10 @@ function useGetSendTxsByAddressByLcd(
 
     if (dataSend.data && dataSend.data.pages.length) {
       dataSendArr = concatResponse(dataSend.data);
-      lastSendItem = dataSendArr[dataSendArr.length - 1].height;
-      firstSendItem = dataSendArr[0].height;
+      if (dataSendArr.length) {
+        lastSendItem = dataSendArr[dataSendArr.length - 1].height;
+        firstSendItem = dataSendArr[0].height;
+      }
     }
 
     if (dataReceive.data && dataReceive.data.pages.length) {
