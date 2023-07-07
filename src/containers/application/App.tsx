@@ -1,19 +1,37 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
-import { AppDispatch } from 'src/redux/store';
+import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from '../../redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 import IPFSConnectError from './IPFSConnectError/IPFSConnectError';
 import { routes } from 'src/routes';
 import styles from './styles.scss';
+import usePassportContract from 'src/features/passport/usePassportContract';
+
+import {
+  setPassport,
+  setPassportLoading,
+} from 'src/features/passport/passport.redux';
+import { Citizenship } from 'src/types/citizenship';
 
 export const PORTAL_ID = 'portal';
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+
+  const address = defaultAccount.account?.cyber?.bech32;
+  const { data: passport, loading } = usePassportContract<Citizenship>({
+    query: {
+      active_passport: {
+        address,
+      },
+    },
+    skip: !address,
+  });
 
   const location = useLocation();
 
@@ -22,6 +40,14 @@ function App() {
   useEffect(() => {
     dispatch(initPocket());
   }, []);
+
+  useEffect(() => {
+    dispatch(setPassportLoading());
+  }, [loading, dispatch]);
+
+  useEffect(() => {
+    dispatch(setPassport(!defaultAccount.account ? null : passport || null));
+  }, [passport, dispatch, defaultAccount]);
 
   // chekEvangelism = () => {
   //   const { location } = this.props;

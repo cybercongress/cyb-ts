@@ -19,10 +19,7 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-import {
-  setAccounts,
-  setDefaultAccount,
-} from '../../../../redux/features/pocket';
+import { setDefaultAccount } from '../../../../redux/features/pocket';
 
 // should be refactored
 function AccountItem({
@@ -105,10 +102,7 @@ function SwitchAccount() {
     placement: 'bottom',
   });
 
-  const { passport } = useGetPassportByAddress(
-    defaultAccount?.account?.cyber?.bech32
-  );
-
+  const passport = useSelector((state: RootState) => state.passport);
   const dispatch = useDispatch();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -117,72 +111,18 @@ function SwitchAccount() {
     setControlledVisible(false);
   });
 
-  useEffect(() => {
-    dispatch(setPassportLoading());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(setPassport(passport));
-  }, [passport, dispatch]);
+  const useGetCidAvatar = passport.data?.extension.avatar;
+  const useGetName = passport.data?.extension.nickname || defaultAccount?.name;
+  const useGetAddress = defaultAccount?.account?.cyber?.bech32;
 
   const onClickChangeActiveAcc = async (key: string) => {
-    if (
-      accounts !== null &&
-      Object.prototype.hasOwnProperty.call(accounts, key)
-    ) {
-      const defaultAccountTemp = { [key]: accounts[key] };
-      const accountsPocket = {
-        [key]: accounts[key],
-        ...accounts,
-      };
-      dispatch(
-        setDefaultAccount({
-          name: key,
-          account: accounts[key],
-        })
-      );
-      dispatch(setAccounts(accountsPocket));
-      setControlledVisible(false);
-      localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
-    }
+    dispatch(
+      setDefaultAccount({
+        name: key,
+      })
+    );
+    setControlledVisible(false);
   };
-
-  const useGetName = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.nickname;
-    }
-
-    if (defaultAccount !== null) {
-      return defaultAccount.name;
-    }
-
-    return null;
-  }, [passport, defaultAccount]);
-
-  const useGetCidAvatar = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.avatar;
-    }
-    return null;
-  }, [passport]);
-
-  const useGetAddress = useMemo(() => {
-    if (
-      defaultAccount !== null &&
-      Object.prototype.hasOwnProperty.call(defaultAccount, 'account')
-    ) {
-      const { account } = defaultAccount;
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
-      ) {
-        const { bech32 } = account.cyber;
-        return bech32;
-      }
-    }
-
-    return null;
-  }, [defaultAccount]);
 
   const renderItem = useMemo(() => {
     if (!accounts) {
@@ -234,7 +174,11 @@ function SwitchAccount() {
           </div>
         )}
         <Link
-          to={routes.robot.path}
+          to={
+            passport.data
+              ? routes.robotPassport.getLink(passport.data.extension.nickname)
+              : routes.robot.path
+          }
           onClick={() => setControlledVisible(!controlledVisible)}
         >
           <div

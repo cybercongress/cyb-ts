@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
-import { Account, DefaultAccount } from 'src/types/defaultAccount';
+import { Account, Accounts, DefaultAccount } from 'src/types/defaultAccount';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { POCKET } from '../../utils/config';
 
@@ -24,14 +24,41 @@ const initialState: SliceState = {
   accounts: null,
 };
 
+function saveToLocalStorage(state: SliceState) {
+  const { defaultAccount, accounts } = state;
+
+  defaultAccount &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET,
+      JSON.stringify({
+        [defaultAccount.name]: defaultAccount.account,
+      })
+    );
+  accounts &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET_ACCOUNT,
+      JSON.stringify(accounts)
+    );
+}
+
 const slice = createSlice({
   name: 'pocket',
   initialState,
   reducers: {
-    setDefaultAccount: (state, { payload }: PayloadAction<DefaultAccount>) => {
-      state.defaultAccount = payload;
+    setDefaultAccount: (
+      state,
+      {
+        payload: { name, account },
+      }: PayloadAction<{ name: string; account?: Account }>
+    ) => {
+      state.defaultAccount = {
+        name,
+        account: account || state.accounts?.[name] || null,
+      };
+
+      saveToLocalStorage(state);
     },
-    setAccounts: (state, { payload }: PayloadAction<Account[]>) => {
+    setAccounts: (state, { payload }: PayloadAction<Accounts>) => {
       state.accounts = payload;
     },
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {
@@ -51,10 +78,16 @@ const slice = createSlice({
               }
 
               if (state.defaultAccount?.account?.cyber?.bech32 === payload) {
-                if (Object.keys(state.accounts).length) {
+                const entries = Object.entries(state.accounts);
+
+                const entryCyber = entries.find(
+                  ([, value]) => value.cyber?.bech32
+                );
+
+                if (entryCyber) {
                   state.defaultAccount = {
-                    name: Object.keys(state.accounts)[0],
-                    account: state.accounts[Object.keys(state.accounts)[0]],
+                    name: entryCyber[0],
+                    account: entryCyber[1],
                   };
                 } else {
                   state.defaultAccount = {
@@ -73,23 +106,6 @@ const slice = createSlice({
   },
 });
 
-function saveToLocalStorage(state) {
-  const { defaultAccount, accounts } = state;
-
-  defaultAccount &&
-    localStorage.setItem(
-      localStorageKeys.pocket.POCKET,
-      JSON.stringify({
-        [defaultAccount.name]: defaultAccount.account,
-      })
-    );
-  accounts &&
-    localStorage.setItem(
-      localStorageKeys.pocket.POCKET_ACCOUNT,
-      JSON.stringify(accounts)
-    );
-}
-
 export const {
   setDefaultAccount,
   setAccounts,
@@ -103,7 +119,7 @@ export default slice.reducer;
 export const initPocket = () => (dispatch: Dispatch) => {
   let defaultAccounts = null;
   let defaultAccountsKeys = null;
-  let accountsTemp = null;
+  let accountsTemp: Accounts | null = null;
 
   const localStoragePocketAccount = localStorage.getItem(
     localStorageKeys.pocket.POCKET_ACCOUNT
@@ -131,7 +147,7 @@ export const initPocket = () => (dispatch: Dispatch) => {
     } else if (defaultAccountsKeys !== null) {
       accountsTemp = {
         [defaultAccountsKeys]:
-          localStoragePocketAccountData[defaultAccountsKeys],
+          localStoragePocketAccountData[defaultAccountsKeys] || undefined,
         ...localStoragePocketAccountData,
       };
     }
@@ -141,11 +157,20 @@ export const initPocket = () => (dispatch: Dispatch) => {
   }
 
   defaultAccountsKeys &&
+    defaultAccounts &&
     dispatch(
       setDefaultAccount({
         name: defaultAccountsKeys,
         account: defaultAccounts,
       })
     );
+
+  accountsTemp &&
+    Object.keys(accountsTemp).forEach((key) => {
+      if (!accountsTemp[key] || Object.keys(accountsTemp[key]).length === 0) {
+        delete accountsTemp[key];
+      }
+    });
+
   accountsTemp && dispatch(setAccounts(accountsTemp));
 };

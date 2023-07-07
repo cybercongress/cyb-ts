@@ -8,11 +8,9 @@ import styles from './Keys.module.scss';
 import { useState } from 'react';
 
 function Keys() {
-  const { accounts, defaultAccount } = useSelector(
-    (state: RootState) => state.pocket
-  );
+  const { accounts } = useSelector((state: RootState) => state.pocket);
 
-  const [selectedKey, setSelectedKey] = useState();
+  const [selectedKey, setSelectedKey] = useState<string | null>();
 
   const dispatch = useDispatch();
 
@@ -20,21 +18,13 @@ function Keys() {
     setSelectedKey(selectedKey === address ? null : address);
   }
 
-  const acc = {
-    ...accounts,
-  };
-
-  if (defaultAccount) {
-    acc[defaultAccount.name] = defaultAccount.account;
-  }
-
   const bostromAccounts =
-    acc && Object.values(acc).filter((account) => account?.cyber);
+    accounts && Object.values(accounts).filter((account) => account?.cyber);
 
   return (
     <>
       <div className={styles.wrapper}>
-        {bostromAccounts.length > 0 ? (
+        {bostromAccounts && bostromAccounts.length > 0 ? (
           bostromAccounts.map(({ cyber: account }) => {
             return (
               <KeyItem
@@ -60,6 +50,7 @@ function Keys() {
         selectedAddress={selectedKey}
         updateAddress={() => {
           dispatch(initPocket());
+          setSelectedKey(null);
         }}
         defaultAccounts={null}
       />

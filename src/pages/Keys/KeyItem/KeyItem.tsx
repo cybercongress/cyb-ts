@@ -11,6 +11,8 @@ import { Citizenship } from 'src/types/citizenship';
 import { equals } from 'ramda';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 
 type Props = {
   account: AccountValue;
@@ -40,6 +42,10 @@ function PassportLoader({
 
 function KeyItem({ account, selected, selectKey }: Props) {
   const { name, bech32, keys, path } = account;
+
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+
+  const isActive = defaultAccount.account?.cyber?.bech32 === bech32;
 
   const activePassport = usePassportContract<Citizenship>({
     query: {
@@ -91,7 +97,17 @@ function KeyItem({ account, selected, selectKey }: Props) {
         })}
         onClick={() => selectKey(bech32)}
       >
-        <img src={require('./images/1.png')} alt="" />
+        <div className={styles.imageWrapper}>
+          <img src={require('./images/1.png')} alt="" />
+
+          {isActive && (
+            <Pill
+              text="active"
+              color={Colors.green}
+              className={styles.active}
+            />
+          )}
+        </div>
 
         <div className={styles.content}>
           key <Pill color={Colors.white} text={name || 'noname'} /> <br />

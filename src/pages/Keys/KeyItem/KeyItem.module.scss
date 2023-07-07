@@ -1,11 +1,24 @@
+@import 'src/style/mixins';
+
 .wrapper {
   display: flex;
   gap: 0 28px;
   overflow-x: auto;
   align-items: center;
+  cursor: pointer;
 
   > img {
     height: auto;
+  }
+
+  .imageWrapper {
+    text-align: center;
+    position: relative;
+
+    .active {
+      position: relative;
+      bottom: 25px;
+    }
   }
 
   .content {
@@ -25,8 +38,20 @@
     }
   }
 
-  &.selected {
-    background-color: var(--green-light);
+  &.selected,
+  &:hover {
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+
+      left: 0px;
+      right: 0px;
+
+      height: 100%;
+
+      @include tableHover;
+    }
   }
 }
 

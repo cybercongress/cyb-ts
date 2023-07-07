@@ -8,7 +8,9 @@
   min-height: 70vh;
 
   > p {
-    margin-top: 50%;
+    margin: auto;
+    position: relative;
+    top: 65px;
     text-align: center;
     line-height: 26px;
   }

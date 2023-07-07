@@ -14,7 +14,7 @@ import imgRead from '../../image/duplicate-outline.svg';
 import Button from 'src/components/btnGrd';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import { deleteAddress } from 'src/redux/features/pocket';
+import { deleteAddress, setDefaultAccount } from 'src/redux/features/pocket';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -50,7 +50,7 @@ type Props = {
   updateTweetFunc?: any;
   updateAddress: () => void;
 
-  selectedAddress: string;
+  selectedAddress?: string;
 
   defaultAccounts: {
     cyber: {
@@ -83,6 +83,9 @@ function ActionBar({
   const [web3, setWeb3] = useState(null);
 
   const dispatch = useDispatch();
+  const { accounts, defaultAccount } = useSelector(
+    (store: RootState) => store.pocket
+  );
 
   useEffect(() => {
     //
@@ -151,33 +154,31 @@ function ActionBar({
     }
   };
 
-  const changeDefaultAccounts = async () => {
-    if (selectAccount !== null && selectAccount.key) {
-      const copy = { ...selectAccount };
-      delete copy.key;
-      localStorage.setItem(
-        'pocket',
-        JSON.stringify({ [selectAccount.key]: copy })
-      );
-    }
-    if (updateAddress) {
-      updateAddress();
-    }
-  };
+  async function changeDefaultAccounts() {
+    const accountName =
+      accounts &&
+      Object.entries(accounts).find(
+        (entry) => entry[1]?.cyber?.bech32 === selectedAddress
+      )?.[0];
 
-  const onClickDefaultAccountSend = () => {
-    if (defaultAccounts !== null && defaultAccounts.cyber) {
-      if (defaultAccounts.cyber.keys === 'keplr') {
-        setStage(STAGE_SEND_KEPLR);
-      }
-      if (defaultAccounts.cyber.keys === 'ledger') {
-        setStage(STAGE_SEND_LEDGER);
-      }
-      if (defaultAccounts.cyber.keys === 'read-only') {
-        setStage(STAGE_SEND_READ_ONLY);
-      }
+    if (accountName) {
+      dispatch(setDefaultAccount({ name: accountName }));
     }
-  };
+  }
+
+  // const onClickDefaultAccountSend = () => {
+  //   if (defaultAccounts !== null && defaultAccounts.cyber) {
+  //     if (defaultAccounts.cyber.keys === 'keplr') {
+  //       setStage(STAGE_SEND_KEPLR);
+  //     }
+  //     if (defaultAccounts.cyber.keys === 'ledger') {
+  //       setStage(STAGE_SEND_LEDGER);
+  //     }
+  //     if (defaultAccounts.cyber.keys === 'read-only') {
+  //       setStage(STAGE_SEND_READ_ONLY);
+  //     }
+  //   }
+  // };
 
   const updateFuncActionBar = () => {
     setTypeActionBar('');
@@ -204,20 +205,31 @@ function ActionBar({
     </Button>
   );
 
+  if (selectedAddress) {
+    return (
+      <ActionBarGravity>
+        <Pane display="flex">
+          {defaultAccount.account?.cyber?.bech32 !== selectedAddress &&
+            buttonActivate}
+
+          <Button
+            onClick={() => {
+              dispatch(deleteAddress(selectedAddress));
+              updateAddress();
+            }}
+          >
+            Delete
+          </Button>
+        </Pane>
+      </ActionBarGravity>
+    );
+  }
+
   if (typeActionBar === '' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
         <Pane display="flex">
           {buttonConnect}
-          {selectedAddress && (
-            <Button
-              onClick={() => {
-                dispatch(deleteAddress(selectedAddress));
-              }}
-            >
-              Delete
-            </Button>
-          )}
           {/* {defaultAccounts !== null && defaultAccounts.cyber && (
             <Button
               style={{ margin: '0 10px' }}

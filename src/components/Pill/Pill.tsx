@@ -14,12 +14,13 @@ export type Props = {
   text: string | React.ReactNode;
   color?: Colors;
   image?: React.ReactNode;
+  className?: string;
 };
 
-function Pill({ color = Colors.black, text, image }: Props) {
+function Pill({ color = Colors.black, text, image, className }: Props) {
   return (
     <div
-      className={cx(styles.pill, styles[color], {
+      className={cx(styles.pill, className, styles[color], {
         [styles['--withImage']]: image,
       })}
     >

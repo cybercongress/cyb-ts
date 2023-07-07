@@ -12,6 +12,10 @@ type Account = {
   [key in AccountKey]: AccountValue;
 };
 
+type Accounts = {
+  [key in string]: Account;
+};
+
 export type DefaultAccount = {
   name: string | null;
   account: Account | null;

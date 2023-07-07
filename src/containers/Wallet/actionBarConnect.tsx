@@ -18,6 +18,8 @@ import {
 import { fromBech32 } from '../../utils/utils';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
+import { useDispatch } from 'react-redux';
+import { initPocket, setDefaultAccount } from 'src/redux/features/pocket';
 
 const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
   LEDGER;
@@ -53,6 +55,8 @@ function ActionBarConnect({
   const [addressLedger, setAddressLedger] = useState(null);
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
@@ -337,9 +341,9 @@ function ActionBarConnect({
       );
       const pk = Buffer.from(pubKey).toString('hex');
 
-      const localStorageStory = await localStorage.getItem('pocketAccount');
-      const localStoragePocket = await localStorage.getItem('pocket');
-      const localStorageCount = await localStorage.getItem('count');
+      const localStorageStory = localStorage.getItem('pocketAccount');
+      const localStoragePocket = localStorage.getItem('pocket');
+      const localStorageCount = localStorage.getItem('count');
       if (localStorageCount !== null) {
         const dataCount = JSON.parse(localStorageCount);
         count = parseFloat(dataCount);
@@ -418,6 +422,11 @@ function ActionBarConnect({
           }
         }
       }
+
+      // need remove code above
+      dispatch(initPocket());
+      dispatch(setDefaultAccount({ name: key }));
+
       cleatState();
       if (updateAddress) {
         updateAddress();
