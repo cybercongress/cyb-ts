@@ -5,7 +5,7 @@ import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import { createPortal } from 'react-dom';
 import { PORTAL_ID } from '../application/App';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 function ForceGraph() {
   const params = useParams();

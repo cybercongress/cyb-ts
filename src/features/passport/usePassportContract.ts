@@ -43,6 +43,9 @@ function usePassportContract<DataType>({ query, skip }: Props) {
 
     try {
       setLoading(true);
+      setData(undefined);
+      setError(undefined);
+
       const response = await queryClient.queryContractSmart(
         CONTRACT_ADDRESS_PASSPORT,
         query
@@ -72,7 +75,6 @@ function usePassportContract<DataType>({ query, skip }: Props) {
   return {
     data,
     loading,
-    // loadData: queryContract,
     error,
   };
 }

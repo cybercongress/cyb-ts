@@ -42,7 +42,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(setPassportLoading());
+    dispatch(setPassportLoading(loading));
   }, [loading, dispatch]);
 
   useEffect(() => {

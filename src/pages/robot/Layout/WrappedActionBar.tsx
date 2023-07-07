@@ -5,7 +5,7 @@ import ActionBarContainer from 'src/containers/account/actionBar';
 
 import { RootState } from 'src/redux/store';
 import { getIpfsHash, chekFollow } from 'src/utils/search/utils';
-import { useRobotContext } from '../Robot';
+import { useRobotContext } from '../robot.context';
 
 import { ActionBar } from 'src/components';
 

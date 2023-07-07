@@ -8,7 +8,7 @@ import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
 import { RootState } from 'src/redux/store';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 function RoutedEnergy() {
   const location = useLocation();

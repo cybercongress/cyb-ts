@@ -50,6 +50,7 @@
     "@storybook/testing-library": "^0.0.14-next.2",
     "@testing-library/react": "^14.0.0",
     "@types/compression-webpack-plugin": "^9.1.1",
+    "@types/react-helmet": "^6.1.6",
     "@types/react-transition-group": "^4.4.5",
     "@types/webpack": "^5.28.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",

@@ -1,6 +1,6 @@
 import { ContainerGradientText } from 'src/components';
 import styles from './RobotHeader.module.scss';
-import { useRobotContext } from '../Robot';
+import { useRobotContext } from '../../robot.context';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { Signatures } from 'src/containers/portal/components';
 // import { Link } from 'react-router-dom';

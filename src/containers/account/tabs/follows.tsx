@@ -7,7 +7,7 @@ import {
 } from '../../../components';
 import { useGetCommunity } from '../hooks';
 import Loader2 from 'src/components/ui/Loader2';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 type CommunityEntityProps = {
   items: string[];

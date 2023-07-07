@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
 import { useLocation } from 'react-router-dom';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 import { RootState } from 'src/redux/store';
 import TokenChange from 'src/components/TokenChange/TokenChange';
 import { routes } from 'src/routes';

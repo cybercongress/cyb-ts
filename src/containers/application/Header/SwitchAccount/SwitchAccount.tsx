@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -6,10 +6,7 @@ import { Transition } from 'react-transition-group';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import {
-  setPassport,
-  setPassportLoading,
-} from 'src/features/passport/passport.redux';
+
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';

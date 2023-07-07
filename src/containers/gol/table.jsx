@@ -2,7 +2,7 @@ import useGetGol from './getGolHooks';
 import { formatNumber } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
 import Table from 'src/components/Table/Table';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 function TableDiscipline() {
   const { address } = useRobotContext();

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NoItems, SearchSnippet } from '../../../components';
 import { getTweet } from 'src/utils/search/utils';
 import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 import Loader2 from 'src/components/ui/Loader2';
 
 function FeedsTab() {

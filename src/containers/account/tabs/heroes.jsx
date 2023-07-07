@@ -8,7 +8,7 @@ import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import { useGetHeroes } from '../hooks';
 import Table from 'src/components/Table/Table';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 import { useEffect } from 'react';
 
 const getDaysIn = (time) => {

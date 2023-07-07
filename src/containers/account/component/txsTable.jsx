@@ -14,7 +14,7 @@ import { ContainerGradientText } from '../../../components/containerGradient/Con
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
 import Loader2 from 'src/components/ui/Loader2';
 import Table from 'src/components/Table/Table';
-import { useRobotContext } from 'src/pages/robot/Robot';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 function TxsTable() {
   const { address: accountUser } = useRobotContext();
@@ -131,6 +131,7 @@ function TxsTable() {
     <ContainerGradientText
       userStyleContent={{
         padding: '15px 0',
+        minHeight: '70vh',
       }}
     >
       <Table columns={columns} data={tableData} isLoading={isFetching}>

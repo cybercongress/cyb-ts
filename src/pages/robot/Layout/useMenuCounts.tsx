@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useNewsToday } from 'src/containers/Wallet/card/tweet';
-import { useGetBalance, useGetHeroes } from 'src/containers/account/hooks';
+import { useGetBalance } from 'src/containers/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
 import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoIpfsNode';
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
@@ -16,10 +16,10 @@ import {
   getTweet,
 } from 'src/utils/search/utils';
 import { convertResources, reduceBalances } from 'src/utils/utils';
-import { useRobotContext } from '../Robot';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
+import { useRobotContext } from '../robot.context';
 
-function useGetMenuCounts(address: string) {
+function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();
   const [cyberlinksCount, setCyberlinksCount] = useState();
   const [energy, setEnergy] = useState<number>();
@@ -140,4 +140,4 @@ function useGetMenuCounts(address: string) {
   };
 }
 
-export default useGetMenuCounts;
+export default useMenuCounts;

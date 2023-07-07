@@ -16,8 +16,8 @@ const slice = createSlice({
   name: 'passport',
   initialState,
   reducers: {
-    setPassportLoading: (state) => {
-      state.loading = true;
+    setPassportLoading: (state, { payload }: PayloadAction<boolean>) => {
+      state.loading = payload;
     },
     setPassport: (state, { payload }: PayloadAction<Citizenship | null>) => {
       state.data = payload;
