@@ -9,6 +9,8 @@ module.exports = merge(commonConfig, {
     host: 'localhost',
     port: process.env.PORT_APP || '3001',
     hot: true,
+    // ngrok tunnel
+    allowedHosts: ['.ngrok-free.app'],
     headers: {
       'Access-Control-Allow-Origin': '*',
     },

@@ -1,8 +1,22 @@
+@import 'src/style/mixins.scss';
+
+.container {
+  display: grid;
+  grid-template-columns: 140px 270px 0.9fr 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 15px 0;
+
+  // &:hover {
+  //   @include tableHover;
+  // }
+}
+
 .containerDetailsBalance {
   position: relative;
   min-height: 0px;
   height: 0px;
-  padding: 0 25px;
+  padding-left: 23px;
   transition: 0.5s ease-in-out;
   opacity: 0;
 
@@ -39,9 +53,9 @@
 
   &entered {
     opacity: 1;
-    min-height: 250px;
+    min-height: 200px;
     height: 1px;
-    margin-top: 30px;
+    margin-top: 20px;
   }
 
   &exiting {

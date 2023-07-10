@@ -1,10 +1,11 @@
-@import '../../../../../style/mixins.scss';
+@import 'src/style/mixins.scss';
 
 .container {
   display: grid;
   gap: 0px 20px;
-  padding: 30px 0;
+  padding: 15px 0;
   // grid-auto-flow: row;
+  grid-template-columns: auto 1fr auto;
   grid-template-areas: '. address total';
   align-items: center;
   font-size: 20px;
@@ -31,6 +32,7 @@
 
 .total {
   grid-area: total;
+  justify-self: flex-end;
 }
 
 .address {

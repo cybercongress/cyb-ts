@@ -3,15 +3,7 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
-import styles from './styles.scss';
-
-// const testData = {
-//   liquid: '1 102 102 102 102',
-//   frozen: 102,
-//   melting: 102,
-//   growth: 102,
-//   total: 100231,
-// };
+import styles from './styles.module.scss';
 
 function DetailsBalance({ data }) {
   const { traseDenom } = useIbcDenom();

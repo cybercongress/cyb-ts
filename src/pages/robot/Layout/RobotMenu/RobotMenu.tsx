@@ -146,7 +146,11 @@ function RobotMenu({ counts, isRight }: Props) {
 
   function renderLinks(links: MenuItem[], isMirror?: boolean) {
     return (
-      <ul className={styles.links}>
+      <ul
+        className={cx(styles.links, {
+          [styles.mirror]: isMirror,
+        })}
+      >
         {links.map((link, index) => {
           let { description, text, icon } = link;
           let count = counts[link.name] || 0;
@@ -190,12 +194,7 @@ function RobotMenu({ counts, isRight }: Props) {
           }
 
           return (
-            <li
-              key={index}
-              className={cx({
-                [styles.mirror]: isMirror,
-              })}
-            >
+            <li key={index}>
               {selectTag(
                 <>
                   <span className={styles.text}>{text}</span>

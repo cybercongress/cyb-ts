@@ -5,7 +5,10 @@ $actionBarSpace: 130px;
   justify-content: center;
   align-items: flex-start;
   grid-template-columns: 1fr minmax(200px, 62%) 1fr;
-  padding-bottom: $actionBarSpace;
+
+  > main {
+    padding-bottom: $actionBarSpace;
+  }
 }
 
 .container {

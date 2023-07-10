@@ -4,6 +4,7 @@ import { useGetBalanceBostrom } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
 import { Citizenship } from 'src/types/citizenship';
+import styles from './CardPassport.module.scss';
 
 type Props = {
   address: string; // bostrom address
@@ -69,7 +70,7 @@ function CardPassport({
         }
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div className={styles.rows}>
         {Object.keys(renderBalanceTokenRow).length > 0 ? (
           renderBalanceTokenRow
         ) : (

@@ -49,6 +49,10 @@ function App() {
     dispatch(setPassport(!defaultAccount.account ? null : passport || null));
   }, [passport, dispatch, defaultAccount]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // chekEvangelism = () => {
   //   const { location } = this.props;
   //   const { search } = location;

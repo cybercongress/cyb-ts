@@ -5,7 +5,7 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
@@ -73,17 +73,7 @@ function RowBalancesDetails({ balance }) {
 
   return (
     <div style={{ display: 'grid' }}>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '140px 270px 0.9fr 1fr',
-          height: '40px',
-          paddingLeft: 25,
-          // padding: '0 25px',
-          gap: '10px',
-          alignItems: 'flex-start',
-        }}
-      >
+      <div className={styles.container}>
         <Link to={getLinktoSearch(balance.total.denom)}>
           <DenomArr denomValue={balance.total.denom} />
         </Link>

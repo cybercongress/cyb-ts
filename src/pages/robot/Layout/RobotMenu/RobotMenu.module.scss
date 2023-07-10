@@ -15,7 +15,7 @@ $activeLineWidth: 2px;
   flex-direction: column;
   justify-content: space-between;
   height: calc(100vh - $headerHeight - $actionBarHeight + 30px);
-  max-height: 900px; // macbook 15'
+  max-height: 900px;
 
   overflow-y: auto;
   overflow-x: hidden;
@@ -26,7 +26,7 @@ $activeLineWidth: 2px;
   z-index: 1; // for active state overflow
 
   li {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     position: relative;
     display: flex;
     direction: ltr;
@@ -36,7 +36,6 @@ $activeLineWidth: 2px;
     button {
       padding-right: 25px;
       gap: 0 10px;
-      min-height: 60px;
 
       display: grid;
       grid-auto-rows: 1fr;
@@ -92,6 +91,7 @@ $activeLineWidth: 2px;
       .icon {
         grid-area: icon;
         line-height: 100%;
+        // min-width: 20px;
         color: white;
         font-size: 20px;
       }
@@ -101,7 +101,7 @@ $activeLineWidth: 2px;
         content: '';
         opacity: 0;
         display: block;
-        right: -$activeLineWidth + 1px;
+        right: -$activeLineWidth + 2px;
         height: 100%;
         position: absolute;
         transition: opacity 0.3s;
@@ -115,11 +115,6 @@ $activeLineWidth: 2px;
       }
 
       &:hover {
-        // grid-template-areas:
-        //   '. text .'
-        //   'count count icon'
-        //   'description description .';
-
         .count {
           color: white;
         }
@@ -153,26 +148,22 @@ $activeLineWidth: 2px;
       cursor: not-allowed;
       opacity: 0.38;
     }
+  }
 
-    &.mirror {
+  &.mirror {
+    direction: ltr;
+
+    li {
       direction: rtl;
-      // justify-content: flex-start;
 
       a,
       button {
         padding-left: 25px;
         padding-right: unset;
 
-        //   grid-template-areas:
-        //     '. text .'
-        //     'icon count new'
-        //     '. description description';
-
-        //   .description,
-        //   .text,
-        //   .count {
-        //     justify-self: flex-start;
-        //   }
+        .count {
+          direction: ltr;
+        }
 
         &.active {
           &::after,
