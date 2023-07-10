@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import KeyItem from './KeyItem/KeyItem';
 import { MainContainer } from 'src/components';
-import ActionBar from 'src/containers/Wallet/actionBar';
+import ActionBar from 'src/pages/Keys/ActionBar/actionBar';
 import { initPocket } from 'src/redux/features/pocket';
 import styles from './Keys.module.scss';
 import { useState } from 'react';

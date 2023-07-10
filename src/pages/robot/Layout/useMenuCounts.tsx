@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { useNewsToday } from 'src/containers/Wallet/card/tweet';
-import { useGetBalance } from 'src/containers/account/hooks';
+import { useNewsToday } from 'src/pages/robot/Layout/tweet.temp';
+import { useGetBalance } from 'src/pages/robot/_refactor/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
 import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoIpfsNode';
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';

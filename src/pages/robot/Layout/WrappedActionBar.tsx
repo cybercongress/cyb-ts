@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import ActionBarContainer from 'src/containers/account/actionBar';
+import ActionBarContainer from 'src/pages/robot/_refactor/account/actionBar';
 
 import { RootState } from 'src/redux/store';
 import { getIpfsHash, chekFollow } from 'src/utils/search/utils';

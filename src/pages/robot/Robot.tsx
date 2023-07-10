@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import TxsTable from 'src/containers/account/component/txsTable';
-import FeedsTab from 'src/containers/account/tabs/feeds';
-import FollowsTab from 'src/containers/account/tabs/follows';
-import Heroes from 'src/containers/account/tabs/heroes';
+import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
+import FeedsTab from 'src/pages/robot/_refactor/account/tabs/feeds';
+import FollowsTab from 'src/pages/robot/_refactor/account/tabs/follows';
+import Heroes from 'src/pages/robot/_refactor/account/tabs/heroes';
 import ForceGraph from 'src/containers/forceGraph/forceGraph';
 import TableDiscipline from 'src/containers/gol/table';
 import IpfsSettings from 'src/containers/ipfsSettings';
