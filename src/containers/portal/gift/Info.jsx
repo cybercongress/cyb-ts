@@ -1,4 +1,8 @@
+import { formatNumber } from 'src/utils/utils';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 import { InfoCard } from '../components';
+import { BOOT_ICON } from '../utils';
 import STEP_INFO from './utils';
 
 const {
@@ -21,9 +25,13 @@ const {
   STATE_RELEASE,
   STATE_CLAIM_IN_PROCESS,
   STATE_PROVE_IN_PROCESS,
+  STATE_RELEASE_INIT,
+  STATE_RELEASE_ALL,
+  STATE_RELEASE_NULL,
+  STATE_RELEASE_IN_PROCESS,
 } = STEP_INFO;
 
-function Info({ stepCurrent, selectedAddress, amountClaims }) {
+function Info({ stepCurrent, useReleasedStage, nextRelease }) {
   try {
     let content;
 
@@ -105,12 +113,6 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_CLAIME_TO_PROVE:
         content = (
           <span>
-            {/* Address{' '}
-          {address !== '' && (
-            <span style={{ color: '#38d6ae' }}>{address}</span>
-          )}{' '}
-          has no gift <br />
-          Prove another address to try your luck */}
             You did not work hard to get gift. No wories ! You have a
             citizenship, just go and buy BOOT
           </span>
@@ -152,12 +154,48 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
         );
         break;
 
+      case STATE_RELEASE_INIT:
+        content = (
+          <span>
+            release {formatNumber(useReleasedStage.availableRelease) || ''}
+            {BOOT_ICON} right now! <br />
+          </span>
+        );
+        break;
+
+      case STATE_RELEASE_ALL:
+        content = (
+          <span>
+            Next release will be available in {nextRelease} new addresses.{' '}
+            <br />
+            <Link to={routes.sphere.path}>Hire hero</Link> and get H token for
+            free
+            <br />
+            invite your friends to release faster
+          </span>
+        );
+        break;
+
+      case STATE_RELEASE_NULL:
+        content = (
+          <span>
+            You have nothing to release. <br />
+            Prove another address <br />
+            or claim address with the gift.
+          </span>
+        );
+        break;
+
       case STATE_PROVE_IN_PROCESS:
         content = <span>prove address take time</span>;
         break;
 
       case STATE_CLAIM_IN_PROCESS:
         content = <span>claim take time</span>;
+        break;
+
+      case STATE_RELEASE_IN_PROCESS:
+        content = <span>release take time</span>;
         break;
 
       default:

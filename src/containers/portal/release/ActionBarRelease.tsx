@@ -1,21 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
-import txs from '../../../utils/txs';
+import { Nullable } from 'src/types';
+import { AccountValue } from 'src/types/defaultAccount';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
-import { Dots, BtnGrd } from '../../../components';
-import { ActionBarSteps } from '../components';
+import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
-import STEP_INFO from './utils';
+import { TxHash } from '../hook/usePingTxs';
+import { CurrentRelease } from './type';
 
-const { STATE_INIT_NULL_ACTIVE, STATE_INIT_NULL_BEFORE } = STEP_INFO;
-
-const gasPrice = GasPrice.fromString('0.001boot');
-
-const releaseMsg = (giftAddress) => {
+const releaseMsg = (giftAddress: string) => {
   return {
     release: {
       gift_address: giftAddress,
@@ -28,25 +24,36 @@ const STEP_CHECK_ACC = 1;
 const STATE_CHANGE_ACCOUNT = 1.1;
 const STEP_RELEASE = 2;
 
+type Props = {
+  txHash: Nullable<TxHash>;
+  updateTxHash: (data: TxHash) => void;
+  selectedAddress: Nullable<string>;
+  isRelease: boolean;
+  loadingRelease: boolean;
+  addressActive: Nullable<AccountValue>;
+  currentRelease: Nullable<CurrentRelease[]>;
+  redirectFunc: (steps: 'claim' | 'prove') => void;
+};
+
 function ActionBarRelease({
-  stateInfo,
+  txHash,
   updateTxHash,
   selectedAddress,
-  activeReleases,
   isRelease,
   currentRelease,
   totalGift,
   totalRelease,
   loadingRelease,
   addressActive,
-}) {
+  redirectFunc,
+}: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
 
   const getRelease = useCallback(async () => {
     try {
-      if (signer && signingClient && currentRelease !== null) {
+      if (signer && signingClient && currentRelease) {
         const msgs = [];
         if (currentRelease.length > 0) {
           currentRelease.forEach((item) => {
@@ -64,7 +71,7 @@ function ActionBarRelease({
             addressKeplr,
             CONTRACT_ADDRESS_GIFT,
             msgs,
-            txs.calculateFee(gasLimits, gasPrice),
+            'auto',
             CYBER.MEMO_KEPLR
           );
 
@@ -96,7 +103,7 @@ function ActionBarRelease({
   useEffect(() => {
     const checkAddress = async () => {
       if (step === STEP_CHECK_ACC || step === STATE_CHANGE_ACCOUNT) {
-        if (signer && addressActive !== null) {
+        if (signer && addressActive) {
           const [{ address }] = await signer.getAccounts();
           const { bech32 } = addressActive;
           if (address === bech32) {
@@ -113,7 +120,7 @@ function ActionBarRelease({
   }, [step, signer, addressActive]);
 
   const useAddressOwner = useMemo(() => {
-    if (addressActive !== null) {
+    if (addressActive) {
       const { name, bech32 } = addressActive;
       if (name !== undefined && name !== null) {
         return (
@@ -135,9 +142,24 @@ function ActionBarRelease({
     return '';
   }, [addressActive]);
 
+  const useValidOwner = useMemo(() => {
+    if (
+      selectedAddress &&
+      !selectedAddress.match(PATTERN_CYBER) &&
+      currentRelease &&
+      addressActive &&
+      currentRelease.length > 0 &&
+      currentRelease[0].addressOwner !== addressActive.bech32
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [addressActive, currentRelease, selectedAddress]);
+
   const isValidClaime = useMemo(() => {
     if (
-      selectedAddress !== null &&
+      selectedAddress &&
       selectedAddress.match(PATTERN_CYBER) &&
       totalGift !== null &&
       totalRelease === null
@@ -146,7 +168,7 @@ function ActionBarRelease({
     }
 
     const validFields =
-      selectedAddress !== null &&
+      selectedAddress &&
       totalGift !== null &&
       totalRelease !== null &&
       !selectedAddress.match(PATTERN_CYBER);
@@ -164,7 +186,7 @@ function ActionBarRelease({
 
   const isValidProve = useMemo(() => {
     if (
-      selectedAddress !== null &&
+      selectedAddress &&
       selectedAddress.match(PATTERN_CYBER) &&
       totalGift === null
     ) {
@@ -172,7 +194,7 @@ function ActionBarRelease({
     }
 
     if (
-      selectedAddress !== null &&
+      selectedAddress &&
       totalGift !== null &&
       !selectedAddress.match(PATTERN_CYBER) &&
       !Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
@@ -184,71 +206,90 @@ function ActionBarRelease({
   }, [selectedAddress, totalGift]);
 
   const useSelectCyber = useMemo(() => {
-    return (
-      selectedAddress &&
-      selectedAddress !== null &&
-      selectedAddress.match(PATTERN_CYBER)
-    );
+    return selectedAddress && selectedAddress.match(PATTERN_CYBER);
   }, [selectedAddress]);
 
-  if (
-    stateInfo === STATE_INIT_NULL_ACTIVE ||
-    stateInfo === STATE_INIT_NULL_BEFORE
-  ) {
+  const redirectToGift = useCallback(
+    (key: 'claim' | 'prove') => {
+      if (redirectFunc) {
+        redirectFunc(key);
+      }
+
+      navigate('/gift');
+    },
+    [navigate, redirectFunc]
+  );
+
+  if (currentRelease && useValidOwner) {
     return (
-      <ActionBarSteps>
-        <BtnGrd
-          onClick={() => navigate('citizenship')}
-          text="get citizenship"
-        />
-      </ActionBarSteps>
+      <ActionBar>
+        <div
+          style={{
+            display: 'flex',
+          }}
+        >
+          already claimed by
+          <Account
+            styleUser={{ marginLeft: '5px' }}
+            address={currentRelease[0].addressOwner}
+          />
+          . switch account to release
+        </div>
+      </ActionBar>
     );
   }
 
   if (step === STATE_CHANGE_ACCOUNT) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
+      <ActionBar onClickBack={() => setStep(STEP_INIT)}>
         choose {useAddressOwner} in keplr
-      </ActionBarSteps>
+      </ActionBar>
     );
   }
 
-  if (activeReleases && loadingRelease) {
+  if (loadingRelease) {
     return (
-      <ActionBarSteps>
+      <ActionBar>
         <BtnGrd disabled text={<Dots />} />
-      </ActionBarSteps>
+      </ActionBar>
     );
   }
 
-  if (activeReleases && isValidProve) {
+  if (isValidProve) {
     return (
-      <ActionBarSteps>
-        <BtnGrd onClick={() => navigate('gift')} text="go to prove address" />
-      </ActionBarSteps>
+      <ActionBar>
+        <BtnGrd
+          onClick={() => redirectToGift('prove')}
+          text="go to prove address"
+        />
+      </ActionBar>
     );
   }
 
-  if (activeReleases && isValidClaime) {
+  if (isValidClaime) {
     return (
-      <ActionBarSteps>
-        <BtnGrd onClick={() => navigate('gift')} text="go to claim" />
-      </ActionBarSteps>
+      <ActionBar>
+        <BtnGrd onClick={() => redirectToGift('claim')} text="go to claim" />
+      </ActionBar>
     );
   }
 
-  if (activeReleases && totalRelease !== null) {
+  if (totalRelease !== null) {
     return (
-      <ActionBarSteps>
+      <ActionBar>
         <BtnGrd
           disabled={isRelease === false || isRelease === null}
           onClick={() => setStep(STEP_CHECK_ACC)}
           text={
             useSelectCyber ? `release all ${GIFT_ICON}` : `release ${GIFT_ICON}`
           }
-          pending={step === STEP_RELEASE || step === STEP_CHECK_ACC}
+          pending={
+            step === STEP_RELEASE ||
+            step === STEP_CHECK_ACC ||
+            txHash?.status === 'pending'
+          }
         />
-      </ActionBarSteps>
+      </ActionBar>
     );
   }
 

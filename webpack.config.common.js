@@ -50,6 +50,7 @@ module.exports = {
       '.json',
       '.ts',
       '.tsx',
+      '.mp3',
     ],
     alias: {
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
@@ -57,6 +58,8 @@ module.exports = {
       src: path.resolve(__dirname, 'src/'),
       components: path.resolve(__dirname, 'src', 'components'),
       images: path.resolve(__dirname, 'src', 'image'),
+      sounds: path.resolve(__dirname, 'src', 'sounds'),
+
       // '../../src/wasm_bindings.js': path.resolve(
       //   __dirname,
       //   './src/wasm_bindings.js'

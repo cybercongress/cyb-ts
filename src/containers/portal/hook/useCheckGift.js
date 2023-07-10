@@ -181,7 +181,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
             !Object.prototype.hasOwnProperty.call(totalGift, element.address)
           ) {
             const responseGift = await checkGift(element.address);
-            // console.log('responseGift', responseGift);
             if (responseGift !== null) {
               result[element.address] = {
                 ...responseGift,

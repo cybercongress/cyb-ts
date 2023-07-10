@@ -2,7 +2,7 @@ import styles from './styles.scss';
 
 const STEP_INIT = 0;
 
-function MoonAnimation({ stepCurrent }) {
+function MoonAnimation({ stepCurrent }: { stepCurrent?: number }) {
   return (
     <div
       className={styles.mask}

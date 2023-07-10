@@ -47,6 +47,7 @@ import ContainerGradient, {
 import MainContainer from './MainContainer';
 import ButtonIcon from './buttons/ButtonIcon';
 import Loading from './ui/Loading';
+import DonutChart from './DonutChart';
 
 const BtnGrd = Button;
 
@@ -100,6 +101,7 @@ export {
   ContainerGradient,
   ContainerGradientText,
   MainContainer,
+  DonutChart,
 };
 
 export { Dots } from './ui/Dots';
