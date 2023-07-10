@@ -625,14 +625,14 @@
   &Pink {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-pink(90deg);
+      @include linear-gradient-pink(0deg);
       right: 0;
       opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-pink(-90deg);
+      @include linear-gradient-pink(180deg);
       left: 0;
       opacity: 11%;
     }

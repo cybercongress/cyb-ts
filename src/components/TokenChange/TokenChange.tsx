@@ -2,7 +2,7 @@ import { CYBER } from 'src/utils/config';
 import { formatNumber } from 'src/utils/utils';
 import cx from 'classnames';
 import styles from './TokenChange.module.scss';
-import { FormatNumberTokens } from 'src/containers/sigma/components/cardUi';
+import { FormatNumberTokens } from 'src/containers/nebula/components';
 
 export type Props = {
   total: number;

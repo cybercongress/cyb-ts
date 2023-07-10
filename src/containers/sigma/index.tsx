@@ -129,7 +129,8 @@ function Sigma() {
         <ContainerGradientText
           status="grey"
           userStyleContent={{
-            paddingRight: 25,
+            // need debug why
+            paddingRight: 23.5,
             paddingLeft: 10,
           }}
         >
@@ -138,7 +139,7 @@ function Sigma() {
               <div className={styles.circle}>
                 <img src={require('../../image/sigma.png')} />
               </div>
-              <h3>Sigma</h3>
+              <h3>{superSigma ? 'Supersigma' : 'Sigma'}</h3>
             </div>
 
             <TokenChange total={value.totalCap} change={value.changeCap} />

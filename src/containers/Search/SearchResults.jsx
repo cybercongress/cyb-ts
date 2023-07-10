@@ -205,7 +205,7 @@ function SearchResults() {
         className="hover-rank"
         display="flex"
         alignItems="center"
-        marginBottom="10px"
+        marginBottom="-2px"
       >
         <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
@@ -228,7 +228,7 @@ function SearchResults() {
         className="hover-rank"
         display="flex"
         alignItems="center"
-        marginBottom="10px"
+        marginBottom="-2px"
       >
         <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
@@ -251,7 +251,7 @@ function SearchResults() {
         className="hover-rank"
         display="flex"
         alignItems="center"
-        marginBottom="10px"
+        marginBottom="-2px"
       >
         <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
           <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
@@ -274,7 +274,7 @@ function SearchResults() {
         className="hover-rank"
         display="flex"
         alignItems="center"
-        marginBottom="10px"
+        marginBottom="-2px"
       >
         <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
           <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
@@ -298,7 +298,7 @@ function SearchResults() {
             className="hover-rank"
             display="flex"
             alignItems="center"
-            marginBottom="10px"
+            marginBottom="-2px"
           >
             {!mobile && (
               <Pane
