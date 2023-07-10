@@ -143,7 +143,7 @@ function SwitchAccount() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, defaultAccount, node]);
 
-  const multipleAccounts = renderItem && Object.keys(renderItem).length > 0;
+  // const multipleAccounts = renderItem && Object.keys(renderItem).length > 0;
 
   return (
     <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
@@ -196,7 +196,6 @@ function SwitchAccount() {
           </div>
         </Link>
       </div>
-      {/* {multipleAccounts && ( */}
       <Transition in={visible} timeout={300}>
         {(state) => {
           return (
@@ -230,7 +229,6 @@ function SwitchAccount() {
           );
         }}
       </Transition>
-      {/* )} */}
     </div>
   );
 }

@@ -56,9 +56,6 @@ import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
-import UnderConstruction from './pages/robot/UnderConstruction/UnderConstruction';
-import Wallet from './containers/Wallet/Wallet';
-import Sigma from './containers/sigma';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 

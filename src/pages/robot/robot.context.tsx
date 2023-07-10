@@ -64,7 +64,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   }
 
   const checkIsOwner = useCallback(
-    (address: string | null) => {
+    (address: string | undefined) => {
       if (!address) {
         return false;
       }
@@ -113,6 +113,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   if (!isOwner) {
     isOwner = checkIsOwner(address);
   }
+  isOwner = isOwner as boolean;
 
   let query = {};
   if (address) {
@@ -136,7 +137,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
 
   const currentPassport = isOwner ? currentUserPassport : passportContract;
   const currentRobotAddress = address || currentPassport.data?.owner || null;
-  // const isLoading = isOwner ? currentUserPassport.loading : passportContract.loading;
+  const isLoading = currentPassport.loading;
 
   // redirect from /robot to /@nickname
   const newUser =
@@ -157,7 +158,11 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       navigate(routes.robot.path);
     }
 
-    if (robotUrl && currentUserPassport.data) {
+    if (
+      robotUrl &&
+      currentUserPassport.data &&
+      defaultAccount.account?.cyber.bech32 === currentUserPassport.data.owner
+    ) {
       navigate(
         location.pathname.replace(
           routes.robot.path,
@@ -175,6 +180,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     robotUrl,
     currentUserPassport.data,
     newUser,
+    defaultAccount,
     navigate,
   ]);
 
@@ -197,19 +203,16 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       addRefetch,
       nickname: nickname || currentPassport.data?.extension.nickname,
       refetchData,
-      isLoading: isOwner
-        ? currentUserPassport.loading
-        : passportContract.loading,
+      isLoading,
     }),
     [
       currentPassport.data,
       nickname,
-      currentUserPassport,
       addRefetch,
       refetchData,
       isOwner,
+      isLoading,
       currentRobotAddress,
-      passportContract,
     ]
   );
   return (
