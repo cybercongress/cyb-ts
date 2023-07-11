@@ -28,7 +28,7 @@ function LinearGradientContainer({ active, color, title, children }: Props) {
         <div className={cx(styles.textboxFace, styles.textboxBottomGradient)} />
         <div className={cx(styles.textboxFace, styles.textboxBottomLine)} />
       </div>
-      {title && !active && <p>{title}</p>}
+      {title && <p>{title}</p>}
     </div>
   );
 }

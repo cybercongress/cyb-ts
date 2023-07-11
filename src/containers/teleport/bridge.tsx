@@ -108,10 +108,8 @@ function Bridge() {
       const tempList: SelectOption[] = [];
       let reduceData: string[] = [];
 
-      if (selected !== CYBER.CHAIN_ID) {
-        reduceData = [CYBER.CHAIN_ID];
-      } else if (channels) {
-        reduceData = [...Object.keys(channels)];
+      if (channels) {
+        reduceData = [CYBER.CHAIN_ID, ...Object.keys(channels)];
       }
 
       reduceData.forEach((key) => {

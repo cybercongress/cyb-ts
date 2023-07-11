@@ -63,7 +63,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
         <LinearGradientContainer
           active={focusedProps || focused}
           color={color}
-          title={!(focused || value) ? title : undefined}
+          title={title}
         >
           <Tag
             type={type}
