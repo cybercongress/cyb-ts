@@ -8,6 +8,16 @@ import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
 import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
+import {
+  matchPath,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { initPocket } from 'src/redux/features/pocket';
+import { Networks } from 'src/types/networks';
+import { routes } from 'src/routes';
 
 export const menuButtonId = 'menu-button';
 
@@ -30,9 +40,9 @@ const forEachObjbech32 = (data, prefix) => {
   return newObj;
 };
 
-const updateAddress = async (prefix: any) => {
-  const localStoragePocketAccount = await localStorage.getItem('pocketAccount');
-  const localStoragePocket = await localStorage.getItem('pocket');
+const updateAddress = (prefix: any) => {
+  const localStoragePocketAccount = localStorage.getItem('pocketAccount');
+  const localStoragePocket = localStorage.getItem('pocket');
 
   if (localStoragePocket !== null) {
     const localStoragePocketData = JSON.parse(localStoragePocket);
@@ -51,6 +61,12 @@ const updateAddress = async (prefix: any) => {
 
 function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
+
+  const location = useLocation();
+  // const navigate = useNavigate();
+  const params = useParams();
+  // const dispatch = useDispatch();
+
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useNetworks();
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
@@ -61,10 +77,23 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
     placement: 'bottom',
   });
 
-  const onClickChain = async (chainId: string, prefix: any) => {
+  const onClickChain = async (chainId: Networks, prefix: any) => {
     localStorage.setItem('chainId', chainId);
-    await updateAddress(prefix);
-    window.location.reload();
+    updateAddress(prefix);
+
+    // dispatch(initPocket());
+
+    let redirectHref = location.pathname;
+    if (matchPath(routes.neuron.path, location.pathname)) {
+      const newAddress = fromBech32(params.address, prefix);
+
+      redirectHref = routes.neuron.getLink(newAddress);
+    } else if (location.pathname.includes('@')) {
+      redirectHref = routes.robot.path;
+    }
+
+    // TODO: remove reload page (need fix config)
+    window.location.pathname = redirectHref;
   };
 
   const renderItemChain =

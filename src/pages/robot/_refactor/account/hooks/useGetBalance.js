@@ -143,7 +143,7 @@ function useGetBalance(address, updateAddress) {
       } catch (e) {
         console.log(e);
         setLoadingBalanceInfo(false);
-        setBalance(...initValue);
+        setBalance(initValue);
       }
     };
     getBalance();

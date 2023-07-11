@@ -58,4 +58,8 @@ export const routes = {
   sigma: {
     path: '/sigma',
   },
+  neuron: {
+    path: '/neuron/:address/*',
+    getLink: (address: string) => `/neuron/${address}`,
+  },
 };

@@ -110,7 +110,11 @@ export function Bookmarks({
           <div key={key}>
             <Items
               selected={
-                item.to === location.pathname && selectedItemSub === ''
+                (item.to === location.pathname && selectedItemSub === '') ||
+                // maybe refactor robot url check
+                (item.to === '/robot' &&
+                  (location.pathname.includes('@') ||
+                    location.pathname.includes('neuron/')))
                 // item.active === undefined
               }
               item={item}
