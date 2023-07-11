@@ -177,6 +177,10 @@ function Send() {
     dataSendTxs.refetch();
   }, [dataSendTxs]);
 
+  const reverceTokenAmount = useMemo(() => {
+    return new BigNumber(tokenAmount).multipliedBy(-1).toString();
+  }, [tokenAmount]);
+
   const stateActionBar = {
     tokenAmount,
     tokenSelect,
@@ -206,6 +210,7 @@ function Send() {
                 accountBalances={accountBalances}
                 token={tokenSelect}
                 title="you have"
+                changeAmount={reverceTokenAmount}
               />
             </Col>
             <Col>
@@ -228,6 +233,7 @@ function Send() {
                 title="recipient have"
                 accountBalances={recipientBalances}
                 token={tokenSelect}
+                changeAmount={tokenAmount}
               />
             </Col>
           </GridContainer>
