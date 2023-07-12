@@ -58,6 +58,7 @@
 .passports {
   display: flex;
   gap: 0 15px;
+  flex-wrap: wrap;
 
   .passportName {
     color: var(--primary-color);
