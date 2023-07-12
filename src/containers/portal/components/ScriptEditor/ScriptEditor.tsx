@@ -1,8 +1,10 @@
 import React, { useCallback, useState, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
 import { RootState } from 'src/redux/store';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import { Pane, TableEv as Table, Text, Tablist } from '@cybercongress/gravity';
+import { Pane, Tablist } from '@cybercongress/gravity';
 import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 import {
@@ -17,6 +19,7 @@ import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
+import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import styles from './ScriptEditor.module.scss';
@@ -27,7 +30,6 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 import 'codemirror/mode/rust/rust';
 
 import { updatePassportData } from '../../utils';
-import { useParams } from 'react-router-dom';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -180,40 +182,10 @@ function ScriptEditor() {
           />
         </Tablist>
         {tab === 'secrets' && (
-          <>
-            <Table>
-              <Table.Head
-                style={{
-                  backgroundColor: '#000',
-                  borderBottom: '1px solid #ffffff80',
-                  paddingBottom: '15px',
-                  height: 'auto',
-                }}
-              >
-                <Table.TextHeaderCell textAlign="center">
-                  <Text>KEY</Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell textAlign="center">
-                  <Text>VALUE</Text>
-                </Table.TextHeaderCell>
-              </Table.Head>
-              <Table.Body overflowY="none">
-                <Table.Row borderBottom="none" padding="15px 0">
-                  <Table.TextCell textAlign="center">
-                    <Text fontSize="16px" color="#fff">
-                      <Input placeholder="" />
-                    </Text>
-                  </Table.TextCell>
-                  <Table.TextCell textAlign="start">
-                    <Input placeholder="" />
-                  </Table.TextCell>
-                </Table.Row>
-              </Table.Body>
-            </Table>
-            {/* <Pane marginTop="25px" width="25%">
-          <Button>Save</Button>
-        </Pane> */}
-          </>
+          <LocalStorageAsEditableTable
+            storageKey="secrets"
+            columns={['key', 'value']}
+          />
         )}
         {!tab && (
           <>
