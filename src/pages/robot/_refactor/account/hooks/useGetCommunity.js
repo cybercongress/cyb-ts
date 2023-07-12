@@ -36,6 +36,10 @@ function useGetCommunity(address) {
       if (responseFollows?.txs) {
         responseFollows.txs.forEach(async (item) => {
           const addressFollowers = item.tx.value.msg[0].value.neuron;
+          if (!addressFollowers) {
+            // maybe better filter by cyber/MsgCyberlink type?
+            return;
+          }
           setFollowers((items) => [...items, addressFollowers]);
         });
       }

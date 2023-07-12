@@ -1,13 +1,8 @@
 import { Pane } from '@cybercongress/gravity';
-import {
-  NoItems,
-  Account,
-  ContainerGradientText,
-  ContainerGradient,
-} from '../../../../../components';
-import { useGetCommunity } from '../hooks';
 import Loader2 from 'src/components/ui/Loader2';
 import { useRobotContext } from 'src/pages/robot/robot.context';
+import { NoItems, Account, ContainerGradient } from '../../../../../components';
+import { useGetCommunity } from '../hooks';
 
 type CommunityEntityProps = {
   items: string[];
