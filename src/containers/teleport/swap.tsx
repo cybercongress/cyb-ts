@@ -281,6 +281,14 @@ function Swap() {
     [accountBalances, tokenA, traseDenom, amountChangeHandler]
   );
 
+  // const onChangeSelect = useCallback(() => {
+  //   setToken();
+  //       amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
+
+
+  // }, []);
+  // ;
+
   const stateActionBar = {
     tokenAAmount,
     tokenA,
