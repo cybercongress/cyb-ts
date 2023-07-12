@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { connect, useSelector } from 'react-redux';
-import { Pane } from '@cybercongress/gravity';
+import { useSelector } from 'react-redux';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useDevice } from 'src/contexts/device';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 import {
   NoItems,
   Dots,
@@ -12,19 +12,19 @@ import {
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { useRobotContext } from 'src/pages/robot/robot.context';
 
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
 function Taverna() {
   const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
+
+  const { address, isOwner } = useRobotContext();
   const { defaultAccount } = useSelector((state) => state.pocket);
-  const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
+  const { tweets, loadingTweets } = useGetTweets(address || null, node);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [rankLink, setRankLink] = useState(null);
   const [update, setUpdate] = useState(1);
-  const { isOwner } = useRobotContext();
 
   useEffect(() => {
     setRankLink(null);

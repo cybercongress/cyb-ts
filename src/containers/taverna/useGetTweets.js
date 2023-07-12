@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dateFormat from 'dateformat';
 import { useWebsockets } from 'src/websockets/context';
 import db from '../../db';
 import { getFollows, getTweet, getContent } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { fromBech32 } from '../../utils/utils';
 
 const getIndexdDb = async (cid) => {
@@ -24,13 +23,18 @@ const getIndexdDb = async (cid) => {
   return addressResolve;
 };
 
-const useGetTweets = (defaultAccount, node = null) => {
+const useGetTweets = (address) => {
   const [tweets, setTweets] = useState({});
   const [tweetData, setTweetData] = useState([]);
-  const [loadingTweets, setLoadingTweets] = useState(true);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [loadingTweets, setLoadingTweets] = useState(false);
   const [addressFollowData, setAddressFollowData] = useState({});
   const { cyber } = useWebsockets();
+
+  const addressActive = useMemo(() => {
+    return {
+      bech32: address,
+    };
+  }, [address]);
 
   useEffect(() => {
     if (!cyber?.connected) {
@@ -81,18 +85,19 @@ const useGetTweets = (defaultAccount, node = null) => {
   // }, [defaultAccount.name]);
 
   useEffect(() => {
-    const feachData = async () => {
+    const fetchData = async () => {
+      setLoadingTweets(true);
       let responseFollows = null;
-      if (addressActive !== null && addressActive.bech32.match(PATTERN_CYBER)) {
+      if (addressActive && addressActive.bech32?.match(PATTERN_CYBER)) {
         responseFollows = await getFollows(addressActive.bech32);
         if (responseFollows !== null && responseFollows.total_count > 0) {
           getFollow(responseFollows);
         }
       }
       if (
-        addressActive === null ||
-        responseFollows === null ||
-        responseFollows.total_count === 0
+        !addressActive ||
+        !responseFollows ||
+        Number(responseFollows.total_count) === 0
       ) {
         const cyberCongressAdsress = fromBech32(
           CYBER.CYBER_CONGRESS_ADDRESS,
@@ -100,18 +105,14 @@ const useGetTweets = (defaultAccount, node = null) => {
         );
 
         const responseTwit = await getTweet(cyberCongressAdsress);
-        if (
-          responseTwit &&
-          responseTwit !== null &&
-          responseTwit.total_count > 0
-        ) {
+        if (responseTwit && responseTwit.total_count > 0) {
           setTweetData((item) => [...item, ...responseTwit.txs]);
-        } else {
-          setLoadingTweets(false);
         }
       }
+      setLoadingTweets(false);
     };
-    feachData();
+
+    fetchData();
   }, [addressActive]);
 
   useEffect(() => {
@@ -163,6 +164,8 @@ const useGetTweets = (defaultAccount, node = null) => {
         }
       }
     });
+
+    setLoadingTweets(false);
   };
 
   const updateWs = async (data) => {
