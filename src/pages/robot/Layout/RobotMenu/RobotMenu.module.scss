@@ -101,7 +101,7 @@ $activeLineWidth: 2px;
         content: '';
         opacity: 0;
         display: block;
-        right: -$activeLineWidth + 0.5px;
+        right: -$activeLineWidth;
         height: 100%;
         position: absolute;
         transition: opacity 0.3s;
@@ -168,7 +168,7 @@ $activeLineWidth: 2px;
         &.active {
           &::after,
           &::before {
-            left: -$activeLineWidth + 0.5px;
+            left: -$activeLineWidth;
             right: unset;
           }
 
