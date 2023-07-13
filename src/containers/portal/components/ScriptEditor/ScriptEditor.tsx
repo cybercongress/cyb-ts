@@ -20,6 +20,7 @@ import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
 import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
+import { KeyValues, keyValuesToObject } from 'src/utils/localStorage';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import styles from './ScriptEditor.module.scss';
@@ -28,6 +29,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/the-matrix.css';
 import 'codemirror/mode/rust/rust';
+import { appBus } from 'src/services/scripting/bus';
 
 import { updatePassportData } from '../../utils';
 
@@ -67,7 +69,6 @@ const compileScript = (
 function ScriptEditor() {
   const codeMirrorRef = useRef();
   const { tab } = useParams();
-  console.log('----tab', tab);
   const { signer, signingClient } = useSigningClient();
   const { node } = useIpfs();
 
@@ -127,12 +128,27 @@ function ScriptEditor() {
     compileScript(code, true, particleParams).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
       highlightErrors(codeMirrorRef.current, result.diagnostics);
-
+      console.log('----res', result);
       if (!isOk) {
         addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
-        addToLog(['', '🏁 Result:', '', `   ${JSON.stringify(result.result)}`]);
+        addToLog([
+          '',
+          '🏁 Result:',
+          '',
+          `   ${JSON.stringify(result.result)}`,
+          '',
+          '🧪 Raw output:',
+          result.output,
+        ]);
       }
+    });
+  };
+
+  const onChangeSecrets = (secrets: KeyValues[]) => {
+    appBus.emit('context', {
+      name: 'secrets',
+      item: keyValuesToObject(secrets),
     });
   };
 
@@ -185,6 +201,7 @@ function ScriptEditor() {
           <LocalStorageAsEditableTable
             storageKey="secrets"
             columns={['key', 'value']}
+            onChange={onChangeSecrets}
           />
         )}
         {!tab && (

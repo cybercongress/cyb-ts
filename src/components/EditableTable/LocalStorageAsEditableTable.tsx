@@ -1,31 +1,33 @@
 import { useState } from 'react';
 
 // import TableControl from './TableControl';
-import { KeyValues } from './TableControl';
+import {
+  loadDataFromLocalStorage,
+  saveDataToLocalStorage,
+  KeyValues,
+} from 'src/utils/localStorage';
 import EditableTable from './EditableTable';
-
-const saveDataToLocalStorage = (
-  storageKey: string,
-  data: { [key: string]: KeyValues }
-) => {
-  localStorage.setItem(storageKey, JSON.stringify(data));
-};
 
 // eslint-disable-next-line import/no-unused-modules
 function LocalStorageAsEditableTable({
   storageKey,
   columns,
+  onChange,
+  defaultData = {},
 }: {
   storageKey: string;
   columns: string[];
+  onChange?: (items: KeyValues[]) => void;
+  defaultData: { [key: string]: KeyValues };
 }) {
   const [storedData, setStoredData] = useState<{ [key: string]: KeyValues }>(
-    JSON.parse(localStorage.getItem(storageKey) || '{}')
+    loadDataFromLocalStorage(storageKey, defaultData)
   );
 
   const handleSave = (data: { [key: string]: KeyValues }) => {
     saveDataToLocalStorage(storageKey, data);
     setStoredData(data);
+    onChange && onChange(Object.values(data));
   };
 
   return (

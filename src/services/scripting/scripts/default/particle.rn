@@ -37,11 +37,12 @@ pub async fn react_to_particle(cid, content_type, content) {
         if content.contains("openai@me") {
             let path =  cyb::context.app.params.path;
             if path.len() >= 2 && path[0] == "ipfs" {
-                let open_ai_key = "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";
+                let openAI_api_key = cyb::context.app.secrets.openAI_api_key;
+
                 let cid = path[1];
                 cyb::log(`feed ${cid} content to openai`);
                 let main_text = cyb::get_text_from_ipfs(cid).await;
-                let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, open_ai_key).await;
+                let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, openAI_api_key).await;
                 return update_content(`OpenAI say: ${result}`);
             }
         }

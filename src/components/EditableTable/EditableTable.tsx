@@ -33,25 +33,14 @@ function EditableTable({ data, columns, onSave }: TableControlProps) {
     () => Object.keys(items).slice(-1)?.[0],
     [items]
   );
-  console.log('----EditableTable', items, data, itemsCount);
-  // const titles = useMemo(() => extractKeys(Object.values(data)), [data]);
 
   useEffect(() => {
-    console.log('----itemsCount', items, itemsCount);
     if (itemsCount === 0) {
       addItem();
     } else {
-      // const lastItemUUID = Object.keys(items).slice(-1)?.[0];
       if (lastItemUUID) {
         const lastValues = Object.values(items[lastItemUUID]);
         const lastIsEdited = lastValues.some((v) => v !== '');
-        console.log(
-          '----lastStarted',
-          lastItemUUID,
-          lastIsEdited,
-          lastValues,
-          items[lastItemUUID]
-        );
         if (lastIsEdited) {
           addItem();
         }

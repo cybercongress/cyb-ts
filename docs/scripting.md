@@ -74,6 +74,15 @@ At the moment available URL based _app.params_: _path, query, and search_
 let path = cyb::context.app.params.path;
 ```
 
+## Secrets
+
+User can manage secrets App sife and access to them from key-value object.
+
+```
+// Load value from secrets
+let openAI_apiKey = cyb::context.app.secrets.openAI_apiKey;
+```
+
 ## Helpers
 
 ```

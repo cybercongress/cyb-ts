@@ -172,6 +172,7 @@ function AppRouter() {
           <Route path="/plugins" element={<ScriptEditor />} />
           <Route path="/plugins/:tab" element={<ScriptEditor />} />
           <Route path="/chatbot" element={<ChatBotConfig />} />
+          <Route path="/chatbot/:tab" element={<ChatBotConfig />} />
           {/*  */}
           <Route path="*" element={<PageNotExist />} />
         </Route>

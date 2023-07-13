@@ -3,6 +3,12 @@
 import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import {
+  STORAGE_KEYS,
+  loadDataFromLocalStorage,
+  keyValuesToObject,
+} from 'src/utils/localStorage';
+
 import { eventbus } from '../eventbus';
 
 type AppDependencies = CyberClient | AppIPFS;
@@ -25,7 +31,7 @@ type BusInitPayload =
     };
 
 type BusContextPayload = {
-  name: 'params';
+  name: 'params' | 'secrets';
   item: Record<string, ContextItemType>;
 };
 
@@ -50,6 +56,13 @@ export class ContextManager {
   }
 
   constructor() {
+    const secrets = loadDataFromLocalStorage(STORAGE_KEYS.secrets, {});
+
+    this.addContext({
+      name: 'secrets',
+      item: keyValuesToObject(Object.values(secrets)),
+    });
+
     appBus.on('init', (dep: BusInitPayload) => {
       this.addDep(dep);
     });

@@ -184,7 +184,7 @@ module.exports = {
         },
       },
       {
-        test: /\.rn$/,
+        test: /\.(rn|json)$/,
         type: 'asset/source',
       },
       // {
