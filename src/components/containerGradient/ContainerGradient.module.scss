@@ -640,7 +640,8 @@
     position: relative;
     margin: 0px -5px;
     padding: 15px;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 }
 

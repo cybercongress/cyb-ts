@@ -17,13 +17,13 @@ $activeLineWidth: 2px;
   height: calc(100vh - $headerHeight - $actionBarHeight + 30px);
   max-height: 900px;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  // overflow-y: auto;
+  // overflow-x: hidden;
   direction: rtl;
 
   top: $headerHeight;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
-  z-index: 1; // for active state overflow
+  z-index: 2; // for active state overflow
 
   li {
     margin-bottom: 10px;
@@ -101,7 +101,7 @@ $activeLineWidth: 2px;
         content: '';
         opacity: 0;
         display: block;
-        right: -$activeLineWidth + 2px;
+        right: -$activeLineWidth + 0.5px;
         height: 100%;
         position: absolute;
         transition: opacity 0.3s;
@@ -168,7 +168,7 @@ $activeLineWidth: 2px;
         &.active {
           &::after,
           &::before {
-            left: -$activeLineWidth + 1;
+            left: -$activeLineWidth + 0.5px;
             right: unset;
           }
 
