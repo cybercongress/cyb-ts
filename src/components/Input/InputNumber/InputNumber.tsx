@@ -20,11 +20,13 @@ function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
 
   return (
     <NumericFormat
-      value={new BigNumber(value).toNumber()}
+      value={value}
       onValueChange={(values, sourceInfo) => {
         onValueChange && onValueChange(values.value, sourceInfo.event);
         onChange && onChange(values.value, sourceInfo.event);
       }}
+      valueIsNumericString
+      allowLeadingZeros
       customInput={Input}
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
@@ -32,7 +34,6 @@ function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       autoComplete="off"
-      allowLeadingZeros
       focusedProps={focused}
       {...props}
     />

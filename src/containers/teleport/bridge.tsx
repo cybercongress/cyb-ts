@@ -25,6 +25,7 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
 import HistoryContextProvider from './ibc-history/historyContext';
 import DataIbcHistory from './comp/dataIbcHistory/DataIbcHistory';
+import { Networks } from 'src/types/networks';
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -39,10 +40,10 @@ function Bridge() {
   );
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [tokenSelect, setTokenSelect] = useState<string>('');
+  const [tokenSelect, setTokenSelect] = useState<string>(CYBER.DENOM_LIQUID_TOKEN);
   const [tokenAmount, setTokenAmount] = useState<string>('');
-  const [networkA, setNetworkA] = useState<string>('');
-  const [networkB, setNetworkB] = useState<string>(CYBER.CHAIN_ID);
+  const [networkA, setNetworkA] = useState<string>(Networks.BOSTROM);
+  const [networkB, setNetworkB] = useState<string>(Networks.SPACE_PUSSY);
   const [typeTxs, setTypeTxs] = useState<TypeTxsT>('deposit');
   const [sourceChannel, setSourceChannel] = useState<string | null>(null);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);

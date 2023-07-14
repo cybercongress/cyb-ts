@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, Link } from 'react-router-dom';
-// import InfiniteScroll from 'react-infinite-scroll-component';
-import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
@@ -81,6 +80,7 @@ function SearchResults() {
   const [total, setTotal] = useState(0);
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [page, setPage] = useState(0);
 
   const { isMobile: mobile } = useDevice();
 
@@ -131,7 +131,7 @@ function SearchResults() {
 
           setTotal(parseFloat(responseSearchResults.pagination.total));
           setHasMore(true);
-          // setPage((item) => item + 1);
+          setPage((item) => item + 1);
         } else {
           setHasMore(false);
         }
@@ -145,7 +145,7 @@ function SearchResults() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, location, update, queryClient]);
 
-  const fetchMoreData = async (page) => {
+  const fetchMoreData = useCallback(async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
@@ -158,9 +158,9 @@ function SearchResults() {
 
     setTimeout(() => {
       setSearchResults((itemState) => ({ ...itemState, ...links }));
-      // setPage((itemPage) => itemPage + 1);
-    }, 500);
-  };
+      setPage((itemPage) => itemPage + 1);
+    }, 700);
+  }, [page, keywordHash, queryClient, query]);
 
   useEffect(() => {
     setRankLink(null);
@@ -342,9 +342,8 @@ function SearchResults() {
     <>
       <MainContainer width="90%">
         <InfiniteScroll
-          pageStart={-1}
-          // initialLoad
-          loadMore={fetchMoreData}
+          dataLength={Object.keys(searchResults).length}
+          next={fetchMoreData}
           hasMore={hasMore}
           loader={
             <h4
@@ -357,12 +356,6 @@ function SearchResults() {
             </h4>
           }
         >
-          {/* <ContentItem
-            cid={'QmP2rY3uUn3TfBYJVFKc7nTjDY82YnAAn7Ui8EcWL1zr5Y'}
-            item={{ rank: 9999 }}
-            parent={query}
-            className="SearchItem"
-          /> */}
           {Object.keys(searchItems).length > 0 ? (
             searchItems
           ) : (

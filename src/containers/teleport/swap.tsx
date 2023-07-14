@@ -132,7 +132,9 @@ function Swap() {
 
       const isReverse = id !== TokenSetterId.tokenAAmount;
 
-      if (tokenAPoolAmount && tokenAPoolAmount && traseDenom) {
+      console.log('inputAmount', new BigNumber(inputAmount).toString());
+
+      if (tokenAPoolAmount && tokenAPoolAmount && traseDenom && Number(inputAmount) > 0) {
         const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
         const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
@@ -281,13 +283,11 @@ function Swap() {
     [accountBalances, tokenA, traseDenom, amountChangeHandler]
   );
 
-  // const onChangeSelect = useCallback(() => {
-  //   setToken();
-  //       amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
-
-
-  // }, []);
-  // ;
+  // useEffect(() => {
+  //   if (new BigNumber(tokenAAmount).comparedTo(0)) {
+  //     amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
+  //   }
+  // }, [tokenA, tokenB, tokenAAmount, amountChangeHandler]);
 
   const stateActionBar = {
     tokenAAmount,
