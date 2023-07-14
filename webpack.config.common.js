@@ -185,7 +185,7 @@ const config = {
         },
       },
       {
-        test: /\.(rn|json)$/,
+        test: /\.rn$/,
         type: 'asset/source',
       },
       // {
