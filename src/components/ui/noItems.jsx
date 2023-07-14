@@ -13,6 +13,7 @@ function NoItems({ text }) {
       paddingY={40}
       alignItems="center"
       flexDirection="column"
+      textTransform="lowercase"
     >
       <Img img={noitem} />
       <Text fontSize="18px" color="#fff">

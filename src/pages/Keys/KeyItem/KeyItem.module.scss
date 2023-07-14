@@ -1,0 +1,70 @@
+@import 'src/style/mixins';
+
+.wrapper {
+  display: flex;
+  gap: 0 28px;
+  overflow-x: auto;
+  align-items: center;
+  cursor: pointer;
+
+  > img {
+    height: auto;
+  }
+
+  .imageWrapper {
+    text-align: center;
+    position: relative;
+
+    .active {
+      position: relative;
+      bottom: 25px;
+    }
+  }
+
+  .content {
+    line-height: 30px;
+
+    > * {
+      line-height: initial;
+    }
+
+    a {
+      margin-top: 5px;
+      display: inline-block;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  &.selected,
+  &:hover {
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+
+      left: 0px;
+      right: 0px;
+
+      height: 100%;
+
+      @include tableHover;
+    }
+  }
+}
+
+.passports {
+  display: flex;
+  gap: 0 15px;
+  flex-wrap: wrap;
+
+  .passportName {
+    color: var(--primary-color);
+  }
+
+  .passportMain {
+    color: var(--green-light);
+  }
+}

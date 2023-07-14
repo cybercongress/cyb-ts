@@ -27,6 +27,20 @@ export const routes = {
   },
   robot: {
     path: '/robot',
+    routes: {
+      karma: {
+        // TODO: reuse parent
+        path: '/robot/karma',
+      },
+      drive: {
+        // TODO: reuse parent
+        path: '/robot/drive',
+      },
+    },
+  },
+  robotPassport: {
+    path: '/:username',
+    getLink: (username: string) => `/@${username}`,
   },
   portal: {
     path: '/portal',
@@ -37,5 +51,15 @@ export const routes = {
   },
   teleport: {
     path: '/teleport',
+  },
+  keys: {
+    path: '/keys',
+  },
+  sigma: {
+    path: '/sigma',
+  },
+  neuron: {
+    path: '/neuron/:address/*',
+    getLink: (address: string) => `/neuron/${address}`,
   },
 };

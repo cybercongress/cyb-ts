@@ -1,5 +1,5 @@
 import { FormatNumberTokens } from '../../../../nebula/components';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 const iconObj = {
   liquid: '💧',

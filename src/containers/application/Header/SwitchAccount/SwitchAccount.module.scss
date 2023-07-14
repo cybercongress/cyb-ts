@@ -5,7 +5,6 @@
   background: #000000;
   position: absolute;
   border-radius: 50%;
-  // z-index: -1;
   display: flex;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -20,7 +19,9 @@
 .tooltipContainerRight {
   position: absolute;
   right: 0px !important;
-  // top: unset !important;
+  padding-right: 5px;
+  max-height: 85vh;
+  overflow-y: auto;
   top: 90px !important;
   left: unset !important;
   z-index: 3;
@@ -28,65 +29,29 @@
 
 .containerSwichAccount {
   display: grid;
+  font-size: 14px;
   grid-template-columns: 1fr 105px;
   gap: 25px;
   align-items: center;
   height: 105px;
-}
 
-.containerSwichAccountList {
-  display: flex;
-  flex-direction: column;
-  // padding-right: 15px;
-  width: 300px;
-  padding-bottom: 15px;
-  opacity: 0;
-  transition: 0.2s;
-  background: #0000008c;
-  backdrop-filter: blur(7px);
-
-  &entering {
-    opacity: 0;
+  .noAccount {
+    color: var(--primary-color);
   }
 
-  &entered {
-    opacity: 1;
+  & + & {
+    margin-top: -30px;
   }
 
-  &exiting {
-    opacity: 0;
-    transition: 0.1s;
-  }
-
-  &exited {
-    opacity: 0;
-    visibility: hidden;
-    height: 1px;
-  }
-}
-
-.containerAvatarConnectHoverAbsolute {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 100px;
-  transition: 0.2s;
-}
-
-.containerSwichAccountHover {
   &:hover {
-    .containerAvatarConnectHoverAbsolute {
-      width: 105px;
-      height: 105px;
-    }
-    .btnContainerTextHover {
+    .btnContainerText {
       transform: translateX(-5px);
     }
-    .containerKarma {
-      transform: translateX(-5px);
+
+    .containerAvatarConnect {
+      padding: 10px;
     }
+
     .containerAvatarConnectTrue {
       &::before {
         width: 105px;
@@ -96,14 +61,58 @@
   }
 }
 
+.content {
+  justify-content: center;
+}
+
+.containerSwichAccountList {
+  display: flex;
+  flex-direction: column;
+  min-width: 230px;
+  padding-bottom: 15px;
+  opacity: 0;
+  transition: 0.2s;
+  background: #0000008c;
+  backdrop-filter: blur(7px);
+
+  &_entering {
+    opacity: 0;
+  }
+
+  &_entered {
+    opacity: 1;
+  }
+
+  &_exiting {
+    opacity: 0;
+    transition: 0.1s;
+  }
+
+  &_exited {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+  }
+}
+
 .containerAvatarConnect {
   width: 100px;
   height: 100px;
+  // padding: 5px;
+  transition: all 0.2s;
   position: relative;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  .image {
+    object-fit: contain;
+    width: inherit;
+    height: inherit;
+    position: relative;
+    z-index: 1;
+  }
 
   &False {
     &::before {

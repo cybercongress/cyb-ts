@@ -17,56 +17,62 @@ function ValueImg({ text, img }) {
 function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
   return (
     <div>
-      <Pane marginY={30} textAlign="center">
-        <LinkWindow>Energy </LinkWindow> (W) is the product of{' '}
-        <LinkWindow>ampers </LinkWindow> and <LinkWindow>volts</LinkWindow>
-      </Pane>
-      <Pane marginBottom={20} fontSize="20px">
-        Balance:
-      </Pane>
-      <Pane
-        marginBottom={60}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        flex-irection="row"
+      <div
+        style={{
+          padding: '15px',
+        }}
       >
-        <Card
-          title={<ValueImg text="A" img={amperImg} />}
-          value={
-            balacesResource.milliampere
-              ? formatNumber(balacesResource.milliampere)
-              : 0
-          }
-          stylesContainer={{ maxWidth: '200px' }}
-        />
-        <Pane marginX={10} fontSize="18px">
-          x
+        <Pane marginY={30} textAlign="center">
+          <LinkWindow>Energy </LinkWindow> (W) is the product of{' '}
+          <LinkWindow>ampers </LinkWindow> and <LinkWindow>volts</LinkWindow>
         </Pane>
-        <Card
-          title={<ValueImg text="V" img={voltImg} />}
-          value={
-            balacesResource.millivolt
-              ? formatNumber(balacesResource.millivolt)
-              : 0
-          }
-          stylesContainer={{ maxWidth: '200px' }}
-        />
-        <Pane marginX={10} fontSize="18px">
-          =
+        <Pane marginBottom={20} fontSize="20px">
+          Balance:
         </Pane>
-        <Card
-          title="W"
-          value={
-            balacesResource.millivolt && balacesResource.milliampere
-              ? formatNumber(
-                  balacesResource.millivolt * balacesResource.milliampere
-                )
-              : 0
-          }
-          stylesContainer={{ maxWidth: '200px' }}
-        />
-      </Pane>
+        <Pane
+          marginBottom={60}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex-irection="row"
+        >
+          <Card
+            title={<ValueImg text="A" img={amperImg} />}
+            value={
+              balacesResource.milliampere
+                ? formatNumber(balacesResource.milliampere)
+                : 0
+            }
+            stylesContainer={{ maxWidth: '200px' }}
+          />
+          <Pane marginX={10} fontSize="18px">
+            x
+          </Pane>
+          <Card
+            title={<ValueImg text="V" img={voltImg} />}
+            value={
+              balacesResource.millivolt
+                ? formatNumber(balacesResource.millivolt)
+                : 0
+            }
+            stylesContainer={{ maxWidth: '200px' }}
+          />
+          <Pane marginX={10} fontSize="18px">
+            =
+          </Pane>
+          <Card
+            title="W"
+            value={
+              balacesResource.millivolt && balacesResource.milliampere
+                ? formatNumber(
+                    balacesResource.millivolt * balacesResource.milliampere
+                  )
+                : 0
+            }
+            stylesContainer={{ maxWidth: '200px' }}
+          />
+        </Pane>
+      </div>
 
       {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
     </div>

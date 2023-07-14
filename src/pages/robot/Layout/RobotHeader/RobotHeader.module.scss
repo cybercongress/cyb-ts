@@ -1,0 +1,51 @@
+.wrapper {
+  &::before {
+    content: '';
+    filter: blur(15px);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -15px;
+    height: 110%;
+    background-color: black;
+  }
+  margin-bottom: 20px;
+  position: sticky;
+  top: 90px;
+  z-index: 1;
+}
+
+.inner {
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 10px;
+
+  .name {
+    color: #1fcbff;
+    font-size: 30px;
+    font-weight: 400;
+    margin-bottom: 15px;
+  }
+
+  .keys {
+    margin-top: 10px;
+    img {
+      height: 42px;
+      width: 42px;
+    }
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  > img {
+    height: 112px;
+    width: 112px;
+  }
+
+  > div {
+    text-align: center;
+  }
+}

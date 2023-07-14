@@ -31,7 +31,7 @@ const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
 // Get IPFS node from local storage
 // TODO: refactor
-const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
+const getIpfsUserGatewanAndNode = (): getIpfsUserGatewanAndNodeType => {
   const LS_IPFS_STATE = localStorage.getItem('ipfsState');
 
   if (LS_IPFS_STATE !== null) {
@@ -184,7 +184,7 @@ const fetchIPFSContentFromGateway = async (
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
   // TODO: Should we use Cyber Gateway?
-  // const { userGateway } = getIpfsUserGatewanAndNodeType();
+  // const { userGateway } = getIpfsUserGatewanAndNode();
 
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
@@ -476,7 +476,7 @@ const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
 
 export {
   getIPFSContent,
-  getIpfsUserGatewanAndNodeType,
+  getIpfsUserGatewanAndNode,
   catIPFSContentFromNode,
   fetchIpfsContent,
   addContenToIpfs,

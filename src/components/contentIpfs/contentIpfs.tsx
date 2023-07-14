@@ -10,7 +10,7 @@ import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
 import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
-import Pdf from '../pdf';
+import Pdf from '../PDF';
 import Img from './component/img';
 import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
