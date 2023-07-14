@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'src/redux/store';
 
 import {
@@ -17,19 +17,15 @@ import { ContainerKeyValue } from 'src/containers/ipfsSettings/ipfsComponents/ut
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Tablist } from '@cybercongress/gravity';
-import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
 import { WebLLMInstance } from 'src/services/scripting/webLLM';
-import { ObjKeyValue } from 'src/types/data';
+import { KeyValueString, TabularKeyValues } from 'src/types/data';
+import EditableTable from 'src/components/EditableTable/EditableTable';
+import {
+  setChatBotList,
+  setChatBotActive,
+  setChatBotName,
+} from 'src/redux/features/scripting';
 import styles from './ChatBotConfig.module.scss';
-import defaultBotList from './defaultBotList.json';
-
-const CHAT_BOT_CONFIG_KEY = 'chat_bot_config';
-
-// TODO: move to utils
-const loadDataFromLocalStorage = (storageKey: string, defaultData: any) => {
-  const raw = localStorage.getItem(storageKey);
-  return raw ? JSON.parse(raw) : defaultData;
-};
 
 type ChatReply = {
   name: string;
@@ -47,27 +43,31 @@ const saveChatHistory = (history: ChatReply[]) => {
 };
 
 function ChatBotConfig() {
+  const dispatch = useDispatch();
+  const {
+    chatBotList,
+    active,
+    name: botName,
+    status,
+    loadProgress,
+  } = useSelector((store: RootState) => store.scripting.chatBot);
+
   const { tab } = useParams();
 
-  const { defaultAccount, accounts } = useSelector(
-    (state: RootState) => state.pocket
-  );
+  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   // TODO: move 'nickname' to reducer
   const { passport } = useGetPassportByAddress(defaultAccount);
 
-  const [config, setConfig] = useState(WebLLMInstance.config);
-  const [botList, setBotList] = useState(
-    loadDataFromLocalStorage(CHAT_BOT_CONFIG_KEY, defaultBotList)
-  );
+  const [currentBotName, setCurrentBotName] = useState(botName);
 
   const botSelectOptions = useMemo(
     () => [
-      ...Object.keys(botList).map((k) => ({ value: k, text: botList[k].name })),
+      ...Object.values(chatBotList).map((k) => ({
+        value: k.name,
+        text: k.name,
+      })),
     ],
-    [botList]
-  );
-  const [selectedBotUUID, setSelectedBotUUID] = useState(
-    botSelectOptions[0].value
+    [chatBotList]
   );
 
   const [inProgress, setIsProgress] = useState(false);
@@ -103,14 +103,14 @@ function ChatBotConfig() {
     [chatHistory, chatReply]
   );
 
-  useEffect(() => {
-    console.log('config');
-  });
+  const onSaveConfig = (botList: TabularKeyValues) => {
+    dispatch(setChatBotList(botList));
+  };
 
   const nickname = passport?.extension.nickname;
-  const botName = config.name;
   const onLoadClick = () => {
-    WebLLMInstance.updateConfig(config);
+    dispatch(setChatBotActive(true));
+    dispatch(setChatBotName(currentBotName));
   };
   const onClearClick = () => {
     WebLLMInstance.resetChat();
@@ -159,10 +159,10 @@ function ChatBotConfig() {
         />
       </Tablist>
       {tab === 'config' && (
-        <LocalStorageAsEditableTable
-          storageKey={CHAT_BOT_CONFIG_KEY}
+        <EditableTable
+          data={chatBotList}
           columns={['name', 'model_url', 'params_url']}
-          defaultData={defaultBotList}
+          onSave={onSaveConfig}
         />
       )}
       {!tab && (
@@ -171,23 +171,44 @@ function ChatBotConfig() {
             <ContainerGradientText
               userStyleContent={{ width: '100%', display: 'grid', gap: '20px' }}
             >
-              <ContainerKeyValue>
-                <div>Model</div>
-                <Select
-                  valueSelect={selectedBotUUID}
-                  width="350px"
-                  onChangeSelect={setSelectedBotUUID}
-                  options={botSelectOptions}
-                />
-                <Button onClick={onLoadClick}>Load</Button>
-              </ContainerKeyValue>
+              <div className={styles.botPanelItem}>
+                <div>
+                  Current: <strong>{botName}</strong>
+                </div>
+                <div>
+                  {status === 'loading'
+                    ? ` (loading: ${Math.round(loadProgress * 100)}%)`
+                    : status}
+                </div>
+              </div>
+              <div className={styles.botPanelItem}>
+                <div className={styles.selectWrapper}>
+                  <Select
+                    valueSelect={currentBotName}
+                    width="100%"
+                    onChangeSelect={setCurrentBotName}
+                    options={botSelectOptions}
+                  />
+                </div>
+                <div>
+                  <button
+                    className={styles.btnLoad}
+                    type="button"
+                    onClick={onLoadClick}
+                  >
+                    reload
+                  </button>
+                </div>
+              </div>
             </ContainerGradientText>
           </div>
           <br />
           <ContainerGradientText
             userStyleContent={{ width: '100%', display: 'grid', gap: '20px' }}
           >
-            <div>Chat with {botList[selectedBotUUID].name} </div>
+            <div>
+              {active ? `💬 Chat with ${botName}` : `💤 ${botName} is inactive`}{' '}
+            </div>
             <div>{messagesItems}</div>
             {inProgress && <div className={styles.statsText}>{statsText}</div>}
             {inProgress && (
@@ -205,7 +226,7 @@ function ChatBotConfig() {
               onChange={(e) => setUserMessage(e.target.value)}
             />
 
-            <Button onClick={onMessage} disabled={inProgress}>
+            <Button onClick={onMessage} disabled={inProgress || !active}>
               Say
             </Button>
             <button

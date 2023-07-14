@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { RootState } from 'src/redux/store';
@@ -19,19 +19,23 @@ import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
-import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
-import { ObjKeyValue, keyValuesToObject } from 'src/utils/localStorage';
+import { setSecrets } from 'src/redux/features/scripting';
+import { appBus } from 'src/services/scripting/bus';
+// import { updatePassportData } from '../../utils';
+import { keyValuesToObject } from 'src/utils/localStorage';
+import { TabularKeyValues } from 'src/types/data';
+
+import EditableTable from 'src/components/EditableTable/EditableTable';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import styles from './ScriptEditor.module.scss';
-import 'codemirror/lib/codemirror.css';
-// import 'codemirror/theme/tomorrow-night-bright.css';
-import 'codemirror/theme/tomorrow-night-eighties.css';
-// import 'codemirror/theme/the-matrix.css';
-import 'codemirror/mode/rust/rust';
-import { appBus } from 'src/services/scripting/bus';
 
-import { updatePassportData } from '../../utils';
+import styles from './ScriptEditor.module.scss';
+
+import 'codemirror/mode/rust/rust';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/tomorrow-night-eighties.css';
+// import 'codemirror/theme/tomorrow-night-bright.css';
+// import 'codemirror/theme/the-matrix.css';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -67,10 +71,13 @@ const compileScript = (
   );
 
 function ScriptEditor() {
+  const dispatch = useDispatch();
+
   const codeMirrorRef = useRef();
   const { tab } = useParams();
   const { signer, signingClient } = useSigningClient();
   const { node } = useIpfs();
+  const { secrets } = useSelector((store: RootState) => store.scripting);
 
   const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const { passport } = useGetPassportByAddress(defaultAccount);
@@ -139,16 +146,17 @@ function ScriptEditor() {
           `   ${JSON.stringify(result.result)}`,
           '',
           '🧪 Raw output:',
-          result.output,
+          result?.output || 'no output.',
         ]);
       }
     });
   };
 
-  const onChangeSecrets = (secrets: ObjKeyValue[]) => {
+  const onSaveSecrets = (secrets: TabularKeyValues) => {
+    dispatch(setSecrets(secrets));
     appBus.emit('context', {
       name: 'secrets',
-      item: keyValuesToObject(secrets),
+      item: keyValuesToObject(Object.values(secrets)),
     });
   };
 
@@ -198,10 +206,10 @@ function ScriptEditor() {
           />
         </Tablist>
         {tab === 'secrets' && (
-          <LocalStorageAsEditableTable
-            storageKey="secrets"
+          <EditableTable
+            data={secrets}
             columns={['key', 'value']}
-            onChange={onChangeSecrets}
+            onSave={onSaveSecrets}
           />
         )}
         {!tab && (

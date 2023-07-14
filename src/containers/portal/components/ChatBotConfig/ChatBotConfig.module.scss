@@ -25,6 +25,35 @@
   }
 }
 
+.btnLoad {
+  cursor: pointer;
+  color: #777777;
+  background-color: transparent;
+  // border: none;
+  cursor: pointer;
+  display: inline;
+  // margin: 0 25px;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .statsText {
   font-size: 8px;
+}
+
+.botPanelItem {
+  display: flex;
+  align-items: center;
+  > :first-child {
+    width: 40%;
+    padding-right: 30px;
+  }
+}
+
+// To fix glitch with
+.selectWrapper {
+  height: 100px;
 }

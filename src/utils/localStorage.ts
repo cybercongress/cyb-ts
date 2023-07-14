@@ -1,4 +1,4 @@
-import { ObjKeyValue, TabularKeyValues } from 'src/types/data';
+import { KeyValueString, TabularKeyValues } from 'src/types/data';
 
 const STORAGE_KEYS = {
   secrets: 'secrets',
@@ -18,17 +18,13 @@ const loadDataFromLocalStorage = (storageKey: string, defaultData: any) => {
   return raw ? JSON.parse(raw) : defaultData;
 };
 
-const keyValuesToObject = (data: ObjKeyValue[]) => {
+const keyValuesToObject = (data: KeyValueString[]) => {
   return Object.fromEntries(
     Object.values(data)
       .filter((row) => !!row?.key)
       .map((row) => [row.key, row.value])
   );
 };
-
-// const localStorageCache = {
-//   [STORAGE_KEYS.secrets]: loadDataFromLocalStorage(STORAGE_KEYS.secrets, {}),
-// };
 
 export {
   saveDataToLocalStorage,

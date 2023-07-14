@@ -2,15 +2,16 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pane, TableEv as Table, Text, Tablist } from '@cybercongress/gravity';
 import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 import { v4 as uuidv4 } from 'uuid';
-import { ObjKeyValue } from 'src/types/data';
+import { ObjKeyValue, TabularKeyValues } from 'src/types/data';
 // import { ObjKeyValue, TableControlProps } from './TableControl.d';
+import { clone } from 'ramda';
 
 import styles from './EditableTable.module.scss';
 
 type TableControlProps = {
-  data: { [key: string]: ObjKeyValue };
+  data: TabularKeyValues;
   columns: string[];
-  onSave: (data: { [key: string]: ObjKeyValue }) => void;
+  onSave: (data: TabularKeyValues) => void;
 };
 
 const actionColumnProps = {
@@ -23,9 +24,7 @@ const actionColumnProps = {
 };
 
 function EditableTable({ data, columns, onSave }: TableControlProps) {
-  const [items, setItems] = useState<{ [key: string]: ObjKeyValue }>({
-    ...data,
-  });
+  const [items, setItems] = useState<TabularKeyValues>(clone(data));
   const [isChanged, setIsChanged] = useState(false);
 
   const itemsCount = useMemo(() => Object.keys(items).length, [items]);
@@ -54,8 +53,10 @@ function EditableTable({ data, columns, onSave }: TableControlProps) {
     if (!newItems[key]) {
       newItems[key] = {};
     }
+    console.log('----xcha', items, key, name, value);
+    console.log('----xch2a', newItems[key], newItems[key][name], name, value);
 
-    newItems[key][name] = value;
+    newItems[key] = { ...newItems[key], [name]: value };
 
     if (Object.values(newItems[key]).every((v) => v === '')) {
       delete newItems[key];

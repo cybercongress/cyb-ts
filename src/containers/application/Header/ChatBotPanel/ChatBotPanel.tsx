@@ -3,22 +3,23 @@ import { Pill } from '@cybercongress/gravity';
 import { Tooltip } from 'src/components';
 import { Link } from 'react-router-dom';
 import styles from './ChatBotPanel.module.scss';
-import { WebLLMInstance } from 'src/services/scripting/webLLM';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from 'src/redux/store';
+
+import { setChatBotActive } from 'src/redux/features/scripting';
 
 function ChatBotPanel() {
-  const [isChatBotActive, setIsChatBotActive] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const swichActive = () => {
-    setIsChatBotActive((isChatBotActive) => !isChatBotActive);
-  };
+  const dispatch = useDispatch();
+  const {
+    active,
+    name: botName,
+    status,
+    loadProgress,
+  } = useSelector((store: RootState) => store.scripting.chatBot);
 
-  useEffect(() => {
-    if (isChatBotActive) {
-      WebLLMInstance.load(({ progress }) => setProgress(progress));
-    } else {
-      WebLLMInstance.unload();
-    }
-  }, [isChatBotActive]);
+  const swichActive = () => {
+    dispatch(setChatBotActive(!active));
+  };
 
   return (
     <div className={styles.chatBot}>
@@ -28,13 +29,13 @@ function ChatBotPanel() {
             Chat bot
           </Link>
         </Tooltip>
-        <Pill marginLeft={10} active={isChatBotActive} onClick={swichActive}>
-          {isChatBotActive ? 'On' : 'Off'}
+        <Pill marginLeft={10} active={active} onClick={swichActive}>
+          {active ? 'on' : 'off'}
         </Pill>
       </div>
-      {isChatBotActive && progress < 1 && (
+      {active && loadProgress < 1 && (
         <div className={styles.progressTitle}>{`Loading: ${Math.round(
-          progress * 100
+          loadProgress * 100
         )}%`}</div>
       )}
       <div className={styles.pluginsButton}>

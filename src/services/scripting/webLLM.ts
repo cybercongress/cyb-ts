@@ -14,33 +14,6 @@ const chatOpts = {
   repetition_penalty: 1.01,
 };
 
-const prebuiltAppConfig: AppConfig = {
-  model_list: [
-    {
-      model_url:
-        'https://huggingface.co/mlc-ai/mlc-chat-RedPajama-INCITE-Chat-3B-v1-q4f32_0/resolve/main/',
-      local_id: 'RedPajama-INCITE-Chat-3B-v1-q4f32_0',
-    },
-    {
-      model_url:
-        'https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/',
-      local_id: 'vicuna-v1-7b-q4f32_0',
-    },
-  ],
-  model_lib_map: {
-    'vicuna-v1-7b-q4f32_0':
-      'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm',
-    'RedPajama-INCITE-Chat-3B-v1-q4f32_0':
-      'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/RedPajama-INCITE-Chat-3B-v1-q4f32_0-webgpu.wasm',
-  },
-};
-
-export type BotConfig = {
-  name: string;
-  model: string;
-  params: string;
-};
-
 class WebLLM {
   private _worker?: Worker = undefined;
 
@@ -48,7 +21,7 @@ class WebLLM {
 
   private isInitialized = false;
 
-  private _config: BotConfig = {} as BotConfig;
+  private _config: AppConfig;
 
   public get config() {
     return this._config;
@@ -57,36 +30,21 @@ class WebLLM {
   constructor() {
     this._worker = new Worker();
     this._chat = new webllm.ChatWorkerClient(this._worker);
-    this.loadConfig();
   }
 
-  private loadConfig() {
-    const config = localStorage.getItem('chat_bot_config');
-    this._config = config
-      ? (JSON.parse(config) as BotConfig)
-      : {
-          name: 'Trotsky Bot',
-          model:
-            'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm',
-          params:
-            'https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/',
-        };
-  }
-
-  public updateConfig(config: BotConfig) {
+  public updateConfig(config: AppConfig) {
     this._config = config;
-    localStorage.setItem('chat_bot_config', JSON.stringify(config));
   }
 
   public async load(
+    modelName: string,
     progressCallback?: (report: webllm.InitProgressReport) => void
   ): Promise<void> {
     this._chat?.setInitProgressCallback((report: webllm.InitProgressReport) => {
       console.log('Init model', report, report.text);
       progressCallback?.(report);
     });
-
-    await this._chat?.reload('vicuna-v1-7b-q4f32_0');
+    await this._chat?.reload(modelName, chatOpts, this.config);
 
     // const { name, params, model } = this._config;
     // await this._chat?.reload(
@@ -130,7 +88,6 @@ class WebLLM {
       progressCallback?.(step, message);
     };
 
-    console.log('------chat', this._chat, prompt);
     // const prompt0 = 'What is the capital of Canada?';
     const reply = await this._chat.generate(prompt, generateProgressCallback);
     return reply;
