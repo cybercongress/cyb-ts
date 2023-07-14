@@ -9,6 +9,7 @@ import {
 } from '../../utils/utils';
 import { getRankGrade } from '../../utils/search/utils';
 import ContentItem from '../ContentItem/contentItem';
+import { useDevice } from 'src/contexts/device';
 
 function TimeAgo({ timeAgoInMS }) {
   return (
@@ -32,9 +33,10 @@ const initialState = {
   grade: { from: 'n/a', to: 'n/a', value: 'n/a' },
 };
 
-function SearchSnippet({ cid, data, mobile, onClickRank }) {
+function SearchSnippet({ cid, data, onClickRank }) {
   const queryClient = useQueryClient();
   const [rankInfo, setRankInfo] = useState(initialState);
+  const { isMobile: mobile } = useDevice();
 
   useEffect(() => {
     const getRank = async () => {
@@ -75,7 +77,7 @@ function SearchSnippet({ cid, data, mobile, onClickRank }) {
       className="hover-rank"
       display="flex"
       alignItems="center"
-      marginBottom="10px"
+      marginBottom="-2px"
     >
       {!mobile && (
         <Pane className="time-discussion rank-contentItem" position="absolute">

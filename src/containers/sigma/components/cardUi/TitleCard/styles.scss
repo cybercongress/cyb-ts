@@ -1,41 +1,42 @@
+@import 'src/style/mixins.scss';
+
 .container {
-  width: 100%;
   display: grid;
-  grid-template-columns: 120px 1fr 1fr;
-  grid-template-rows: repeat(2, 1fr);
   gap: 0px 20px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    'avatar name total'
-    'avatar address address';
+  padding: 15px 0;
+  // grid-auto-flow: row;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: '. address total';
   align-items: center;
   font-size: 20px;
-}
 
-.avatar {
-  grid-area: avatar;
-  width: 120px;
-  height: 120px;
-}
+  &.selected,
+  &.select:hover {
+    position: relative;
+    cursor: pointer;
 
-.name {
-  grid-area: name;
-  color: #1fcbff;
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+
+      left: -20px;
+      right: -20px;
+
+      height: 100%;
+
+      @include tableHover;
+    }
+  }
 }
 
 .total {
   grid-area: total;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  gap: 30px;
   justify-self: flex-end;
-  white-space: nowrap;
 }
 
 .address {
   grid-area: address;
-  justify-self: flex-end;
 }
 
 // @media all and (-ms-high-contrast: none) {

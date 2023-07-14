@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
+import cx from 'classnames';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
+import { Props } from './Props';
 
 const classNames = require('classnames');
 
@@ -107,11 +109,13 @@ type ContainerGradientText = {
   children: React.ReactNode;
   userStyleContent?: object;
   status?: ColorLamp;
+  className?: string;
 };
 
 export function ContainerGradientText({
   children,
-  userStyleContent,
+  userStyleContent = {},
+  className,
   status = 'blue',
 }: ContainerGradientText) {
   return (
@@ -127,7 +131,7 @@ export function ContainerGradientText({
       >
         <div
           style={userStyleContent}
-          className={styles.containerGradientTextContent}
+          className={cx(styles.containerGradientTextContent, className)}
         >
           {children}
         </div>
@@ -212,6 +216,20 @@ export function ContainerGradientBeforeOrAfter({
   );
 }
 
+interface Props {
+  title?: string;
+  closedTitle?: string;
+  children?: React.ReactNode;
+  txs?: any;
+  danger?: boolean;
+  userStyleContent?: React.CSSProperties;
+  stateOpen?: boolean;
+  initState?: boolean;
+  styleLampContent?: string;
+  styleLampTitle?: any;
+  togglingDisable?: any;
+}
+
 function ContainerGradient({
   title = 'Moon Citizenship',
   closedTitle,
@@ -224,7 +242,7 @@ function ContainerGradient({
   styleLampContent = 'blue',
   styleLampTitle,
   togglingDisable,
-}) {
+}: Props) {
   const [isOpen, setIsOpen] = useState(initState);
 
   useEffect(() => {
@@ -248,18 +266,13 @@ function ContainerGradient({
         closedTitle !== null &&
         state === 'exited'
       ) {
-        // setTimeout(() => {
-        //   console.log('first', first)
-        // }, 500);
         return closedTitle;
       }
-      // setTimeout(() => {
       if (state === 'entered') {
         return title;
       }
 
-      return undefined;
-      // }, 500);
+      return title;
     },
     [isOpen, closedTitle, title]
   );
@@ -269,6 +282,7 @@ function ContainerGradient({
       <ContainerLampAfter style={styleLampContent}>
         <div
           className={classNames(styles.containerContainerGradient, {
+            [styles.togglingDisable]: togglingDisable,
             [styles.containerContainerGradientPrimary]: !styleLampContent,
             [styles.containerContainerGradientPrimary]:
               styleLampContent === 'blue',

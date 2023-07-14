@@ -5,6 +5,7 @@
   width: 100%;
   position: fixed;
   bottom: 0;
+  left: 0;
   padding: 10px 0;
   background: linear-gradient(
     0deg,
@@ -36,6 +37,7 @@
 .ActionBarContentText {
   display: flex;
   align-items: center;
+  gap: 0 15px;
   justify-content: center;
   flex-grow: 1;
   // color: #777777;

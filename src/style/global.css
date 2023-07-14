@@ -11,6 +11,7 @@ html {
 
 body {
   padding: 0;
+  overflow-y: scroll; /* prevent content jumping when scroll appears */
   overflow-x: hidden;
   background-color: #000000;
   color: #fff;
@@ -193,6 +194,8 @@ p {
 
 button {
   cursor: pointer;
+  border: unset;
+  background-color: transparent;
 }
 
 button:disabled {
@@ -202,6 +205,11 @@ button:disabled {
 
 a {
   color: #36d6ae;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #00ffbf;
   text-decoration: none;
 }
 
@@ -536,7 +544,6 @@ input:focus:-ms-input-placeholder {
 
 .infinite-scroll-component {
   padding-top: 3px !important;
-  overflow: hidden !important;
 }
 
 .padded-text {

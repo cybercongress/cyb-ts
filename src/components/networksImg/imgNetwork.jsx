@@ -9,6 +9,10 @@ import Tooltip from '../tooltip/tooltip';
 
 import boot from '../../image/large-green.png';
 import pussy from '../../image/large-purple-circle.png';
+import eth from 'images/Ethereum_logo_2014.svg';
+import osmo from 'images/osmosis.svg';
+import cosmos from 'images/cosmos-2.svg';
+import terra from 'images/terra.svg';
 import defaultImg from '../../image/large-orange-circle.png';
 
 const getNativeImg = (text) => {
@@ -21,6 +25,22 @@ const getNativeImg = (text) => {
 
     case 'space-pussy':
       img = pussy;
+      break;
+
+    case 'eth':
+      img = eth;
+      break;
+
+    case 'cosmos':
+      img = cosmos;
+      break;
+
+    case 'osmo':
+      img = osmo;
+      break;
+
+    case 'terra':
+      img = terra;
       break;
 
     default:

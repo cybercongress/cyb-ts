@@ -1,6 +1,10 @@
 export const enum Networks {
   BOSTROM = 'bostrom',
   SPACE_PUSSY = 'space-pussy',
+  ETH = 'eth',
+  OSMO = 'osmo',
+  TERRA = 'terra',
+  COSMOS = 'cosmos',
 }
 
 export type NetworkConfig = {

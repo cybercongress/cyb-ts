@@ -1,90 +1,33 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { activePassport } from '../../portal/utils';
-
-type Passport = {
-  owner: string;
-  approvals: any[];
-  token_uri: string | null;
-  extension: {
-    addresses: {
-      label: string | null;
-      address: string;
-    }[];
-    avatar: string;
-    nickname: string;
-    data: any | null;
-    particle: any | null;
-  };
-};
+import { Citizenship } from 'src/types/citizenship';
+import usePassportContract from 'src/features/passport/usePassportContract';
+import { PATTERN_CYBER } from 'src/utils/config';
 
 function useGetPassportByAddress(accounts: any) {
-  const queryClient = useQueryClient();
-  const [passport, setPassport] = useState<Passport | null>(null);
-  const [addressBech32, setAddressBech32] = useState(null);
-  const { data } = useQuery(
-    ['activePassport', addressBech32],
-    async () => {
-      const response = await activePassport(queryClient, addressBech32);
-      if (response !== null) {
-        return response;
-      }
-      return null;
+  let address =
+    accounts?.account?.cyber?.bech32 ||
+    accounts?.cyber?.bech32 ||
+    accounts?.bech32 ||
+    accounts;
+
+  // temp for debug
+  if (typeof address === 'object') {
+    address = '';
+    debugger;
+  }
+
+  const { data, loading, error } = usePassportContract<Citizenship>({
+    query: {
+      active_passport: {
+        address,
+      },
     },
-    {
-      enabled: Boolean(queryClient && addressBech32 !== null),
-    }
-  );
-
-  useEffect(() => {
-    if (
-      accounts !== null &&
-      Object.prototype.hasOwnProperty.call(accounts, 'account')
-    ) {
-      const { account } = accounts;
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
-      ) {
-        const { bech32 } = account.cyber;
-        setAddressBech32(bech32);
-      } else {
-        setAddressBech32(null);
-      }
-    }
-
-    if (
-      accounts !== null &&
-      Object.prototype.hasOwnProperty.call(accounts, 'cyber')
-    ) {
-      const { bech32 } = accounts.cyber;
-      setAddressBech32(bech32);
-    }
-
-    if (
-      accounts !== null &&
-      Object.prototype.hasOwnProperty.call(accounts, 'bech32')
-    ) {
-      const { bech32 } = accounts;
-      setAddressBech32(bech32);
-    }
-
-    if (accounts === null) {
-      setAddressBech32(null);
-    }
-  }, [accounts]);
-
-  useEffect(() => {
-    if (data && accounts !== null) {
-      setPassport(data);
-    } else {
-      setPassport(null);
-    }
-  }, [data, accounts]);
+    skip: !address || !address.match(PATTERN_CYBER),
+  });
 
   return {
-    passport,
+    passport: data,
+    loading,
+    error,
   };
 }
 

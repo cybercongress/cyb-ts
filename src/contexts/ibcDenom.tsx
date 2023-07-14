@@ -139,13 +139,17 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
     [ibcDenoms, poolsData]
   );
 
+  const value = useMemo(
+    () => ({ ibcDenoms, traseDenom }),
+    [ibcDenoms, traseDenom]
+  );
+
+  if (!poolsData) {
+    return null;
+  }
+
   return (
-    <IbcDenomContext.Provider
-      value={useMemo(
-        () => ({ ibcDenoms, traseDenom }),
-        [ibcDenoms, traseDenom]
-      )}
-    >
+    <IbcDenomContext.Provider value={value}>
       {children}
     </IbcDenomContext.Provider>
   );

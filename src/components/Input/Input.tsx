@@ -1,10 +1,10 @@
 import cx from 'classnames';
 import React, { useState } from 'react';
+import TextareaAutosize from 'react-textarea-autosize';
 import styles from './Input.module.scss';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
-import TextareaAutosize from 'react-textarea-autosize';
 
 export type Props = {
   color?: Color;
@@ -14,6 +14,7 @@ export type Props = {
   focusedProps?: boolean;
   isTextarea?: boolean;
   type?: 'text' | 'password';
+  error?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlurFnc?: () => void;
@@ -34,6 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       focusedProps,
       isTextarea,
       onBlurFnc,
+      error,
       ...props
     },
     ref
@@ -79,6 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             {...props}
           />
         </LinearGradientContainer>
+        {error && <div className={styles.error}>{error}</div>}
       </div>
     );
   }

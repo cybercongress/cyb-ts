@@ -4,12 +4,13 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
-  devtool: 'cheap-module-source-map',
   devServer: {
     https: true,
     host: 'localhost',
     port: process.env.PORT_APP || '3001',
     hot: true,
+    // ngrok tunnel
+    allowedHosts: ['.ngrok-free.app'],
     headers: {
       'Access-Control-Allow-Origin': '*',
     },

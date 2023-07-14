@@ -45,6 +45,7 @@
   position: absolute;
   height: 100%;
   width: 100px;
+  z-index: -1;
   top: 0;
   bottom: 0;
 }
@@ -95,6 +96,7 @@
     min-height: 50px;
     font-size: 18px;
     display: flex;
+    text-transform: lowercase;
     align-items: center;
     position: relative;
     margin: 0px;
@@ -163,7 +165,6 @@
     padding: 17px 15px;
     min-height: 170px;
     height: 1px;
-    z-index: 1;
     transition: 1s ease-in-out;
 
     &entering {
@@ -644,7 +645,18 @@
     position: relative;
     margin: 0px -5px;
     padding: 15px;
-    z-index: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+.togglingDisable {
+  .containerContainerGradientTitle {
+    cursor: default;
+  }
+
+  .containerContainerGradientContent {
+    height: auto;
   }
 }
 

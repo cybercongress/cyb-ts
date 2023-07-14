@@ -19,9 +19,9 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
     >
       <Card
         active={active === 'myEnegy'}
-        title="My Enegy"
+        title="Enegy"
         value={`${formatNumber(myEnegy)} W`}
-        onClick={() => navigate('/grid')}
+        onClick={() => navigate('./')}
       />
       <Pane marginX={5} fontSize="20px">
         +
@@ -30,7 +30,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'income'}
         title="Income"
         value={`${formatNumber(income)} W`}
-        onClick={() => navigate('/grid/income')}
+        onClick={() => navigate('./income')}
       />
       <Pane marginX={5} fontSize="20px">
         -
@@ -39,7 +39,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'outcome'}
         title="Outcome"
         value={`${formatNumber(outcome)} W`}
-        onClick={() => navigate('/grid/outcome')}
+        onClick={() => navigate('./outcome')}
       />
       <Pane marginX={5} fontSize="20px">
         =

@@ -63,6 +63,11 @@
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
+    "no-param-reassign": [
+      "error",
+      // redux toolkit state
+      { "ignorePropertyModificationsFor": ["state"] }
+    ],
     "no-duplicate-imports": [
       "warn",
       {

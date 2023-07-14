@@ -22,8 +22,8 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');

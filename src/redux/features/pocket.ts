@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
-import { Account, DefaultAccount } from 'src/types/defaultAccount';
+import { Account, Accounts, DefaultAccount } from 'src/types/defaultAccount';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { POCKET } from '../../utils/config';
 
@@ -10,7 +10,7 @@ type SliceState = {
     tweet: string;
   };
   defaultAccount: DefaultAccount;
-  accounts: null | Account[];
+  accounts: null | { [key: string]: Account };
 };
 
 const initialState: SliceState = {
@@ -24,24 +24,94 @@ const initialState: SliceState = {
   accounts: null,
 };
 
+function saveToLocalStorage(state: SliceState) {
+  const { defaultAccount, accounts } = state;
+
+  defaultAccount &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET,
+      JSON.stringify({
+        [defaultAccount.name]: defaultAccount.account,
+      })
+    );
+  accounts &&
+    localStorage.setItem(
+      localStorageKeys.pocket.POCKET_ACCOUNT,
+      JSON.stringify(accounts)
+    );
+}
+
 const slice = createSlice({
   name: 'pocket',
   initialState,
   reducers: {
-    setDefaultAccount: (state, { payload }: PayloadAction<DefaultAccount>) => {
-      state.defaultAccount = payload;
+    setDefaultAccount: (
+      state,
+      {
+        payload: { name, account },
+      }: PayloadAction<{ name: string; account?: Account }>
+    ) => {
+      state.defaultAccount = {
+        name,
+        account: account || state.accounts?.[name] || null,
+      };
+
+      saveToLocalStorage(state);
     },
-    setAccounts: (state, { payload }: PayloadAction<Account[]>) => {
+    setAccounts: (state, { payload }: PayloadAction<Accounts>) => {
       state.accounts = payload;
     },
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {
       state.actionBar.tweet = payload;
     },
+
+    // bullshit
+    deleteAddress: (state, { payload }: PayloadAction<string>) => {
+      if (state.accounts) {
+        Object.keys(state.accounts).forEach((accountKey) => {
+          Object.keys(state.accounts[accountKey]).forEach((networkKey) => {
+            if (state.accounts[accountKey][networkKey].bech32 === payload) {
+              delete state.accounts[accountKey][networkKey];
+
+              if (Object.keys(state.accounts[accountKey]).length === 0) {
+                delete state.accounts[accountKey];
+              }
+
+              if (state.defaultAccount?.account?.cyber?.bech32 === payload) {
+                const entries = Object.entries(state.accounts);
+
+                const entryCyber = entries.find(
+                  ([, value]) => value.cyber?.bech32
+                );
+
+                if (entryCyber) {
+                  state.defaultAccount = {
+                    name: entryCyber[0],
+                    account: entryCyber[1],
+                  };
+                } else {
+                  state.defaultAccount = {
+                    name: null,
+                    account: null,
+                  };
+                }
+              }
+
+              saveToLocalStorage(state);
+            }
+          });
+        });
+      }
+    },
   },
 });
 
-export const { setDefaultAccount, setAccounts, setStageTweetActionBar } =
-  slice.actions;
+export const {
+  setDefaultAccount,
+  setAccounts,
+  setStageTweetActionBar,
+  deleteAddress,
+} = slice.actions;
 
 export default slice.reducer;
 
@@ -49,7 +119,7 @@ export default slice.reducer;
 export const initPocket = () => (dispatch: Dispatch) => {
   let defaultAccounts = null;
   let defaultAccountsKeys = null;
-  let accountsTemp = null;
+  let accountsTemp: Accounts | null = null;
 
   const localStoragePocketAccount = localStorage.getItem(
     localStorageKeys.pocket.POCKET_ACCOUNT
@@ -77,7 +147,7 @@ export const initPocket = () => (dispatch: Dispatch) => {
     } else if (defaultAccountsKeys !== null) {
       accountsTemp = {
         [defaultAccountsKeys]:
-          localStoragePocketAccountData[defaultAccountsKeys],
+          localStoragePocketAccountData[defaultAccountsKeys] || undefined,
         ...localStoragePocketAccountData,
       };
     }
@@ -87,11 +157,20 @@ export const initPocket = () => (dispatch: Dispatch) => {
   }
 
   defaultAccountsKeys &&
+    defaultAccounts &&
     dispatch(
       setDefaultAccount({
         name: defaultAccountsKeys,
         account: defaultAccounts,
       })
     );
+
+  accountsTemp &&
+    Object.keys(accountsTemp).forEach((key) => {
+      if (!accountsTemp[key] || Object.keys(accountsTemp[key]).length === 0) {
+        delete accountsTemp[key];
+      }
+    });
+
   accountsTemp && dispatch(setAccounts(accountsTemp));
 };

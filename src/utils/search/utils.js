@@ -732,6 +732,44 @@ export const chekFollow = async (address, addressFollowHash) => {
   }
 };
 
+// // TODO: add types
+// async function getTransactions({ events, ...params }) {
+//   try {
+//     axios.get(`${CYBER_NODE_URL_LCD}/txs`, {
+//       params: {
+//         limit: 1000,
+//         events
+//         ...params,
+//       },
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     throw Error(error);
+//   }
+// }
+
+// export async function getCyberlinks(address) {
+//   getTransactions({
+//     events: [
+//       "message.action='/cyber.graph.v1beta1.MsgCyberlink'",
+//       "cyberlink.neuron=' + address",
+//     ],
+//   });
+// }
+export async function getCyberlinks(address) {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
+    });
+
+    return response.data.pagination.total;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
 export const getAvatar = async (address) => {
   try {
     const response = await axios({

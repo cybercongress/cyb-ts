@@ -5,20 +5,10 @@ import { useGetBalance, initValueMainToken } from './utils';
 
 function useGetBalanceMainToken(address) {
   const queryClient = useQueryClient();
-  const [addressActive, setAddressActive] = useState(null);
+  const addressActive = address?.bech32 || address;
   const [balance, setBalance] = useState({ ...initValueMainToken });
   const data = useGetBalance(queryClient, addressActive);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (address !== null) {
-      if (address.bech32) {
-        setAddressActive(address.bech32);
-      } else {
-        setAddressActive(address);
-      }
-    }
-  }, [address]);
 
   useEffect(() => {
     setLoading(true);

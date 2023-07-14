@@ -1,0 +1,39 @@
+@import '../../style/mixins.scss';
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+
+  td,
+  th {
+    padding: 18px;
+    text-align: center;
+  }
+
+  thead {
+    color: #777777;
+
+    th {
+      font-weight: 400;
+      text-transform: lowercase;
+    }
+  }
+
+  tbody {
+    color: #ffffff;
+
+    tr {
+      td {
+        word-wrap: break-word;
+      }
+
+      &.rowSelected {
+        box-shadow: inset 0px 0px 0px 1px #36d6ae;
+      }
+
+      &:hover {
+        @include tableHover;
+      }
+    }
+  }
+}
