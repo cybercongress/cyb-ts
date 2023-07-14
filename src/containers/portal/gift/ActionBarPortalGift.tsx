@@ -35,6 +35,13 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import { useDispatch } from 'react-redux';
+import {
+  addAddress,
+  deleteAddress,
+} from '../../../features/passport/passport.redux';
+import { Citizenship } from 'src/types/citizenship';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -68,10 +75,26 @@ const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
   };
 };
 
+type Props = {
+  addressActive?: {
+    bech32: string;
+  };
+  citizenship: Citizenship | null;
+  updateTxHash?: () => void;
+  isClaimed: any;
+  selectedAddress?: string;
+  currentGift: any;
+  activeStep: any;
+  setStepApp: any;
+  setLoading: any;
+  setLoadingGift: any;
+  loadingGift: any;
+};
+
 function ActionBarPortalGift({
   addressActive,
   citizenship,
-  updateTxHash,
+  updateTxHash = () => {},
   isClaimed,
   selectedAddress,
   currentGift,
@@ -80,7 +103,7 @@ function ActionBarPortalGift({
   setLoading,
   setLoadingGift,
   loadingGift,
-}) {
+}: Props) {
   const { node } = useIpfs();
   const navigate = useNavigate();
   const { signer, signingClient, initSigner } = useSigningClient();
@@ -88,13 +111,24 @@ function ActionBarPortalGift({
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
 
+  const [currentTx, setCurrentTx] = useState<{
+    hash: string;
+    onSuccess: () => void;
+  }>();
+
+  const dispatch = useDispatch();
+
+  useWaitForTransaction({
+    hash: currentTx?.hash,
+    onSuccess: currentTx?.onSuccess,
+  });
+
   useEffect(() => {
     const checkAddress = async () => {
       if (
         activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT ||
         activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT
       ) {
-        console.log('addressActive', addressActive);
         if (signer && addressActive !== null) {
           const [{ address }] = await signer.getAccounts();
           const { bech32 } = addressActive;
@@ -140,7 +174,7 @@ function ActionBarPortalGift({
       const { addresses } = extension;
 
       if (selectNetwork === 'columbus-5') {
-        if (window.keplr.experimentalSuggestChain) {
+        if (window.keplr?.experimentalSuggestChain) {
           await window.keplr.experimentalSuggestChain(configTerraKeplr());
         }
       }
@@ -181,7 +215,6 @@ function ActionBarPortalGift({
       const { addresses } = extension;
 
       const { ethereum } = window;
-      console.log('ethereum.isConnected()', ethereum.isConnected());
 
       const accounts = await ethereum.request({
         method: 'eth_requestAccounts',
@@ -206,13 +239,6 @@ function ActionBarPortalGift({
       const signature = await ethereum.request({
         method: 'personal_sign',
         params: [msg, from, 'proveAddress'],
-      });
-
-      console.log('first', {
-        address,
-        message,
-        messageHash: msg,
-        signature,
       });
 
       setSignedMessageKeplr({ signature, address });
@@ -246,6 +272,7 @@ function ActionBarPortalGift({
 
       try {
         const [{ address }] = await signer.getAccounts();
+
         const executeResponseResult = await signingClient.execute(
           address,
           CONTRACT_ADDRESS_PASSPORT,
@@ -253,12 +280,21 @@ function ActionBarPortalGift({
           txs.calculateFee(400000, gasPrice),
           'cyber'
         );
-        console.log('executeResponseResult', executeResponseResult);
+
         if (executeResponseResult.code === 0) {
           updateTxHash({
             status: 'pending',
             txHash: executeResponseResult.transactionHash,
           });
+
+          setCurrentTx({
+            hash: executeResponseResult.transactionHash,
+            onSuccess: () => {
+              dispatch(addAddress(signedMessageKeplr.address));
+              setStepApp(STEP_INFO.STATE_PROVE_DONE);
+            },
+          });
+
           setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
           if (setLoading) {
             setLoading(true);
@@ -379,12 +415,14 @@ function ActionBarPortalGift({
   ]);
 
   const isProve = useMemo(() => {
-    if (citizenship !== null && citizenship.extension.addresses === null) {
+    if (citizenship !== null && !citizenship.extension.addresses) {
       return false;
     }
-    const validObj =
-      citizenship !== null && citizenship.extension.addresses !== null;
-    if (validObj && Object.keys(citizenship.extension.addresses).length <= 8) {
+
+    if (
+      !!citizenship?.extension.addresses &&
+      Object.keys(citizenship.extension.addresses).length <= 8
+    ) {
       return false;
     }
 
@@ -399,44 +437,52 @@ function ActionBarPortalGift({
   }, [isClaimed]);
 
   const useDeleteAddress = useCallback(async () => {
-    if (signer && signingClient) {
-      if (
-        selectedAddress !== null &&
-        !selectedAddress.match(PATTERN_CYBER) &&
-        citizenship !== null
-      ) {
-        const { nickname } = citizenship.extension;
-        const msgObject = deleteAddressMsg(selectedAddress, nickname);
-        try {
-          const [{ address }] = await signer.getAccounts();
-          const executeResponseResult = await signingClient.execute(
-            address,
-            CONTRACT_ADDRESS_PASSPORT,
-            msgObject,
-            txs.calculateFee(400000, gasPrice),
-            'cyber'
-          );
-          console.log('executeResponseResult', executeResponseResult);
-          if (executeResponseResult.code === 0) {
-            updateTxHash({
-              status: 'pending',
-              txHash: executeResponseResult.transactionHash,
-            });
-            setStepApp(STEP_INFO.STATE_DELETE_IN_PROCESS);
-          }
+    if (!signer || !signingClient || !selectedAddress || !citizenship) {
+      return;
+    }
 
-          if (executeResponseResult.code) {
-            updateTxHash({
-              txHash: executeResponseResult?.transactionHash,
-              status: 'error',
-              rawLog: executeResponseResult?.rawLog.toString(),
-            });
-          }
-        } catch (error) {
-          console.log('error', error);
-          setStepApp(STEP_INFO.STATE_INIT);
-        }
+    // not possible to delete cyber address
+    if (selectedAddress.match(PATTERN_CYBER)) {
+      return;
+    }
+
+    const { nickname } = citizenship.extension;
+    const msgObject = deleteAddressMsg(selectedAddress, nickname);
+    try {
+      const [{ address }] = await signer.getAccounts();
+      const executeResponseResult = await signingClient.execute(
+        address,
+        CONTRACT_ADDRESS_PASSPORT,
+        msgObject,
+        txs.calculateFee(400000, gasPrice),
+        'cyber'
+      );
+
+      if (executeResponseResult.code === 0) {
+        updateTxHash({
+          status: 'pending',
+          txHash: executeResponseResult.transactionHash,
+        });
+        setCurrentTx({
+          hash: executeResponseResult.transactionHash,
+          onSuccess: () => {
+            dispatch(deleteAddress(selectedAddress));
+            setStepApp(STEP_INFO.STATE_INIT);
+          },
+        });
+        setStepApp(STEP_INFO.STATE_DELETE_IN_PROCESS);
       }
+
+      if (executeResponseResult.code) {
+        updateTxHash({
+          txHash: executeResponseResult?.transactionHash,
+          status: 'error',
+          rawLog: executeResponseResult?.rawLog.toString(),
+        });
+      }
+    } catch (error) {
+      console.log('error', error);
+      setStepApp(STEP_INFO.STATE_INIT);
     }
   }, [signer, signingClient, selectedAddress, citizenship]);
 

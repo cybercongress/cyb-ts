@@ -14,6 +14,7 @@ export type Props = {
   focusedProps?: boolean;
   isTextarea?: boolean;
   type?: 'text' | 'password';
+  error?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
@@ -32,6 +33,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       className,
       focusedProps,
       isTextarea,
+      error,
       ...props
     },
     ref
@@ -69,6 +71,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             {...props}
           />
         </LinearGradientContainer>
+        {error && <div className={styles.error}>{error}</div>}
       </div>
     );
   }

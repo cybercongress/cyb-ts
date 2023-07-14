@@ -11,19 +11,19 @@ import DownloadableItem from './items/DownloadableItem';
 import DirectoryItem from './DirectoryItem/DirectoryItem';
 import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
-const getContentDetails = async (
-  cid: string,
-  content: IPFSContentMaybe
-): Promise<IPFSContentDetails> => {
-  if (content?.result) {
-    return parseRawIpfsData(
-      cid,
-      content
-      // (progress: number) => console.log(`${cid} progress: ${progress}`)
-    );
-  }
-  return undefined;
-};
+// const getContentDetails = async (
+//   cid: string,
+//   content: IPFSContentMaybe
+// ): Promise<IPFSContentDetails> => {
+//   if (content?.result) {
+//     return parseRawIpfsData(
+//       cid,
+//       content
+//       // (progress: number) => console.log(`${cid} progress: ${progress}`)
+//     );
+//   }
+//   return undefined;
+// };
 
 type ContentTabProps = {
   content: IPFSContentMaybe;

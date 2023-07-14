@@ -4,20 +4,17 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Outlet,
   Navigate,
   useParams,
 } from 'react-router-dom';
 import App from './containers/application/App';
 import SearchResults from './containers/Search/SearchResults';
-import Wallet from './containers/Wallet/Wallet';
 import Home from './containers/home/home';
 import Governance from './containers/governance/governance';
 import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
-import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Ipfs from './containers/ipfs/ipfs';
 import BlockDetails from './containers/blok/blockDetails';
@@ -29,11 +26,9 @@ import ForceGraph from './containers/forceGraph/forceGraph';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
 import TestKeplr from './containers/testKeplre';
 import Mint from './containers/mint';
-import RoutedEnergy from './containers/energy';
 import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
-import Taverna from './containers/taverna';
 import TeleportTs from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
@@ -57,13 +52,14 @@ import {
   DetailsNetwork,
 } from './containers/network';
 
-import Sigma from './containers/sigma';
-
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 import ScriptEditor from './containers/portal/components/ScriptEditor/ScriptEditor';
 import ChatBotConfig from './containers/portal/components/ChatBotConfig/ChatBotConfig';
+import Robot from './pages/robot/Robot';
+import SigmaWrapper from './containers/sigma/SigmaWrapper';
+import Keys from './pages/Keys/Keys';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -79,7 +75,11 @@ function WrappedRouter({ children }: WrappedRouterProps) {
 
 function PageNotExist() {
   return (
-    <div>
+    <div
+      style={{
+        textAlign: 'center',
+      }}
+    >
       page not exists
       <br />
       <Link to={routes.home.path}>Home</Link>
@@ -87,9 +87,24 @@ function PageNotExist() {
   );
 }
 
+function CheckPassportPage() {
+  const params = useParams();
+
+  if (params.username?.includes('@')) {
+    return <Robot />;
+  }
+
+  return <PageNotExist />;
+}
+
 function ValidatorsRedirect() {
   const { status } = useParams();
   return <Navigate to={`/sphere/${status}`} />;
+}
+
+function RedirectToRobot() {
+  const params = useParams();
+  return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
 function AppRouter() {
@@ -98,7 +113,13 @@ function AppRouter() {
       <Routes>
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Temple />} />
-          <Route path="/robot" element={<Wallet />} />
+
+          {/* <Route path="/passport" element={<Wallet />} /> */}
+          <Route path="/robot/*" element={<Robot />} />
+          {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
+          <Route path={routes.neuron.path} element={<Robot />} />
+          {/* <Route path="/@:passport" element={<Robot />} /> */}
+
           <Route path="/oracle" element={<Home />} />
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
@@ -125,8 +146,13 @@ function AppRouter() {
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
-            <Route path="contract/:address" element={<AccountDetails />} />
-            <Route path="contract/:address/:tab" element={<AccountDetails />} />
+
+            <Route path="contract/:address" element={<RedirectToRobot />} />
+            <Route
+              path="contract/:address/:tab"
+              element={<RedirectToRobot />}
+            />
+
             <Route path="hero/:address/" element={<ValidatorsDetails />} />
             <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
@@ -137,12 +163,10 @@ function AppRouter() {
           <Route path="/degenbox" element={<TrollBoxx />} />
           <Route path="/test" element={<TestKeplr />} />
           <Route path={routes.hfr.path} element={<Mint />} />
-          <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />
           <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
-          <Route path="/sixthSense" element={<Taverna />} />
           <Route path="/teleport" element={<TeleportTs />} />
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
@@ -165,8 +189,9 @@ function AppRouter() {
           <Route path="/networks/add" element={<CustomNetwork />} />
           <Route path="/networks/:networkId" element={<DetailsNetwork />} />
           <Route path="/help" element={<Help />} />
-          {/* Sigma */}
-          <Route path="/sigma" element={<Sigma />} />
+
+          <Route path="/sigma" element={<SigmaWrapper />} />
+
           <Route path="/nebula" element={<Nebula />} />
           {/* TMP */}
           <Route path="/plugins" element={<ScriptEditor />} />
@@ -174,6 +199,11 @@ function AppRouter() {
           <Route path="/chatbot" element={<ChatBotConfig />} />
           <Route path="/chatbot/:tab" element={<ChatBotConfig />} />
           {/*  */}
+
+          <Route path="/keys" element={<Keys />} />
+
+          {/* works as 404 also */}
+          <Route path=":username/*" element={<CheckPassportPage />} />
           <Route path="*" element={<PageNotExist />} />
         </Route>
       </Routes>

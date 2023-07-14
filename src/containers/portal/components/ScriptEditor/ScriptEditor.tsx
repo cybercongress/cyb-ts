@@ -20,7 +20,7 @@ import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
 import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
-import { KeyValues, keyValuesToObject } from 'src/utils/localStorage';
+import { ObjKeyValue, keyValuesToObject } from 'src/utils/localStorage';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import styles from './ScriptEditor.module.scss';
@@ -145,7 +145,7 @@ function ScriptEditor() {
     });
   };
 
-  const onChangeSecrets = (secrets: KeyValues[]) => {
+  const onChangeSecrets = (secrets: ObjKeyValue[]) => {
     appBus.emit('context', {
       name: 'secrets',
       item: keyValuesToObject(secrets),

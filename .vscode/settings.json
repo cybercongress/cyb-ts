@@ -3,10 +3,12 @@
     "Bostrom",
     "cybercongress",
     "cyberlink",
+    "cyberlinks",
     "investmint",
     "Ipfs",
     "Keplr",
     "stylelint",
-    "denoms"
+    "denoms",
+    "bech32"
   ]
 }

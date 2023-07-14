@@ -1,14 +1,14 @@
-export type KeyValues = { [key: string]: string };
+import { ObjKeyValue, TabularKeyValues } from 'src/types/data';
 
-type TableData = { [key: string]: KeyValues };
 const STORAGE_KEYS = {
   secrets: 'secrets',
   botConfig: 'chat_bot_config',
+  activeBotName: 'active_bot',
 };
 
 const saveDataToLocalStorage = (
   storageKey: string,
-  data: TableData | string | number | boolean
+  data: TabularKeyValues | string | number | boolean
 ) => {
   localStorage.setItem(storageKey, JSON.stringify(data));
 };
@@ -18,7 +18,7 @@ const loadDataFromLocalStorage = (storageKey: string, defaultData: any) => {
   return raw ? JSON.parse(raw) : defaultData;
 };
 
-const keyValuesToObject = (data: KeyValues[]) => {
+const keyValuesToObject = (data: ObjKeyValue[]) => {
   return Object.fromEntries(
     Object.values(data)
       .filter((row) => !!row?.key)

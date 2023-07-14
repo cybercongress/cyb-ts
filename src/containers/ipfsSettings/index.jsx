@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import { MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
 import {
@@ -15,6 +14,7 @@ import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import { ContainerGradientText, Input } from '../../components';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { ContainerGradientText, Input, ActionBar } from 'src/components';
 
 const dataOpts = ['external', 'embedded'];
 
@@ -81,18 +81,9 @@ function IpfsSettings() {
   }
 
   return (
-    <MainContainer>
-      <ContainerGradientText
-        userStyleContent={{ width: '100%', display: 'grid', gap: '20px' }}
-      >
-        <BtnPasport
-          style={{ maxWidth: '100px' }}
-          typeBtn="blue"
-          onClick={() => onClickReConnect()}
-        >
-          reconnect
-        </BtnPasport>
-
+    // <MainContainer>
+    <ContainerGradientText>
+      <div style={{ width: '100%', display: 'grid', gap: '20px' }}>
         <ContainerKeyValue>
           <div>client</div>
 
@@ -161,9 +152,17 @@ function IpfsSettings() {
           </>
         )}
 
-        <InfoIpfsNode ipfs={ipfs} />
-      </ContainerGradientText>
-    </MainContainer>
+        <InfoIpfsNode />
+
+        <ActionBar
+          button={{
+            text: 'Reconnect',
+            onClick: onClickReConnect,
+          }}
+        />
+      </div>
+    </ContainerGradientText>
+    // </MainContainer>
   );
 }
 

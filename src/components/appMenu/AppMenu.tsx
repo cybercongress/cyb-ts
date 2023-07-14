@@ -1,26 +1,13 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useLocation, Link, NavLink } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 import styles from './AppMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
-
-// recheck types
-interface SubItem {
-  name: string;
-  to: string;
-}
-
-interface Item {
-  name: string;
-  to: string;
-  icon?: string;
-  active?: boolean;
-  subItems: SubItem[];
-}
+import { MenuItem, MenuItems } from 'src/containers/application/AppMenu';
 
 interface Props {
-  item: Item;
+  item: MenuItem | MenuItem['subItems'][0];
   selected: boolean;
   onClick: () => void;
 }
@@ -66,38 +53,50 @@ function Items({ item, selected, onClick }: Props) {
   );
 }
 
-const renderSubItems = (subItems, location, onClickSubItem) => {
-  let itemsSub = [];
-  if (subItems.length > 0) {
-    itemsSub = subItems.map((itemSub) => {
-      return (
-        <Items
-          selected={itemSub.to === location.pathname}
-          key={itemSub.name}
-          item={itemSub}
-          onClick={() => onClickSubItem(itemSub.name)}
-        />
-      );
-    });
-  }
-
-  return itemsSub;
+const renderSubItems = (
+  subItems: MenuItem['subItems'],
+  location,
+  onClickSubItem
+) => {
+  return subItems.map((itemSub) => {
+    return (
+      <Items
+        selected={itemSub.to === location.pathname}
+        key={itemSub.name}
+        item={itemSub}
+        onClick={() => onClickSubItem(itemSub.name)}
+      />
+    );
+  });
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export function Bookmarks({ items }) {
+export function Bookmarks({
+  items,
+  closeMenu,
+}: {
+  items: MenuItems;
+  closeMenu: () => void;
+}) {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedItemSub, setSelectedItemSub] = useState<string>('');
   const location = useLocation();
 
-  const onClickItem = (itemKey: string) => {
+  function onClickItem(itemKey: MenuItem['name']) {
     setSelectedItem(itemKey);
     setSelectedItemSub('');
-  };
 
-  const onClickSubItem = (itemKey: string) => {
+    const item = items.find((item) => item.name === itemKey);
+
+    if (item && item.subItems.length === 0) {
+      closeMenu();
+    }
+  }
+
+  function onClickSubItem(itemKey: string) {
     setSelectedItemSub(itemKey);
-  };
+    closeMenu();
+  }
 
   useEffect(() => {
     setSelectedItemSub('');
@@ -105,15 +104,18 @@ export function Bookmarks({ items }) {
 
   return (
     <div className={styles.bookmarks}>
-      {items.map((item: Item) => {
+      {items.map((item) => {
         const key = uuidv4();
         return (
           <div key={key}>
             <Items
               selected={
-                item.to === location.pathname &&
-                selectedItemSub === '' &&
-                item.active === undefined
+                (item.to === location.pathname && selectedItemSub === '') ||
+                // maybe refactor robot url check
+                (item.to === '/robot' &&
+                  (location.pathname.includes('@') ||
+                    location.pathname.includes('neuron/')))
+                // item.active === undefined
               }
               item={item}
               onClick={() => onClickItem(item.name)}

@@ -1,0 +1,98 @@
+@import 'src/style/mixins.scss';
+
+.container {
+  display: grid;
+  grid-template-columns: 140px 270px 0.9fr 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 15px 0;
+
+  // &:hover {
+  //   @include tableHover;
+  // }
+}
+
+.containerDetailsBalance {
+  position: relative;
+  min-height: 0px;
+  height: 0px;
+  padding-left: 23px;
+  transition: 0.5s ease-in-out;
+  opacity: 0;
+
+  &entering {
+    opacity: 0;
+    transition: 1ms ease-in-out;
+  }
+
+  &entered {
+    opacity: 1;
+    min-height: 110px;
+    height: 1px;
+    margin-top: 30px;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+  }
+
+  &exited {
+    opacity: 0;
+    height: 0px;
+    min-height: 0px;
+    visibility: hidden;
+  }
+}
+
+.containerDetailsBalanceMain {
+  &entering {
+    opacity: 0;
+    transition: 1ms ease-in-out;
+  }
+
+  &entered {
+    opacity: 1;
+    min-height: 200px;
+    height: 1px;
+    margin-top: 20px;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.5s ease-in-out;
+  }
+
+  &exited {
+    opacity: 0;
+    height: 0px;
+    min-height: 0px;
+    visibility: hidden;
+  }
+}
+
+.containerDetailsBalanceMainComm {
+  &entering {
+    opacity: 0;
+    transition: 1ms ease-in-out;
+  }
+
+  &entered {
+    opacity: 1;
+    min-height: 320px;
+    height: 1px;
+    margin-top: 30px;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.5s ease-in-out;
+  }
+
+  &exited {
+    opacity: 0;
+    height: 0px;
+    min-height: 0px;
+    visibility: hidden;
+  }
+}

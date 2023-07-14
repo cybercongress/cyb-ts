@@ -19,7 +19,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { Tablist } from '@cybercongress/gravity';
 import LocalStorageAsEditableTable from 'src/components/EditableTable/LocalStorageAsEditableTable';
 import { WebLLMInstance } from 'src/services/scripting/webLLM';
-
+import { ObjKeyValue } from 'src/types/data';
 import styles from './ChatBotConfig.module.scss';
 import defaultBotList from './defaultBotList.json';
 

@@ -2,17 +2,15 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pane, TableEv as Table, Text, Tablist } from '@cybercongress/gravity';
 import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 import { v4 as uuidv4 } from 'uuid';
-
-// import { KeyValues, TableControlProps } from './TableControl.d';
+import { ObjKeyValue } from 'src/types/data';
+// import { ObjKeyValue, TableControlProps } from './TableControl.d';
 
 import styles from './EditableTable.module.scss';
 
-export type KeyValues = { [key: string]: string };
-
 type TableControlProps = {
-  data: { [key: string]: KeyValues };
+  data: { [key: string]: ObjKeyValue };
   columns: string[];
-  onSave: (data: { [key: string]: KeyValues }) => void;
+  onSave: (data: { [key: string]: ObjKeyValue }) => void;
 };
 
 const actionColumnProps = {
@@ -25,7 +23,9 @@ const actionColumnProps = {
 };
 
 function EditableTable({ data, columns, onSave }: TableControlProps) {
-  const [items, setItems] = useState<{ [key: string]: KeyValues }>({ ...data });
+  const [items, setItems] = useState<{ [key: string]: ObjKeyValue }>({
+    ...data,
+  });
   const [isChanged, setIsChanged] = useState(false);
 
   const itemsCount = useMemo(() => Object.keys(items).length, [items]);
@@ -84,7 +84,7 @@ function EditableTable({ data, columns, onSave }: TableControlProps) {
     setIsChanged(false);
   };
 
-  const renderRow = (key: string, item: KeyValues) => {
+  const renderRow = (key: string, item: ObjKeyValue) => {
     return (
       <Table.Row borderBottom="none" padding="15px 0">
         {Array.from(columns).map((title: string, index: number) => (

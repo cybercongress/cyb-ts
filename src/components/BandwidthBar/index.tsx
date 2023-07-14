@@ -101,7 +101,6 @@ function BandwidthBar(
     const getBandwidth = async () => {
       try {
         const { account } = defaultAccount;
-        console.log(`account getBandwidth`, account);
         if (
           account !== null &&
           Object.prototype.hasOwnProperty.call(account, 'cyber') &&

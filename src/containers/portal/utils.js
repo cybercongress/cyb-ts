@@ -93,6 +93,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
   return { citizenship, loading, setLoading };
 };
 
+// TODO: replace with hook
 const activePassport = async (client, address) => {
   try {
     const query = {

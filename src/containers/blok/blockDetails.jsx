@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import withRouter from 'src/components/helpers/withRouter';
 
 import InformationBlock from './informationBlock';
-import TableTxs from '../account/component/tableTxs';
+import TableTxs from '../../pages/robot/_refactor/account/component/tableTxs';
 import { CardTemplate } from '../../components';
 import ActionBarContainer from '../Search/ActionBarContainer';
 

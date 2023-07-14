@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -6,6 +6,9 @@ import { Transition } from 'react-transition-group';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
+
+import useOnClickOutside from 'src/hooks/useOnClickOutside';
+import { routes } from 'src/routes';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
 import styles from './SwitchAccount.module.scss';
@@ -13,89 +16,70 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-import {
-  setAccounts,
-  setDefaultAccount,
-} from '../../../../redux/features/pocket';
 import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
+import { setDefaultAccount } from '../../../../redux/features/pocket';
 
-function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
-  const { passport } = useGetPassportByAddress(data);
+// should be refactored
+function AccountItem({
+  data,
+  onClickSetActive,
+  setControlledVisible,
+  name: accountName,
+  image,
+  link,
+}) {
+  const address = data?.cyber?.bech32;
+  const { passport } = useGetPassportByAddress(address);
 
-  const useGetName = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.nickname;
-    }
+  const name =
+    passport?.extension?.nickname || data?.cyber?.name || accountName;
 
-    if (name) {
-      return name;
-    }
+  const nickname = passport?.extension?.nickname;
 
-    return null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [passport]);
-
-  const useGetCidAvatar = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.avatar;
-    }
-    return '';
-  }, [passport]);
-
-  const useGetAddress = useMemo(() => {
-    if (data !== null && Object.prototype.hasOwnProperty.call(data, 'cyber')) {
-      const { bech32 } = data.cyber;
-      return bech32;
-    }
-    return null;
-  }, [data]);
-
-  const hadleOnClick = () => {
-    onClickSetActive();
+  function handleClick() {
+    onClickSetActive?.();
     setControlledVisible(false);
-  };
+  }
 
   return (
-    <button
-      type="button"
-      onClick={() => hadleOnClick()}
+    <Link
+      to={
+        link ||
+        (nickname && routes.robotPassport.getLink(nickname)) ||
+        routes.robot.path
+      }
+      onClick={handleClick}
       className={cx(
         styles.containerSwichAccount,
-        networkStyles.btnContainerText,
-        styles.containerSwichAccountHover
+        networkStyles.btnContainerText
       )}
-      style={{ marginTop: -10 }}
     >
-      <div className={networkStyles.containerKrmaName}>
-        {useGetName && (
+      <div className={cx(networkStyles.containerKrmaName, styles.content)}>
+        {name && (
           <span
-            className={cx(
-              networkStyles.btnContainerText,
-              networkStyles.btnContainerTextHover
-            )}
+            className={cx(networkStyles.btnContainerText, {
+              [styles.noAccount]: !address,
+            })}
           >
-            {useGetName}
+            {name}
           </span>
         )}
-        {useGetAddress && <Karma address={useGetAddress} />}
+        {address && <Karma address={address} />}
       </div>
-      <div
-        className={cx(
-          styles.containerAvatarConnect,
-          styles.containerAvatarConnectHover
-        )}
-      >
-        <div className={styles.containerAvatarConnectHoverAbsolute}>
-          <div className={styles.containerAvatarConnectTrue}>
+      <div className={cx(styles.containerAvatarConnect)}>
+        <div className={styles.containerAvatarConnectTrue}>
+          {image ? (
+            <img className={styles.image} src={image} alt={name} />
+          ) : (
             <AvataImgIpfs
               style={{ position: 'relative' }}
-              cidAvatar={useGetCidAvatar}
-              addressCyber={useGetAddress}
+              cidAvatar={passport?.extension?.avatar}
+              addressCyber={address}
             />
-          </div>
+          )}
         </div>
       </div>
-    </button>
+    </Link>
   );
 }
 
@@ -115,68 +99,28 @@ function SwitchAccount() {
     onVisibleChange: setControlledVisible,
     placement: 'bottom',
   });
-  const { passport } = useGetPassportByAddress(defaultAccount);
 
+  const passport = useSelector((state: RootState) => state.passport);
   const dispatch = useDispatch();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(containerRef, () => {
+    setControlledVisible(false);
+  });
+
+  const useGetCidAvatar = passport.data?.extension.avatar;
+  const useGetName = passport.data?.extension.nickname || defaultAccount?.name;
+  const useGetAddress = defaultAccount?.account?.cyber?.bech32;
+
   const onClickChangeActiveAcc = async (key: string) => {
-    if (
-      accounts !== null &&
-      Object.prototype.hasOwnProperty.call(accounts, key)
-    ) {
-      const defaultAccountTemp = { [key]: accounts[key] };
-      const accountsPocket = {
-        [key]: accounts[key],
-        ...accounts,
-      };
-      dispatch(
-        setDefaultAccount({
-          name: key,
-          account: accounts[key],
-        })
-      );
-      dispatch(setAccounts(accountsPocket));
-      setControlledVisible(false);
-      localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
-    }
+    dispatch(
+      setDefaultAccount({
+        name: key,
+      })
+    );
+    setControlledVisible(false);
   };
-
-  const useGetName = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.nickname;
-    }
-
-    if (defaultAccount !== null) {
-      return defaultAccount.name;
-    }
-
-    return null;
-  }, [passport, defaultAccount]);
-
-  const useGetCidAvatar = useMemo(() => {
-    if (passport && passport !== null) {
-      return passport.extension.avatar;
-    }
-    return null;
-  }, [passport]);
-
-  const useGetAddress = useMemo(() => {
-    if (
-      defaultAccount !== null &&
-      Object.prototype.hasOwnProperty.call(defaultAccount, 'account')
-    ) {
-      const { account } = defaultAccount;
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
-      ) {
-        const { bech32 } = account.cyber;
-        return bech32;
-      }
-    }
-
-    return null;
-  }, [defaultAccount]);
 
   const renderItem = useMemo(() => {
     if (!accounts) {
@@ -184,7 +128,7 @@ function SwitchAccount() {
     }
 
     return Object.keys(accounts)
-      .filter((item) => defaultAccount.name !== item)
+      .filter((item) => defaultAccount.name !== item && accounts[item].cyber)
       .map((key) => {
         return (
           <AccountItem
@@ -200,10 +144,10 @@ function SwitchAccount() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, defaultAccount, node]);
 
-  // return items;
+  // const multipleAccounts = renderItem && Object.keys(renderItem).length > 0;
 
   return (
-    <div style={{ position: 'relative', fontSize: '20px' }}>
+    <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
       <div
         className={styles.containerSwichAccount}
         style={{
@@ -211,7 +155,7 @@ function SwitchAccount() {
             !useGetName || !mediaQuery || !useGetAddress ? '1fr' : '1fr 105px',
         }}
       >
-        {mediaQuery && useGetAddress !== null && (
+        {mediaQuery && useGetAddress && (
           <div className={networkStyles.containerKrmaName}>
             {useGetName && (
               <button
@@ -221,14 +165,22 @@ function SwitchAccount() {
                 style={{ fontSize: '20px' }}
               >
                 {useGetName}
+                {/* {multipleAccounts && '>'} */}
               </button>
             )}
-            {useGetAddress && <Karma address={useGetAddress} />}
+
+            <Karma address={useGetAddress} />
             <ChatBotPanel />
           </div>
         )}
-
-        <Link to="/robot">
+        <Link
+          to={
+            passport.data
+              ? routes.robotPassport.getLink(passport.data.extension.nickname)
+              : routes.robot.path
+          }
+          // onClick={() => setControlledVisible(!controlledVisible)}
+        >
           <div
             className={cx(styles.containerAvatarConnect, {
               [styles.containerAvatarConnectFalse]: !ipfsStatus,
@@ -247,28 +199,39 @@ function SwitchAccount() {
           </div>
         </Link>
       </div>
-      {renderItem && Object.keys(renderItem).length > 0 && (
-        <Transition in={visible} timeout={300}>
-          {(state) => {
-            return (
+      <Transition in={visible} timeout={300}>
+        {(state) => {
+          return (
+            <div
+              ref={setTooltipRef}
+              {...getTooltipProps({
+                className: styles.tooltipContainerRight,
+              })}
+            >
               <div
-                ref={setTooltipRef}
-                {...getTooltipProps({
-                  className: styles.tooltipContainerRight,
-                })}
+                className={cx(styles.containerSwichAccountList, [
+                  styles[`containerSwichAccountList_${state}`],
+                ])}
               >
-                <div
-                  className={cx(styles.containerSwichAccountList, [
-                    styles[`containerSwichAccountList${state}`],
-                  ])}
-                >
-                  {renderItem}
-                </div>
+                {renderItem}
+
+                <AccountItem
+                  name="supersigma"
+                  link={routes.sigma.path}
+                  setControlledVisible={setControlledVisible}
+                  image={require('../../../../image/sigma.png')}
+                />
+                <AccountItem
+                  name="keys"
+                  setControlledVisible={setControlledVisible}
+                  link={routes.keys.path}
+                  image={require('./keys.png')}
+                />
               </div>
-            );
-          }}
-        </Transition>
-      )}
+            </div>
+          );
+        }}
+      </Transition>
     </div>
   );
 }

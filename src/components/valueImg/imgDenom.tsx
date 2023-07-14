@@ -34,14 +34,18 @@ const getNativeImg = (text: string) => {
   return nativeImageMap[text.toLowerCase()] || defaultImg;
 };
 
-export type ImgDenomProps = {
+type ImgDenomProps = {
   coinDenom: string;
-  marginImg: string;
-  size: string | number;
-  zIndexImg: number;
+  marginImg?: number;
+  size?: number;
+  zIndexImg?: number;
   tooltipStatus: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  infoDenom: any;
+  infoDenom?: {
+    coinImageCid?: string;
+    path?: string;
+    native?: boolean;
+    denom?: string;
+  };
 };
 
 function ImgDenom({
@@ -52,7 +56,7 @@ function ImgDenom({
   tooltipStatus,
   infoDenom,
 }: ImgDenomProps) {
-  const [imgDenom, setImgDenom] = useState<string | undefined>(undefined);
+  const [imgDenom, setImgDenom] = useState<string>();
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
   const { node } = useIpfs();
 
@@ -81,7 +85,10 @@ function ImgDenom({
           setImgDenom(pool);
           setTooltipText(trimString(coinDenom, 9, 9));
         } else {
-          setTooltipText(infoDenom.denom);
+          if (infoDenom.denom) {
+            setTooltipText(infoDenom.denom);
+          }
+
           const nativeImg = getNativeImg(coinDenom);
           setImgDenom(nativeImg);
         }
@@ -97,40 +104,31 @@ function ImgDenom({
     }
   }, [node, coinDenom, infoDenom, getImgFromIpfsByCid]);
 
+  const img = (
+    <img
+      style={{
+        margin: marginImg || 0,
+        width: size || 20,
+        height: size || 20,
+        zIndex: zIndexImg || 0,
+        verticalAlign: 'middle',
+      }}
+      src={imgDenom || defaultImg}
+      alt="text"
+    />
+  );
+
   if (tooltipStatus) {
     return (
       <div>
         <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
-          <img
-            style={{
-              margin: marginImg || 0,
-              width: size || 20,
-              height: size || 20,
-              zIndex: zIndexImg || 0,
-            }}
-            src={imgDenom || defaultImg}
-            alt="text"
-          />
+          {img}
         </Tooltip>
       </div>
     );
   }
 
-  return (
-    <div style={{ display: 'flex' }}>
-      <img
-        style={{
-          margin: marginImg || 0,
-          width: size || 20,
-          height: size || 20,
-          zIndex: zIndexImg || 0,
-        }}
-        src={imgDenom || defaultImg}
-        alt="text"
-      />
-    </div>
-  );
+  return <div style={{ display: 'flex' }}>{img}</div>;
 }
 
-// eslint-disable-next-line import/no-unused-modules
 export default ImgDenom;

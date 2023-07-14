@@ -14,7 +14,9 @@ import {
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
+import { useIpfs } from 'src/contexts/ipfs';
+import { useSigningClient } from 'src/contexts/signerClient';
+import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 
 const STAGE_TYPE_GOV = 9;
 

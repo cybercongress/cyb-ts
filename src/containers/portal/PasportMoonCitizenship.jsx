@@ -97,6 +97,7 @@ function PasportMoonCitizenship({ defaultAccount }) {
     const getPasport = async () => {
       if (queryClient) {
         setStagePortal(STAGE_LOADING);
+        // TODO: possible to use passport from store
         const addressActiveData = getActiveAddress(defaultAccount);
         if (addressActiveData !== null) {
           const response = await activePassport(

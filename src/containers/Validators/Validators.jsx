@@ -9,7 +9,7 @@ import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
-import { useGetBalance } from '../account/hooks';
+import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 function Validators({ defaultAccount }) {
