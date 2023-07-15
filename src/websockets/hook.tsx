@@ -41,7 +41,13 @@ function useWebSocket(url: string): Socket {
     }
 
     if (message.method === 'subscribe') {
-      subscriptions.current.push(message.params[0]);
+      const paramsStr = JSON.stringify(message.params);
+
+      if (subscriptions.current.includes(paramsStr)) {
+        return;
+      }
+
+      subscriptions.current.push(paramsStr);
     }
 
     webSocketRef.current.send(JSON.stringify(message));
