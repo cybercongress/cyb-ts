@@ -10,40 +10,45 @@ type Props = {
   onChangeRecipient: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function AccountInput({ recipient, onChangeRecipient }: Props) {
-  const [focused, setFocused] = useState(false);
+const AccountInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ recipient, valueRecipient, onChangeRecipient }, ref) => {
+    const [focused, setFocused] = useState(false);
 
-  const onBlurInput = useCallback(() => {
-    if (recipient && recipient.length && recipient.match(PATTERN_CYBER)) {
-      setFocused(true);
+    const onBlurInput = useCallback(() => {
+      if (recipient && recipient.length && recipient.match(PATTERN_CYBER)) {
+        setFocused(true);
+      }
+    }, [recipient]);
+
+    if (focused) {
+      return (
+        <button
+          type="button"
+          onClick={() => setFocused(false)}
+          style={{ height: '42px', background: 'transparent', border: 'none' }}
+        >
+          <LinearGradientContainer color={Color.Green} title="choose recipient">
+            <Account avatar address={recipient} />
+          </LinearGradientContainer>
+        </button>
+      );
     }
-  }, [recipient]);
 
-  if (focused) {
     return (
-      <button
-        type="button"
-        onClick={() => setFocused(false)}
-        style={{ height: '42px', background: 'transparent', border: 'none' }}
-      >
-        <LinearGradientContainer color={Color.Green} title="choose recipient">
-          <Account avatar address={recipient} />
-        </LinearGradientContainer>
-      </button>
+      <Input
+        ref={ref}
+        id="recipient"
+        value={valueRecipient}
+        onChange={onChangeRecipient}
+        title="choose recipient"
+        color={Color.Green}
+        onBlurFnc={() => onBlurInput()}
+        // onClick={}
+      />
     );
   }
+);
 
-  return (
-    <Input
-      id="recipient"
-      value={recipient}
-      onChange={(e) => onChangeRecipient(e.target.value)}
-      title="choose recipient"
-      color={Color.Green}
-      onBlurFnc={() => onBlurInput()}
-      // onClick={}
-    />
-  );
-}
+AccountInput.displayName = 'AccountInput';
 
 export default AccountInput;
