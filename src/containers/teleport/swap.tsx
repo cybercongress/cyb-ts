@@ -156,10 +156,10 @@ function Swap() {
       }
 
       if (isReverse) {
-        setTokenBAmount(new BigNumber(inputAmount).toString());
+        setTokenBAmount(inputAmount);
         setTokenAAmount(counterPairAmount.toString());
       } else {
-        setTokenAAmount(new BigNumber(inputAmount).toString());
+        setTokenAAmount(inputAmount);
         setTokenBAmount(counterPairAmount.toString());
       }
     },
@@ -283,11 +283,11 @@ function Swap() {
     [accountBalances, tokenA, traseDenom, amountChangeHandler]
   );
 
-  // useEffect(() => {
-  //   if (new BigNumber(tokenAAmount).comparedTo(0)) {
-  //     amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
-  //   }
-  // }, [tokenA, tokenB, tokenAAmount, amountChangeHandler]);
+  useEffect(() => {
+    if (new BigNumber(tokenAAmount).comparedTo(0)) {
+      amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
+    }
+  }, [tokenA, tokenB, tokenAAmount, amountChangeHandler]);
 
   const stateActionBar = {
     tokenAAmount,
