@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -7,19 +13,19 @@ import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
+
 import {
-  scriptItemStorage,
-  runScript,
-  saveScript,
+  ScriptEntrypoint,
+  ScriptItem,
   ScriptParticleParams,
-} from 'src/services/scripting/engine';
+} from 'src/services/scripting/scritpting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
-import { setSecrets } from 'src/redux/features/scripting';
+import { setSecrets, setScript } from 'src/redux/features/scripting';
 import { appBus } from 'src/services/scripting/bus';
 // import { updatePassportData } from '../../utils';
 import { keyValuesToObject } from 'src/utils/localStorage';
@@ -28,7 +34,7 @@ import { TabularKeyValues } from 'src/types/data';
 import EditableTable from 'src/components/EditableTable/EditableTable';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
-
+import { compileScript } from './utils';
 import styles from './ScriptEditor.module.scss';
 
 import 'codemirror/mode/rust/rust';
@@ -36,6 +42,9 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
+
+// const isScriptEntrypoint = (name: string | undefined) =>
+//   name && Object.values(scriptEntrypoints).find((i) => i.name);
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -55,51 +64,24 @@ const highlightErrors = (codeMirrorRef, diagnostics) => {
     );
   });
 };
-const compileScript = (
-  code: string,
-  executeAfterCompile: boolean,
-  particle?: ScriptParticleParams
-) =>
-  runScript(
-    code,
-    {
-      particle,
-    },
-    scriptItemStorage.particle.runtime,
-    undefined,
-    executeAfterCompile
-  );
 
-function ScriptEditor() {
-  const dispatch = useDispatch();
-
-  const codeMirrorRef = useRef();
-  const { tab } = useParams();
-  const { signer, signingClient } = useSigningClient();
+function PlayParticlePostProcessor({
+  addToLog,
+  codeMirrorRef,
+  code,
+  entrypoint,
+  reset,
+}: {
+  addToLog: (log: string[]) => void;
+  codeMirrorRef: React.MutableRefObject<CodeMirror | null>;
+  code: string;
+  entrypoint: ScriptItem;
+  reset: () => void;
+}) {
   const { node } = useIpfs();
-  const { secrets } = useSelector((store: RootState) => store.scripting);
-
-  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
-  const { passport } = useGetPassportByAddress(defaultAccount);
-
-  const [log, setLog] = useState<string[]>([]);
-  const [isChanged, setIsChanged] = useState(false);
   const [testCid, seTestCid] = useState('');
-  const [code, setCode] = useState(scriptItemStorage.particle.user);
-
-  const logText = useMemo(() => log.join('\r\n'), [log]);
-
-  const addToLog = useCallback(
-    (lines: string[]) => setLog((log) => [...log, ...lines]),
-    []
-  );
-
-  // useEffect(() => {
-  //   setCode(passport?.extension.data || scriptItemStorage.particle.user);
-  // }, [passport]);
-
   const onTestClick = async () => {
-    setLog([]);
+    reset();
     if (!isCID(testCid)) {
       addToLog([`🚫 '${testCid}' - is not correct CID.`]);
       return;
@@ -132,38 +114,151 @@ function ScriptEditor() {
       content,
     };
 
-    compileScript(code, true, particleParams).then((result) => {
-      const isOk = !result.diagnosticsOutput && !result.error;
-      highlightErrors(codeMirrorRef.current, result.diagnostics);
-      console.log('----res', result);
-      if (!isOk) {
-        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-      } else {
-        addToLog([
-          '',
-          '🏁 Result:',
-          '',
-          `   ${JSON.stringify(result.result)}`,
-          '',
-          '🧪 Raw output:',
-          result?.output || 'no output.',
-        ]);
+    compileScript(code, true, particleParams, entrypoint.runtime).then(
+      (result) => {
+        const isOk = !result.diagnosticsOutput && !result.error;
+        highlightErrors(codeMirrorRef.current, result.diagnostics);
+        console.log('----res', result);
+        if (!isOk) {
+          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+        } else {
+          addToLog([
+            '',
+            '🏁 Result:',
+            '',
+            `   ${JSON.stringify(result.result)}`,
+            '',
+            '🧪 Raw output:',
+            result?.output || 'no output.',
+          ]);
+        }
       }
-    });
+    );
   };
+
+  return (
+    <div className={styles.testPanel}>
+      <Input
+        value={testCid}
+        onChange={(e) => seTestCid(e.target.value)}
+        placeholder="Enter particle CID to apply script...."
+      />
+      <Button onClick={onTestClick}>Test</Button>
+    </div>
+  );
+}
+
+function PlayMyParticle({
+  addToLog,
+  codeMirrorRef,
+  code,
+  entrypoint,
+  reset,
+}: {
+  addToLog: (log: string[]) => void;
+  codeMirrorRef: React.MutableRefObject<CodeMirror | null>;
+  code: string;
+  entrypoint: ScriptItem;
+  reset: () => void;
+}) {
+  const [testInput, seTestInput] = useState('');
+  const onTestClick = async () => {
+    reset();
+    const particleParams = {
+      cid: testInput,
+      input: testInput,
+    };
+
+    compileScript(code, true, particleParams, entrypoint.runtime).then(
+      (result) => {
+        const isOk = !result.diagnosticsOutput && !result.error;
+        highlightErrors(codeMirrorRef.current, result.diagnostics);
+        console.log('----res', result);
+        if (!isOk) {
+          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+        } else {
+          addToLog([
+            '',
+            '🏁 Result:',
+            '',
+            `   ${JSON.stringify(result.result)}`,
+            '',
+            '🧪 Raw output:',
+            result?.output || 'no output.',
+          ]);
+        }
+      }
+    );
+  };
+
+  return (
+    <div className={styles.testPanel}>
+      <Input
+        value={testInput}
+        onChange={(e) => seTestInput(e.target.value)}
+        placeholder="Enter commander input..."
+      />
+      <Button onClick={onTestClick}>Test</Button>
+    </div>
+  );
+}
+
+function ScriptEditor() {
+  const dispatch = useDispatch();
+
+  const codeMirrorRef = useRef<CodeMirror>();
+  const { signer, signingClient } = useSigningClient();
+  const {
+    secrets,
+    scripts: { entrypoints },
+  } = useSelector((store: RootState) => store.scripting);
+
+  const [entrypointName, setEntrypointName] = useState<ScriptEntrypoint>(
+    Object.keys(entrypoints)[0]
+  );
+
+  const { tab = entrypointName } = useParams();
+
+  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
+  const { passport } = useGetPassportByAddress(defaultAccount);
+
+  const [log, setLog] = useState<string[]>([]);
+  const [isChanged, setIsChanged] = useState(false);
+  const [code, setCode] = useState('');
+
+  useEffect(() => {
+    setEntrypointName(
+      Object.keys(entrypoints).indexOf(tab) > -1 ? tab : undefined
+    );
+    setCode(entrypoints[tab]?.user);
+  }, [tab, entrypoints]);
+
+  const logText = useMemo(() => log.join('\r\n'), [log]);
+
+  const addToLog = useCallback(
+    (lines: string[]) => setLog((log) => [...log, ...lines]),
+    []
+  );
+
+  // useEffect(() => {
+  //   setCode(passport?.extension.data || scriptItemStorage.particle.user);
+  // }, [passport]);
+
+  const resetPlayGround = () => setLog([]);
 
   const onSaveSecrets = (secrets: TabularKeyValues) => {
     dispatch(setSecrets(secrets));
-    appBus.emit('context', {
-      name: 'secrets',
-      item: keyValuesToObject(Object.values(secrets)),
-    });
   };
 
   const onSaveClick = () => {
     setLog([]);
 
-    compileScript(code, false).then((result) => {
+    compileScript(
+      code,
+      false,
+      undefined,
+      entrypoints?.[entrypointName].runtime
+    ).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
       highlightErrors(codeMirrorRef.current, result.diagnostics);
 
@@ -171,7 +266,7 @@ function ScriptEditor() {
         addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
         addToLog(['🏁 Compiled!']);
-        saveScript('particle', code);
+        dispatch(setScript({ name: entrypointName, code }));
         setIsChanged(false);
         addToLog(['', '☑️ Saved to local storage.']);
       }
@@ -198,7 +293,14 @@ function ScriptEditor() {
           width="100%"
           marginX="auto"
         >
-          <TabBtn text="Scripts" isSelected={!tab} to="/plugins" />
+          {Object.keys(entrypoints).map((k) => (
+            <TabBtn
+              key={`tab_${k}`}
+              text={entrypoints[k].title}
+              isSelected={tab === k}
+              to={`/plugins/${k}`}
+            />
+          ))}
           <TabBtn
             text="Secrets"
             isSelected={tab === 'secrets'}
@@ -212,10 +314,10 @@ function ScriptEditor() {
             onSave={onSaveSecrets}
           />
         )}
-        {!tab && (
+        {Object.keys(entrypoints).indexOf(tab) > -1 && (
           <>
             <Pane marginBottom="25px" fontSize="20px">
-              Particle post-processor script
+              {entrypoints[tab].title}
             </Pane>
             <CodeMirror
               ref={codeMirrorRef}
@@ -237,14 +339,32 @@ function ScriptEditor() {
               justifyContent="center"
               className={styles.actionPanel}
             >
-              <div className={styles.testPanel}>
+              {entrypointName === 'particle' && (
+                <PlayParticlePostProcessor
+                  reset={resetPlayGround}
+                  addToLog={addToLog}
+                  codeMirrorRef={codeMirrorRef}
+                  code={code}
+                  entrypoint={entrypoints[entrypointName]}
+                />
+              )}
+              {entrypointName === 'my-particle' && (
+                <PlayMyParticle
+                  reset={resetPlayGround}
+                  addToLog={addToLog}
+                  codeMirrorRef={codeMirrorRef}
+                  code={code}
+                  entrypoint={entrypoints[entrypointName]}
+                />
+              )}
+              {/* <div className={styles.testPanel}>
                 <Input
                   value={testCid}
                   onChange={(e) => seTestCid(e.target.value)}
                   placeholder="Enter particle CID to apply script...."
                 />
                 <Button onClick={onTestClick}>Test</Button>
-              </div>
+              </div> */}
               {isChanged && <Button onClick={onSaveClick}>Save</Button>}
             </Pane>
             <textarea value={logText} className={styles.logArea} rows={18} />

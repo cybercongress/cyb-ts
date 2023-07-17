@@ -5,42 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import scriptParticleDefault from './scripts/default/particle.rn';
 import scriptParticleRuntime from './scripts/runtime/particle.rn';
 import { appContextManager } from './bus';
-
-type ScriptNames = 'particle'; // | 'search';
-type ScriptItem = { name: string; runtime: string; user: string };
-
-type ScriptCallbackStatus =
-  | 'pending'
-  | 'running'
-  | 'completed'
-  | 'canceled'
-  | 'error';
-
-export type ScriptCallback = (
-  refId: string,
-  status: ScriptCallbackStatus,
-  result: any
-) => void;
-
-export type ScriptParticleParams = {
-  cid?: string;
-  contentType?: string;
-  content?: string;
-};
-
-type ScriptScopeParams = {
-  particle?: ScriptParticleParams;
-  refId?: string;
-};
-
-type ScriptExecutionData = {
-  error?: string;
-  result?: any;
-  diagnosticsOutput?: string;
-  output?: string;
-  diagnostics?: Object[];
-  instructions?: string;
-};
+import {
+  ScriptEntrypoint,
+  ScriptItem,
+  ScriptCallback,
+  ScriptCallbackStatus,
+  ScriptScopeParams,
+  ScriptExecutionData,
+} from './scritpting';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -62,10 +34,13 @@ export const loadCyberScripingEngine = async () => {
   return rune;
 };
 
-export const loadScript = (scriptName: ScriptNames) =>
+export const loadScript = (scriptName: ScriptEntrypoint) =>
   localStorage.getItem(`script_${scriptName}`);
 
-export const saveScript = (scriptName: ScriptNames, scriptCode: string) => {
+export const saveScript = (
+  scriptName: ScriptEntrypoint,
+  scriptCode: string
+) => {
   localStorage.setItem(`script_${scriptName}`, scriptCode);
   scriptItemStorage[scriptName].user = scriptCode;
 };
@@ -73,9 +48,14 @@ export const saveScript = (scriptName: ScriptNames, scriptCode: string) => {
 // Scripts cached to use on demand
 // Runtime - cyber scripts to hide extra functionality
 // User - user written scripts(or default)
-export const scriptItemStorage: Record<ScriptNames, ScriptItem> = {
+export const scriptItemStorage: Record<ScriptEntrypoint, ScriptItem> = {
   particle: {
     name: 'Particle post processor',
+    runtime: scriptParticleRuntime,
+    user: loadScript('particle') || scriptParticleDefault,
+  },
+  myParticle: {
+    name: 'My particle',
     runtime: scriptParticleRuntime,
     user: loadScript('particle') || scriptParticleDefault,
   },

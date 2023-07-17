@@ -161,7 +161,7 @@ function ChatBotConfig() {
       {tab === 'config' && (
         <EditableTable
           data={chatBotList}
-          columns={['name', 'model_url', 'params_url']}
+          columns={['name', 'modelUrl', 'paramsUrl']}
           onSave={onSaveConfig}
         />
       )}

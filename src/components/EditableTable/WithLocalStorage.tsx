@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 
 import { KeyValues, TableControlProps } from './TableControl';
 
-const saveDataToLocalStorage = (
+const saveJsonToLocalStorage = (
   storageKey: string,
   data: { [key: string]: KeyValues }
 ) => {
@@ -18,7 +18,7 @@ function WithLocalStorage<T extends TableControlProps>(
   );
 
   const handleSave = (data: { [key: string]: KeyValues }) => {
-    saveDataToLocalStorage(storageKey, data);
+    saveJsonToLocalStorage(storageKey, data);
     setStoredData(data);
   };
 

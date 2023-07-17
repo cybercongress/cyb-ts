@@ -4,8 +4,7 @@ import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import {
-  STORAGE_KEYS,
-  loadDataFromLocalStorage,
+  loadJsonFromLocalStorage,
   keyValuesToObject,
 } from 'src/utils/localStorage';
 
@@ -56,7 +55,7 @@ export class ContextManager {
   }
 
   constructor() {
-    const secrets = loadDataFromLocalStorage(STORAGE_KEYS.secrets, {});
+    const secrets = loadJsonFromLocalStorage('secrets', {});
 
     this.addContext({
       name: 'secrets',

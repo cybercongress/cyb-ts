@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 // import TableControl from './TableControl';
 import {
-  loadDataFromLocalStorage,
-  saveDataToLocalStorage,
+  loadJsonFromLocalStorage,
+  saveJsonToLocalStorage,
 } from 'src/utils/localStorage';
 import { ObjKeyValue } from 'src/types/data';
 import EditableTable from './EditableTable';
@@ -21,11 +21,11 @@ function LocalStorageAsEditableTable({
   defaultData: { [key: string]: ObjKeyValue };
 }) {
   const [storedData, setStoredData] = useState<{ [key: string]: ObjKeyValue }>(
-    loadDataFromLocalStorage(storageKey, defaultData)
+    loadJsonFromLocalStorage(storageKey, defaultData)
   );
 
   const handleSave = (data: { [key: string]: ObjKeyValue }) => {
-    saveDataToLocalStorage(storageKey, data);
+    saveJsonToLocalStorage(storageKey, data);
     setStoredData(data);
     onChange && onChange(Object.values(data));
   };

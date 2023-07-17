@@ -1,69 +1,98 @@
 /* eslint-disable camelcase */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { WebLLMInstance } from 'src/services/scripting/webLLM';
+import {
+  WebLLMInstance,
+  LLMParams,
+  LLMParamsMap,
+} from 'src/services/scripting/webLLM';
 import { TabularKeyValues } from 'src/types/data';
 import {
-  STORAGE_KEYS,
-  loadDataFromLocalStorage,
-  saveDataToLocalStorage,
+  loadJsonFromLocalStorage,
+  saveJsonToLocalStorage,
+  loadStringFromLocalStorage,
+  saveStringToLocalStorage,
+  keyValuesToObject,
 } from 'src/utils/localStorage';
-import { AppConfig } from '@mlc-ai/web-llm';
+import {
+  ScriptEntrypoint,
+  ScriptItem,
+} from 'src/services/scripting/scritpting';
+import { appBus } from 'src/services/scripting/bus';
+
+import scriptParticleDefault from 'src/services/scripting/scripts/default/particle.rn';
+import scriptParticleRuntime from 'src/services/scripting/scripts/runtime/particle.rn';
 
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
+
 type SliceState = {
   secrets: TabularKeyValues;
+  scripts: {
+    entrypoints: Record<ScriptEntrypoint, ScriptItem>;
+  };
   chatBot: {
     name: string;
     active: boolean;
     status: ChatBotStatus;
     loadProgress: number;
-    chatBotList: TabularKeyValues;
+    chatBotList: LLMParamsMap;
   };
 };
 
-const initialBotList = {
+const scriptEntrypoints: Record<ScriptEntrypoint, ScriptItem> = {
+  particle: {
+    title: 'Particle post processor',
+    runtime: scriptParticleRuntime,
+    user: loadStringFromLocalStorage('particle', scriptParticleDefault),
+  },
+  'my-particle': {
+    title: 'My particle',
+    runtime: scriptParticleRuntime,
+    user: loadStringFromLocalStorage('my-particle', scriptParticleDefault),
+  },
+};
+
+const initialBotList: LLMParamsMap = {
   '0': {
     name: 'vicuna-v1-7b-q4f32_0',
-    model_url:
+    modelUrl:
       'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/vicuna-v1-7b-q4f32_0-webgpu.wasm',
-    params_url:
+    paramsUrl:
       'https://huggingface.co/mlc-ai/mlc-chat-vicuna-v1-7b-q4f32_0/resolve/main/',
   },
   '1': {
     name: 'RedPajama-INCITE-Chat-3B-v1-q4f32_0',
-    model_url:
+    modelUrl:
       'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/RedPajama-INCITE-Chat-3B-v1-q4f32_0-webgpu.wasm',
-    params_url:
+    paramsUrl:
       'https://huggingface.co/mlc-ai/mlc-chat-RedPajama-INCITE-Chat-3B-v1-q4f32_0/resolve/main/',
   },
 };
 
-const botListToWebLLMConfig = (botList: TabularKeyValues): AppConfig => {
-  const items = Object.values(botList);
-  const model_lib_map = Object.fromEntries(
-    items.map((i) => [i.name, i.model_url])
-  );
-  const model_list = items.map((i) => ({
-    model_url: i.params_url,
-    local_id: i.name,
-  }));
-  return { model_lib_map, model_list };
-};
+// const botListToWebLLMConfig = (botList: LLMParams[]): AppConfig => {
+//   const items = Object.values(botList);
+//   const model_lib_map = Object.fromEntries(
+//     items.map((i) => [i.name, i.modelUrl])
+//   );
+//   const model_list = items.map((i) => ({
+//     model_url: i.paramsUrl,
+//     local_id: i.name,
+//   }));
+//   return { model_lib_map, model_list };
+// };
+const chatBotList = loadJsonFromLocalStorage('botConfig', initialBotList);
 
-const chatBotList = loadDataFromLocalStorage(
-  STORAGE_KEYS.botConfig,
-  initialBotList
-);
-
-WebLLMInstance.updateConfig(botListToWebLLMConfig(chatBotList));
+WebLLMInstance.updateConfig(chatBotList);
 
 const botName =
-  localStorage.getItem(STORAGE_KEYS.activeBotName) ||
+  loadStringFromLocalStorage('activeBotName') ||
   Object.values(chatBotList)?.[0]?.name ||
   '';
 
 const initialState: SliceState = {
-  secrets: loadDataFromLocalStorage(STORAGE_KEYS.secrets, {}),
+  secrets: loadJsonFromLocalStorage('secrets', {}),
+  scripts: {
+    entrypoints: scriptEntrypoints,
+  },
   chatBot: {
     name: botName,
     active: false,
@@ -77,10 +106,10 @@ const slice = createSlice({
   name: 'scripting',
   initialState,
   reducers: {
-    setChatBotList: (state, { payload }: PayloadAction<TabularKeyValues>) => {
-      saveDataToLocalStorage(STORAGE_KEYS.botConfig, payload);
+    setChatBotList: (state, { payload }: PayloadAction<LLMParamsMap>) => {
+      saveJsonToLocalStorage('botConfig', payload);
       state.chatBot.chatBotList = payload;
-      WebLLMInstance.updateConfig(botListToWebLLMConfig(payload));
+      WebLLMInstance.updateConfig(payload);
     },
     setChatBotActive: (state, { payload }: PayloadAction<boolean>) => {
       state.chatBot.active = payload;
@@ -107,21 +136,39 @@ const slice = createSlice({
       state.chatBot.status = payload;
     },
     setChatBotName: (state, { payload }: PayloadAction<string>) => {
-      localStorage.setItem(STORAGE_KEYS.activeBotName, payload);
+      saveStringToLocalStorage('activeBotName', payload);
       state.chatBot.name = payload;
     },
     setSecrets: (state, { payload }: PayloadAction<TabularKeyValues>) => {
-      saveDataToLocalStorage(STORAGE_KEYS.secrets, payload);
+      saveJsonToLocalStorage('secrets', payload);
+      appBus.emit('context', {
+        name: 'secrets',
+        item: keyValuesToObject(Object.values(payload)),
+      });
       state.secrets = payload;
+    },
+    setScript: (
+      state,
+      { payload }: PayloadAction<{ name: ScriptEntrypoint; code: string }>
+    ) => {
+      const { name, code } = payload;
+      saveStringToLocalStorage(name, code);
+      state.scripts.entrypoints[name].user = code;
     },
   },
 });
-
-export const { setChatBotList, setChatBotActive, setChatBotName, setSecrets } =
-  slice.actions;
 
 const setStatus = (status: ChatBotStatus) =>
   window.store.dispatch(slice.actions.setChatBotStatus(status));
 const onProgress = ({ progress }) =>
   window.store.dispatch(slice.actions.setChatBotLoadProgress({ progress }));
+
+export const {
+  setChatBotList,
+  setChatBotActive,
+  setChatBotName,
+  setSecrets,
+  setScript,
+} = slice.actions;
+
 export default slice.reducer;

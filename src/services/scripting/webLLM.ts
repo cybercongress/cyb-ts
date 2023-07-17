@@ -10,6 +10,16 @@ import * as webllm from '@mlc-ai/web-llm';
 import { GenerateProgressCallback, AppConfig } from '@mlc-ai/web-llm/types';
 import Worker from 'worker-loader!src/services/scripting/worker.ts';
 
+type LLMParams = {
+  name: string;
+  modelUrl: string;
+  paramsUrl: string;
+};
+
+type LLMParamsMap = {
+  [id: string]: LLMParams;
+};
+
 const chatOpts = {
   repetition_penalty: 1.01,
 };
@@ -32,8 +42,17 @@ class WebLLM {
     this._chat = new webllm.ChatWorkerClient(this._worker);
   }
 
-  public updateConfig(config: AppConfig) {
-    this._config = config;
+  public updateConfig(botList: LLMParamsMap) {
+    const items = Object.values(botList);
+    const model_lib_map = Object.fromEntries(
+      items.map((i) => [i.name, i.modelUrl])
+    );
+    const model_list = items.map((i) => ({
+      model_url: i.paramsUrl,
+      local_id: i.name,
+    }));
+
+    this._config = { model_lib_map, model_list };
   }
 
   public async load(
@@ -112,4 +131,4 @@ class WebLLM {
 
 const WebLLMInstance = new WebLLM();
 window.webLLM = WebLLMInstance;
-export { WebLLMInstance };
+export { WebLLMInstance, LLMParamsMap };
