@@ -8,6 +8,7 @@ import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import { routes } from 'src/routes';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
+import usePassportByAddress from 'src/features/passport/hooks';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -57,7 +58,7 @@ function Account({
 }: Props) {
   const [moniker, setMoniker] = useState<string | null>(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
-  const { passport: dataPassport } = useGetPassportByAddress(address);
+  const { passport: dataPassport } = usePassportByAddress(address);
 
   useEffect(() => {
     if (dataValidInfo !== undefined) {

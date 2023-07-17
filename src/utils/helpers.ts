@@ -71,3 +71,14 @@ export function convertTimeToMilliseconds(timeValue: string | number): number {
       throw new Error(`Invalid time unit: ${unit}`);
   }
 }
+
+export function debounce(func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    debugger;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
