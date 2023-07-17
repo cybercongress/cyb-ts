@@ -77,21 +77,7 @@ function Send() {
   const { debounce } = useDebounce();
   const inputElem = useRef(null);
 
-  // useEffect(() => {
-  //   const getRecipient = async () => {
-  //     if (deferredRecipient.match(PATTERN_CYBER)) {
-  //       setRecipientAddress(deferredRecipient);
-  //     } else {
-  //       const response = await getPassportByNickname(
-  //         queryClient,
-  //         deferredRecipient
-  //       );
-
-  //       console.log('response', response);
-  //     }
-  //   };
-  //   getRecipient();
-  // }, [deferredRecipient, queryClient]);
+  console.log('searchParams', Object.fromEntries(searchParams.entries()));
 
   useEffect(() => {
     if (firstEffectOccured.current) {
@@ -99,10 +85,15 @@ function Send() {
       const query = {
         token: tokenSelect,
         recipient: '',
+        amount: '',
       };
 
       if (recipient) {
         query.recipient = recipient;
+      }
+
+      if (Number(tokenAmount) > 0) {
+        query.amount = tokenAmount;
       }
 
       setSearchParams(createSearchParams(query));
@@ -110,16 +101,16 @@ function Send() {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());
       if (Object.keys(param).length > 0) {
-        const { token, recipient } = param;
+        const { token, recipient, amount } = param;
         setTokenSelect(token);
         setRecipient(recipient);
+
+        if (amount && Number(amount) > 0) {
+          setTokenAmount(amount);
+        }
       }
     }
-  }, [tokenSelect, recipient, setSearchParams, searchParams]);
-
-  useEffect(() => {
-    setTokenAmount('');
-  }, [tokenSelect]);
+  }, [tokenSelect, recipient, setSearchParams, searchParams, tokenAmount]);
 
   const validInputAmountToken = useMemo(() => {
     if (traseDenom) {

@@ -27,6 +27,13 @@ import HistoryContextProvider from './ibc-history/historyContext';
 import DataIbcHistory from './comp/dataIbcHistory/DataIbcHistory';
 import { Networks } from 'src/types/networks';
 
+type Query = {
+  networkFrom: string;
+  networkTo: string;
+  token: string;
+  amount?: string;
+};
+
 function Bridge() {
   const { traseDenom } = useIbcDenom();
   const { channels } = useChannels();
@@ -40,7 +47,9 @@ function Bridge() {
   );
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [tokenSelect, setTokenSelect] = useState<string>(CYBER.DENOM_LIQUID_TOKEN);
+  const [tokenSelect, setTokenSelect] = useState<string>(
+    CYBER.DENOM_LIQUID_TOKEN
+  );
   const [tokenAmount, setTokenAmount] = useState<string>('');
   const [networkA, setNetworkA] = useState<string>(Networks.BOSTROM);
   const [networkB, setNetworkB] = useState<string>(Networks.SPACE_PUSSY);
@@ -58,21 +67,29 @@ function Bridge() {
   useEffect(() => {
     if (firstEffectOccured.current) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      const query = {
+      const query: Query = {
         networkFrom: networkA,
         networkTo: networkB,
         token: tokenSelect,
       };
+
+      if (Number(tokenAmount) > 0) {
+        query.amount = tokenAmount;
+      }
 
       setSearchParams(createSearchParams(query));
     } else {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());
       if (Object.keys(param).length > 0) {
-        const { networkFrom, networkTo, token } = param;
+        const { networkFrom, networkTo, token, amount } = param;
         setNetworkA(networkFrom);
         setNetworkB(networkTo);
         setTokenSelect(token);
+
+        if (Number(amount)) {
+          setTokenAmount(amount);
+        }
       }
     }
   }, [networkA, networkB, tokenSelect, setSearchParams, searchParams]);

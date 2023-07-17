@@ -28,6 +28,7 @@ import ActionBar from './actionBar.swap';
 import { TeleportContainer } from './comp/grid';
 import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
 import DataSwapTxs from './comp/dataSwapTxs/DataSwapTxs';
+import { Nullable } from 'src/types';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -66,26 +67,7 @@ function Swap() {
     tokenBPoolAmount
   );
   const firstEffectOccured = useRef(false);
-
-  useEffect(() => {
-    if (firstEffectOccured.current) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const query = {
-        from: tokenA,
-        to: tokenB,
-      };
-
-      setSearchParams(createSearchParams(query));
-    } else {
-      firstEffectOccured.current = true;
-      const param = Object.fromEntries(searchParams.entries());
-      if (Object.keys(param).length > 0) {
-        const { from, to } = param;
-        setTokenA(from);
-        setTokenB(to);
-      }
-    }
-  }, [tokenA, tokenB, setSearchParams, searchParams]);
+  const [percent, setPercent] = useState<Nullable<string>>(undefined);
 
   useEffect(() => {
     // find pool for current pair
@@ -132,9 +114,12 @@ function Swap() {
 
       const isReverse = id !== TokenSetterId.tokenAAmount;
 
-      console.log('inputAmount', new BigNumber(inputAmount).toString());
-
-      if (tokenAPoolAmount && tokenAPoolAmount && traseDenom && Number(inputAmount) > 0) {
+      if (
+        tokenAPoolAmount &&
+        tokenAPoolAmount &&
+        traseDenom &&
+        Number(inputAmount) > 0
+      ) {
         const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
         const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
@@ -168,10 +153,10 @@ function Swap() {
 
   useEffect(() => {
     // update swap price for current amount tokenA
-    if (update) {
+    if (update || new BigNumber(tokenAAmount).comparedTo(0)) {
       amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
     }
-  }, [update, amountChangeHandler]);
+  }, [update, amountChangeHandler, tokenA, tokenB]);
 
   const validInputAmountTokenA = useMemo(() => {
     if (traseDenom) {
@@ -221,7 +206,7 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  // console.log('useGetSlippage', useGetSlippage);
+  console.log('useGetSlippage', useGetSlippage);
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {
@@ -278,16 +263,47 @@ function Swap() {
         const amountDecimals = getDisplayAmount(amount, coinDecimals);
         amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
         setTokenAAmount(amountDecimals);
+        setPercent(new BigNumber(value).toString());
       }
     },
-    [accountBalances, tokenA, traseDenom, amountChangeHandler]
+    [accountBalances, tokenA, traseDenom, amountChangeHandler, searchParams]
   );
 
   useEffect(() => {
-    if (new BigNumber(tokenAAmount).comparedTo(0)) {
-      amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
+    if (firstEffectOccured.current) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const query = {
+        from: tokenA,
+        to: tokenB,
+      };
+
+      if (Number(tokenAAmount) > 0) {
+        query.amount = tokenAAmount;
+      }
+
+      setSearchParams(createSearchParams(query));
+    } else {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { from, to, amount } = param;
+        setTokenA(from);
+        setTokenB(to);
+        if (Number(amount) > 0) {
+          setTokenAAmount(amount);
+          amountChangeHandler(amount, TokenSetterId.tokenAAmount);
+        }
+      }
     }
-  }, [tokenA, tokenB, tokenAAmount, amountChangeHandler]);
+  }, [
+    tokenA,
+    tokenB,
+    tokenAAmount,
+    setSearchParams,
+    searchParams,
+    percent,
+    amountChangeHandler,
+  ]);
 
   const stateActionBar = {
     tokenAAmount,
