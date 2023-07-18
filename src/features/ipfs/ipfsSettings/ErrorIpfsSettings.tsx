@@ -4,9 +4,9 @@ import {
   ContainerGradientText,
   ActionBar,
   ContainerGradient,
-} from '../../components';
-import BtnPasport from '../portal/pasport/btnPasport';
-import Select from '../teleport/components/select';
+} from '../../../components';
+import BtnPasport from '../../../containers/portal/pasport/btnPasport';
+import Select from '../../../containers/teleport/components/select';
 import CodeSnipet from './ipfsComponents/codeSnipet';
 import {
   ContainerKeyValue,

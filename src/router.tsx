@@ -36,7 +36,7 @@ import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 import Temple from './containers/temple';
-import IpfsSettings from './containers/ipfsSettings';
+import IpfsSettings from './features/ipfs/ipfsSettings';
 import Ibc from './containers/ibc';
 import {
   Codes,

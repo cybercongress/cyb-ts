@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import { MainContainer } from '../portal/components';
-import BtnPasport from '../portal/pasport/btnPasport';
-import Select from '../teleport/components/select';
+import { MainContainer } from '../../../containers/portal/components';
+import BtnPasport from '../../../containers/portal/pasport/btnPasport';
+import Select from '../../../containers/teleport/components/select';
 import {
   updateIpfsStateUrl,
   updateIpfsStateType,

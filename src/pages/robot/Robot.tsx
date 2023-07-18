@@ -5,7 +5,7 @@ import FollowsTab from 'src/pages/robot/_refactor/account/tabs/follows';
 import Heroes from 'src/pages/robot/_refactor/account/tabs/heroes';
 import ForceGraph from 'src/containers/forceGraph/forceGraph';
 import TableDiscipline from 'src/containers/gol/table';
-import IpfsSettings from 'src/containers/ipfsSettings';
+import IpfsSettings from 'src/features/ipfs/ipfsSettings';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
 import Layout from './Layout/Layout';
