@@ -21,8 +21,14 @@ export type ScriptParticleParams = {
   content?: string;
 };
 
+export type ScriptMyParticleParams = {
+  nickname?: string;
+  input?: string;
+};
+
 export type ScriptScopeParams = {
   particle?: ScriptParticleParams;
+  myParticle?: ScriptMyParticleParams;
   refId?: string;
 };
 

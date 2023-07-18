@@ -1,24 +1,15 @@
+import { runScript } from 'src/services/scripting/engine';
 import {
-  scriptItemStorage,
-  runScript,
-  saveScript,
-} from 'src/services/scripting/engine';
-import { ScriptParticleParams } from 'src/services/scripting/scritpting';
+  ScriptParticleParams,
+  ScriptMyParticleParams,
+  ScriptScopeParams,
+} from 'src/services/scripting/scritpting';
 
 const compileScript = (
   code: string,
+  runtime: string,
   executeAfterCompile: boolean,
-  particle?: ScriptParticleParams,
-  runtime: string
-) =>
-  runScript(
-    code,
-    {
-      particle,
-    },
-    runtime,
-    undefined,
-    executeAfterCompile
-  );
+  params: ScriptScopeParams = {}
+) => runScript(code, params, runtime, undefined, executeAfterCompile);
 
-export { highlightErrors, compileScript };
+export { compileScript };

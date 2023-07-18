@@ -40,7 +40,7 @@ type SliceState = {
 
 const scriptEntrypoints: Record<ScriptEntrypoint, ScriptItem> = {
   particle: {
-    title: 'Particle post processor',
+    title: 'Particle post-processor',
     runtime: scriptParticleRuntime,
     user: loadStringFromLocalStorage('particle', scriptParticleDefault),
   },
@@ -68,17 +68,6 @@ const initialBotList: LLMParamsMap = {
   },
 };
 
-// const botListToWebLLMConfig = (botList: LLMParams[]): AppConfig => {
-//   const items = Object.values(botList);
-//   const model_lib_map = Object.fromEntries(
-//     items.map((i) => [i.name, i.modelUrl])
-//   );
-//   const model_list = items.map((i) => ({
-//     model_url: i.paramsUrl,
-//     local_id: i.name,
-//   }));
-//   return { model_lib_map, model_list };
-// };
 const chatBotList = loadJsonFromLocalStorage('botConfig', initialBotList);
 
 WebLLMInstance.updateConfig(chatBotList);

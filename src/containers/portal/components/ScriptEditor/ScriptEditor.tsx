@@ -16,6 +16,7 @@ import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
 
 import {
   ScriptEntrypoint,
+  ScriptExecutionData,
   ScriptItem,
   ScriptParticleParams,
 } from 'src/services/scripting/scritpting';
@@ -43,9 +44,6 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
 
-// const isScriptEntrypoint = (name: string | undefined) =>
-//   name && Object.values(scriptEntrypoints).find((i) => i.name);
-
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
 
@@ -65,6 +63,29 @@ const highlightErrors = (codeMirrorRef, diagnostics) => {
   });
 };
 
+const formatExecutionResult = (
+  result: ScriptExecutionData,
+  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>,
+  addToLog: (items: string[]) => void
+) => {
+  const isOk = !result.diagnosticsOutput && !result.error;
+  highlightErrors(codeMirrorRef.current, result.diagnostics);
+  console.log('----res', result);
+  if (!isOk) {
+    addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+  } else {
+    addToLog([
+      '',
+      '🏁 Result:',
+      '',
+      `   ${JSON.stringify(result.result)}`,
+      '',
+      '🧪 Raw output:',
+      result?.output || 'no output.',
+    ]);
+  }
+};
+
 function PlayParticlePostProcessor({
   addToLog,
   codeMirrorRef,
@@ -73,7 +94,7 @@ function PlayParticlePostProcessor({
   reset,
 }: {
   addToLog: (log: string[]) => void;
-  codeMirrorRef: React.MutableRefObject<CodeMirror | null>;
+  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>;
   code: string;
   entrypoint: ScriptItem;
   reset: () => void;
@@ -108,32 +129,17 @@ function PlayParticlePostProcessor({
       '',
       '💭 Execute script....',
     ]);
-    const particleParams = {
+    const particle = {
       cid: testCid,
       contentType,
       content,
     };
 
-    compileScript(code, true, particleParams, entrypoint.runtime).then(
-      (result) => {
-        const isOk = !result.diagnosticsOutput && !result.error;
-        highlightErrors(codeMirrorRef.current, result.diagnostics);
-        console.log('----res', result);
-        if (!isOk) {
-          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-        } else {
-          addToLog([
-            '',
-            '🏁 Result:',
-            '',
-            `   ${JSON.stringify(result.result)}`,
-            '',
-            '🧪 Raw output:',
-            result?.output || 'no output.',
-          ]);
-        }
-      }
-    );
+    compileScript(code, entrypoint.runtime, true, {
+      particle,
+    }).then((result) => {
+      formatExecutionResult(result, codeMirrorRef, addToLog);
+    });
   };
 
   return (
@@ -156,7 +162,7 @@ function PlayMyParticle({
   reset,
 }: {
   addToLog: (log: string[]) => void;
-  codeMirrorRef: React.MutableRefObject<CodeMirror | null>;
+  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>;
   code: string;
   entrypoint: ScriptItem;
   reset: () => void;
@@ -164,31 +170,15 @@ function PlayMyParticle({
   const [testInput, seTestInput] = useState('');
   const onTestClick = async () => {
     reset();
-    const particleParams = {
-      cid: testInput,
+    const myParticle = {
       input: testInput,
     };
 
-    compileScript(code, true, particleParams, entrypoint.runtime).then(
-      (result) => {
-        const isOk = !result.diagnosticsOutput && !result.error;
-        highlightErrors(codeMirrorRef.current, result.diagnostics);
-        console.log('----res', result);
-        if (!isOk) {
-          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-        } else {
-          addToLog([
-            '',
-            '🏁 Result:',
-            '',
-            `   ${JSON.stringify(result.result)}`,
-            '',
-            '🧪 Raw output:',
-            result?.output || 'no output.',
-          ]);
-        }
-      }
-    );
+    compileScript(code, entrypoint.runtime, true, {
+      myParticle,
+    }).then((result) => {
+      formatExecutionResult(result, codeMirrorRef, addToLog);
+    });
   };
 
   return (
@@ -214,7 +204,7 @@ function ScriptEditor() {
   } = useSelector((store: RootState) => store.scripting);
 
   const [entrypointName, setEntrypointName] = useState<ScriptEntrypoint>(
-    Object.keys(entrypoints)[0]
+    Object.keys(entrypoints)[0] as ScriptEntrypoint
   );
 
   const { tab = entrypointName } = useParams();
@@ -224,13 +214,16 @@ function ScriptEditor() {
 
   const [log, setLog] = useState<string[]>([]);
   const [isChanged, setIsChanged] = useState(false);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState<string>(
+    entrypoints[tab as ScriptEntrypoint]?.user
+  );
 
   useEffect(() => {
-    setEntrypointName(
-      Object.keys(entrypoints).indexOf(tab) > -1 ? tab : undefined
-    );
-    setCode(entrypoints[tab]?.user);
+    if (Object.keys(entrypoints).indexOf(tab as ScriptEntrypoint) > -1) {
+      const newEntrypoint = tab as ScriptEntrypoint;
+      setEntrypointName(newEntrypoint);
+      setCode(entrypoints[newEntrypoint]?.user);
+    }
   }, [tab, entrypoints]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
@@ -252,12 +245,16 @@ function ScriptEditor() {
 
   const onSaveClick = () => {
     setLog([]);
+    if (!code) {
+      addToLog([`🚫 Can't save empty code`]);
+      return;
+    }
 
     compileScript(
       code,
+      entrypoints[entrypointName].runtime,
       false,
-      undefined,
-      entrypoints?.[entrypointName].runtime
+      undefined
     ).then((result) => {
       const isOk = !result.diagnosticsOutput && !result.error;
       highlightErrors(codeMirrorRef.current, result.diagnostics);
@@ -296,7 +293,7 @@ function ScriptEditor() {
           {Object.keys(entrypoints).map((k) => (
             <TabBtn
               key={`tab_${k}`}
-              text={entrypoints[k].title}
+              text={entrypoints[k as ScriptEntrypoint].title}
               isSelected={tab === k}
               to={`/plugins/${k}`}
             />
@@ -314,50 +311,51 @@ function ScriptEditor() {
             onSave={onSaveSecrets}
           />
         )}
-        {Object.keys(entrypoints).indexOf(tab) > -1 && (
-          <>
-            <Pane marginBottom="25px" fontSize="20px">
-              {entrypoints[tab].title}
-            </Pane>
-            <CodeMirror
-              ref={codeMirrorRef}
-              value={code}
-              options={{
-                mode: 'rust',
-                theme: 'tomorrow-night-eighties',
-                lineNumbers: true,
-              }}
-              onBeforeChange={(editor, data, value) => {
-                setCode(value);
-                setIsChanged(true);
-              }}
-            />
-            <Pane
-              marginBottom="10px"
-              marginTop="25px"
-              alignItems="center"
-              justifyContent="center"
-              className={styles.actionPanel}
-            >
-              {entrypointName === 'particle' && (
-                <PlayParticlePostProcessor
-                  reset={resetPlayGround}
-                  addToLog={addToLog}
-                  codeMirrorRef={codeMirrorRef}
-                  code={code}
-                  entrypoint={entrypoints[entrypointName]}
-                />
-              )}
-              {entrypointName === 'my-particle' && (
-                <PlayMyParticle
-                  reset={resetPlayGround}
-                  addToLog={addToLog}
-                  codeMirrorRef={codeMirrorRef}
-                  code={code}
-                  entrypoint={entrypoints[entrypointName]}
-                />
-              )}
-              {/* <div className={styles.testPanel}>
+        {!tab ||
+          (Object.keys(entrypoints).indexOf(tab) > -1 && (
+            <>
+              <Pane marginBottom="25px" fontSize="20px">
+                {entrypoints[entrypointName].title}
+              </Pane>
+              <CodeMirror
+                ref={codeMirrorRef}
+                value={code}
+                options={{
+                  mode: 'rust',
+                  theme: 'tomorrow-night-eighties',
+                  lineNumbers: true,
+                }}
+                onBeforeChange={(editor, data, value) => {
+                  setCode(value);
+                  setIsChanged(true);
+                }}
+              />
+              <Pane
+                marginBottom="10px"
+                marginTop="25px"
+                alignItems="center"
+                justifyContent="center"
+                className={styles.actionPanel}
+              >
+                {entrypointName === 'particle' && (
+                  <PlayParticlePostProcessor
+                    reset={resetPlayGround}
+                    addToLog={addToLog}
+                    codeMirrorRef={codeMirrorRef}
+                    code={code}
+                    entrypoint={entrypoints[entrypointName]}
+                  />
+                )}
+                {entrypointName === 'my-particle' && (
+                  <PlayMyParticle
+                    reset={resetPlayGround}
+                    addToLog={addToLog}
+                    codeMirrorRef={codeMirrorRef}
+                    code={code}
+                    entrypoint={entrypoints[entrypointName]}
+                  />
+                )}
+                {/* <div className={styles.testPanel}>
                 <Input
                   value={testCid}
                   onChange={(e) => seTestCid(e.target.value)}
@@ -365,11 +363,11 @@ function ScriptEditor() {
                 />
                 <Button onClick={onTestClick}>Test</Button>
               </div> */}
-              {isChanged && <Button onClick={onSaveClick}>Save</Button>}
-            </Pane>
-            <textarea value={logText} className={styles.logArea} rows={18} />
-          </>
-        )}
+                {isChanged && <Button onClick={onSaveClick}>Save</Button>}
+              </Pane>
+              <textarea value={logText} className={styles.logArea} rows={18} />
+            </>
+          ))}
       </main>
     </div>
   );

@@ -1,20 +1,13 @@
-pub fn pass() {
-    #{ "cid": cyb::context.particle.cid, "action": "pass" }
+pub fn skip() {
+    #{ "nickname": cyb::context.input.nickname, "action": "skip" }
 }
 
-pub fn hide() {
-    #{ "cid": cyb::context.particle.cid, "action": "hide" }
+pub fn answer(content) {
+    #{ "nickname": cyb::context.input.nickname, "action": "answer", "content": content }
 }
 
-pub fn update_cid(cid) {
-    #{ "cid": cid, "action": "update_cid" }
-}
-
-pub fn update_content(content) {
-    #{ "content": content, "action": "update_content" }
-}
 
 pub async fn main() {
-    let particle_ctx = cyb::context.particle;
-    react_to_particle(particle_ctx.cid, particle_ctx.contentType, particle_ctx.content).await
+    let my_particle_ctx = cyb::context.myParticle;
+    my_particle(my_particle_ctx.nickname, my_particle_ctx.input).await
 }
