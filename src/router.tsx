@@ -138,7 +138,7 @@ function AppRouter() {
           <Route path="/quitter" element={<ForceQuitter />} />
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<ForceGraph />} />
-          <Route path="/ipfs" element={<IpfsSettings />} />
+          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
           <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
           <Route path="network/bostrom">

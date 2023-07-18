@@ -1,3 +1,4 @@
+import InfoCard from 'src/containers/portal/components/InfoCard/InfoCard';
 import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
@@ -5,7 +6,6 @@ import CurrentGift from './currentGift';
 import ProgressCard from './progressCard';
 import NextUnfreeze from './nextUnfreeze';
 import MainContainer from './mainContainer/mainContainer';
-import InfoCard from './infoCard/infoCard';
 import ActionBarContainer from './ActionBar';
 import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
@@ -21,10 +21,10 @@ export {
   ProgressCard,
   NextUnfreeze,
   MainContainer,
-  InfoCard,
   ActionBarContainer,
   ActionBarSteps,
   AboutGift,
   MoonAnimation,
   Stars,
+  InfoCard,
 };

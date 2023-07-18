@@ -1,5 +1,10 @@
-import { Input, LinkWindow, ContainerGradient, Button } from '../../components';
-import { MainContainer } from '../portal/components';
+import {
+  Input,
+  LinkWindow,
+  ContainerGradientText,
+  ActionBar,
+  ContainerGradient,
+} from '../../components';
 import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
 import CodeSnipet from './ipfsComponents/codeSnipet';
@@ -30,19 +35,17 @@ function ErrorIpfsSettings({ stateErrorIpfsSettings }) {
   } = stateErrorIpfsSettings;
 
   return (
-    // <MainContainer>
-    <div
-      // title=""
+    <ContainerGradient
       togglingDisable
       styleLampContent="red"
-      style={{
+      title="Could not connect to the IPFS API"
+      userStyleContent={{
         minHeight: 'auto',
         height: 'unset',
         display: 'grid',
         gap: '20px',
       }}
     >
-      <h4>Could not connect to the IPFS API</h4>
       <ContainerKeyValue>
         <div>client</div>
 
@@ -91,11 +94,14 @@ function ErrorIpfsSettings({ stateErrorIpfsSettings }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '300px',
-            gap: '20px',
-            position: 'relative',
+            gridTemplateColumns: '300px auto',
+            gap: '10px',
           }}
         >
+          <Input
+            value={valueInput}
+            onChange={(e) => setValueInput(e.target.value)}
+          />
           <BtnPasport
             style={{ maxWidth: '100px', position: 'static' }}
             typeBtn="blue"
@@ -103,22 +109,16 @@ function ErrorIpfsSettings({ stateErrorIpfsSettings }) {
           >
             edit
           </BtnPasport>
-          <Input
-            value={valueInput}
-            onChange={(e) => setValueInput(e.target.value)}
-          />
         </div>
       )}
 
-      <Button
-        style={{ maxWidth: '100px' }}
-        typeBtn="blue"
-        onClick={() => onClickReConnect()}
-      >
-        reconnect
-      </Button>
-    </div>
-    // </MainContainer>
+      <ActionBar
+        button={{
+          text: 'reconnect',
+          onClick: onClickReConnect,
+        }}
+      />
+    </ContainerGradient>
   );
 }
 

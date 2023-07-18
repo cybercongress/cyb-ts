@@ -79,9 +79,8 @@ function IpfsSettings() {
   }
 
   return (
-    // <MainContainer>
     <ContainerGradientText>
-      <div style={{ width: '100%', display: 'grid', gap: '20px' }}>
+      <div style={{ display: 'grid', gap: '20px' }}>
         <ContainerKeyValue>
           <div>client</div>
 
@@ -160,7 +159,6 @@ function IpfsSettings() {
         />
       </div>
     </ContainerGradientText>
-    // </MainContainer>
   );
 }
 

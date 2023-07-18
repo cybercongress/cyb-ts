@@ -67,11 +67,14 @@ function App() {
   return (
     <MainLayout>
       <>
-        {ipfs.error && location.pathname !== routes.ipfs.path && (
-          <IPFSConnectError />
+        {/* not move portal order */}
+        {location.pathname.includes('/brain') && (
+          <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        <div id={PORTAL_ID} className={styles.portal} />
+        {ipfs.error && !location.pathname.includes('/drive') && (
+          <IPFSConnectError />
+        )}
 
         <Outlet />
       </>
