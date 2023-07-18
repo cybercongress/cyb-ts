@@ -21,6 +21,8 @@ import { appBus } from 'src/services/scripting/bus';
 
 import scriptParticleDefault from 'src/services/scripting/scripts/default/particle.rn';
 import scriptParticleRuntime from 'src/services/scripting/scripts/runtime/particle.rn';
+import scriptMyParticleDefault from 'src/services/scripting/scripts/default/my-particle.rn';
+import scriptMyParticleRuntime from 'src/services/scripting/scripts/runtime/my-particle.rn';
 
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
@@ -46,8 +48,8 @@ const scriptEntrypoints: Record<ScriptEntrypoint, ScriptItem> = {
   },
   'my-particle': {
     title: 'My particle',
-    runtime: scriptParticleRuntime,
-    user: loadStringFromLocalStorage('my-particle', scriptParticleDefault),
+    runtime: scriptMyParticleRuntime,
+    user: loadStringFromLocalStorage('my-particle', scriptMyParticleDefault),
   },
 };
 
@@ -117,9 +119,6 @@ const slice = createSlice({
       { payload }: PayloadAction<{ progress: number }>
     ) => {
       state.chatBot.loadProgress = payload.progress;
-      // if (payload.progress >= 1) {
-      //   state.chatBot.status = 'on';
-      // }
     },
     setChatBotStatus: (state, { payload }: PayloadAction<ChatBotStatus>) => {
       state.chatBot.status = payload;
@@ -130,10 +129,6 @@ const slice = createSlice({
     },
     setSecrets: (state, { payload }: PayloadAction<TabularKeyValues>) => {
       saveJsonToLocalStorage('secrets', payload);
-      appBus.emit('context', {
-        name: 'secrets',
-        item: keyValuesToObject(Object.values(payload)),
-      });
       state.secrets = payload;
     },
     setScript: (

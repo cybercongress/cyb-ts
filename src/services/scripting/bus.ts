@@ -9,6 +9,11 @@ import {
 } from 'src/utils/localStorage';
 
 import { eventbus } from '../eventbus';
+import store from 'src/redux/store';
+import { RootState } from 'src/redux/store';
+import { from, Observable, distinctUntilChanged, map } from 'rxjs';
+import { ScriptEntrypoint, ScriptItem } from './scritpting';
+import { Citizenship } from 'src/types/citizenship';
 
 type AppDependencies = CyberClient | AppIPFS;
 type AppDependencyNames = 'ipfs' | 'queryClient' | 'signer';
@@ -19,7 +24,7 @@ type AppDependencyNames = 'ipfs' | 'queryClient' | 'signer';
 //     gateway: new Set(),
 //   };
 
-type ContextItemType = string | Record<string, string> | string[];
+type ContextItemType = string | Record<string, string> | string[] | Citizenship;
 
 type BusInitPayload =
   | { name: 'ipfs'; item: AppIPFS }
@@ -30,7 +35,7 @@ type BusInitPayload =
     };
 
 type BusContextPayload = {
-  name: 'params' | 'secrets';
+  name: 'params' | 'secrets' | 'user';
   item: Record<string, ContextItemType>;
 };
 
@@ -44,23 +49,44 @@ export class ContextManager {
 
   private _context: Record<string, Record<string, ContextItemType>> = {};
 
+  private _entrypoints: Record<ScriptEntrypoint, ScriptItem> = {};
+
+  private _state$: Observable<RootState> = from(store);
+
   public get deps() {
     // Return a copy of the deps object
     return { ...this._deps };
   }
 
   public get context() {
-    // Return a copy of the deps object
-    return { ...this._context };
+    return this._context;
+  }
+
+  public get entrypoints() {
+    return this._entrypoints;
   }
 
   constructor() {
-    const secrets = loadJsonFromLocalStorage('secrets', {});
+    console.log('--------bus store', store.getState(), this._state$);
 
-    this.addContext({
-      name: 'secrets',
-      item: keyValuesToObject(Object.values(secrets)),
-    });
+    this._state$
+      .pipe(
+        map((state: RootState) => state.scripting.secrets),
+        distinctUntilChanged()
+      )
+      .subscribe((secrets) => {
+        this._context.secrets = keyValuesToObject(Object.values(secrets));
+      });
+
+    this._state$
+      .pipe(
+        map((state: RootState) => state.scripting.scripts.entrypoints),
+        distinctUntilChanged()
+      )
+      .subscribe((entrypoints) => {
+        console.log('----entrypoints', entrypoints);
+        this._entrypoints = entrypoints;
+      });
 
     appBus.on('init', (dep: BusInitPayload) => {
       this.addDep(dep);

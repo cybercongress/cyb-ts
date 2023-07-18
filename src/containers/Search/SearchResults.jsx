@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, Link } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { reactToInput } from 'src/services/scripting/engine';
+
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -32,6 +34,7 @@ import {
 } from '../../utils/config';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
+import SwarmAnswer from './SwarmAnswer/SwarmAnswer';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -67,6 +70,15 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
+// TODO: refactor this, use scss
+const searchPaneStyles = {
+  position: 'relative',
+  className: 'hover-rank',
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: '-2px',
+};
+
 function SearchResults() {
   const queryClient = useQueryClient();
   const { query } = useParams();
@@ -82,6 +94,8 @@ function SearchResults() {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
+  const [swarmReactions, setSwarmReactions] = useState([]);
+
   const { isMobile: mobile } = useDevice();
 
   // useEffect(() => {
@@ -90,6 +104,14 @@ function SearchResults() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [query]);
+
+  useEffect(() => {
+    const getSwarmReactions = async () => {
+      // TODO: iterate over my pre-cached swarm
+      setSwarmReactions([await reactToInput(query)]);
+    };
+    getSwarmReactions();
+  }, [query]);
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -196,17 +218,25 @@ function SearchResults() {
     );
   }
 
+  if (swarmReactions.length > 0) {
+    swarmReactions.forEach((item) => {
+      const { nickname, action } = item;
+      if (action === 'answer') {
+        searchItems.push(
+          <Pane key={`answer_${nickname}`} {...searchPaneStyles}>
+            <Link className="SearchItem" to={`/@${nickname}`}>
+              <SwarmAnswer item={item} query={query} />
+            </Link>
+          </Pane>
+        );
+      }
+    });
+  }
+
   if (query.match(PATTERN_CYBER)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
+      <Pane key={key} {...searchPaneStyles}>
         <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
             {textPreviewSparkApp(
@@ -222,14 +252,7 @@ function SearchResults() {
   if (query.match(PATTERN_CYBER_VALOPER)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
+      <Pane key={key} {...searchPaneStyles}>
         <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
             {textPreviewSparkApp(
@@ -245,14 +268,7 @@ function SearchResults() {
   if (query.match(PATTERN_TX)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
+      <Pane key={key} {...searchPaneStyles}>
         <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
           <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
             {textPreviewSparkApp(
@@ -268,14 +284,7 @@ function SearchResults() {
   if (query.match(PATTERN_BLOCK)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
+      <Pane key={key} {...searchPaneStyles}>
         <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
           <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
             {textPreviewSparkApp(
@@ -292,14 +301,7 @@ function SearchResults() {
     searchItems.push(
       Object.keys(searchResults).map((key) => {
         return (
-          <Pane
-            key={key}
-            position="relative"
-            className="hover-rank"
-            display="flex"
-            alignItems="center"
-            marginBottom="-2px"
-          >
+          <Pane key={key} {...searchPaneStyles}>
             {!mobile && (
               <Pane
                 className={`time-discussion ${

@@ -1,4 +1,5 @@
-pub async fn main() {
-    let my_particle_ctx = cyb::context.myParticle;
-    my_particle(my_particle_ctx.nickname, my_particle_ctx.input).await
+pub async fn my_particle(input) {
+    let nickname =  cyb::context.app.user.nickname;
+    //return answer(`${nickname} - купи гараж!`);
+    return answer("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
 }

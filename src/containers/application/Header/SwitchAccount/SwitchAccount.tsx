@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -18,7 +18,7 @@ import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-
+import { appBus } from 'src/services/scripting/bus';
 // should be refactored
 function AccountItem({
   data,
@@ -112,6 +112,19 @@ function SwitchAccount() {
   const useGetCidAvatar = passport.data?.extension.avatar;
   const useGetName = passport.data?.extension.nickname || defaultAccount?.name;
   const useGetAddress = defaultAccount?.account?.cyber?.bech32;
+
+  useEffect(() => {
+    if (passport.data) {
+      appBus.emit('context', {
+        name: 'user',
+        item: {
+          address: useGetAddress || '',
+          nickname: useGetName || '',
+          passport: passport.data,
+        },
+      });
+    }
+  }, [passport]);
 
   const onClickChangeActiveAcc = async (key: string) => {
     dispatch(

@@ -1,13 +1,13 @@
 pub fn skip() {
-    #{ "nickname": cyb::context.input.nickname, "action": "skip" }
+    #{ "nickname": cyb::context.app.user.nickname, "action": "skip" }
 }
 
 pub fn answer(content) {
-    #{ "nickname": cyb::context.input.nickname, "action": "answer", "content": content }
+    #{ "nickname": cyb::context.app.user.nickname, "action": "answer", "answer": content }
 }
 
 
 pub async fn main() {
     let my_particle_ctx = cyb::context.myParticle;
-    my_particle(my_particle_ctx.nickname, my_particle_ctx.input).await
+    my_particle(my_particle_ctx.input).await
 }

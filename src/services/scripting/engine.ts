@@ -23,43 +23,40 @@ const compileConfig = {
 
 let rune;
 
-export let isCyberScriptingLoaded = false;
-
 export const loadCyberScripingEngine = async () => {
   console.time('⚡️ Rune initialized! 🔋');
   rune = await initAsync();
   window.rune = rune;
   console.timeEnd('⚡️ Rune initialized! 🔋');
-  isCyberScriptingLoaded = true;
   return rune;
 };
 
-export const loadScript = (scriptName: ScriptEntrypoint) =>
-  localStorage.getItem(`script_${scriptName}`);
+// export const loadScript = (scriptName: ScriptEntrypoint) =>
+//   localStorage.getItem(`script_${scriptName}`);
 
-export const saveScript = (
-  scriptName: ScriptEntrypoint,
-  scriptCode: string
-) => {
-  localStorage.setItem(`script_${scriptName}`, scriptCode);
-  scriptItemStorage[scriptName].user = scriptCode;
-};
+// export const saveScript = (
+//   scriptName: ScriptEntrypoint,
+//   scriptCode: string
+// ) => {
+//   localStorage.setItem(`script_${scriptName}`, scriptCode);
+//   scriptItemStorage[scriptName].user = scriptCode;
+// };
 
-// Scripts cached to use on demand
-// Runtime - cyber scripts to hide extra functionality
-// User - user written scripts(or default)
-export const scriptItemStorage: Record<ScriptEntrypoint, ScriptItem> = {
-  particle: {
-    name: 'Particle post processor',
-    runtime: scriptParticleRuntime,
-    user: loadScript('particle') || scriptParticleDefault,
-  },
-  myParticle: {
-    name: 'My particle',
-    runtime: scriptParticleRuntime,
-    user: loadScript('particle') || scriptParticleDefault,
-  },
-};
+// // Scripts cached to use on demand
+// // Runtime - cyber scripts to hide extra functionality
+// // User - user written scripts(or default)
+// export const scriptItemStorage: Record<ScriptEntrypoint, ScriptItem> = {
+//   particle: {
+//     name: 'Particle post processor',
+//     runtime: scriptParticleRuntime,
+//     user: loadScript('particle') || scriptParticleDefault,
+//   },
+//   myParticle: {
+//     name: 'My particle',
+//     runtime: scriptParticleRuntime,
+//     user: loadScript('particle') || scriptParticleDefault,
+//   },
+// };
 
 const scriptCallbacks = new Map<string, ScriptCallback>();
 
@@ -87,8 +84,11 @@ export const runScript = async (
   const paramRefId = params.refId || uuidv4().toString();
 
   callback && scriptCallbacks.set(paramRefId, callback);
-
-  // input: String, config: JsValue, ref_id: String, scripts:  String, params: JsValue
+  // console.log('-------compile', {
+  //   ...params,
+  //   app: appContextManager.context,
+  //   refId: paramRefId,
+  // });
   const outputData = await compile(
     scriptCode,
     compileConfig,
@@ -139,7 +139,13 @@ type ReactToParticleResult = {
   content?: string;
 };
 
-export const reactToParticle = async (
+type ReactToInputResult = {
+  action: 'pass' | 'answer' | 'error';
+  answer?: string;
+  nickname: string;
+};
+
+const reactToParticle = async (
   cid: string,
   contentType: string,
   content: string
@@ -151,7 +157,7 @@ export const reactToParticle = async (
   }
 
   const scriptResult = await runScript(
-    scriptItemStorage.particle.user,
+    appContextManager.entrypoints.particle.user,
     {
       particle: {
         cid,
@@ -159,7 +165,7 @@ export const reactToParticle = async (
         content,
       },
     },
-    scriptItemStorage.particle.runtime,
+    appContextManager.entrypoints.particle.runtime,
     undefined,
     true
   );
@@ -175,3 +181,33 @@ export const reactToParticle = async (
   // console.log('----react to particle', cid, contentType, content, result);
   return scriptResult.result;
 };
+
+const reactToInput = async (input: string): Promise<ReactToInputResult> => {
+  // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
+
+  if (!appContextManager.deps.queryClient) {
+    throw Error('Cyber queryClient is not set');
+  }
+
+  const scriptResult = await runScript(
+    appContextManager.entrypoints['my-particle'].user,
+    {
+      myParticle: {
+        input,
+      },
+    },
+    appContextManager.entrypoints['my-particle'].runtime,
+    undefined,
+    true
+  );
+
+  if (scriptResult.error) {
+    return { action: 'error' };
+  }
+
+  return scriptResult.result;
+};
+
+export type { ReactToInputResult, ReactToParticleResult };
+
+export { reactToParticle, reactToInput };

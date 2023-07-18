@@ -81,6 +81,7 @@ const formatExecutionResult = (
       `   ${JSON.stringify(result.result)}`,
       '',
       '🧪 Raw output:',
+      '',
       result?.output || 'no output.',
     ]);
   }
