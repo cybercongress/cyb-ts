@@ -1,29 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { equals } from 'ramda';
-
-// TODO: add type
-// https://github.com/cybercongress/cw-cybergift/tree/main/contracts/cw-cyber-passport/schema
-type Query = {
-  active_passport:
-    | {
-        address: string;
-      }
-    | {
-        passport_by_nickname: {
-          nickname: string;
-        };
-      }
-    | {
-        nft_info: {
-          token_id: string;
-        };
-      };
-};
+import {
+  PassportContractQuery,
+  queryPassportContract,
+} from 'src/soft.js/api/passport';
 
 type Props = {
-  query: Query;
+  query: PassportContractQuery;
   skip?: boolean;
 };
 
@@ -34,9 +18,9 @@ function usePassportContract<DataType>({ query, skip }: Props) {
 
   const queryClient = useQueryClient();
 
-  const lastQuery = useRef<Query>();
+  const lastQuery = useRef<PassportContractQuery>();
 
-  async function queryContract(query: Query) {
+  async function queryContract(query: PassportContractQuery) {
     if (!queryClient) {
       return;
     }
@@ -46,11 +30,7 @@ function usePassportContract<DataType>({ query, skip }: Props) {
       setData(undefined);
       setError(undefined);
 
-      const response = await queryClient.queryContractSmart(
-        CONTRACT_ADDRESS_PASSPORT,
-        query
-      );
-
+      const response = await queryPassportContract(query, queryClient);
       setData(response);
     } catch (error) {
       console.error(error);

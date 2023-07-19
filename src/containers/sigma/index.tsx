@@ -14,6 +14,7 @@ import { ContainerGradientText } from '../../components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
+import usePassportByAddress from 'src/features/passport/hooks';
 
 const valueContext = {
   totalCap: 0,
@@ -33,13 +34,15 @@ function Sigma() {
 
   const {
     pocket: { accounts, defaultAccount },
-    passport: defaultPassport,
   } = useSelector((state: RootState) => {
     return {
       pocket: state.pocket,
-      passport: state.passport,
     };
   });
+
+  const { passport: defaultPassport } = usePassportByAddress(
+    defaultAccount?.account?.cyber?.bech32 || null
+  );
 
   const superSigma = location.pathname === routes.sigma.path;
 
@@ -65,7 +68,7 @@ function Sigma() {
   }, [address, accounts, superSigma]);
 
   const isCurrentOwner = isOwner || superSigma;
-  const currentPassport = isCurrentOwner ? defaultPassport.data : passport;
+  const currentPassport = isCurrentOwner ? defaultPassport : passport;
 
   useEffect(() => {
     const { dataCap } = value;
