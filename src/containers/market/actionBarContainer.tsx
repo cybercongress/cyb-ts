@@ -2,16 +2,28 @@ import { Link } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import { trimString } from '../../utils/utils';
+import { useDevice } from 'src/contexts/device';
+import { AccountValue } from 'src/types/defaultAccount';
+
+type Props = {
+  addressActive: AccountValue | null;
+
+  keywordHash: string;
+  updateFunc: any;
+  rankLink: string | null;
+  textBtn: string;
+};
 
 function ActionBarCont({
-  mobile,
   addressActive,
   keywordHash,
   updateFunc,
   rankLink,
   textBtn,
-}) {
-  if (!mobile && addressActive && addressActive !== null) {
+}: Props) {
+  const { isMobile: mobile } = useDevice();
+
+  if (!mobile && addressActive) {
     if (addressActive.keys !== 'read-only') {
       return (
         <ActionBarContainer
