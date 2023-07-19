@@ -123,13 +123,13 @@ function SwitchAccount() {
   const useGetName = passport?.extension.nickname || defaultAccount?.name;
 
   useEffect(() => {
-    if (passport.data) {
+    if (passport) {
       appBus.emit('context', {
         name: 'user',
         item: {
           address: useGetAddress || '',
           nickname: useGetName || '',
-          passport: passport.data,
+          passport,
         },
       });
     }
