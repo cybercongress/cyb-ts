@@ -1,12 +1,11 @@
-import { IpfsContentSource } from 'src/utils/ipfs/ipfs';
-import QueueManager from './QueueManager';
+// import '@types/jest';
+import QueueManager, { QueueItemStatus } from './QueueManager';
 import { QueueStrategy } from './QueueStrategy';
+import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
-import {
-  fetchIpfsContent,
-  reconnectToCyberSwarm,
-} from 'src/utils/ipfs/utils-ipfs';
-import { QueueItemStatus } from './QueueManager';
+jest.mock('./utils', () => ({
+  postProcessIpfContent: jest.fn(),
+}));
 
 jest.mock('src/utils/ipfs/utils-ipfs', () => ({
   fetchIpfsContent: jest.fn(),

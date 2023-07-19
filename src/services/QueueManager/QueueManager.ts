@@ -67,7 +67,7 @@ const strategies = {
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
 
-class QueueManager<T extends IPFSContent> {
+class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
   private node: AppIPFS | undefined = undefined;
