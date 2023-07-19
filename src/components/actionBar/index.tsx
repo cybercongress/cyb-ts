@@ -9,6 +9,7 @@ import { Networks } from 'src/types/networks';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
 import Button from '../btnGrd';
+import usePassportByAddress from 'src/features/passport/hooks';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -42,15 +43,18 @@ export type Props = {
 function ActionBar({ children, text, onClickBack, button }: Props) {
   const location = useLocation();
 
-  const { passport, defaultAccount } = useSelector((store: RootState) => {
+  const { defaultAccount } = useSelector((store: RootState) => {
     return {
-      passport: store.passport,
       defaultAccount: store.pocket.defaultAccount,
     };
   });
 
+  const { passport } = usePassportByAddress(
+    defaultAccount?.account?.cyber?.bech32 || null
+  );
+
   const noAccount = !defaultAccount.account;
-  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport.data;
+  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
 
   // TODO: not show while loading passport
 

@@ -19,6 +19,8 @@ import Karma from '../../Karma/Karma';
 import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
 import { appBus } from 'src/services/scripting/bus';
+import usePassportByAddress from 'src/features/passport/hooks';
+
 // should be refactored
 function AccountItem({
   data,
@@ -29,7 +31,8 @@ function AccountItem({
   link,
 }) {
   const address = data?.cyber?.bech32;
-  const { passport } = useGetPassportByAddress(address);
+
+  const { passport } = usePassportByAddress(address);
 
   const name =
     passport?.extension?.nickname || data?.cyber?.name || accountName;
@@ -88,9 +91,17 @@ function SwitchAccount() {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
-  const { defaultAccount, accounts } = useSelector(
-    (state: RootState) => state.pocket
-  );
+  const {
+    pocket: { defaultAccount, accounts },
+  } = useSelector((state: RootState) => {
+    return {
+      pocket: state.pocket,
+    };
+  });
+
+  const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
+
+  const { passport } = usePassportByAddress(useGetAddress);
 
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
     trigger: 'click',
@@ -100,7 +111,6 @@ function SwitchAccount() {
     placement: 'bottom',
   });
 
-  const passport = useSelector((state: RootState) => state.passport);
   const dispatch = useDispatch();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -109,9 +119,8 @@ function SwitchAccount() {
     setControlledVisible(false);
   });
 
-  const useGetCidAvatar = passport.data?.extension.avatar;
-  const useGetName = passport.data?.extension.nickname || defaultAccount?.name;
-  const useGetAddress = defaultAccount?.account?.cyber?.bech32;
+  const useGetCidAvatar = passport?.extension.avatar;
+  const useGetName = passport?.extension.nickname || defaultAccount?.name;
 
   useEffect(() => {
     if (passport.data) {
@@ -188,8 +197,8 @@ function SwitchAccount() {
         )}
         <Link
           to={
-            passport.data
-              ? routes.robotPassport.getLink(passport.data.extension.nickname)
+            passport
+              ? routes.robotPassport.getLink(passport.extension.nickname)
               : routes.robot.path
           }
           // onClick={() => setControlledVisible(!controlledVisible)}

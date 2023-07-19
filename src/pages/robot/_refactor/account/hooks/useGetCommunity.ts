@@ -7,7 +7,7 @@ import {
 } from '../../../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../../../utils/config';
 
-function useGetCommunity(address) {
+function useGetCommunity(address: string | null, skip?: boolean) {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [community, setCommunity] = useState({
@@ -45,8 +45,13 @@ function useGetCommunity(address) {
       }
       setLoading((state) => ({ ...state, followers: false }));
     };
+
+    if (!address || skip) {
+      return;
+    }
+
     getFollowersFunc();
-  }, [address]);
+  }, [address, skip]);
 
   useEffect(() => {
     const getFollowersAddress = async () => {
@@ -72,8 +77,12 @@ function useGetCommunity(address) {
       }
       setLoading((state) => ({ ...state, following: false }));
     };
+    if (!address || skip) {
+      return;
+    }
+
     getFollowersAddress();
-  }, [address]);
+  }, [address, skip]);
 
   useEffect(() => {
     setCommunity({

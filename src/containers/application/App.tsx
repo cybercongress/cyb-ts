@@ -11,28 +11,22 @@ import { routes } from 'src/routes';
 import styles from './styles.scss';
 import usePassportContract from 'src/features/passport/usePassportContract';
 
-import {
-  setPassport,
-  setPassportLoading,
-} from 'src/features/passport/passport.redux';
 import { Citizenship } from 'src/types/citizenship';
+import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
+import { setCommunity } from 'src/redux/features/currentAccount';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 export const PORTAL_ID = 'portal';
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const queryClient = useQueryClient();
 
   const address = defaultAccount.account?.cyber?.bech32;
-  const { data: passport, loading } = usePassportContract<Citizenship>({
-    query: {
-      active_passport: {
-        address,
-      },
-    },
-    skip: !address,
-  });
 
+  const { community } = useGetCommunity(address || null);
   const location = useLocation();
 
   const ipfs = useIpfs();
@@ -42,12 +36,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(setPassportLoading(loading));
-  }, [loading, dispatch]);
+    if (!address || !queryClient) {
+      return;
+    }
+    dispatch(
+      getPassport({
+        address,
+        queryClient,
+      })
+    );
+  }, [address]);
+
+  // reset
 
   useEffect(() => {
-    dispatch(setPassport(!defaultAccount.account ? null : passport || null));
-  }, [passport, dispatch, defaultAccount]);
+    dispatch(setCommunity(community));
+  }, [community, dispatch]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

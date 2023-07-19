@@ -36,10 +36,16 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const {
     pocket: { defaultAccount, accounts },
     passport: currentUserPassport,
-  } = useSelector(({ pocket, passport }: RootState) => {
+  } = useSelector(({ pocket, passports }: RootState) => {
+    const address = pocket.defaultAccount.account?.cyber?.bech32;
+
     return {
       pocket,
-      passport,
+      // maybe try to reuse passport hook
+      passport: (address && passports[address]) || {
+        data: undefined,
+        loading: false,
+      },
     };
   });
 
