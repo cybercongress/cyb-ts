@@ -1,5 +1,5 @@
 pub async fn my_particle(input) {
     let nickname =  cyb::context.app.user.nickname;
-    //return answer(`${nickname} - купи гараж!`);
-    return answer("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
+    return answer(`${nickname} - купи гараж!`);
+    //return answer("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
 }

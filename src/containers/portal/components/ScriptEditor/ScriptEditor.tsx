@@ -315,9 +315,6 @@ function ScriptEditor() {
         {!tab ||
           (Object.keys(entrypoints).indexOf(tab) > -1 && (
             <>
-              <Pane marginBottom="25px" fontSize="20px">
-                {entrypoints[entrypointName].title}
-              </Pane>
               <CodeMirror
                 ref={codeMirrorRef}
                 value={code}
