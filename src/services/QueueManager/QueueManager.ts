@@ -21,13 +21,7 @@ import {
   fetchIpfsContent,
   reconnectToCyberSwarm,
 } from 'src/utils/ipfs/utils-ipfs';
-import {
-  AppIPFS,
-  IPFSContent,
-  IPFSContentMaybe,
-  IpfsContentSource,
-} from 'src/utils/ipfs/ipfs';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
+import { AppIPFS, IPFSContent, IpfsContentSource } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -43,67 +37,13 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { reactToParticle } from '../scripting/engine';
+import { postProcessIpfContent } from './utils';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
 
 function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
-}
-
-/**
- * Execute 'particle' script to post process item: modify cid or content, or hide from view
- * @param item
- * @param content
- * @param node
- * @returns
- */
-async function postProcessIpfContent<T>(
-  item: QueueItem<T>,
-  content: IPFSContent,
-  node: AppIPFS
-): Promise<IPFSContent> {
-  const { cid, controller, source } = item;
-
-  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
-    console.log('---content MOON', content, item);
-  }
-
-  // Preload data for text items
-  const isTextData =
-    content?.contentType === 'text' && content?.result instanceof Uint8Array;
-
-  const text = isTextData ? uint8ArrayToAsciiString(content.result) : '';
-
-  const mutation = await reactToParticle(cid, content?.contentType, text);
-
-  if (mutation.action === 'update_cid') {
-    console.log('update_cid', mutation, mutation.cid);
-    // refectch content from new cid
-    const contentUpdated = await fetchIpfsContent<T>(mutation!.cid, source, {
-      controller,
-      node,
-    });
-    console.log('update_cid', contentUpdated);
-    return { ...contentUpdated, mutation: 'modified' };
-  }
-  if (mutation.action === 'update_content') {
-    console.log('update_content', mutation);
-    return { ...content, result: mutation.content, mutation: 'modified' };
-  }
-
-  if (mutation.action === 'hide') {
-    // TODO: NEED to fix content result uint8array vs string
-    return { ...content, mutation: 'hidden' }; // { ...content, result: mutation.content, modified: true };
-  }
-
-  if (mutation.action === 'error') {
-    // TODO: NEED to fix content result uint8array vs string
-    return { ...content, mutation: 'error' }; // { ...content, result: mutation.content, modified: true };
-  }
-
-  return content;
 }
 
 const strategies = {
@@ -127,7 +67,7 @@ const strategies = {
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
 
-class QueueManager<T> {
+class QueueManager<T extends IPFSContent> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
   private node: AppIPFS | undefined = undefined;
@@ -204,7 +144,7 @@ class QueueManager<T> {
         controller,
         node: this.node,
       }).then((content) =>
-        content ? postProcessIpfContent(item, content, this.node!) : undefined
+        content ? postProcessIpfContent(item, content, this.node) : undefined
       );
 
       return content; // pass

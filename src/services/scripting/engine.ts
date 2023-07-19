@@ -175,7 +175,7 @@ const reactToParticle = async (
   }
 
   if (scriptResult.result?.action !== 'pass') {
-    console.log(`---reactToParticle ${cid} output: `, scriptResult);
+    // console.log(`---reactToParticle ${cid} output: `, scriptResult);
   }
 
   // console.log('----react to particle', cid, contentType, content, result);
