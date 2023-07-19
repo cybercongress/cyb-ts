@@ -7,7 +7,7 @@ import { CYBER } from 'src/utils/config';
 import { useLocation } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
 import ButtonIcon from '../buttons/ButtonIcon';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import Button from '../btnGrd';
 
 const back = require('../../image/arrow-left-img.svg');
@@ -28,7 +28,7 @@ function ActionBarContentText({ children, ...props }) {
   );
 }
 
-type Props = {
+export type Props = {
   children?: React.ReactNode;
   onClickBack?: $TsFixMeFunc;
   text?: string | React.ReactNode;
@@ -68,6 +68,25 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   const content = text || children;
 
+  const isButton = !!button;
+
+  function withForm(children: React.ReactNode) {
+    if (isButton) {
+      return (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            button.onClick();
+          }}
+        >
+          {children}
+        </form>
+      );
+    }
+
+    return children;
+  }
+
   return (
     <ActionBarContainer>
       {/* <Telegram /> */}
@@ -82,13 +101,18 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
         />
       )}
 
-      {content && <ActionBarContentText>{content}</ActionBarContentText>}
+      {withForm(
+        <>
+          {content && <ActionBarContentText>{content}</ActionBarContentText>}
 
-      {button?.text && (
-        <Button disabled={button.disabled} onClick={button.onClick}>
-          {button.text}
-        </Button>
+          {isButton && (
+            <Button type="submit" disabled={button.disabled}>
+              {button.text}
+            </Button>
+          )}
+        </>
       )}
+
       {/* <GitHub /> */}
     </ActionBarContainer>
   );

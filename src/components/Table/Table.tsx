@@ -9,14 +9,17 @@ import {
 import styles from './Table.module.scss';
 import Loader2 from '../ui/Loader2';
 import NoItems from '../ui/noItems';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
+import useOnClickOutside from 'src/hooks/useOnClickOutside';
+import { findElementInParents } from 'src/containers/application/AppSideBar';
 
 export type Props<T extends object> = {
   columns: ColumnDef<T>[];
   data: T[];
   isLoading?: boolean;
   onSelect?: (id: string | null) => void;
+  selected?: any;
   style: any;
 };
 
@@ -26,8 +29,22 @@ function Table<T extends object>({
   isLoading,
   style,
   onSelect,
+  selected,
 }: Props<T>) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const selectedRef = useRef<HTMLTableRowElement>(null);
+
+  useOnClickOutside(selectedRef, (e) => {
+    // TODO: refactor to ref maybe
+    if (
+      findElementInParents(e.target, `tr`) ||
+      findElementInParents(e.target, `button`)
+    ) {
+      // this row will update selected
+      return;
+    }
+
+    onSelect?.(null);
+  });
 
   const table = useReactTable({
     columns,
@@ -66,11 +83,13 @@ function Table<T extends object>({
 
         <tbody>
           {table.getRowModel().rows.map((row) => {
+            const isSelected = row.id === String(selected);
             return (
               <tr
                 key={row.id}
                 data-id={row.id}
-                className={cx({ [styles.rowSelected]: row.id === selected })}
+                ref={isSelected ? selectedRef : null}
+                className={cx({ [styles.rowSelected]: isSelected })}
                 onClick={(e) => {
                   // TODO: move to tbody
 
@@ -80,14 +99,7 @@ function Table<T extends object>({
 
                   const id = e.currentTarget.getAttribute('data-id');
 
-                  if (id === selected) {
-                    setSelected(null);
-                    onSelect(null);
-                    return;
-                  }
-
-                  setSelected(id);
-                  onSelect(id);
+                  onSelect?.(id === selected ? null : id);
                 }}
               >
                 {row.getVisibleCells().map((cell) => {

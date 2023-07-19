@@ -11,14 +11,19 @@ import { useParams } from 'react-router-dom';
 import { RootState } from 'src/redux/store';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
 import { Pane, Tablist } from '@cybercongress/gravity';
-import { Button, Input, ContainerGradientText, TabBtn } from 'src/components';
+import {
+  Button,
+  Input,
+  TabBtn,
+  MainContainer,
+  ContainerGradientText,
+} from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 
 import {
   ScriptEntrypoint,
   ScriptExecutionData,
   ScriptItem,
-  ScriptParticleParams,
 } from 'src/services/scripting/scritpting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
@@ -27,12 +32,8 @@ import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
 import { setSecrets, setScript } from 'src/redux/features/scripting';
-import { appBus } from 'src/services/scripting/bus';
 // import { updatePassportData } from '../../utils';
-import { keyValuesToObject } from 'src/utils/localStorage';
 import { TabularKeyValues } from 'src/types/data';
-
-import EditableTable from 'src/components/EditableTable/EditableTable';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import { compileScript } from './utils';
@@ -41,8 +42,10 @@ import styles from './ScriptEditor.module.scss';
 import 'codemirror/mode/rust/rust';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
+import Secrets from './Secrets/Secrets';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
+import Carousel from '../../../temple/components/corusel/index';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -281,7 +284,8 @@ function ScriptEditor() {
 
   return (
     <div>
-      <main className="block-body">
+      <MainContainer>
+        {/* <main className="block-body"> */}
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -305,29 +309,35 @@ function ScriptEditor() {
             to="/plugins/secrets"
           />
         </Tablist>
-        {tab === 'secrets' && (
-          <EditableTable
-            data={secrets}
-            columns={['key', 'value']}
-            onSave={onSaveSecrets}
-          />
-        )}
+
+        {/* <Carousel
+          slides={Object.keys(entrypoints).map((k) => ({
+            title: entrypoints[k as ScriptEntrypoint].title.toLocaleLowerCase(),
+          }))}
+          setStep={(i) => {
+            console.log(i);
+          }}
+          activeStep={Object.keys(entrypoints).indexOf(tab as ScriptEntrypoint)}
+        /> */}
+        {tab === 'secrets' && <Secrets />}
         {!tab ||
           (Object.keys(entrypoints).indexOf(tab) > -1 && (
             <>
-              <CodeMirror
-                ref={codeMirrorRef}
-                value={code}
-                options={{
-                  mode: 'rust',
-                  theme: 'tomorrow-night-eighties',
-                  lineNumbers: true,
-                }}
-                onBeforeChange={(editor, data, value) => {
-                  setCode(value);
-                  setIsChanged(true);
-                }}
-              />
+              <ContainerGradientText>
+                <CodeMirror
+                  ref={codeMirrorRef}
+                  value={code}
+                  options={{
+                    mode: 'rust',
+                    theme: 'tomorrow-night-eighties',
+                    lineNumbers: true,
+                  }}
+                  onBeforeChange={(editor, data, value) => {
+                    setCode(value);
+                    setIsChanged(true);
+                  }}
+                />
+              </ContainerGradientText>
               <Pane
                 marginBottom="10px"
                 marginTop="25px"
@@ -366,7 +376,8 @@ function ScriptEditor() {
               <textarea value={logText} className={styles.logArea} rows={18} />
             </>
           ))}
-      </main>
+        {/* </main> */}
+      </MainContainer>
     </div>
   );
 }

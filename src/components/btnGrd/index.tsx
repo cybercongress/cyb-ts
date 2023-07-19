@@ -33,6 +33,7 @@ export type Props = {
   disabled?: boolean;
   text?: string | JSX.Element;
   img?: $TsFixMe;
+  type?: 'button' | 'submit' | 'reset';
   pending?: boolean;
   className?: $TsFixMe;
   pendingText?: string;
@@ -49,6 +50,7 @@ function Button({
   pendingText,
   pending,
   onClick,
+  type = 'button',
   link,
   className,
   ...props
@@ -84,7 +86,7 @@ function Button({
 
   let Component: HTMLButtonElement | Link = 'button';
   let componentProps: object = {
-    type: 'button',
+    type,
   };
 
   // if http: will need to add <a> tag
@@ -97,7 +99,6 @@ function Button({
 
   return (
     <Component
-      type="button"
       id="BtnGrd"
       onClick={handleClick}
       className={cx(styles.containerBtnGrd, className)}

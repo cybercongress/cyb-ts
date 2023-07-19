@@ -10,7 +10,10 @@ interface Props {
   closeMenu: () => void;
 }
 
-function findElementInParents(element: HTMLElement, targetSelector: string) {
+export function findElementInParents(
+  element: HTMLElement,
+  targetSelector: string
+) {
   let { parentElement } = element;
 
   while (parentElement) {

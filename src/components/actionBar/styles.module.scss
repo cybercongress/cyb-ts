@@ -15,15 +15,18 @@
   z-index: 2;
 
   &Content {
+    &,
+    form {
+      display: flex;
+      gap: 25px;
+      flex-grow: 1;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
     max-width: 1000px;
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-end;
-    gap: 25px;
-    justify-content: center;
     position: relative;
-    padding: 0 70px;
-    padding-bottom: 10px;
+    padding: 0 70px 10px;
   }
 
   @media (max-width: 540px) {
