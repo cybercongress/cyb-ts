@@ -1,12 +1,9 @@
 import { KeyValueString, TabularKeyValues } from 'src/types/data';
-import {
-  ScriptEntrypointNameName,
-  ScriptEntrypoint,
-} from 'src/services/scripting/scritpting';
+import { ScriptEntrypointNames } from 'src/types/scripting';
 
 type JsonTypeKeys = 'secrets' | 'botConfig';
 
-type StringTypeKeys = 'activeBotName' | ScriptEntrypointNameName;
+type StringTypeKeys = 'activeBotName' | ScriptEntrypointNames;
 
 const jsonKeyMap: Record<JsonTypeKeys, string> = {
   secrets: 'secrets',

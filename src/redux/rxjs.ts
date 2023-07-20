@@ -8,10 +8,10 @@ import {
 import { Citizenship } from 'src/types/citizenship';
 import { Nullable } from 'src/types';
 import scriptEngine from 'src/services/scripting/engine';
+import { keyValuesToObject } from 'src/utils/localStorage';
 
 import store, { RootState } from './store';
 import { setContext } from './features/scripting';
-import { keyValuesToObject } from 'src/utils/localStorage';
 
 function select<T>(
   state$: Observable<RootState>,
@@ -19,28 +19,6 @@ function select<T>(
 ): Observable<T> {
   return state$.pipe(map(mapFn), distinctUntilChanged());
 }
-/*
-select(
-  this._state$,
-  (state: RootState) => state.scripting.secrets
-).subscribe((secrets) => {
-  this._context.secrets = keyValuesToObject(Object.values(secrets));
-});
-
-select(
-  this._state$,
-  (state: RootState) => state.scripting.context
-).subscribe((context) => {
-  this._context = { ...this._context, ...context };
-});
-
-select(
-  this._state$,
-  (state: RootState) => state.scripting.scripts.entrypoints
-).subscribe((entrypoints) => {
-  this._entrypoints = entrypoints;
-});
-*/
 
 const initRxStore = () => {
   const state$ = from(store);

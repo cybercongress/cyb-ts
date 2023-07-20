@@ -1,7 +1,6 @@
 import {
   ScriptCallback,
-  ScriptEntrypointNameName,
-  ScriptEntrypointNameNames,
+  ScriptEntrypointNames,
   ScriptEntrypoint,
   ScriptParticleParams,
   ScriptScopeParams,
@@ -9,6 +8,8 @@ import {
   ScriptMyParticleResult,
   ScriptParticleResult,
   ScriptMyParticleParams,
+  ScriptEntrypoints,
+  ScriptExecutionResult,
 } from 'src/types/scripting';
 import initAsync, { compile } from 'cyb-rune-wasm';
 
@@ -36,8 +37,8 @@ const compileConfig = {
 //   };
 
 const getEntrypointScripts = (
-  entrypoints: ScriptEntrypointNameNames,
-  name: ScriptEntrypointNameName
+  entrypoints: ScriptEntrypoints,
+  name: ScriptEntrypointNames
 ) => {
   if (!entrypoints[name]) {
     throw Error(`No '${name}' script exist`);
@@ -56,7 +57,7 @@ type EngineDeps = {
 
 interface Engine {
   setContext(context: Partial<ScriptContext>): void;
-  setEntrypoints(entrypoints: Partial<ScriptEntrypointNameNames>): void;
+  setEntrypoints(entrypoints: ScriptEntrypoints): void;
   setDeps(deps: Partial<EngineDeps>): void;
   getDeps(): EngineDeps;
   getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
@@ -69,14 +70,14 @@ interface Engine {
     scriptRuntime: string,
     callback?: ScriptCallback,
     executeAfterCompile?: boolean
-  ): Promise<unknown>;
+  ): Promise<ScriptExecutionResult>;
   reactToInput(params: ScriptMyParticleParams): Promise<ScriptMyParticleResult>;
   reactToParticle(params: ScriptParticleParams): Promise<ScriptParticleResult>;
 }
 
 // eslint-disable-next-line import/prefer-default-export
 function enigine(): Engine {
-  const entrypoints: ScriptEntrypointNameNames = {};
+  const entrypoints: ScriptEntrypoints = {};
   let context: ScriptContext = { params: {}, user: {}, secrets: {} };
   let deps: EngineDeps;
 
@@ -103,14 +104,12 @@ function enigine(): Engine {
 
   const getSingleDep = (name: keyof EngineDeps) => deps[name];
 
-  const setEntrypoints = (
-    ScriptEntrypointNameNames: ScriptEntrypointNameNames
-  ) => {
-    (
-      Object.keys(ScriptEntrypointNameNames) as ScriptEntrypointNameName[]
-    ).forEach((name) => {
-      entrypoints[name] = ScriptEntrypointNameNames[name];
-    });
+  const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
+    (Object.keys(scriptEntrypoints) as ScriptEntrypointNames[]).forEach(
+      (name) => {
+        entrypoints[name] = scriptEntrypoints[name];
+      }
+    );
   };
 
   const run = async (

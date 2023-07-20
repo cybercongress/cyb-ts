@@ -19,14 +19,14 @@ type ScriptContext = {
   secrets: Record<string, string>;
 };
 
-type ScriptEntrypointName = { title: string; runtime: string; user: string };
+type ScriptEntrypoint = { title: string; runtime: string; user: string };
 
-type ScriptEntrypointNames = {
-  particle?: ScriptEntrypointName;
-  myParticle?: ScriptEntrypointName;
+type ScriptEntrypoints = {
+  particle?: ScriptEntrypoint;
+  myParticle?: ScriptEntrypoint;
 };
 
-type ScriptEntrypointNameName = keyof ScriptEntrypointNames;
+type ScriptEntrypointNames = keyof ScriptEntrypoints;
 
 type ScriptCallbackStatus =
   | 'pending'
@@ -83,7 +83,7 @@ export {
   ScriptContext,
   UserContext,
   ParamsContext,
-  ScriptEntrypointName,
+  ScriptEntrypointNames,
   ScriptEntrypoint,
   ScriptCallbackStatus,
   ScriptCallback,
@@ -91,7 +91,7 @@ export {
   ScriptMyParticleParams,
   ScriptScopeParams,
   ScriptExecutionResult,
-  ScriptEntrypointNames,
+  ScriptEntrypoints,
   ScriptMyParticleResult,
   ScriptParticleResult,
 };

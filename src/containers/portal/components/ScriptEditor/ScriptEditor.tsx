@@ -20,22 +20,27 @@ import {
 } from 'src/components';
 // import Tooltip from 'src/components/tooltip/tooltip';
 
+// import {
+//   ScriptEntrypointName,
+//   ScriptExecutionResult,
+//   ScriptEntrypoint,
+// } from 'src/services/scripting/scritpting';
 import {
-  ScriptEntrypointNameName,
-  ScriptExecutionResult,
   ScriptEntrypoint,
-} from 'src/services/scripting/scritpting';
+  ScriptExecutionResult,
+  ScriptEntrypointNames,
+} from 'src/types/scripting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
-import { setSecrets, setScript } from 'src/redux/features/scripting';
-// import { updatePassportData } from '../../utils';
-import { TabularKeyValues } from 'src/types/data';
+import { setScript } from 'src/redux/features/scripting';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
+import { updatePassportData } from '../../utils';
+
 import { compileScript } from './utils';
 import styles from './ScriptEditor.module.scss';
 
@@ -203,14 +208,12 @@ function ScriptEditor() {
   const codeMirrorRef = useRef<CodeMirror>();
   const { signer, signingClient } = useSigningClient();
   const {
-    secrets,
     scripts: { entrypoints },
   } = useSelector((store: RootState) => store.scripting);
 
-  const [entrypointName, setEntrypointName] =
-    useState<ScriptEntrypointNameName>(
-      Object.keys(entrypoints)[0] as ScriptEntrypointNameName
-    );
+  const [entrypointName, setEntrypointName] = useState<ScriptEntrypointNames>(
+    Object.keys(entrypoints)[0] as ScriptEntrypointNames
+  );
 
   const { tab = entrypointName } = useParams();
 
@@ -220,16 +223,29 @@ function ScriptEditor() {
   const [log, setLog] = useState<string[]>([]);
   const [isChanged, setIsChanged] = useState(false);
   const [code, setCode] = useState<string>(
-    entrypoints[tab as ScriptEntrypointNameName]?.user
+    entrypoints[tab as ScriptEntrypointNames]?.user || ''
   );
 
+  // const loadScript = () => {
+  //   if (entrypointName === 'particle') {
+  //     passport?.extension.particle;
+  //   }
+  //   if (entrypointName === 'myParticle') {
+  //   }
+  // };
+
+  // const saveScript = () => {
+  //   if (entrypointName === 'particle') {
+  //   }
+  //   if (entrypointName === 'myParticle') {
+  //   }
+  // };
+
   useEffect(() => {
-    if (
-      Object.keys(entrypoints).indexOf(tab as ScriptEntrypointNameName) > -1
-    ) {
-      const newEntrypoint = tab as ScriptEntrypointNameName;
+    if (Object.keys(entrypoints).indexOf(tab as ScriptEntrypointNames) > -1) {
+      const newEntrypoint = tab as ScriptEntrypointNames;
       setEntrypointName(newEntrypoint);
-      setCode(entrypoints[newEntrypoint]?.user);
+      setCode(entrypoints[newEntrypoint]?.user || '');
     }
   }, [tab, entrypoints]);
 
@@ -245,10 +261,6 @@ function ScriptEditor() {
   // }, [passport]);
 
   const resetPlayGround = () => setLog([]);
-
-  const onSaveSecrets = (secrets: TabularKeyValues) => {
-    dispatch(setSecrets(secrets));
-  };
 
   const onSaveClick = () => {
     setLog([]);
@@ -301,7 +313,7 @@ function ScriptEditor() {
           {Object.keys(entrypoints).map((k) => (
             <TabBtn
               key={`tab_${k}`}
-              text={entrypoints[k as ScriptEntrypointNameName].title}
+              text={entrypoints[k as ScriptEntrypointNames].title}
               isSelected={tab === k}
               to={`/plugins/${k}`}
             />
@@ -315,12 +327,12 @@ function ScriptEditor() {
 
         {/* <Carousel
           slides={Object.keys(entrypoints).map((k) => ({
-            title: entrypoints[k as ScriptEntrypointNameName].title.toLocaleLowerCase(),
+            title: entrypoints[k as ScriptEntrypointName].title.toLocaleLowerCase(),
           }))}
           setStep={(i) => {
             console.log(i);
           }}
-          activeStep={Object.keys(entrypoints).indexOf(tab as ScriptEntrypointNameName)}
+          activeStep={Object.keys(entrypoints).indexOf(tab as ScriptEntrypointName)}
         /> */}
         {tab === 'secrets' && <Secrets />}
         {!tab ||
