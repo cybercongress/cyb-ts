@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Dots } from '../../../components';
-import { formatCurrency, trimString } from '../../../utils/utils';
+import { Dots } from '../../../../components';
+import { formatCurrency, trimString } from '../../../../utils/utils';
 import { ContainerKeyValue } from './utilsComponents';
 import { useIpfs } from 'src/contexts/ipfs';
 

@@ -3,7 +3,7 @@ import { Story, Meta } from '@storybook/react';
 import AddFile, { Props } from './AddFile';
 
 export default {
-  title: 'buttons/AddFile',
+  title: 'atoms/buttons/AddFile',
   component: AddFile,
 } as Meta;
 

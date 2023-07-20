@@ -1,5 +1,5 @@
-import { ContainerGradientText } from '../../components';
-import { MainContainer } from '../portal/components';
+import { ContainerGradientText } from '../../../components';
+import { MainContainer } from '../../../containers/portal/components';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 
 function PendingIpfsSettings() {
