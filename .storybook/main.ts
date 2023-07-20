@@ -37,8 +37,14 @@ const config: StorybookConfig = {
           ...webpackConfig.resolve.alias,
         },
       },
-
-      plugins: [...config.plugins, ...webpackConfig.plugins],
+      plugins: [
+        ...webpackConfig.plugins.filter((plugin) =>
+          ['NodePolyfillPlugin', 'NormalModuleReplacementPlugin'].includes(
+            plugin.constructor.name
+          )
+        ),
+        ...config.plugins,
+      ],
     };
   },
   docs: {

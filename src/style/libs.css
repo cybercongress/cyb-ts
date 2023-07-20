@@ -2,3 +2,8 @@
 .react-json-view {
   overflow-x: auto;
 }
+
+.infinite-scroll-component {
+  padding-top: 3px !important;
+  overflow: unset !important;
+}

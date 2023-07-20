@@ -110,30 +110,30 @@
   }
 }
 
-.triangle {
-  width: 150px;
-  height: 150px;
-  border-left: 5px solid green;
-  position: relative;
-  margin: 50px;
-  &::after,
-  &::before {
-    content: '';
-    position: absolute;
-    height: 5px;
-    background: green;
-    transform-origin: 0 0;
-  }
-  &::before {
-    top: 0;
-    left: 0;
-    right: 3px;
-    transform: rotate(30deg);
-  }
-  &::after {
-    bottom: 0;
-    right: 7px;
-    left: -2.5px;
-    transform: rotate(-30deg);
-  }
-}
+// .triangle {
+//   width: 150px;
+//   height: 150px;
+//   border-left: 5px solid green;
+//   position: relative;
+//   margin: 50px;
+//   &::after,
+//   &::before {
+//     content: '';
+//     position: absolute;
+//     height: 5px;
+//     background: green;
+//     transform-origin: 0 0;
+//   }
+//   &::before {
+//     top: 0;
+//     left: 0;
+//     right: 3px;
+//     transform: rotate(30deg);
+//   }
+//   &::after {
+//     bottom: 0;
+//     right: 7px;
+//     left: -2.5px;
+//     transform: rotate(-30deg);
+//   }
+// }

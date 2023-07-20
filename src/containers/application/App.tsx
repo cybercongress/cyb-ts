@@ -4,9 +4,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
 import { AppDispatch, RootState } from 'src/redux/store';
-import { initPocket } from '../../redux/features/pocket';
+import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
-import IPFSConnectError from './IPFSConnectError/IPFSConnectError';
+import IPFSConnectError from 'src/features/ipfs/IPFSConnectError/IPFSConnectError';
 import { routes } from 'src/routes';
 import styles from './styles.scss';
 import usePassportContract from 'src/features/passport/usePassportContract';
@@ -71,11 +71,14 @@ function App() {
   return (
     <MainLayout>
       <>
-        {ipfs.error && location.pathname !== routes.ipfs.path && (
-          <IPFSConnectError />
+        {/* not move portal order */}
+        {location.pathname.includes('/brain') && (
+          <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        <div id={PORTAL_ID} className={styles.portal} />
+        {ipfs.error && !location.pathname.includes('/drive') && (
+          <IPFSConnectError />
+        )}
 
         <Outlet />
       </>

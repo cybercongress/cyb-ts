@@ -1,4 +1,4 @@
-import ComponentLoader from '../../ipfsSettings/ipfsComponents/ipfsLoader';
+import ComponentLoader from '../../../features/ipfs/ipfsSettings/ipfsComponents/ipfsLoader';
 
 type Props = {
   loading?: boolean;
