@@ -354,7 +354,7 @@ function ScriptEditor() {
                     entrypoint={entrypoints[entrypointName]}
                   />
                 )}
-                {entrypointName === 'my-particle' && (
+                {entrypointName === 'myParticle' && (
                   <PlayMyParticle
                     reset={resetPlayGround}
                     addToLog={addToLog}
@@ -363,14 +363,6 @@ function ScriptEditor() {
                     entrypoint={entrypoints[entrypointName]}
                   />
                 )}
-                {/* <div className={styles.testPanel}>
-                <Input
-                  value={testCid}
-                  onChange={(e) => seTestCid(e.target.value)}
-                  placeholder="Enter particle CID to apply script...."
-                />
-                <Button onClick={onTestClick}>Test</Button>
-              </div> */}
                 {isChanged && <Button onClick={onSaveClick}>Save</Button>}
               </Pane>
               <textarea value={logText} className={styles.logArea} rows={18} />

@@ -1,32 +1,22 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useIpfs } from './ipfs';
+import scriptEngine from 'src/services/scripting/engine';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { useSigningClient } from './signerClient';
-import {
-  loadCyberScripingEngine,
-  // isCyberScriptingLoaded,
-  runScript,
-} from 'src/services/scripting/engine';
 
-import { appBus } from 'src/services/scripting/bus';
+import { useIpfs } from './ipfs';
+import { useSigningClient } from './signerClient';
 
 type CyberScriptsContextType = {
   isLoaded: boolean;
-  runScript: (code: string) => Promise<any>;
-  onCallback?: (code: string) => void;
 };
 
 const CyberScriptsContext = React.createContext<CyberScriptsContextType>({
-  runScript: async () => {
-    throw new Error('CyberScriptsProvider not loaded');
-  },
   isLoaded: false,
 });
 
-export function useCyberScriptEngine() {
-  const cyberScripts = useContext(CyberScriptsContext);
-  return cyberScripts;
-}
+// export function useCyberScriptEngine() {
+//   const cyberScripts = useContext(CyberScriptsContext);
+//   return cyberScripts;
+// }
 
 function CyberScriptEngineProvider({
   children,
@@ -44,30 +34,25 @@ function CyberScriptEngineProvider({
 
   useEffect(() => {
     const initScripting = async () => {
-      await loadCyberScripingEngine();
+      await scriptEngine.load();
+      setIsLoaded(true);
     };
     initScripting();
   }, []);
 
   useEffect(() => {
-    if (node) {
-      appBus.emit('init', { name: 'ipfs', item: node });
-    }
+    node && scriptEngine.setDeps({ ipfs: node });
   }, [node]);
 
   useEffect(() => {
-    if (queryClient) {
-      appBus.emit('init', { name: 'queryClient', item: queryClient });
-    }
+    queryClient && scriptEngine.setDeps({ queryClient });
   }, [queryClient]);
 
   useEffect(() => {
-    if (signingClient) {
-      appBus.emit('init', { name: 'signer', item: { signer, signingClient } });
-    }
+    signingClient && scriptEngine.setDeps({ signer, signingClient });
   }, [signer, signingClient]);
 
-  const value = useMemo(() => ({ runScript, isLoaded }), [isLoaded]);
+  const value = useMemo(() => ({ isLoaded }), [isLoaded]);
 
   return (
     <CyberScriptsContext.Provider value={value}>

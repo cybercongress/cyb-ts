@@ -1,18 +1,25 @@
-/* eslint-disable import/no-unused-modules */
+import {
+  ScriptCallback,
+  ScriptEntrypoint,
+  ScriptEntrypoints,
+  ScriptItem,
+  ScriptParticleParams,
+  ScriptScopeParams,
+  ScriptingContext,
+  ReactToInputResult,
+  ReactToParticleResult,
+  ScriptMyParticleParams,
+} from 'src/types/scripting';
 import initAsync, { compile } from 'cyb-rune-wasm';
 
 import { v4 as uuidv4 } from 'uuid';
-import scriptParticleDefault from './scripts/default/particle.rn';
-import scriptParticleRuntime from './scripts/runtime/particle.rn';
-import { appContextManager } from './bus';
+
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { CyberClient } from '@cybercongress/cyber-js';
 import {
-  ScriptEntrypoint,
-  ScriptItem,
-  ScriptCallback,
-  ScriptCallbackStatus,
-  ScriptScopeParams,
-  ScriptExecutionData,
-} from './scritpting';
+  OfflineSigner,
+  SigningCyberClient,
+} from '@cybercongress/cyber-js/build/signingcyberclient';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -21,193 +28,217 @@ const compileConfig = {
   options: [],
 };
 
-let rune;
+// | { name: 'ipfs'; item: AppIPFS }
+// | { name: 'queryClient'; item: CyberClient }
+// | {
+//     name: 'signer';
+//     item: { signer?: OfflineSigner; signingClient: SigningCyberClient };
+//   };
 
-export const loadCyberScripingEngine = async () => {
-  console.time('⚡️ Rune initialized! 🔋');
-  rune = await initAsync();
-  window.rune = rune;
-  console.timeEnd('⚡️ Rune initialized! 🔋');
-  return rune;
-};
-
-// export const loadScript = (scriptName: ScriptEntrypoint) =>
-//   localStorage.getItem(`script_${scriptName}`);
-
-// export const saveScript = (
-//   scriptName: ScriptEntrypoint,
-//   scriptCode: string
-// ) => {
-//   localStorage.setItem(`script_${scriptName}`, scriptCode);
-//   scriptItemStorage[scriptName].user = scriptCode;
-// };
-
-// // Scripts cached to use on demand
-// // Runtime - cyber scripts to hide extra functionality
-// // User - user written scripts(or default)
-// export const scriptItemStorage: Record<ScriptEntrypoint, ScriptItem> = {
-//   particle: {
-//     name: 'Particle post processor',
-//     runtime: scriptParticleRuntime,
-//     user: loadScript('particle') || scriptParticleDefault,
-//   },
-//   myParticle: {
-//     name: 'My particle',
-//     runtime: scriptParticleRuntime,
-//     user: loadScript('particle') || scriptParticleDefault,
-//   },
-// };
-
-const scriptCallbacks = new Map<string, ScriptCallback>();
-
-export const executeCallback = (
-  refId: string,
-  status: ScriptCallbackStatus,
-  result: any
-): void => {
-  const cb = scriptCallbacks.get(refId);
-  cb && cb(refId, status, result);
-
-  // if (['canceled', 'error', 'done'].indexOf(status) > -1) {
-  //   scriptCallbacks.delete(refId);
-  // }
-};
-
-export const runScript = async (
-  scriptCode: string,
-  params: ScriptScopeParams = {},
-  runtimeScript?: string,
-  callback?: ScriptCallback,
-  executeAfterCompile: boolean
-): Promise<ScriptExecutionData> => {
-  // console.log('runeRun before', code, refId, callback);
-  const paramRefId = params.refId || uuidv4().toString();
-
-  callback && scriptCallbacks.set(paramRefId, callback);
-  // console.log('-------compile', {
-  //   ...params,
-  //   app: appContextManager.context,
-  //   refId: paramRefId,
-  // });
-  const outputData = await compile(
-    scriptCode,
-    compileConfig,
-    runtimeScript || '',
-    {
-      ...params,
-      app: appContextManager.context,
-      refId: paramRefId,
-    },
-    executeAfterCompile
-  );
-  const {
-    result,
-    output,
-    error,
-    diagnostics_output,
-    instructions,
-    diagnostics,
-  } = outputData;
-
-  // console.log('runeRun result', result, code);
-  // if (result.error) {
-  //   console.log('runeRun error', result.error);
-  //   throw Error(result.error);
-  // }
-
-  scriptCallbacks.delete(paramRefId);
-  try {
-    return {
-      result: result ? JSON.parse(result) : null,
-      output,
-      error,
-      diagnosticsOutput: diagnostics_output,
-      instructions,
-      diagnostics,
-    };
-  } catch (e) {
-    console.log('runeRun error', e, outputData);
-    return {
-      diagnosticsOutput: e.toString(),
-    };
-  }
-};
-
-type ReactToParticleResult = {
-  action: 'pass' | 'update_cid' | 'update_content' | 'hide' | 'error';
-  cid?: string;
-  content?: string;
-};
-
-type ReactToInputResult = {
-  action: 'pass' | 'answer' | 'error';
-  answer?: string;
-  nickname: string;
-};
-
-const reactToParticle = async (
-  cid: string,
-  contentType: string,
-  content: string
-): Promise<ReactToParticleResult> => {
-  // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
-
-  if (!appContextManager.deps.queryClient) {
-    throw Error('Cyber queryClient is not set');
+const getEntrypointScripts = (
+  entrypoints: ScriptEntrypoints,
+  name: ScriptEntrypoint
+) => {
+  if (!entrypoints[name]) {
+    throw Error(`No '${name}' script exist`);
   }
 
-  const scriptResult = await runScript(
-    appContextManager.entrypoints.particle.user,
-    {
-      particle: {
-        cid,
-        contentType: contentType || '',
-        content,
+  const { user, runtime } = entrypoints[name] as ScriptItem;
+  return { userScript: user, runtimeScript: runtime };
+};
+
+type EngineDeps = {
+  ipfs?: AppIPFS;
+  queryClient?: CyberClient;
+  signer?: OfflineSigner;
+  signingClient?: SigningCyberClient;
+};
+
+interface Engine {
+  setContext(context: Partial<ScriptingContext>): void;
+  setEntrypoints(entrypoints: Partial<ScriptEntrypoints>): void;
+  setDeps(deps: Partial<EngineDeps>): void;
+  getDeps(): EngineDeps;
+  getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
+
+  load(): Promise<void>;
+
+  run(
+    script: string,
+    params: ScriptScopeParams,
+    scriptRuntime: string,
+    callback?: ScriptCallback,
+    executeAfterCompile?: boolean
+  ): Promise<unknown>;
+  reactToInput(params: ScriptMyParticleParams): Promise<ReactToInputResult>;
+  reactToParticle(params: ScriptParticleParams): Promise<ReactToParticleResult>;
+}
+
+// eslint-disable-next-line import/prefer-default-export
+function enigine(): Engine {
+  const entrypoints: ScriptEntrypoints = {};
+  let context: ScriptingContext = { params: {}, user: {}, secrets: {} };
+  let deps: EngineDeps;
+
+  const scriptCallbacks = new Map<string, ScriptCallback>();
+
+  let rune;
+
+  const load = async () => {
+    console.time('⚡️ Rune initialized! 🔋');
+    rune = await initAsync();
+    window.rune = rune;
+    console.timeEnd('⚡️ Rune initialized! 🔋');
+  };
+
+  const setContext = (appContext: Partial<ScriptingContext>) => {
+    context = { ...context, ...appContext };
+  };
+
+  const getDeps = () => deps;
+
+  const setDeps = (appDeps: Partial<EngineDeps>) => {
+    deps = { ...deps, ...appDeps };
+  };
+
+  const getSingleDep = (name: keyof EngineDeps) => deps[name];
+
+  const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
+    (Object.keys(scriptEntrypoints) as ScriptEntrypoint[]).forEach((name) => {
+      entrypoints[name] = scriptEntrypoints[name];
+    });
+  };
+
+  const run = async (
+    script: string,
+    params: ScriptScopeParams,
+    scriptRuntime = '',
+    callback?: ScriptCallback,
+    executeAfterCompile?: boolean
+  ) => {
+    const paramRefId = params.refId || uuidv4().toString();
+
+    callback && scriptCallbacks.set(paramRefId, callback);
+
+    const outputData = await compile(
+      script,
+      compileConfig,
+      scriptRuntime,
+      {
+        ...params,
+        app: context,
+        refId: paramRefId,
       },
-    },
-    appContextManager.entrypoints.particle.runtime,
-    undefined,
-    true
-  );
-  if (scriptResult.error) {
-    console.log(`---reactToParticle ${cid} error: `, scriptResult);
-    return { action: 'error' };
-  }
+      executeAfterCompile || false
+    );
+    const {
+      result,
+      //   output,
+      //   error,
+      //   diagnostics_output,
+      //   instructions,
+      //   diagnostics,
+    } = outputData;
+    outputData.diagnosticsOutput = outputData.diagnostics_output;
+    delete outputData.diagnostics_output;
 
-  if (scriptResult.result?.action !== 'pass') {
-    // console.log(`---reactToParticle ${cid} output: `, scriptResult);
-  }
+    scriptCallbacks.delete(paramRefId);
 
-  // console.log('----react to particle', cid, contentType, content, result);
-  return scriptResult.result;
-};
+    try {
+      return {
+        ...outputData,
+        result: result ? JSON.parse(result) : null,
+        // output,
+        // error,
+        // diagnosticsOutput: diagnostics_output,
+        // instructions,
+        // diagnostics,
+      };
+    } catch (e) {
+      console.log('runeRun error', e, outputData);
+      return {
+        diagnosticsOutput: `n-genie error ${e}`,
+        ...outputData,
+      };
+    }
+  };
 
-const reactToInput = async (input: string): Promise<ReactToInputResult> => {
-  // const injectCode = `react_to_particle("${cid}", "${contentType}", "${content}")`;
+  const reactToParticle = async (
+    params: ScriptParticleParams
+  ): Promise<ReactToParticleResult> => {
+    // if (!deps.queryClient) {
+    //   throw Error('Cyber queryClient is not set');
+    // }
 
-  if (!appContextManager.deps.queryClient) {
-    throw Error('Cyber queryClient is not set');
-  }
+    const { userScript, runtimeScript } = getEntrypointScripts(
+      entrypoints,
+      'particle'
+    );
 
-  const scriptResult = await runScript(
-    appContextManager.entrypoints['my-particle'].user,
-    {
-      myParticle: {
-        input,
+    const scriptResult = await run(
+      userScript,
+      {
+        particle: params,
       },
-    },
-    appContextManager.entrypoints['my-particle'].runtime,
-    undefined,
-    true
-  );
+      runtimeScript,
+      undefined,
+      true
+    );
+    if (scriptResult.error) {
+      console.log(`---reactToParticle ${params.cid} error: `, scriptResult);
+      return { action: 'error' };
+    }
 
-  if (scriptResult.error) {
-    return { action: 'error' };
-  }
+    if (scriptResult.result?.action !== 'pass') {
+      // console.log(`---reactToParticle ${cid} output: `, scriptResult);
+    }
 
-  return scriptResult.result;
-};
+    return scriptResult.result;
+  };
 
-export type { ReactToInputResult, ReactToParticleResult };
+  const reactToInput = async (
+    params: ScriptMyParticleParams
+  ): Promise<ReactToInputResult> => {
+    // if (!deps.queryClient) {
+    //   throw Error('Cyber queryClient is not set');
+    // }
+    console.log('-------reactToInput', entrypoints, params);
+    const { userScript, runtimeScript } = getEntrypointScripts(
+      entrypoints,
+      'myParticle'
+    );
 
-export { reactToParticle, reactToInput };
+    const scriptResult = await run(
+      userScript,
+      {
+        myParticle: params,
+      },
+      runtimeScript,
+      undefined,
+      true
+    );
+    console.log('-------reactToInput scriptResult', scriptResult);
+
+    if (scriptResult.error) {
+      return { action: 'error', nickname: '' };
+    }
+
+    return scriptResult.result;
+  };
+
+  return {
+    load,
+    run,
+    reactToInput,
+    reactToParticle,
+    setEntrypoints,
+    getDeps,
+    getSingleDep,
+    setDeps,
+    setContext,
+  };
+}
+
+const scriptEngine = enigine();
+
+export default scriptEngine;

@@ -16,6 +16,7 @@ import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
+import initRxStore from 'src/redux/rxjs';
 
 export const PORTAL_ID = 'portal';
 
@@ -33,6 +34,7 @@ function App() {
 
   useEffect(() => {
     dispatch(initPocket());
+    initRxStore();
   }, []);
 
   useEffect(() => {

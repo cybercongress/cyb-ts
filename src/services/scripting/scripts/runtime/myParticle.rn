@@ -9,5 +9,6 @@ pub fn answer(content) {
 
 pub async fn main() {
     let my_particle_ctx = cyb::context.myParticle;
+    dbg(cyb::context);
     my_particle(my_particle_ctx.input).await
 }

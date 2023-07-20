@@ -11,23 +11,28 @@ import {
   saveJsonToLocalStorage,
   loadStringFromLocalStorage,
   saveStringToLocalStorage,
-  keyValuesToObject,
 } from 'src/utils/localStorage';
 import {
   ScriptEntrypoint,
   ScriptItem,
 } from 'src/services/scripting/scritpting';
-import { appBus } from 'src/services/scripting/bus';
 
 import scriptParticleDefault from 'src/services/scripting/scripts/default/particle.rn';
 import scriptParticleRuntime from 'src/services/scripting/scripts/runtime/particle.rn';
-import scriptMyParticleDefault from 'src/services/scripting/scripts/default/my-particle.rn';
-import scriptMyParticleRuntime from 'src/services/scripting/scripts/runtime/my-particle.rn';
+import scriptMyParticleDefault from 'src/services/scripting/scripts/default/myParticle.rn';
+import scriptMyParticleRuntime from 'src/services/scripting/scripts/runtime/myParticle.rn';
 
+import {
+  ParamsContext,
+  ScriptEntrypoints,
+  ScriptingContext,
+  UserContext,
+} from 'src/types/scripting';
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
 type SliceState = {
   secrets: TabularKeyValues;
+  context: ScriptingContext;
   scripts: {
     entrypoints: Record<ScriptEntrypoint, ScriptItem>;
   };
@@ -40,16 +45,16 @@ type SliceState = {
   };
 };
 
-const scriptEntrypoints: Record<ScriptEntrypoint, ScriptItem> = {
+const scriptEntrypoints: ScriptEntrypoints = {
   particle: {
     title: 'Particle post-processor',
     runtime: scriptParticleRuntime,
     user: loadStringFromLocalStorage('particle', scriptParticleDefault),
   },
-  'my-particle': {
+  myParticle: {
     title: 'My particle',
     runtime: scriptMyParticleRuntime,
-    user: loadStringFromLocalStorage('my-particle', scriptMyParticleDefault),
+    user: loadStringFromLocalStorage('myParticle', scriptMyParticleDefault),
   },
 };
 
@@ -81,6 +86,7 @@ const botName =
 
 const initialState: SliceState = {
   secrets: loadJsonFromLocalStorage('secrets', {}),
+  context: { params: {}, user: {}, secrets: {} },
   scripts: {
     entrypoints: scriptEntrypoints,
   },
@@ -131,6 +137,17 @@ const slice = createSlice({
       saveJsonToLocalStorage('secrets', payload);
       state.secrets = payload;
     },
+    setContext: (
+      state,
+      {
+        payload,
+      }: PayloadAction<
+        | { name: 'params'; item: ParamsContext }
+        | { name: 'user'; item: UserContext }
+      >
+    ) => {
+      state.context[payload.name] = payload.item;
+    },
     setScript: (
       state,
       { payload }: PayloadAction<{ name: ScriptEntrypoint; code: string }>
@@ -153,6 +170,7 @@ export const {
   setChatBotName,
   setSecrets,
   setScript,
+  setContext,
 } = slice.actions;
 
 export default slice.reducer;

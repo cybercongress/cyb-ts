@@ -6,8 +6,7 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { reactToInput } from 'src/services/scripting/engine';
-
+import scriptEngine from 'src/services/scripting/engine';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -35,6 +34,7 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import SwarmAnswer from './SwarmAnswer/SwarmAnswer';
+import store from 'src/redux/store';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -108,7 +108,7 @@ function SearchResults() {
   useEffect(() => {
     const getSwarmReactions = async () => {
       // TODO: iterate over my pre-cached swarm
-      setSwarmReactions([await reactToInput(query)]);
+      setSwarmReactions([await scriptEngine.reactToInput({ input: query })]);
     };
     getSwarmReactions();
   }, [query]);

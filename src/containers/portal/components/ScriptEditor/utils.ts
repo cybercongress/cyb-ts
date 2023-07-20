@@ -1,15 +1,12 @@
-import { runScript } from 'src/services/scripting/engine';
-import {
-  ScriptParticleParams,
-  ScriptMyParticleParams,
-  ScriptScopeParams,
-} from 'src/services/scripting/scritpting';
+import scriptEngine from 'src/services/scripting/engine';
+
+import { ScriptScopeParams } from 'src/types/scripting';
 
 const compileScript = (
   code: string,
   runtime: string,
   executeAfterCompile: boolean,
   params: ScriptScopeParams = {}
-) => runScript(code, params, runtime, undefined, executeAfterCompile);
+) => scriptEngine.run(code, params, runtime, undefined, executeAfterCompile);
 
 export { compileScript };

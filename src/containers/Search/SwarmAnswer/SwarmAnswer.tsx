@@ -1,4 +1,4 @@
-import type { ReactToInputResult } from 'src/services/scripting/engine';
+import type { ReactToInputResult } from 'src/types/scripting';
 import { isCID } from 'src/utils/ipfs/helpers';
 import ContentItem from 'src/components/ContentItem/contentItem';
 import styles from './SwarmAnswer.module.scss';

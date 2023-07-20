@@ -2,7 +2,7 @@ import { IPFSContent, AppIPFS } from 'src/utils/ipfs/ipfs';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
-import { reactToParticle } from '../scripting/engine';
+import scriptEngine from '../scripting/engine';
 import { QueueItem } from './QueueManager.d';
 
 const contentToStringOrEmpty = (content: IPFSContent) =>
@@ -25,10 +25,11 @@ export async function postProcessIpfContent<T extends IPFSContent>(
 ): Promise<IPFSContent> {
   const { cid, controller, source } = item;
 
-  // Preload data for text items
-  const text = contentToStringOrEmpty(content);
-
-  const mutation = await reactToParticle(cid, content?.contentType, text);
+  const mutation = await scriptEngine.reactToParticle({
+    cid,
+    contentType: content?.contentType || '',
+    content: contentToStringOrEmpty(content),
+  });
 
   if (mutation.action === 'update_cid' && mutation.cid) {
     // refectch content from new cid

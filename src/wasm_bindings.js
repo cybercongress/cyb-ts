@@ -1,15 +1,13 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable import/no-unused-modules */
-// import { detectCybContentType } from 'src/utils/ipfs/content-utils';
 import { getPassportByNickname } from 'src/containers/portal/utils';
-// import { getCyberClient } from 'src/services/scripting/engine';
-import { appContextManager } from 'src/services/scripting/bus';
+import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { promptToOpenAI } from 'src/services/scripting/openai';
 import { getIpfsTextContent } from 'src/services/scripting/helpers';
-import { addContenToIpfs } from './utils/ipfs/utils-ipfs';
 import { getFromLink, getToLink, getIpfsHash } from 'src/utils/search/utils';
 import { encodeSlash } from 'src/utils/utils';
-import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import { addContenToIpfs } from './utils/ipfs/utils-ipfs';
+import scriptEngine from './services/scripting/engine';
 
 // export function js_detectCybContentType(mime) {
 //   return detectCybContentType(mime);
@@ -17,7 +15,7 @@ import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
 // const { signer, signingClient } = useSigningClient();
 
 export async function js_getPassportByNickname(nickname) {
-  const client = appContextManager.deps.queryClient;
+  const client = scriptEngine.getSingleDep('queryClient');
   const result = await getPassportByNickname(client, nickname);
   return result;
 }
@@ -28,13 +26,13 @@ export async function js_promptToOpenAI(prompt, apiKey) {
 }
 
 export async function js_getIpfsTextContent(cid) {
-  const ipfs = appContextManager.deps.ipfs;
+  const ipfs = scriptEngine.getSingleDep('ipfs');
   const result = await getIpfsTextContent(ipfs, cid);
   return result;
 }
 
 export async function js_addContenToIpfs(content) {
-  const ipfs = appContextManager.deps.ipfs;
+  const ipfs = scriptEngine.getSingleDep('ipfs');
   const result = await addContenToIpfs(ipfs, content);
   return result;
 }
@@ -50,7 +48,7 @@ export async function js_cyberLinksTo(cid) {
 }
 
 export async function js_cyberSearch(query) {
-  const client = appContextManager.deps.queryClient;
+  const client = scriptEngine.getSingleDep('queryClient');
 
   const cid = query.match(PATTERN_IPFS_HASH)
     ? query
@@ -61,7 +59,7 @@ export async function js_cyberSearch(query) {
 }
 
 export async function js_cyberLink(fromCid, toCid) {
-  const { signer, signingClient } = appContextManager.deps.signer;
+  const { signer, signingClient } = scriptEngine.getDeps();
   if (signer && signingClient) {
     const { address } = (await signer.getAccounts())[0];
     const fee = {

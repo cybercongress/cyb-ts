@@ -18,7 +18,6 @@ import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { appBus } from 'src/services/scripting/bus';
 import usePassportByAddress from 'src/features/passport/hooks';
 
 // should be refactored
@@ -121,19 +120,6 @@ function SwitchAccount() {
 
   const useGetCidAvatar = passport?.extension.avatar;
   const useGetName = passport?.extension.nickname || defaultAccount?.name;
-
-  useEffect(() => {
-    if (passport) {
-      appBus.emit('context', {
-        name: 'user',
-        item: {
-          address: useGetAddress || '',
-          nickname: useGetName || '',
-          passport,
-        },
-      });
-    }
-  }, [passport]);
 
   const onClickChangeActiveAcc = async (key: string) => {
     dispatch(
