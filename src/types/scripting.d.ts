@@ -13,20 +13,20 @@ type UserContext = {
   particle?: string | null;
 };
 
-type ScriptingContext = {
+type ScriptContext = {
   params: ParamsContext;
   user: UserContext;
   secrets: Record<string, string>;
 };
 
-type ScriptItem = { title: string; runtime: string; user: string };
+type ScriptEntrypointName = { title: string; runtime: string; user: string };
 
-type ScriptEntrypoints = {
-  particle?: ScriptItem;
-  myParticle?: ScriptItem;
+type ScriptEntrypointNames = {
+  particle?: ScriptEntrypointName;
+  myParticle?: ScriptEntrypointName;
 };
 
-type ScriptEntrypoint = keyof ScriptEntrypoints;
+type ScriptEntrypointNameName = keyof ScriptEntrypointNames;
 
 type ScriptCallbackStatus =
   | 'pending'
@@ -52,13 +52,13 @@ type ScriptMyParticleParams = {
   input?: string;
 };
 
-type ReactToParticleResult = {
+type ScriptParticleResult = {
   action: 'pass' | 'update_cid' | 'update_content' | 'hide' | 'error';
   cid?: string;
   content?: string;
 };
 
-type ReactToInputResult = {
+type ScriptMyParticleResult = {
   action: 'pass' | 'answer' | 'error';
   answer?: string;
   nickname: string;
@@ -70,9 +70,9 @@ type ScriptScopeParams = {
   refId?: string;
 };
 
-type ScriptExecutionData = {
+type ScriptExecutionResult = {
   error?: string;
-  result?: ReactToParticleResult | ReactToInputResult;
+  result?: ScriptParticleResult | ScriptMyParticleResult;
   diagnosticsOutput?: string;
   output?: string;
   diagnostics?: object[];
@@ -80,18 +80,18 @@ type ScriptExecutionData = {
 };
 
 export {
-  ScriptingContext,
+  ScriptContext,
   UserContext,
   ParamsContext,
+  ScriptEntrypointName,
   ScriptEntrypoint,
-  ScriptItem,
   ScriptCallbackStatus,
   ScriptCallback,
   ScriptParticleParams,
   ScriptMyParticleParams,
   ScriptScopeParams,
-  ScriptExecutionData,
-  ScriptEntrypoints,
-  ReactToInputResult,
-  ReactToParticleResult,
+  ScriptExecutionResult,
+  ScriptEntrypointNames,
+  ScriptMyParticleResult,
+  ScriptParticleResult,
 };

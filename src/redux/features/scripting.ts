@@ -13,8 +13,8 @@ import {
   saveStringToLocalStorage,
 } from 'src/utils/localStorage';
 import {
+  ScriptEntrypointNameName,
   ScriptEntrypoint,
-  ScriptItem,
 } from 'src/services/scripting/scritpting';
 
 import scriptParticleDefault from 'src/services/scripting/scripts/default/particle.rn';
@@ -24,17 +24,17 @@ import scriptMyParticleRuntime from 'src/services/scripting/scripts/runtime/myPa
 
 import {
   ParamsContext,
-  ScriptEntrypoints,
-  ScriptingContext,
+  ScriptEntrypointNameNames,
+  ScriptContext,
   UserContext,
 } from 'src/types/scripting';
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
 type SliceState = {
   secrets: TabularKeyValues;
-  context: ScriptingContext;
+  context: ScriptContext;
   scripts: {
-    entrypoints: Record<ScriptEntrypoint, ScriptItem>;
+    entrypoints: Record<ScriptEntrypointNameName, ScriptEntrypoint>;
   };
   chatBot: {
     name: string;
@@ -45,7 +45,7 @@ type SliceState = {
   };
 };
 
-const scriptEntrypoints: ScriptEntrypoints = {
+const ScriptEntrypointNameNames: ScriptEntrypointNameNames = {
   particle: {
     title: 'Particle post-processor',
     runtime: scriptParticleRuntime,
@@ -88,7 +88,7 @@ const initialState: SliceState = {
   secrets: loadJsonFromLocalStorage('secrets', {}),
   context: { params: {}, user: {}, secrets: {} },
   scripts: {
-    entrypoints: scriptEntrypoints,
+    entrypoints: ScriptEntrypointNameNames,
   },
   chatBot: {
     name: botName,
@@ -150,7 +150,9 @@ const slice = createSlice({
     },
     setScript: (
       state,
-      { payload }: PayloadAction<{ name: ScriptEntrypoint; code: string }>
+      {
+        payload,
+      }: PayloadAction<{ name: ScriptEntrypointNameName; code: string }>
     ) => {
       const { name, code } = payload;
       saveStringToLocalStorage(name, code);

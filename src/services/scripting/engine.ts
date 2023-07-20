@@ -1,13 +1,13 @@
 import {
   ScriptCallback,
+  ScriptEntrypointNameName,
+  ScriptEntrypointNameNames,
   ScriptEntrypoint,
-  ScriptEntrypoints,
-  ScriptItem,
   ScriptParticleParams,
   ScriptScopeParams,
-  ScriptingContext,
-  ReactToInputResult,
-  ReactToParticleResult,
+  ScriptContext,
+  ScriptMyParticleResult,
+  ScriptParticleResult,
   ScriptMyParticleParams,
 } from 'src/types/scripting';
 import initAsync, { compile } from 'cyb-rune-wasm';
@@ -36,14 +36,14 @@ const compileConfig = {
 //   };
 
 const getEntrypointScripts = (
-  entrypoints: ScriptEntrypoints,
-  name: ScriptEntrypoint
+  entrypoints: ScriptEntrypointNameNames,
+  name: ScriptEntrypointNameName
 ) => {
   if (!entrypoints[name]) {
     throw Error(`No '${name}' script exist`);
   }
 
-  const { user, runtime } = entrypoints[name] as ScriptItem;
+  const { user, runtime } = entrypoints[name] as ScriptEntrypoint;
   return { userScript: user, runtimeScript: runtime };
 };
 
@@ -55,8 +55,8 @@ type EngineDeps = {
 };
 
 interface Engine {
-  setContext(context: Partial<ScriptingContext>): void;
-  setEntrypoints(entrypoints: Partial<ScriptEntrypoints>): void;
+  setContext(context: Partial<ScriptContext>): void;
+  setEntrypoints(entrypoints: Partial<ScriptEntrypointNameNames>): void;
   setDeps(deps: Partial<EngineDeps>): void;
   getDeps(): EngineDeps;
   getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
@@ -70,14 +70,14 @@ interface Engine {
     callback?: ScriptCallback,
     executeAfterCompile?: boolean
   ): Promise<unknown>;
-  reactToInput(params: ScriptMyParticleParams): Promise<ReactToInputResult>;
-  reactToParticle(params: ScriptParticleParams): Promise<ReactToParticleResult>;
+  reactToInput(params: ScriptMyParticleParams): Promise<ScriptMyParticleResult>;
+  reactToParticle(params: ScriptParticleParams): Promise<ScriptParticleResult>;
 }
 
 // eslint-disable-next-line import/prefer-default-export
 function enigine(): Engine {
-  const entrypoints: ScriptEntrypoints = {};
-  let context: ScriptingContext = { params: {}, user: {}, secrets: {} };
+  const entrypoints: ScriptEntrypointNameNames = {};
+  let context: ScriptContext = { params: {}, user: {}, secrets: {} };
   let deps: EngineDeps;
 
   const scriptCallbacks = new Map<string, ScriptCallback>();
@@ -91,7 +91,7 @@ function enigine(): Engine {
     console.timeEnd('⚡️ Rune initialized! 🔋');
   };
 
-  const setContext = (appContext: Partial<ScriptingContext>) => {
+  const setContext = (appContext: Partial<ScriptContext>) => {
     context = { ...context, ...appContext };
   };
 
@@ -103,9 +103,13 @@ function enigine(): Engine {
 
   const getSingleDep = (name: keyof EngineDeps) => deps[name];
 
-  const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
-    (Object.keys(scriptEntrypoints) as ScriptEntrypoint[]).forEach((name) => {
-      entrypoints[name] = scriptEntrypoints[name];
+  const setEntrypoints = (
+    ScriptEntrypointNameNames: ScriptEntrypointNameNames
+  ) => {
+    (
+      Object.keys(ScriptEntrypointNameNames) as ScriptEntrypointNameName[]
+    ).forEach((name) => {
+      entrypoints[name] = ScriptEntrypointNameNames[name];
     });
   };
 
@@ -165,7 +169,7 @@ function enigine(): Engine {
 
   const reactToParticle = async (
     params: ScriptParticleParams
-  ): Promise<ReactToParticleResult> => {
+  ): Promise<ScriptParticleResult> => {
     // if (!deps.queryClient) {
     //   throw Error('Cyber queryClient is not set');
     // }
@@ -198,7 +202,7 @@ function enigine(): Engine {
 
   const reactToInput = async (
     params: ScriptMyParticleParams
-  ): Promise<ReactToInputResult> => {
+  ): Promise<ScriptMyParticleResult> => {
     // if (!deps.queryClient) {
     //   throw Error('Cyber queryClient is not set');
     // }
