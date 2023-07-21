@@ -7,15 +7,13 @@ import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 import IPFSConnectError from 'src/features/ipfs/IPFSConnectError/IPFSConnectError';
-import { routes } from 'src/routes';
 import styles from './styles.scss';
-import usePassportContract from 'src/features/passport/usePassportContract';
 
-import { Citizenship } from 'src/types/citizenship';
 import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
+import AdvicerContainer from '../portal/components/InfoCard/Advicer/AdvicerContainer';
 
 export const PORTAL_ID = 'portal';
 
@@ -75,6 +73,8 @@ function App() {
         {location.pathname.includes('/brain') && (
           <div id={PORTAL_ID} className={styles.portal} />
         )}
+
+        <AdvicerContainer />
 
         {ipfs.error && !location.pathname.includes('/drive') && (
           <IPFSConnectError />
