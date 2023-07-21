@@ -9,7 +9,7 @@ import { Networks } from 'src/types/networks';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.scss';
 import Button from '../btnGrd';
-import usePassportByAddress from 'src/features/passport/hooks';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
 const back = require('../../image/arrow-left-img.svg');
 

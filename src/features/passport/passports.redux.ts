@@ -1,7 +1,15 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { queryPassportContract } from 'src/soft.js/api/passport';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
+import { RootState } from 'src/redux/store';
+import { AppThunk } from 'src/redux/types';
+import { selectFollowings } from 'src/redux/features/currentAccount';
 
 type SliceState = {
   // address
@@ -12,6 +20,18 @@ type SliceState = {
 };
 
 const initialState: SliceState = {};
+
+export function getFollowingsPassports(queryClient: CyberClient): AppThunk {
+  return (dispatch, getState) => {
+    const { currentAccount, passports } = getState();
+    currentAccount.community.following.forEach((address) => {
+      const passport = passports[address];
+      if (!passport?.data && !passport?.loading) {
+        dispatch(getPassport({ address, queryClient }));
+      }
+    });
+  };
+}
 
 const getPassport = createAsyncThunk(
   'passports/getPassport',
@@ -104,6 +124,20 @@ const slice = createSlice({
     });
   },
 });
+
+const selectPassports = (state: RootState) => state.passports;
+
+export const selectFollowingsPassports = createSelector(
+  selectFollowings,
+  selectPassports,
+  (followings, passports) => {
+    return followings
+      .map((address) => {
+        return passports[address];
+      })
+      .filter(Boolean);
+  }
+);
 
 export const { deleteAddress, addAddress } = slice.actions;
 

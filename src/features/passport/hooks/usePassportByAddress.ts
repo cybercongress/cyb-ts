@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getPassport } from './passports.redux';
 import { PATTERN_CYBER } from 'src/utils/config';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { getPassport } from '../passports.redux';
 
 type Props = {
   address: string | null;
@@ -11,9 +10,10 @@ type Props = {
 
 // add 'refresh' prop
 function usePassportByAddress(address: Props['address']) {
-  const passports = useSelector((state: RootState) => state.passports);
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
+
+  const passports = useAppSelector((state) => state.passports);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!queryClient || !address) {

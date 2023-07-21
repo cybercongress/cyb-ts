@@ -8,7 +8,7 @@ import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import { routes } from 'src/routes';
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import usePassportByAddress from 'src/features/passport/hooks';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
