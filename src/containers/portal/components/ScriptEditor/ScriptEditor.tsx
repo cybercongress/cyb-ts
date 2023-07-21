@@ -32,14 +32,14 @@ import {
 } from 'src/types/scripting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
-import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
+import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
 import { setScript } from 'src/redux/features/scripting';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import { updatePassportData } from '../../utils';
+import { updatePassportParticle } from '../../utils';
 
 import { compileScript } from './utils';
 import styles from './ScriptEditor.module.scss';
@@ -48,6 +48,14 @@ import 'codemirror/mode/rust/rust';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 import Secrets from './Secrets/Secrets';
+
+import {
+  loadStringFromLocalStorage,
+  saveStringToLocalStorage,
+} from 'src/utils/localStorage';
+
+import { scriptMap } from 'src/services/scripting/scripts/mapping';
+
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
 import Carousel from '../../../temple/components/corusel/index';
@@ -78,7 +86,6 @@ const formatExecutionResult = (
 ) => {
   const isOk = !result.diagnosticsOutput && !result.error;
   highlightErrors(codeMirrorRef.current, result.diagnostics);
-  console.log('----res', result);
   if (!isOk) {
     addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
   } else {
@@ -122,7 +129,7 @@ function PlayParticlePostProcessor({
       `🚧 Fetching particle '${testCid}'...`,
     ]);
     const response = await getIPFSContent(node, testCid);
-    const contentType = detectContentType(response?.meta.mime);
+    const contentType = response?.contentType; // detectContentType(response?.meta.mime);
 
     const content =
       contentType === 'text' && response?.result
@@ -133,7 +140,7 @@ function PlayParticlePostProcessor({
       content.length > 144 ? `${content.slice(1, 144)}....` : content;
 
     addToLog([
-      `   ☑️ Content-type: ${contentType}`,
+      `   ☑️ Content-type: ${contentType || '???'}`,
       `   ☑️ Preview: ${preview}`,
       '',
       '💭 Execute script....',
@@ -225,29 +232,81 @@ function ScriptEditor() {
   const [code, setCode] = useState<string>(
     entrypoints[tab as ScriptEntrypointNames]?.user || ''
   );
+  const { node } = useIpfs();
 
-  // const loadScript = () => {
-  //   if (entrypointName === 'particle') {
-  //     passport?.extension.particle;
-  //   }
-  //   if (entrypointName === 'myParticle') {
-  //   }
-  // };
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // const saveScript = () => {
-  //   if (entrypointName === 'particle') {
-  //   }
-  //   if (entrypointName === 'myParticle') {
-  //   }
-  // };
+  const loadScript = async () => {
+    const alreadyLoaded = entrypoints[entrypointName]?.user;
+    // workaround to fix pre-cached passport cid
+    if (alreadyLoaded) {
+      setCode(alreadyLoaded);
+      return;
+    }
+
+    if (entrypointName === 'particle') {
+      setCode(
+        loadStringFromLocalStorage(entrypointName, scriptMap.particle.user)
+      );
+    }
+    if (entrypointName === 'myParticle') {
+      const cid = passport?.extension.particle;
+      if (!cid || !isCID(cid)) {
+        setCode(scriptMap.myParticle.user);
+      } else {
+        const response = await getIPFSContent(node, cid);
+        const content =
+          response?.contentType === 'text' && response?.result
+            ? await getTextFromIpfsContent(response.result)
+            : undefined;
+        setCode(
+          content || content === '' ? content : scriptMap.myParticle.user
+        );
+      }
+    }
+
+    setIsLoaded(true);
+  };
+
+  const saveScript = async () => {
+    addToLog(['Saving code...']);
+    setIsLoaded(false);
+    if (entrypointName === 'particle') {
+      saveStringToLocalStorage('particle', code);
+      addToLog(['', '☑️ Saved to local storage.']);
+    }
+    if (entrypointName === 'myParticle') {
+      const cid = await addContenToIpfs(node, code);
+
+      if (cid) {
+        const result = await updatePassportParticle(
+          passport?.extension.nickname,
+          cid,
+          {
+            signer,
+            signingClient,
+          }
+        );
+        addToLog(['', `☑️ Saved as particle into your passport.`]);
+      }
+    }
+
+    dispatch(setScript({ name: entrypointName, code }));
+    setIsLoaded(true);
+  };
 
   useEffect(() => {
     if (Object.keys(entrypoints).indexOf(tab as ScriptEntrypointNames) > -1) {
       const newEntrypoint = tab as ScriptEntrypointNames;
       setEntrypointName(newEntrypoint);
-      setCode(entrypoints[newEntrypoint]?.user || '');
+      // setCode(entrypoints[newEntrypoint]?.user || '');
     }
-  }, [tab, entrypoints]);
+  }, [tab]);
+
+  useEffect(() => {
+    resetPlayGround();
+    loadScript();
+  }, [entrypointName, passport]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
 
@@ -282,9 +341,9 @@ function ScriptEditor() {
         addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
       } else {
         addToLog(['🏁 Compiled!']);
-        dispatch(setScript({ name: entrypointName, code }));
+        // dispatch(setScript({ name: entrypointName, code }));
+        saveScript();
         setIsChanged(false);
-        addToLog(['', '☑️ Saved to local storage.']);
       }
     });
   };
@@ -343,6 +402,7 @@ function ScriptEditor() {
                   ref={codeMirrorRef}
                   value={code}
                   options={{
+                    readOnly: !isLoaded,
                     mode: 'rust',
                     theme: 'tomorrow-night-eighties',
                     lineNumbers: true,

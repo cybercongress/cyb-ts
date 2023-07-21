@@ -13,10 +13,7 @@ import {
   saveStringToLocalStorage,
 } from 'src/utils/localStorage';
 
-import scriptParticleDefault from 'src/services/scripting/scripts/default/particle.rn';
-import scriptParticleRuntime from 'src/services/scripting/scripts/runtime/particle.rn';
-import scriptMyParticleDefault from 'src/services/scripting/scripts/default/myParticle.rn';
-import scriptMyParticleRuntime from 'src/services/scripting/scripts/runtime/myParticle.rn';
+import { scriptMap } from 'src/services/scripting/scripts/mapping';
 
 import {
   ParamsContext,
@@ -47,13 +44,13 @@ type SliceState = {
 const ScriptEntrypointsData: ScriptEntrypoints = {
   particle: {
     title: 'Particle post-processor',
-    runtime: scriptParticleRuntime,
-    user: loadStringFromLocalStorage('particle', scriptParticleDefault),
+    runtime: scriptMap.particle.runtime,
+    user: scriptMap.particle.user,
   },
   myParticle: {
     title: 'My particle',
-    runtime: scriptMyParticleRuntime,
-    user: loadStringFromLocalStorage('myParticle', scriptMyParticleDefault),
+    runtime: scriptMap.myParticle.runtime,
+    user: '',
   },
 };
 
@@ -152,7 +149,7 @@ const slice = createSlice({
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>
     ) => {
       const { name, code } = payload;
-      saveStringToLocalStorage(name, code);
+      // saveStringToLocalStorage(name, code);
       state.scripts.entrypoints[name].user = code;
     },
   },
