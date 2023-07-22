@@ -28,6 +28,7 @@ type SliceState = {
   secrets: TabularKeyValues;
   context: ScriptContext;
   scripts: {
+    isLoaded: boolean;
     entrypoints: ScriptEntrypoints;
   };
   chatBot: {
@@ -84,6 +85,7 @@ const initialState: SliceState = {
   secrets: loadJsonFromLocalStorage('secrets', {}),
   context: { params: {}, user: {}, secrets: {} },
   scripts: {
+    isLoaded: false,
     entrypoints: ScriptEntrypointsData,
   },
   chatBot: {
@@ -152,6 +154,9 @@ const slice = createSlice({
       // saveStringToLocalStorage(name, code);
       state.scripts.entrypoints[name].user = code;
     },
+    setScriptingEngineLoaded: (state, { payload }: PayloadAction<boolean>) => {
+      state.scripts.isLoaded = payload;
+    },
   },
 });
 
@@ -167,6 +172,7 @@ export const {
   setSecrets,
   setScript,
   setContext,
+  setScriptingEngineLoaded,
 } = slice.actions;
 
 export default slice.reducer;

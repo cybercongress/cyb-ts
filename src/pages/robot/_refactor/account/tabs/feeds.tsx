@@ -4,10 +4,15 @@ import { getTweet } from 'src/utils/search/utils';
 import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import Loader2 from 'src/components/ui/Loader2';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 
 function FeedsTab() {
   const [dataTweet, setDataTweet] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isLoaded } = useSelector(
+    (state: RootState) => state.scripting.scripts
+  );
 
   const { address, addRefetch } = useRobotContext();
 
@@ -38,7 +43,7 @@ function FeedsTab() {
   return (
     <ContainerGradientText>
       <div className="container-contentItem" style={{ width: '100%' }}>
-        {loading ? (
+        {loading || !isLoaded ? (
           <Loader2 />
         ) : data.length > 0 ? (
           data

@@ -7,6 +7,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import scriptEngine from 'src/services/scripting/engine';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -34,7 +36,6 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import SwarmAnswer from './SwarmAnswer/SwarmAnswer';
-import store from 'src/redux/store';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -97,6 +98,7 @@ function SearchResults() {
   const [swarmReactions, setSwarmReactions] = useState([]);
 
   const { isMobile: mobile } = useDevice();
+  const { isLoaded } = useSelector((state) => state.scripting.scripts);
 
   // useEffect(() => {
   //   if (query.match(/\//g)) {
@@ -110,8 +112,10 @@ function SearchResults() {
       // TODO: iterate over my pre-cached swarm
       setSwarmReactions([await scriptEngine.reactToInput({ input: query })]);
     };
-    getSwarmReactions();
-  }, [query]);
+    if (isLoaded) {
+      getSwarmReactions();
+    }
+  }, [query, isLoaded]);
 
   useEffect(() => {
     const getFirstItem = async () => {
