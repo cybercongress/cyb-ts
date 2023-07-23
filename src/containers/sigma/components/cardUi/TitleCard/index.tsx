@@ -70,7 +70,7 @@ function TitleCard({
         <TokenChange
           className={styles.total}
           total={totalLiquid.currentCap}
-          change={totalLiquid.change}
+          // change={totalLiquid.change}
         />
       )}
     </div>
