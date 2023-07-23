@@ -14,7 +14,7 @@ import { ContainerGradientText } from '../../components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
-import usePassportByAddress from 'src/features/passport/hooks';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
 const valueContext = {
   totalCap: 0,
