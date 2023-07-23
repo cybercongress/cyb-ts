@@ -23,8 +23,21 @@ const getIndexdDb = async (cid) => {
   return addressResolve;
 };
 
+interface Tweet {
+  status: string;
+  text: string;
+  address: string;
+  content: boolean;
+  time: string;
+  rank: null | number;
+}
+
+type TweetTemp = {
+  [key: string]: Tweet;
+};
+
 const useGetTweets = (address) => {
-  const [tweets, setTweets] = useState({});
+  const [tweets, setTweets] = useState<TweetTemp>({});
   const [tweetData, setTweetData] = useState([]);
   const [loadingTweets, setLoadingTweets] = useState(false);
   const [addressFollowData, setAddressFollowData] = useState({});
@@ -41,14 +54,20 @@ const useGetTweets = (address) => {
       return;
     }
 
+    const param = {
+      query:
+        "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
+    };
+
+    if (cyber.subscriptions.includes(JSON.stringify(param))) {
+      return;
+    }
+
     cyber.sendMessage({
       jsonrpc: '2.0',
       method: 'subscribe',
       id: '0',
-      params: {
-        query:
-          "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
-      },
+      params: param,
     });
   }, [cyber, cyber?.connected]);
 
@@ -132,7 +151,7 @@ const useGetTweets = (address) => {
         }),
         {}
       );
-      setTweets(tweetTemp);
+      setTweets(tweetTemp as TweetTemp);
       setLoadingTweets(false);
     }
   }, [tweetData]);

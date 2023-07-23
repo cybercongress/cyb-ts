@@ -1,7 +1,7 @@
 import { formatNumber } from 'src/utils/utils';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
-import { InfoCard } from '../components';
+import InfoCard from '../components/InfoCard/InfoCard';
 import { BOOT_ICON } from '../utils';
 import { DataReleaseStatus } from './type';
 import STEP_INFO from './utils';

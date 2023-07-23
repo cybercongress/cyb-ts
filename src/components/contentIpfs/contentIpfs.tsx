@@ -75,7 +75,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
       {['text', 'xml', 'cid'].indexOf(contentType) !== -1 &&
         ipfsDataDetails && (
-          <TextMarkdown fullWidth={search}>
+          <TextMarkdown preview={search}>
             {search ? ipfsDataDetails?.text : ipfsDataDetails?.content}
           </TextMarkdown>
         )}

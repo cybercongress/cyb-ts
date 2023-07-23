@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import { useIpfs } from 'src/contexts/ipfs';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
 
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
-import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
@@ -18,7 +18,6 @@ import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import usePassportByAddress from 'src/features/passport/hooks';
 
 // should be refactored
 function AccountItem({
@@ -88,15 +87,11 @@ function AccountItem({
 function SwitchAccount() {
   const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
+
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
-  const {
-    pocket: { defaultAccount, accounts },
-  } = useSelector((state: RootState) => {
-    return {
-      pocket: state.pocket,
-    };
-  });
+  const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
+  const dispatch = useAppDispatch();
 
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
@@ -109,8 +104,6 @@ function SwitchAccount() {
     onVisibleChange: setControlledVisible,
     placement: 'bottom',
   });
-
-  const dispatch = useDispatch();
 
   const containerRef = useRef<HTMLDivElement>(null);
 

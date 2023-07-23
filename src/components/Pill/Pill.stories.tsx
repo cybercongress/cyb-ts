@@ -27,10 +27,11 @@ const Template: Story<Props> = (args) => {
         <h5>With image:</h5>
 
         <Pill
-          image={{
-            src: cyber,
-            alt: 'cyber',
-          }}
+          // image={{
+          //   src: cyber,
+          //   alt: 'cyber',
+          // }}
+          image={<img src={cyber} />}
           text="cyber"
         />
       </div>

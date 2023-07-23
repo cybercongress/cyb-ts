@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useNewsToday } from 'src/pages/robot/Layout/tweet.temp';
 import { useGetBalance } from 'src/pages/robot/_refactor/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
-import { useGetIpfsInfo } from 'src/containers/ipfsSettings/ipfsComponents/infoIpfsNode';
+import { useGetIpfsInfo } from 'src/features/ipfs/ipfsSettings/ipfsComponents/infoIpfsNode';
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
