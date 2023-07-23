@@ -420,9 +420,7 @@ function ActionBarConnect({
 
       // need remove code above
       dispatch(initPocket());
-      setTimeout(() => {
-        dispatch(setDefaultAccount({ name: key }));
-      }, 100);
+      dispatch(setDefaultAccount({ name: key }));
 
       cleatState();
       if (updateAddress) {
