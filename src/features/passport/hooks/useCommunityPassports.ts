@@ -19,7 +19,7 @@ function useCommunityPassports() {
     }
 
     dispatch(getCommunityPassports(queryClient));
-  }, [queryClient, dispatch, community.followers, community.following]);
+  }, [queryClient, dispatch, community]);
 
   return communityPassports;
 }

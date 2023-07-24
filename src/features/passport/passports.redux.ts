@@ -25,8 +25,8 @@ const initialState: SliceState = {};
 export function getCommunityPassports(queryClient: CyberClient): AppThunk {
   return (dispatch, getState) => {
     const { currentAccount, passports } = getState();
-    const { following, followers } = currentAccount.community;
-    [...following, ...followers].forEach((address) => {
+    const { following, followers, friends } = currentAccount.community;
+    [...friends, ...following, ...followers].forEach((address) => {
       const passport = passports[address];
       if (!passport?.data && !passport?.loading) {
         dispatch(getPassport({ address, queryClient }));
@@ -131,6 +131,8 @@ export const selectCommunityPassports = createSelector(
   (state: RootState) => state.currentAccount.community,
   (state: RootState) => state.passports,
   (community, passports) => {
+    const { following, followers, friends } = community;
+
     function process(addresses: string[]) {
       return addresses.reduce<SliceState>((acc, value) => {
         acc[value] = passports[value];
@@ -139,8 +141,9 @@ export const selectCommunityPassports = createSelector(
     }
 
     return {
-      following: process(community.following),
-      followers: process(community.followers),
+      following: process(following),
+      followers: process(followers),
+      friends: process(friends),
     };
   }
 );
