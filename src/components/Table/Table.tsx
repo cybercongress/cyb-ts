@@ -20,7 +20,7 @@ export type Props<T extends object> = {
   isLoading?: boolean;
   onSelect?: (id: string | null) => void;
   selected?: any;
-  style: any;
+  style?: any;
 };
 
 function Table<T extends object>({

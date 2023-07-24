@@ -358,8 +358,8 @@ function ScriptEditor() {
 
   return (
     <div>
-      <MainContainer>
-        {/* <main className="block-body"> */}
+      {/* <MainContainer> */}
+      <main className="block-body">
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -443,8 +443,8 @@ function ScriptEditor() {
               <textarea value={logText} className={styles.logArea} rows={18} />
             </>
           ))}
-        {/* </main> */}
-      </MainContainer>
+      </main>
+      {/* </MainContainer> */}
     </div>
   );
 }
