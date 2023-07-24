@@ -47,26 +47,23 @@ img.logo-container {
 
 progress {
   width: 42rem;
-  height: 3px;
+  height: 2px;
   margin: 0;
-  border: 1px solid rgba(159, 162, 185, 0.5);
-  border-radius: 3px;
-  background: #9c9eb1;
-  box-sizing: border-box;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-progress[value]::-webkit-progress-bar {
-  background-color: #9c9eb1;
+progress[value] {
+  appearance: none;
 }
 
+/* don't combine webkit and moz in 1 block, will not work */
 progress[value]::-webkit-progress-value {
-  box-shadow: 0 0 10px 2px #f78160;
-  background: linear-gradient(to left, #f1846a 0%, #fac1b2 50%, #f48163 100%);
-  transition: width 0.45s ease;
+  box-shadow: 0 0 10px 2px #36d6ae;
+  background-color: white;
 }
 
 progress[value]::-moz-progress-bar {
-  box-shadow: 0 0 10px 2px #f78160;
-  background: linear-gradient(to left, #f1846a 0%, #fac1b2 50%, #f48163 100%);
-  transition: width 0.45s ease;
+  box-shadow: 0 0 10px 2px #36d6ae; /* seems not working */
+  background-color: #36d6ae;
 }

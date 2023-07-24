@@ -145,7 +145,10 @@ function Sigma() {
               <h3>{superSigma ? 'Supersigma' : 'Sigma'}</h3>
             </div>
 
-            <TokenChange total={value.totalCap} change={value.changeCap} />
+            <TokenChange
+              total={value.totalCap}
+              // change={value.changeCap}
+            />
           </header>
         </ContainerGradientText>
 
