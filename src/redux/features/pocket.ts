@@ -4,6 +4,7 @@ import { localStorageKeys } from 'src/constants/localStorageKeys';
 import { Account, Accounts, DefaultAccount } from 'src/types/defaultAccount';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { POCKET } from '../../utils/config';
+import { RootState } from '../store';
 
 type SliceState = {
   actionBar: {
@@ -105,6 +106,9 @@ const slice = createSlice({
     },
   },
 });
+
+export const selectCurrentAddress = (store: RootState) =>
+  store.pocket.defaultAccount.account?.cyber.bech32;
 
 export const {
   setDefaultAccount,

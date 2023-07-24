@@ -10,6 +10,7 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { RootState } from 'src/redux/store';
 import { AppThunk } from 'src/redux/types';
 import { selectFollowings } from 'src/redux/features/currentAccount';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 type SliceState = {
   // address
@@ -21,10 +22,11 @@ type SliceState = {
 
 const initialState: SliceState = {};
 
-export function getFollowingsPassports(queryClient: CyberClient): AppThunk {
+export function getCommunityPassports(queryClient: CyberClient): AppThunk {
   return (dispatch, getState) => {
     const { currentAccount, passports } = getState();
-    currentAccount.community.following.forEach((address) => {
+    const { following, followers } = currentAccount.community;
+    [...following, ...followers].forEach((address) => {
       const passport = passports[address];
       if (!passport?.data && !passport?.loading) {
         dispatch(getPassport({ address, queryClient }));
@@ -125,18 +127,28 @@ const slice = createSlice({
   },
 });
 
-const selectPassports = (state: RootState) => state.passports;
+export const selectCommunityPassports = createSelector(
+  (state: RootState) => state.currentAccount.community,
+  (state: RootState) => state.passports,
+  (community, passports) => {
+    function process(addresses: string[]) {
+      return addresses.reduce<SliceState>((acc, value) => {
+        acc[value] = passports[value];
+        return acc;
+      }, {});
+    }
 
-export const selectFollowingsPassports = createSelector(
-  selectFollowings,
-  selectPassports,
-  (followings, passports) => {
-    return followings
-      .map((address) => {
-        return passports[address];
-      })
-      .filter(Boolean);
+    return {
+      following: process(community.following),
+      followers: process(community.followers),
+    };
   }
+);
+
+export const selectCurrentPassport = createSelector(
+  selectCurrentAddress,
+  (state: RootState) => state.passports,
+  (address, passports) => (address ? passports[address] : undefined)
 );
 
 export const { deleteAddress, addAddress } = slice.actions;
