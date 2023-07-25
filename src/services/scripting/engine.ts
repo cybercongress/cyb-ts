@@ -56,7 +56,8 @@ type EngineDeps = {
 };
 
 interface Engine {
-  setContext(context: Partial<ScriptContext>): void;
+  pushContext(context: Partial<ScriptContext>): void;
+  popContext(names: keyof ScriptContext[]): void;
   setEntrypoints(entrypoints: ScriptEntrypoints): void;
   setDeps(deps: Partial<EngineDeps>): void;
   getDeps(): EngineDeps;
@@ -92,7 +93,7 @@ function enigine(): Engine {
     console.timeEnd('⚡️ Rune initialized! 🔋');
   };
 
-  const setContext = (appContext: Partial<ScriptContext>) => {
+  const pushContext = (appContext: Partial<ScriptContext>) => {
     context = { ...context, ...appContext };
   };
 
@@ -134,14 +135,8 @@ function enigine(): Engine {
       },
       executeAfterCompile || false
     );
-    const {
-      result,
-      //   output,
-      //   error,
-      //   diagnostics_output,
-      //   instructions,
-      //   diagnostics,
-    } = outputData;
+    const { result } = outputData;
+    //TODO: refactor
     outputData.diagnosticsOutput = outputData.diagnostics_output;
     delete outputData.diagnostics_output;
 
@@ -151,11 +146,6 @@ function enigine(): Engine {
       return {
         ...outputData,
         result: result ? JSON.parse(result) : null,
-        // output,
-        // error,
-        // diagnosticsOutput: diagnostics_output,
-        // instructions,
-        // diagnostics,
       };
     } catch (e) {
       console.log('runeRun error', e, outputData);
@@ -238,7 +228,7 @@ function enigine(): Engine {
     getDeps,
     getSingleDep,
     setDeps,
-    setContext,
+    pushContext,
   };
 }
 

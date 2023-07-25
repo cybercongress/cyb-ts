@@ -8,7 +8,7 @@ import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import scriptEngine from 'src/services/scripting/engine';
 import { useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
+import store, { RootState } from 'src/redux/store';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,

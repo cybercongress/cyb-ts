@@ -4,6 +4,7 @@ import {
   from,
   Observable,
   distinctUntilChanged,
+  filter,
 } from 'rxjs';
 import { Citizenship } from 'src/types/citizenship';
 import { Nullable } from 'src/types';
@@ -21,37 +22,30 @@ function select<T>(
 }
 
 const initRxStore = () => {
+  // create observable from redux store
   const state$ = from(store);
 
-  const passport$ = state$.pipe(
-    map((state) => state.passports),
-    distinctUntilChanged()
+  const passport$ = select(state$, (state: RootState) => state.passports);
+
+  const defaultAddress$ = state$.pipe(
+    map((state) => state.pocket.defaultAccount.account?.cyber.bech32 || ''),
+    filter((defaultAddress) => !!defaultAddress)
   );
 
-  const defaultAccount$ = state$.pipe(
-    map((state) => state.pocket.defaultAccount),
-    distinctUntilChanged()
-  );
-
-  // Combine data to get passport based user info/citizenship
-  combineLatest([passport$, defaultAccount$])
+  combineLatest([passport$, defaultAddress$])
     .pipe(
-      map(([passports, defaultAccount]) => {
-        const address = defaultAccount.account?.cyber.bech32;
-        if (
-          !address ||
-          passports[address]?.loading ||
-          !passports[address]?.data
-        ) {
-          return undefined;
-        }
-
-        return passports[address]?.data;
-      }),
+      filter(
+        ([passports, defaultAddress]) =>
+          !passports[defaultAddress]?.loading &&
+          !!passports[defaultAddress]?.data
+      ),
+      map(([passports, defaultAddress]) => passports[defaultAddress]?.data),
       distinctUntilChanged()
     )
     .subscribe((passport: Nullable<Citizenship>) => {
       if (passport) {
+        // dispach change inside scripting context
+
         store.dispatch(
           setContext({
             name: 'user',
@@ -69,7 +63,7 @@ const initRxStore = () => {
   // Secrets
   select(state$, (state: RootState) => state.scripting.secrets).subscribe(
     (secrets) => {
-      scriptEngine.setContext({
+      scriptEngine.pushContext({
         secrets: keyValuesToObject(Object.values(secrets)),
       });
     }
@@ -78,7 +72,7 @@ const initRxStore = () => {
   // Context
   select(state$, (state: RootState) => state.scripting.context).subscribe(
     (context) => {
-      scriptEngine.setContext(context);
+      scriptEngine.pushContext(context);
     }
   );
 
