@@ -4,7 +4,7 @@ import { RootState } from 'src/redux/store';
 import ActionBar from './ActionBar';
 import Table from 'src/components/Table/Table';
 import { ContainerGradientText } from 'src/components';
-import InfoCard from '../../infoCard/infoCard';
+import InfoCard from '../../InfoCard/InfoCard';
 
 function Secrets() {
   const { secrets } = useSelector((store: RootState) => store.scripting);
