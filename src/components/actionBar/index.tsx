@@ -29,18 +29,29 @@ function ActionBarContentText({ children, ...props }) {
   );
 }
 
+type ButtonType = {
+  text: string | React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+};
+
 export type Props = {
   children?: React.ReactNode;
   onClickBack?: $TsFixMeFunc;
   text?: string | React.ReactNode;
-  button?: {
-    text: string | React.ReactNode;
-    onClick: () => void;
-    disabled?: boolean;
-  };
+  button?: ButtonType;
+
+  // maybe will be refactored
+  additionalButtons?: ButtonType[];
 };
 
-function ActionBar({ children, text, onClickBack, button }: Props) {
+function ActionBar({
+  children,
+  text,
+  onClickBack,
+  button,
+  additionalButtons,
+}: Props) {
   const location = useLocation();
 
   const { defaultAccount } = useSelector((store: RootState) => {
@@ -108,6 +119,17 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {withForm(
         <>
           {content && <ActionBarContentText>{content}</ActionBarContentText>}
+
+          {additionalButtons &&
+            additionalButtons.map((item, index) => (
+              <Button
+                key={index}
+                onClick={item.onClick}
+                disabled={item.disabled}
+              >
+                {item.text}
+              </Button>
+            ))}
 
           {isButton && (
             <Button type="submit" disabled={button.disabled}>
