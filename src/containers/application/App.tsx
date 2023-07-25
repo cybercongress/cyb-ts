@@ -17,6 +17,7 @@ import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
 import initRxStore from 'src/redux/rxjs';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 
 export const PORTAL_ID = 'portal';
 
@@ -28,6 +29,9 @@ function App() {
   const address = defaultAccount.account?.cyber?.bech32;
 
   const { community } = useGetCommunity(address || null);
+
+  useCommunityPassports();
+
   const location = useLocation();
 
   const ipfs = useIpfs();

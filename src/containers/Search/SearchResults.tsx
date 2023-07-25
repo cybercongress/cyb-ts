@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, Link } from 'react-router-dom';
@@ -8,7 +8,9 @@ import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import scriptEngine from 'src/services/scripting/engine';
 import { useSelector } from 'react-redux';
-import store, { RootState } from 'src/redux/store';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCommunityFollowingParticles } from 'src/features/passport/passports.redux';
+
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -36,7 +38,13 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import SwarmAnswer from './SwarmAnswer/SwarmAnswer';
-import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+import {
+  ScriptCallbackStatus,
+  ScriptMyParticleResult,
+} from 'src/types/scripting';
+import { RootState } from 'src/redux/store';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -81,6 +89,75 @@ const searchPaneStyles = {
   marginBottom: '-2px',
 };
 
+const SearchResultWrapper = ({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) => (
+  <Pane {...searchPaneStyles}>
+    <Link className="SearchItem" to={to}>
+      {children}
+    </Link>
+  </Pane>
+);
+
+const SwarmParticle = ({
+  input,
+  nickname,
+  cid,
+}: {
+  input: string;
+  nickname: string;
+  cid: string;
+}) => {
+  const [result, setResult] = useState<ScriptMyParticleResult | undefined>(
+    undefined
+  );
+  const { status, content } = useQueueIpfsContent(cid, 1, input);
+
+  useEffect(() => {
+    const getCode = async () => {
+      if (status === 'completed' && content?.cid) {
+        console.log('----render particle', nickname, status, content, input);
+        if (content.contentType === 'text') {
+          const scriptCode = await parseRawIpfsData(cid, content);
+          // setCode(scriptCode?.content);
+
+          const item = await scriptEngine.reactToInput(scriptCode!.content, {
+            input,
+          });
+
+          setResult(
+            item.action === 'error'
+              ? { ...item, answer: 'Error executing particle script', nickname }
+              : item
+          );
+        } else {
+          setResult({
+            action: 'error',
+            answer: `Can't execute script because of content type '${content.contentType}'`,
+            nickname,
+          });
+        }
+      }
+    };
+
+    getCode();
+  }, [status, content]);
+
+  if (!result) {
+    return null;
+  }
+
+  return (
+    <SearchResultWrapper key={`answer_${nickname}`} to={`/@${nickname}`}>
+      <SwarmAnswer item={result} query={input} />
+    </SearchResultWrapper>
+  );
+};
+
 function SearchResults() {
   const queryClient = useQueryClient();
   const { query } = useParams();
@@ -96,29 +173,11 @@ function SearchResults() {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  const [swarmReactions, setSwarmReactions] = useState([]);
-
   const { isMobile: mobile } = useDevice();
-  const { isLoaded } = useSelector((state) => state.scripting.scripts);
-  useCommunityPassports();
-
-  console.log('-----aaa', store.getState());
-  // useEffect(() => {
-  //   if (query.match(/\//g)) {
-  //     navigate(`/search/${replaceSlash(query)}`);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [query]);
-
-  useEffect(() => {
-    const getSwarmReactions = async () => {
-      // TODO: iterate over my pre-cached swarm
-      setSwarmReactions([await scriptEngine.reactToInput({ input: query })]);
-    };
-    if (isLoaded) {
-      getSwarmReactions();
-    }
-  }, [query, isLoaded]);
+  const { isLoaded } = useAppSelector(
+    (state: RootState) => state.scripting.scripts
+  );
+  const followingParticles = useAppSelector(selectCommunityFollowingParticles);
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -225,82 +284,71 @@ function SearchResults() {
     );
   }
 
-  if (swarmReactions.length > 0) {
-    swarmReactions.forEach((item) => {
-      const { nickname, action } = item;
-      if (action === 'answer') {
-        searchItems.push(
-          <Pane key={`answer_${nickname}`} {...searchPaneStyles}>
-            <Link className="SearchItem" to={`/@${nickname}`}>
-              <SwarmAnswer item={item} query={query} />
-            </Link>
-          </Pane>
-        );
-      }
+  //TODO: useMemo
+  if (isLoaded) {
+    followingParticles.forEach((item) => {
+      const { nickname, particle } = item;
+      //   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+
+      searchItems.push(
+        <SwarmParticle nickname={nickname} cid={particle} input={query} />
+      );
     });
   }
 
   if (query.match(PATTERN_CYBER)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane key={key} {...searchPaneStyles}>
-        <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
-          <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
-            {textPreviewSparkApp(
-              'Explore details of contract',
-              <Account avatar address={query} />
-            )}
-          </SearchItem>
-        </Link>
-      </Pane>
+      <SearchResultWrapper key={key} to={`/network/bostrom/contract/${query}`}>
+        <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
+          {textPreviewSparkApp(
+            'Explore details of contract',
+            <Account avatar address={query} />
+          )}
+        </SearchItem>
+      </SearchResultWrapper>
     );
   }
 
   if (query.match(PATTERN_CYBER_VALOPER)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane key={key} {...searchPaneStyles}>
-        <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
-          <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
-            {textPreviewSparkApp(
-              'Explore details of hero',
-              <Account address={query} />
-            )}
-          </SearchItem>
-        </Link>
-      </Pane>
+      <SearchResultWrapper key={key} to={`/network/bostrom/hero/${query}`}>
+        <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
+          {textPreviewSparkApp(
+            'Explore details of hero',
+            <Account address={query} />
+          )}
+        </SearchItem>
+      </SearchResultWrapper>
     );
   }
 
   if (query.match(PATTERN_TX)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane key={key} {...searchPaneStyles}>
-        <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
-          <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
-            {textPreviewSparkApp(
-              'Explore details of tx',
-              trimString(query, 4, 4)
-            )}
-          </SearchItem>
-        </Link>
-      </Pane>
+      <SearchResultWrapper key={key} to={`/network/bostrom/tx/${query}`}>
+        <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
+          {textPreviewSparkApp(
+            'Explore details of tx',
+            trimString(query, 4, 4)
+          )}
+        </SearchItem>
+      </SearchResultWrapper>
     );
   }
 
   if (query.match(PATTERN_BLOCK)) {
     const key = uuidv4();
     searchItems.push(
-      <Pane key={key} {...searchPaneStyles}>
-        <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
-          <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
-            {textPreviewSparkApp(
-              'Explore details of block ',
-              formatNumber(parseFloat(query))
-            )}
-          </SearchItem>
-        </Link>
-      </Pane>
+      <SearchResultWrapper key={key} to={`/network/bostrom/block/${query}`}>
+        <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
+          {textPreviewSparkApp(
+            'Explore details of block ',
+            formatNumber(parseFloat(query))
+          )}
+        </SearchItem>
+      </SearchResultWrapper>
     );
   }
   // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
@@ -338,14 +386,6 @@ function SearchResults() {
       })
     );
   }
-
-  // console.log(
-  //   `searchResults`,
-  //   searchResults,
-  //   Object.keys(searchResults).length
-  // );
-  // console.log(`total`, total);
-  console.log(Object.keys(searchResults).length, total);
 
   return (
     <>

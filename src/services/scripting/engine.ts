@@ -72,7 +72,10 @@ interface Engine {
     callback?: ScriptCallback,
     executeAfterCompile?: boolean
   ): Promise<ScriptExecutionResult>;
-  reactToInput(params: ScriptMyParticleParams): Promise<ScriptMyParticleResult>;
+  reactToInput(
+    userScript: string,
+    params: ScriptMyParticleParams
+  ): Promise<ScriptMyParticleResult>;
   reactToParticle(params: ScriptParticleParams): Promise<ScriptParticleResult>;
 }
 
@@ -150,7 +153,7 @@ function enigine(): Engine {
     } catch (e) {
       console.log('runeRun error', e, outputData);
       return {
-        diagnosticsOutput: `n-genie error ${e}`,
+        diagnosticsOutput: `scripting engine error ${e}`,
         ...outputData,
       };
     }
@@ -190,16 +193,14 @@ function enigine(): Engine {
   };
 
   const reactToInput = async (
+    userScript: string,
     params: ScriptMyParticleParams
   ): Promise<ScriptMyParticleResult> => {
     // if (!deps.queryClient) {
     //   throw Error('Cyber queryClient is not set');
     // }
-    console.log('-------reactToInput', entrypoints, params);
-    const { userScript, runtimeScript } = getEntrypointScripts(
-      entrypoints,
-      'myParticle'
-    );
+    const { runtimeScript } = getEntrypointScripts(entrypoints, 'myParticle');
+    // console.log('-------reactToInput', userScript, runtimeScript, params);
 
     const scriptResult = await run(
       userScript,
@@ -210,7 +211,7 @@ function enigine(): Engine {
       undefined,
       true
     );
-    console.log('-------reactToInput scriptResult', scriptResult);
+    // console.log('-------reactToInput scriptResult', scriptResult);
 
     if (scriptResult.error) {
       return { action: 'error', nickname: '' };

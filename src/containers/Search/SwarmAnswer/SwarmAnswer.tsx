@@ -15,11 +15,18 @@ function SwarmAnswer({
 }) {
   const { nickname, answer, action } = item;
   const isCid = answer && isCID(answer);
-
+  const hasError = action === 'error';
   return (
     <div className={styles.swarmAnswer}>
-      {isCid && <ContentItem cid={answer} item={dummyItem} parent={query} />}
-      {!isCid && <div>{answer}</div>}
+      {hasError && <div>{`🤯 ${answer}`}</div>}
+      {!hasError && (
+        <>
+          {isCid && (
+            <ContentItem cid={answer} item={dummyItem} parent={query} />
+          )}
+          {!isCid && <div>{answer}</div>}
+        </>
+      )}
       <div className={styles.nickname}>{nickname}</div>
     </div>
   );

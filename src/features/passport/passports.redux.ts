@@ -148,6 +148,27 @@ export const selectCommunityPassports = createSelector(
   }
 );
 
+export const selectCommunityFollowingParticles = createSelector(
+  selectCommunityPassports,
+  (communityPassports) => {
+    const { following, friends } = communityPassports;
+    const result = Object.values({ ...following, ...friends })
+      .filter((i) => !!i?.data?.extension.particle)
+      .map((i) => {
+        const { nickname, particle } = i.data!.extension;
+
+        return { nickname, particle };
+      });
+
+    // result.push({
+    //   nickname: 'dasein',
+    //   particle: 'QmUv8yJ5DJvE2cLpFDjPUroi3Q1mbjVxTm7yFKKvCKktS5',
+    // });
+
+    return result;
+  }
+);
+
 export const selectCurrentPassport = createSelector(
   selectCurrentAddress,
   (state: RootState) => state.passports,

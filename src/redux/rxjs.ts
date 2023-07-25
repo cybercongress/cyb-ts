@@ -1,18 +1,11 @@
-import {
-  combineLatest,
-  map,
-  from,
-  Observable,
-  distinctUntilChanged,
-  filter,
-} from 'rxjs';
+import { map, from, Observable, distinctUntilChanged, filter } from 'rxjs';
 import { Citizenship } from 'src/types/citizenship';
 import { Nullable } from 'src/types';
 import scriptEngine from 'src/services/scripting/engine';
 import { keyValuesToObject } from 'src/utils/localStorage';
+import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 
 import store, { RootState } from './store';
-import { setContext } from './features/scripting';
 
 function select<T>(
   state$: Observable<RootState>,
@@ -25,38 +18,23 @@ const initRxStore = () => {
   // create observable from redux store
   const state$ = from(store);
 
-  const passport$ = select(state$, (state: RootState) => state.passports);
-
-  const defaultAddress$ = state$.pipe(
-    map((state) => state.pocket.defaultAccount.account?.cyber.bech32 || ''),
-    filter((defaultAddress) => !!defaultAddress)
-  );
-
-  combineLatest([passport$, defaultAddress$])
+  state$
     .pipe(
-      filter(
-        ([passports, defaultAddress]) =>
-          !passports[defaultAddress]?.loading &&
-          !!passports[defaultAddress]?.data
-      ),
-      map(([passports, defaultAddress]) => passports[defaultAddress]?.data),
+      map((state) => selectCurrentPassport(state)),
+      filter((r) => !r?.loading && !!r?.data),
+      map((r) => r?.data),
       distinctUntilChanged()
     )
     .subscribe((passport: Nullable<Citizenship>) => {
       if (passport) {
-        // dispach change inside scripting context
-
-        store.dispatch(
-          setContext({
-            name: 'user',
-            item: {
-              address: passport.owner,
-              nickname: passport.extension.nickname,
-              passport,
-              particle: passport.extension.particle,
-            },
-          })
-        );
+        scriptEngine.pushContext({
+          user: {
+            address: passport.owner,
+            nickname: passport.extension.nickname,
+            passport,
+            particle: passport.extension.particle,
+          },
+        });
       }
     });
 
