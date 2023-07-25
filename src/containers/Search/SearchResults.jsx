@@ -32,6 +32,7 @@ import {
 } from '../../utils/config';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -83,6 +84,7 @@ function SearchResults() {
   const [hasMore, setHasMore] = useState(false);
 
   const { isMobile: mobile } = useDevice();
+  useCommunityPassports();
 
   // useEffect(() => {
   //   if (query.match(/\//g)) {
