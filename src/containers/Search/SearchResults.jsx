@@ -36,6 +36,7 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import SwarmAnswer from './SwarmAnswer/SwarmAnswer';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -99,7 +100,9 @@ function SearchResults() {
 
   const { isMobile: mobile } = useDevice();
   const { isLoaded } = useSelector((state) => state.scripting.scripts);
+  useCommunityPassports();
 
+  console.log('-----aaa', store.getState());
   // useEffect(() => {
   //   if (query.match(/\//g)) {
   //     navigate(`/search/${replaceSlash(query)}`);
