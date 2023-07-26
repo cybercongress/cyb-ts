@@ -177,3 +177,13 @@ export const parseRawIpfsData = async (
     return undefined;
   }
 };
+
+export const contentToUint8Array = async (
+  content: File | string
+): Promise<Uint8Array> => {
+  return new Uint8Array(
+    typeof content === 'string'
+      ? Buffer.from(content)
+      : await content.arrayBuffer()
+  );
+};

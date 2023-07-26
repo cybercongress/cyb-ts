@@ -22,10 +22,9 @@ import {
 
 import { CYBER } from '../config';
 
-// import { addDataChunksToIpfsCluster, pinToIpfsCluster } from './cluster-utils';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
-import { addDataChunksToIpfsCluster } from './cluster-utils';
-import { detectCybContentType } from './content-utils';
+import { addToIpfsCluster } from './cluster-utils';
+import { contentToUint8Array, detectCybContentType } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -171,6 +170,7 @@ const fetchIPFSContentFromNode = async (
         // if already pinned skip pin
         if (!meta.local && allowedSize) {
           node.pin.add(cid);
+
           meta.pinTime = Date.now() - meta.catTime;
         } else {
           meta.pinTime = -1;
@@ -366,35 +366,20 @@ const catIPFSContentFromNode = (
 
 const addContenToIpfs = async (
   node: AppIPFS,
-  content: ImportCandidate
+  content: File | string
 ): Promise<Option<string>> => {
-  let cid: AddResult;
-  let arrayBuffer: Buffer | ArrayBuffer | undefined;
-
+  // let arrayBuffer: Buffer | ArrayBuffer | undefined;
+  let addResult;
   if (node) {
-    if (typeof content === 'string') {
-      cid = await node.add(Buffer.from(content), { pin: true });
-      arrayBuffer = Buffer.from(content);
-    } else {
-      cid = await node.add(content, { pin: true });
-      if (content instanceof File) {
-        arrayBuffer = await content.arrayBuffer();
-      }
-    }
-
-    if (arrayBuffer) {
-      const raw = new Uint8Array(arrayBuffer);
-      const result = await addDataChunksToIpfsCluster(
-        cid.cid.toString(),
-        raw,
-        node.nodeType === 'embedded'
-      );
-
-      console.log('result', result);
-    }
-    return cid.path;
+    addResult = await node.add(content, { pin: true });
   }
-  return undefined;
+  const pinResponse = await addToIpfsCluster(content);
+
+  const cid = addResult?.path || pinResponse?.cid;
+
+  await addIpfsContentToDb(cid, await contentToUint8Array(content));
+
+  return cid;
 };
 
 const CYBER_NODE_SWARM_PEER_ID =
