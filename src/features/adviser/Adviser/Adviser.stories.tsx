@@ -1,12 +1,12 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import Advicer from './Advicer';
+import Adviser from './Adviser';
 
-const Template: Story = (args) => <Advicer {...args} />;
+const Template: Story = (args) => <Adviser {...args} />;
 
 export default {
-  title: 'Components/Advicer',
-  component: Advicer,
+  title: 'Components/Adviser',
+  component: Adviser,
 } as Meta;
 
 export const Default = Template.bind({});

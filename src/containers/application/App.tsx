@@ -1,19 +1,21 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
 import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
-import IPFSConnectError from 'src/features/ipfs/IPFSConnectError/IPFSConnectError';
 import styles from './styles.scss';
 
 import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
-import AdvicerContainer from '../portal/components/InfoCard/Advicer/AdvicerContainer';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
+import { useAdviser } from 'src/features/adviser/context';
+import { routes } from 'src/routes';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 
 export const PORTAL_ID = 'portal';
 
@@ -26,6 +28,7 @@ function App() {
 
   const { community } = useGetCommunity(address || null);
   const location = useLocation();
+  const adviserContext = useAdviser();
 
   const ipfs = useIpfs();
 
@@ -55,6 +58,20 @@ function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (ipfs.error && !location.pathname.includes('/drive')) {
+      adviserContext.setAdviser(
+        <p>
+          Could not connect to the IPFS API <br />
+          <Link to={routes.robot.routes.drive.path}>Go to ipfs page</Link>
+        </p>,
+        AdviserColors.red
+      );
+
+      adviserContext.setIsOpen(true);
+    }
+  }, [ipfs.error, location.pathname]);
+
   // chekEvangelism = () => {
   //   const { location } = this.props;
   //   const { search } = location;
@@ -66,6 +83,8 @@ function App() {
   //   }
   // };
 
+  console.log('render');
+
   return (
     <MainLayout>
       <>
@@ -74,11 +93,7 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        <AdvicerContainer />
-
-        {ipfs.error && !location.pathname.includes('/drive') && (
-          <IPFSConnectError />
-        )}
+        <AdviserContainer />
 
         <Outlet />
       </>

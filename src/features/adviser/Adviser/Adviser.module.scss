@@ -1,35 +1,43 @@
 .wrapper {
-  //   border: 1px solid red;
-
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(31, 203, 255, 0.2) 48%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  //   filter: blur(5px);
-
-  //   fill: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(31, 203, 255, 0.13) 28.13%, rgba(31, 203, 255, 0.13) 70.83%, rgba(0, 0, 0, 0.00) 100%);
-  // filter: blur(7.5px);
+  // ur(5px);
 
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+
+  --color-r: 0;
+  --color-b: 0;
+  --color-g: 0;
 
   &.color_ {
     color: white;
-    // &blue {
-    //   color: var(--blue);
-    // }
-    // &red {
-    //   color: var(--red);
-    // }
-    // &green {
-    //   color: var(--primary-color);
-    // }
+
+    &blue {
+      --color-r: 31;
+      --color-b: 203;
+      --color-g: 225;
+    }
+
+    &red {
+      --color-r: 255;
+      --color-b: 92;
+      --color-g: 0;
+    }
+    &green {
+      --color-r: 122;
+      --color-b: 250;
+      --color-g: 161;
+    }
   }
 
-  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 28.13%,
+    rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 70.83%,
+    rgba(0, 0, 0, 0) 100%
+  );
 
   &.open {
     summary {
@@ -37,13 +45,17 @@
     }
 
     > div {
-      text-shadow: 0px 0px 1px rgba(255, 92, 0, 0.7);
+      text-shadow: 0px 0px 5px
+        rgba(var(--color-r), var(--color-b), var(--color-g), 0.7);
       display: block;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      min-height: 80px;
+      padding: 20px 0;
+      margin: auto;
+      line-height: 26px;
+      // display: flex;
+      // align-items: center;
+      // justify-content: center;
+      // height: 100%;
+      // min-height: 80px;
       opacity: 1;
     }
   }
@@ -81,8 +93,8 @@
     text-align: center;
     display: none;
     // border: 1px solid yellow;
-    height: 0px;
-    line-height: 26px;
+    // height: 0px;
+    // line-height: 26px;
     opacity: 0;
 
     transition: opacity 1s;

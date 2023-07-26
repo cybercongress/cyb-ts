@@ -1,4 +1,3 @@
-import InfoCard from 'src/containers/portal/components/InfoCard/InfoCard';
 import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
@@ -26,5 +25,4 @@ export {
   AboutGift,
   MoonAnimation,
   Stars,
-  InfoCard,
 };
