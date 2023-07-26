@@ -211,36 +211,6 @@ function PlayMyParticle({
   );
 }
 
-const useGetIpfsContent = ({
-  parent,
-  rank,
-}: {
-  parent?: string;
-  rank?: number;
-}) => {
-  const [cid, setCid] = useState<string | undefined>();
-  const [loaded, setLoaded] = useState<boolean>();
-  const [ipfsContent, setIpfsContent] = useState<IPFSContentMaybe>();
-
-  const { status, content, cancel } = useQueueIpfsContent(cid, rank, parent);
-  useEffect(() => {
-    console.log('-------getIpfsContentFromQueue', cid, status, content);
-    if (status !== 'executing' && status !== 'pending') {
-      setIpfsContent(content);
-      setLoaded(true);
-    }
-  }, [status, content]);
-
-  const getIpfsContentFromQueue = (cid: string) => {
-    setLoaded(false);
-    setIpfsContent(undefined);
-    cancel(cid);
-    setCid(cid);
-    console.log('-------getIpfsContentFromQueue start', cid);
-  };
-  return { getIpfsContentFromQueue, status, loaded, ipfsContent };
-};
-
 function ScriptEditor() {
   const dispatch = useDispatch();
 
@@ -266,27 +236,9 @@ function ScriptEditor() {
   );
 
   const { node } = useIpfs();
-  const {
-    getIpfsContentFromQueue,
-    ipfsContent,
-    loaded: ipfsContentLoaded,
-  } = useGetIpfsContent({ parent: 'scripting' });
 
   const [isLoaded, setIsLoaded] = useState(false);
-  //   const { status, content } = useQueueIpfsContent(cid, 1, input);
-  useEffect(() => {
-    if (ipfsContentLoaded) {
-      (async () => {
-        const content =
-          ipfsContent?.contentType === 'text' && ipfsContent?.result
-            ? await getTextFromIpfsContent(ipfsContent.result)
-            : undefined;
-        setCode(
-          content || content === '' ? content : scriptMap.myParticle.user
-        );
-      })();
-    }
-  }, [ipfsContent, ipfsContentLoaded]);
+
   const loadScript = async () => {
     const alreadyLoaded = entrypoints[entrypointName]?.user;
     // workaround to fix pre-cached passport cid
@@ -306,15 +258,14 @@ function ScriptEditor() {
       if (!cid || !isCID(cid)) {
         setCode(scriptMap.myParticle.user);
       } else {
-        getIpfsContentFromQueue(cid);
-        // const response = await getIPFSContent(node, cid);
-        // const content =
-        //   response?.contentType === 'text' && response?.result
-        //     ? await getTextFromIpfsContent(response.result)
-        //     : undefined;
-        // setCode(
-        //   content || content === '' ? content : scriptMap.myParticle.user
-        // );
+        const response = await getIPFSContent(node, cid);
+        const content =
+          response?.contentType === 'text' && response?.result
+            ? await getTextFromIpfsContent(response.result)
+            : undefined;
+        setCode(
+          content || content === '' ? content : scriptMap.myParticle.user
+        );
       }
     }
 

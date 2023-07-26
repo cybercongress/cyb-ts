@@ -289,28 +289,30 @@ const getIPFSContent = async (
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
-  const dataRsponseDb = await loadIPFSContentFromDb(cid);
-  if (dataRsponseDb !== undefined) {
-    return dataRsponseDb;
+  const dataResponseDb = await loadIPFSContentFromDb(cid);
+  if (dataResponseDb) {
+    return dataResponseDb;
   }
 
-  if (node) {
+  const fetchFromGateway = async () => {
+    callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
+    return fetchIPFSContentFromGateway(node, cid, controller);
+  };
+
+  const fetchFromNode = async () => {
     callBackFuncStatus && callBackFuncStatus('trying to get with a node');
-    // console.log('----Fetch from node', cid);
-    const ipfsContent = await fetchIPFSContentFromNode(node, cid, controller);
+    return fetchIPFSContentFromNode(node, cid, controller);
+  };
 
-    return ipfsContent;
+  if (!node) {
+    return fetchFromGateway();
   }
 
-  callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
-  // console.log('----Fetch from gateway', cid);
-  const respnseGateway = await fetchIPFSContentFromGateway(
-    node,
-    cid,
-    controller
-  );
+  if (node.nodeType === 'external') {
+    return fetchFromNode() || fetchFromGateway();
+  }
 
-  return respnseGateway;
+  return fetchFromGateway() || fetchFromNode();
 };
 
 const catIPFSContentFromNode = (
