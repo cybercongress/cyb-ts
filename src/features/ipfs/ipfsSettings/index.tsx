@@ -14,14 +14,13 @@ import {
 import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
-import { ContainerGradientText, Input } from '../../components';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { ContainerGradientText, Input, ActionBar } from 'src/components';
 
 const dataOpts = ['external', 'embedded'];
 
 function IpfsSettings() {
-  const [valueSelect, setValueSelec] = useState('external');
+  const [valueSelect, setValueSelec] = useState('embedded');
   const [valueInput, setValueInput] = useState('');
   // const [valueInputGateway, setValueInputGateway] = useState('');
   const { node: ipfs, isLoading: pending, error: failed } = useIpfs();

@@ -305,6 +305,7 @@ function ScriptEditor() {
 
   useEffect(() => {
     resetPlayGround();
+    setCode('Loading script...');
     loadScript();
   }, [entrypointName, passport]);
 
