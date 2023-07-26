@@ -32,7 +32,7 @@ export function useGetIpfsInfo() {
   useEffect(() => {
     const getIpfsStat = async () => {
       setLoading(true);
-      if (ipfs !== null) {
+      if (ipfs) {
         const response = await ipfs.stats.repo();
         const repoSize = formatCurrency(
           Number(response.repoSize),

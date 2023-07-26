@@ -16,6 +16,7 @@ type UseIpfsContentReturn = {
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
   clear: () => void;
+  cancel: (cid: string) => void;
 };
 
 function useQueueIpfsContent(
@@ -79,6 +80,7 @@ function useQueueIpfsContent(
     status,
     source,
     content,
+    cancel: (cid: string) => queueManager.cancel(cid),
     clear: queueManager.clear.bind(queueManager),
   };
 }
