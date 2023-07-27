@@ -14,10 +14,11 @@ function select<T>(
   return state$.pipe(map(mapFn), distinctUntilChanged());
 }
 
-const initRxStore = () => {
+const applyRxJs = (appStore: typeof store) => {
   // create observable from redux store
-  const state$ = from(store);
+  const state$ = from(appStore);
 
+  // User passport
   state$
     .pipe(
       map((state) => selectCurrentPassport(state)),
@@ -63,4 +64,4 @@ const initRxStore = () => {
   });
 };
 
-export default initRxStore;
+export default applyRxJs;
