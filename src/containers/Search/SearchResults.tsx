@@ -120,25 +120,27 @@ const SwarmParticle = ({
   useEffect(() => {
     const getCode = async () => {
       if (status === 'completed' && content?.cid) {
-        console.log('----render particle', nickname, status, content, input);
         if (content.contentType === 'text') {
           const scriptCode = await parseRawIpfsData(cid, content);
-          // setCode(scriptCode?.content);
 
-          const item = await scriptEngine.reactToInput(scriptCode!.content, {
-            input,
-          });
+          const item = await scriptEngine.reactToInput(
+            scriptCode.content || '',
+            {
+              input,
+            }
+          );
+
+          // console.log('----react code', nickname, scriptCode, item);
 
           setResult(
             item.action === 'error'
-              ? { ...item, answer: 'Error executing particle script', nickname }
+              ? { ...item, answer: 'Error executing particle script' }
               : item
           );
         } else {
           setResult({
             action: 'error',
             answer: `Can't execute script because of content type '${content.contentType}'`,
-            nickname,
           });
         }
       }
@@ -153,7 +155,7 @@ const SwarmParticle = ({
 
   return (
     <SearchResultWrapper key={`answer_${nickname}`} to={`/@${nickname}`}>
-      <SwarmAnswer item={result} query={input} />
+      <SwarmAnswer item={result} nickname={nickname} query={input} />
     </SearchResultWrapper>
   );
 };

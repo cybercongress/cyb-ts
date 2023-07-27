@@ -211,7 +211,7 @@ function enigine(): Engine {
       undefined,
       true
     );
-    // console.log('-------reactToInput scriptResult', scriptResult);
+    console.log('-------reactToInput scriptResult', scriptResult);
 
     if (scriptResult.error) {
       return { action: 'error', nickname: '' };

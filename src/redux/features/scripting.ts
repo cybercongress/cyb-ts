@@ -26,7 +26,7 @@ type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
 type SliceState = {
   secrets: TabularKeyValues;
-  context: ScriptContext;
+  context: Omit<ScriptContext, 'secrets' | 'user'>;
   scripts: {
     isLoaded: boolean;
     entrypoints: ScriptEntrypoints;
@@ -83,7 +83,7 @@ const botName =
 
 const initialState: SliceState = {
   secrets: loadJsonFromLocalStorage('secrets', {}),
-  context: { params: {}, user: {}, secrets: {} },
+  context: { params: {} },
   scripts: {
     isLoaded: false,
     entrypoints: ScriptEntrypointsData,
@@ -137,15 +137,12 @@ const slice = createSlice({
     },
     setContext: (
       state,
+      { payload }: PayloadAction<{ name: 'params'; item: ParamsContext }>
+    ) =>
+      // | { name: 'user'; item: UserContext }
       {
-        payload,
-      }: PayloadAction<
-        | { name: 'params'; item: ParamsContext }
-        | { name: 'user'; item: UserContext }
-      >
-    ) => {
-      state.context[payload.name] = payload.item;
-    },
+        state.context[payload.name] = payload.item;
+      },
     setScript: (
       state,
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>

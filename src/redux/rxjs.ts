@@ -32,7 +32,7 @@ const applyRxJs = (appStore: typeof store) => {
           user: {
             address: passport.owner,
             nickname: passport.extension.nickname,
-            passport,
+            // passport,
             particle: passport.extension.particle,
           },
         });

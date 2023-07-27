@@ -9,11 +9,13 @@ const dummyItem = {
 function SwarmAnswer({
   item,
   query,
+  nickname,
 }: {
   item: ScriptMyParticleResult;
   query: string;
+  nickname: string;
 }) {
-  const { nickname, answer, action } = item;
+  const { answer, action } = item;
   const isCid = answer && isCID(answer);
   const hasError = action === 'error';
   return (

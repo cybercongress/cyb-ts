@@ -1,9 +1,9 @@
 pub fn skip() {
-    #{ "nickname": cyb::context.app.user.nickname, "action": "skip" }
+    #{ "action": "skip" }
 }
 
 pub fn answer(content) {
-    #{ "nickname": cyb::context.app.user.nickname, "action": "answer", "answer": content }
+    #{ "action": "answer", "answer": content }
 }
 
 

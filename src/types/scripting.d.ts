@@ -61,7 +61,6 @@ type ScriptParticleResult = {
 type ScriptMyParticleResult = {
   action: 'pass' | 'answer' | 'error';
   answer?: string;
-  nickname: string;
 };
 
 type ScriptScopeParams = {
