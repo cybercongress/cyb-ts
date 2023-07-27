@@ -15,6 +15,7 @@ function AdviserContainer() {
 
   return (
     <Adviser
+      disabled={!content}
       className={styles.adviser}
       isOpen={isOpen && !!content}
       color={color}

@@ -14,12 +14,14 @@ type Props = {
   color?: AdviserColors;
   className?: string;
   isOpen?: boolean;
+  disabled?: boolean;
 };
 
 function Adviser({
   children,
   color = AdviserColors.blue,
   className,
+  disabled,
   isOpen: open = false,
 }: Props) {
   const [isOpen, setIsOpen] = useState(open || false);
@@ -37,7 +39,9 @@ function Adviser({
   return (
     // TODO: use <details> tag
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-    <div
+    <button
+      type="button"
+      disabled={disabled}
       className={cx(styles.wrapper, styles[`color_${color}`], className, {
         [styles.open]: isOpen && children,
       })}
@@ -46,7 +50,7 @@ function Adviser({
     >
       <summary>Adviser</summary>
       <div>{children}</div>
-    </div>
+    </button>
   );
 }
 
