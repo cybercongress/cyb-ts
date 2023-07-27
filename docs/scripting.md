@@ -9,7 +9,7 @@ Any user can tune-up and extend Cyber functionality by his own plugins/scripts.
 
 There is several points in the app where Rune scripts is embedded as part of workflow
 
-## Particle
+## Particle post-processor
 
 Every single particle goes thru pipeline and **react_to_particle** function is applied to that:
 
@@ -42,6 +42,32 @@ return hide()
 return pass()
 ```
 
+## My Particle
+
+Every user is able to create his own particle that appears in search results of all his followers:
+
+```mermaid
+graph LR
+E(follower) -- search input --> C(("my_particle")) -- answer --> D(search results)
+```
+
+```
+// input - Search input
+
+my_particle(input) {}
+```
+
+Follower gets answer based on following particle automatically
+
+```
+
+// Answer with any cid/text content
+return answer("blah")
+
+// Ignore input
+return skip()
+```
+
 ## Bindings to interact with app
 
 Cyber provide some bindings that extend Rune features with app/user specific features.
@@ -66,12 +92,15 @@ add_text_to_ipfs(text: string);
 
 ## Context
 
-User can understand exactly where in context of app script is executed.
-At the moment available URL based _app.params_: _path, query, and search_
+Sc can understand exactly where in context of app script is executed.
+Context - params - path / query /search - user - address / nickname / passport - secrets - key/value storage
 
 ```
 // Get list of url parameters
 let path = cyb::context.app.params.path;
+
+// Nickname of user that see this particle(in case of myParticle)
+let nick = cyb::context.app.user.nickname;
 ```
 
 ## Secrets
@@ -90,10 +119,23 @@ let openAI_apiKey = cyb::context.app.secrets.openAI_apiKey;
 dbg(`react_to_particle ${cid} ${content_type} ${content}`);
 
 // console.log
-cyb:log("blah);
+cyb:log("blah");
 ```
 
-## Full example
+## Examples
+
+### myParticle
+
+```
+pub async fn my_particle(input) {
+    let nickname =  cyb::context.app.user.nickname;
+    return answer(`${nickname}, I want to buy your hears! Expensive.`);
+    // Answer with IPFS content
+    // return answer("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
+}
+```
+
+### Particle post-processor
 
 ```
 
@@ -127,8 +169,8 @@ pub async fn react_to_particle(cid, content_type, content) {
         }
 
         // Hide the content that I not want to see
-        if content.contains("хуярта") {
-            cyb::log(`Hide items with хуярта in ${cid}`);
+        if content.contains("fuck") {
+            cyb::log(`Hide items with fuck in ${cid}`);
             return hide()
         }
 
