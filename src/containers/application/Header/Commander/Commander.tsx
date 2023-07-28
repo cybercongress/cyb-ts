@@ -25,7 +25,9 @@ function Commander() {
       if (
         event.key === '/' &&
         ref.current &&
-        ref.current !== document.activeElement
+        ref.current !== document.activeElement &&
+        event.target &&
+        !['INPUT', 'TEXTAREA'].includes(event.target.tagName)
       ) {
         event.preventDefault();
         ref.current.focus();
