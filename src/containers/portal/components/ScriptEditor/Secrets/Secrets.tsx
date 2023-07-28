@@ -7,7 +7,9 @@ import { ContainerGradientText } from 'src/components';
 import InfoCard from '../../InfoCard/InfoCard';
 
 function Secrets() {
-  const { secrets } = useSelector((store: RootState) => store.scripting);
+  const { secrets } = useSelector(
+    (store: RootState) => store.scripting.context
+  );
   const [selected, setSelected] = useState<string | null>();
 
   return (

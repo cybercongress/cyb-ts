@@ -28,7 +28,9 @@ const INITIAL_STATE = {
 
 function ActionBar({ selected, callback }: Props) {
   const [step, setStep] = useState(Steps.INIT_STATE);
-  const { secrets } = useSelector((store: RootState) => store.scripting);
+  const { secrets } = useSelector(
+    (store: RootState) => store.scripting.context
+  );
   const dispatch = useDispatch();
 
   const [newSecret, setNewSecret] = useState(INITIAL_STATE);

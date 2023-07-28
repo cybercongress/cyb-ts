@@ -33,7 +33,6 @@ import {
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
-import { detectContentType } from 'src/utils/ipfs/content-utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
 import { setScript } from 'src/redux/features/scripting';
@@ -58,9 +57,6 @@ import { scriptMap } from 'src/services/scripting/scripts/mapping';
 
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
-import Carousel from '../../../temple/components/corusel/index';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -240,13 +236,6 @@ function ScriptEditor() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const loadScript = async () => {
-    const alreadyLoaded = entrypoints[entrypointName]?.user;
-    // workaround to fix pre-cached passport cid
-    if (alreadyLoaded) {
-      setCode(alreadyLoaded);
-      return;
-    }
-
     if (entrypointName === 'particle') {
       setCode(
         loadStringFromLocalStorage(entrypointName, scriptMap.particle.user)
@@ -268,7 +257,6 @@ function ScriptEditor() {
         );
       }
     }
-
     setIsLoaded(true);
   };
 

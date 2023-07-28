@@ -1,10 +1,6 @@
 /* eslint-disable camelcase */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import {
-  WebLLMInstance,
-  LLMParams,
-  LLMParamsMap,
-} from 'src/services/scripting/webLLM';
+import { LLMParamsMap } from 'src/services/scripting/webLLM';
 import { TabularKeyValues } from 'src/types/data';
 import {
   loadJsonFromLocalStorage,
@@ -16,17 +12,17 @@ import {
 import { scriptMap } from 'src/services/scripting/scripts/mapping';
 
 import {
-  ParamsContext,
   ScriptEntrypointNames,
   ScriptContext,
-  UserContext,
   ScriptEntrypoints,
 } from 'src/types/scripting';
+
+import type { SliceActions } from '../types';
+
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
 type SliceState = {
-  secrets: TabularKeyValues;
-  context: Omit<ScriptContext, 'secrets' | 'user'>;
+  context: ScriptContext; // Omit<ScriptContext, 'secrets' | 'user'>;
   scripts: {
     isLoaded: boolean;
     entrypoints: ScriptEntrypoints;
@@ -39,6 +35,8 @@ type SliceState = {
     chatBotList: LLMParamsMap;
   };
 };
+
+export type ChatBotActiveAction = PayloadAction<boolean>;
 
 // const loadScript(name: ScriptEntrypointNames, deps: {ipfs: AppIPFS, queryClient: })
 
@@ -74,16 +72,17 @@ const initialBotList: LLMParamsMap = {
 
 const chatBotList = loadJsonFromLocalStorage('botConfig', initialBotList);
 
-WebLLMInstance.updateConfig(chatBotList);
-
 const botName =
   loadStringFromLocalStorage('activeBotName') ||
   Object.values(chatBotList)?.[0]?.name ||
   '';
 
 const initialState: SliceState = {
-  secrets: loadJsonFromLocalStorage('secrets', {}),
-  context: { params: {} },
+  context: {
+    secrets: loadJsonFromLocalStorage('secrets', {}) as TabularKeyValues,
+    params: {},
+    user: {},
+  },
   scripts: {
     isLoaded: false,
     entrypoints: ScriptEntrypointsData,
@@ -104,18 +103,13 @@ const slice = createSlice({
     setChatBotList: (state, { payload }: PayloadAction<LLMParamsMap>) => {
       saveJsonToLocalStorage('botConfig', payload);
       state.chatBot.chatBotList = payload;
-      WebLLMInstance.updateConfig(payload);
     },
-    setChatBotActive: (state, { payload }: PayloadAction<boolean>) => {
+    setChatBotActive: (state, { payload }: ChatBotActiveAction) => {
       state.chatBot.active = payload;
       if (payload) {
         state.chatBot.status = 'loading';
-        WebLLMInstance.load(state.chatBot.name, onProgress).then(() =>
-          setStatus('on')
-        );
       } else {
         state.chatBot.status = 'off';
-        WebLLMInstance.unload();
       }
     },
     setChatBotLoadProgress: (
@@ -133,16 +127,19 @@ const slice = createSlice({
     },
     setSecrets: (state, { payload }: PayloadAction<TabularKeyValues>) => {
       saveJsonToLocalStorage('secrets', payload);
-      state.secrets = payload;
+      setContext({ name: 'secrets', item: payload });
     },
     setContext: (
       state,
-      { payload }: PayloadAction<{ name: 'params'; item: ParamsContext }>
-    ) =>
-      // | { name: 'user'; item: UserContext }
       {
-        state.context[payload.name] = payload.item;
-      },
+        payload,
+      }: PayloadAction<{
+        name: keyof ScriptContext;
+        item: ScriptContext[keyof ScriptContext];
+      }>
+    ) => {
+      state.context[payload.name] = payload.item;
+    },
     setScript: (
       state,
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>
@@ -157,10 +154,7 @@ const slice = createSlice({
   },
 });
 
-const setStatus = (status: ChatBotStatus) =>
-  window.store.dispatch(slice.actions.setChatBotStatus(status));
-const onProgress = ({ progress }) =>
-  window.store.dispatch(slice.actions.setChatBotLoadProgress({ progress }));
+export type ScriptingActionTypes = SliceActions<typeof slice.actions>;
 
 export const {
   setChatBotList,
@@ -170,6 +164,8 @@ export const {
   setScript,
   setContext,
   setScriptingEngineLoaded,
+  setChatBotStatus,
+  setChatBotLoadProgress,
 } = slice.actions;
 
 export default slice.reducer;

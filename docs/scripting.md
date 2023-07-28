@@ -92,8 +92,14 @@ add_text_to_ipfs(text: string);
 
 ## Context
 
-Sc can understand exactly where in context of app script is executed.
-Context - params - path / query /search - user - address / nickname / passport - secrets - key/value storage
+Context of place where script is executed locaded in `cyb::context.app`
+
+- params
+  - path / query / search
+- user
+  - address / nickname / passport
+- secrets
+  - key/value storage
 
 ```
 // Get list of url parameters

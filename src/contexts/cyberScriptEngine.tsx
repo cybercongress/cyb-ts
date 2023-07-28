@@ -4,8 +4,9 @@ import { useQueryClient } from 'src/contexts/queryClient';
 
 import { useIpfs } from './ipfs';
 import { useSigningClient } from './signerClient';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setScriptingEngineLoaded } from 'src/redux/features/scripting';
+import { RootState } from 'src/redux/store';
 
 type CyberScriptsContextType = {
   isLoaded: boolean;
@@ -34,15 +35,19 @@ function CyberScriptEngineProvider({
   const { node } = useIpfs();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const {
+    scripts: { entrypoints },
+    context: { secrets },
+  } = useSelector((store: RootState) => store.scripting);
 
   useEffect(() => {
     const initScripting = async () => {
-      await scriptEngine.load();
+      await scriptEngine.load({ entrypoints, secrets });
       setIsLoaded(true);
       dispatch(setScriptingEngineLoaded(true));
     };
     initScripting();
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     node && scriptEngine.setDeps({ ipfs: node });

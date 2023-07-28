@@ -21,12 +21,18 @@ import {
   OfflineSigner,
   SigningCyberClient,
 } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { TabularKeyValues, KeyValueString } from 'src/types/data';
+import { keyValuesToObject } from 'src/utils/localStorage';
 
 const compileConfig = {
   budget: 1_000_000,
   experimental: false,
   instructions: true,
   options: [],
+};
+
+type EngineContext = Omit<ScriptContext, 'secrets'> & {
+  secrets: KeyValueString;
 };
 
 // | { name: 'ipfs'; item: AppIPFS }
@@ -48,6 +54,9 @@ const getEntrypointScripts = (
   return { userScript: user, runtimeScript: runtime };
 };
 
+const toRecord = (item: TabularKeyValues) =>
+  keyValuesToObject(Object.values(item));
+
 type EngineDeps = {
   ipfs?: AppIPFS;
   queryClient?: CyberClient;
@@ -55,15 +64,23 @@ type EngineDeps = {
   signingClient?: SigningCyberClient;
 };
 
+type LoadParams = {
+  entrypoints: ScriptEntrypoints;
+  secrets: TabularKeyValues;
+};
+
 interface Engine {
-  pushContext(context: Partial<ScriptContext>): void;
-  popContext(names: keyof ScriptContext[]): void;
+  pushContext<K extends keyof ScriptContext>(
+    key: K,
+    value: ScriptContext[K]
+  ): void;
+  popContext(names: (keyof ScriptContext)[]): void;
   setEntrypoints(entrypoints: ScriptEntrypoints): void;
   setDeps(deps: Partial<EngineDeps>): void;
   getDeps(): EngineDeps;
   getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
 
-  load(): Promise<void>;
+  load(params: LoadParams): Promise<void>;
 
   run(
     script: string,
@@ -81,23 +98,41 @@ interface Engine {
 
 // eslint-disable-next-line import/prefer-default-export
 function enigine(): Engine {
-  const entrypoints: ScriptEntrypoints = {};
-  let context: ScriptContext = { params: {}, user: {}, secrets: {} };
+  let entrypoints: ScriptEntrypoints | undefined;
+  let context: EngineContext = { params: {}, user: {}, secrets: {} };
   let deps: EngineDeps;
 
   const scriptCallbacks = new Map<string, ScriptCallback>();
 
   let rune;
 
-  const load = async () => {
+  const load = async (params: LoadParams) => {
+    entrypoints = params.entrypoints;
+    pushContext('secrets', params.secrets);
+
     console.time('⚡️ Rune initialized! 🔋');
     rune = await initAsync();
     window.rune = rune;
     console.timeEnd('⚡️ Rune initialized! 🔋');
   };
 
-  const pushContext = (appContext: Partial<ScriptContext>) => {
-    context = { ...context, ...appContext };
+  const pushContext = <K extends keyof ScriptContext>(
+    name: K,
+    value: ScriptContext[K]
+  ) => {
+    if (name === 'secrets') {
+      context[name] = toRecord(value as TabularKeyValues);
+      return;
+    }
+    context[name] = value;
+  };
+
+  const popContext = (names: (keyof ScriptContext)[]) => {
+    const newContext = context;
+    names.forEach((name) => {
+      newContext[name] = {};
+    });
+    context = newContext;
   };
 
   const getDeps = () => deps;
@@ -109,11 +144,7 @@ function enigine(): Engine {
   const getSingleDep = (name: keyof EngineDeps) => deps[name];
 
   const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
-    (Object.keys(scriptEntrypoints) as ScriptEntrypointNames[]).forEach(
-      (name) => {
-        entrypoints[name] = scriptEntrypoints[name];
-      }
-    );
+    entrypoints = scriptEntrypoints;
   };
 
   const run = async (
@@ -142,7 +173,6 @@ function enigine(): Engine {
     //TODO: refactor
     outputData.diagnosticsOutput = outputData.diagnostics_output;
     delete outputData.diagnostics_output;
-
     scriptCallbacks.delete(paramRefId);
 
     try {
@@ -162,10 +192,6 @@ function enigine(): Engine {
   const reactToParticle = async (
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult> => {
-    // if (!deps.queryClient) {
-    //   throw Error('Cyber queryClient is not set');
-    // }
-
     const { userScript, runtimeScript } = getEntrypointScripts(
       entrypoints,
       'particle'
@@ -186,7 +212,6 @@ function enigine(): Engine {
     }
 
     if (scriptResult.result?.action !== 'pass') {
-      // console.log(`---reactToParticle ${cid} output: `, scriptResult);
     }
 
     return scriptResult.result;
@@ -196,11 +221,7 @@ function enigine(): Engine {
     userScript: string,
     params: ScriptMyParticleParams
   ): Promise<ScriptMyParticleResult> => {
-    // if (!deps.queryClient) {
-    //   throw Error('Cyber queryClient is not set');
-    // }
     const { runtimeScript } = getEntrypointScripts(entrypoints, 'myParticle');
-    // console.log('-------reactToInput', userScript, runtimeScript, params);
 
     const scriptResult = await run(
       userScript,
@@ -214,7 +235,7 @@ function enigine(): Engine {
     console.log('-------reactToInput scriptResult', scriptResult);
 
     if (scriptResult.error) {
-      return { action: 'error', nickname: '' };
+      return { action: 'error' };
     }
 
     return scriptResult.result;
@@ -230,9 +251,14 @@ function enigine(): Engine {
     getSingleDep,
     setDeps,
     pushContext,
+    popContext,
+    getDebug: () => ({
+      context,
+      entrypoints,
+    }),
   };
 }
 
 const scriptEngine = enigine();
-
+window.ngn = scriptEngine;
 export default scriptEngine;

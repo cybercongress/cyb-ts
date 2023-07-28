@@ -37,7 +37,6 @@ import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import CyberScriptEngineProvider from './contexts/cyberScriptEngine';
 import { Helmet } from 'react-helmet';
-import applyRxJs from './redux/rxjs';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -64,8 +63,6 @@ const terminatingLink = split(
   wsLink,
   httpLink
 );
-
-applyRxJs(store);
 
 const link = ApolloLink.from([terminatingLink]);
 

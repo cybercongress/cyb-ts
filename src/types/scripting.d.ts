@@ -1,4 +1,5 @@
 import { Citizenship } from './citizenship';
+import { TabularKeyValues } from './data';
 
 type ParamsContext = {
   path?: string[];
@@ -16,14 +17,14 @@ type UserContext = {
 type ScriptContext = {
   params: ParamsContext;
   user: UserContext;
-  secrets: Record<string, string>;
+  secrets: TabularKeyValues; // Record<string, string>;
 };
 
 type ScriptEntrypoint = { title: string; runtime: string; user: string };
 
 type ScriptEntrypoints = {
-  particle?: ScriptEntrypoint;
-  myParticle?: ScriptEntrypoint;
+  particle: ScriptEntrypoint;
+  myParticle: ScriptEntrypoint;
 };
 
 type ScriptEntrypointNames = keyof ScriptEntrypoints;

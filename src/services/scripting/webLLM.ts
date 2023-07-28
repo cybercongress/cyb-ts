@@ -85,7 +85,12 @@ class WebLLM {
   }
 
   public async unload() {
+    // prevent unloading if not initialized, othervise it can't be unloaded :(
+    // if (!this.isInitialized) {
+    //   return false;
+    // }
     await this._chat?.unload();
+    return true;
   }
 
   public async destroy(): Promise<void> {
