@@ -14,14 +14,16 @@ function AdviserContainer() {
   }, [setAdviser, location.pathname]);
 
   return (
-    <Adviser
-      disabled={!content}
-      className={styles.adviser}
-      isOpen={isOpen && !!content}
-      color={color}
-    >
-      {content}
-    </Adviser>
+    <div className={styles.wrapper}>
+      <Adviser
+        disabled={!content}
+        className={styles.adviser}
+        isOpen={isOpen && !!content}
+        color={color}
+      >
+        {content}
+      </Adviser>
+    </div>
   );
 }
 

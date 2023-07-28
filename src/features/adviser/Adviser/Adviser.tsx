@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import styles from './Adviser.module.scss';
 import cx from 'classnames';
+import styles from './Adviser.module.scss';
 import { useAdviser } from '../context';
 
 export enum AdviserColors {
@@ -22,34 +22,32 @@ function Adviser({
   color = AdviserColors.blue,
   className,
   disabled,
-  isOpen: open = false,
+  isOpen: forceOpen = false,
 }: Props) {
-  const [isOpen, setIsOpen] = useState(open || false);
+  const [isOpen, setIsOpen] = useState(forceOpen);
 
-  const { setIsOpen: isOp } = useAdviser();
-
-  useEffect(() => {
-    setIsOpen(open);
-  }, [open]);
+  const { setIsOpen: setIsOpenContext } = useAdviser();
 
   useEffect(() => {
-    isOp(isOpen);
-  }, [isOp, isOpen]);
+    setIsOpen(forceOpen);
+  }, [forceOpen]);
+
+  useEffect(() => {
+    setIsOpenContext(isOpen);
+  }, [setIsOpenContext, isOpen]);
 
   return (
-    // TODO: use <details> tag
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    // maybe try use <details> tag
     <button
       type="button"
       disabled={disabled}
       className={cx(styles.wrapper, styles[`color_${color}`], className, {
         [styles.open]: isOpen && children,
       })}
-      // open={isOpen}
       onClick={() => setIsOpen(!isOpen)}
     >
-      <summary>Adviser</summary>
-      <div>{children}</div>
+      <span className={styles.summary}>Adviser</span>
+      <div className={styles.content}>{children}</div>
     </button>
   );
 }

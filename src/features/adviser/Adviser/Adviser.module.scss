@@ -1,3 +1,5 @@
+$animation-time: 2.3s;
+
 .wrapper {
   display: flex;
   align-items: center;
@@ -40,22 +42,18 @@
       filter: blur(11px);
     }
 
-    summary {
-      &::before {
-        animation: none;
-      }
-    }
-
     --color-r: 255;
     --color-b: 255;
     --color-g: 255;
   }
 
+  // background
   &::before {
     content: '';
-    filter: blur(5px);
+
     position: absolute;
     left: 0;
+    filter: blur(10px);
     z-index: -1;
 
     width: 100%;
@@ -68,81 +66,107 @@
       rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 70.83%,
       rgba(0, 0, 0, 0) 100%
     );
-  }
 
-  summary {
-    width: 474px;
-    list-style: none;
-    font-size: 0;
-    height: 28px;
-    margin: auto;
-    position: relative;
-    transition: all 1s;
+    @keyframes pulseBg {
+      0% {
+        transform: scale(0.5, 0.8);
+        filter: blur(7px);
+      }
 
-    &::before {
-      content: '';
-      $size: 4px;
-
-      border-radius: 50%;
-      transition: all 1s;
-      opacity: 1;
-
-      animation: pulse 2.3s infinite alternate;
-
-      width: $size;
-      height: $size;
-
-      position: absolute;
-      top: calc(50% - $size / 2);
-      left: calc(50% - $size / 2);
-
-      background-color: white;
-    }
-  }
-
-  > div {
-    // width: 670px;
-    text-align: center;
-    text-shadow: 0px 0px 5px
-      rgba(var(--color-r), var(--color-b), var(--color-g), 0.7);
-    line-height: 26px;
-    overflow: hidden;
-    height: 0;
-    min-height: 0;
-    opacity: 0;
-  }
-
-  &.open {
-    summary {
-      height: 0;
-      display: none;
-      &::before {
-        height: 0;
-        opacity: 0;
+      100% {
       }
     }
+    // animation: pulseBg $animation-time infinite alternate;
+  }
 
-    > div {
-      padding: 5px 0;
-      min-height: 50px;
-      height: auto;
-      opacity: 1;
+  &.open,
+  &:disabled {
+    &::before {
+      animation: none;
     }
   }
 
   &,
-  summary,
-  > div {
+  .summary,
+  .content {
     transition: all 0.7s;
   }
 }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+.summary {
+  width: 360px;
+  list-style: none;
+  font-size: 0;
+  height: 28px;
+  margin: auto;
+  position: relative;
+  transition: all 1s;
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+      opacity: 0.35;
+    }
+    100% {
+      box-shadow: 0px 0px 10px 4px
+        rgb(var(--color-r), var(--color-b), var(--color-g));
+    }
   }
-  100% {
-    box-shadow: 0px 0px 10px 4px
-      rgb(var(--color-r), var(--color-b), var(--color-g));
+
+  // dot
+  &::before {
+    content: '';
+    $size: 4px;
+    background-color: #fff;
+
+    border-radius: 50%;
+    transition: all 1s;
+    opacity: 1;
+
+    animation: pulse 2.3s infinite alternate;
+
+    width: $size;
+    height: $size;
+
+    position: absolute;
+    top: calc(50% - $size / 2);
+    left: calc(50% - $size / 2);
+  }
+
+  .open & {
+    height: 0;
+    display: none;
+
+    &::before {
+      height: 0;
+      opacity: 0;
+    }
+  }
+
+  .wrapper:disabled & {
+    &::before {
+      animation: none;
+      opacity: 0.35;
+      // background-color: rgba(#fff, 0.5);
+    }
+  }
+}
+
+.content {
+  // width: 670px;
+  text-align: center;
+  text-shadow: 0px 0px 5px
+    rgba(var(--color-r), var(--color-b), var(--color-g), 0.7);
+  line-height: 26px;
+  overflow: hidden;
+  height: 0;
+  min-height: 0;
+  opacity: 0;
+
+  .open & {
+    padding: 5px 0;
+    min-height: 50px;
+    height: auto;
+    opacity: 1;
   }
 }

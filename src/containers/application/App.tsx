@@ -91,6 +91,8 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
+        <AdviserContainer />
+
         <Outlet />
       </>
     </MainLayout>
