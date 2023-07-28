@@ -5,6 +5,7 @@ import Commander from './Commander/Commander';
 import styles from './Header.module.scss';
 import { useEffect, useState } from 'react';
 import cx from 'classnames';
+import AdviserContainer from 'src/features/adviser/AdviserContainer';
 
 type Props = {
   menuProps: {
@@ -47,6 +48,8 @@ function Header({ menuProps }: Props) {
       />
 
       <Commander />
+
+      <AdviserContainer />
 
       <Electricity />
       <SwitchAccount />

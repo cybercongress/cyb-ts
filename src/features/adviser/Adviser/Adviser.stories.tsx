@@ -1,22 +1,34 @@
-import React from 'react';
-import { Story, Meta } from '@storybook/react';
-import Adviser from './Adviser';
+/* eslint-disable import/no-unused-modules */
 
-const Template: Story = (args) => <Adviser {...args} />;
+import { Meta, StoryObj } from '@storybook/react';
 
-export default {
-  title: 'Components/Adviser',
+import { Link } from 'react-router-dom';
+import Adviser, { AdviserColors } from './Adviser';
+
+const meta: Meta<typeof Adviser> = {
   component: Adviser,
-} as Meta;
+  title: 'molecules/Adviser',
+};
+export default meta;
 
-export const Default = Template.bind({});
-Default.args = {
-  children: (
-    <>
-      Connect your wallet by adding a key to start using robot. <br /> Get your
-      first citizenship to unlock all features of cyb.{' '}
-    </>
-  ),
+type Story = StoryObj<typeof Adviser>;
+
+export const Default: Story = {
+  args: {
+    children: (
+      <>
+        Connect your wallet by adding a <Link to="/">key</Link> to start using
+        robot. <br /> Get your first <Link to="/">citizenship</Link> to unlock
+        all features of cyb.
+      </>
+    ),
+    color: AdviserColors.blue,
+  },
 };
 
-// export { Default };
+export const Disabled: Story = {
+  args: {
+    ...Default.args,
+    disabled: true,
+  },
+};

@@ -46,7 +46,7 @@ function App() {
         queryClient,
       })
     );
-  }, [address]);
+  }, [address, queryClient, dispatch]);
 
   // reset
 
@@ -83,8 +83,6 @@ function App() {
   //   }
   // };
 
-  console.log('render');
-
   return (
     <MainLayout>
       <>
@@ -92,8 +90,6 @@ function App() {
         {location.pathname.includes('/brain') && (
           <div id={PORTAL_ID} className={styles.portal} />
         )}
-
-        <AdviserContainer />
 
         <Outlet />
       </>
