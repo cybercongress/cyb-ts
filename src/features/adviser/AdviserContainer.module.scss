@@ -10,8 +10,6 @@
   // top: 25px;
   margin-top: -45px;
   margin-bottom: 10px;
-
-  // border: 1px solid red;
   // margin-top: 60px;
 
   &::before {
@@ -24,8 +22,9 @@
     height: 110%;
     left: 0;
 
-    filter: blur(20px);
+    filter: blur(10px);
   }
 }
 .adviser {
+  margin: auto;
 }
