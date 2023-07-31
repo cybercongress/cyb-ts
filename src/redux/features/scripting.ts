@@ -17,7 +17,7 @@ import {
   ScriptEntrypoints,
 } from 'src/types/scripting';
 
-import type { SliceActions } from '../types';
+import type { AppThunk, SliceActions } from '../types';
 
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
@@ -96,6 +96,13 @@ const initialState: SliceState = {
   },
 };
 
+export function setSecrets(secrets: TabularKeyValues): AppThunk {
+  return (dispatch) => {
+    saveJsonToLocalStorage('secrets', secrets);
+    dispatch(setContext({ name: 'secrets', item: secrets }));
+  };
+}
+
 const slice = createSlice({
   name: 'scripting',
   initialState,
@@ -124,10 +131,6 @@ const slice = createSlice({
     setChatBotName: (state, { payload }: PayloadAction<string>) => {
       saveStringToLocalStorage('activeBotName', payload);
       state.chatBot.name = payload;
-    },
-    setSecrets: (state, { payload }: PayloadAction<TabularKeyValues>) => {
-      saveJsonToLocalStorage('secrets', payload);
-      setContext({ name: 'secrets', item: payload });
     },
     setContext: (
       state,
@@ -160,7 +163,6 @@ export const {
   setChatBotList,
   setChatBotActive,
   setChatBotName,
-  setSecrets,
   setScript,
   setContext,
   setScriptingEngineLoaded,

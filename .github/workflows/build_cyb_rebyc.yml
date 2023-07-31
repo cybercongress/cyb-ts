@@ -3,7 +3,7 @@ name: build_cyb_rebyc
 on:
   push:
     branches:
-      - rebyc
+      - dev
 
 jobs:
   build_cyb:

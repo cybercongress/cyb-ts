@@ -222,6 +222,7 @@
     "react-transition-group": "^4.4.2",
     "read-chunk": "^4.0.3",
     "readable-stream": "^4.3.0",
+    "redux-observable": "^2.0.0",
     "redux-thunk": "^2.4.2",
     "regenerator-runtime": "^0.13.7",
     "remark-breaks": "^3.0.3",
