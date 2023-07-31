@@ -8,6 +8,12 @@ import Adviser, { AdviserColors } from './Adviser';
 const meta: Meta<typeof Adviser> = {
   component: Adviser,
   title: 'molecules/Adviser',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=18318-21114',
+    },
+  },
 };
 export default meta;
 

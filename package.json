@@ -150,6 +150,7 @@
     "@multiformats/multiaddr": "^11.4.0",
     "@nftstorage/ipfs-cluster": "^5.0.1",
     "@reduxjs/toolkit": "^1.9.3",
+    "@storybook/addon-designs": "^7.0.1",
     "@tableflip/react-inspector": "^2.3.0",
     "@tanstack/react-query": "^4.22.0",
     "@tanstack/react-query-devtools": "^4.22.0",
