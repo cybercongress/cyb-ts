@@ -62,18 +62,16 @@ $animation-time: 2.3s;
     background: linear-gradient(
       to right,
       rgba(0, 0, 0, 0) 0%,
-      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 28.13%,
-      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 70.83%,
+      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 40%,
+      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 60%,
       rgba(0, 0, 0, 0) 100%
     );
 
     @keyframes pulseBg {
       0% {
         transform: scale(0.5, 0.8);
+        opacity: 0.7;
         filter: blur(7px);
-      }
-
-      100% {
       }
     }
     animation: pulseBg $animation-time infinite alternate;
@@ -105,10 +103,10 @@ $animation-time: 2.3s;
   @keyframes pulse {
     0% {
       box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
-      opacity: 0.35;
+      opacity: 0.2;
     }
     100% {
-      box-shadow: 0px 0px 10px 4px
+      box-shadow: 0px 0px 10px 2px
         rgb(var(--color-r), var(--color-b), var(--color-g));
     }
   }
@@ -168,7 +166,7 @@ $animation-time: 2.3s;
 
   .open & {
     padding: 5px 0;
-    min-height: 50px;
+    min-height: 55px;
     height: auto;
     opacity: 1;
   }
