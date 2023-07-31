@@ -76,7 +76,7 @@ $animation-time: 2.3s;
       100% {
       }
     }
-    // animation: pulseBg $animation-time infinite alternate;
+    animation: pulseBg $animation-time infinite alternate;
   }
 
   &.open,
@@ -135,10 +135,10 @@ $animation-time: 2.3s;
 
   .open & {
     height: 0;
-    display: none;
 
     &::before {
       height: 0;
+      width: 0;
       opacity: 0;
     }
   }
@@ -162,6 +162,9 @@ $animation-time: 2.3s;
   height: 0;
   min-height: 0;
   opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .open & {
     padding: 5px 0;

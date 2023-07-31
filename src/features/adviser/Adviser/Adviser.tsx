@@ -47,7 +47,9 @@ function Adviser({
       onClick={() => setIsOpen(!isOpen)}
     >
       <span className={styles.summary}>Adviser</span>
-      <div className={styles.content}>{children}</div>
+      <div className={styles.content}>
+        <div>{children}</div>
+      </div>
     </button>
   );
 }
