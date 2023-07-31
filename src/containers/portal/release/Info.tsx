@@ -1,7 +1,6 @@
 import { formatNumber } from 'src/utils/utils';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
-import InfoCard from '../components/InfoCard/InfoCard';
 import { BOOT_ICON } from '../utils';
 import { DataReleaseStatus } from './type';
 import STEP_INFO from './utils';
@@ -18,60 +17,46 @@ function Info({
   useReleasedStage: DataReleaseStatus;
   nextRelease: number;
 }) {
-  try {
-    let content;
+  let content;
 
-    switch (stepCurrent) {
-      case STATE_READY_TO_RELEASE:
-        content = (
-          <span>
-            release {formatNumber(useReleasedStage.availableRelease) || ''}
-            {BOOT_ICON} right now! <br />
-          </span>
-        );
-        break;
-
-      case STATE_NEXT_UNFREEZE:
-        content = (
-          <span>
-            Next release will be available in {nextRelease} new addresses.{' '}
-            <br />
-            <Link to={routes.sphere.path}>Hire hero</Link> and get H token for
-            free
-            <br />
-            invite your friends to release faster
-          </span>
-        );
-        break;
-
-      case STATE_PROVE_ADDRESS:
-        content = (
-          <span>
-            You have nothing to release. <br />
-            Prove another address <br />
-            or claim address with the gift.
-          </span>
-        );
-        break;
-
-      default:
-        content = null;
-        break;
-    }
-
-    if (content) {
-      return (
-        <InfoCard>
-          <div style={{ textAlign: 'center' }}>{content}</div>
-        </InfoCard>
+  switch (stepCurrent) {
+    case STATE_READY_TO_RELEASE:
+      content = (
+        <span>
+          release {formatNumber(useReleasedStage.availableRelease) || ''}
+          {BOOT_ICON} right now! <br />
+        </span>
       );
-    }
+      break;
 
-    return null;
-  } catch (error) {
-    console.log('error', error);
-    return null;
+    case STATE_NEXT_UNFREEZE:
+      content = (
+        <span>
+          Next release will be available in {nextRelease} new addresses. <br />
+          <Link to={routes.sphere.path}>Hire hero</Link> and get H token for
+          free
+          <br />
+          invite your friends to release faster
+        </span>
+      );
+      break;
+
+    case STATE_PROVE_ADDRESS:
+      content = (
+        <span>
+          You have nothing to release. <br />
+          Prove another address <br />
+          or claim address with the gift.
+        </span>
+      );
+      break;
+
+    default:
+      content = null;
+      break;
   }
+
+  return content;
 }
 
 export default Info;
