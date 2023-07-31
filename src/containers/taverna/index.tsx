@@ -44,17 +44,13 @@ function Taverna() {
   const displayedPalettes = useMemo(
     () =>
       Object.keys(tweets)
-        .slice(0, itemsToShow)
         .sort((a, b) => {
           const x = Date.parse(tweets[a].time);
           const y = Date.parse(tweets[b].time);
           return y - x;
         })
-        .map((key, i) => {
-          if (i > itemsToShow) {
-            return null;
-          }
-          // console.log(i);
+        .slice(0, itemsToShow)
+        .map((key) => {
           // let timeAgoInMS = 0;
           // const time = Date.parse(d) - Date.parse(tweets[key].time);
           // if (time > 0) {
