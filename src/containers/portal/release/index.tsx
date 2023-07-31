@@ -281,13 +281,13 @@ function Release() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser(
-      <Info
-        useReleasedStage={useReleasedStage}
-        stepCurrent={stateInfo}
-        nextRelease={useNextRelease}
-      />
-    );
+    const content = Info({
+      useReleasedStage,
+      stepCurrent: stateInfo,
+      nextRelease: useNextRelease,
+    });
+
+    setAdviser(content);
   }, [setAdviser, useReleasedStage, stateInfo, useNextRelease]);
 
   const useUnClaimedGiftData = useMemo(() => {

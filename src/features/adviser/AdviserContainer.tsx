@@ -5,7 +5,7 @@ import styles from './AdviserContainer.module.scss';
 import { useEffect } from 'react';
 
 function AdviserContainer() {
-  const { content, isOpen, setAdviser, color } = useAdviser();
+  const { content, isOpen, setAdviser, setIsOpen, color } = useAdviser();
 
   const location = useLocation();
 
@@ -20,6 +20,7 @@ function AdviserContainer() {
         className={styles.adviser}
         isOpen={isOpen && !!content}
         color={color}
+        openCallback={setIsOpen}
       >
         {content}
       </Adviser>

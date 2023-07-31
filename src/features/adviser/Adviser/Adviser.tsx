@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import cx from 'classnames';
 import styles from './Adviser.module.scss';
-import { useAdviser } from '../context';
 
 export enum AdviserColors {
   blue = 'blue',
-  red = 'red',
   green = 'green',
+  red = 'red',
 }
 
 type Props = {
   children: React.ReactNode;
   color?: AdviserColors;
-  className?: string;
-  isOpen?: boolean;
   disabled?: boolean;
+  className?: string;
+
+  isOpen?: boolean;
+  openCallback?: (isOpen: boolean) => void;
 };
 
 function Adviser({
@@ -22,19 +23,27 @@ function Adviser({
   color = AdviserColors.blue,
   className,
   disabled,
+  openCallback,
   isOpen: forceOpen = false,
 }: Props) {
   const [isOpen, setIsOpen] = useState(forceOpen);
-
-  const { setIsOpen: setIsOpenContext } = useAdviser();
 
   useEffect(() => {
     setIsOpen(forceOpen);
   }, [forceOpen]);
 
   useEffect(() => {
-    setIsOpenContext(isOpen);
-  }, [setIsOpenContext, isOpen]);
+    // context infinity render
+    const timeout = setTimeout(() => {
+      if (openCallback && isOpen !== forceOpen) {
+        openCallback(isOpen);
+      }
+    }, 1);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [openCallback, isOpen, forceOpen]);
 
   return (
     // maybe try use <details> tag
