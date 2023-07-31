@@ -5,7 +5,6 @@ import cx from 'classnames';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
-import { Props } from './Props';
 
 const classNames = require('classnames');
 
