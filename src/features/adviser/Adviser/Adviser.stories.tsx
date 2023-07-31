@@ -15,24 +15,32 @@ type Story = StoryObj<typeof Adviser>;
 
 export const Main: Story = {
   render: () => (
-    <div>
-      <Adviser
-        children={
-          <>
-            Connect your wallet by adding a <Link to="/">key</Link> to start
-            using robot.
-            <br /> Get your first <Link to="/">citizenship</Link> to unlock all
-            features of cyb.
-          </>
-        }
-        color={AdviserColors.blue}
-      />
+    <>
+      <div
+        style={{
+          display: 'grid',
+          gap: 20,
+        }}
+      >
+        {Object.keys(AdviserColors).map((color) => (
+          <Adviser
+            key={color}
+            children={
+              <>
+                Connect your wallet by adding a <Link to="/">key</Link> to start
+                using robot.
+                <br /> Get your first <Link to="/">citizenship</Link> to unlock
+                all features of cyb.
+              </>
+            }
+            color={color}
+          />
+        ))}
+      </div>
 
       <br />
-
-      <hr />
-
       <h3>One line: </h3>
+      <br />
 
       <Adviser
         children={
@@ -41,9 +49,9 @@ export const Main: Story = {
             using robot.
           </>
         }
-        color={AdviserColors.blue}
+        color={AdviserColors.green}
       />
-    </div>
+    </>
   ),
 };
 
