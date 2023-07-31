@@ -4,6 +4,7 @@ import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { Col, GridContainer } from './grid';
+import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale';
 
 export const enum TokenSetterId {
   tokenAAmount = 'tokenAAmount',
@@ -65,12 +66,13 @@ function TokenSetterSwap({
   return (
     <GridContainer>
       <Col>
-        <InputNumber
+        <InputNumberDecimalScale
           id={id}
           value={tokenAmountValue}
           onValueChange={(value, e) => amountChangeHandler(value, e.target.id)}
           title={`choose amount to ${textAction}`}
-          color={validInputAmount ? Color.Pink : undefined}
+          validAmount={validInputAmount}
+          tokenSelect={valueSelect}
           autoFocus={autoFocus}
         />
         <AvailableAmount

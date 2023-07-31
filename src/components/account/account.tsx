@@ -24,6 +24,7 @@ function useGetValidatorInfo(address: string) {
     {
       enabled: Boolean(
         queryClient &&
+          address &&
           address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
       ),
     }

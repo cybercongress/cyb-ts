@@ -38,12 +38,14 @@ import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from './utils';
 import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
 import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
-import AccountInput from './comp/AccountInput/AccountInput';
+import AccountInput from './comp/Inputs/AccountInput';
 import useGetSendTxsByAddressByLcd from './hooks/useGetSendTxsByAddressByLcd';
 import { getPassportByNickname } from '../portal/utils';
 import citizenship from '../portal/citizenship';
 import { Citizenship } from 'src/types/citizenship';
 import useDebounce from './useDebounce';
+import InputMemo from './comp/Inputs/InputMemo';
+import InputNumberDecimalScale from './comp/Inputs/InputNumberDecimalScale';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -77,8 +79,6 @@ function Send() {
   const { debounce } = useDebounce();
   const inputElem = useRef(null);
 
-  console.log('searchParams', Object.fromEntries(searchParams.entries()));
-
   useEffect(() => {
     if (firstEffectOccured.current) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +103,10 @@ function Send() {
       if (Object.keys(param).length > 0) {
         const { token, recipient, amount } = param;
         setTokenSelect(token);
-        setRecipient(recipient);
+        if (recipient) {
+          setValueRecipient(recipient);
+          handleSearch(recipient);
+        }
 
         if (amount && Number(amount) > 0) {
           setTokenAmount(amount);
@@ -228,7 +231,7 @@ function Send() {
       } else {
         const response = await getPassportByNickname(queryClient, value);
 
-        console.log('response', response)
+        console.log('response', response);
 
         if (response) {
           setRecipient(response.owner);
@@ -258,20 +261,22 @@ function Send() {
             ref={inputElem}
             valueRecipient={valueRecipient}
             recipient={recipient}
-            onChangeRecipient={(e) => onChangeRecipient(e.target.value)}
+            onChangeRecipient={onChangeRecipient}
           />
+          <InputMemo value={memoValue} onChangeValue={setMemoValue} />
           <GridContainer>
             <Col>
-              <InputNumber
+              <InputNumberDecimalScale
                 value={tokenAmount}
                 onValueChange={(value) => setTokenAmount(value)}
                 title="choose amount to send"
-                color={validInputAmountToken ? Color.Pink : undefined}
+                validAmount={validInputAmountToken}
+                tokenSelect={tokenSelect}
               />
               <AvailableAmount
                 accountBalances={accountBalances}
                 token={tokenSelect}
-                title="you have"
+                title="you will have"
                 changeAmount={reverceTokenAmount}
               />
             </Col>
@@ -305,13 +310,6 @@ function Send() {
             tokenAAmount={tokenAmount}
             setPercentageBalanceHook={setPercentageBalanceHook}
             accountBalances={accountBalances}
-          />
-
-          <Input
-            value={memoValue}
-            onChange={(e) => setMemoValue(e.target.value)}
-            title="type public message"
-            color={Color.Pink}
           />
         </TeleportContainer>
         <TeleportContainer>

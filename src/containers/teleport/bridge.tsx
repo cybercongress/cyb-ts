@@ -26,6 +26,7 @@ import { useChannels } from 'src/hooks/useHub';
 import HistoryContextProvider from './ibc-history/historyContext';
 import DataIbcHistory from './comp/dataIbcHistory/DataIbcHistory';
 import { Networks } from 'src/types/networks';
+import InputNumberDecimalScale from './comp/Inputs/InputNumberDecimalScale';
 
 type Query = {
   networkFrom: string;
@@ -307,11 +308,12 @@ function Bridge() {
         <TeleportContainer>
           <GridContainer>
             <Col>
-              <InputNumber
+              <InputNumberDecimalScale
                 value={tokenAmount}
                 onValueChange={(value) => setTokenAmount(value)}
                 title="choose amount to send"
-                color={validInputAmountToken ? Color.Pink : undefined}
+                validAmount={validInputAmountToken}
+                tokenSelect={tokenSelect}
               />
               <AvailableAmount
                 accountBalances={getAccountBalancesToken(networkA)}

@@ -13,9 +13,16 @@ export type Props = {
   id?: string;
   title?: string;
   color?: Color;
+  fixedDecimalScale?: boolean;
 };
 
-function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
+function InputNumber({
+  value,
+  onValueChange,
+  fixedDecimalScale,
+  onChange,
+  ...props
+}: Props) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -31,6 +38,7 @@ function InputNumber({ value, onValueChange, onChange, ...props }: Props) {
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
       decimalScale={3}
+      fixedDecimalScale={fixedDecimalScale}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       autoComplete="off"

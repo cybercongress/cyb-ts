@@ -10,7 +10,7 @@ export const enum Color {
 }
 
 export type Props = {
-  active: boolean;
+  active?: boolean;
   color?: Color;
   title?: string;
   children: React.ReactNode;

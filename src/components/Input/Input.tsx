@@ -11,6 +11,7 @@ export type Props = {
   width?: string;
   title?: string;
   className?: string;
+  classNameTextbox?: string;
   focusedProps?: boolean;
   isTextarea?: boolean;
   type?: 'text' | 'password';
@@ -32,6 +33,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       value,
       autoFocus,
       className,
+      classNameTextbox,
       focusedProps,
       isTextarea,
       onBlurFnc,
@@ -58,7 +60,8 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           styles.textbox,
           color && styles[color],
           focused && styles.focused,
-          isTextarea && styles.textarea
+          isTextarea && styles.textarea,
+          classNameTextbox
         )}
         style={{ width }}
       >
