@@ -28,12 +28,11 @@ export const routes = {
   robot: {
     path: '/robot',
     routes: {
+      // TODO: reuse parent
       karma: {
-        // TODO: reuse parent
         path: '/robot/karma',
       },
       drive: {
-        // TODO: reuse parent
         path: '/robot/drive',
       },
     },

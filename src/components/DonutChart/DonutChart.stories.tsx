@@ -22,7 +22,7 @@ const defaultArgs: Props = {
 
 export default {
   component: DonutChart,
-  title: 'Atoms/DonutChart',
+  title: 'Atoms/charts/DonutChart',
 } as Meta;
 
 function Template(args) {

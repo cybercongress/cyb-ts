@@ -9,6 +9,7 @@
     "Keplr",
     "stylelint",
     "denoms",
-    "bech32"
+    "bech32",
+    "websockets"
   ]
 }

@@ -12,10 +12,12 @@ export function isNativeChainId(chain: string) {
   return false;
 }
 
-const findChainIdInNetworkList = (chainId: string, networks: ObjectKey<Network>) => {
-  
+const findChainIdInNetworkList = (
+  chainId: string,
+  networks: ObjectKey<Network>
+) => {
   if (Object.prototype.hasOwnProperty.call(networks, chainId)) {
-    return networks[chainId]
+    return networks[chainId];
   }
 
   return undefined;
@@ -27,7 +29,6 @@ export const useTraseNetworks = (chainIdTrase: string) => {
     chainId: chainIdTrase,
     chainName: chainIdTrase,
     chainIdImageCid: '',
-
   });
 
   useEffect(() => {

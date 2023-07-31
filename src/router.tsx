@@ -36,7 +36,7 @@ import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 import Temple from './containers/temple';
-import IpfsSettings from './containers/ipfsSettings';
+import IpfsSettings from './features/ipfs/ipfsSettings';
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -141,7 +141,7 @@ function AppRouter() {
           <Route path="/quitter" element={<ForceQuitter />} />
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<ForceGraph />} />
-          <Route path="/ipfs" element={<IpfsSettings />} />
+          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
           <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
           <Route path="network/bostrom">

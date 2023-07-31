@@ -215,7 +215,6 @@ export function ContainerGradientBeforeOrAfter({
     </Tag>
   );
 }
-
 interface Props {
   title?: string;
   closedTitle?: string;

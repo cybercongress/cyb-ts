@@ -22,14 +22,43 @@ const Template: Story<Props> = (args) => {
     <div style={{ width: 400 }}>
       <Table
         {...args}
-        columns={['skill', 'network', 'provider', 'address']}
+        columns={[
+          {
+            header: 'Skill',
+            accessorKey: 'skill',
+          },
+          {
+            header: 'Network',
+            accessorKey: 'network',
+          },
+          {
+            header: 'Provider',
+            accessorKey: 'provider',
+          },
+          {
+            header: 'Address',
+            accessorKey: 'address',
+          },
+        ]}
         data={[
-          ['skill1', 'network', 'provider', 'address'],
-          ['skill2', 'network', 'provider', 'address'],
-          [null, 'network', 'provider', 'address'],
-          ['skill4', 'network', 'provider', 'address'],
-          ['skill4', 'network', 'provider', 'address'],
-          ['skill4', 'network', 'provider', 'address'],
+          {
+            skill: 'skill1',
+            network: 'network',
+            provider: 'provider',
+            address: 'address',
+          },
+          {
+            skill: 'skill2',
+            network: 'network',
+            provider: 'provider',
+            address: 'address',
+          },
+          // ['skill1', 'network', 'provider', 'address'],
+          // ['skill2', 'network', 'provider', 'address'],
+          // [null, 'network', 'provider', 'address'],
+          // ['skill4', 'network', 'provider', 'address'],
+          // ['skill4', 'network', 'provider', 'address'],
+          // ['skill4', 'network', 'provider', 'address'],
         ]}
       />
     </div>

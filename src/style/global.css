@@ -542,10 +542,6 @@ input:focus:-ms-input-placeholder {
   min-height: 42px !important;
 }
 
-.infinite-scroll-component {
-  padding-top: 3px !important;
-}
-
 .padded-text {
   padding: 0.5rem;
 }
