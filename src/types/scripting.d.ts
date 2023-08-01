@@ -20,7 +20,12 @@ type ScriptContext = {
   secrets: TabularKeyValues; // Record<string, string>;
 };
 
-type ScriptEntrypoint = { title: string; runtime: string; user: string };
+type ScriptEntrypoint = {
+  title: string;
+  runtime: string;
+  user: string;
+  enabled: boolean;
+};
 
 type ScriptEntrypoints = {
   particle: ScriptEntrypoint;

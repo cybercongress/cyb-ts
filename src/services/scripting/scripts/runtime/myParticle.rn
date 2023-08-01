@@ -8,7 +8,7 @@ pub fn answer(content) {
 
 
 pub async fn main() {
-    let my_particle_ctx = cyb::context.myParticle;
+    let particle_inference_ctx = cyb::context.myParticle;
     dbg(cyb::context);
-    my_particle(my_particle_ctx.input).await
+    particle_inference(particle_inference_ctx.input).await
 }

@@ -50,8 +50,8 @@ const getEntrypointScripts = (
     throw Error(`No '${name}' script exist`);
   }
 
-  const { user, runtime } = entrypoints[name] as ScriptEntrypoint;
-  return { userScript: user, runtimeScript: runtime };
+  const { user, runtime, enabled } = entrypoints[name] as ScriptEntrypoint;
+  return { userScript: user, runtimeScript: runtime, enabled };
 };
 
 const toRecord = (item: TabularKeyValues) =>
@@ -192,10 +192,14 @@ function enigine(): Engine {
   const reactToParticle = async (
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult> => {
-    const { userScript, runtimeScript } = getEntrypointScripts(
+    const { userScript, runtimeScript, enabled } = getEntrypointScripts(
       entrypoints,
       'particle'
     );
+
+    if (!enabled) {
+      return { action: 'pass' };
+    }
 
     const scriptResult = await run(
       userScript,

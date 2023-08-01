@@ -20,8 +20,11 @@ type StreamDoneCallback = (
 // }
 
 export const getMimeFromUint8Array = async (
-  raw: Uint8Array
+  raw: Uint8Array | undefined
 ): Promise<string | undefined> => {
+  if (!raw) {
+    return undefined;
+  }
   const fileType = await fileTypeFromBuffer(raw);
 
   return fileType?.mime.split(' ')[0] || 'text/plain';

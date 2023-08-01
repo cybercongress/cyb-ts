@@ -3,7 +3,11 @@ import { ScriptEntrypointNames } from 'src/types/scripting';
 
 type JsonTypeKeys = 'secrets' | 'botConfig';
 
-type StringTypeKeys = 'activeBotName' | ScriptEntrypointNames;
+type StringTypeKeys =
+  | 'activeBotName'
+  | ScriptEntrypointNames
+  | `${ScriptEntrypointNames[0]}_enabled`
+  | `${ScriptEntrypointNames[1]}_enabled`;
 
 const jsonKeyMap: Record<JsonTypeKeys, string> = {
   secrets: 'secrets',
@@ -13,7 +17,7 @@ const jsonKeyMap: Record<JsonTypeKeys, string> = {
 const stringKeyMap: Record<StringTypeKeys, string> = {
   activeBotName: 'active_bot_name',
   particle: 'script_particle',
-  myParticle: 'script_my_particle',
+  myParticle: 'script_particle_inference',
 };
 
 const saveJsonToLocalStorage = (
@@ -34,10 +38,15 @@ const loadJsonFromLocalStorage = (
 const loadStringFromLocalStorage = (
   name: StringTypeKeys,
   defaultValue?: string
-) => localStorage.getItem(stringKeyMap[name]) || defaultValue || '';
+) => {
+  const keyName = stringKeyMap[name] || name;
+  const result = localStorage.getItem(keyName) || defaultValue || '';
+  return result;
+};
 
 const saveStringToLocalStorage = (name: StringTypeKeys, value: string) => {
-  localStorage.setItem(stringKeyMap[name], value);
+  const keyName = stringKeyMap[name] || name;
+  localStorage.setItem(keyName, value);
 };
 
 const keyValuesToObject = (data: KeyValueString[]) => {
@@ -48,10 +57,16 @@ const keyValuesToObject = (data: KeyValueString[]) => {
   );
 };
 
+const getEntrypointKeyName = (
+  name: ScriptEntrypointNames,
+  prefix: 'enabled'
+): StringTypeKeys => `${name}_${prefix}`;
+
 export {
   saveJsonToLocalStorage,
   loadJsonFromLocalStorage,
   keyValuesToObject,
   loadStringFromLocalStorage,
   saveStringToLocalStorage,
+  getEntrypointKeyName,
 };

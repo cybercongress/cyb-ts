@@ -11,11 +11,11 @@ There is several points in the app where Rune scripts is embedded as part of wor
 
 ## Particle post-processor
 
-Every single particle goes thru pipeline and **react_to_particle** function is applied to that:
+Every single particle goes thru pipeline and **personal_processor** function is applied to that:
 
 ```mermaid
 graph LR
-E(app) -- user input --> A[cyber] -- cid --> B[IPFS] -- content --> C(("react_to_particle")) -- content mutation --> D(app)
+E(app) -- user input --> A[cyber] -- cid --> B[IPFS] -- content --> C(("personal_processor")) -- content mutation --> D(app)
 ```
 
 ```
@@ -23,7 +23,7 @@ E(app) -- user input --> A[cyber] -- cid --> B[IPFS] -- content --> C(("react_to
 // content_type - text, video, pdf, image
 // content - at the moment ONLY TEXT content is availible here
 
-pub async fn react_to_particle(cid, content_type, content) {}
+pub async fn personal_processor(cid, content_type, content) {}
 ```
 
 User can do any transformation/mutation of content in pipeline, and return next result using helper functions
@@ -48,13 +48,13 @@ Every user is able to create his own particle that appears in search results of 
 
 ```mermaid
 graph LR
-E(follower) -- search input --> C(("my_particle")) -- answer --> D(search results)
+E(follower) -- search input --> C(("particle_inference")) -- answer --> D(search results)
 ```
 
 ```
 // input - Search input
 
-my_particle(input) {}
+particle_inference(input) {}
 ```
 
 Follower gets answer based on following particle automatically
@@ -122,7 +122,7 @@ let openAI_apiKey = cyb::context.app.secrets.openAI_apiKey;
 
 ```
 // Add debug info to script output
-dbg(`react_to_particle ${cid} ${content_type} ${content}`);
+dbg(`personal_processor ${cid} ${content_type} ${content}`);
 
 // console.log
 cyb:log("blah");
@@ -133,7 +133,7 @@ cyb:log("blah");
 ### myParticle
 
 ```
-pub async fn my_particle(input) {
+pub async fn particle_inference(input) {
     let nickname =  cyb::context.app.user.nickname;
     return answer(`${nickname}, I want to buy your hears! Expensive.`);
     // Answer with IPFS content
@@ -145,9 +145,9 @@ pub async fn my_particle(input) {
 
 ```
 
-pub async fn react_to_particle(cid, content_type, content) {
+pub async fn personal_processor(cid, content_type, content) {
 
-    dbg(`react_to_particle ${cid} ${content_type} ${content}`);
+    dbg(`personal_processor ${cid} ${content_type} ${content}`);
 
     if content_type == "text" {
 

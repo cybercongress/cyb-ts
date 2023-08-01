@@ -35,7 +35,10 @@ import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { useIpfs } from 'src/contexts/ipfs';
 import { isCID } from 'src/utils/ipfs/helpers';
-import { setScript } from 'src/redux/features/scripting';
+import {
+  setEntrypoint,
+  setEntrypointEnabled,
+} from 'src/redux/features/scripting';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import { updatePassportParticle } from '../../utils';
@@ -54,6 +57,8 @@ import {
 } from 'src/utils/localStorage';
 
 import { scriptMap } from 'src/services/scripting/scripts/mapping';
+import Switch from 'src/components/Switch/Switch';
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
@@ -97,6 +102,21 @@ const formatExecutionResult = (
       '',
       result?.output || 'no output.',
     ]);
+  }
+};
+
+const saveToPassport = async (node: AppIPFS, code: string) => {
+  const cid = await addContenToIpfs(node, code);
+
+  if (cid) {
+    const result = await updatePassportParticle(
+      passport?.extension.nickname,
+      cid,
+      {
+        signer,
+        signingClient,
+      }
+    );
   }
 };
 
@@ -236,6 +256,8 @@ function ScriptEditor() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const loadScript = async () => {
+    console.log('loadScript', entrypointName, entrypoints[entrypointName]);
+    // setIsEnabled(entrypoints[entrypointName].enabled);
     if (entrypointName === 'particle') {
       setCode(
         loadStringFromLocalStorage(entrypointName, scriptMap.particle.user)
@@ -243,9 +265,17 @@ function ScriptEditor() {
     }
     if (entrypointName === 'myParticle') {
       const cid = passport?.extension.particle;
+      console.log('loadScript myParticle', cid);
 
       if (!cid || !isCID(cid)) {
-        setCode(scriptMap.myParticle.user);
+        setCode(
+          loadStringFromLocalStorage(entrypointName, scriptMap.myParticle.user)
+        );
+        // setIsEnabled(false);
+        console.log('loadScript noIpfs');
+        dispatch(
+          setEntrypointEnabled({ name: entrypointName, enabled: false })
+        );
       } else {
         const response = await getIPFSContent(node, cid);
         const content =
@@ -255,35 +285,44 @@ function ScriptEditor() {
         setCode(
           content || content === '' ? content : scriptMap.myParticle.user
         );
+        console.log('loadScript myParticle fromIpfs', content, response);
+        dispatch(
+          setEntrypointEnabled({ name: entrypointName, enabled: !!content })
+        );
       }
     }
     setIsLoaded(true);
   };
 
+  const saveScriptToPassport = async (scriptCode: string) => {
+    const cid = await addContenToIpfs(node, scriptCode);
+    console.log('saveScriptToPassport', cid, scriptCode);
+
+    if (cid) {
+      const result = await updatePassportParticle(
+        passport?.extension.nickname,
+        cid,
+        {
+          signer,
+          signingClient,
+        }
+      );
+      addToLog(['', `☑️ Saved as particle into your passport.`]);
+    }
+  };
   const saveScript = async () => {
     addToLog(['Saving code...']);
     setIsLoaded(false);
+    saveStringToLocalStorage(entrypointName, code);
+
     if (entrypointName === 'particle') {
-      saveStringToLocalStorage('particle', code);
       addToLog(['', '☑️ Saved to local storage.']);
     }
     if (entrypointName === 'myParticle') {
-      const cid = await addContenToIpfs(node, code);
-
-      if (cid) {
-        const result = await updatePassportParticle(
-          passport?.extension.nickname,
-          cid,
-          {
-            signer,
-            signingClient,
-          }
-        );
-        addToLog(['', `☑️ Saved as particle into your passport.`]);
-      }
+      await saveScriptToPassport(code);
     }
 
-    dispatch(setScript({ name: entrypointName, code }));
+    dispatch(setEntrypoint({ name: entrypointName, code }));
     setIsLoaded(true);
   };
 
@@ -341,6 +380,18 @@ function ScriptEditor() {
     });
   };
 
+  const changeScriptEnabled = async (isOn: boolean) => {
+    dispatch(
+      setEntrypointEnabled({
+        name: entrypointName,
+        enabled: isOn,
+      })
+    );
+    if (entrypointName === 'myParticle') {
+      await saveScriptToPassport(isOn ? code : '');
+    }
+  };
+
   if (!signer || !signingClient) {
     return <Pane>Wallet is not connected.</Pane>;
   }
@@ -358,7 +409,6 @@ function ScriptEditor() {
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
           marginTop={25}
-          marginBottom={50}
           width="100%"
           marginX="auto"
         >
@@ -389,7 +439,15 @@ function ScriptEditor() {
         {tab === 'secrets' && <Secrets />}
         {!tab ||
           (Object.keys(entrypoints).indexOf(tab) > -1 && (
-            <>
+            <div className={styles.tabInner}>
+              <div className={styles.settingsPanel}>
+                <Switch
+                  isOn={entrypoints[entrypointName].enabled}
+                  onToggle={changeScriptEnabled}
+                  label={<div>Script enabled</div>}
+                />
+              </div>
+
               <ContainerGradientText>
                 <CodeMirror
                   ref={codeMirrorRef}
@@ -434,7 +492,7 @@ function ScriptEditor() {
                 {isChanged && <Button onClick={onSaveClick}>Save</Button>}
               </Pane>
               <textarea value={logText} className={styles.logArea} rows={18} />
-            </>
+            </div>
           ))}
       </main>
       {/* </MainContainer> */}

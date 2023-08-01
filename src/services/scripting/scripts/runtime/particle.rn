@@ -16,5 +16,5 @@ pub fn update_content(content) {
 
 pub async fn main() {
     let particle_ctx = cyb::context.particle;
-    react_to_particle(particle_ctx.cid, particle_ctx.contentType, particle_ctx.content).await
+    personal_processor(particle_ctx.cid, particle_ctx.contentType, particle_ctx.content).await
 }

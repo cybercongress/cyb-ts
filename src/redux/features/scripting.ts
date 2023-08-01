@@ -7,6 +7,7 @@ import {
   saveJsonToLocalStorage,
   loadStringFromLocalStorage,
   saveStringToLocalStorage,
+  getEntrypointKeyName,
 } from 'src/utils/localStorage';
 
 import { scriptMap } from 'src/services/scripting/scripts/mapping';
@@ -39,17 +40,23 @@ type SliceState = {
 export type ChatBotActiveAction = PayloadAction<boolean>;
 
 // const loadScript(name: ScriptEntrypointNames, deps: {ipfs: AppIPFS, queryClient: })
+const isParticleScriptEnabled = !!loadStringFromLocalStorage(
+  getEntrypointKeyName('particle', 'enabled')
+);
 
 const ScriptEntrypointsData: ScriptEntrypoints = {
   particle: {
-    title: 'Particle post-processor',
+    title: 'Personal processor',
     runtime: scriptMap.particle.runtime,
     user: scriptMap.particle.user,
+    enabled:
+      isParticleScriptEnabled === undefined ? true : !!isParticleScriptEnabled,
   },
   myParticle: {
-    title: 'My particle',
+    title: 'Social inference',
     runtime: scriptMap.myParticle.runtime,
     user: '',
+    enabled: true,
   },
 };
 
@@ -143,13 +150,27 @@ const slice = createSlice({
     ) => {
       state.context[payload.name] = payload.item;
     },
-    setScript: (
+    setEntrypoint: (
       state,
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>
     ) => {
       const { name, code } = payload;
       // saveStringToLocalStorage(name, code);
       state.scripts.entrypoints[name].user = code;
+    },
+    setEntrypointEnabled: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{ name: ScriptEntrypointNames; enabled: boolean }>
+    ) => {
+      const { name, enabled } = payload;
+      saveStringToLocalStorage(
+        getEntrypointKeyName('particle', 'enabled'),
+        enabled ? 'true' : ''
+      );
+
+      state.scripts.entrypoints[name].enabled = enabled;
     },
     setScriptingEngineLoaded: (state, { payload }: PayloadAction<boolean>) => {
       state.scripts.isLoaded = payload;
@@ -163,7 +184,8 @@ export const {
   setChatBotList,
   setChatBotActive,
   setChatBotName,
-  setScript,
+  setEntrypoint,
+  setEntrypointEnabled,
   setContext,
   setScriptingEngineLoaded,
   setChatBotStatus,

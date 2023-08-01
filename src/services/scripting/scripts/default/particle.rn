@@ -1,7 +1,7 @@
 
-pub async fn react_to_particle(cid, content_type, content) {
+pub async fn personal_processor(cid, content_type, content) {
 
-    dbg(`react_to_particle ${cid} ${content_type} ${content}`);
+    dbg(`personal_processor ${cid} ${content_type} ${content}`);
 
     if content_type == "text" {
         if content.contains(".") {

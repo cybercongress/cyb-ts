@@ -1,9 +1,5 @@
-import {
-  ofType,
-  combineEpics,
-  StateObservable,
-  ActionsObservable,
-} from 'redux-observable';
+import { ofType, combineEpics, StateObservable } from 'redux-observable';
+
 import {
   Observable,
   tap,
@@ -13,7 +9,6 @@ import {
   filter,
   distinctUntilChanged,
   ignoreElements,
-  EMPTY,
 } from 'rxjs';
 import { Nullable } from 'src/types';
 
@@ -21,7 +16,6 @@ import { WebLLMInstance } from 'src/services/scripting/webLLM';
 import scriptEngine from 'src/services/scripting/engine';
 import { Citizenship } from 'src/types/citizenship';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
-import { keyValuesToObject } from 'src/utils/localStorage';
 
 import {
   setChatBotStatus,
@@ -40,7 +34,7 @@ const ofScriptingType = ofType<
 >;
 
 const chatBotActiveEpic = (
-  action$: ActionsObservable<ScriptingActionTypes>,
+  action$: Observable<ScriptingActionTypes>,
   state$: StateObservable<RootState>
 ) =>
   action$.pipe(
@@ -65,7 +59,7 @@ const chatBotActiveEpic = (
   );
 
 const selectPassportEpic = (
-  action$: ActionsObservable<ScriptingActionTypes>,
+  action$: Observable<ScriptingActionTypes>,
   state$: StateObservable<RootState>
 ) =>
   action$.pipe(
@@ -89,9 +83,7 @@ const selectPassportEpic = (
     )
   );
 
-const scriptingContextEpic = (
-  action$: ActionsObservable<ScriptingActionTypes>
-) =>
+const scriptingContextEpic = (action$: Observable<ScriptingActionTypes>) =>
   action$.pipe(
     ofScriptingType('scripting/setContext'),
     map((action: ActionWithPayload<'scripting/setContext'>) => {
@@ -102,22 +94,28 @@ const scriptingContextEpic = (
   );
 
 const entrypointsEpic = (
-  action$: ActionsObservable<ScriptingActionTypes>,
+  action$: Observable<ScriptingActionTypes>,
   state$: StateObservable<RootState>
 ) =>
   action$.pipe(
-    ofScriptingType('scripting/setScript'),
+    ofScriptingType(
+      'scripting/setEntrypoint',
+      'scripting/setEntrypointEnabled'
+    ),
     withLatestFrom(state$),
     map(([, state]) => {
-      console.log('-----setent', state.scripting.scripts.entrypoints);
+      console.log('-----scripting upda', state.scripting.scripts.entrypoints);
+
       scriptEngine.setEntrypoints(state.scripting.scripts.entrypoints);
     }),
     ignoreElements()
   );
 
-export default combineEpics(
+const rootEpic = combineEpics(
   chatBotActiveEpic,
   selectPassportEpic,
   scriptingContextEpic,
   entrypointsEpic
 );
+
+export default rootEpic;

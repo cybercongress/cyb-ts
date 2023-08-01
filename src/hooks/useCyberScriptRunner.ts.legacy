@@ -24,7 +24,7 @@ function useCyberScriptRunner(): UseCyberScriptReturn {
         if (isLoaded && scriptType && params) {
           setStatus('running');
           // let result = cyb::getPassportByNickname("dasein").await;
-          const injectCode = `react_to_particle("${params?.cid}", "${params?.contentType}", "${params?.preview}")`;
+          const injectCode = `personal_processor("${params?.cid}", "${params?.contentType}", "${params?.preview}")`;
           const content = `
 pub async fn main(refId) {
   cyb::log("testtttttt" + refId);
