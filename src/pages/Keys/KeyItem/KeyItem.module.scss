@@ -5,18 +5,17 @@
   gap: 0 28px;
   overflow-x: auto;
   align-items: center;
-  cursor: pointer;
 
   > img {
     height: auto;
   }
 
   .imageWrapper {
-    text-align: center;
     position: relative;
 
     .active {
-      position: relative;
+      position: absolute;
+      left: 0;
       bottom: 25px;
     }
   }
@@ -40,6 +39,8 @@
 
   &.selected,
   &:hover {
+    cursor: pointer;
+
     &::before {
       content: '';
       position: absolute;

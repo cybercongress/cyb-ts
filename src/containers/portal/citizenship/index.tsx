@@ -35,6 +35,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
+import { useAdviser } from 'src/features/adviser/context';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -584,6 +585,30 @@ function GetCitizenship({ defaultAccount }) {
     return true;
   }, []);
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <Info
+        nickname={valueNickname}
+        stepCurrent={step}
+        valuePriceNickname={usePriceNickname}
+        registerDisabled={registerDisabled}
+        setStep={setStep}
+        counCitizenshipst={counCitizenshipst}
+        mobile={mobile}
+      />
+    );
+  }, [
+    setAdviser,
+    valueNickname,
+    step,
+    usePriceNickname,
+    registerDisabled,
+    counCitizenshipst,
+    mobile,
+  ]);
+
   return (
     <>
       <MainContainer>
@@ -592,15 +617,7 @@ function GetCitizenship({ defaultAccount }) {
         {(step === STEP_INIT || !mobile) && (
           <MoonAnimation stepCurrent={step} />
         )}
-        <Info
-          nickname={valueNickname}
-          stepCurrent={step}
-          valuePriceNickname={usePriceNickname}
-          registerDisabled={registerDisabled}
-          setStep={setStep}
-          counCitizenshipst={counCitizenshipst}
-          mobile={mobile}
-        />
+
         {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
           <Carousel
             slides={items}

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { MainContainer, InfoCard, Stars } from './components';
+import { MainContainer, Stars } from './components';
 import { activePassport } from './utils';
 import Release from './release';
 import PortalGift from './gift';
 import styles from './styles.scss';
 // const rocketSpacePussy = require('../../image/rocket.svg');
 import RocketSpacePussy from './RocketSpacePussy';
+import { useAdviser } from 'src/features/adviser/context';
 
 const spacePussy = require('../../image/space-pussy.svg');
 const portalPussyEnter = require('../../sounds/portalPussyEnter.mp3');
@@ -80,6 +81,24 @@ function MainPartal({ defaultAccount }) {
     getPasport();
   }, [queryClient, defaultAccount, stagePortal]);
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (!(scale === scaleInitValue)) {
+      return;
+    }
+
+    setAdviser(
+      <>
+        <blockquote>
+          The measure of intelligence is ability to change.
+        </blockquote>
+        <br />
+        <i>Albert Einstein</i>
+      </>
+    );
+  }, [setAdviser, scale]);
+
   const onClickSpacePussy = () => {
     setScale(6);
     setTimeout(() => {
@@ -97,12 +116,6 @@ function MainPartal({ defaultAccount }) {
     return (
       <MainContainer>
         <Stars />
-        {scale === scaleInitValue && (
-          <InfoCard>
-            The measure of intelligence is ability to change. <br /> Albert
-            Einstein
-          </InfoCard>
-        )}
 
         <div
           style={{

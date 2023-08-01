@@ -224,7 +224,7 @@ a:hover {
   background-position: top left !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
-  padding: 10px 1em 135px 1em;
+  padding: 0 1em 135px 1em;
   position: relative;
   background-color: #000000;
 }

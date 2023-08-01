@@ -1,15 +1,17 @@
-import { combineReducers } from 'redux';
+// import { combineReducers } from 'redux';
 
 import golReducer from './gol';
 import bandwidthReducer from './bandwidth';
 import pocketReducer from '../features/pocket';
-import passportReducer from '../../features/passport/passport.redux';
+import currentAccountReducer from '../features/currentAccount';
+import passportsReducer from '../../features/passport/passports.redux';
 
-const rootReducer = combineReducers({
+const rootReducer = {
   gol: golReducer,
   bandwidth: bandwidthReducer,
   pocket: pocketReducer,
-  passport: passportReducer,
-});
+  passports: passportsReducer,
+  currentAccount: currentAccountReducer,
+};
 
 export default rootReducer;

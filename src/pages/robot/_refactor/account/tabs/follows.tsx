@@ -3,6 +3,8 @@ import Loader2 from 'src/components/ui/Loader2';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import { NoItems, Account, ContainerGradient } from '../../../../../components';
 import { useGetCommunity } from '../hooks';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 
 type CommunityEntityProps = {
   items: string[];
@@ -54,12 +56,24 @@ function CommunityEntity({
 }
 
 function FollowsTab() {
-  const { address } = useRobotContext();
+  const { address, isOwner } = useRobotContext();
+  const currentAccount = useSelector(
+    (state: RootState) => state.currentAccount
+  );
 
-  const {
-    community: { friends, followers, following },
-    loading,
-  } = useGetCommunity(address);
+  const communityHook = useGetCommunity(address, isOwner);
+
+  const community = isOwner
+    ? currentAccount.community
+    : communityHook.community;
+  const loading = isOwner
+    ? {
+        friends: false,
+        following: false,
+        followers: false,
+      }
+    : communityHook.loading;
+
   return (
     <Pane
       style={{
@@ -71,19 +85,19 @@ function FollowsTab() {
         title="Friends"
         loading={loading.friends}
         noItemsTitle="No Friends"
-        items={friends}
+        items={community.friends}
       />
       <CommunityEntity
         title="Following"
         loading={loading.following}
         noItemsTitle="No Following"
-        items={following}
+        items={community.following}
       />
       <CommunityEntity
         title="Followers"
         loading={loading.followers}
         noItemsTitle="No Followers"
-        items={followers}
+        items={community.followers}
       />
     </Pane>
   );

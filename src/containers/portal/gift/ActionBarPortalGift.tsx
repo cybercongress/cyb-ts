@@ -36,12 +36,13 @@ import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addAddress,
   deleteAddress,
-} from '../../../features/passport/passport.redux';
+} from '../../../features/passport/passports.redux';
 import { Citizenship } from 'src/types/citizenship';
+import { RootState } from 'src/redux/store';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -110,6 +111,8 @@ function ActionBarPortalGift({
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
+  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
+  const currentAddress = defaultAccount.account?.cyber?.bech32;
 
   const [currentTx, setCurrentTx] = useState<{
     hash: string;
@@ -290,7 +293,12 @@ function ActionBarPortalGift({
           setCurrentTx({
             hash: executeResponseResult.transactionHash,
             onSuccess: () => {
-              dispatch(addAddress(signedMessageKeplr.address));
+              dispatch(
+                addAddress({
+                  address: signedMessageKeplr.address,
+                  currentAddress,
+                })
+              );
               setStepApp(STEP_INFO.STATE_PROVE_DONE);
             },
           });
@@ -466,7 +474,12 @@ function ActionBarPortalGift({
         setCurrentTx({
           hash: executeResponseResult.transactionHash,
           onSuccess: () => {
-            dispatch(deleteAddress(selectedAddress));
+            dispatch(
+              deleteAddress({
+                address: selectedAddress,
+                currentAddress,
+              })
+            );
             setStepApp(STEP_INFO.STATE_INIT);
           },
         });
