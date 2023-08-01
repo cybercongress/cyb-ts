@@ -37,13 +37,14 @@ function Table<T extends object>({
     // TODO: refactor to ref maybe
     if (
       findElementInParents(e.target, `tr`) ||
-      findElementInParents(e.target, `button`)
+      findElementInParents(e.target, `button`) ||
+      findElementInParents(e.target, `input`)
     ) {
       // this row will update selected
       return;
     }
 
-    onSelect?.(null);
+    // onSelect?.(null);
   });
 
   const table = useReactTable({

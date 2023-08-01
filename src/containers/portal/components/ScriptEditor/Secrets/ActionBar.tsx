@@ -49,6 +49,8 @@ function ActionBar({ selected, callback }: Props) {
     } else {
       setStep(Steps.INIT_STATE);
     }
+
+    setNewSecret(INITIAL_STATE);
   }, [selected]);
 
   useEffect(() => {
@@ -73,6 +75,7 @@ function ActionBar({ selected, callback }: Props) {
         placeholder="Key"
       />
       <Input
+        // isTextarea
         value={newSecret.value}
         onChange={(e) => handleSecretChange(e.target.value, 'value')}
         placeholder="Value"
