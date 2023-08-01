@@ -157,9 +157,11 @@ function enigine(): Engine {
     const paramRefId = params.refId || uuidv4().toString();
 
     callback && scriptCallbacks.set(paramRefId, callback);
-
+    const userScriptBackwardCompatibility = script
+      .replace('my_particle(', 'particle_inference(')
+      .replace('react_to_particle(', 'personal_processor(');
     const outputData = await compile(
-      script,
+      userScriptBackwardCompatibility,
       compileConfig,
       scriptRuntime,
       {
