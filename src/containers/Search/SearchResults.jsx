@@ -84,7 +84,7 @@ function SearchResults() {
   const [page, setPage] = useState(0);
 
   const { isMobile: mobile } = useDevice();
-  useCommunityPassports();
+  // useCommunityPassports();
 
   // useEffect(() => {
   //   if (query.match(/\//g)) {

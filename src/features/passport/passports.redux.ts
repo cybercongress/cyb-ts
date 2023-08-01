@@ -12,7 +12,7 @@ import { AppThunk } from 'src/redux/types';
 import { selectFollowings } from 'src/redux/features/currentAccount';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 
-type SliceState = {
+export type SliceState = {
   // address
   [key in string]?: {
     data?: Citizenship | null;

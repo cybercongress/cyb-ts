@@ -1,23 +1,12 @@
 import {
   AvailableAmount,
   DenomArr,
-  Input,
-  InputNumber,
   MainContainer,
   Select,
 } from 'src/components';
-import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { RootState } from 'src/redux/store';
-import { useSelector } from 'react-redux';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useDeferredValue,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
@@ -28,22 +17,23 @@ import {
 import { OptionSelect, SelectOption } from 'src/components/Select';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
-import { Nullable, Option } from 'src/types';
+import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { useAppSelector } from 'src/redux/hooks';
+import {
+  SliceState,
+  selectCommunityPassports,
+} from 'src/features/passport/passports.redux';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import Slider from './components/slider';
 import { getBalances } from './hooks';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from './utils';
 import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
-import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
 import AccountInput from './comp/Inputs/AccountInput';
 import useGetSendTxsByAddressByLcd from './hooks/useGetSendTxsByAddressByLcd';
-import { getPassportByNickname } from '../portal/utils';
-import citizenship from '../portal/citizenship';
-import { Citizenship } from 'src/types/citizenship';
-import useDebounce from './useDebounce';
 import InputMemo from './comp/Inputs/InputMemo';
 import InputNumberDecimalScale from './comp/Inputs/InputNumberDecimalScale';
 
@@ -52,11 +42,11 @@ const tokenDefaultValue = CYBER.DENOM_CYBER;
 function Send() {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
+  useCommunityPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const [recipient, setRecipient] = useState<string>('');
-  const [valueRecipient, setValueRecipient] = useState<string>('');
+  const [recipient, setRecipient] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   // const dataSendTxs = useGetSendTxsByAddressByType(
   //   addressActive,
@@ -76,8 +66,6 @@ function Send() {
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
   const firstEffectOccured = useRef(false);
   // const deferredRecipient = useDeferredValue(recipient );
-  const { debounce } = useDebounce();
-  const inputElem = useRef(null);
 
   useEffect(() => {
     if (firstEffectOccured.current) {
@@ -104,8 +92,7 @@ function Send() {
         const { token, recipient, amount } = param;
         setTokenSelect(token);
         if (recipient) {
-          setValueRecipient(recipient);
-          handleSearch(recipient);
+          setRecipient(recipient);
         }
 
         if (amount && Number(amount) > 0) {
@@ -219,50 +206,11 @@ function Send() {
     memoValue,
   };
 
-  const getRecipient = useCallback(
-    async (value: string) => {
-      if (!value) {
-        setRecipient(undefined);
-        return;
-      }
-
-      if (value.match(PATTERN_CYBER)) {
-        setRecipient(value);
-      } else {
-        const response = await getPassportByNickname(queryClient, value);
-
-        console.log('response', response);
-
-        if (response) {
-          setRecipient(response.owner);
-          return;
-        }
-        setRecipient(undefined);
-      }
-    },
-    [queryClient]
-  );
-
-  const handleSearch = useCallback(
-    debounce((inputVal) => getRecipient(inputVal), 500),
-    []
-  );
-
-  const onChangeRecipient = useCallback((inputVal) => {
-    setValueRecipient(inputVal);
-    handleSearch(inputElem.current?.value);
-  }, []);
-
   return (
     <>
       <MainContainer width="62%">
         <TeleportContainer>
-          <AccountInput
-            ref={inputElem}
-            valueRecipient={valueRecipient}
-            recipient={recipient}
-            onChangeRecipient={onChangeRecipient}
-          />
+          <AccountInput recipient={recipient} setRecipient={setRecipient} />
           <InputMemo value={memoValue} onChangeValue={setMemoValue} />
           <GridContainer>
             <Col>

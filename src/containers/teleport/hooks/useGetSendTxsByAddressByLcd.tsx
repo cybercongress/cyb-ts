@@ -65,7 +65,7 @@ function useGetSendBySenderRecipient(
 
 function useGetSendTxsByAddressByLcd(
   sender: Nullable<AccountValue>,
-  addressRecipient: string
+  addressRecipient: Option<string>
 ) {
   const [addressSender, setAddressSender] = useState<Option<string>>();
   const [data, setData] = useState<Option<TxsResponse[]>>(undefined);

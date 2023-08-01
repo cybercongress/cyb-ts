@@ -19,6 +19,7 @@ export type Props = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlurFnc?: () => void;
+  onFocusFnc?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = React.forwardRef<HTMLInputElement, Props>(
@@ -37,6 +38,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       focusedProps,
       isTextarea,
       onBlurFnc,
+      onFocusFnc,
       error,
       ...props
     },
@@ -45,6 +47,14 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
     const [focused, setFocused] = useState(false);
 
     const Tag = isTextarea ? TextareaAutosize : 'input';
+
+    const handlerOnFocused = () => {
+      setFocused(true);
+
+      if (onFocusFnc) {
+        onFocusFnc();
+      }
+    };
 
     const handlerOnBlur = () => {
       setFocused(false);
@@ -78,9 +88,10 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             onChange={onChange}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={autoFocus}
-            onFocus={() => setFocused(true)}
+            onFocus={() => handlerOnFocused()}
             onBlur={() => handlerOnBlur()}
             placeholder={placeholder}
+            autoComplete="off"
             {...props}
           />
         </LinearGradientContainer>
