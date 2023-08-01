@@ -7,7 +7,7 @@ function PaneWithPill({ caption, count, active }) {
     <Pane display="flex" alignItems="center">
       <Pane>{caption}</Pane>
       {count > 0 && (
-        <Pill marginLeft={5} active={active}>
+        <Pill marginLeft={5} active={active?.toString()}>
           {formatNumber(count)}
         </Pill>
       )}

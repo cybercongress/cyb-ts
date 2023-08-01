@@ -577,14 +577,14 @@
   &Primary {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-green(90deg);
+      @include linear-gradient-blue(0deg);
       right: 0;
       opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-blue(-90deg);
+      @include linear-gradient-blue(180deg);
       left: 0;
       opacity: 11%;
     }
@@ -641,14 +641,14 @@
   &Grey {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-grey(90deg);
+      @include linear-gradient-grey(0deg);
       right: 0;
       opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-grey(-90deg);
+      @include linear-gradient-grey(180deg);
       left: 0;
       opacity: 11%;
     }
