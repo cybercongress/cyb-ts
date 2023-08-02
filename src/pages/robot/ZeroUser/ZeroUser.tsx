@@ -18,6 +18,10 @@ function ZeroUser() {
         features of cyb.
       </>
     );
+
+    return () => {
+      setAdviser(null);
+    };
   }, [setAdviser]);
 
   return (
