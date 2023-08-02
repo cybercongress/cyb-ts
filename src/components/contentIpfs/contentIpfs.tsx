@@ -12,7 +12,7 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+// import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
 const getContentDetails = async (
   cid: string,
