@@ -21,6 +21,9 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { Citizenship } from 'src/types/citizenship';
 import { Nullable } from 'src/types';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import { useSearchParams } from 'react-router-dom';
+import useOnClickOutside from 'src/hooks/useOnClickOutside';
 
 function contains(query: string, list: SliceState) {
   return Object.values(list).filter((item) => {
@@ -38,38 +41,45 @@ type Props = {
 };
 
 function AccountInput({ recipient, setRecipient }: Props) {
+  const [searchParams] = useSearchParams();
   const inputElem = useRef(null);
+  const selectContainerRef = useRef(null);
   const firstEffectOccured = useRef(false);
   const queryClient = useQueryClient();
   const [focused, setFocused] = useState(false);
-  const [focusedList, setFocusedList] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [valueRecipient, setValueRecipient] = useState<string>('');
   const { debounce } = useDebounce();
   const selectCommunity = useAppSelector(selectCommunityPassports);
   const [listRecipient, setListRecipient] = useState<SliceState>({});
 
-  console.log('valueRecipient', valueRecipient)
+  const clickOutsideHandler = () => setIsOpen(false);
 
-  useEffect(() => {
-    console.log('recipient', recipient)
-    console.log('firstEffectOccured.current', firstEffectOccured.current)
-    if (!firstEffectOccured.current) {
-      firstEffectOccured.current = true;
-      if (recipient) {
-        console.log('recipient', recipient)
-        // setValueRecipient(recipient);
-      }
-    }
-
-    onBlurInput();
-  }, [recipient]);
+  useOnClickOutside(selectContainerRef, clickOutsideHandler);
 
   const onBlurInput = useCallback(() => {
-    // setFocusedList(false);
     if (recipient && recipient.length && recipient.match(PATTERN_CYBER)) {
       setFocused(true);
     }
   }, [recipient]);
+
+  useEffect(() => {
+    onBlurInput();
+  }, [recipient]);
+
+  useEffect(() => {
+    if (!firstEffectOccured.current) {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { recipient: recipientParam } = param;
+        if (recipientParam) {
+          setValueRecipient(recipientParam);
+          handleSearch(recipientParam);
+        }
+      }
+    }
+  }, [searchParams]);
 
   const handleGetRecipient = useCallback(
     async (value: string) => {
@@ -141,11 +151,12 @@ function AccountInput({ recipient, setRecipient }: Props) {
     return listRecipient;
   }, [listRecipient, valueRecipient, selectCommunity.friends]);
 
-  const onClickByNickname = (item: Nullable<Citizenship>) => {
-    if (item) {
-      setValueRecipient(item.extension.nickname);
-      setRecipient(item.owner);
-    }
+  const onClickByNickname = (owner: string, nickname: string) => {
+    console.log('nickname', nickname);
+    console.log('owner', owner);
+    setValueRecipient(nickname);
+    setRecipient(owner);
+    clickOutsideHandler();
   };
 
   if (focused && recipient) {
@@ -163,7 +174,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
   }
 
   return (
-    <>
+    <div className={styles.containerListAndInput} ref={selectContainerRef}>
       <Input
         ref={inputElem}
         id="recipient"
@@ -172,30 +183,51 @@ function AccountInput({ recipient, setRecipient }: Props) {
         title="choose recipient"
         color={Color.Green}
         classNameTextbox={styles.contentValueInput}
-        onBlurFnc={() => onBlurInput()}
-        // onFocusFnc={() => setFocusedList(true)}
+        onFocusFnc={() => setIsOpen(true)}
+        autoFocus
         // onClick={}
       />
-      <div>
-        {useListRecipient &&
-          Object.values(useListRecipient).map((item) => {
-            if (item?.data) {
-              const { nickname } = item.data.extension;
+
+      {isOpen &&
+        useListRecipient &&
+        Object.keys(useListRecipient).length > 0 && (
+          <div className={styles.containerList}>
+            {Object.keys(useListRecipient).map((key) => {
+              let nickname = key;
+              let cidAvatar;
+              let owner = key;
+              const item = useListRecipient[key];
+              if (item?.data) {
+                const { data } = item;
+                const { extension } = data;
+
+                nickname = extension.nickname;
+                owner = data.owner;
+                cidAvatar = extension.avatar;
+              }
               return (
                 <button
                   type="button"
                   key={nickname}
-                  onClick={() => onClickByNickname(item.data)}
+                  onClick={() => onClickByNickname(owner, nickname)}
                   style={{ color: '#fff', display: 'flex' }}
                 >
-                  {nickname}
+                  <div
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                    }}
+                  >
+                    <AvataImgIpfs addressCyber={owner} cidAvatar={cidAvatar} />
+                  </div>
+                  <div>{nickname}</div>
                 </button>
               );
-            }
-            return null;
-          })}
-      </div>
-    </>
+            })}
+          </div>
+        )}
+    </div>
   );
 }
 
