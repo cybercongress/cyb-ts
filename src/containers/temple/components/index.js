@@ -1,4 +1,4 @@
 import Canvas from './canvasOne';
-import Carousel from './corusel';
+import Carousel from './Carousel/Carousel';
 
 export { Canvas, Carousel };
