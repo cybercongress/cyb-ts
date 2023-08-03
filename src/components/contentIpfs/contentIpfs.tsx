@@ -13,6 +13,7 @@ import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
 import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+import PDFRenderer from '../PDF/PDF';
 
 const getContentDetails = async (
   cid: string,
@@ -106,7 +107,9 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
             </TextMarkdown>
           )}
           {contentType === 'image' && <Img content={ipfsDataDetails.content} />}
-          {contentType === 'pdf' && <Pdf content={ipfsDataDetails.content} />}
+          {contentType === 'pdf' && (
+            <PDFRenderer url={ipfsDataDetails.content} />
+          )}
           {contentType === 'link' && (
             <LinkHttp content={ipfsDataDetails.content} preview />
           )}
