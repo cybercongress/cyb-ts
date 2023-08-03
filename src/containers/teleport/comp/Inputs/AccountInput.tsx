@@ -105,10 +105,10 @@ function AccountInput({ recipient, setRecipient }: Props) {
         setRecipient(value);
         return;
       }
-
+      console.log('value', value);
+      console.log('selectCommunity.friends', selectCommunity.friends);
       if (Object.keys(selectCommunity.friends).length > 0) {
         const result = contains(value, selectCommunity.friends);
-
         if (result.length > 0) {
           if (
             result.length === 1 &&
@@ -125,12 +125,12 @@ function AccountInput({ recipient, setRecipient }: Props) {
       const resultHandle = await handleGetRecipient(value);
       setRecipient(resultHandle);
     },
-    [selectCommunity]
+    [selectCommunity.friends]
   );
 
   const handleSearch = useCallback(
     debounce((inputVal: string) => getRecipient(inputVal), 500),
-    []
+    [getRecipient]
   );
 
   const onChangeRecipient = useCallback(
