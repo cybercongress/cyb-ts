@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
-import cx from 'classnames';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
+import Display from './Display';
 
 const classNames = require('classnames');
 
-function ContainerLamp({ style, children }) {
+export function ContainerLamp({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLamp, {
@@ -104,41 +104,6 @@ function TxsStatus({ data }) {
 
 export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey' | 'purple';
 
-type ContainerGradientText = {
-  children: React.ReactNode;
-  userStyleContent?: object;
-  status?: ColorLamp;
-  className?: string;
-};
-
-export function ContainerGradientText({
-  children,
-  userStyleContent = {},
-  className,
-  status = 'blue',
-}: ContainerGradientText) {
-  return (
-    <ContainerLamp style={status}>
-      <div
-        className={classNames(styles.containerGradientText, {
-          [styles.containerGradientTextPrimary]: status === 'blue',
-          [styles.containerGradientTextDanger]: status === 'red',
-          [styles.containerGradientTextGreen]: status === 'green',
-          [styles.containerGradientTextPink]: status === 'pink',
-          [styles.containerGradientTextGrey]: status === 'grey',
-        })}
-      >
-        <div
-          style={userStyleContent}
-          className={cx(styles.containerGradientTextContent, className)}
-        >
-          {children}
-        </div>
-      </div>
-    </ContainerLamp>
-  );
-}
-
 interface Props {
   title?: string;
   closedTitle?: string;
@@ -151,6 +116,40 @@ interface Props {
   styleLampContent?: ColorLamp;
   styleLampTitle?: any;
   togglingDisable?: any;
+}
+
+type TitleProps = {
+  title: string;
+
+  // temp prop
+  animationState: string;
+  image?: {
+    src: string;
+    alt?: string;
+    size?: 'small' | 'large';
+  };
+};
+
+function Title({ title, animationState: state, image }: TitleProps) {
+  return (
+    <div
+      className={classNames(
+        styles.containerContainerGradientTitleContent,
+        styles[`containerContainerGradientTitleContent${state}`]
+      )}
+    >
+      {image && (
+        <img
+          src={image.src}
+          alt={image.alt}
+          className={classNames({
+            [styles.big]: image.size === 'large',
+          })}
+        />
+      )}
+      {title}
+    </div>
+  );
 }
 
 function ContainerGradient({
@@ -237,17 +236,7 @@ function ContainerGradient({
                         }
                       )}
                     >
-                      <div
-                        className={classNames(
-                          styles.containerContainerGradientTitleContent,
-                          styles[
-                            `containerContainerGradientTitleContent${state}`
-                          ]
-                        )}
-                      >
-                        {/*  eslint-disable-next-line react-hooks/rules-of-hooks */}
-                        {useTitle(state)}
-                      </div>
+                      <Title title={useTitle(state)} animationState={state} />
                     </div>
                   </ContainerLampBefore>
                   <ContainerLampBefore style={styleLampContent}>
@@ -284,7 +273,7 @@ function ContainerGradient({
   );
 }
 
-export const Display = ContainerGradient;
-export const Display2 = ContainerGradientText;
+export const ContainerGradientText = Display;
+export const Display2 = ContainerGradient;
 
 export default ContainerGradient;
