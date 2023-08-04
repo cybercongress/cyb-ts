@@ -143,7 +143,6 @@ function Send() {
         const getAllBalancesPromise = await queryClient.getAllBalances(
           recipient
         );
-        console.log('getAllBalancesPromise', getAllBalancesPromise);
         const dataReduceBalances = reduceBalances(getAllBalancesPromise);
         setRecipientBalances(dataReduceBalances);
       }

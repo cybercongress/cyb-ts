@@ -10,35 +10,26 @@ import LinearGradientContainer, {
   Color,
 } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { PATTERN_CYBER } from 'src/utils/config';
-import styles from './styles.module.scss';
 import {
   SliceState,
   selectCommunityPassports,
 } from 'src/features/passport/passports.redux';
-import useDebounce from '../../useDebounce';
 import { useAppSelector } from 'src/redux/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { getPassportByNickname } from 'src/containers/portal/utils';
-import { Citizenship } from 'src/types/citizenship';
-import { Nullable } from 'src/types';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { useSearchParams } from 'react-router-dom';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
-
-function contains(query: string, list: SliceState) {
-  return Object.values(list).filter((item) => {
-    if (item?.data?.extension) {
-      const { nickname } = item.data.extension;
-      return nickname.toLowerCase().startsWith(query.toLowerCase());
-    }
-    return false;
-  });
-}
+import useDebounce from '../../useDebounce';
+import styles from './styles.module.scss';
+import { contains } from './utils';
+import AccountInputOptionList from './AccountInputItem';
 
 type Props = {
   recipient: string | undefined;
   setRecipient: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
+
+const PLACEHOLDER_TITLE = 'choose recipient';
 
 function AccountInput({ recipient, setRecipient }: Props) {
   const [searchParams] = useSearchParams();
@@ -81,19 +72,6 @@ function AccountInput({ recipient, setRecipient }: Props) {
     }
   }, [searchParams]);
 
-  const handleGetRecipient = useCallback(
-    async (value: string) => {
-      const response = await getPassportByNickname(queryClient, value);
-
-      if (response) {
-        return response.owner;
-      }
-
-      return undefined;
-    },
-    [queryClient]
-  );
-
   const getRecipient = useCallback(
     async (value: string) => {
       if (!value) {
@@ -105,27 +83,31 @@ function AccountInput({ recipient, setRecipient }: Props) {
         setRecipient(value);
         return;
       }
-      console.log('value', value);
-      console.log('selectCommunity.friends', selectCommunity.friends);
+
+      let listRecipientTemp: SliceState = {};
       if (Object.keys(selectCommunity.friends).length > 0) {
         const result = contains(value, selectCommunity.friends);
-        if (result.length > 0) {
-          if (
-            result.length === 1 &&
-            result[0]?.data?.extension.nickname === value
-          ) {
-            setRecipient(result[0]?.data?.owner);
-          }
-          setListRecipient(result);
+        if (Object.keys(result).length) {
+          listRecipientTemp = { ...result };
         }
-
-        return;
       }
 
-      const resultHandle = await handleGetRecipient(value);
-      setRecipient(resultHandle);
+      const resultHandle = await await getPassportByNickname(
+        queryClient,
+        value
+      );
+
+      if (resultHandle) {
+        const resultHandleRecipient = {
+          [resultHandle.owner]: { loading: false, data: resultHandle },
+        };
+
+        listRecipientTemp = { ...resultHandleRecipient, ...listRecipientTemp };
+      }
+
+      setListRecipient(listRecipientTemp);
     },
-    [selectCommunity.friends]
+    [selectCommunity.friends, queryClient]
   );
 
   const handleSearch = useCallback(
@@ -151,10 +133,8 @@ function AccountInput({ recipient, setRecipient }: Props) {
     return listRecipient;
   }, [listRecipient, valueRecipient, selectCommunity.friends]);
 
-  const onClickByNickname = (owner: string, nickname: string) => {
-    console.log('nickname', nickname);
-    console.log('owner', owner);
-    setValueRecipient(nickname);
+  const onClickByNickname = (owner: string, nickname: string | undefined) => {
+    setValueRecipient(nickname || owner);
     setRecipient(owner);
     clickOutsideHandler();
   };
@@ -166,7 +146,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
         onClick={() => setFocused(false)}
         className={styles.containerBtnValue}
       >
-        <LinearGradientContainer color={Color.Green} title="choose recipient">
+        <LinearGradientContainer color={Color.Green} title={PLACEHOLDER_TITLE}>
           <Account avatar address={recipient} />
         </LinearGradientContainer>
       </button>
@@ -180,7 +160,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
         id="recipient"
         value={valueRecipient}
         onChange={(e) => onChangeRecipient(e.target.value)}
-        title="choose recipient"
+        title={PLACEHOLDER_TITLE}
         color={Color.Green}
         classNameTextbox={styles.contentValueInput}
         onFocusFnc={() => setIsOpen(true)}
@@ -191,41 +171,10 @@ function AccountInput({ recipient, setRecipient }: Props) {
       {isOpen &&
         useListRecipient &&
         Object.keys(useListRecipient).length > 0 && (
-          <div className={styles.containerList}>
-            {Object.keys(useListRecipient).map((key) => {
-              let nickname = key;
-              let cidAvatar;
-              let owner = key;
-              const item = useListRecipient[key];
-              if (item?.data) {
-                const { data } = item;
-                const { extension } = data;
-
-                nickname = extension.nickname;
-                owner = data.owner;
-                cidAvatar = extension.avatar;
-              }
-              return (
-                <button
-                  type="button"
-                  key={nickname}
-                  onClick={() => onClickByNickname(owner, nickname)}
-                  style={{ color: '#fff', display: 'flex' }}
-                >
-                  <div
-                    style={{
-                      width: '30px',
-                      height: '30px',
-                      borderRadius: '50%',
-                    }}
-                  >
-                    <AvataImgIpfs addressCyber={owner} cidAvatar={cidAvatar} />
-                  </div>
-                  <div>{nickname}</div>
-                </button>
-              );
-            })}
-          </div>
+          <AccountInputOptionList
+            data={useListRecipient}
+            onClickByNickname={onClickByNickname}
+          />
         )}
     </div>
   );
