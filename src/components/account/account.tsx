@@ -44,6 +44,7 @@ type Props = {
   sizeAvatar?: string;
   styleUser?: object;
   trimAddressParam?: [number, number];
+  disabled?: boolean;
 };
 
 function Account({
@@ -56,6 +57,7 @@ function Account({
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
+  disabled,
 }: Props) {
   const [moniker, setMoniker] = useState<string | null>(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
@@ -120,6 +122,7 @@ function Account({
       )}
       {!onlyAvatar && (
         <Link
+          onClick={(e) => disabled && e.preventDefault()}
           style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
           to={linkAddress}
         >

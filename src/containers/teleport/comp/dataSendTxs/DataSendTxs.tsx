@@ -16,6 +16,8 @@ import {
   ContainerLampBefore,
 } from 'src/components/containerGradient/ContainerGradient';
 
+// TO DO REFACTOR STYLE
+
 type TxsResponseCustom = {
   code: number;
   height: string;
@@ -74,7 +76,7 @@ function DataSendTxs({
               <div
                 style={{
                   color: '#fff',
-                  paddingLeft: typeTx === 'Receive' ? '0px' : '50px',
+                  textAlign: typeTx === 'Receive' ? 'start' : 'end',
                 }}
               >
                 {memo}

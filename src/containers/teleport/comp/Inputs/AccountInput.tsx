@@ -32,12 +32,12 @@ type Props = {
 const PLACEHOLDER_TITLE = 'choose recipient';
 
 function AccountInput({ recipient, setRecipient }: Props) {
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const inputElem = useRef(null);
   const selectContainerRef = useRef(null);
+
   const firstEffectOccured = useRef(false);
-  const queryClient = useQueryClient();
-  const [focused, setFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [valueRecipient, setValueRecipient] = useState<string>('');
   const { debounce } = useDebounce();
@@ -48,14 +48,10 @@ function AccountInput({ recipient, setRecipient }: Props) {
 
   useOnClickOutside(selectContainerRef, clickOutsideHandler);
 
-  const onBlurInput = useCallback(() => {
-    if (recipient && recipient.length && recipient.match(PATTERN_CYBER)) {
-      setFocused(true);
-    }
-  }, [recipient]);
-
   useEffect(() => {
-    onBlurInput();
+    if (recipient && recipient.length && recipient.match(PATTERN_CYBER)) {
+      clickOutsideHandler();
+    }
   }, [recipient]);
 
   useEffect(() => {
@@ -139,15 +135,20 @@ function AccountInput({ recipient, setRecipient }: Props) {
     clickOutsideHandler();
   };
 
-  if (focused && recipient) {
+  if (!isOpen && recipient) {
     return (
       <button
         type="button"
-        onClick={() => setFocused(false)}
+        onClick={() => setIsOpen(true)}
         className={styles.containerBtnValue}
       >
         <LinearGradientContainer color={Color.Green} title={PLACEHOLDER_TITLE}>
-          <Account avatar address={recipient} />
+          <Account
+            avatar
+            disabled
+            address={recipient}
+            styleUser={{ height: '42px' }}
+          />
         </LinearGradientContainer>
       </button>
     );
@@ -161,7 +162,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
         value={valueRecipient}
         onChange={(e) => onChangeRecipient(e.target.value)}
         title={PLACEHOLDER_TITLE}
-        color={Color.Green}
+        color={!recipient ? Color.Red : Color.Green}
         classNameTextbox={styles.contentValueInput}
         onFocusFnc={() => setIsOpen(true)}
         autoFocus

@@ -223,7 +223,7 @@ function Send() {
               <AvailableAmount
                 accountBalances={accountBalances}
                 token={tokenSelect}
-                title="you will have"
+                title={tokenAmount.length === 0 ? 'you have' : 'you will have'}
                 changeAmount={reverceTokenAmount}
               />
             </Col>
@@ -244,7 +244,11 @@ function Send() {
                 title="choose token to send"
               />
               <AvailableAmount
-                title="recipient have"
+                title={
+                  tokenAmount.length === 0
+                    ? 'recipient have'
+                    : 'recipient will have'
+                }
                 accountBalances={recipientBalances}
                 token={tokenSelect}
                 changeAmount={tokenAmount}
