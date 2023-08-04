@@ -102,7 +102,7 @@ function TxsStatus({ data }) {
   );
 }
 
-export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey';
+export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey' | 'purple';
 
 type ContainerGradientText = {
   children: React.ReactNode;
@@ -148,7 +148,7 @@ interface Props {
   userStyleContent?: React.CSSProperties;
   stateOpen?: boolean;
   initState?: boolean;
-  styleLampContent?: string;
+  styleLampContent?: ColorLamp;
   styleLampTitle?: any;
   togglingDisable?: any;
 }
@@ -283,5 +283,8 @@ function ContainerGradient({
     </div>
   );
 }
+
+export const Display = ContainerGradient;
+export const Display2 = ContainerGradientText;
 
 export default ContainerGradient;
