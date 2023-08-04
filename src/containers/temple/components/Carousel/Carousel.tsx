@@ -1,14 +1,32 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
-import styles from './carousel.scss';
+import styles from './Carousel.module.scss';
 
 const cx = require('classnames');
+
+interface Slide {
+  step?: number;
+  title?: string | JSX.Element;
+}
+
+type CarouselProps = {
+  slides: Slide[];
+  // speed?: number;
+  activeStep?: number;
+  // setStep: (step: number) => void;
+  // transitionSpeed?: number;
+  // slideWidth?: number;
+  heightSlide?: string;
+  // disableNext?: boolean;
+  disableMode?: boolean;
+  displaySlide?: number;
+};
 
 function Carousel({
   slides = [],
   speed = 3000,
-  activeStep,
+  activeStep = 1,
   setStep,
   transitionSpeed = 500,
   slideWidth = 200,
@@ -16,7 +34,7 @@ function Carousel({
   disableNext,
   disableMode,
   displaySlide = 3,
-}) {
+}: CarouselProps) {
   const query = useMediaQuery('(min-width: 768px)');
   const [itemWidth, setItemWidth] = useState(0);
   const [displaySlideState, setDisplaySlideState] = useState(displaySlide);

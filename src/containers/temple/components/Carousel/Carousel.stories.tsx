@@ -1,10 +1,12 @@
-import { Meta, StoryObj, Story } from '@storybook/react';
-import { useState } from 'react';
-import Carousel, { Props } from './Carousel';
+/* eslint-disable import/no-unused-modules */
+
+import { Meta, StoryObj } from '@storybook/react';
+
+import Carousel from './Carousel';
 
 const meta: Meta<typeof Carousel> = {
   component: Carousel,
-  title: 'molecules/carousels/CarouselOld',
+  title: 'molecules/carousels/Carousel',
   //   parameters: {
   //     design: {
   //       type: 'figma',
@@ -33,22 +35,17 @@ const slides = [
     title: 'Slide 4',
     step: 4,
   },
-  {
-    title: 'Slide 5',
-    step: 5,
-  },
 ];
 
-const Template: Story<Props> = (args) => {
-  const [step, setStep] = useState(1);
-  return (
-    <Carousel
-      {...args}
-      setStep={() => setStep(step >= slides.length ? 0 : step + 1)}
-      activeStep={step}
-      slides={slides}
-    />
-  );
+export const Main: Story = {
+  args: {
+    slides,
+  },
 };
 
-export const Default = Template.bind({});
+export const Disabled: Story = {
+  args: {
+    slides,
+    disableMode: true,
+  },
+};

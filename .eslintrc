@@ -111,6 +111,10 @@
         "name": "react-redux",
         "importNames": ["useSelector", "useDispatch"],
         "message": "Use typed hooks `useAppDispatch` and `useAppSelector` instead."
+      },
+      {
+        "name": "@cybercongress/gravity",
+        "message": "Lib is deprecated"
       }
     ],
     "react/jsx-filename-extension": "off",
