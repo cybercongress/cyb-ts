@@ -1,6 +1,14 @@
 .markdownContainer {
   width: 60%;
   margin: 0 auto;
+
+  @media (max-width: 680px) {
+    width: 80%;
+  }
+
+  @media (max-width: 480px) {
+    width: unset;
+  }
 }
 
 .markdownContainerFullWidth {
