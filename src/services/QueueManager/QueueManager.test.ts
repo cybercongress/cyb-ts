@@ -1,10 +1,9 @@
-// import '@types/jest';
 import QueueManager, { QueueItemStatus } from './QueueManager';
 import { QueueStrategy } from './QueueStrategy';
 import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
 jest.mock('./utils', () => ({
-  postProcessIpfContent: jest.fn(),
+  postProcessIpfContent: (item, content, _) => content,
 }));
 
 jest.mock('src/utils/ipfs/utils-ipfs', () => ({
@@ -56,7 +55,7 @@ const getPromise = (
     signal
   );
 
-describe.skip('QueueManager', () => {
+describe('QueueManager', () => {
   let queueManager: QueueManager<string>;
   const strategy = new QueueStrategy(
     {
@@ -295,6 +294,31 @@ describe.skip('QueueManager', () => {
           done();
         }
       }, QUEUE_DEBOUNCE_MS * 3 + 10);
+    } finally {
+      (fetchIpfsContent as jest.Mock).mockClear();
+    }
+  });
+
+  it('should execute enqueue as promise and get result', async () => {
+    try {
+      (fetchIpfsContent as jest.Mock).mockImplementation(() =>
+        Promise.resolve('done!')
+      );
+
+      const result = await queueManager.enqueueAndWait('xxx');
+      expect(result?.result).toBe('done!');
+    } finally {
+      (fetchIpfsContent as jest.Mock).mockClear();
+    }
+  });
+
+  it('should execute enqueue as promise and get undefined', async () => {
+    try {
+      (fetchIpfsContent as jest.Mock).mockImplementation(() =>
+        Promise.reject()
+      );
+      const result = await queueManager.enqueueAndWait('xxx');
+      expect(result).toBe(undefined);
     } finally {
       (fetchIpfsContent as jest.Mock).mockClear();
     }

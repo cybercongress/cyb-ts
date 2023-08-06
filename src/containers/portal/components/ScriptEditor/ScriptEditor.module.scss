@@ -1,23 +1,23 @@
 .actionPanel {
-  padding: 25px 0;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  width: 100%;
   .testPanel {
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: 100%;
     button {
       margin-left: 25px;
     }
-
-    width: 75%;
   }
 }
 
 .logArea {
+  margin-top: 20px;
   padding: 5px;
   font-family: monospace !important;
+  resize: vertical;
 }
 
 .errorHighlight {

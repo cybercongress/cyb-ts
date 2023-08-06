@@ -7,7 +7,8 @@ type QueueItemStatus =
   | 'timeout'
   | 'completed'
   | 'cancelled'
-  | 'error';
+  | 'error'
+  | 'not_found';
 
 export type QueueSourceSettings = {
   timeout: number;

@@ -5962,10 +5962,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^29.5.0":
-  version "29.5.1"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.1.tgz#83c818aa9a87da27d6da85d3378e5a34d2f31a47"
-  integrity sha512-tEuVcHrpaixS36w7hpsfLBLpjtMRJUE09/MHXn923LOVojDwyC14cWcfc0rDs0VEfUyYmt/+iX1kxxp+gZMcaQ==
+"@types/jest@^29.5.3":
+  version "29.5.3"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.3.tgz#7a35dc0044ffb8b56325c6802a4781a626b05777"
+  integrity sha512-1Nq7YrO/vJE/FYnqYyw0FS8LdrjExSgIiHyKg7xPpn+yi8Q4huZryKnkJatN1ZRH89Kw2v33/8ZMB7DuZeSLlA==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
@@ -10045,10 +10045,10 @@ cwise-compiler@^1.0.0, cwise-compiler@^1.1.2:
   dependencies:
     uniq "^1.0.0"
 
-cyb-rune-wasm@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/cyb-rune-wasm/-/cyb-rune-wasm-0.0.6.tgz#8d5ab0ae23b99865c564be094eb37f297a4b505d"
-  integrity sha512-ceUq0wPbYLPoFFIu9frJdyOig7HyRxUeOD0tn2ilk8cJFynpArzSSqflIOtej3kVucWKuYsgOZ4mIhy8g+eb1w==
+cyb-rune-wasm@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/cyb-rune-wasm/-/cyb-rune-wasm-0.0.7.tgz#d42ce9402f7749c555d1c13149d7b9ee8b9deb8b"
+  integrity sha512-p0iEVklBXDAf217ylRGsTSLDgtnMsE5GRJGN1WNV1c6fHBIRT4Zc7PO17FbExaOMLQDHZRDSHug1LmGspaytDw==
 
 d3-array@1, d3-array@^1.1.1, d3-array@^1.2.0, d3-array@^1.2.1:
   version "1.2.4"

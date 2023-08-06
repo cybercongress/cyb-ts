@@ -194,10 +194,10 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
           {/* TMP */}
-          <Route path="/plugins" element={<ScriptEditor />} />
-          <Route path="/plugins/:tab" element={<ScriptEditor />} />
-          <Route path="/chatbot" element={<ChatBotConfig />} />
-          <Route path="/chatbot/:tab" element={<ChatBotConfig />} />
+          {/* <Route path="/plugins" element={<ScriptEditor />} />
+          <Route path="/plugins/:tab" element={<ScriptEditor />} /> */}
+          {/* <Route path="/chatbot" element={<ChatBotConfig />} />
+          <Route path="/chatbot/:tab" element={<ChatBotConfig />} /> */}
           {/*  */}
 
           <Route path="/keys" element={<Keys />} />

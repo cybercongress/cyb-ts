@@ -31,7 +31,7 @@ export async function postProcessIpfContent<T extends IPFSContent>(
     content: contentToStringOrEmpty(content),
   });
 
-  if (mutation.action === 'update_cid' && mutation.cid) {
+  if (mutation.action === 'cid_result' && mutation.cid) {
     // refectch content from new cid
     const contentUpdated = await fetchIpfsContent<IPFSContent>(
       mutation.cid,
@@ -46,8 +46,8 @@ export async function postProcessIpfContent<T extends IPFSContent>(
     }
   }
 
-  if (mutation.action === 'update_content') {
-    // console.log('update_content', mutation);
+  if (mutation.action === 'content_result') {
+    // console.log('content_result', mutation);
     return { ...content, result: mutation.content, mutation: 'modified' };
   }
 

@@ -16,7 +16,7 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
+// import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
 
 // should be refactored
@@ -171,7 +171,7 @@ function SwitchAccount() {
             )}
 
             <Karma address={useGetAddress} />
-            <ChatBotPanel />
+            {/* <ChatBotPanel /> */}
           </div>
         )}
         <Link

@@ -50,7 +50,7 @@ describe('Script executor', () => {
   });
 
   it('should execute react to particle script and return <username>.moon particle content', async () => {
-    const newCid = 'new_cid';
+    const newCid = 'cid_result';
     const cid = 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1';
     const contentType = 'text';
     const preview = 'dasein.moon';
@@ -64,7 +64,7 @@ describe('Script executor', () => {
     // CID with dasein.moon content
 
     const result = await reactToParticle(cid, contentType, preview);
-    expect(result.action).toBe('update_cid');
+    expect(result.action).toBe('cid_result');
     expect(result.cid).toEqual(newCid);
   });
 });

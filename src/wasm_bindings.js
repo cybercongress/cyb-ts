@@ -1,13 +1,19 @@
+/* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable import/no-unused-modules */
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { promptToOpenAI } from 'src/services/scripting/openai';
-import { getIpfsTextContent } from 'src/services/scripting/helpers';
+import {
+  getIpfsTextContent,
+  getScriptFromParticle,
+} from 'src/services/scripting/helpers';
 import { getFromLink, getToLink, getIpfsHash } from 'src/utils/search/utils';
 import { encodeSlash } from 'src/utils/utils';
 import { addContenToIpfs } from './utils/ipfs/utils-ipfs';
 import scriptEngine from './services/scripting/engine';
+import { queueManager } from './services/QueueManager/QueueManager';
+import { isCID } from './utils/ipfs/helpers';
 
 // export function js_detectCybContentType(mime) {
 //   return detectCybContentType(mime);
@@ -54,20 +60,34 @@ export async function js_cyberSearch(query) {
     ? query
     : await getIpfsHash(encodeSlash(query));
 
-  const result = await search(client, cid, 0);
+  const result = await client.search(cid, 0);
   return result;
 }
 
 export async function js_cyberLink(fromCid, toCid) {
   const { signer, signingClient } = scriptEngine.getDeps();
-  if (signer && signingClient) {
-    const { address } = (await signer.getAccounts())[0];
-    const fee = {
-      amount: [],
-      gas: DEFAULT_GAS_LIMITS.toString(),
-    };
-    const result = await signingClient.cyberlink(address, fromCid, toCid, fee);
 
-    return result;
+  if (!signer || !signingClient) {
+    throw new Error('signer or signingClient not found');
   }
+
+  const { address } = (await signer.getAccounts())[0];
+  const fee = {
+    amount: [],
+    gas: DEFAULT_GAS_LIMITS.toString(),
+  };
+  const result = await signingClient.cyberlink(address, fromCid, toCid, fee);
+
+  return result;
+}
+
+export async function js_evalScriptFromIpfs(cid, funcName, params = {}) {
+  console.log('js_evalScriptFromIpfs', cid);
+  try {
+    const script = await getScriptFromParticle(cid);
+    return scriptEngine.executeFunction(script, funcName, params);
+  } catch (e) {
+    return { action: 'error', message: e.toString() };
+  }
+  // .catch((e) => e);
 }

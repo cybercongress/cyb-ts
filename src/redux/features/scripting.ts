@@ -10,7 +10,7 @@ import {
   getEntrypointKeyName,
 } from 'src/utils/localStorage';
 
-import { scriptMap } from 'src/services/scripting/scripts/mapping';
+import { defaultScriptMap } from 'src/services/scripting/scripts/mapping';
 
 import {
   ScriptEntrypointNames,
@@ -40,24 +40,21 @@ type SliceState = {
 export type ChatBotActiveAction = PayloadAction<boolean>;
 
 // const loadScript(name: ScriptEntrypointNames, deps: {ipfs: AppIPFS, queryClient: })
-const isParticleScriptEnabled = !!loadStringFromLocalStorage(
-  getEntrypointKeyName('particle', 'enabled')
-);
-
+const isParticleScriptEnabled =
+  !!loadStringFromLocalStorage(getEntrypointKeyName('particle', 'enabled')) ||
+  true;
+console.log('----isParticleScriptEnabled', isParticleScriptEnabled);
 const ScriptEntrypointsData: ScriptEntrypoints = {
   particle: {
     title: 'Personal processor',
-    runtime: scriptMap.particle.runtime,
-    user: scriptMap.particle.user,
-    enabled:
-      isParticleScriptEnabled === undefined ? true : !!isParticleScriptEnabled,
+    script: defaultScriptMap.particle.script,
+    enabled: !!isParticleScriptEnabled,
   },
-  myParticle: {
-    title: 'Social inference',
-    runtime: scriptMap.myParticle.runtime,
-    user: '',
-    enabled: true,
-  },
+  // myParticle: {
+  //   title: 'Social inference',
+  //   script: '',
+  //   enabled: true,
+  // },
 };
 
 const initialBotList: LLMParamsMap = {
@@ -155,8 +152,9 @@ const slice = createSlice({
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>
     ) => {
       const { name, code } = payload;
+      console.log('---setEntrypoint', name);
       // saveStringToLocalStorage(name, code);
-      state.scripts.entrypoints[name].user = code;
+      state.scripts.entrypoints[name].script = code;
     },
     setEntrypointEnabled: (
       state,

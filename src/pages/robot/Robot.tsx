@@ -13,6 +13,7 @@ import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 import ZeroUser from './ZeroUser/ZeroUser';
 import RobotContextProvider, { useRobotContext } from './robot.context';
+import ScriptEditor from 'src/containers/portal/components/ScriptEditor/ScriptEditor';
 
 function RobotRoutes() {
   const { isOwner, isLoading, address } = useRobotContext();
@@ -40,7 +41,7 @@ function RobotRoutes() {
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<ForceGraph />} />
         <Route path="karma" element={<UnderConstruction />} />
-        <Route path="soul" element={<UnderConstruction />} />
+        <Route path="soul" element={<ScriptEditor />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

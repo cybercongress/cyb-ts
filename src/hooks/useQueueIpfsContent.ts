@@ -4,12 +4,7 @@ import { useIpfs } from 'src/contexts/ipfs';
 
 import { IPFSContentMaybe, IpfsContentSource } from '../utils/ipfs/ipfs';
 
-import QueueManager from '../services/QueueManager/QueueManager';
-
-// TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
-const queueManager = new QueueManager<IPFSContentMaybe>();
-
-window.qm = queueManager;
+import { queueManager } from '../services/QueueManager/QueueManager';
 
 type UseIpfsContentReturn = {
   status?: QueueItemStatus;

@@ -3,13 +3,13 @@ import {
   ScriptEntrypointNames,
   ScriptEntrypoint,
   ScriptParticleParams,
-  ScriptScopeParams,
   ScriptContext,
   ScriptMyParticleResult,
   ScriptParticleResult,
   ScriptMyParticleParams,
   ScriptEntrypoints,
   ScriptExecutionResult,
+  EntrypointParams,
 } from 'src/types/scripting';
 import initAsync, { compile } from 'cyb-rune-wasm';
 
@@ -23,12 +23,21 @@ import {
 } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { TabularKeyValues, KeyValueString } from 'src/types/data';
 import { keyValuesToObject } from 'src/utils/localStorage';
+import scriptingRuntime from './scripts/runtime.rn';
 
 const compileConfig = {
   budget: 1_000_000,
   experimental: false,
   instructions: true,
   options: [],
+};
+
+export type CompilerParams = {
+  readOnly: boolean;
+  execute: boolean;
+  funcName: string;
+  funcParams: EntrypointParams;
+  config: typeof compileConfig;
 };
 
 type EngineContext = Omit<ScriptContext, 'secrets'> & {
@@ -50,8 +59,8 @@ const getEntrypointScripts = (
     throw Error(`No '${name}' script exist`);
   }
 
-  const { user, runtime, enabled } = entrypoints[name] as ScriptEntrypoint;
-  return { userScript: user, runtimeScript: runtime, enabled };
+  const { script: user, enabled } = entrypoints[name] as ScriptEntrypoint;
+  return { script: user, enabled };
 };
 
 const toRecord = (item: TabularKeyValues) =>
@@ -84,16 +93,19 @@ interface Engine {
 
   run(
     script: string,
-    params: ScriptScopeParams,
-    scriptRuntime: string,
-    callback?: ScriptCallback,
-    executeAfterCompile?: boolean
+    compilerParams: Partial<CompilerParams>,
+    callback?: ScriptCallback
   ): Promise<ScriptExecutionResult>;
   reactToInput(
     userScript: string,
     params: ScriptMyParticleParams
   ): Promise<ScriptMyParticleResult>;
   reactToParticle(params: ScriptParticleParams): Promise<ScriptParticleResult>;
+  executeFunction(
+    script: string,
+    funcName: string,
+    params: EntrypointParams
+  ): Promise<ScriptParticleResult>;
 }
 
 // eslint-disable-next-line import/prefer-default-export
@@ -149,33 +161,33 @@ function enigine(): Engine {
 
   const run = async (
     script: string,
-    params: ScriptScopeParams,
-    scriptRuntime = '',
-    callback?: ScriptCallback,
-    executeAfterCompile?: boolean
+    compilerParams: Partial<CompilerParams>,
+    callback?: ScriptCallback
   ) => {
-    const paramRefId = params.refId || uuidv4().toString();
+    const refId = uuidv4().toString();
 
-    callback && scriptCallbacks.set(paramRefId, callback);
-    const userScriptBackwardCompatibility = script
-      .replace('my_particle(', 'particle_inference(')
-      .replace('react_to_particle(', 'personal_processor(');
-    const outputData = await compile(
-      userScriptBackwardCompatibility,
-      compileConfig,
-      scriptRuntime,
-      {
-        ...params,
-        app: context,
-        refId: paramRefId,
-      },
-      executeAfterCompile || false
-    );
+    callback && scriptCallbacks.set(refId, callback);
+    const scriptParams = {
+      app: context,
+      refId,
+    };
+
+    const defaultCompilerParams: CompilerParams = {
+      readOnly: false,
+      execute: true,
+      funcName: 'main',
+      funcParams: {},
+      config: compileConfig,
+    };
+
+    const outputData = await compile(script, scriptingRuntime, scriptParams, {
+      ...defaultCompilerParams,
+      ...compilerParams,
+    });
+    // console.log(`------ run ${funcName} outputData`, outputData);
     const { result } = outputData;
-    //TODO: refactor
-    outputData.diagnosticsOutput = outputData.diagnostics_output;
-    delete outputData.diagnostics_output;
-    scriptCallbacks.delete(paramRefId);
+
+    scriptCallbacks.delete(refId);
 
     try {
       return {
@@ -194,30 +206,45 @@ function enigine(): Engine {
   const reactToParticle = async (
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult> => {
-    const { userScript, runtimeScript, enabled } = getEntrypointScripts(
-      entrypoints,
-      'particle'
-    );
+    const { script, enabled } = entrypoints['particle'];
 
     if (!enabled) {
       return { action: 'pass' };
     }
 
-    const scriptResult = await run(
-      userScript,
-      {
-        particle: params,
-      },
-      runtimeScript,
-      undefined,
-      true
-    );
+    const scriptResult = await run(script, {
+      funcName: 'personal_processor',
+      funcParams: params as EntrypointParams,
+    });
     if (scriptResult.error) {
       console.log(`---reactToParticle ${params.cid} error: `, scriptResult);
       return { action: 'error' };
     }
 
-    if (scriptResult.result?.action !== 'pass') {
+    // if (scriptResult.result?.action !== 'pass') {
+    // }
+
+    return scriptResult.result;
+  };
+
+  const executeFunction = async (
+    script: string,
+    funcName: string,
+    funcParams: EntrypointParams
+  ): Promise<ScriptParticleResult> => {
+    const scriptResult = await run(script, {
+      funcName,
+      funcParams,
+      readOnly: true, // don't allow to sign tx and add to ipfs
+    });
+
+    if (scriptResult.error) {
+      console.log(
+        `---executeFunction ${funcName} error: `,
+        funcParams,
+        scriptResult
+      );
+      return { action: 'error' };
     }
 
     return scriptResult.result;
@@ -227,18 +254,12 @@ function enigine(): Engine {
     userScript: string,
     params: ScriptMyParticleParams
   ): Promise<ScriptMyParticleResult> => {
-    const { runtimeScript } = getEntrypointScripts(entrypoints, 'myParticle');
+    const { script } = entrypoints?.myParticle;
 
-    const scriptResult = await run(
-      userScript,
-      {
-        myParticle: params,
-      },
-      runtimeScript,
-      undefined,
-      true
-    );
-    console.log('-------reactToInput scriptResult', scriptResult);
+    const scriptResult = await run(script, {
+      funcName: 'particle_inference',
+      funcParams: params as EntrypointParams,
+    });
 
     if (scriptResult.error) {
       return { action: 'error' };
@@ -258,6 +279,7 @@ function enigine(): Engine {
     setDeps,
     pushContext,
     popContext,
+    executeFunction,
     getDebug: () => ({
       context,
       entrypoints,

@@ -17,7 +17,7 @@ const jsonKeyMap: Record<JsonTypeKeys, string> = {
 const stringKeyMap: Record<StringTypeKeys, string> = {
   activeBotName: 'active_bot_name',
   particle: 'script_particle',
-  myParticle: 'script_particle_inference',
+  // myParticle: 'script_particle_inference',
 };
 
 const saveJsonToLocalStorage = (

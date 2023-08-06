@@ -1,5 +1,9 @@
-pub async fn particle_inference(input) {
+// params:
+//  - inupt: user search input
+pub async fn particle_inference(params) {
     let nickname =  cyb::context.app.user.nickname;
-    return answer(`${nickname} - купи гараж!`);
-    //return answer("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
+
+    //return cid_result("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
+
+    return content_result(`Hello, ${nickname}!`);
 }

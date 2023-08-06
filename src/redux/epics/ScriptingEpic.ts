@@ -9,22 +9,28 @@ import {
   filter,
   distinctUntilChanged,
   ignoreElements,
+  from,
+  of,
 } from 'rxjs';
 import { Nullable } from 'src/types';
 
 import { WebLLMInstance } from 'src/services/scripting/webLLM';
 import scriptEngine from 'src/services/scripting/engine';
+import { queueManager } from 'src/services/QueueManager/QueueManager';
 import { Citizenship } from 'src/types/citizenship';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 
 import {
   setChatBotStatus,
   setChatBotLoadProgress,
+  setEntrypoint,
   setContext,
   ScriptingActionTypes,
 } from '../features/scripting';
 
 import type { RootState } from '../store';
+import { isCID } from 'src/utils/ipfs/helpers';
+import { getScriptFromParticle } from 'src/services/scripting/helpers';
 
 type ActionWithPayload<T> = Extract<ScriptingActionTypes, { type: T }>;
 
@@ -68,19 +74,23 @@ const selectPassportEpic = (
     filter((r) => !r?.loading && r?.data),
     map((r) => r.data),
     distinctUntilChanged(),
-    map((passport: Nullable<Citizenship>) =>
-      passport
-        ? setContext({
-            name: 'user',
-            item: {
-              address: passport.owner,
-              nickname: passport.extension.nickname,
-              passport,
-              particle: passport.extension.particle,
-            },
-          })
-        : { type: 'passport_not_initialized' }
-    )
+    switchMap((passport: Nullable<Citizenship>) => {
+      if (passport) {
+        setContext({
+          name: 'user',
+          item: {
+            address: passport.owner,
+            nickname: passport.extension.nickname,
+            passport,
+            particle: passport.extension.particle,
+          },
+        });
+        return from(getScriptFromParticle(passport.extension.particle)).pipe(
+          map((code) => setEntrypoint({ name: 'particle', code }))
+        );
+      }
+      return of({ type: 'passport_not_initialized' });
+    })
   );
 
 const scriptingContextEpic = (action$: Observable<ScriptingActionTypes>) =>

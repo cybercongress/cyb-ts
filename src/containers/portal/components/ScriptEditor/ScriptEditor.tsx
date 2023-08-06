@@ -5,31 +5,15 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
 
 import { RootState } from 'src/redux/store';
-import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import { Pane, Tablist } from '@cybercongress/gravity';
-import {
-  Button,
-  Input,
-  TabBtn,
-  MainContainer,
-  ContainerGradientText,
-} from 'src/components';
-// import Tooltip from 'src/components/tooltip/tooltip';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 
-// import {
-//   ScriptEntrypointName,
-//   ScriptExecutionResult,
-//   ScriptEntrypoint,
-// } from 'src/services/scripting/scritpting';
-import {
-  ScriptEntrypoint,
-  ScriptExecutionResult,
-  ScriptEntrypointNames,
-} from 'src/types/scripting';
+import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
+import { Pane } from '@cybercongress/gravity';
+import { Button, Input, ContainerGradientText } from 'src/components';
+
+import { ScriptEntrypoint, ScriptExecutionResult } from 'src/types/scripting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
@@ -39,27 +23,28 @@ import {
   setEntrypoint,
   setEntrypointEnabled,
 } from 'src/redux/features/scripting';
+import { defaultScriptMap } from 'src/services/scripting/scripts/mapping';
+
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import Switch from 'src/components/Switch/Switch';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import { updatePassportParticle } from '../../utils';
 
-import { compileScript } from './utils';
-import styles from './ScriptEditor.module.scss';
-
-import 'codemirror/mode/rust/rust';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/tomorrow-night-eighties.css';
-import Secrets from './Secrets/Secrets';
-
+import ActionBarContainer from 'src/components/actionBar';
 import {
   loadStringFromLocalStorage,
   saveStringToLocalStorage,
 } from 'src/utils/localStorage';
 
-import { scriptMap } from 'src/services/scripting/scripts/mapping';
-import Switch from 'src/components/Switch/Switch';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { updatePassportParticle } from '../../utils';
 
+import { compileScript } from './utils';
+
+import styles from './ScriptEditor.module.scss';
+
+import 'codemirror/mode/rust/rust';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
 
@@ -105,21 +90,6 @@ const formatExecutionResult = (
   }
 };
 
-const saveToPassport = async (node: AppIPFS, code: string) => {
-  const cid = await addContenToIpfs(node, code);
-
-  if (cid) {
-    const result = await updatePassportParticle(
-      passport?.extension.nickname,
-      cid,
-      {
-        signer,
-        signingClient,
-      }
-    );
-  }
-};
-
 function PlayParticlePostProcessor({
   addToLog,
   codeMirrorRef,
@@ -135,6 +105,43 @@ function PlayParticlePostProcessor({
 }) {
   const { node } = useIpfs();
   const [testCid, seTestCid] = useState('');
+  const onTestMoonDomainClick = async () => {
+    reset();
+
+    addToLog([
+      '💡 Prepare data....',
+      '',
+      `🚧 Fetching particle '${testCid}'...`,
+    ]);
+    const response = await getIPFSContent(node, testCid);
+    const contentType = response?.contentType; // detectContentType(response?.meta.mime);
+
+    const content =
+      contentType === 'text' && response?.result
+        ? await getTextFromIpfsContent(response.result)
+        : '';
+
+    const preview =
+      content.length > 144 ? `${content.slice(1, 144)}....` : content;
+
+    addToLog([
+      `   ☑️ Content-type: ${contentType || '???'}`,
+      `   ☑️ Preview: ${preview}`,
+      '',
+      '💭 Execute script....',
+    ]);
+    const particle = {
+      cid: testCid,
+      contentType,
+      content,
+    };
+    compileScript(code, entrypoint.runtime, true, {
+      particle,
+    }).then((result) => {
+      formatExecutionResult(result, codeMirrorRef, addToLog);
+    });
+  };
+
   const onTestClick = async () => {
     reset();
     if (!isCID(testCid)) {
@@ -178,119 +185,65 @@ function PlayParticlePostProcessor({
 
   return (
     <div className={styles.testPanel}>
+      <Button onClick={onTestClick}>Test personal domain .moon</Button>
       <Input
         value={testCid}
         onChange={(e) => seTestCid(e.target.value)}
         placeholder="Enter particle CID to apply script...."
       />
-      <Button onClick={onTestClick}>Test</Button>
+      <Button onClick={onTestClick}>Test particle processor</Button>
     </div>
   );
 }
 
-function PlayMyParticle({
-  addToLog,
-  codeMirrorRef,
-  code,
-  entrypoint,
-  reset,
-}: {
-  addToLog: (log: string[]) => void;
-  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>;
-  code: string;
-  entrypoint: ScriptEntrypoint;
-  reset: () => void;
-}) {
-  const [testInput, seTestInput] = useState('');
-  const onTestClick = async () => {
-    reset();
-    const myParticle = {
-      input: testInput,
-    };
-
-    compileScript(code, entrypoint.runtime, true, {
-      myParticle,
-    }).then((result) => {
-      formatExecutionResult(result, codeMirrorRef, addToLog);
-    });
-  };
-
-  return (
-    <div className={styles.testPanel}>
-      <Input
-        value={testInput}
-        onChange={(e) => seTestInput(e.target.value)}
-        placeholder="Enter commander input..."
-      />
-      <Button onClick={onTestClick}>Test</Button>
-    </div>
-  );
-}
+const entrypointName = 'particle';
+const defaultParticleScript = defaultScriptMap[entrypointName].script;
 
 function ScriptEditor() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const codeMirrorRef = useRef<CodeMirror>();
   const { signer, signingClient } = useSigningClient();
-  const {
-    scripts: { entrypoints },
-  } = useSelector((store: RootState) => store.scripting);
-
-  const [entrypointName, setEntrypointName] = useState<ScriptEntrypointNames>(
-    Object.keys(entrypoints)[0] as ScriptEntrypointNames
+  const { [entrypointName]: currentEntrypoint } = useAppSelector(
+    (store: RootState) => store.scripting.scripts.entrypoints
   );
 
-  const { tab = entrypointName } = useParams();
-
-  const { defaultAccount } = useSelector((store: RootState) => store.pocket);
+  const { defaultAccount } = useAppSelector((store: RootState) => store.pocket);
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [log, setLog] = useState<string[]>([]);
   const [isChanged, setIsChanged] = useState(false);
-  const [code, setCode] = useState<string>(
-    entrypoints[tab as ScriptEntrypointNames]?.user || ''
-  );
+  const [code, setCode] = useState<string>(currentEntrypoint.script || '');
 
   const { node } = useIpfs();
 
   const [isLoaded, setIsLoaded] = useState(false);
 
   const loadScript = async () => {
-    console.log('loadScript', entrypointName, entrypoints[entrypointName]);
-    // setIsEnabled(entrypoints[entrypointName].enabled);
-    if (entrypointName === 'particle') {
+    const cid = passport?.extension.particle;
+    console.log('loadScript', cid);
+
+    if (!cid || !isCID(cid)) {
       setCode(
-        loadStringFromLocalStorage(entrypointName, scriptMap.particle.user)
+        loadStringFromLocalStorage(entrypointName, defaultParticleScript)
+      );
+      // setIsEnabled(false);
+      console.log('loadScript noIpfs', currentEntrypoint);
+      dispatch(setEntrypointEnabled({ name: entrypointName, enabled: false }));
+    } else {
+      const response = await getIPFSContent(node, cid);
+      const content =
+        response?.contentType === 'text' && response?.result
+          ? await getTextFromIpfsContent(response.result)
+          : undefined;
+      setCode(content || defaultParticleScript);
+
+      console.log('loadScript myParticle fromIpfs', content, response);
+      dispatch(
+        setEntrypointEnabled({ name: entrypointName, enabled: !!content })
       );
     }
-    if (entrypointName === 'myParticle') {
-      const cid = passport?.extension.particle;
-      console.log('loadScript myParticle', cid);
 
-      if (!cid || !isCID(cid)) {
-        setCode(
-          loadStringFromLocalStorage(entrypointName, scriptMap.myParticle.user)
-        );
-        // setIsEnabled(false);
-        console.log('loadScript noIpfs');
-        dispatch(
-          setEntrypointEnabled({ name: entrypointName, enabled: false })
-        );
-      } else {
-        const response = await getIPFSContent(node, cid);
-        const content =
-          response?.contentType === 'text' && response?.result
-            ? await getTextFromIpfsContent(response.result)
-            : undefined;
-        setCode(
-          content || content === '' ? content : scriptMap.myParticle.user
-        );
-        console.log('loadScript myParticle fromIpfs', content, response);
-        dispatch(
-          setEntrypointEnabled({ name: entrypointName, enabled: !!content })
-        );
-      }
-    }
     setIsLoaded(true);
   };
 
@@ -315,10 +268,9 @@ function ScriptEditor() {
     setIsLoaded(false);
     saveStringToLocalStorage(entrypointName, code);
 
-    if (entrypointName === 'particle') {
+    if (currentEntrypoint.enabled) {
       addToLog(['', '☑️ Saved to local storage.']);
-    }
-    if (entrypointName === 'myParticle') {
+    } else {
       await saveScriptToPassport(code);
     }
 
@@ -327,18 +279,10 @@ function ScriptEditor() {
   };
 
   useEffect(() => {
-    if (Object.keys(entrypoints).indexOf(tab as ScriptEntrypointNames) > -1) {
-      const newEntrypoint = tab as ScriptEntrypointNames;
-      setEntrypointName(newEntrypoint);
-      // setCode(entrypoints[newEntrypoint]?.user || '');
-    }
-  }, [tab]);
-
-  useEffect(() => {
     resetPlayGround();
     setCode('Loading script...');
     loadScript();
-  }, [entrypointName, passport]);
+  }, [passport]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
 
@@ -354,30 +298,27 @@ function ScriptEditor() {
   const resetPlayGround = () => setLog([]);
 
   const onSaveClick = () => {
-    setLog([]);
+    resetPlayGround();
     if (!code) {
       addToLog([`🚫 Can't save empty code`]);
       return;
     }
 
-    compileScript(
-      code,
-      entrypoints[entrypointName].runtime,
-      false,
-      undefined
-    ).then((result) => {
-      const isOk = !result.diagnosticsOutput && !result.error;
-      highlightErrors(codeMirrorRef.current, result.diagnostics);
+    compileScript(code, currentEntrypoint.runtime, false, undefined).then(
+      (result) => {
+        const isOk = !result.diagnosticsOutput && !result.error;
+        highlightErrors(codeMirrorRef.current, result.diagnostics);
 
-      if (!isOk) {
-        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-      } else {
-        addToLog(['🏁 Compiled!']);
-        // dispatch(setScript({ name: entrypointName, code }));
-        saveScript();
-        setIsChanged(false);
+        if (!isOk) {
+          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+        } else {
+          addToLog(['🏁 Compiled!']);
+          // dispatch(setScript({ name: entrypointName, code }));
+          saveScript();
+          setIsChanged(false);
+        }
       }
-    });
+    );
   };
 
   const changeScriptEnabled = async (isOn: boolean) => {
@@ -387,116 +328,70 @@ function ScriptEditor() {
         enabled: isOn,
       })
     );
-    if (entrypointName === 'myParticle') {
-      await saveScriptToPassport(isOn ? code : '');
-    }
+    await saveScriptToPassport(isOn ? code : '');
   };
 
   if (!signer || !signingClient) {
-    return <Pane>Wallet is not connected.</Pane>;
+    return (
+      <ContainerGradientText>Wallet is not connected.</ContainerGradientText>
+    );
   }
 
   if (!passport) {
-    return <Pane>Passport required, for this action.</Pane>;
+    return (
+      <ContainerGradientText>
+        Passport required, for this action.
+      </ContainerGradientText>
+    );
   }
 
   return (
-    <div>
-      {/* <MainContainer> */}
-      <main className="block-body">
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-          gridGap="10px"
-          marginTop={25}
-          width="100%"
-          marginX="auto"
-        >
-          {Object.keys(entrypoints).map((k) => (
-            <TabBtn
-              key={`tab_${k}`}
-              text={entrypoints[k as ScriptEntrypointNames].title}
-              isSelected={tab === k}
-              to={`/plugins/${k}`}
+    <>
+      <ContainerGradientText>
+        <div>
+          <div className={styles.settingsPanel}>
+            <Switch
+              isOn={currentEntrypoint.enabled}
+              onToggle={changeScriptEnabled}
+              label={<div>Soul enabled</div>}
             />
-          ))}
-          <TabBtn
-            text="Secrets"
-            isSelected={tab === 'secrets'}
-            to="/plugins/secrets"
+          </div>
+
+          <CodeMirror
+            ref={codeMirrorRef}
+            editorDidMount={(editor) => {
+              editor.setSize('', '450px');
+            }}
+            value={code}
+            options={{
+              readOnly: !isLoaded,
+              mode: 'rust',
+              theme: 'tomorrow-night-eighties',
+              lineNumbers: true,
+            }}
+            onBeforeChange={(editor, data, value) => {
+              setCode(value);
+              setIsChanged(true);
+            }}
           />
-        </Tablist>
 
-        {/* <Carousel
-          slides={Object.keys(entrypoints).map((k) => ({
-            title: entrypoints[k as ScriptEntrypointName].title.toLocaleLowerCase(),
-          }))}
-          setStep={(i) => {
-            console.log(i);
-          }}
-          activeStep={Object.keys(entrypoints).indexOf(tab as ScriptEntrypointName)}
-        /> */}
-        {tab === 'secrets' && <Secrets />}
-        {!tab ||
-          (Object.keys(entrypoints).indexOf(tab) > -1 && (
-            <div className={styles.tabInner}>
-              <div className={styles.settingsPanel}>
-                <Switch
-                  isOn={entrypoints[entrypointName].enabled}
-                  onToggle={changeScriptEnabled}
-                  label={<div>Script enabled</div>}
-                />
-              </div>
-
-              <ContainerGradientText>
-                <CodeMirror
-                  ref={codeMirrorRef}
-                  value={code}
-                  options={{
-                    readOnly: !isLoaded,
-                    mode: 'rust',
-                    theme: 'tomorrow-night-eighties',
-                    lineNumbers: true,
-                  }}
-                  onBeforeChange={(editor, data, value) => {
-                    setCode(value);
-                    setIsChanged(true);
-                  }}
-                />
-              </ContainerGradientText>
-              <Pane
-                marginBottom="10px"
-                marginTop="25px"
-                alignItems="center"
-                justifyContent="center"
-                className={styles.actionPanel}
-              >
-                {entrypointName === 'particle' && (
-                  <PlayParticlePostProcessor
-                    reset={resetPlayGround}
-                    addToLog={addToLog}
-                    codeMirrorRef={codeMirrorRef}
-                    code={code}
-                    entrypoint={entrypoints[entrypointName]}
-                  />
-                )}
-                {entrypointName === 'myParticle' && (
-                  <PlayMyParticle
-                    reset={resetPlayGround}
-                    addToLog={addToLog}
-                    codeMirrorRef={codeMirrorRef}
-                    code={code}
-                    entrypoint={entrypoints[entrypointName]}
-                  />
-                )}
-                {isChanged && <Button onClick={onSaveClick}>Save</Button>}
-              </Pane>
-              <textarea value={logText} className={styles.logArea} rows={18} />
-            </div>
-          ))}
-      </main>
-      {/* </MainContainer> */}
-    </div>
+          <textarea value={logText} className={styles.logArea} rows={18} />
+        </div>
+      </ContainerGradientText>
+      <ActionBarContainer
+        button={isChanged ? { text: 'save', onClick: onSaveClick } : undefined}
+      >
+        <Pane className={styles.actionPanel}>
+          <PlayParticlePostProcessor
+            reset={resetPlayGround}
+            addToLog={addToLog}
+            codeMirrorRef={codeMirrorRef}
+            code={code}
+            entrypoint={currentEntrypoint}
+          />
+        </Pane>
+      </ActionBarContainer>
+    </>
   );
 }
 

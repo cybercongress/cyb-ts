@@ -22,14 +22,13 @@ type ScriptContext = {
 
 type ScriptEntrypoint = {
   title: string;
-  runtime: string;
-  user: string;
+  script: string;
   enabled: boolean;
 };
 
 type ScriptEntrypoints = {
   particle: ScriptEntrypoint;
-  myParticle: ScriptEntrypoint;
+  // myParticle: ScriptEntrypoint;
 };
 
 type ScriptEntrypointNames = keyof ScriptEntrypoints;
@@ -47,32 +46,36 @@ type ScriptCallback = (
   result: unknown
 ) => void;
 
-type ScriptParticleParams = {
-  cid?: string;
-  contentType?: string;
-  content?: string;
-};
+// type ScriptParticleParams = {
+//   cid?: string;
+//   contentType?: string;
+//   content?: string;
+// };
 
-type ScriptMyParticleParams = {
-  nickname?: string;
-  input?: string;
-};
+// type ScriptMyParticleParams = {
+//   nickname?: string;
+//   input?: string;
+// };
 
 type ScriptParticleResult = {
-  action: 'pass' | 'update_cid' | 'update_content' | 'hide' | 'error';
+  action: 'pass' | 'cid_result' | 'content_result' | 'hide' | 'error';
   cid?: string;
   content?: string;
 };
 
-type ScriptMyParticleResult = {
-  action: 'pass' | 'answer' | 'error';
-  answer?: string;
-};
+// type ScriptMyParticleResult = {
+//   action: 'pass' | 'answer' | 'error';
+//   answer?: string;
+// };
 
-type ScriptScopeParams = {
-  particle?: ScriptParticleParams;
-  myParticle?: ScriptMyParticleParams;
-  refId?: string;
+// type ScriptScopeParams = {
+//   particle?: ScriptParticleParams;
+//   myParticle?: ScriptMyParticleParams;
+//   refId?: string;
+// };
+
+type EntrypointParams = {
+  [key: string]: any;
 };
 
 type ScriptExecutionResult = {
@@ -92,6 +95,7 @@ export {
   ScriptEntrypoint,
   ScriptCallbackStatus,
   ScriptCallback,
+  EntrypointParams,
   ScriptParticleParams,
   ScriptMyParticleParams,
   ScriptScopeParams,

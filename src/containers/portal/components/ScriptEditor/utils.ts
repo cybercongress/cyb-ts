@@ -1,12 +1,6 @@
-import scriptEngine from 'src/services/scripting/engine';
+import scriptEngine, { CompilerParams } from 'src/services/scripting/engine';
 
-import { ScriptScopeParams } from 'src/types/scripting';
-
-const compileScript = (
-  code: string,
-  runtime: string,
-  executeAfterCompile: boolean,
-  params: ScriptScopeParams = {}
-) => scriptEngine.run(code, params, runtime, undefined, executeAfterCompile);
+const compileScript = (code: string, compilerParams: CompilerParams) =>
+  scriptEngine.run(code, compilerParams);
 
 export { compileScript };

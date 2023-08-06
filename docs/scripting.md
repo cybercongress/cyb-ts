@@ -30,10 +30,10 @@ User can do any transformation/mutation of content in pipeline, and return next 
 
 ```
 // Update content
-return update_content("Transformed content")
+return content_result("Transformed content")
 
 // Replace CID -> reapply new item
-return update_cid("Qm.....")
+return cid_result("Qm.....")
 
 // Hide item from App
 return hide()
@@ -164,14 +164,14 @@ pub async fn personal_processor(cid, content_type, content) {
                 let particle_cid = result["extension"]["particle"];
 
                 cyb::log(`Change ${cid} to ${particle_cid} based on ${username} passport particle`);
-                return update_cid(particle_cid)
+                return cid_result(particle_cid)
             }
         }
 
         // Modify contennt
         if content.contains("dasein") {
             cyb::log(`Update ${cid} all the content with 'dasein' to 'Dasein the Great'`);
-            return update_content(content.replace("dasein", "Dasein the Great"))
+            return content_result(content.replace("dasein", "Dasein the Great"))
         }
 
         // Hide the content that I not want to see
@@ -187,7 +187,7 @@ pub async fn personal_processor(cid, content_type, content) {
             let left_part = content.split("@NOW").next().unwrap();
             let symbol = left_part.split(" ").rev().next().unwrap();
             let json =  http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
-            return update_content(content.replace(`${symbol}@NOW`, json["lastPrice"]))
+            return content_result(content.replace(`${symbol}@NOW`, json["lastPrice"]))
         }
 
         // Place comment with TAG 'openai@me' to any particle
@@ -200,7 +200,7 @@ pub async fn personal_processor(cid, content_type, content) {
                 cyb::log(`feed ${cid} content to openai`);
                 let main_text = cyb::get_text_from_ipfs(cid).await;
                 let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, open_ai_key).await;
-                return update_content(`OpenAI say: ${result}`);
+                return content_result(`OpenAI say: ${result}`);
             }
         }
     }
