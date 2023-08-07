@@ -20,7 +20,7 @@ cyb module provide bindings that connect cyber-scripting with app and extend [Ru
 Allows to evaluate code from external IPFS scripts in verifiable way, execute remote computations
 
 ```
-// Evaluate sfunction from IPFS
+// Evaluate function from IPFS
 cyb::eval_script_from_ipfs(cid,'func_name', #{'name': 'john-the-baptist', 'evangelist': true, 'age': 33})
 
 // Evaluate remote function(not ready yet)
@@ -85,7 +85,7 @@ cyb:log("blah");
 ## Entrypoints
 
 Entrypoint is important concept of cyber scripting, literally that is the place where cyber-script is inlined into app pipeline.
-At the moment each entrypoint type is related to some particle in cyber.
+At the moment all entrypoint types is related to some particle in cyber:
 
 - Moon Domain Resolver
 - Personal Processor
@@ -106,8 +106,9 @@ pub async fn personal_processor(params) {
 
 _`personal_processor` is entrypoint for each-single particle(see. furter)_
 
-Second convention that each storypoint should return **output** object that with one required property named action and some optional props depending on action for ex. `#{action: 'pass'}`.
-cyber-scripting has helpers to construct responses
+Second convention that each entrypoint should return **output** object - with one required property named _action_ and some optional props depending on action for ex. `#{action: 'pass'}`.
+
+Cyber-scripting has helpers to construct responses:
 
 ```
 pass() // pass untouched = #{action: 'pass'}
@@ -131,9 +132,9 @@ pub async fn personal_processor(params) {
 
 ### Entrypoint types
 
-#### Particle post-processor
+#### Particle processor
 
-Every single particle in app goes thru pipeline and **personal_processor** function is applied to the this content:
+Every single particle goes thru the pipeline and **personal_processor** function is applied to it content:
 
 ```mermaid
 graph LR
@@ -152,16 +153,16 @@ pub async fn personal_processor(params) {
 }
 ```
 
-User can do any transformation/mutation of content in pipeline, and return next result using helper functions
+User can do any transformation of the particle in pipeline
 
 ```
 // Update content
 return content_result("Transformed content")
 
-// Replace CID -> reapply new item
+// Replace CID -> re-apply new particle
 return cid_result("Qm.....")
 
-// Hide item from the UI
+// Hide item from UI
 return hide()
 
 // Keep it as is
@@ -304,16 +305,21 @@ pub async fn personal_processor(params) {
         }
     }
 
-    if content.contains("dasein") {
-        cyb::log(`Update ${cid} content, replace 'Mark Zukerberg' to 'Elon Musk'`);
-        return content_result(content.replace("Mark Zukerberg", "Elon Musk"))
+    let one_guy = 'Mark Zukerberg'
+
+    if content.contains(one_guy) {
+        cyb::log(`Update ${cid} content, replace ${one_guy} to 'Elon Musk'`);
+        return content_result(content.replace(one_guy, "Elon Musk"))
     }
 
-    if content.contains("хуярта") {
-        cyb::log(`Hide ${cid} item because of 'хуярта' in the content`);
+    let buzz_word = "хуярта"
+
+    if content.contains(buzz_word) {
+        cyb::log(`Hide ${cid} item because of '${buzz_word}' in the content`);
         return hide()
     }
 
+    // <ticker>@NOW btcusd@NOW
     if content.contains("@NOW") {
         let left_part = content.split("@NOW").next().unwrap();
         let symbol = left_part.split(" ").rev().next().unwrap();
