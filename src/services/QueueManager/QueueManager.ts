@@ -314,7 +314,6 @@ class QueueManager<T> {
           } else {
             this.removeAndNext(cid);
             // notify thatn nothing found from all sources
-            console.log('----cbs', callbacks, cid, source, result);
             callbacks.map((callback) =>
               callback(cid, 'not_found', source, result)
             );

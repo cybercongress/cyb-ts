@@ -16,6 +16,8 @@ cyb module provide bindings that connect cyber-scripting with app and extend [Ru
 
 #### Distributed computing
 
+Allows to evaluate code from external IPFS scripts in verifiable way, execute remote computations
+
 ```
 // Evaluate sfunction from IPFS
 cyb::eval_script_from_ipfs(cid,'func_name', #{'name': 'john-the-baptist', 'evangelist': true, 'age': 33})
@@ -24,14 +26,18 @@ cyb::eval_script_from_ipfs(cid,'func_name', #{'name': 'john-the-baptist', 'evang
 cyb::eval_remote_script(peerId, 'func_name', params)
 ```
 
-####Passport
+#### Passport
+
+Get info about Citizenship
 
 ```
 // Get passport data by nickname
 cyb::get_passport_by_nickname(nickname: string) -> json;
 ```
 
-####Cyber links
+#### Cyber links
+
+Work with Knowelege Graph
 
 ```
 cyb::get_cyberlinks_from_cid(cid: string) -> json;
@@ -45,21 +51,27 @@ cyb::cyber_search(query: string) -> json;
 cyb::cyber_link(from_cid: string, to_cid: string);
 ```
 
-####IPFS
+#### IPFS
+
+Work with IPFS
 
 ```
 cyb::get_text_from_ipfs(cid: string) -> string;
 cyb::add_text_to_ipfs(text: string);
 ```
 
-####Experemental
+#### Experemental
+
+OpenAI promts(beta)
 
 ```
 // Apply prompt OpenAI and get result
 cyb::open_ai_prompt(prompt: string; api_key: string) -> string;
 ```
 
-####Debug
+#### Debug
+
+Logging and debug methods
 
 ```
 // Add debug info to script output
@@ -71,8 +83,8 @@ cyb:log("blah");
 
 ## Entrypoints
 
-Entrypoint is the place where cyber-script is embedded.
-All the entrypoints related to some particle in cyber.
+Entrypoint is important concept of cyber scripting, literally that is the place where cyber-script is inlined into app pipeline.
+At the moment each entrypoint type is related to some particle in cyber.
 
 - Moon Domain Resolver
 - Personal Processor
@@ -112,7 +124,7 @@ So minimal entrypoint looks like this:
 
 ```
 pub async fn personal_processor(params) {
-    pass()
+    return pass()
 }
 ```
 

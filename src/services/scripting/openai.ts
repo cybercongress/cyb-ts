@@ -12,7 +12,7 @@ export const promptToOpenAI = async (
   prompt: string,
   apiKey = API_KEY,
   model = 'text-davinci-003', // 'gpt-3.5-turbo',
-  maxTokens = 50,
+  maxTokens = 500,
   stop = '.',
   n = 1
 ) => {
