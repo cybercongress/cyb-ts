@@ -1,8 +1,8 @@
 // any ipfs content with <your-nickname>.moon trigger this function execution.
 // You can apply any logic and return CID/text here.
 pub async fn moon_domain_resolver(params) {
-    //QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi
     dbg("moon_domain_resolver fired");
+    // QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17 - is html app hosted in IPFS
     return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 
@@ -15,49 +15,59 @@ pub async fn personal_processor(params) {
     let content_type = params.contentType;
     let content = params.content;
     dbg(`personal_processor ${cid} ${content_type} ${content}`);
-    if content_type == "text" {
-        if content.contains(".") {
-            let items = content.split(".").collect::<Vec>();
-            let username = items[0];
-            let ext = items[1];
-            if username.len() <= 14 && ext == "moon" {
-                let passport = cyb::get_passport_by_nickname(username).await;
-                let particle_cid = passport["extension"]["particle"];
-                cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
-                let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
-                dbg(result);
-                return result
-            }
+    if content_type != "text" {
+        return pass()
+    }
+
+    if content.ends_with(".moon") {
+        let items = content.split(".").collect::<Vec>();
+        let username = items[0];
+        let ext = items[1];
+        if username.len() <= 14 && ext == "moon" {
+            let passport = cyb::get_passport_by_nickname(username).await;
+            let particle_cid = passport["extension"]["particle"];
+            cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
+            let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
+            dbg(result);
+            return result
         }
+    }
 
-        if content.contains("dasein") {
-            cyb::log(`Update ${cid} replace 'dasein' to 'Dasein the Great'`);
-            return content_result(content.replace("dasein", "Dasein the Great"))
-        }
+    if content.contains("dasein") {
+        cyb::log(`Update ${cid} content, replace 'Mark Zukerberg' to 'Elon Musk'`);
+        return content_result(content.replace("Mark Zukerberg", "Elon Musk"))
+    }
 
-        if content.contains("хуярта") {
-            cyb::log(`Hide items with хуярта in ${cid}`);
-            return hide()
-        }
+    if content.contains("хуярта") {
+        cyb::log(`Hide ${cid} item because of 'хуярта' in the content`);
+        return hide()
+    }
 
-        if content.contains("@NOW") {
-            let left_part = content.split("@NOW").next().unwrap();
-            let symbol = left_part.split(" ").rev().next().unwrap();
-            let json =  http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
-            return content_result(content.replace(`${symbol}@NOW`, json["lastPrice"]))
-        }
+    if content.contains("@NOW") {
+        let left_part = content.split("@NOW").next().unwrap();
+        let symbol = left_part.split(" ").rev().next().unwrap();
 
-        if content.contains("openai@me") {
-            let path =  cyb::context.app.params.path;
-            if path.len() >= 2 && path[0] == "ipfs" {
-                let openAI_api_key = cyb::context.app.secrets.openAI_api_key;
+        // external url call
+        let json =  http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
+        return content_result(content.replace(`${symbol}@NOW`, json["lastPrice"]))
+    }
 
-                let cid = path[1];
-                cyb::log(`feed ${cid} content to openai`);
-                let main_text = cyb::get_text_from_ipfs(cid).await;
-                let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, openAI_api_key).await;
-                return content_result(`OpenAI say: ${result}`);
-            }
+    if content.contains("openai@me") {
+        // get path from url
+        let path = cyb::context.app.params.path;
+        if path.len() >= 2 && path[0] == "ipfs" {
+
+            // get openAI api key from secrets
+            let openAI_api_key = cyb::context.app.secrets.openAI_api_key;
+
+            // get current item CID fro url cyb.ap/ipfs/Qm.....
+            let cid = path[1];
+
+            // get current item content from IPFS
+            let main_text = cyb::get_text_from_ipfs(cid).await;
+            // apply openAI prompt
+            let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, openAI_api_key).await;
+            return content_result(`OpenAI say: ${result}`);
         }
     }
 

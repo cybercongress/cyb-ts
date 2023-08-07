@@ -216,7 +216,7 @@ function ScriptEditor() {
 
   const { node } = useIpfs();
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   // const loadScript = async () => {
   //   const cid = passport?.extension.particle;
@@ -263,18 +263,20 @@ function ScriptEditor() {
     }
   };
   const saveScript = async () => {
-    addToLog(['Saving code...']);
-    setIsLoaded(false);
-    saveStringToLocalStorage(entrypointName, code);
+    try {
+      addToLog(['Saving code...']);
+      setIsLoaded(false);
+      saveStringToLocalStorage(entrypointName, code);
+      if (!currentEntrypoint.enabled) {
+        addToLog(['', '☑️ Saved to local storage.']);
+      } else {
+        await saveScriptToPassport(code);
+      }
 
-    if (currentEntrypoint.enabled) {
-      addToLog(['', '☑️ Saved to local storage.']);
-    } else {
-      await saveScriptToPassport(code);
+      dispatch(setEntrypoint({ name: entrypointName, code }));
+    } finally {
+      setIsLoaded(true);
     }
-
-    dispatch(setEntrypoint({ name: entrypointName, code }));
-    setIsLoaded(true);
   };
 
   useEffect(() => {
@@ -301,22 +303,26 @@ function ScriptEditor() {
       addToLog([`🚫 Can't save empty code`]);
       return;
     }
+    //   readOnly: boolean;
+    // execute: boolean;
+    // funcName: string;
+    // funcParams: EntrypointParams;
+    // config: typeof compileConfig;
+    compileScript(code, {
+      execute: false,
+    }).then((result) => {
+      const isOk = !result.diagnosticsOutput && !result.error;
+      highlightErrors(codeMirrorRef.current, result.diagnostics);
 
-    compileScript(code, currentEntrypoint.runtime, false, undefined).then(
-      (result) => {
-        const isOk = !result.diagnosticsOutput && !result.error;
-        highlightErrors(codeMirrorRef.current, result.diagnostics);
-
-        if (!isOk) {
-          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-        } else {
-          addToLog(['🏁 Compiled!']);
-          // dispatch(setScript({ name: entrypointName, code }));
-          saveScript();
-          setIsChanged(false);
-        }
+      if (!isOk) {
+        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+      } else {
+        addToLog(['🏁 Compiled!']);
+        // dispatch(setScript({ name: entrypointName, code }));
+        saveScript();
+        setIsChanged(false);
       }
-    );
+    });
   };
 
   const changeScriptEnabled = async (isOn: boolean) => {
