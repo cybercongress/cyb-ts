@@ -24,7 +24,7 @@ function Backlinks({ data, parent }: Props) {
                 className="hover-rank"
                 display="flex"
                 alignItems="center"
-                marginBottom="10px"
+                marginBottom="-2px"
                 key={item.cid}
               >
                 {!isMobile && (

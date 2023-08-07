@@ -30,7 +30,7 @@ function DiscussionTab({ dataDiscussion, mobile, parent }) {
               className="hover-rank"
               display="flex"
               alignItems="center"
-              marginBottom="10px"
+              marginBottom="-2px"
               key={`${cid}_${index}`}
             >
               {!mobile && (
