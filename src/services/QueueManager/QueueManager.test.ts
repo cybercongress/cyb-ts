@@ -1,14 +1,15 @@
 import QueueManager, { QueueItemStatus } from './QueueManager';
 import { QueueStrategy } from './QueueStrategy';
-import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
-jest.mock('./utils', () => ({
-  postProcessIpfContent: (item, content, _) => content,
-}));
+import { fetchIpfsContent } from 'src/utils/ipfs/utils-ipfs';
 
 jest.mock('src/utils/ipfs/utils-ipfs', () => ({
   fetchIpfsContent: jest.fn(),
   reconnectToCyberSwarm: jest.fn(),
+}));
+
+jest.mock('./utils', () => ({
+  postProcessIpfContent: (item, content, _) => content,
 }));
 
 const QUEUE_DEBOUNCE_MS = 100;
@@ -101,6 +102,7 @@ describe('QueueManager', () => {
         'pending', // node
         'executing', // gateway
         'timeout', // gateway
+        'not_found',
       ]);
       const itemId = 'id-to-timeout';
 
@@ -163,6 +165,7 @@ describe('QueueManager', () => {
         ['pending', 'gateway'],
         ['executing', 'gateway'],
         ['error', 'gateway'],
+        ['not_found', 'gateway'],
       ]);
       queueManager.enqueue(itemId, (cid, status, source): void => {
         expect(cid).toBe(itemId);
@@ -318,6 +321,7 @@ describe('QueueManager', () => {
         Promise.reject()
       );
       const result = await queueManager.enqueueAndWait('xxx');
+      console.log('----res');
       expect(result).toBe(undefined);
     } finally {
       (fetchIpfsContent as jest.Mock).mockClear();

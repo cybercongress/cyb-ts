@@ -1,5 +1,5 @@
 import { Citizenship } from './citizenship';
-import { TabularKeyValues } from './data';
+import { KeyValueString, TabularKeyValues } from './data';
 
 type ParamsContext = {
   path?: string[];
@@ -18,6 +18,10 @@ type ScriptContext = {
   params: ParamsContext;
   user: UserContext;
   secrets: TabularKeyValues; // Record<string, string>;
+};
+
+type EngineContext = Omit<ScriptContext, 'secrets'> & {
+  secrets: KeyValueString;
 };
 
 type ScriptEntrypoint = {
@@ -46,11 +50,11 @@ type ScriptCallback = (
   result: unknown
 ) => void;
 
-// type ScriptParticleParams = {
-//   cid?: string;
-//   contentType?: string;
-//   content?: string;
-// };
+type ScriptParticleParams = {
+  cid?: string;
+  contentType?: string;
+  content?: string;
+};
 
 // type ScriptMyParticleParams = {
 //   nickname?: string;
@@ -61,6 +65,7 @@ type ScriptParticleResult = {
   action: 'pass' | 'cid_result' | 'content_result' | 'hide' | 'error';
   cid?: string;
   content?: string;
+  message?: string;
 };
 
 // type ScriptMyParticleResult = {
@@ -80,7 +85,7 @@ type EntrypointParams = {
 
 type ScriptExecutionResult = {
   error?: string;
-  result?: ScriptParticleResult | ScriptMyParticleResult;
+  result: ScriptParticleResult;
   diagnosticsOutput?: string;
   output?: string;
   diagnostics?: object[];
@@ -103,4 +108,5 @@ export {
   ScriptEntrypoints,
   ScriptMyParticleResult,
   ScriptParticleResult,
+  EngineContext,
 };

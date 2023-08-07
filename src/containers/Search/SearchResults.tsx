@@ -123,7 +123,7 @@ const SwarmParticle = ({
         if (content.contentType === 'text') {
           const scriptCode = await parseRawIpfsData(cid, content);
 
-          const item = await scriptEngine.reactToInput(
+          const item = await scriptEngine.particleInference(
             scriptCode.content || '',
             {
               input,
@@ -176,10 +176,12 @@ function SearchResults() {
   const [hasMore, setHasMore] = useState(false);
 
   const { isMobile: mobile } = useDevice();
-  const { isLoaded } = useAppSelector(
-    (state: RootState) => state.scripting.scripts
-  );
-  const followingParticles = useAppSelector(selectCommunityFollowingParticles);
+
+  // TMP: DISABLED
+  // const { isLoaded } = useAppSelector(
+  //   (state: RootState) => state.scripting.scripts
+  // );
+  // const followingParticles = useAppSelector(selectCommunityFollowingParticles);
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -286,17 +288,18 @@ function SearchResults() {
     );
   }
 
+  // TMP DISABLED
   //TODO: useMemo
-  if (isLoaded) {
-    followingParticles.forEach((item) => {
-      const { nickname, particle } = item;
-      //   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+  // if (isLoaded) {
+  //   followingParticles.forEach((item) => {
+  //     const { nickname, particle } = item;
+  //     //   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
-      searchItems.push(
-        <SwarmParticle nickname={nickname} cid={particle} input={query} />
-      );
-    });
-  }
+  //     searchItems.push(
+  //       <SwarmParticle nickname={nickname} cid={particle} input={query} />
+  //     );
+  //   });
+  // }
 
   if (query.match(PATTERN_CYBER)) {
     const key = uuidv4();

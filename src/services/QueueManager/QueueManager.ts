@@ -148,7 +148,10 @@ class QueueManager<T> {
       const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      }).then((content) => {
+      }).then((content: T) => {
+        if (!item.postProcessing) {
+          return content;
+        }
         const result = content
           ? postProcessIpfContent(item, content, this.node)
           : undefined;
@@ -311,6 +314,7 @@ class QueueManager<T> {
           } else {
             this.removeAndNext(cid);
             // notify thatn nothing found from all sources
+            console.log('----cbs', callbacks, cid, source, result);
             callbacks.map((callback) =>
               callback(cid, 'not_found', source, result)
             );
@@ -341,6 +345,7 @@ class QueueManager<T> {
         callbacks: [callback],
         source, // initial method to fetch
         status: 'pending',
+        postProcessing: true, // by default rune-post-processing enabled
         ...options,
       };
 

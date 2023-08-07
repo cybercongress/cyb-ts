@@ -10,8 +10,6 @@ import {
   getEntrypointKeyName,
 } from 'src/utils/localStorage';
 
-import { defaultScriptMap } from 'src/services/scripting/scripts/mapping';
-
 import {
   ScriptEntrypointNames,
   ScriptContext,
@@ -19,6 +17,8 @@ import {
 } from 'src/types/scripting';
 
 import type { AppThunk, SliceActions } from '../types';
+
+import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
 type ChatBotStatus = 'on' | 'off' | 'loading' | 'error';
 
@@ -37,17 +37,16 @@ type SliceState = {
   };
 };
 
-export type ChatBotActiveAction = PayloadAction<boolean>;
+type ChatBotActiveAction = PayloadAction<boolean>;
 
 // const loadScript(name: ScriptEntrypointNames, deps: {ipfs: AppIPFS, queryClient: })
 const isParticleScriptEnabled =
   !!loadStringFromLocalStorage(getEntrypointKeyName('particle', 'enabled')) ||
   true;
-console.log('----isParticleScriptEnabled', isParticleScriptEnabled);
-const ScriptEntrypointsData: ScriptEntrypoints = {
+const initialScriptEntrypoints: ScriptEntrypoints = {
   particle: {
     title: 'Personal processor',
-    script: defaultScriptMap.particle.script,
+    script: defaultParticleScript,
     enabled: !!isParticleScriptEnabled,
   },
   // myParticle: {
@@ -89,7 +88,7 @@ const initialState: SliceState = {
   },
   scripts: {
     isLoaded: false,
-    entrypoints: ScriptEntrypointsData,
+    entrypoints: initialScriptEntrypoints,
   },
   chatBot: {
     name: botName,
@@ -152,8 +151,6 @@ const slice = createSlice({
       { payload }: PayloadAction<{ name: ScriptEntrypointNames; code: string }>
     ) => {
       const { name, code } = payload;
-      console.log('---setEntrypoint', name);
-      // saveStringToLocalStorage(name, code);
       state.scripts.entrypoints[name].script = code;
     },
     setEntrypointEnabled: (

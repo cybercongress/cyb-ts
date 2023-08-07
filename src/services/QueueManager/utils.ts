@@ -25,7 +25,7 @@ export async function postProcessIpfContent<T extends IPFSContent>(
 ): Promise<IPFSContent> {
   const { cid, controller, source } = item;
 
-  const mutation = await scriptEngine.reactToParticle({
+  const mutation = await scriptEngine.personalProcessor({
     cid,
     contentType: content?.contentType || '',
     content: contentToStringOrEmpty(content),

@@ -33,7 +33,9 @@ export async function getScriptFromParticle(cid?: Nullable<string>) {
     return undefined;
   }
 
-  const queueResult = await queueManager.enqueueAndWait(cid);
+  const queueResult = await queueManager.enqueueAndWait(cid, {
+    postProcessing: false,
+  });
   const result = queueResult?.result;
   if (!result?.result || result?.contentType !== 'text') {
     // throw new Error('content is not valid');

@@ -35,6 +35,7 @@ export type QueueItemOptions = {
   priority?: number;
   viewPortPriority?: number;
   initialSource?: QueueSource;
+  postProcessing?: boolean;
 };
 
 export type QueueItemCallback<T> = (

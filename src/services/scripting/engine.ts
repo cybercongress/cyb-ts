@@ -1,7 +1,5 @@
 import {
   ScriptCallback,
-  ScriptEntrypointNames,
-  ScriptEntrypoint,
   ScriptParticleParams,
   ScriptContext,
   ScriptMyParticleResult,
@@ -10,6 +8,7 @@ import {
   ScriptEntrypoints,
   ScriptExecutionResult,
   EntrypointParams,
+  EngineContext,
 } from 'src/types/scripting';
 import initAsync, { compile } from 'cyb-rune-wasm';
 
@@ -23,7 +22,7 @@ import {
 } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { TabularKeyValues, KeyValueString } from 'src/types/data';
 import { keyValuesToObject } from 'src/utils/localStorage';
-import scriptingRuntime from './scripts/runtime.rn';
+import runtimeScript from './rune/runtime.rn';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -40,28 +39,12 @@ export type CompilerParams = {
   config: typeof compileConfig;
 };
 
-type EngineContext = Omit<ScriptContext, 'secrets'> & {
-  secrets: KeyValueString;
-};
-
 // | { name: 'ipfs'; item: AppIPFS }
 // | { name: 'queryClient'; item: CyberClient }
 // | {
 //     name: 'signer';
 //     item: { signer?: OfflineSigner; signingClient: SigningCyberClient };
 //   };
-
-const getEntrypointScripts = (
-  entrypoints: ScriptEntrypoints,
-  name: ScriptEntrypointNames
-) => {
-  if (!entrypoints[name]) {
-    throw Error(`No '${name}' script exist`);
-  }
-
-  const { script: user, enabled } = entrypoints[name] as ScriptEntrypoint;
-  return { script: user, enabled };
-};
 
 const toRecord = (item: TabularKeyValues) =>
   keyValuesToObject(Object.values(item));
@@ -93,14 +76,16 @@ interface Engine {
 
   run(
     script: string,
-    compilerParams: Partial<CompilerParams>,
+    compileParams: Partial<CompilerParams>,
     callback?: ScriptCallback
   ): Promise<ScriptExecutionResult>;
-  reactToInput(
+  particleInference(
     userScript: string,
     params: ScriptMyParticleParams
   ): Promise<ScriptMyParticleResult>;
-  reactToParticle(params: ScriptParticleParams): Promise<ScriptParticleResult>;
+  personalProcessor(
+    params: ScriptParticleParams
+  ): Promise<ScriptParticleResult>;
   executeFunction(
     script: string,
     funcName: string,
@@ -110,7 +95,7 @@ interface Engine {
 
 // eslint-disable-next-line import/prefer-default-export
 function enigine(): Engine {
-  let entrypoints: ScriptEntrypoints | undefined;
+  let entrypoints: ScriptEntrypoints = {};
   let context: EngineContext = { params: {}, user: {}, secrets: {} };
   let deps: EngineDeps;
 
@@ -124,18 +109,19 @@ function enigine(): Engine {
 
     console.time('⚡️ Rune initialized! 🔋');
     rune = await initAsync();
-    window.rune = rune;
+    window.rune = rune; // debug
     console.timeEnd('⚡️ Rune initialized! 🔋');
   };
 
   const pushContext = <K extends keyof ScriptContext>(
     name: K,
-    value: ScriptContext[K]
+    value: ScriptContext[K] | TabularKeyValues
   ) => {
     if (name === 'secrets') {
       context[name] = toRecord(value as TabularKeyValues);
       return;
     }
+
     context[name] = value;
   };
 
@@ -159,9 +145,17 @@ function enigine(): Engine {
     entrypoints = scriptEntrypoints;
   };
 
+  const defaultCompilerParams: CompilerParams = {
+    readOnly: false,
+    execute: true,
+    funcName: 'main',
+    funcParams: {},
+    config: compileConfig,
+  };
+
   const run = async (
     script: string,
-    compilerParams: Partial<CompilerParams>,
+    compileParams: Partial<CompilerParams>,
     callback?: ScriptCallback
   ) => {
     const refId = uuidv4().toString();
@@ -171,20 +165,16 @@ function enigine(): Engine {
       app: context,
       refId,
     };
-
-    const defaultCompilerParams: CompilerParams = {
-      readOnly: false,
-      execute: true,
-      funcName: 'main',
-      funcParams: {},
-      config: compileConfig,
-    };
-
-    const outputData = await compile(script, scriptingRuntime, scriptParams, {
+    const compilerParams = {
       ...defaultCompilerParams,
-      ...compilerParams,
-    });
-    // console.log(`------ run ${funcName} outputData`, outputData);
+      ...compileParams,
+    };
+    const outputData = await compile(
+      script,
+      runtimeScript,
+      scriptParams,
+      compilerParams
+    );
     const { result } = outputData;
 
     scriptCallbacks.delete(refId);
@@ -192,39 +182,47 @@ function enigine(): Engine {
     try {
       return {
         ...outputData,
-        result: result ? JSON.parse(result) : null,
+        result: result
+          ? JSON.parse(result)
+          : { action: 'error', message: 'No result' },
       };
     } catch (e) {
-      console.log('runeRun error', e, outputData);
+      console.log(
+        `engine.run err ${compilerParams.funcName}`,
+        e,
+        outputData,
+        compilerParams
+      );
       return {
         diagnosticsOutput: `scripting engine error ${e}`,
         ...outputData,
+        result: { action: 'error', message: e?.toString() || 'Unknown error' },
       };
     }
   };
 
-  const reactToParticle = async (
+  const personalProcessor = async (
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult> => {
-    const { script, enabled } = entrypoints['particle'];
+    if (!entrypoints.particle) {
+      return { action: 'error', message: 'No particle entrypoint' };
+    }
+
+    const { script, enabled } = entrypoints.particle;
 
     if (!enabled) {
       return { action: 'pass' };
     }
 
-    const scriptResult = await run(script, {
+    const output = await run(script, {
       funcName: 'personal_processor',
       funcParams: params as EntrypointParams,
     });
-    if (scriptResult.error) {
-      console.log(`---reactToParticle ${params.cid} error: `, scriptResult);
-      return { action: 'error' };
+
+    if (output.result.action !== 'pass') {
+      console.log(`personalProcessor ${params.cid}`, params, output);
     }
-
-    // if (scriptResult.result?.action !== 'pass') {
-    // }
-
-    return scriptResult.result;
+    return output.result;
   };
 
   const executeFunction = async (
@@ -232,47 +230,32 @@ function enigine(): Engine {
     funcName: string,
     funcParams: EntrypointParams
   ): Promise<ScriptParticleResult> => {
-    const scriptResult = await run(script, {
+    const output = await run(script, {
       funcName,
       funcParams,
-      readOnly: true, // don't allow to sign tx and add to ipfs
+      readOnly: true, // block to sign tx and add to ipfs
     });
 
-    if (scriptResult.error) {
-      console.log(
-        `---executeFunction ${funcName} error: `,
-        funcParams,
-        scriptResult
-      );
-      return { action: 'error' };
-    }
-
-    return scriptResult.result;
+    return output.result;
   };
 
-  const reactToInput = async (
+  const particleInference = async (
     userScript: string,
-    params: ScriptMyParticleParams
+    funcParams: EntrypointParams
   ): Promise<ScriptMyParticleResult> => {
-    const { script } = entrypoints?.myParticle;
-
-    const scriptResult = await run(script, {
+    const output = await run(userScript, {
       funcName: 'particle_inference',
-      funcParams: params as EntrypointParams,
+      funcParams,
     });
 
-    if (scriptResult.error) {
-      return { action: 'error' };
-    }
-
-    return scriptResult.result;
+    return output.result;
   };
 
   return {
     load,
     run,
-    reactToInput,
-    reactToParticle,
+    particleInference,
+    personalProcessor,
     setEntrypoints,
     getDeps,
     getSingleDep,
@@ -288,5 +271,5 @@ function enigine(): Engine {
 }
 
 const scriptEngine = enigine();
-window.ngn = scriptEngine;
+window.ngn = scriptEngine; // debug
 export default scriptEngine;

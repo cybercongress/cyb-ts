@@ -16,9 +16,9 @@ import { Nullable } from 'src/types';
 
 import { WebLLMInstance } from 'src/services/scripting/webLLM';
 import scriptEngine from 'src/services/scripting/engine';
-import { queueManager } from 'src/services/QueueManager/QueueManager';
 import { Citizenship } from 'src/types/citizenship';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+import { getScriptFromParticle } from 'src/services/scripting/helpers';
 
 import {
   setChatBotStatus,
@@ -29,8 +29,6 @@ import {
 } from '../features/scripting';
 
 import type { RootState } from '../store';
-import { isCID } from 'src/utils/ipfs/helpers';
-import { getScriptFromParticle } from 'src/services/scripting/helpers';
 
 type ActionWithPayload<T> = Extract<ScriptingActionTypes, { type: T }>;
 
@@ -86,7 +84,7 @@ const selectPassportEpic = (
           },
         });
         return from(getScriptFromParticle(passport.extension.particle)).pipe(
-          map((code) => setEntrypoint({ name: 'particle', code }))
+          map((code) => code && setEntrypoint({ name: 'particle', code }))
         );
       }
       return of({ type: 'passport_not_initialized' });

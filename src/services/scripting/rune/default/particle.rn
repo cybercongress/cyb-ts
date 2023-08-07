@@ -1,4 +1,3 @@
-
 // any ipfs content with <your-nickname>.moon trigger this function execution.
 // You can apply any logic and return CID/text here.
 pub async fn moon_domain_resolver(params) {
@@ -32,7 +31,7 @@ pub async fn personal_processor(params) {
         }
 
         if content.contains("dasein") {
-            cyb::log(`Update ${cid} all the content with 'dasein' to 'Dasein the Great'`);
+            cyb::log(`Update ${cid} replace 'dasein' to 'Dasein the Great'`);
             return content_result(content.replace("dasein", "Dasein the Great"))
         }
 

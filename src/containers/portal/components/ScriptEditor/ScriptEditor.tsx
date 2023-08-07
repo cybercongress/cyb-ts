@@ -23,9 +23,7 @@ import {
   setEntrypoint,
   setEntrypointEnabled,
 } from 'src/redux/features/scripting';
-import { defaultScriptMap } from 'src/services/scripting/scripts/mapping';
 
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
 import Switch from 'src/components/Switch/Switch';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
@@ -39,6 +37,8 @@ import {
 import { updatePassportParticle } from '../../utils';
 
 import { compileScript } from './utils';
+
+import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
 import styles from './ScriptEditor.module.scss';
 
@@ -197,7 +197,6 @@ function PlayParticlePostProcessor({
 }
 
 const entrypointName = 'particle';
-const defaultParticleScript = defaultScriptMap[entrypointName].script;
 
 function ScriptEditor() {
   const dispatch = useAppDispatch();
@@ -219,38 +218,38 @@ function ScriptEditor() {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const loadScript = async () => {
-    const cid = passport?.extension.particle;
-    console.log('loadScript', cid);
+  // const loadScript = async () => {
+  //   const cid = passport?.extension.particle;
+  //   console.log('loadScript', cid);
 
-    if (!cid || !isCID(cid)) {
-      setCode(
-        loadStringFromLocalStorage(entrypointName, defaultParticleScript)
-      );
-      // setIsEnabled(false);
-      console.log('loadScript noIpfs', currentEntrypoint);
-      dispatch(setEntrypointEnabled({ name: entrypointName, enabled: false }));
-    } else {
-      const response = await getIPFSContent(node, cid);
-      const content =
-        response?.contentType === 'text' && response?.result
-          ? await getTextFromIpfsContent(response.result)
-          : undefined;
-      setCode(content || defaultParticleScript);
+  //   if (!cid || !isCID(cid)) {
+  //     setCode(
+  //       loadStringFromLocalStorage(entrypointName, defaultParticleScript)
+  //     );
+  //     // setIsEnabled(false);
+  //     console.log('loadScript noIpfs', currentEntrypoint);
+  //     dispatch(setEntrypointEnabled({ name: entrypointName, enabled: false }));
+  //   } else {
+  //     const response = await getIPFSContent(node, cid);
+  //     const content =
+  //       response?.contentType === 'text' && response?.result
+  //         ? await getTextFromIpfsContent(response.result)
+  //         : undefined;
+  //     setCode(content || defaultParticleScript);
 
-      console.log('loadScript myParticle fromIpfs', content, response);
-      dispatch(
-        setEntrypointEnabled({ name: entrypointName, enabled: !!content })
-      );
-    }
+  //     console.log('loadScript myParticle fromIpfs', content, response);
+  //     dispatch(
+  //       setEntrypointEnabled({ name: entrypointName, enabled: !!content })
+  //     );
+  //   }
 
-    setIsLoaded(true);
-  };
+  //   setIsLoaded(true);
+  // };
 
   const saveScriptToPassport = async (scriptCode: string) => {
     const cid = await addContenToIpfs(node, scriptCode);
     console.log('saveScriptToPassport', cid, scriptCode);
-
+    addToLog(['🏁 Saving to passport...']);
     if (cid) {
       const result = await updatePassportParticle(
         passport?.extension.nickname,
@@ -280,9 +279,8 @@ function ScriptEditor() {
 
   useEffect(() => {
     resetPlayGround();
-    setCode('Loading script...');
-    loadScript();
-  }, [passport]);
+    setCode(currentEntrypoint.script);
+  }, [currentEntrypoint]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
 
@@ -322,13 +320,16 @@ function ScriptEditor() {
   };
 
   const changeScriptEnabled = async (isOn: boolean) => {
-    dispatch(
-      setEntrypointEnabled({
-        name: entrypointName,
-        enabled: isOn,
-      })
-    );
-    await saveScriptToPassport(isOn ? code : '');
+    setIsLoaded(false);
+    saveScriptToPassport(isOn ? code : '').then(() => {
+      dispatch(
+        setEntrypointEnabled({
+          name: entrypointName,
+          enabled: isOn,
+        })
+      );
+      setIsLoaded(true);
+    });
   };
 
   if (!signer || !signingClient) {
