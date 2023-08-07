@@ -3,7 +3,8 @@
 [Rune Language]: https://rune-rs.github.io
 [Cyber]: https://cyb.ai
 
-[Cyber] uses [Rune Language] for embeddable scripting(-cyber-scripting-).
+[Cyber] uses [Rune Language] for embeddable scripting aka _cyber-scripting_.
+
 Rune is virtual machine(WASM module written on Rust) that runs inside cyber.
 
 Using cyber-scripting any cyber citizen can tune-up his "soul", and extend and modify cyber behaivior and functionality.
@@ -22,8 +23,8 @@ Allows to evaluate code from external IPFS scripts in verifiable way, execute re
 // Evaluate sfunction from IPFS
 cyb::eval_script_from_ipfs(cid,'func_name', #{'name': 'john-the-baptist', 'evangelist': true, 'age': 33})
 
-// Evaluate remote function(not implemented yer)
-cyb::eval_remote_script(peerId, 'func_name', params)
+// Evaluate remote function(not ready yet)
+cyb::eval_remote_script(peer_id, func_name, params)
 ```
 
 #### Passport
@@ -109,15 +110,15 @@ Second convention that each storypoint should return **output** object that with
 cyber-scripting has helpers to construct responses
 
 ```
-pass() // = #{action: 'pass'} - pass untouched
+pass() // pass untouched = #{action: 'pass'}
 
-hide() // = #{ "action": "hide" } - hide particle
+hide() // hide particle = #{ "action": "hide" }
 
-cid_result(cid) // = #{ "cid": cid, "action": "cid_result" } - change particle's cid
+cid_result(cid) // change particle's cid and parse = #{ "cid": cid, "action": "cid_result" }
 
-content_result(content) // = #{ "content": content, "action": "content_result" } - modify particle content
+content_result(content) //  modify particle content = #{ "content": content, "action": "content_result" }
 
-error() // = #{ "message": message, "action": "error" } - error ^_^
+error(message) // error ^_^ = #{ "message": message, "action": "error" }
 ```
 
 So minimal entrypoint looks like this:
@@ -130,7 +131,7 @@ pub async fn personal_processor(params) {
 
 ### Entrypoint types
 
-####Particle post-processor
+#### Particle post-processor
 
 Every single particle in app goes thru pipeline and **personal_processor** function is applied to the this content:
 
@@ -141,9 +142,9 @@ A[particle] -- cid --> B[IPFS] -- content --> C(("personal<br />processor")) -- 
 
 ```
 // params:
-//  - cid: CID of the content
-//  - contentType:
-//  - content: content itself(text only supported for now)
+//      cid: CID of the content
+//      contentType: text, image, link, pdf, video, directory, html etc...
+//      content: content itself (text only supported at the moment)
 pub async fn personal_processor(params) {
     let cid = params.cid; // CID of the particle
     let content_type = params.contentType; // text, image, video, audio, pdf, etc...
@@ -167,7 +168,7 @@ return hide()
 return pass()
 ```
 
-#### .moon domain
+#### .moon domain resolver
 
 Every user can write his own .moon domain resolver: _[username].moon_. When any other user meep particle with exactly such text, entrypoint will be executed.
 
@@ -205,12 +206,16 @@ pub async fn personal_processor(params) {
             let username = items[0];
             let ext = items[1];
             if username.len() <= 14 && ext == "moon" {
+
                 // get citizenship data by username
                 let passport = cyb::get_passport_by_nickname(username).await;
+
                 // get personal particle
                 let particle_cid = passport["extension"]["particle"];
-                // console log
+
+                // log to browser console
                 cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
+
                 // execute user 'moon_domain_resolver' function from 'soul' script
                 return cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
         }
@@ -220,7 +225,7 @@ pub async fn personal_processor(params) {
 
 #### ~~Particle Inference~~
 
-######_(in developement)_
+###### _(in developement)_
 
 Every user is able to create his own particle that appears in search results of all his followers and depends:
 
@@ -241,19 +246,19 @@ particle_inference(params) {
 One of important thing, that can be used inside scripting is the context.
 Context point to place and obstacles where entrypoint was triggered. Context is stored in `cyb::context` and contains such values:
 
-- params(command line)
+- params(url params)
   - path / query / search
-- user(entrypoint executor)
+- user(user that executes entrypoint)
   - address / nickname / passport
-- secrets( key-value list in the app)
+- secrets(key-value list from the cyber app)
   - key/value storage
 
 ```
 // Get list of url parameters
-let path = cyb::context.app.params.path;
+let path = cyb::context.params.path;
 
 // nick of user that see this particle(in case of domain resolver)
-let name = cyb::context.app.user.nickname;
+let name = cyb::context.user.nickname;
 
 //get some secret
 let openAI_apiKey = cyb::context.secrets.openAI_apiKey;
