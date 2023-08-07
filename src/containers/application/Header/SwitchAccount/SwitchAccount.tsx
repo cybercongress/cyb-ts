@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import { useIpfs } from 'src/contexts/ipfs';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
 
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
-import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
@@ -28,7 +28,8 @@ function AccountItem({
   link,
 }) {
   const address = data?.cyber?.bech32;
-  const { passport } = useGetPassportByAddress(address);
+
+  const { passport } = usePassportByAddress(address);
 
   const name =
     passport?.extension?.nickname || data?.cyber?.name || accountName;
@@ -85,11 +86,15 @@ function AccountItem({
 function SwitchAccount() {
   const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
+
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
-  const { defaultAccount, accounts } = useSelector(
-    (state: RootState) => state.pocket
-  );
+  const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
+  const dispatch = useAppDispatch();
+
+  const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
+
+  const { passport } = usePassportByAddress(useGetAddress);
 
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
     trigger: 'click',
@@ -99,18 +104,14 @@ function SwitchAccount() {
     placement: 'bottom',
   });
 
-  const passport = useSelector((state: RootState) => state.passport);
-  const dispatch = useDispatch();
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(containerRef, () => {
     setControlledVisible(false);
   });
 
-  const useGetCidAvatar = passport.data?.extension.avatar;
-  const useGetName = passport.data?.extension.nickname || defaultAccount?.name;
-  const useGetAddress = defaultAccount?.account?.cyber?.bech32;
+  const useGetCidAvatar = passport?.extension.avatar;
+  const useGetName = passport?.extension.nickname || defaultAccount?.name;
 
   const onClickChangeActiveAcc = async (key: string) => {
     dispatch(
@@ -172,8 +173,8 @@ function SwitchAccount() {
         )}
         <Link
           to={
-            passport.data
-              ? routes.robotPassport.getLink(passport.data.extension.nickname)
+            passport
+              ? routes.robotPassport.getLink(passport.extension.nickname)
               : routes.robot.path
           }
           // onClick={() => setControlledVisible(!controlledVisible)}

@@ -36,11 +36,15 @@ const reduceParticleArr = (data, cidFrom: string) => {
   }, []);
 };
 
-const getTo = async (hash: string, offset: string, callBack) => {
+const getTo = async (
+  hash: string,
+  offset: string,
+  callBack: (total: number) => void
+) => {
   try {
     const response = await getToLink(hash, offset, limit);
     if (callBack && offset === '0' && response) {
-      callBack(response.pagination.total);
+      callBack(Number(response.pagination.total));
     }
     return response.tx_responses || [];
   } catch (error) {

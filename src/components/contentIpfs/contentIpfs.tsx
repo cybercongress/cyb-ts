@@ -12,7 +12,7 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+// import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
 const getContentDetails = async (
   cid: string,
@@ -43,9 +43,7 @@ function OtherItem({
 }) {
   if (search) {
     return (
-      <TextMarkdown fullWidth={search}>
-        {content || `${cid} (n/a)`}
-      </TextMarkdown>
+      <TextMarkdown preview={search}>{content || `${cid} (n/a)`}</TextMarkdown>
     );
   }
   return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
@@ -101,7 +99,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
       {ipfsDataDetails && (
         <>
           {contentType === 'text' && (
-            <TextMarkdown fullWidth={search}>
+            <TextMarkdown preview={search}>
               {search ? ipfsDataDetails.text : ipfsDataDetails.content}
             </TextMarkdown>
           )}

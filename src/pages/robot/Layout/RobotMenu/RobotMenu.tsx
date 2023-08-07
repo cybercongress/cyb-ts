@@ -1,9 +1,9 @@
 import React from 'react';
-import styles from './RobotMenu.module.scss';
 import { NavLink } from 'react-router-dom';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
-import { useRobotContext } from '../../robot.context';
 import cx from 'classnames';
+import { useRobotContext } from '../../robot.context';
+import styles from './RobotMenu.module.scss';
 
 type MenuItem = {
   text: string;
@@ -11,6 +11,7 @@ type MenuItem = {
   description?: string;
   name?: string;
   icon: string;
+  isDisabled?: boolean;
 };
 
 const links: MenuItem[] = [
@@ -31,6 +32,7 @@ const links: MenuItem[] = [
   {
     text: 'Chat',
     link: './chat',
+    isDisabled: true,
     icon: '💬',
     description: 'msg',
   },
@@ -44,6 +46,7 @@ const links: MenuItem[] = [
   {
     text: 'Items',
     link: './items',
+    isDisabled: true,
     icon: '🖼',
     description: 'tokens',
   },
@@ -56,6 +59,7 @@ const links: MenuItem[] = [
   },
   {
     text: 'Skills',
+    isDisabled: true,
     link: './skills',
     description: 'active',
     icon: '🍄',
@@ -63,6 +67,7 @@ const links: MenuItem[] = [
   {
     text: 'Rights',
     link: './rights',
+    isDisabled: true,
     icon: '🙌',
   },
 
@@ -121,6 +126,7 @@ const links: MenuItem[] = [
   {
     text: 'Soul',
     link: './soul',
+    isDisabled: true,
     // description: 'bytes',
     icon: '👻',
   },
@@ -134,7 +140,7 @@ type Props = {
 const splitIndex = 8;
 
 function RobotMenu({ counts, isRight }: Props) {
-  const { address, isOwner, isLoading, nickname } = useRobotContext();
+  const { address, isLoading } = useRobotContext();
 
   let linksToRender = [];
 
@@ -170,9 +176,18 @@ function RobotMenu({ counts, isRight }: Props) {
           }
 
           function selectTag(content: React.ReactNode) {
-            if (newUser && !['sigma', 'drive'].includes(link.name)) {
+            if (
+              (newUser && !['sigma', 'drive'].includes(link.name)) ||
+              link.isDisabled
+            ) {
               return (
-                <button type="button" className={styles.disabled}>
+                <button
+                  type="button"
+                  title={
+                    link.isDisabled ? 'Page is under construction' : undefined
+                  }
+                  className={styles.disabled}
+                >
                   {content}
                 </button>
               );

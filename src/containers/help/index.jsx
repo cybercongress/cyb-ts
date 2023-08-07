@@ -1,13 +1,13 @@
 import { connect } from 'react-redux';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import BanerHelp from './banerHelp';
+import BannerHelp from './BannerHelp';
 
 function Help({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
 
   return (
     <main className="block-body">
-      <BanerHelp addressActive={addressActive} />
+      <BannerHelp addressActive={addressActive} />
     </main>
   );
 }

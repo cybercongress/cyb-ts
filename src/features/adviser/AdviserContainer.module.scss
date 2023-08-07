@@ -1,0 +1,29 @@
+.wrapper {
+  position: sticky;
+  top: 75px;
+
+  z-index: 3;
+
+  margin-top: -45px;
+  margin-bottom: 10px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.blurWrapper {
+  position: relative;
+  padding: 0 10px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    background-color: black;
+    z-index: -1;
+    width: 100%;
+    height: 110%;
+    left: 0;
+
+    filter: blur(12px);
+  }
+}

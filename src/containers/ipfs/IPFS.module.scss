@@ -1,0 +1,8 @@
+.tabs {
+  width: 62%;
+  margin: 40px auto;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}

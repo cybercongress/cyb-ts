@@ -1,39 +1,34 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { useIpfs } from 'src/contexts/ipfs';
 import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
-import IPFSConnectError from 'src/features/ipfs/IPFSConnectError/IPFSConnectError';
-import { routes } from 'src/routes';
 import styles from './styles.scss';
-import usePassportContract from 'src/features/passport/usePassportContract';
 
-import {
-  setPassport,
-  setPassportLoading,
-} from 'src/features/passport/passport.redux';
-import { Citizenship } from 'src/types/citizenship';
+import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
+import { setCommunity } from 'src/redux/features/currentAccount';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { useQueryClient } from 'src/contexts/queryClient';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
+import { useAdviser } from 'src/features/adviser/context';
+import { routes } from 'src/routes';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 
 export const PORTAL_ID = 'portal';
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const queryClient = useQueryClient();
 
   const address = defaultAccount.account?.cyber?.bech32;
-  const { data: passport, loading } = usePassportContract<Citizenship>({
-    query: {
-      active_passport: {
-        address,
-      },
-    },
-    skip: !address,
-  });
 
+  const { community } = useGetCommunity(address || null);
   const location = useLocation();
+  const adviserContext = useAdviser();
 
   const ipfs = useIpfs();
 
@@ -42,16 +37,40 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(setPassportLoading(loading));
-  }, [loading, dispatch]);
+    if (!address || !queryClient) {
+      return;
+    }
+    dispatch(
+      getPassport({
+        address,
+        queryClient,
+      })
+    );
+  }, [address, queryClient, dispatch]);
+
+  // reset
 
   useEffect(() => {
-    dispatch(setPassport(!defaultAccount.account ? null : passport || null));
-  }, [passport, dispatch, defaultAccount]);
+    dispatch(setCommunity(community));
+  }, [community, dispatch]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (ipfs.error && !location.pathname.includes('/drive')) {
+      adviserContext.setAdviser(
+        <p>
+          Could not connect to the IPFS API <br />
+          <Link to={routes.robot.routes.drive.path}>Go to ipfs page</Link>
+        </p>,
+        AdviserColors.red
+      );
+
+      adviserContext.setIsOpen(true);
+    }
+  }, [ipfs.error, location.pathname]);
 
   // chekEvangelism = () => {
   //   const { location } = this.props;
@@ -72,9 +91,7 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        {ipfs.error && !location.pathname.includes('/drive') && (
-          <IPFSConnectError />
-        )}
+        <AdviserContainer />
 
         <Outlet />
       </>

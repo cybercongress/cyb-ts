@@ -7,6 +7,12 @@ import cyber from '../../image/cyber.png';
 export default {
   title: 'Atoms/Pill',
   component: Pill,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=17411-16660&mode=dev',
+    },
+  },
 } as Meta;
 
 const Template: Story<Props> = (args) => {
