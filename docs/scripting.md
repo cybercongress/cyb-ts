@@ -1,15 +1,27 @@
-# Soul: Scripting Guide
+# soul: scripting guide
 
-[Rune Language]: https://rune-rs.github.io
-[Cyber]: https://cyb.ai
+[rune Language]: https://rune-rs.github.io
+[cyb]: https://cyb.ai
 
-[Cyber] uses [Rune Language] for embeddable scripting aka _cyber-scripting_.
+[cyb] uses [rune Language] for embeddable scripting aka [[cybscript]].
 
-Rune is virtual machine(WASM module written on Rust) that runs inside cyber.
+rune is virtual machine that runs inside cyb and process all commands and rendering results
 
-Using cyber-scripting any cyber citizen can tune-up his "soul", and extend and modify cyber behaivior and functionality.
+## why we choose new language?
 
-Currently cyber-script is stored in IPFS and CID of that is linked directly to user's passport.
+rune is dynamic, compact, portable, async and fast scripting language which is specially targeted to rust developers. 
+
+to our dismay we was not able to find any other way to provide dynamic execution in existing browsers which are compatable with future wasm based browsers.
+
+rune is wasm module written in rust.
+
+we hope you will enjoy it.
+
+Using cybscript any cyber citizen can
+- tune-up his [[soul]]
+- extend and modify robot behaivior and functionality
+
+soul is stored in [[ipfs]] and is linked directly to avatars passport.
 
 ## cyb module
 
