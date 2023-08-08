@@ -6,7 +6,7 @@ import { Display2 } from './ContainerGradient';
 
 const meta: Meta<typeof Display2> = {
   component: Display2,
-  title: 'atoms/display/DisplayComplex',
+  title: 'atoms/display/DisplayOld(refactor)',
   parameters: {
     design: {
       type: 'figma',

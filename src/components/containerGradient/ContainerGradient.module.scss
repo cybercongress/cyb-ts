@@ -1,68 +1,4 @@
-@mixin linear-gradient-green($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(54, 214, 174, 1) 100%
-  );
-}
-
-@mixin linear-gradient-pink($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(246, 43, 253, 1) 100%
-  );
-}
-
-@mixin linear-gradient-blue($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(31, 203, 255, 1) 100%
-  );
-}
-
-@mixin linear-gradient-grey($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-}
-
-@mixin linear-gradient-yellow($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgba(255, 217, 0, 1) 100%
-  );
-}
-
-@mixin linear-gradient-danger($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgb(255, 0, 0) 100%
-  );
-}
-
-@mixin linear-gradient-purple($route) {
-  background: linear-gradient(
-    $route,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 10, 255, 1) 100%
-  );
-}
-
-@mixin styleGradientPseudoEl {
-  content: '';
-  position: absolute;
-  height: 100%;
-  width: 100px;
-  z-index: -1;
-  top: 0;
-  bottom: 0;
-}
+@import './styles/mixins.scss';
 
 .containerContainerGradient {
   width: 100%;
@@ -70,106 +6,26 @@
   position: relative;
   padding: 0px;
 
+  &::after {
+    @include styleGradientPseudoEl;
+    right: 0;
+  }
+
   &Primary {
     &::after {
-      opacity: 11%;
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
-      right: 0;
     }
   }
 
   &Danger {
     &::after {
-      opacity: 11%;
-      @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
-      right: 0;
-    }
-  }
-
-  &Purple {
-    &::after {
-      opacity: 11%;
-      @include styleGradientPseudoEl;
-      @include linear-gradient-purple(90deg);
-      right: 0;
     }
   }
 
   &Green {
     &::after {
-      opacity: 11%;
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
-      right: 0;
-    }
-  }
-
-  &Title {
-    min-height: 50px;
-    font-size: 18px;
-    display: flex;
-    text-transform: lowercase;
-    align-items: center;
-    position: relative;
-    margin: 0px;
-    padding: 15px;
-    cursor: pointer;
-
-    &Primary {
-      &::before {
-        opacity: 14%;
-        @include styleGradientPseudoEl;
-        @include linear-gradient-grey(-90deg);
-        left: 0;
-      }
-    }
-
-    &Danger {
-      &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
-        @include linear-gradient-danger(-90deg);
-        left: 0;
-      }
-    }
-
-    &Green {
-      &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
-        @include linear-gradient-green(-90deg);
-        left: 0;
-      }
-    }
-
-    &Content {
-      display: flex;
-      align-items: center;
-      min-height: 32px;
-      line-height: 25px;
-      width: 100%;
-      transition: 1.5s ease-in-out;
-      opacity: 0;
-
-      &entering {
-        opacity: 0;
-        transition: 1ms ease-in-out;
-      }
-
-      &entered {
-        opacity: 1;
-      }
-
-      &exiting {
-        opacity: 0;
-        transition: 1ms ease-in-out;
-      }
-
-      &exited {
-        opacity: 1;
-      }
     }
   }
 
@@ -205,43 +61,28 @@
       visibility: hidden;
     }
 
+    &::before {
+      opacity: 11%;
+      left: 0;
+      @include styleGradientPseudoEl;
+      z-index: -1;
+    }
+
     &Primary {
       &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
         @include linear-gradient-green(-90deg);
-        left: 0;
-        z-index: -1;
       }
     }
 
     &Danger {
       &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
         @include linear-gradient-danger(-90deg);
-        left: 0;
-        z-index: -1;
-      }
-    }
-
-    &Purple {
-      &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
-        @include linear-gradient-purple(-90deg);
-        left: 0;
-        z-index: -1;
       }
     }
 
     &Green {
       &::before {
-        opacity: 11%;
-        @include styleGradientPseudoEl;
         @include linear-gradient-green(-90deg);
-        left: 0;
-        z-index: -1;
       }
     }
   }
@@ -266,14 +107,12 @@
     &::before {
       @include ion-lamp;
       left: 0;
-      // border-radius: 2px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
     }
 
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
     }
   }
@@ -281,7 +120,6 @@
   &Red {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
@@ -289,79 +127,55 @@
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
     }
   }
   &Green {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
     }
   }
   &Blue {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
     }
   }
   &Yellow {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-    }
-  }
-
-  &Purple {
-    &::before {
-      @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
-      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
-      left: 0;
-    }
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      // border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
     }
   }
 
   &Pink {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
       left: 0;
     }
     &::after {
       @include ion-lamp;
       right: 0;
-      // border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
     }
   }
@@ -381,7 +195,6 @@
   &Red {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
@@ -389,7 +202,6 @@
   &Green {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
@@ -397,7 +209,6 @@
   &Blue {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
@@ -405,16 +216,7 @@
   &Yellow {
     &::before {
       @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
       box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-      left: 0;
-    }
-  }
-  &Purple {
-    &::before {
-      @include ion-lamp;
-      // border-radius: 0px 0px 0px 2px;
-      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
   }
@@ -460,14 +262,6 @@
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
       box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-      right: 0;
-    }
-  }
-  &Purple {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(0, 10, 255, 0.65);
       right: 0;
     }
   }
@@ -556,83 +350,66 @@
   padding: 0px 5px;
   height: 100%;
 
+  &::after,
+  &::before {
+    @include styleGradientPseudoEl;
+  }
+
+  &::after {
+    right: 0;
+  }
+
+  &::before {
+    left: 0;
+  }
+
   &Primary {
     &::after {
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
-      right: 0;
-      opacity: 11%;
     }
 
     &::before {
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(-90deg);
-      left: 0;
-      opacity: 11%;
     }
   }
 
   &Danger {
     &::after {
-      @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
-      right: 0;
-      opacity: 11%;
     }
 
     &::before {
-      @include styleGradientPseudoEl;
       @include linear-gradient-danger(-90deg);
-      left: 0;
-      opacity: 11%;
     }
   }
 
   &Green {
     &::after {
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
-      opacity: 11%;
-      right: 0;
     }
 
     &::before {
-      @include styleGradientPseudoEl;
       @include linear-gradient-green(-90deg);
-      opacity: 11%;
-      left: 0;
     }
   }
 
   &Pink {
     &::after {
-      @include styleGradientPseudoEl;
       @include linear-gradient-pink(90deg);
-      right: 0;
-      opacity: 11%;
     }
 
     &::before {
-      @include styleGradientPseudoEl;
       @include linear-gradient-pink(-90deg);
-      left: 0;
-      opacity: 11%;
     }
   }
 
   &Grey {
     &::after {
-      @include styleGradientPseudoEl;
       @include linear-gradient-grey(90deg);
-      right: 0;
-      opacity: 11%;
     }
 
     &::before {
-      @include styleGradientPseudoEl;
       @include linear-gradient-grey(-90deg);
-      left: 0;
-      opacity: 11%;
     }
   }
 
@@ -653,4 +430,8 @@
   .containerContainerGradientContent {
     height: auto;
   }
+}
+
+.titleTogglingActive {
+  cursor: pointer;
 }

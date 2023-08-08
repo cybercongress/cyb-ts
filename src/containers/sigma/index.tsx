@@ -15,6 +15,7 @@ import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import Display from 'src/components/containerGradient/Display/Display';
 
 const valueContext = {
   totalCap: 0,
@@ -129,48 +130,46 @@ function Sigma() {
           overflowX: 'auto',
         }}
       >
-        <ContainerGradientText
-          status="grey"
-          userStyleContent={{
-            // need debug why
-            paddingRight: 23.5,
-            paddingLeft: 10,
-          }}
-        >
-          <header className={styles.totalHeader}>
-            <div className={styles.image}>
-              <div className={styles.circle}>
-                <img src={require('../../image/sigma.png')} />
-              </div>
-              <h3>{superSigma ? 'Supersigma' : 'Sigma'}</h3>
-            </div>
+        <Display
+          status="green"
+          titleProps={{
+            title: superSigma ? 'Supersigma' : 'Sigma',
+            image: {
+              src: require('../../image/sigma.png'),
+              alt: 'sigma',
+              isLarge: true,
+            },
 
-            <TokenChange
-              total={value.totalCap}
-              // change={value.changeCap}
-            />
-          </header>
-        </ContainerGradientText>
-
-        <div
-          style={{
-            display: 'grid',
-            gap: '20px 0',
-            gridTemplateColumns: 'minmax(0, 1fr)',
-          }}
-        >
-          {accountsData?.map(({ bech32: address }) => {
-            return (
-              <CardPassport
-                key={address}
-                address={address}
-                passport={currentPassport}
-                selectAddress={isCurrentOwner ? selectAddress : undefined}
-                selectedAddress={selectedAddress}
+            children: (
+              <TokenChange
+                total={value.totalCap}
+                // change={value.changeCap}
               />
-            );
-          })}
-        </div>
+            ),
+          }}
+        >
+          <div
+            style={
+              {
+                // display: 'grid',
+                // gap: '20px 0',
+                // gridTemplateColumns: 'minmax(0, 1fr)',
+              }
+            }
+          >
+            {accountsData?.map(({ bech32: address }) => {
+              return (
+                <CardPassport
+                  key={address}
+                  address={address}
+                  passport={currentPassport}
+                  selectAddress={isCurrentOwner ? selectAddress : undefined}
+                  selectedAddress={selectedAddress}
+                />
+              );
+            })}
+          </div>
+        </Display>
       </div>
 
       {isCurrentOwner && currentPassport && (

@@ -4,7 +4,9 @@ import { Transition } from 'react-transition-group';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
-import Display from './Display';
+import Display from './Display/Display';
+import { ColorLamp } from './types';
+import DisplayTitle from './DisplayTitle/DisplayTitle';
 
 const classNames = require('classnames');
 
@@ -35,7 +37,7 @@ function ContainerLampAfter({ style, children }) {
         [styles.wrapContainerLampAfterRed]: style === 'red',
         [styles.wrapContainerLampAfterYellow]: style === 'yellow',
         [styles.wrapContainerLampAfterPurple]: style === 'purple',
-        [styles.wrapContainerLampAfterDefault]: !style,
+        [styles.wrapContainerLampAfterDefault]: !style || style === 'grey',
       })}
     >
       {children}
@@ -43,7 +45,7 @@ function ContainerLampAfter({ style, children }) {
   );
 }
 
-function ContainerLampBefore({ style, children }) {
+export function ContainerLampBefore({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLampBefore, {
@@ -52,7 +54,7 @@ function ContainerLampBefore({ style, children }) {
         [styles.wrapContainerLampBeforeRed]: style === 'red',
         [styles.wrapContainerLampBeforeYellow]: style === 'yellow',
         [styles.wrapContainerLampBeforePurple]: style === 'purple',
-        [styles.wrapContainerLampBeforeDefault]: !style,
+        [styles.wrapContainerLampBeforeDefault]: !style || style === 'grey',
       })}
     >
       {children}
@@ -102,54 +104,18 @@ function TxsStatus({ data }) {
   );
 }
 
-export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey' | 'purple';
-
 interface Props {
   title?: string;
   closedTitle?: string;
+
   children?: React.ReactNode;
   txs?: any;
-  danger?: boolean;
   userStyleContent?: React.CSSProperties;
   stateOpen?: boolean;
   initState?: boolean;
   styleLampContent?: ColorLamp;
-  styleLampTitle?: any;
-  togglingDisable?: any;
-}
-
-type TitleProps = {
-  title: string;
-
-  // temp prop
-  animationState: string;
-  image?: {
-    src: string;
-    alt?: string;
-    size?: 'small' | 'large';
-  };
-};
-
-function Title({ title, animationState: state, image }: TitleProps) {
-  return (
-    <div
-      className={classNames(
-        styles.containerContainerGradientTitleContent,
-        styles[`containerContainerGradientTitleContent${state}`]
-      )}
-    >
-      {image && (
-        <img
-          src={image.src}
-          alt={image.alt}
-          className={classNames({
-            [styles.big]: image.size === 'large',
-          })}
-        />
-      )}
-      {title}
-    </div>
-  );
+  styleLampTitle?: ColorLamp;
+  togglingDisable?: boolean;
 }
 
 function ContainerGradient({
@@ -157,7 +123,6 @@ function ContainerGradient({
   closedTitle,
   children,
   txs,
-  danger,
   userStyleContent,
   stateOpen,
   initState = true,
@@ -201,6 +166,7 @@ function ContainerGradient({
 
   return (
     <div>
+      {/* TODO: use Display component */}
       <ContainerLampAfter style={styleLampContent}>
         <div
           className={classNames(styles.containerContainerGradient, {
@@ -210,8 +176,6 @@ function ContainerGradient({
               styleLampContent === 'blue',
             [styles.containerContainerGradientDanger]:
               styleLampContent === 'red',
-            [styles.containerContainerGradientPurple]:
-              styleLampContent === 'purple',
             [styles.containerContainerGradientGreen]:
               styleLampContent === 'green',
           })}
@@ -220,25 +184,20 @@ function ContainerGradient({
             {(state) => {
               return (
                 <>
-                  <ContainerLampBefore style={styleLampTitle}>
-                    <div
-                      onClick={() => toggling()}
-                      role="presentation"
-                      className={classNames(
-                        styles.containerContainerGradientTitle,
-                        {
-                          [styles.containerContainerGradientTitlePrimary]:
-                            !styleLampTitle,
-                          [styles.containerContainerGradientTitleDanger]:
-                            styleLampTitle === 'red',
-                          [styles.containerContainerGradientTitleGreen]:
-                            styleLampTitle === 'green',
-                        }
-                      )}
-                    >
-                      <Title title={useTitle(state)} animationState={state} />
-                    </div>
-                  </ContainerLampBefore>
+                  <div
+                    onClick={!togglingDisable ? toggling : undefined}
+                    role={!togglingDisable ? 'presentation' : undefined}
+                    className={classNames({
+                      [styles.titleTogglingActive]: !togglingDisable,
+                    })}
+                  >
+                    <DisplayTitle
+                      title={useTitle(state)}
+                      animationState={state}
+                      color={styleLampTitle}
+                    />
+                  </div>
+
                   <ContainerLampBefore style={styleLampContent}>
                     <div
                       style={userStyleContent}
@@ -251,8 +210,6 @@ function ContainerGradient({
                             styleLampContent === 'blue',
                           [styles.containerContainerGradientContentDanger]:
                             styleLampContent === 'red',
-                          [styles.containerContainerGradientContentPurple]:
-                            styleLampContent === 'purple',
                           [styles.containerContainerGradientContentGreen]:
                             styleLampContent === 'green',
                         },

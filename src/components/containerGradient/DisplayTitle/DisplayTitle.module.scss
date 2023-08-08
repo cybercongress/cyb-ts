@@ -1,0 +1,109 @@
+@import '../styles/mixins.scss';
+
+.noPaddingWrapper {
+  position: relative;
+  left: -20px;
+}
+
+.displayTitle {
+  min-height: 50px;
+  font-size: 18px;
+  display: flex;
+  text-transform: lowercase;
+  align-items: center;
+  position: relative;
+  margin: 0px;
+  padding: 0 22px;
+  position: relative;
+
+  &::before {
+    left: 0;
+    // opacity: 14%;
+    @include styleGradientPseudoEl;
+    @include linear-gradient-grey(-90deg);
+  }
+
+  &Danger {
+    &::before {
+      @include linear-gradient-danger(-90deg);
+    }
+  }
+
+  &Blue {
+    &::before {
+      @include linear-gradient-blue(-90deg);
+    }
+  }
+
+  &Yellow {
+    &::before {
+      @include linear-gradient-yellow(-90deg);
+    }
+  }
+
+  &Content {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    gap: 0 10px;
+    line-height: 25px;
+    width: 100%;
+    transition: 1.5s ease-in-out;
+    opacity: 0;
+
+    &entering {
+      opacity: 0;
+      transition: 1ms ease-in-out;
+    }
+
+    &entered {
+      opacity: 1;
+    }
+
+    &exiting {
+      opacity: 0;
+      transition: 1ms ease-in-out;
+    }
+
+    &exited {
+      opacity: 1;
+    }
+  }
+}
+
+.titleImage {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  margin-right: 18px;
+
+  &.big {
+    height: 112px;
+    width: 112px;
+  }
+}
+
+// .image {
+//   display: flex;
+//   align-items: center;
+//   gap: 0 10px;
+
+//   .circle {
+//     display: flex;
+//     padding: 5px;
+//     align-items: center;
+//     justify-content: center;
+//     border-radius: 67px;
+//     background: rgba(255, 255, 255, 0.05);
+
+//     img {
+//       height: 54px;
+//     }
+//   }
+
+//   h3 {
+//     text-transform: lowercase;
+//     font-weight: 400;
+//     font-size: 20px;
+//   }
+// }

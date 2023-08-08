@@ -9,6 +9,7 @@ import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
 interface Props {
   address: string;
@@ -31,12 +32,6 @@ function TitleCard({
   const addressNetwork = getTypeFromAddress(address);
 
   return (
-    // <ContainerGradientText
-    // status="grey"
-    // userStyleContent={{
-    // margin: '-15px',
-    // }}
-    // >
     <div
       className={cx(styles.container, {
         [styles.select]: selectAddress,
@@ -44,37 +39,41 @@ function TitleCard({
       })}
       onClick={selectAddress ? () => selectAddress(address) : undefined}
     >
-      <DenomArr
-        denomValue={addressNetwork}
-        onlyImg
-        tooltipStatusImg={false}
-        type="network"
-        size={37}
-      />
-
-      <div className={styles.address}>
-        <Signatures
-          addressActive={{ bech32: address }}
-          disabled={
-            ![Networks.BOSTROM, Networks.SPACE_PUSSY].includes(addressNetwork)
-          }
-        />
-      </div>
-
-      {/* <div className={styles.avatar}>
-      <AvataImgIpfs cidAvatar={useGetCidAvatar} />
-      </div> */}
-      {/* <div className={styles.name}>{useGetName}</div> */}
-
-      {totalLiquid && (
-        <TokenChange
-          className={styles.total}
-          total={totalLiquid.currentCap}
-          // change={totalLiquid.change}
-        />
-      )}
+      <DisplayTitle
+        inDisplay
+        image={{
+          content: (
+            <DenomArr
+              denomValue={addressNetwork}
+              onlyImg
+              tooltipStatusImg={false}
+              type="network"
+              size={37}
+            />
+          ),
+        }}
+        title={
+          <div className={styles.address}>
+            <Signatures
+              addressActive={{ bech32: address }}
+              disabled={
+                ![Networks.BOSTROM, Networks.SPACE_PUSSY].includes(
+                  addressNetwork
+                )
+              }
+            />
+          </div>
+        }
+      >
+        {totalLiquid && (
+          <TokenChange
+            className={styles.total}
+            total={totalLiquid.currentCap}
+            // change={totalLiquid.change}
+          />
+        )}
+      </DisplayTitle>
     </div>
-    // </ContainerGradientText>
   );
 }
 
