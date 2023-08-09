@@ -8,17 +8,19 @@ import React, {
 
 import { RootState } from 'src/redux/store';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import { Pane } from '@cybercongress/gravity';
+import { Pane, Tablist } from '@cybercongress/gravity';
 import {
   Button,
   Input,
   ContainerGradientText,
   ButtonIcon,
+  TabBtn,
 } from 'src/components';
 
-import { ScriptEntrypoint, ScriptExecutionResult } from 'src/types/scripting';
+import { ScriptExecutionResult } from 'src/types/scripting';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
 import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
@@ -33,11 +35,7 @@ import Switch from 'src/components/Switch/Switch';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import ActionBarContainer from 'src/components/actionBar';
-import {
-  loadStringFromLocalStorage,
-  saveStringToLocalStorage,
-} from 'src/utils/localStorage';
-import back from 'src/image/arrow-left-img.svg';
+import { saveStringToLocalStorage } from 'src/utils/localStorage';
 
 import { updatePassportParticle } from '../../utils';
 
@@ -50,9 +48,15 @@ import 'codemirror/mode/rust/rust';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
-import 'codemirror/theme/the-matrix.css';
-import './CodeMirror.scss';
-import { async } from 'rxjs';
+// import 'codemirror/theme/the-matrix.css';
+import './CodeMirror.css';
+
+import BioEditor2 from './BioEditor2/BioEditor2';
+import StepsBar from './StepsBar/StepsBar';
+import { MilkdownProvider } from '@milkdown/react';
+
+const SOUL_TABS = { script: 'cybscript', bio: 'bio' };
+const defaultBio = "Hello, I'm a ##name##!";
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -96,31 +100,11 @@ const formatExecutionResult = (
   }
 };
 
-function StepsBar({
-  steps,
-  currentStep,
-  setCurrentStep,
-}: {
-  steps: React.ReactNode[];
-  currentStep: number;
-  setCurrentStep: (step: number) => void;
-}) {
-  const onBack = () => setCurrentStep(currentStep - 1);
-
-  return (
-    <div className={styles.stepsPanel}>
-      {!!currentStep && (
-        <ButtonIcon img={back} onClick={onBack} text="previous step" />
-      )}
-      {steps[currentStep]}
-    </div>
-  );
-}
-
 function ScriptingActionBar({
   isChanged,
   addToLog,
   onSaveClick,
+  onCancelClick,
   codeMirrorRef,
   code,
   nickname,
@@ -130,6 +114,7 @@ function ScriptingActionBar({
   isChanged: boolean;
   addToLog: (log: string[]) => void;
   onSaveClick: () => void;
+  onCancelClick: () => void;
   codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>;
   code: string;
   nickname: string;
@@ -229,8 +214,14 @@ function ScriptingActionBar({
 
   return (
     <ActionBarContainer
-      button={isChanged ? { text: 'save', onClick: onSaveClick } : undefined}
-      // additionalButtons={[{ text: 'reset to default', onClick: console.log }]}
+      additionalButtons={
+        isChanged
+          ? [
+              { text: 'cancel', onClick: onCancelClick },
+              { text: 'save', onClick: onSaveClick },
+            ]
+          : []
+      }
     >
       <Pane className={styles.actionPanel}>
         <StepsBar
@@ -245,8 +236,16 @@ function ScriptingActionBar({
 
 const entrypointName = 'particle';
 
+const changeUrlLastPath = (path: string, newPath: string) => {
+  const paths = path.split('/');
+  paths.pop();
+  paths.push(newPath);
+  return paths.join('/');
+};
+
 function ScriptEditor() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const codeMirrorRef = useRef<CodeMirror>();
   const { signer, signingClient } = useSigningClient();
@@ -258,12 +257,14 @@ function ScriptEditor() {
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [log, setLog] = useState<string[]>([]);
+  const [bio, setBio] = useState<string>('');
   const [isChanged, setIsChanged] = useState(false);
   const [code, setCode] = useState<string>(currentEntrypoint.script || '');
 
   const { node } = useIpfs();
 
   const [isLoaded, setIsLoaded] = useState(true);
+  const { tab } = useParams();
 
   // const loadScript = async () => {
   //   const cid = passport?.extension.particle;
@@ -348,7 +349,11 @@ function ScriptEditor() {
   );
 
   const resetPlayGround = () => setLog([]);
-
+  const onCancelClick = () => {
+    resetPlayGround();
+    setIsChanged(false);
+    setCode(currentEntrypoint.script);
+  };
   const onSaveClick = () => {
     resetPlayGround();
     if (!code) {
@@ -404,49 +409,80 @@ function ScriptEditor() {
   }
 
   return (
-    <>
-      <ContainerGradientText>
-        <div>
-          <div className={styles.settingsPanel}>
-            <Switch
-              isOn={currentEntrypoint.enabled}
-              onToggle={changeScriptEnabled}
-              label={<div>Soul enabled</div>}
-            />
-          </div>
-
-          <CodeMirror
-            ref={codeMirrorRef}
-            editorDidMount={(editor) => {
-              editor.setSize('', '450px');
-            }}
-            value={code}
-            options={{
-              readOnly: !isLoaded,
-              mode: 'rust',
-              theme: 'tomorrow-night-eighties',
-              lineNumbers: true,
-            }}
-            onBeforeChange={(editor, data, value) => {
-              setCode(value);
-              setIsChanged(true);
-            }}
+    <ContainerGradientText>
+      <Tablist
+        display="grid"
+        gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+        gridGap="10px"
+        marginBottom={25}
+        width="100%"
+        marginX="auto"
+      >
+        {Object.keys(SOUL_TABS).map((key) => (
+          <TabBtn
+            key={`tab_script_${key}`}
+            text={SOUL_TABS[key]}
+            isSelected={tab === key}
+            to={changeUrlLastPath(location.pathname, key)}
           />
+        ))}
+      </Tablist>
 
-          <textarea value={logText} className={styles.logArea} rows={18} />
-        </div>
-      </ContainerGradientText>
-      <ScriptingActionBar
-        isChanged={isChanged}
-        onSaveClick={onSaveClick}
-        code={code}
-        codeMirrorRef={codeMirrorRef}
-        resetPlayGround={resetPlayGround}
-        addToLog={addToLog}
-        nickname={passport.extension.nickname}
-        resetToDefault={onResetToDefault}
-      />
-    </>
+      {tab === 'script' && (
+        <>
+          <div>
+            <div className={styles.settingsPanel}>
+              <Switch
+                isOn={currentEntrypoint.enabled}
+                onToggle={changeScriptEnabled}
+                label={<div>Soul enabled</div>}
+              />
+            </div>
+
+            <CodeMirror
+              ref={codeMirrorRef}
+              editorDidMount={(editor) => {
+                editor.setSize('', '450px');
+              }}
+              value={code}
+              options={{
+                readOnly: !isLoaded,
+                mode: 'rust',
+                theme: 'tomorrow-night-eighties',
+                lineNumbers: true,
+              }}
+              onBeforeChange={(editor, data, value) => {
+                setCode(value);
+                setIsChanged(true);
+              }}
+            />
+
+            <textarea value={logText} className={styles.logArea} rows={18} />
+          </div>
+          <ScriptingActionBar
+            isChanged={isChanged}
+            onSaveClick={onSaveClick}
+            onCancelClick={onCancelClick}
+            code={code}
+            codeMirrorRef={codeMirrorRef}
+            resetPlayGround={resetPlayGround}
+            addToLog={addToLog}
+            nickname={passport.extension.nickname}
+            resetToDefault={onResetToDefault}
+          />
+        </>
+      )}
+      {tab === 'bio' && (
+        <MilkdownProvider>
+          <BioEditor2
+            bio={
+              bio || defaultBio.replace('##name##', passport.extension.nickname)
+            }
+            onSave={console.log}
+          />
+        </MilkdownProvider>
+      )}
+    </ContainerGradientText>
   );
 }
 

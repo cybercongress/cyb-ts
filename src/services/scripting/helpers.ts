@@ -44,3 +44,27 @@ export async function getScriptFromParticle(cid?: Nullable<string>) {
 
   return getTextFromIpfsContent(result.result);
 }
+
+export function extractRuneContent(markdown: string) {
+  // Regular expression to match the content between ```rune``` tags
+  const runeRegex = /```rune\s*([\s\S]*?)```/g;
+
+  let match;
+  let runeContent = '';
+  let modifiedMarkdown = markdown;
+
+  // Iterate through all matches of the regular expression
+  while ((match = runeRegex.exec(markdown)) !== null) {
+    // Append the matched content between ```rune``` tags to runeContent variable
+    runeContent += match[1] + '\n';
+
+    // Replace the entire matched block, including the tags, with an empty string
+    modifiedMarkdown = modifiedMarkdown.replace(match[0], '');
+  }
+
+  // Returning both the extracted content and the modified markdown without the tags
+  return {
+    runeContent: runeContent.trim(),
+    modifiedMarkdown,
+  };
+}

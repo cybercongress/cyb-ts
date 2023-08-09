@@ -149,6 +149,7 @@ const config = {
           },
         ],
       },
+      //test: /\.module\.s(a|c)ss$/,
       {
         test: /\.(scss|sass)$/,
         use: [

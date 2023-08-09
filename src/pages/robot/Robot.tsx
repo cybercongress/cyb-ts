@@ -41,7 +41,7 @@ function RobotRoutes() {
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<ForceGraph />} />
         <Route path="karma" element={<UnderConstruction />} />
-        <Route path="soul" element={<ScriptEditor />} />
+        <Route path="soul/:tab" element={<ScriptEditor />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

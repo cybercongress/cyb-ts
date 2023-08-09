@@ -125,8 +125,7 @@ const links: MenuItem[] = [
   },
   {
     text: 'Soul',
-    link: './soul',
-    isDisabled: true,
+    link: './soul/script',
     // description: 'bytes',
     icon: '👻',
   },
