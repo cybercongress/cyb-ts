@@ -1,3 +1,4 @@
+// TODO: need refactor
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
@@ -62,7 +63,18 @@ export function ContainerLampBefore({ style, children }) {
   );
 }
 
-function TxsStatus({ data }) {
+type Txs = {
+  status: 'pending' | 'confirmed' | 'error';
+  txHash?: string;
+  rawLog?: string;
+};
+
+type TxsProps = {
+  data: Txs;
+};
+
+// TODO: move to action bar
+function TxsStatus({ data }: TxsProps) {
   let style;
   switch (data.status) {
     case 'pending':
@@ -92,7 +104,6 @@ function TxsStatus({ data }) {
             <Link to={`/network/bostrom/tx/${data.txHash}`}>
               <div>{trimString(data.txHash, 5, 5)}</div>
             </Link>
-            {/* <div>5 min ago</div> */}
             <div>{data.status}</div>
           </div>
         )}
@@ -109,7 +120,7 @@ interface Props {
   closedTitle?: string;
 
   children?: React.ReactNode;
-  txs?: any;
+  txs?: Txs;
   userStyleContent?: React.CSSProperties;
   stateOpen?: boolean;
   initState?: boolean;
@@ -231,6 +242,5 @@ function ContainerGradient({
 }
 
 export const ContainerGradientText = Display;
-export const Display2 = ContainerGradient;
 
 export default ContainerGradient;

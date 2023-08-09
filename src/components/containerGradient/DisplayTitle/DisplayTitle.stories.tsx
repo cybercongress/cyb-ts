@@ -2,9 +2,9 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import DisplayTitle, { TitleProps } from './DisplayTitle';
+import DisplayTitle, { Props } from './DisplayTitle';
 
-const meta: Meta<Omit<typeof DisplayTitle, 'animationState'>> = {
+const meta: Meta<typeof DisplayTitle> = {
   component: DisplayTitle,
   title: 'atoms/display/DisplayTitle',
   parameters: {
@@ -16,10 +16,10 @@ const meta: Meta<Omit<typeof DisplayTitle, 'animationState'>> = {
 };
 export default meta;
 
-type Story = StoryObj<Omit<typeof DisplayTitle, 'animationState'>>;
+type Story = StoryObj<typeof DisplayTitle>;
 
 const defaultTitle = 'Moon Citizenship';
-const defaultImage: TitleProps['image'] = {
+const defaultImage: Props['image'] = {
   src: 'https://cyb.ai/images/preview.png',
   alt: 'cyb.ai',
 };

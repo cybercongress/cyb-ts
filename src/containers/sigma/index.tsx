@@ -137,7 +137,7 @@ function Sigma() {
             image: {
               src: require('../../image/sigma.png'),
               alt: 'sigma',
-              isLarge: true,
+              isLarge: false,
             },
 
             children: (

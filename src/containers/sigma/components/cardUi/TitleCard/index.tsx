@@ -2,7 +2,7 @@ import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { Signatures } from '../../../../portal/components';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Citizenship } from 'src/types/citizenship';
 import { ContainerGradientText, DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';

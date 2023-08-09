@@ -1,4 +1,28 @@
-@import './styles/mixins.scss';
+// TODO: component is need be removed (use Display)
+
+@mixin linear-gradient($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(
+        var(--shadow-color-r),
+        var(--shadow-color-g),
+        var(--shadow-color-b),
+        0.11
+      )
+      100%
+  );
+}
+
+@mixin styleGradientPseudoEl {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100px;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+}
 
 .containerContainerGradient {
   width: 100%;
@@ -8,25 +32,8 @@
 
   &::after {
     @include styleGradientPseudoEl;
+    @include linear-gradient(90deg);
     right: 0;
-  }
-
-  &Primary {
-    &::after {
-      @include linear-gradient-green(90deg);
-    }
-  }
-
-  &Danger {
-    &::after {
-      @include linear-gradient-danger(90deg);
-    }
-  }
-
-  &Green {
-    &::after {
-      @include linear-gradient-green(90deg);
-    }
   }
 
   &Content {
@@ -62,28 +69,10 @@
     }
 
     &::before {
-      opacity: 11%;
       left: 0;
       @include styleGradientPseudoEl;
+      @include linear-gradient(-90deg);
       z-index: -1;
-    }
-
-    &Primary {
-      &::before {
-        @include linear-gradient-green(-90deg);
-      }
-    }
-
-    &Danger {
-      &::before {
-        @include linear-gradient-danger(-90deg);
-      }
-    }
-
-    &Green {
-      &::before {
-        @include linear-gradient-green(-90deg);
-      }
     }
   }
 }
@@ -94,179 +83,145 @@
   background: #ffffff;
   border: 1px solid #ffffff;
   box-sizing: border-box;
-  // box-shadow: 0px 0px 6px 2px rgba(255, 255, 255, 0.3);
-  // box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
   top: 0;
   bottom: 0;
 }
 
-.wrapContainerLamp {
-  position: relative;
-
-  &Default {
-    &::before {
-      @include ion-lamp;
-      left: 0;
-      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
-    }
-
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
-    }
-  }
-
-  &Red {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
-      left: 0;
-    }
-
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
-    }
-  }
-  &Green {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
-      left: 0;
-    }
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
-    }
-  }
-  &Blue {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
-      left: 0;
-    }
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
-    }
-  }
-  &Yellow {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-      left: 0;
-    }
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-    }
-  }
-
-  &Pink {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
-      left: 0;
-    }
-    &::after {
-      @include ion-lamp;
-      right: 0;
-      box-shadow: 0 0 20px 1.5px rgba(246, 43, 253, 0.5);
-    }
-  }
-}
-
+.wrapContainerLamp,
+.wrapContainerLampAfter,
 .wrapContainerLampBefore {
   position: relative;
 
-  &Default {
-    &::before {
-      @include ion-lamp;
-      border-radius: 2px 0px 0px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
-      left: 0;
-    }
+  --shadow-color-r: 0;
+  --shadow-color-g: 0;
+  --shadow-color-b: 0;
+
+  &::after,
+  &::before {
+    box-shadow: 0 0 10px 1.5px
+      rgba(
+        var(--shadow-color-r),
+        var(--shadow-color-g),
+        var(--shadow-color-b),
+        0.5
+      );
   }
+
+  // reuse colors
+  &Default {
+    --shadow-color-r: 225;
+    --shadow-color-g: 225;
+    --shadow-color-b: 225;
+  }
+
   &Red {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
-      left: 0;
-    }
+    --shadow-color-r: 255;
+    --shadow-color-g: 0;
+    --shadow-color-b: 0;
   }
   &Green {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
-      left: 0;
-    }
+    --shadow-color-r: 54;
+    --shadow-color-g: 214;
+    --shadow-color-b: 174;
   }
   &Blue {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
-      left: 0;
-    }
+    --shadow-color-r: 31;
+    --shadow-color-g: 203;
+    --shadow-color-b: 255;
   }
   &Yellow {
-    &::before {
-      @include ion-lamp;
-      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-      left: 0;
-    }
+    --shadow-color-r: 255;
+    --shadow-color-g: 217;
+    --shadow-color-b: 0;
+  }
+
+  &Pink {
+    --shadow-color-r: 246;
+    --shadow-color-g: 43;
+    --shadow-color-b: 253;
+  }
+}
+
+.wrapContainerLamp {
+  &::before {
+    left: 0;
+  }
+
+  &::after {
+    right: 0;
+  }
+
+  &::before,
+  &::after {
+    @include ion-lamp;
+  }
+}
+
+.wrapContainerLampAfter::after,
+.wrapContainerLampBefore::before {
+  @include ion-lamp;
+}
+
+.wrapContainerLampBefore {
+  &::before {
+    left: 0;
+    border-radius: 2px 0px 0px 0px;
   }
 }
 
 .wrapContainerLampAfter {
-  position: relative;
-
-  &Default {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(255, 255, 255, 0.7);
-      right: 0;
-    }
-  }
-  &Red {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(255, 0, 0, 0.7);
-      right: 0;
-    }
-  }
-  &Green {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(54, 214, 174, 0.7);
-      right: 0;
-    }
-  }
-  &Blue {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(31, 203, 255, 0.7);
-      right: 0;
-    }
-  }
-  &Yellow {
-    &::after {
-      @include ion-lamp;
-      border-radius: 0px 2px 2px 0px;
-      box-shadow: 0 0 20px 1.5px rgba(255, 217, 0, 0.7);
-      right: 0;
-    }
+  &::after {
+    right: 0;
+    border-radius: 0px 2px 2px 0px;
   }
 }
 
+.containerGradientText {
+  width: 100%;
+  min-height: 50px;
+  position: relative;
+  padding: 0px 5px;
+  height: 100%;
+
+  &::after,
+  &::before {
+    @include styleGradientPseudoEl;
+  }
+
+  &::after {
+    @include linear-gradient(90deg);
+    right: 0;
+  }
+
+  &::before {
+    left: 0;
+    @include linear-gradient(-90deg);
+  }
+
+  &Content {
+    position: relative;
+    margin: 0px -5px;
+    padding: 15px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+.togglingDisable {
+  .containerContainerGradientTitle {
+    cursor: default;
+  }
+
+  .containerContainerGradientContent {
+    height: auto;
+  }
+}
+
+.titleTogglingActive {
+  cursor: pointer;
+}
+
+// TODO: remove
 .containerTxs {
   width: 100%;
   padding: 15px;
@@ -294,14 +249,14 @@
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-green(-90deg);
+      @include linear-gradient(-90deg);
       left: 0;
       opacity: 11%;
     }
 
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-green(90deg);
+      @include linear-gradient(90deg);
       right: 0;
       opacity: 11%;
     }
@@ -311,14 +266,14 @@
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-yellow(-90deg);
+      @include linear-gradient(-90deg);
       left: 0;
       opacity: 12%;
     }
 
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-yellow(90deg);
+      @include linear-gradient(90deg);
       right: 0;
       opacity: 12%;
     }
@@ -329,109 +284,16 @@
 
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-danger(90deg);
+      @include linear-gradient(90deg);
       right: 0;
       opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
-      @include linear-gradient-danger(-90deg);
+      @include linear-gradient(-90deg);
       left: 0;
       opacity: 11%;
     }
   }
-}
-
-.containerGradientText {
-  width: 100%;
-  min-height: 50px;
-  position: relative;
-  padding: 0px 5px;
-  height: 100%;
-
-  &::after,
-  &::before {
-    @include styleGradientPseudoEl;
-  }
-
-  &::after {
-    right: 0;
-  }
-
-  &::before {
-    left: 0;
-  }
-
-  &Primary {
-    &::after {
-      @include linear-gradient-green(90deg);
-    }
-
-    &::before {
-      @include linear-gradient-green(-90deg);
-    }
-  }
-
-  &Danger {
-    &::after {
-      @include linear-gradient-danger(90deg);
-    }
-
-    &::before {
-      @include linear-gradient-danger(-90deg);
-    }
-  }
-
-  &Green {
-    &::after {
-      @include linear-gradient-green(90deg);
-    }
-
-    &::before {
-      @include linear-gradient-green(-90deg);
-    }
-  }
-
-  &Pink {
-    &::after {
-      @include linear-gradient-pink(90deg);
-    }
-
-    &::before {
-      @include linear-gradient-pink(-90deg);
-    }
-  }
-
-  &Grey {
-    &::after {
-      @include linear-gradient-grey(90deg);
-    }
-
-    &::before {
-      @include linear-gradient-grey(-90deg);
-    }
-  }
-
-  &Content {
-    position: relative;
-    margin: 0px -5px;
-    padding: 15px;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-}
-
-.togglingDisable {
-  .containerContainerGradientTitle {
-    cursor: default;
-  }
-
-  .containerContainerGradientContent {
-    height: auto;
-  }
-}
-
-.titleTogglingActive {
-  cursor: pointer;
 }

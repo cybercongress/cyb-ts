@@ -3,6 +3,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 
 import Display from './Display';
+import { text100, title } from '../../../../.storybook/stubTexts';
 
 const meta: Meta<typeof Display> = {
   component: Display,
@@ -18,12 +19,26 @@ export default meta;
 
 type Story = StoryObj<typeof Display>;
 
+const defaultArgs = {
+  children: text100,
+};
+
 export const Main: Story = {
+  args: defaultArgs,
+};
+
+export const WithTitle: Story = {
   args: {
+    ...defaultArgs,
     titleProps: {
-      title: 'Moon Citizenship',
+      title,
     },
-    children:
-      'Welcome to the portal. Take a quick look on what Bostrom are, and what you can do here. Get or manage your Moon Citizenship, check the ongoing gift status and more. Welcome to the portal. Take a quick look on what Bostrom are, and what you can do here. Get or manage your Moon Citizenship, check the ongoing gift status and more. Welcome to the portal. Take a quick look on what Bostrom are, and what you can do here. Get or manage your Moon Citizenship',
+  },
+};
+
+export const Vertical: Story = {
+  args: {
+    ...defaultArgs,
+    isVertical: true,
   },
 };

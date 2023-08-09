@@ -1,5 +1,33 @@
+@import '../saber/index.module.scss';
+
+$paddingTop: 23px;
+$paddingX: 20px;
+
+.wrapper {
+  padding: $paddingTop $paddingX 24px;
+
+  // TODO: remove this
+  z-index: 0;
+
+  &:not(.vertical) {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-horizontal($color);
+      }
+    }
+  }
+
+  &.vertical {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-vertical($color);
+      }
+    }
+  }
+}
+
 .header {
   position: relative;
-  // z-index: 2;
-  top: -15px;
+  top: -$paddingTop;
+  margin-bottom: -$paddingTop;
 }

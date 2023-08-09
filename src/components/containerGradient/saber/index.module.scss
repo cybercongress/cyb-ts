@@ -1,0 +1,94 @@
+@mixin saber-background($position) {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  #{$position}: 0;
+
+  @if ($position == left or $position == right) {
+    top: 0;
+    height: 100%;
+    width: 100px;
+  } @else {
+    width: 100%;
+    left: 0;
+    height: 50px;
+  }
+
+  background: linear-gradient(
+    /* vise versa */ to #{$position},
+    rgb(0, 0, 0) 0%,
+    rgba(
+        var(--shadow-color-r),
+        var(--shadow-color-g),
+        var(--shadow-color-b),
+        0.11
+      )
+      100%
+  );
+}
+
+$valid-colors: 'green', 'blue', 'purple', 'white', 'red', 'yellow';
+/*
+    green - default
+    blue - dynamic elements
+    purple - commander only
+    white - headers
+    red - error
+    yellow - loading
+*/
+$valid-positions: 'left', 'right', 'top', 'bottom';
+
+@mixin saber($color: 'green', $position) {
+  position: relative;
+  border-#{$position}: 2px solid white;
+
+  @if ($color == 'green') {
+    --shadow-color-r: 54;
+    --shadow-color-g: 214;
+    --shadow-color-b: 174;
+  } @else if ($color == 'blue') {
+    --shadow-color-r: 31;
+    --shadow-color-g: 203;
+    --shadow-color-b: 255;
+  } @else if ($color == 'purple') {
+    --shadow-color-r: 246;
+    --shadow-color-g: 43;
+    --shadow-color-b: 253;
+  } @else if ($color == 'white') {
+    --shadow-color-r: 225;
+    --shadow-color-g: 225;
+    --shadow-color-b: 225;
+  } @else if ($color == 'red') {
+    --shadow-color-r: 255;
+    --shadow-color-g: 0;
+    --shadow-color-b: 0;
+  } @else if ($color == 'yellow') {
+    --shadow-color-r: 255;
+    --shadow-color-g: 217;
+    --shadow-color-b: 0;
+  } @else {
+    // @error "Invalid color: #{$color}";
+  }
+
+  @if ($position == left or $position == top) {
+    &::before {
+      @include saber-background($position);
+    }
+  } @else if ($position == right or $position == bottom) {
+    &::after {
+      @include saber-background($position);
+    }
+  } @else {
+    @error "Invalid position: #{$position}";
+  }
+}
+
+@mixin saber-horizontal($color) {
+  @include saber($color, left);
+  @include saber($color, right);
+}
+
+@mixin saber-vertical($color) {
+  @include saber($color, top);
+  @include saber($color, bottom);
+}

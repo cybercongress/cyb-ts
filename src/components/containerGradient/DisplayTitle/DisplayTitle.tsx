@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cx from 'classnames';
 import { ContainerLampBefore } from '../ContainerGradient';
 import styles from './DisplayTitle.module.scss';
 
@@ -30,41 +30,33 @@ function DisplayTitle({
   image,
   children,
   inDisplay,
-  color: styleLampTitle,
+  color = 'white',
 }: Props) {
   const content = (
-    <ContainerLampBefore style={styleLampTitle}>
+    <div className={cx(styles.displayTitle, styles[color])}>
       <div
-        className={classNames(styles.displayTitle, {
-          [styles.displayTitleDanger]: styleLampTitle === 'red',
-          [styles.displayTitleBlue]: styleLampTitle === 'blue',
-          [styles.displayTitleYellow]: styleLampTitle === 'yellow',
-        })}
+        className={cx(
+          styles.displayTitleContent,
+          styles[`displayTitleContent${state}`]
+        )}
       >
-        <div
-          className={classNames(
-            styles.displayTitleContent,
-            styles[`displayTitleContent${state}`]
-          )}
-        >
-          {image && image.src ? (
-            <img
-              src={image.src}
-              alt={image.alt}
-              className={classNames(styles.titleImage, {
-                [styles.big]: image.isLarge,
-              })}
-            />
-          ) : (
-            image?.content
-          )}
+        {image && image.src ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            className={cx(styles.titleImage, {
+              [styles.big]: image.isLarge,
+            })}
+          />
+        ) : (
+          image?.content
+        )}
 
-          {title}
+        {title}
 
-          {children}
-        </div>
+        <div className={styles.content}>{children}</div>
       </div>
-    </ContainerLampBefore>
+    </div>
   );
 
   if (inDisplay) {
