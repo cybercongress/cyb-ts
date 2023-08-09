@@ -5,7 +5,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { steps } from './utils';
-import { InfoCard } from '../components';
 import { formatNumber } from '../../../utils/search/utils';
 import { BOOT_ICON } from '../utils';
 import { LinkWindow } from '../../../components';
@@ -215,14 +214,7 @@ function Info({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepCurrent, counCitizenshipst, mobile]);
 
-  return (
-    <InfoCard style={{ minHeight: '102px' }}>
-      <div style={{ textAlign: 'center' }}>
-        {/* <InfoTypingText content={useContent} /> */}
-        {useContent !== null && useContent}
-      </div>
-    </InfoCard>
-  );
+  return useContent;
 }
 
 export default Info;

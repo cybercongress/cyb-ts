@@ -2,9 +2,6 @@
 import { multiaddr } from '@multiformats/multiaddr';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 
-import { AddResult } from 'kubo-rpc-client/types';
-
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
 import {
   IPFSContentMaybe,
@@ -12,7 +9,6 @@ import {
   CallBackFuncStatus,
   IpfsContentSource,
   AppIPFS,
-  IPFSContent,
 } from './ipfs.d';
 
 import {
@@ -23,6 +19,7 @@ import {
 import { CYBER } from '../config';
 
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
+
 import { addToIpfsCluster } from './cluster-utils';
 import { contentToUint8Array, detectCybContentType } from './content-utils';
 

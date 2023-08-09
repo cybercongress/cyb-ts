@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../routes';
 
-function BanerHelp({ addressActive }) {
+function BannerHelp({ addressActive }: { addressActive?: any }) {
   const useCommunity = useMemo(() => {
     let link = 'community';
     if (addressActive && addressActive !== null) {
@@ -235,4 +235,4 @@ function BanerHelp({ addressActive }) {
   );
 }
 
-export default BanerHelp;
+export default BannerHelp;

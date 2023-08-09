@@ -37,6 +37,7 @@ import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import CyberScriptEngineProvider from './contexts/cyberScriptEngine';
 import { Helmet } from 'react-helmet';
+import AdviserProvider from './features/adviser/context';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -104,9 +105,11 @@ function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <DeviceProvider>
-                          <CyberScriptEngineProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
-                          </CyberScriptEngineProvider>
+                          <AdviserProvider>
+                            <CyberScriptEngineProvider>
+                              <ErrorBoundary>{children}</ErrorBoundary>
+                            </CyberScriptEngineProvider>
+                          </AdviserProvider>
                         </DeviceProvider>
                       </ApolloProvider>
                     </DataProvider>

@@ -25,6 +25,7 @@ import ReleaseStatus from '../components/ReleaseStatus';
 import usePingTxs from '../hook/usePingTxs';
 import useGetStatGift from '../hook/useGetStatGift';
 import { CurrentRelease, ReadyRelease } from './type';
+import { useAdviser } from 'src/features/adviser/context';
 
 const portalAmbientObg = new Audio(portalAmbient);
 
@@ -277,6 +278,18 @@ function Release() {
     return 0;
   }, [currentStage, claimStat]);
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    const content = Info({
+      useReleasedStage,
+      stepCurrent: stateInfo,
+      nextRelease: useNextRelease,
+    });
+
+    setAdviser(content);
+  }, [setAdviser, useReleasedStage, stateInfo, useNextRelease]);
+
   const useUnClaimedGiftData = useMemo(() => {
     if (
       giftData !== null &&
@@ -335,11 +348,7 @@ function Release() {
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
-        <Info
-          useReleasedStage={useReleasedStage}
-          stepCurrent={stateInfo}
-          nextRelease={useNextRelease}
-        />
+
         {content}
       </MainContainer>
 

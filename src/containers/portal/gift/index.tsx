@@ -28,6 +28,7 @@ import { CurrentRelease, ReadyRelease } from '../release/type';
 import useCheckRelease from '../hook/useCheckRelease';
 import { filterByOwner } from '../release';
 import ActionBarRelease from '../release/ActionBarRelease';
+import { useAdviser } from 'src/features/adviser/context';
 
 const portalAmbientObg = new Audio(portalAmbient);
 
@@ -564,18 +565,28 @@ function PortalGift() {
     );
   }
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (!appStep) {
+      return;
+    }
+
+    setAdviser(
+      <Info
+        stepCurrent={appStep}
+        nextRelease={useNextRelease}
+        useReleasedStage={useReleasedStage}
+      />
+    );
+  }, [appStep, useReleasedStage, useNextRelease, setAdviser]);
+
   return (
     <>
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
-        {appStep !== null && (
-          <Info
-            stepCurrent={appStep}
-            nextRelease={useNextRelease}
-            useReleasedStage={useReleasedStage}
-          />
-        )}
+
         <Carousel
           slides={itemsStep}
           activeStep={Math.floor(appStep)}
