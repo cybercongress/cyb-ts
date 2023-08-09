@@ -11,6 +11,11 @@
       margin-left: 25px;
     }
   }
+
+  .stepWraperJustified {
+    @extend .stepWrapper;
+    justify-content: space-between;
+  }
 }
 
 .logArea {

@@ -43,7 +43,7 @@ import { updatePassportParticle } from '../../utils';
 
 import { compileScript } from './utils';
 
-// import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
+import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
 import styles from './ScriptEditor.module.scss';
 import 'codemirror/mode/rust/rust';
@@ -52,6 +52,7 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 import 'codemirror/theme/the-matrix.css';
 import './CodeMirror.scss';
+import { async } from 'rxjs';
 
 const highlightErrors = (codeMirrorRef, diagnostics) => {
   const cm = codeMirrorRef.editor;
@@ -124,6 +125,7 @@ function ScriptingActionBar({
   code,
   nickname,
   resetPlayGround,
+  resetToDefault,
 }: {
   isChanged: boolean;
   addToLog: (log: string[]) => void;
@@ -132,6 +134,7 @@ function ScriptingActionBar({
   code: string;
   nickname: string;
   resetPlayGround: () => void;
+  resetToDefault: () => void;
 }) {
   const { node } = useIpfs();
   const [testCid, seTestCid] = useState('');
@@ -198,18 +201,23 @@ function ScriptingActionBar({
     });
   };
 
-  const onTestPersonalProcessorClick = () => setActionBarStep(1);
+  const onTestPersonalProcessorClick = () => setActionBarStep(2);
+  const onTestStepClick = () => setActionBarStep(1);
   const actionBarSteps = [
-    <div key="step_0" className={styles.stepWrapper}>
+    <div key="step_0" className={styles.stepWraperJustified}>
+      <Button onClick={onTestStepClick}>test script</Button>
+
+      <Button onClick={resetToDefault}>reset to default</Button>
+    </div>,
+    <div key="step_1" className={styles.stepWrapper}>
       <Button
         onClick={onTestMoonDomainClick}
       >{`test ${nickname}.moon resolver`}</Button>
       <Button onClick={onTestPersonalProcessorClick}>
         test personal processor
       </Button>
-      <Button onClick={console.log}>reset to default</Button>
     </div>,
-    <div key="step_1" className={styles.stepWrapper}>
+    <div key="step_2" className={styles.stepWrapper}>
       <Input
         value={testCid}
         onChange={(e) => seTestCid(e.target.value)}
@@ -320,6 +328,13 @@ function ScriptEditor() {
     }
   };
 
+  const onResetToDefault = async () => {
+    addToLog(['Resetting to default...']);
+    setIsLoaded(false);
+    setCode(defaultParticleScript);
+    await saveScript();
+  };
+
   useEffect(() => {
     resetPlayGround();
     setCode(currentEntrypoint.script);
@@ -331,10 +346,6 @@ function ScriptEditor() {
     (lines: string[]) => setLog((log) => [...log, ...lines]),
     []
   );
-
-  // useEffect(() => {
-  //   setCode(passport?.extension.data || ScriptEntrypointStorage.particle.user);
-  // }, [passport]);
 
   const resetPlayGround = () => setLog([]);
 
@@ -433,6 +444,7 @@ function ScriptEditor() {
         resetPlayGround={resetPlayGround}
         addToLog={addToLog}
         nickname={passport.extension.nickname}
+        resetToDefault={onResetToDefault}
       />
     </>
   );
