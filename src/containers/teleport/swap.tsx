@@ -142,10 +142,10 @@ function Swap() {
 
       if (isReverse) {
         setTokenBAmount(inputAmount);
-        setTokenAAmount(counterPairAmount.toString());
+        setTokenAAmount(counterPairAmount.toString(10));
       } else {
         setTokenAAmount(inputAmount);
-        setTokenBAmount(counterPairAmount.toString());
+        setTokenBAmount(counterPairAmount.toString(10));
       }
     },
     [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount, traseDenom]
