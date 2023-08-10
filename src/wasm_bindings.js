@@ -4,16 +4,12 @@
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { promptToOpenAI } from 'src/services/scripting/openai';
-import {
-  getIpfsTextContent,
-  getScriptFromParticle,
-} from 'src/services/scripting/helpers';
+import { getScriptFromParticle } from 'src/services/scripting/helpers';
 import { getFromLink, getToLink, getIpfsHash } from 'src/utils/search/utils';
 import { encodeSlash } from 'src/utils/utils';
-import { addContenToIpfs } from './utils/ipfs/utils-ipfs';
 import scriptEngine from './services/scripting/engine';
-import { queueManager } from './services/QueueManager/QueueManager';
-import { isCID } from './utils/ipfs/helpers';
+import { addContenToIpfs } from './utils/ipfs/utils-ipfs';
+import { getIpfsTextContent } from './utils/ipfs/helpers';
 
 // export function js_detectCybContentType(mime) {
 //   return detectCybContentType(mime);
@@ -33,7 +29,7 @@ export async function js_promptToOpenAI(prompt, apiKey) {
 
 export async function js_getIpfsTextContent(cid) {
   const ipfs = scriptEngine.getSingleDep('ipfs');
-  const result = await getIpfsTextContent(ipfs, cid);
+  const result = await getIpfsTextContent(ipfs, cid)?.content;
   return result;
 }
 

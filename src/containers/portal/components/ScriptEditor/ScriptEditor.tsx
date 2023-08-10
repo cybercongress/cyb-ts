@@ -11,21 +11,12 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import { Pane, Tablist } from '@cybercongress/gravity';
-import {
-  Button,
-  Input,
-  ContainerGradientText,
-  ButtonIcon,
-  TabBtn,
-} from 'src/components';
+import { Tablist } from '@cybercongress/gravity';
+import { ContainerGradientText, TabBtn } from 'src/components';
 
-import { ScriptExecutionResult } from 'src/types/scripting';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { getTextFromIpfsContent } from 'src/services/scripting/helpers';
-import { addContenToIpfs, getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import { useIpfs } from 'src/contexts/ipfs';
-import { isCID } from 'src/utils/ipfs/helpers';
 import {
   setEntrypoint,
   setEntrypointEnabled,
@@ -34,221 +25,43 @@ import {
 import Switch from 'src/components/Switch/Switch';
 
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import ActionBarContainer from 'src/components/actionBar';
 import { saveStringToLocalStorage } from 'src/utils/localStorage';
 
 import { updatePassportParticle } from '../../utils';
 
-import { compileScript } from './utils';
+import { compileScript, highlightErrors, changeUrlLastPath } from './utils';
+
+import BioEditor2 from './BioEditor2/BioEditor2';
+import { MilkdownProvider } from '@milkdown/react';
+import ScriptingActionBar from './ScriptingActionBar/ScriptingActionBar';
 
 import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
-import styles from './ScriptEditor.module.scss';
 import 'codemirror/mode/rust/rust';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
 import './CodeMirror.css';
-
-import BioEditor2 from './BioEditor2/BioEditor2';
-import StepsBar from './StepsBar/StepsBar';
-import { MilkdownProvider } from '@milkdown/react';
+import styles from './ScriptEditor.module.scss';
+import { extractRuneContent } from 'src/services/scripting/helpers';
+import { set } from 'ramda';
 
 const SOUL_TABS = { script: 'cybscript', bio: 'bio' };
-const defaultBio = "Hello, I'm a ##name##!";
-
-const highlightErrors = (codeMirrorRef, diagnostics) => {
-  const cm = codeMirrorRef.editor;
-
-  cm.getAllMarks().forEach((mark) => mark.clear());
-
-  diagnostics.forEach((error) => {
-    const { start, end } = error;
-    cm.scrollIntoView({ line: start.line, ch: start.character });
-    cm.markText(
-      { line: start.line, ch: start.character },
-      { line: end.line, ch: end.character },
-      {
-        className: styles.errorHighlight,
-        clearOnEnter: true,
-      }
-    );
-  });
-};
-
-const formatExecutionResult = (
-  result: ScriptExecutionResult,
-  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>,
-  addToLog: (items: string[]) => void
-) => {
-  const isOk = !result.diagnosticsOutput && !result.error;
-  highlightErrors(codeMirrorRef.current, result.diagnostics);
-  if (!isOk) {
-    addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-  } else {
-    addToLog([
-      '',
-      '🏁 Result:',
-      '',
-      `   ${JSON.stringify(result.result)}`,
-      '',
-      '🧪 Raw output:',
-      '',
-      result?.output || 'no output.',
-    ]);
-  }
-};
-
-function ScriptingActionBar({
-  isChanged,
-  addToLog,
-  onSaveClick,
-  onCancelClick,
-  codeMirrorRef,
-  code,
-  nickname,
-  resetPlayGround,
-  resetToDefault,
-}: {
-  isChanged: boolean;
-  addToLog: (log: string[]) => void;
-  onSaveClick: () => void;
-  onCancelClick: () => void;
-  codeMirrorRef: React.MutableRefObject<CodeMirror | undefined>;
-  code: string;
-  nickname: string;
-  resetPlayGround: () => void;
-  resetToDefault: () => void;
-}) {
-  const { node } = useIpfs();
-  const [testCid, seTestCid] = useState('');
-
-  const [actionBarStep, setActionBarStep] = useState(0);
-
-  const onTestMoonDomainClick = async () => {
-    resetPlayGround();
-    addToLog([`🚧 Execute your 'moon_domain_resolver'.`]);
-
-    compileScript(code, {
-      execute: true,
-      funcName: 'moon_domain_resolver',
-      funcParams: {},
-    })
-      .then((result) => {
-        formatExecutionResult(result, codeMirrorRef, addToLog);
-      })
-      .finally(() => {
-        setActionBarStep(0);
-      });
-  };
-
-  const onTestClick = async () => {
-    resetPlayGround();
-    if (!isCID(testCid)) {
-      addToLog([`🚫 '${testCid}' - is not correct CID.`]);
-      return;
-    }
-    addToLog([
-      '💡 Prepare data....',
-      '',
-      `🚧 Fetching particle '${testCid}'...`,
-    ]);
-    const response = await getIPFSContent(node, testCid);
-    const contentType = response?.contentType; // detectContentType(response?.meta.mime);
-
-    const content =
-      contentType === 'text' && response?.result
-        ? await getTextFromIpfsContent(response.result)
-        : '';
-
-    const preview =
-      content.length > 144 ? `${content.slice(1, 144)}....` : content;
-
-    addToLog([
-      `   ☑️ Content-type: ${contentType || '???'}`,
-      `   ☑️ Preview: ${preview}`,
-      '',
-      '💭 Execute script....',
-    ]);
-    const funcParams = {
-      cid: testCid,
-      contentType,
-      content,
-    };
-
-    compileScript(code, {
-      execute: true,
-      funcName: 'personal_processor',
-      funcParams,
-    }).then((result) => {
-      formatExecutionResult(result, codeMirrorRef, addToLog);
-    });
-  };
-
-  const onTestPersonalProcessorClick = () => setActionBarStep(2);
-  const onTestStepClick = () => setActionBarStep(1);
-  const actionBarSteps = [
-    <div key="step_0" className={styles.stepWraperJustified}>
-      <Button onClick={onTestStepClick}>test script</Button>
-
-      <Button onClick={resetToDefault}>reset to default</Button>
-    </div>,
-    <div key="step_1" className={styles.stepWrapper}>
-      <Button
-        onClick={onTestMoonDomainClick}
-      >{`test ${nickname}.moon resolver`}</Button>
-      <Button onClick={onTestPersonalProcessorClick}>
-        test personal processor
-      </Button>
-    </div>,
-    <div key="step_2" className={styles.stepWrapper}>
-      <Input
-        value={testCid}
-        onChange={(e) => seTestCid(e.target.value)}
-        placeholder="Enter particle CID to apply script...."
-      />
-      <Button onClick={onTestClick}>Test particle processor</Button>
-    </div>,
-  ];
-
-  return (
-    <ActionBarContainer
-      additionalButtons={
-        isChanged
-          ? [
-              { text: 'cancel', onClick: onCancelClick },
-              { text: 'save', onClick: onSaveClick },
-            ]
-          : []
-      }
-    >
-      <Pane className={styles.actionPanel}>
-        <StepsBar
-          steps={actionBarSteps}
-          currentStep={actionBarStep}
-          setCurrentStep={(value) => setActionBarStep(value)}
-        />
-      </Pane>
-    </ActionBarContainer>
-  );
-}
+const defaultBio =
+  'Hello, _##name##_!\r\nYou can fill any info about yourself using **markdown**.';
 
 const entrypointName = 'particle';
-
-const changeUrlLastPath = (path: string, newPath: string) => {
-  const paths = path.split('/');
-  paths.pop();
-  paths.push(newPath);
-  return paths.join('/');
-};
 
 function ScriptEditor() {
   const dispatch = useAppDispatch();
   const location = useLocation();
 
   const codeMirrorRef = useRef<CodeMirror>();
+  const outputRef = useRef();
+
   const { signer, signingClient } = useSigningClient();
+
   const { [entrypointName]: currentEntrypoint } = useAppSelector(
     (store: RootState) => store.scripting.scripts.entrypoints
   );
@@ -257,47 +70,54 @@ function ScriptEditor() {
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [log, setLog] = useState<string[]>([]);
-  const [bio, setBio] = useState<string>('');
   const [isChanged, setIsChanged] = useState(false);
-  const [code, setCode] = useState<string>(currentEntrypoint.script || '');
+  const [code, setCode] = useState<string>('');
+  const [bio, setBio] = useState<string>('');
 
   const { node } = useIpfs();
 
   const [isLoaded, setIsLoaded] = useState(true);
   const { tab } = useParams();
 
-  // const loadScript = async () => {
-  //   const cid = passport?.extension.particle;
-  //   console.log('loadScript', cid);
+  const addToLog = useCallback(
+    (lines: string[]) => setLog((log) => [...log, ...lines]),
+    []
+  );
 
-  //   if (!cid || !isCID(cid)) {
-  //     setCode(
-  //       loadStringFromLocalStorage(entrypointName, defaultParticleScript)
-  //     );
-  //     // setIsEnabled(false);
-  //     console.log('loadScript noIpfs', currentEntrypoint);
-  //     dispatch(setEntrypointEnabled({ name: entrypointName, enabled: false }));
-  //   } else {
-  //     const response = await getIPFSContent(node, cid);
-  //     const content =
-  //       response?.contentType === 'text' && response?.result
-  //         ? await getTextFromIpfsContent(response.result)
-  //         : undefined;
-  //     setCode(content || defaultParticleScript);
+  const compileAndTest = async (funcName: string, funcParams = {}) => {
+    outputRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-  //     console.log('loadScript myParticle fromIpfs', content, response);
-  //     dispatch(
-  //       setEntrypointEnabled({ name: entrypointName, enabled: !!content })
-  //     );
-  //   }
+    addToLog([`🚧 Execute your '${funcName}'.`]);
 
-  //   setIsLoaded(true);
-  // };
+    compileScript(code, {
+      execute: true,
+      funcName,
+      funcParams,
+    }).then((result) => {
+      const isOk = !result.diagnosticsOutput && !result.error;
+      highlightErrors(codeMirrorRef.current, result.diagnostics, styles);
+      if (!isOk) {
+        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+      } else {
+        addToLog([
+          '',
+          '🏁 Result:',
+          '',
+          `   ${JSON.stringify(result.result)}`,
+          '',
+          '🧪 Raw output:',
+          '',
+          result?.output || 'no output.',
+        ]);
+      }
+    });
+  };
 
   const saveScriptToPassport = async (scriptCode: string) => {
+    addToLog(['⚓️ Saving to IPFS ...']);
     const cid = await addContenToIpfs(node, scriptCode);
-    console.log('saveScriptToPassport', cid, scriptCode);
-    addToLog(['🏁 Saving to passport...']);
+    // console.log('saveScriptToPassport', cid, scriptCode);
+    addToLog([`🏁 Saving '${cid}' to passport ...`]);
     if (cid) {
       updatePassportParticle(passport?.extension.nickname, cid, {
         signer,
@@ -312,48 +132,58 @@ function ScriptEditor() {
     }
   };
 
-  const saveScript = async () => {
+  const saveScript = async (script: string, markdown: string) => {
     try {
       addToLog(['Saving code...']);
       setIsLoaded(false);
-      saveStringToLocalStorage(entrypointName, code);
+
+      const combinedScript = `${markdown}\r\n\`\`\`rune\r\n${script}\r\n\`\`\``;
+
+      saveStringToLocalStorage(entrypointName, combinedScript);
       if (!currentEntrypoint.enabled) {
         addToLog(['', '☑️ Saved to local storage.']);
       } else {
-        await saveScriptToPassport(code);
+        await saveScriptToPassport(combinedScript);
       }
 
-      dispatch(setEntrypoint({ name: entrypointName, code }));
+      dispatch(setEntrypoint({ name: entrypointName, code: combinedScript }));
     } finally {
       setIsLoaded(true);
+      setIsChanged(false);
     }
+  };
+
+  const saveBio = async (newBio: string) => {
+    setBio(newBio);
+    await saveScript(code, newBio);
   };
 
   const onResetToDefault = async () => {
     addToLog(['Resetting to default...']);
     setIsLoaded(false);
     setCode(defaultParticleScript);
-    await saveScript();
+    setBio(defaultBio);
+    await saveScript(defaultParticleScript, defaultBio);
   };
 
   useEffect(() => {
     resetPlayGround();
-    setCode(currentEntrypoint.script);
+    console.log('currentEntrypoint', currentEntrypoint);
+    const { script, markdown } = extractRuneContent(currentEntrypoint.script);
+    setCode(script || defaultParticleScript);
+    setBio(markdown);
   }, [currentEntrypoint]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
 
-  const addToLog = useCallback(
-    (lines: string[]) => setLog((log) => [...log, ...lines]),
-    []
-  );
-
   const resetPlayGround = () => setLog([]);
+
   const onCancelClick = () => {
     resetPlayGround();
     setIsChanged(false);
     setCode(currentEntrypoint.script);
   };
+
   const onSaveClick = () => {
     resetPlayGround();
     if (!code) {
@@ -364,16 +194,14 @@ function ScriptEditor() {
     compileScript(code, {
       execute: false,
     }).then((result) => {
-      const isOk = !result.diagnosticsOutput && !result.error;
-      highlightErrors(codeMirrorRef.current, result.diagnostics);
-
-      if (!isOk) {
+      if (result.diagnosticsOutput || result.error) {
         addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
+
+        highlightErrors(codeMirrorRef.current, result.diagnostics, styles);
       } else {
         addToLog(['🏁 Compiled - OK.']);
-        // dispatch(setScript({ name: entrypointName, code }));
-        saveScript();
-        setIsChanged(false);
+
+        saveScript(code, bio);
       }
     });
   };
@@ -435,14 +263,14 @@ function ScriptEditor() {
               <Switch
                 isOn={currentEntrypoint.enabled}
                 onToggle={changeScriptEnabled}
-                label={<div>Soul enabled</div>}
+                label={<div>cybscript enabled</div>}
               />
             </div>
 
             <CodeMirror
               ref={codeMirrorRef}
               editorDidMount={(editor) => {
-                editor.setSize('', '450px');
+                editor.setSize('', '400px');
               }}
               value={code}
               options={{
@@ -457,18 +285,23 @@ function ScriptEditor() {
               }}
             />
 
-            <textarea value={logText} className={styles.logArea} rows={18} />
+            <textarea
+              ref={outputRef}
+              value={logText}
+              className={styles.logArea}
+              rows={18}
+            />
           </div>
           <ScriptingActionBar
             isChanged={isChanged}
             onSaveClick={onSaveClick}
             onCancelClick={onCancelClick}
-            code={code}
-            codeMirrorRef={codeMirrorRef}
             resetPlayGround={resetPlayGround}
             addToLog={addToLog}
             nickname={passport.extension.nickname}
             resetToDefault={onResetToDefault}
+            node={node}
+            compileAndTest={compileAndTest}
           />
         </>
       )}
@@ -478,7 +311,7 @@ function ScriptEditor() {
             bio={
               bio || defaultBio.replace('##name##', passport.extension.nickname)
             }
-            onSave={console.log}
+            onSave={(m) => saveBio(m)}
           />
         </MilkdownProvider>
       )}
