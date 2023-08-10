@@ -1,8 +1,6 @@
 import cx from 'classnames';
-import { ContainerLampBefore } from '../ContainerGradient';
 import styles from './DisplayTitle.module.scss';
-
-// type PickedColors = ;
+import { ColorLamp } from '../types';
 
 export type Props = {
   title: string;
@@ -14,7 +12,8 @@ export type Props = {
   // to remove padding
   inDisplay?: boolean;
 
-  color?: 'red' | 'grey' | 'blue' | 'yellow';
+  color?: ColorLamp;
+
   image?: {
     src?: string;
     content?: React.ReactNode;

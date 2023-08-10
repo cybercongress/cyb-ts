@@ -1,4 +1,4 @@
-// TODO: need refactor
+// TODO: need use Display component for this
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
@@ -236,7 +236,7 @@ function ContainerGradient({
           </Transition>
         </div>
       </ContainerLampAfter>
-      {txs && txs !== null && <TxsStatus data={txs} />}
+      {txs && <TxsStatus data={txs} />}
     </div>
   );
 }

@@ -4,13 +4,7 @@
   background: linear-gradient(
     $route,
     rgba(0, 0, 0, 0) 0%,
-    rgba(
-        var(--shadow-color-r),
-        var(--shadow-color-g),
-        var(--shadow-color-b),
-        0.11
-      )
-      100%
+    rgba(var(--color-r), var(--color-g), var(--color-b), 0.11) 100%
   );
 }
 
@@ -92,53 +86,42 @@
 .wrapContainerLampBefore {
   position: relative;
 
-  --shadow-color-r: 0;
-  --shadow-color-g: 0;
-  --shadow-color-b: 0;
-
-  &::after,
-  &::before {
-    box-shadow: 0 0 10px 1.5px
-      rgba(
-        var(--shadow-color-r),
-        var(--shadow-color-g),
-        var(--shadow-color-b),
-        0.5
-      );
-  }
+  --color-r: 0;
+  --color-g: 0;
+  --color-b: 0;
 
   // reuse colors
   &Default {
-    --shadow-color-r: 225;
-    --shadow-color-g: 225;
-    --shadow-color-b: 225;
+    --color-r: 225;
+    --color-g: 225;
+    --color-b: 225;
   }
 
   &Red {
-    --shadow-color-r: 255;
-    --shadow-color-g: 0;
-    --shadow-color-b: 0;
+    --color-r: 255;
+    --color-g: 0;
+    --color-b: 0;
   }
   &Green {
-    --shadow-color-r: 54;
-    --shadow-color-g: 214;
-    --shadow-color-b: 174;
+    --color-r: 54;
+    --color-g: 214;
+    --color-b: 174;
   }
   &Blue {
-    --shadow-color-r: 31;
-    --shadow-color-g: 203;
-    --shadow-color-b: 255;
+    --color-r: 31;
+    --color-g: 203;
+    --color-b: 255;
   }
   &Yellow {
-    --shadow-color-r: 255;
-    --shadow-color-g: 217;
-    --shadow-color-b: 0;
+    --color-r: 255;
+    --color-g: 217;
+    --color-b: 0;
   }
 
   &Pink {
-    --shadow-color-r: 246;
-    --shadow-color-g: 43;
-    --shadow-color-b: 253;
+    --color-r: 246;
+    --color-g: 43;
+    --color-b: 253;
   }
 }
 

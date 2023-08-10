@@ -7,6 +7,7 @@ type Props = {
   position?: Positions;
 };
 
+// component only for Storybook usage
 function Saber({ color = 'green', position = Positions.LEFT }: Props) {
   return <div className={cx(styles.saber, styles[color], styles[position])} />;
 }

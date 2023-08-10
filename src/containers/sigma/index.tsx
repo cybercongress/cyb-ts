@@ -1,21 +1,19 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
 import { useLocation } from 'react-router-dom';
 import { useRobotContext } from 'src/pages/robot/robot.context';
-import { RootState } from 'src/redux/store';
 import TokenChange from 'src/components/TokenChange/TokenChange';
 import { routes } from 'src/routes';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import Display from 'src/components/containerGradient/Display/Display';
+import { useAppSelector } from 'src/redux/hooks';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
-import { ContainerGradientText } from '../../components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
-import Display from 'src/components/containerGradient/Display/Display';
 
 const valueContext = {
   totalCap: 0,
@@ -35,7 +33,7 @@ function Sigma() {
 
   const {
     pocket: { accounts, defaultAccount },
-  } = useSelector((state: RootState) => {
+  } = useAppSelector((state) => {
     return {
       pocket: state.pocket,
     };
@@ -148,15 +146,7 @@ function Sigma() {
             ),
           }}
         >
-          <div
-            style={
-              {
-                // display: 'grid',
-                // gap: '20px 0',
-                // gridTemplateColumns: 'minmax(0, 1fr)',
-              }
-            }
-          >
+          <div className={styles.addresses}>
             {accountsData?.map(({ bech32: address }) => {
               return (
                 <CardPassport
@@ -197,22 +187,3 @@ function Sigma() {
 }
 
 export default Sigma;
-
-// базаво давать добавть адрес и все
-// для того что бы доваить космос , эфир , аватар надо создать паспорт
-// можно сделать урезанный функционал
-// надо добвать иконку что бы создал паспорт, можно другим цветм подсветить
-
-// save address
-// {
-//     "bech32": "bostrom16macu2qtc0jmqc7txvf0wkz84cycsx728ah0xc",
-//     "keyWallet": "keplr",
-//     "name": "ledger S"
-// }
-
-// pasport sigma
-// {
-//  bostrom16macu2qtc0jmqc7txvf0wkz84cycsx728ah0xc: {
-//     null;
-//   }
-// }

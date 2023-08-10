@@ -17,57 +17,45 @@
   background: linear-gradient(
     /* vise versa */ to #{$position},
     rgb(0, 0, 0) 0%,
-    rgba(
-        var(--shadow-color-r),
-        var(--shadow-color-g),
-        var(--shadow-color-b),
-        0.11
-      )
-      100%
+    rgba(var(--color-r), var(--color-g), var(--color-b), 0.11) 100%
   );
 }
 
+// check Storybook for more documentation
 $valid-colors: 'green', 'blue', 'purple', 'white', 'red', 'yellow';
-/*
-    green - default
-    blue - dynamic elements
-    purple - commander only
-    white - headers
-    red - error
-    yellow - loading
-*/
 $valid-positions: 'left', 'right', 'top', 'bottom';
+$saber-border-width: 2px;
 
 @mixin saber($color: 'green', $position) {
   position: relative;
-  border-#{$position}: 2px solid white;
+  border-#{$position}: $saber-border-width solid white;
 
   @if ($color == 'green') {
-    --shadow-color-r: 54;
-    --shadow-color-g: 214;
-    --shadow-color-b: 174;
+    --color-r: 54;
+    --color-g: 214;
+    --color-b: 174;
   } @else if ($color == 'blue') {
-    --shadow-color-r: 31;
-    --shadow-color-g: 203;
-    --shadow-color-b: 255;
+    --color-r: 31;
+    --color-g: 203;
+    --color-b: 255;
   } @else if ($color == 'purple') {
-    --shadow-color-r: 246;
-    --shadow-color-g: 43;
-    --shadow-color-b: 253;
+    --color-r: 246;
+    --color-g: 43;
+    --color-b: 253;
   } @else if ($color == 'white') {
-    --shadow-color-r: 225;
-    --shadow-color-g: 225;
-    --shadow-color-b: 225;
+    --color-r: 225;
+    --color-g: 225;
+    --color-b: 225;
   } @else if ($color == 'red') {
-    --shadow-color-r: 255;
-    --shadow-color-g: 0;
-    --shadow-color-b: 0;
+    --color-r: 255;
+    --color-g: 0;
+    --color-b: 0;
   } @else if ($color == 'yellow') {
-    --shadow-color-r: 255;
-    --shadow-color-g: 217;
-    --shadow-color-b: 0;
+    --color-r: 255;
+    --color-g: 217;
+    --color-b: 0;
   } @else {
-    // @error "Invalid color: #{$color}";
+    @error "Invalid color: #{$color}";
   }
 
   @if ($position == left or $position == top) {

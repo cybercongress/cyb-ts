@@ -1,10 +1,10 @@
 @import '../saber/index.module.scss';
 
-$paddingTop: 23px;
-$paddingX: 20px;
+$display-padding-top: 23px;
+$display-padding-x: 20px;
 
 .wrapper {
-  padding: $paddingTop $paddingX 24px;
+  padding: $display-padding-top $display-padding-x 24px;
 
   // TODO: remove this
   z-index: 0;
@@ -28,6 +28,6 @@ $paddingX: 20px;
 
 .header {
   position: relative;
-  top: -$paddingTop;
-  margin-bottom: -$paddingTop;
+  top: -$display-padding-top;
+  // margin-bottom: -$display-padding-top;
 }
