@@ -4,7 +4,10 @@
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { PATTERN_IPFS_HASH, DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { promptToOpenAI } from 'src/services/scripting/openai';
-import { getScriptFromParticle } from 'src/services/scripting/helpers';
+import {
+  extractRuneScript,
+  getScriptFromParticle,
+} from 'src/services/scripting/helpers';
 import { getFromLink, getToLink, getIpfsHash } from 'src/utils/search/utils';
 import { encodeSlash } from 'src/utils/utils';
 import scriptEngine from './services/scripting/engine';
@@ -81,7 +84,10 @@ export async function js_evalScriptFromIpfs(cid, funcName, params = {}) {
   console.log('js_evalScriptFromIpfs', cid);
   try {
     const script = await getScriptFromParticle(cid);
-    return scriptEngine.executeFunction(script, funcName, params);
+    // in case of soul script is mixed with markdown
+    // need to extract pure script
+    const pureScript = extractRuneScript(script);
+    return scriptEngine.executeFunction(pureScript, funcName, params);
   } catch (e) {
     return { action: 'error', message: e.toString() };
   }

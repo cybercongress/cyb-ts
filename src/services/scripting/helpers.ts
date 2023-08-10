@@ -28,9 +28,10 @@ export function extractRuneContent(markdown: string) {
   let match;
   let runeScript = '';
   let modifiedMarkdown = markdown;
-
+  let hasRune = false;
   // Iterate through all matches of the regular expression
   while ((match = runeRegex.exec(markdown)) !== null) {
+    hasRune = true;
     // Append the matched content between ```rune``` tags to runeContent variable
     runeScript += match[1] + '\n';
 
@@ -42,5 +43,12 @@ export function extractRuneContent(markdown: string) {
   return {
     script: runeScript.trim(),
     markdown: modifiedMarkdown,
+    hasRune,
   };
+}
+
+export function extractRuneScript(markdown: string) {
+  const { script, markdown: md, hasRune } = extractRuneContent(markdown);
+  // if no rune tag, consider this like pure script
+  return hasRune ? script : md;
 }

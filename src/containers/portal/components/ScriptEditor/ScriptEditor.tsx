@@ -167,7 +167,7 @@ function ScriptEditor() {
   };
 
   useEffect(() => {
-    resetPlayGround();
+    // resetPlayGround();
     console.log('currentEntrypoint', currentEntrypoint);
     const { script, markdown } = extractRuneContent(currentEntrypoint.script);
     setCode(script || defaultParticleScript);

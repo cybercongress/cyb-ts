@@ -23,6 +23,8 @@ import {
 import { TabularKeyValues, KeyValueString } from 'src/types/data';
 import { keyValuesToObject } from 'src/utils/localStorage';
 import runtimeScript from './rune/runtime.rn';
+import { mapObjIndexed } from 'ramda';
+import { extractRuneScript } from './helpers';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -142,7 +144,10 @@ function enigine(): Engine {
   const getSingleDep = (name: keyof EngineDeps) => deps[name];
 
   const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
-    entrypoints = scriptEntrypoints;
+    entrypoints = mapObjIndexed(
+      (v) => ({ ...v, script: extractRuneScript(v.script) }),
+      scriptEntrypoints
+    );
   };
 
   const defaultCompilerParams: CompilerParams = {
