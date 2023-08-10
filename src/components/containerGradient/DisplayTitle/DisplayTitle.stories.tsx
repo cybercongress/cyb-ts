@@ -3,6 +3,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 
 import DisplayTitle, { Props } from './DisplayTitle';
+import { figmaDisplayUrl } from '../Display/storybook.temp';
 
 const meta: Meta<typeof DisplayTitle> = {
   component: DisplayTitle,
@@ -10,7 +11,7 @@ const meta: Meta<typeof DisplayTitle> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=11052-15684',
+      url: figmaDisplayUrl,
     },
   },
 };

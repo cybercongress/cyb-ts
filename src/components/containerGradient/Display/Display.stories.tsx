@@ -4,6 +4,7 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import Display from './Display';
 import { text100, title } from '../../../../.storybook/stubTexts';
+import { figmaDisplayUrl } from './storybook.temp';
 
 const meta: Meta<typeof Display> = {
   component: Display,
@@ -11,7 +12,7 @@ const meta: Meta<typeof Display> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=11052-15684',
+      url: figmaDisplayUrl,
     },
   },
 };
