@@ -1,29 +1,30 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import {
-  IPFSContentDetails,
-  IpfsContentType,
-  IpfsRawDataResponse,
-} from './ipfs';
-import {
-  CYBER,
-  PATTERN_HTML,
-  PATTERN_HTTP,
-  PATTERN_IPFS_HASH,
-} from '../config';
+import { IPFSContent, IPFSContentDetails, IpfsContentType } from './ipfs';
+import { PATTERN_PARTICLE, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
 
-import { getResponseResult, onProgressCallback } from './stream-utils';
+import { responseToPlainData, onProgressCallback } from './stream-utils';
+import { string } from 'prop-types';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
   return URL.createObjectURL(blob);
 }
 
-function createImgData(rawData: Uint8Array, type: string) {
+export function createImgData(rawData: Uint8Array, type: string) {
   const imgBase64 = uint8ArrayToAsciiString(rawData, 'base64');
-  const file = `data:${type};base64,${imgBase64}`;
-  return file;
+  return `data:${type};base64,${imgBase64}`;
 }
+
+const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
+
+function isHtml(string: string) {
+  const newString = string.trim().slice(0, 1000);
+  return basic.test(newString);
+}
+
+// export const isTextContent = (mime: String) =>
+//   mime.indexOf('text/plain') !== -1;
 
 // eslint-disable-next-line import/no-unused-modules
 export const detectContentType = (
@@ -33,16 +34,49 @@ export const detectContentType = (
     if (mime.indexOf('video') !== -1) {
       return 'video';
     }
+    if (mime.indexOf('text/plain') !== -1) {
+      return 'text';
+    }
+    if (mime.indexOf('xml') !== -1) {
+      return 'xml';
+    }
+    if (mime.indexOf('image') !== -1) {
+      return 'image';
+    }
+    if (mime.indexOf('pdf') !== -1) {
+      return 'pdf';
+    }
   }
   return 'other';
 };
 
-const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
+const detectTextContentType = (dataBase64?: string): IpfsContentType => {
+  if (!dataBase64) {
+    return 'other';
+  }
+  if (dataBase64.match(PATTERN_IPFS_HASH)) {
+    return 'cid';
+  }
+  if (dataBase64.match(PATTERN_HTTP)) {
+    return 'link';
+  }
+  if (isHtml(dataBase64)) {
+    return 'html';
+  }
 
-function isHtml(string) {
-  const newString = string.trim().slice(0, 1000);
-  return basic.test(newString);
-}
+  return 'text';
+};
+
+export const detectCybContentType = (
+  mime: string | undefined,
+  data?: Uint8Array
+): IpfsContentType => {
+  const contentType = detectContentType(mime);
+  if (contentType === 'text' && data) {
+    return detectTextContentType(uint8ArrayToAsciiString(data));
+  }
+  return contentType;
+};
 
 // eslint-disable-next-line import/no-unused-modules
 export const chunksToBlob = (
@@ -52,82 +86,94 @@ export const chunksToBlob = (
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseRawIpfsData = async (
-  rawDataResponse: IpfsRawDataResponse,
-  mime: string | undefined,
   cid: string,
+  content: IPFSContent,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
+    const { contentType, result, meta } = content;
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
       cid,
     };
 
-    if (detectContentType(mime) === 'video') {
-      // This type of content uses AsyncIterator<Uint8Array>
-      response.type = 'video';
-      // response.content = await getResponseResult(rawDataResponse);
+    if (!meta.mime) {
+      response.text = `Can't detect MIME for ${cid.toString()}`;
+      response.gateway = true;
       return response;
     }
 
-    const rawData = rawDataResponse
-      ? await getResponseResult(rawDataResponse, onProgress)
+    response.type = contentType;
+
+    // if (contentType === 'directory') {
+    //   console.log('-parse', cid, contentType, response);
+
+    //   response.gateway = true;
+    //   return response;
+    // }
+
+    if (contentType === 'video') {
+      // This type of content uses AsyncIterator<Uint8Array>
+      // response.content = await getResponseResult(rawDataResponse);
+      response.gateway = true;
+      return response;
+    }
+
+    // If data is string, it's already was parsed by scripting engine,
+    // use it as is
+    const data = result
+      ? await responseToPlainData(result, onProgress)
       : undefined;
 
-    if (!mime) {
-      response.text = `Can't detect MIME for ${cid.toString()}`;
-      response.gateway = true; // ???
-    } else if (
-      mime.indexOf('text/plain') !== -1 ||
-      mime.indexOf('application/xml') !== -1
-    ) {
-      if (isSvg(Buffer.from(rawData))) {
-        response.type = 'image';
-        response.content = createImgData(rawData, 'image/svg+xml'); // file
-      } else {
-        const dataBase64 = uint8ArrayToAsciiString(rawData);
-        // TODO: search can bel longer for 42???!
-        // also cover ipns links
-        response.link =
-          dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
-
-        if (dataBase64.match(PATTERN_IPFS_HASH)) {
-          response.gateway = true;
-          response.type = 'other';
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (dataBase64.match(PATTERN_HTTP)) {
-          response.type = 'link';
-          response.gateway = false;
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (isHtml(dataBase64)) {
-          response.type = 'other';
-          response.gateway = true;
-          response.content = cid.toString();
-        } else {
-          response.type = 'text';
-          response.content = dataBase64;
-          response.text =
-            dataBase64.length > 300
-              ? `${dataBase64.slice(0, 300)}...`
-              : dataBase64;
-        }
-      }
-    } else if (mime.indexOf('image') !== -1) {
-      response.content = createImgData(rawData, mime); // file
-      response.type = 'image';
+    if (contentType === 'image') {
+      response.content = createImgData(data, meta.mime);
       response.gateway = false;
-    } else if (mime.indexOf('application/pdf') !== -1) {
-      response.type = 'pdf';
-      response.content = createObjectURL(rawData, mime); // file
-      response.gateway = true; // ???
+      return response;
+    }
+
+    if (contentType === 'pdf') {
+      response.content = createObjectURL(data, meta.mime);
+      response.gateway = true;
+      return response;
+    }
+
+    if (contentType === 'xml') {
+      if (isSvg(Buffer.from(data))) {
+        response.content = createImgData(data, 'image/svg+xml');
+        return response;
+      }
+      response.content = uint8ArrayToAsciiString(data);
+      return response;
+    }
+    const dataBase64 =
+      typeof result === 'string' ? data : uint8ArrayToAsciiString(data);
+
+    if (contentType === 'cid') {
+      response.gateway = true;
+      response.content = dataBase64;
+      return response;
+    }
+    if (contentType === 'link') {
+      response.content = dataBase64;
+      return response;
+    }
+    if (contentType === 'html') {
+      response.gateway = true;
+      response.content = cid;
+      return response;
+    }
+    if (contentType === 'text') {
+      response.link =
+        dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
+      response.content = dataBase64;
+      response.text =
+        dataBase64.length > 300 ? `${dataBase64.slice(0, 300)}...` : dataBase64;
     }
 
     return response;
   } catch (e) {
-    console.log('----parseRawIpfsData', e, cid, mime);
+    console.error('parseRawIpfsData error:', e, cid, content);
     return undefined;
   }
 };

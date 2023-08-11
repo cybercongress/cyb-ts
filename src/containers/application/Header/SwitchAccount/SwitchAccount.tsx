@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
@@ -16,6 +16,7 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
+// import ChatBotPanel from '../ChatBotPanel/ChatBotPanel';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
 
 // should be refactored
@@ -168,7 +169,9 @@ function SwitchAccount() {
                 {/* {multipleAccounts && '>'} */}
               </button>
             )}
+
             <Karma address={useGetAddress} />
+            {/* <ChatBotPanel /> */}
           </div>
         )}
         <Link

@@ -7,7 +7,7 @@ import { CYBER } from 'src/utils/config';
 import { useLocation } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
 import ButtonIcon from '../buttons/ButtonIcon';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import Button from '../btnGrd';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
@@ -29,18 +29,29 @@ function ActionBarContentText({ children, ...props }) {
   );
 }
 
-type Props = {
+type ButtonType = {
+  text: string | React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+};
+
+export type Props = {
   children?: React.ReactNode;
   onClickBack?: $TsFixMeFunc;
   text?: string | React.ReactNode;
-  button?: {
-    text: string | React.ReactNode;
-    onClick: () => void;
-    disabled?: boolean;
-  };
+  button?: ButtonType;
+
+  // maybe will be refactored
+  additionalButtons?: ButtonType[];
 };
 
-function ActionBar({ children, text, onClickBack, button }: Props) {
+function ActionBar({
+  children,
+  text,
+  onClickBack,
+  button,
+  additionalButtons,
+}: Props) {
   const location = useLocation();
 
   const { defaultAccount } = useSelector((store: RootState) => {
@@ -72,6 +83,25 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   const content = text || children;
 
+  const isButton = !!button;
+
+  function withForm(children: React.ReactNode) {
+    if (isButton) {
+      return (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            button.onClick();
+          }}
+        >
+          {children}
+        </form>
+      );
+    }
+
+    return children;
+  }
+
   return (
     <ActionBarContainer>
       {/* <Telegram /> */}
@@ -86,13 +116,29 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
         />
       )}
 
-      {content && <ActionBarContentText>{content}</ActionBarContentText>}
+      {withForm(
+        <>
+          {content && <ActionBarContentText>{content}</ActionBarContentText>}
 
-      {button?.text && (
-        <Button disabled={button.disabled} onClick={button.onClick}>
-          {button.text}
-        </Button>
+          {additionalButtons &&
+            additionalButtons.map((item, index) => (
+              <Button
+                key={index}
+                onClick={item.onClick}
+                disabled={item.disabled}
+              >
+                {item.text}
+              </Button>
+            ))}
+
+          {isButton && (
+            <Button type="submit" disabled={button.disabled}>
+              {button.text}
+            </Button>
+          )}
+        </>
       )}
+
       {/* <GitHub /> */}
     </ActionBarContainer>
   );

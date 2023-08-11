@@ -14,14 +14,14 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noEmit": true,
-    "types": ["node", "jest", "@types/jest"],
+    "types": ["node", "jest", "@types/jest", "reflect-metadata"],
     "jsx": "react-jsx",
     // "paths": {
     //   "components": ["src/components"],
     //   "images": ["src/image"],
     //   "src": ["src"]
     // },
-    "typeRoots": ["./src/types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src"]
 }

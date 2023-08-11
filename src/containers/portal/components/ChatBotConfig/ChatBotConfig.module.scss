@@ -1,0 +1,59 @@
+.msg {
+  padding: 10px 0;
+  > span:nth-child(1) {
+    font-size: 10px;
+    color: var(--primary-color);
+  }
+  > span:nth-child(2) {
+    color: #777777;
+  }
+  > span:nth-child(3) {
+  }
+}
+
+.btnClear {
+  cursor: pointer;
+  color: #777777;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.btnLoad {
+  cursor: pointer;
+  color: #777777;
+  background-color: transparent;
+  // border: none;
+  cursor: pointer;
+  display: inline;
+  // margin: 0 25px;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.statsText {
+  font-size: 8px;
+}
+
+.botPanelItem {
+  display: flex;
+  align-items: center;
+  > :first-child {
+    width: 40%;
+    padding-right: 30px;
+  }
+}
+
+// To fix glitch with
+.selectWrapper {
+  height: 100px;
+}

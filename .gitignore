@@ -33,3 +33,4 @@ storybook-static
 
 # Local Netlify folder
 .netlify
+src/wasm/rune/target/*

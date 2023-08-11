@@ -6,6 +6,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+// const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 require('dotenv').config();
 
@@ -30,6 +31,8 @@ const config = {
       zlib: false,
       path: false,
       url: false,
+      module: false,
+      perf_hooks: false,
       crypto: require.resolve('crypto-browserify'),
       assert: require.resolve('assert'),
       https: require.resolve('https-browserify'),
@@ -57,6 +60,12 @@ const config = {
       components: path.resolve(__dirname, 'src', 'components'),
       images: path.resolve(__dirname, 'src', 'image'),
       sounds: path.resolve(__dirname, 'src', 'sounds'),
+
+      // '../../src/wasm_bindings.js': path.resolve(
+      //   __dirname,
+      //   './src/wasm_bindings.js'
+      // ),
+      // 'cyb-rune-wasm': path.resolve(__dirname, '../cyb_external_modules/pkg'),
     },
   },
   plugins: [
@@ -140,6 +149,7 @@ const config = {
           },
         ],
       },
+      //test: /\.module\.s(a|c)ss$/,
       {
         test: /\.(scss|sass)$/,
         use: [
@@ -175,7 +185,19 @@ const config = {
           fullySpecified: false,
         },
       },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
+      },
+      // {
+      //   test: /\.wasm$/,
+      //   type: 'webassembly/sync',
+      // },
     ],
+  },
+  experiments: {
+    asyncWebAssembly: true,
+    syncWebAssembly: true,
   },
 };
 

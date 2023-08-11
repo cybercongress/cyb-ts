@@ -2,6 +2,7 @@
   width: 62%;
   margin: 0px auto;
   display: grid;
+  grid-template-columns: minmax(0, auto);
   gap: 20px;
 
   @media (max-width: 650px) {

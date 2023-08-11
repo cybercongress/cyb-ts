@@ -1,0 +1,33 @@
+$colorSecondary: #36d6aee3;
+.head {
+  background-color: #000;
+  border-bottom: 1px solid #ffffff80;
+  padding-bottom: 15px;
+  height: 'auto';
+}
+
+.icoBtn {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+.textBtn {
+  cursor: pointer;
+  color: $colorSecondary;
+  font-size: 14px;
+  background-color: transparent;
+  border: none;
+  height: fit-content;
+  padding: 5px 25px 5px;
+  &::hover {
+    border-bottom: 1px solid $colorSecondary;
+  }
+}
+
+.noItems {
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  color: $colorSecondary;
+}

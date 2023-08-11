@@ -21,7 +21,12 @@ import {
   fetchIpfsContent,
   reconnectToCyberSwarm,
 } from 'src/utils/ipfs/utils-ipfs';
-import { AppIPFS, IpfsContentSource } from 'src/utils/ipfs/ipfs';
+import {
+  AppIPFS,
+  IPFSContent,
+  IPFSContentMaybe,
+  IpfsContentSource,
+} from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -37,6 +42,7 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import { postProcessIpfContent } from './utils';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -137,13 +143,23 @@ class QueueManager<T> {
 
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(() =>
+    return promiseToObservable(async () => {
       // fetch by item source
-      fetchIpfsContent<T>(cid, source, {
+      const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      })
-    ).pipe(
+      }).then((content: T) => {
+        if (!item.postProcessing) {
+          return content;
+        }
+        const result = content
+          ? postProcessIpfContent(item, content, this.node)
+          : undefined;
+        return result;
+      });
+
+      return content; // pass
+    }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -169,7 +185,8 @@ class QueueManager<T> {
             source,
           });
         }
-        if (error.name === 'AbortError') {
+
+        if (error?.name === 'AbortError') {
           return of({ item, status: 'cancelled', source });
         }
         return of({ item, status: 'error', source });
@@ -190,7 +207,7 @@ class QueueManager<T> {
       queue.set(cid, { ...item, ...changes });
     }
 
-    return queue;
+    return this.queue$.next(queue);
   }
 
   private removeAndNext(cid: string): void {
@@ -206,9 +223,7 @@ class QueueManager<T> {
   ): void {
     item.callbacks.map((callback) => callback(item.cid, 'pending', nextSource));
 
-    this.queue$.next(
-      this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource })
-    );
+    this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource });
   }
 
   private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
@@ -271,21 +286,24 @@ class QueueManager<T> {
         })
       )
       .subscribe(({ item, status, source, result }) => {
-        item.callbacks.map((callback) =>
-          callback(item.cid, status, source, result)
-        );
+        const { cid } = item;
+
+        const callbacks = this.queue$.value.get(cid)?.callbacks || [];
+        // fix to process dublicated items
+
+        callbacks.map((callback) => callback(cid, status, source, result));
 
         // HACK to use with GracePeriod for reconnection
         if (source === 'node') {
           this.lastNodeCallTime = Date.now();
         }
 
-        this.executing[source].delete(item.cid);
+        this.executing[source].delete(cid);
 
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);
-          this.removeAndNext(item.cid);
+          this.removeAndNext(cid);
         } else {
           // console.log('------error', item, status, source, result);
           // Retry -> (next sources) or -> next
@@ -294,7 +312,11 @@ class QueueManager<T> {
           if (nextSource) {
             this.switchSourceAndNext(item, nextSource);
           } else {
-            this.removeAndNext(item.cid);
+            this.removeAndNext(cid);
+            // notify thatn nothing found from all sources
+            callbacks.map((callback) =>
+              callback(cid, 'not_found', source, result)
+            );
           }
         }
       });
@@ -322,8 +344,10 @@ class QueueManager<T> {
         callbacks: [callback],
         source, // initial method to fetch
         status: 'pending',
+        postProcessing: true, // by default rune-post-processing enabled
         ...options,
       };
+
       callback(cid, 'pending', source);
 
       queue.set(cid, item);
@@ -331,8 +355,26 @@ class QueueManager<T> {
     }
   }
 
+  public enqueueAndWait(
+    cid: string,
+    options: QueueItemOptions = {}
+  ): Promise<QueueItemResult<T> | undefined> {
+    return new Promise((resolve, reject) => {
+      const callback = ((cid, status, source, result) => {
+        if (status === 'completed') {
+          resolve({ cid, status, source, result });
+        } else if (status === 'not_found') {
+          console.log('---enqueueAndWait  NOT FOUND');
+          resolve(undefined);
+        }
+      }) as QueueItemCallback<T>;
+
+      this.enqueue(cid, callback, options);
+    });
+  }
+
   public updateViewPortPriority(cid: string, viewPortPriority: number) {
-    this.queue$.next(this.mutateQueueItem(cid, { viewPortPriority }));
+    this.mutateQueueItem(cid, { viewPortPriority });
   }
 
   public cancel(cid: string): void {
@@ -363,6 +405,18 @@ class QueueManager<T> {
     this.queue$.next(queue);
   }
 
+  public clear(): void {
+    const queue = this.queue$.value;
+
+    queue.forEach((item, cid) => {
+      this.releaseExecution(cid);
+      item.controller?.abort('cancelled');
+      queue.delete(cid);
+    });
+
+    this.queue$.next(new Map());
+  }
+
   public getQueueMap(): QueueMap<T> {
     return this.queue$.value;
   }
@@ -382,4 +436,10 @@ class QueueManager<T> {
   }
 }
 
+// TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
+const queueManager = new QueueManager<IPFSContentMaybe>();
+
+window.qm = queueManager;
+
+export { queueManager };
 export default QueueManager;

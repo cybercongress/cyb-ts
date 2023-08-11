@@ -2,9 +2,10 @@
 import { Link, useParams } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
-import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useCallback, useState } from 'react';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
+import { TabBtn } from '../../components';
 import { ContainerGradientText } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -32,8 +33,7 @@ function Ipfs() {
   const dataAnswer = useGetAnswers(cid);
   const dataDiscussion = useGetDiscussion(cid);
   const { community } = useGetCommunity(cid);
-  // const { statusFetching, content, status, source, loading } =
-  //   useGetIpfsContent(cid);
+
   const { isMobile: mobile } = useDevice();
   const queryParamsId = `${cid}.${tab}`;
 
@@ -82,7 +82,12 @@ function Ipfs() {
               minHeight: 250,
             }}
           >
-            <ContentIpfs status={status} content={content} cid={cid} />
+            <ContentIpfs
+              status={status}
+              content={content}
+              cid={cid}
+              options={{ parentId: cid }}
+            />
           </ContainerGradientText>
         )}
 

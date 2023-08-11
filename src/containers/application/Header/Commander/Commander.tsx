@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { useDispatch } from 'react-redux';
+import { setContext } from 'src/redux/features/scripting';
 
 const fixedValue = '~/';
 
 function Commander() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { query } = useParams();
+  const location = useLocation();
+
   const [search, setSearch] = useState(fixedValue + (query || ''));
 
   const ref = React.useRef<HTMLInputElement>(null);
@@ -38,6 +44,20 @@ function Commander() {
   useEffect(() => {
     setSearch(fixedValue + (query || ''));
   }, [query]);
+
+  useEffect(() => {
+    // pass context to scripting
+    dispatch(
+      setContext({
+        name: 'params',
+        item: {
+          path: location.pathname.split('/').slice(1),
+          query: query || '',
+          search: Object.fromEntries(new URLSearchParams(location.search)),
+        },
+      })
+    );
+  }, [query, location, dispatch]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;

@@ -51,19 +51,19 @@ const updateIpfsStateUrl = (newUrlValue) => {
   }
 };
 
-const updateUserGatewayUrl = (newUrlValue) => {
-  const lsTypeIpfs = localStorage.getItem('ipfsState');
-  if (lsTypeIpfs !== null) {
-    const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
-    const newObj = { ...lsTypeIpfsData, userGateway: newUrlValue };
-    localStorage.setItem('ipfsState', JSON.stringify(newObj));
-  }
-};
+// const updateUserGatewayUrl = (newUrlValue) => {
+//   const lsTypeIpfs = localStorage.getItem('ipfsState');
+//   if (lsTypeIpfs !== null) {
+//     const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
+//     const newObj = { ...lsTypeIpfsData, userGateway: newUrlValue };
+//     localStorage.setItem('ipfsState', JSON.stringify(newObj));
+//   }
+// };
 
 export {
   updateIpfsStateUrl,
   updateIpfsStateType,
-  updateUserGatewayUrl,
+  // updateUserGatewayUrl,
   renderOptions,
   ContainerKeyValue,
 };

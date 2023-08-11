@@ -2,12 +2,8 @@
 import { multiaddr } from '@multiformats/multiaddr';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 
-import { AddResult } from 'kubo-rpc-client/types';
-
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
 import {
-  getIpfsUserGatewanAndNodeType,
   IPFSContentMaybe,
   IPFSContentMeta,
   CallBackFuncStatus,
@@ -23,27 +19,11 @@ import {
 import { CYBER } from '../config';
 
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
-import { convertTimeToMilliseconds } from '../helpers';
+
 import { addToIpfsCluster } from './cluster-utils';
 import { contentToUint8Array, detectCybContentType } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
-
-// Get IPFS node from local storage
-// TODO: refactor
-const getIpfsUserGatewanAndNode = (): getIpfsUserGatewanAndNodeType => {
-  const LS_IPFS_STATE = localStorage.getItem('ipfsState');
-
-  if (LS_IPFS_STATE !== null) {
-    const lsTypeIpfsData = JSON.parse(LS_IPFS_STATE);
-    if (lsTypeIpfsData?.userGateway) {
-      const { userGateway, ipfsNodeType } = lsTypeIpfsData;
-      return { userGateway, ipfsNodeType };
-    }
-  }
-
-  return { ipfsNodeType: undefined, userGateway: undefined };
-};
 
 // Get data by CID from local storage
 const loadIPFSContentFromDb = async (
@@ -56,21 +36,22 @@ const loadIPFSContentFromDb = async (
   const data = await getIpfsContentFromDb(cid);
   if (data && data.length) {
     // TODO: use cursor
-    const mime = await getMimeFromUint8Array(data);
+    const chunk = data.slice(0, 2048);
+    const mime = await getMimeFromUint8Array(chunk);
+    const contentType = detectCybContentType(mime, chunk);
 
     const meta: IPFSContentMeta = {
-      type: 'file', // dir support ?
+      // type: 'file', // dir support ?
       size: data.length,
       mime,
     };
-    return { result: data, cid, meta, source: 'db' };
+    return { result: data, cid, meta, source: 'db', contentType };
   }
 
   return undefined;
 };
 
 const emptyMeta: IPFSContentMeta = {
-  type: 'file',
   size: -1,
   local: undefined,
 };
@@ -96,6 +77,27 @@ const fetchIPFSContentMeta = async (
     };
   }
   return emptyMeta;
+};
+
+const fetchIPFSContentMetaFromGateway = async (
+  contentUrl: string,
+  controller?: AbortController
+): Promise<IPFSContentMeta> => {
+  try {
+    const response = await fetch(contentUrl, {
+      method: 'HEAD',
+      signal: controller?.signal,
+    });
+    // 'cache-control', 'content-length', 'content-type', 'x-ipfs-path', 'x-ipfs-roots'
+    return {
+      // type: 'file',
+      mime: response.headers.get('content-type') || undefined,
+      size: parseInt(response.headers.get('content-length') || '-1', 10),
+    };
+  } catch (e) {
+    console.error('fetchIPFSContentMetaFromGateway error', e, contentUrl);
+    return emptyMeta;
+  }
 };
 
 const fetchIPFSContentFromNode = async (
@@ -133,7 +135,13 @@ const fetchIPFSContentFromNode = async (
     switch (meta.type) {
       case 'directory': {
         // TODO: return directory structure
-        return { cid, availableDownload: true, source: 'node', meta };
+        return {
+          cid,
+          availableDownload: false,
+          source: 'node',
+          meta,
+          contentType: 'directory',
+        };
       }
       default: {
         // Get sample of content
@@ -143,7 +151,8 @@ const fetchIPFSContentFromNode = async (
           .next();
 
         const mime = await getMimeFromUint8Array(firstChunk);
-        const fullyDownloaded = firstChunk.length >= meta.size;
+        const fullyDownloaded =
+          meta.size !== -1 && firstChunk.length >= meta.size;
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
@@ -164,18 +173,27 @@ const fetchIPFSContentFromNode = async (
           meta.pinTime = -1;
         }
 
+        const contentType = detectCybContentType(mime, firstChunk);
+
         return {
           result: stream,
           cid,
           meta: { ...meta, mime },
           source: 'node',
+          contentType,
         };
         // }
       }
     }
   } catch (error) {
     console.log('error fetch stat', error);
-    return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
+    return {
+      cid,
+      availableDownload: true,
+      source: 'node',
+      meta: emptyMeta,
+      contentType: 'unknown',
+    };
   }
 };
 
@@ -184,34 +202,24 @@ const fetchIPFSContentFromGateway = async (
   cid: string,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
-  // TODO: Should we use Cyber Gateway?
-  // const { userGateway } = getIpfsUserGatewanAndNode();
-
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
-  const meta = isExternalNode
-    ? await fetchIPFSContentMeta(node, cid, controller?.signal)
-    : emptyMeta;
-
   const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+
+  // const meta = isExternalNode
+  //   ? await fetchIPFSContentMeta(node, cid, controller?.signal)
+  //   : await fetchIPFSContentMetaFromGateway(contentUrl, controller);
+
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
   });
 
   if (response && response.body) {
-    // fetch doesn't provide any headers in our case :(
-
-    // const contentLength = parseInt(
-    //   response.headers['content-length'] || '-1',
-    //   10
-    // );
-    // const contentType = response.headers['content-type'];
-
-    // Extract meta if ipfs prob/node not started yet
-    // if (!meta.mime) {
-    //   meta = { ...meta, mime: contentType };
-    // }
+    const meta = {
+      mime: response.headers.get('content-type') || undefined,
+      size: parseInt(response.headers.get('content-length') || '-1', 10),
+    };
 
     // TODO: fix
     const flushResults = (chunks, mime) =>
@@ -219,17 +227,25 @@ const fetchIPFSContentFromGateway = async (
         ? addIpfsContentToDb(cid, uint8ArrayConcat(chunks))
         : Promise.resolve();
 
-    const { mime, result } = await toReadableStreamWithMime(
+    const { mime, result, firstChunk } = await toReadableStreamWithMime(
       response.body,
       flushResults
     );
+    const contentType = detectCybContentType(mime, firstChunk);
+
+    const fullyDownloaded =
+      meta.size !== -1 && firstChunk && firstChunk.length >= meta.size;
+
+    // If all content fits in first chunk return byte-array instead ReadableStream
+    const stream = fullyDownloaded ? firstChunk : result;
 
     return {
       cid,
       meta: { ...meta, mime },
-      result,
+      result: stream,
       source: 'gateway',
       contentUrl,
+      contentType,
     };
   }
 
@@ -247,7 +263,6 @@ async function fetchIpfsContent<T>(
   options: fetchContentOptions
 ): Promise<T | undefined> {
   const { node, controller } = options;
-
   try {
     switch (source) {
       case 'db':
@@ -271,28 +286,30 @@ const getIPFSContent = async (
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
-  const dataRsponseDb = await loadIPFSContentFromDb(cid);
-  if (dataRsponseDb !== undefined) {
-    return dataRsponseDb;
+  const dataResponseDb = await loadIPFSContentFromDb(cid);
+  if (dataResponseDb) {
+    return dataResponseDb;
   }
 
-  if (node) {
+  const fetchFromGateway = async () => {
+    callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
+    return fetchIPFSContentFromGateway(node, cid, controller);
+  };
+
+  const fetchFromNode = async () => {
     callBackFuncStatus && callBackFuncStatus('trying to get with a node');
-    // console.log('----Fetch from node', cid);
-    const ipfsContent = await fetchIPFSContentFromNode(node, cid, controller);
+    return fetchIPFSContentFromNode(node, cid, controller);
+  };
 
-    return ipfsContent;
+  if (!node) {
+    return fetchFromGateway();
   }
 
-  callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
-  // console.log('----Fetch from gateway', cid);
-  const respnseGateway = await fetchIPFSContentFromGateway(
-    node,
-    cid,
-    controller
-  );
+  if (node.nodeType === 'external') {
+    return fetchFromNode() || fetchFromGateway();
+  }
 
-  return respnseGateway;
+  return fetchFromGateway() || fetchFromNode();
 };
 
 const catIPFSContentFromNode = (
@@ -373,14 +390,14 @@ const CYBERNODE_SWARM_ADDR_TCP =
   '/ip4/88.99.105.146/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 // '/dns4/swarm.io.cybernode.ai/tcp/4001/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 
-const connectToSwarm = async (node, address) => {
+const connectToSwarm = async (node: AppIPFS, address: string) => {
   const multiaddrSwarm = multiaddr(address);
   // console.log(`Connecting to swarm ${address}`, node);
   await node.bootstrap.add(multiaddrSwarm);
 
   node?.swarm
     .connect(multiaddrSwarm)
-    .then((resp) => {
+    .then(() => {
       console.log(`Welcome to swarm ${address} 🐝🐝🐝`);
       // node.swarm.peers().then((peers) => console.log('---peeers', peers));
     })
@@ -404,7 +421,7 @@ const connectToSwarm = async (node, address) => {
 //   await connectToSwarm(node, cyberNodeAddr);
 // };
 
-const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
+const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime?: number) => {
   if (!node) {
     return;
   }
@@ -418,7 +435,8 @@ const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
   // console.log('autoDialTime', await getNodeAutoDialInterval(node));
   // console.log('lastCallTime', lastCallTime, Date.now() - lastCallTime);
   const isConnected =
-    Date.now() - lastCallTime < node.connMgrGracePeriod ||
+    !lastCallTime ||
+    Date.now() - lastCallTime < node.swarmConnTimeout ||
     peers.find((p) => p.peer.toString() === CYBER_NODE_SWARM_PEER_ID);
 
   // console.log('---isConnected', true, peers.length);
@@ -430,30 +448,41 @@ const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
 
 const DEFAULT_AUTO_DIAL_INTERVAL = 20000;
 const GET_CONFIG_TIMEOUT = 3000;
+const IPFS_CONFIG_SWARM_CONN_TIMEOUT = 'Swarm.ConnMgr.GracePeriod';
+const IPFS_CONFIG_GATEWAY_URL = 'Addresses.Gateway';
 
-const getNodeAutoDialInterval = async (node: AppIPFS) => {
+const getIpfsConfigSwarmConnTimeout = async (node: AppIPFS) =>
+  getIpfsConfig(
+    node,
+    IPFS_CONFIG_SWARM_CONN_TIMEOUT,
+    DEFAULT_AUTO_DIAL_INTERVAL
+  );
+
+const getIpfsConfigGatewayAddr = async (node: AppIPFS) =>
+  getIpfsConfig(node, IPFS_CONFIG_GATEWAY_URL);
+
+const getIpfsConfig = async (
+  node: AppIPFS,
+  name: string,
+  defaultValue?: string | number
+) => {
   try {
-    const autoDialTime = convertTimeToMilliseconds(
-      ((await node.config.get('Swarm.ConnMgr.GracePeriod', {
-        timeout: GET_CONFIG_TIMEOUT,
-      })) as string) || DEFAULT_AUTO_DIAL_INTERVAL
-    );
-
-    return autoDialTime;
-  } catch {
-    return DEFAULT_AUTO_DIAL_INTERVAL;
+    const response = await node.config.get(name, {
+      timeout: GET_CONFIG_TIMEOUT,
+    });
+    return response;
+  } catch (error) {
+    return defaultValue;
   }
 };
 
-const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
-  if (node.nodeType === 'embedded') {
+const getIpfsGatewayUrl = async (node?: AppIPFS, cid: string) => {
+  if (!node || node.nodeType === 'embedded') {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
   }
 
-  const response = await node.config.get('Addresses.Gateway');
-  const address = multiaddr(response).nodeAddress();
-
   try {
+    const address = multiaddr(node.gatewayAddr).nodeAddress();
     return `http://${address.address}:${address.port}/ipfs/${cid}`;
   } catch (error) {
     return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
@@ -462,11 +491,11 @@ const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
 
 export {
   getIPFSContent,
-  getIpfsUserGatewanAndNode,
   catIPFSContentFromNode,
   fetchIpfsContent,
   addContenToIpfs,
   reconnectToCyberSwarm,
   getIpfsGatewayUrl,
-  getNodeAutoDialInterval,
+  getIpfsConfigSwarmConnTimeout,
+  getIpfsConfigGatewayAddr,
 };

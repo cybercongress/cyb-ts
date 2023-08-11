@@ -7,8 +7,6 @@ type Props = {
 };
 
 function ContentIpfsCid({ loading, statusFetching, status }: Props) {
-  // const loading = dataGetIpfsContent.loading;
-
   if (loading) {
     return (
       <div

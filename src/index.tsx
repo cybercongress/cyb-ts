@@ -35,6 +35,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import CyberScriptEngineProvider from './contexts/cyberScriptEngine';
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
 
@@ -91,7 +92,7 @@ if (container === null) {
 const root = createRoot(container);
 
 // for Storybook, WIP
-export function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <IpfsProvider>
@@ -105,7 +106,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       <ApolloProvider client={client}>
                         <DeviceProvider>
                           <AdviserProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
+                            <CyberScriptEngineProvider>
+                              <ErrorBoundary>{children}</ErrorBoundary>
+                            </CyberScriptEngineProvider>
                           </AdviserProvider>
                         </DeviceProvider>
                       </ApolloProvider>

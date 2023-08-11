@@ -12,10 +12,11 @@ import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
 
 export const PORTAL_ID = 'portal';
 
@@ -27,6 +28,9 @@ function App() {
   const address = defaultAccount.account?.cyber?.bech32;
 
   const { community } = useGetCommunity(address || null);
+
+  useCommunityPassports();
+
   const location = useLocation();
   const adviserContext = useAdviser();
 

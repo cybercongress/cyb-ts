@@ -1,11 +1,8 @@
 // TODO: refactor needed
-import React from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
-
 import SearchItem from '../SearchItem/searchItem';
 
 import { getRankGrade } from '../../utils/search/utils';
@@ -14,7 +11,7 @@ import ContentIpfs from '../contentIpfs/contentIpfs';
 type ContentItemProps = {
   item: $TsFixMe;
   cid: string;
-  grade?: $TsFixMe;
+  grade?: number;
   className?: string;
   parent?: string;
 };
@@ -28,18 +25,35 @@ function ContentItem({
 }: ContentItemProps): JSX.Element {
   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
+  const [itemCid, setItemCid] = useState(cid);
+  const [isHidden, setIsHidden] = useState(false);
+  useEffect(() => {
+    if (status === 'completed' && content?.cid) {
+      setItemCid(content?.cid);
+      setIsHidden(content?.mutation === 'hidden');
+    }
+  }, [status, content]);
+
+  const itemGrade = useMemo(
+    () =>
+      item.rank
+        ? getRankGrade(item.rank)
+        : grade || { from: 'n/a', to: 'n/a', value: 'n/a' },
+    [item.rank, grade]
+  );
+
+  if (isHidden) {
+    return null;
+  }
+
   return (
-    <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
-      <SearchItem
-        key={cid}
-        status={status}
-        grade={
-          item.rank
-            ? getRankGrade(item.rank)
-            : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
-        }
-      >
-        <ContentIpfs status={status} content={content} cid={cid} search />
+    <Link
+      className={className}
+      style={{ color: '#fff' }}
+      to={`/ipfs/${itemCid}`}
+    >
+      <SearchItem key={itemCid} status={status} grade={itemGrade}>
+        <ContentIpfs content={content} status={status} cid={itemCid} search />
       </SearchItem>
     </Link>
   );

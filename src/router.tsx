@@ -55,6 +55,8 @@ import {
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
+import ScriptEditor from './containers/portal/components/ScriptEditor/ScriptEditor';
+import ChatBotConfig from './containers/portal/components/ChatBotConfig/ChatBotConfig';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
@@ -191,6 +193,12 @@ function AppRouter() {
           <Route path="/sigma" element={<SigmaWrapper />} />
 
           <Route path="/nebula" element={<Nebula />} />
+          {/* TMP */}
+          {/* <Route path="/plugins" element={<ScriptEditor />} />
+          <Route path="/plugins/:tab" element={<ScriptEditor />} /> */}
+          {/* <Route path="/chatbot" element={<ChatBotConfig />} />
+          <Route path="/chatbot/:tab" element={<ChatBotConfig />} /> */}
+          {/*  */}
 
           <Route path="/keys" element={<Keys />} />
 

@@ -7,7 +7,8 @@ type QueueItemStatus =
   | 'timeout'
   | 'completed'
   | 'cancelled'
-  | 'error';
+  | 'error'
+  | 'not_found';
 
 export type QueueSourceSettings = {
   timeout: number;
@@ -34,6 +35,7 @@ export type QueueItemOptions = {
   priority?: number;
   viewPortPriority?: number;
   initialSource?: QueueSource;
+  postProcessing?: boolean;
 };
 
 export type QueueItemCallback<T> = (

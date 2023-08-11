@@ -1,10 +1,15 @@
 import * as external from './external';
 import * as embedded from './embedded';
-import { getNodeAutoDialInterval, reconnectToCyberSwarm } from './utils-ipfs';
+import {
+  reconnectToCyberSwarm,
+  getIpfsConfigGatewayAddr,
+  getIpfsConfigSwarmConnTimeout,
+} from './utils-ipfs';
+import { AppIPFS, IpfsOptsType } from './ipfs';
 
-let client;
+let client: AppIPFS | null = null;
 
-export async function initIpfsClient(opts) {
+export async function ipfsClientFactory(opts: IpfsOptsType) {
   let backend;
 
   switch (opts.ipfsNodeType) {
@@ -20,27 +25,30 @@ export async function initIpfsClient(opts) {
   }
 
   const instance = await backend.init(opts);
-  instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
+
   window.ipfs = instance;
 
-  // Only for embedded node
-  if (instance.libp2p) {
-    // instance.libp2p.addEventListener('peer:discovery', (evt) => {
-    //   // window.discoveredPeers.set(evt.detail.id.toString(), evt.detail)
-    //   // console.log(`Discovered peer ${evt.detail.id.toString()}`);
-    // });
-    instance.libp2p.addEventListener('peer:connect', (evt) => {
-      console.log(`Connected to ${evt.detail.remotePeer.toString()}`);
-    });
-    instance.libp2p.addEventListener('peer:disconnect', (evt) => {
-      console.log(`Disconnected from ${evt.detail.remotePeer.toString()}`);
-    });
+  instance.gatewayAddr = await getIpfsConfigGatewayAddr(instance);
+  instance.swarmConnTimeout = await getIpfsConfigSwarmConnTimeout(instance);
 
-    // connectToSwarm(
-    //   instance,
-    //   '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star'
-    // );
-  }
+  // Only for embedded node
+  // if (instance.libp2p) {
+  //   // instance.libp2p.addEventListener('peer:discovery', (evt) => {
+  //   //   // window.discoveredPeers.set(evt.detail.id.toString(), evt.detail)
+  //   //   // console.log(`Discovered peer ${evt.detail.id.toString()}`);
+  //   // });
+  //   instance.libp2p.addEventListener('peer:connect', (evt) => {
+  //     console.log(`Connected to ${evt.detail.remotePeer.toString()}`);
+  //   });
+  //   instance.libp2p.addEventListener('peer:disconnect', (evt) => {
+  //     console.log(`Disconnected from ${evt.detail.remotePeer.toString()}`);
+  //   });
+
+  //   // connectToSwarm(
+  //   //   instance,
+  //   //   '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star'
+  //   // );
+  // }
   await reconnectToCyberSwarm(instance);
   client = backend;
   return instance;

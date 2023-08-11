@@ -7,6 +7,7 @@ import { IpfsRawDataResponse } from './ipfs';
 type ResultWithMime = {
   result: IpfsRawDataResponse;
   mime: string | undefined;
+  firstChunk: Uint8Array | undefined;
 };
 
 type StreamDoneCallback = (
@@ -19,12 +20,14 @@ type StreamDoneCallback = (
 // }
 
 export const getMimeFromUint8Array = async (
-  raw: Uint8Array
+  raw: Uint8Array | undefined
 ): Promise<string | undefined> => {
-  // TODO: try to pass only first N-bytes
+  if (!raw) {
+    return undefined;
+  }
   const fileType = await fileTypeFromBuffer(raw);
 
-  return fileType?.mime || 'text/plain';
+  return fileType?.mime.split(' ')[0] || 'text/plain';
 };
 
 export async function toAsyncIterableWithMime(
@@ -85,16 +88,20 @@ export async function toReadableStreamWithMime(
     },
   });
 
-  return { mime, result: modifiedStream };
+  return { mime, result: modifiedStream, firstChunk: value };
 }
 export type onProgressCallback = (progress: number) => void;
 
-export const getResponseResult = async (
+export const responseToPlainData = async (
   response: IpfsRawDataResponse,
   onProgress?: onProgressCallback
 ) => {
   let bytesDownloaded = 0;
   try {
+    if (typeof response === 'string') {
+      onProgress && onProgress(response.byteLength);
+      return response; // no need trasform
+    }
     if (response instanceof Uint8Array) {
       onProgress && onProgress(response.byteLength);
       return response;

@@ -5,7 +5,7 @@ import configIpfs from './configIpfs';
 
 let node: null | AppIPFS = null;
 
-export async function init() {
+export async function init(): Promise<AppIPFS> {
   if (node !== null) {
     console.log('IPFS already started');
   } else if (window.ipfs && window.ipfs.enable) {

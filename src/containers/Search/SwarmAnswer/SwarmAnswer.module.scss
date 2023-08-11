@@ -1,0 +1,15 @@
+.swarmAnswer {
+  padding: 15px 0;
+}
+.content {
+}
+
+.nickname {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.8rem;
+  &::before {
+    content: '©';
+    padding-right: 0.25rem;
+  }
+}
