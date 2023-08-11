@@ -32,12 +32,15 @@ import { updatePassportParticle } from '../../utils';
 import { compileScript, highlightErrors, changeUrlLastPath } from './utils';
 
 import BioEditor2 from './BioEditor2/BioEditor2';
+
 import { MilkdownProvider } from '@milkdown/react';
+
 import ScriptingActionBar from './ScriptingActionBar/ScriptingActionBar';
 
 import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
-import 'codemirror/mode/rust/rust';
+// import 'codemirror/mode/rust/rust';
+import './formatting/rune';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/tomorrow-night-eighties.css';
 // import 'codemirror/theme/tomorrow-night-bright.css';
@@ -45,7 +48,6 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 import './CodeMirror.css';
 import styles from './ScriptEditor.module.scss';
 import { extractRuneContent } from 'src/services/scripting/helpers';
-import { set } from 'ramda';
 
 const SOUL_TABS = { script: 'cybscript', bio: 'bio' };
 const defaultBio =
@@ -275,7 +277,7 @@ function ScriptEditor() {
               value={code}
               options={{
                 readOnly: !isLoaded,
-                mode: 'rust',
+                mode: 'rune',
                 theme: 'tomorrow-night-eighties',
                 lineNumbers: true,
               }}

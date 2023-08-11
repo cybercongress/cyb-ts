@@ -5177,6 +5177,22 @@
   dependencies:
     tslib "^2.5.0"
 
+"@milkdown/plugin-clipboard@^7.2.4":
+  version "7.2.4"
+  resolved "https://registry.yarnpkg.com/@milkdown/plugin-clipboard/-/plugin-clipboard-7.2.4.tgz#4b11cb332e40b8419042fa0348b503dc17ecd80a"
+  integrity sha512-zjJNXDMxBYPhYCP5EBMJ2wns8svEPXpH08WUqL1zdNh4BNLD+bi8DrKQbTbnIjIzR/Ph8m9RVbHXA6STvwTEWA==
+  dependencies:
+    "@milkdown/utils" "7.2.4"
+    tslib "^2.5.0"
+
+"@milkdown/plugin-history@^7.2.4":
+  version "7.2.4"
+  resolved "https://registry.yarnpkg.com/@milkdown/plugin-history/-/plugin-history-7.2.4.tgz#53c55758be70ca9c93c09d3b6a2b371c7a292ed3"
+  integrity sha512-jETMMNR+zwdb9QAY4gzN63f7gcmiWLGwmz5nlCJmz9/rcXK1xurm6VCmwhmnmQm0ETwr6iZkytz4z2Me6nrZBw==
+  dependencies:
+    "@milkdown/utils" "7.2.4"
+    tslib "^2.5.0"
+
 "@milkdown/plugin-listener@^7.2.4":
   version "7.2.4"
   resolved "https://registry.yarnpkg.com/@milkdown/plugin-listener/-/plugin-listener-7.2.4.tgz#c00eaa7185210d9b1b0baa8b8a2d1993c3c84928"

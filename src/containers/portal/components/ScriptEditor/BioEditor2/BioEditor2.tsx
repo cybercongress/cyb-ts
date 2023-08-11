@@ -6,6 +6,8 @@ import { nord } from '@milkdown/theme-nord';
 import { Milkdown, useEditor } from '@milkdown/react';
 import { commonmark } from '@milkdown/preset-commonmark';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
+import { clipboard } from '@milkdown/plugin-clipboard';
+import { history } from '@milkdown/plugin-history';
 import ActionBarContainer from 'src/components/actionBar';
 
 import './BioEditor.css';
@@ -45,7 +47,9 @@ function BioEditor2({
       })
       .use(listener)
       .config(nord)
-      .use(commonmark);
+      .use(commonmark)
+      .use(clipboard)
+      .use(history);
   }, []);
 
   return (
