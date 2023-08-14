@@ -22,7 +22,7 @@ function Switch({ label, onChange, value }: Props) {
 
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label className={styles.toggle} ref={ref}>
+    <label className={styles.switch} ref={ref}>
       <input
         type="checkbox"
         defaultChecked={value}

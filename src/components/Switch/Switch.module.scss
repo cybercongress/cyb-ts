@@ -1,4 +1,7 @@
-.toggle {
+// Example 2
+// https://www.tutorialstonight.com/css-toggle-switch-with-text
+
+.switch {
   --length: 0;
   --height: 22px;
   --width: max(calc(var(--length) * 9.5px + var(--height)), 60px);
@@ -12,11 +15,11 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-.toggle input {
+.switch input {
   display: none;
 }
 
-.toggle .slider {
+.switch .slider {
   position: absolute;
   top: 0;
   left: 0;
@@ -27,7 +30,7 @@
   transition: all 0.4s ease-in-out;
 }
 
-.toggle .slider::before {
+.switch .slider::before {
   content: '';
   position: absolute;
   left: 1px;
@@ -39,17 +42,17 @@
   transition: all 0.4s ease-in-out;
 }
 
-.toggle input:checked + .slider {
+.switch input:checked + .slider {
   border-color: #2196f3;
 }
 
-.toggle input:checked + .slider::before {
+.switch input:checked + .slider::before {
   border-color: #2196f3;
   background-color: rgba(31, 203, 255, 0.7);
   transform: translateX(calc(var(--width) - var(--height)));
 }
 
-.toggle .labels {
+.switch .labels {
   text-transform: lowercase;
   position: absolute;
   top: 0.5px;
@@ -61,7 +64,7 @@
   transition: all 0.4s ease-in-out;
 }
 
-.toggle .labels::after {
+.switch .labels::after {
   content: attr(data-off);
   position: absolute;
   right: 8px;
@@ -69,7 +72,7 @@
   transition: all 0.4s ease-in-out;
 }
 
-.toggle .labels::before {
+.switch .labels::before {
   content: attr(data-on);
   position: absolute;
   left: 8px;
@@ -78,10 +81,10 @@
   transition: all 0.4s ease-in-out;
 }
 
-.toggle input:checked ~ .labels::after {
+.switch input:checked ~ .labels::after {
   opacity: 0;
 }
 
-.toggle input:checked ~ .labels::before {
+.switch input:checked ~ .labels::before {
   opacity: 1;
 }
