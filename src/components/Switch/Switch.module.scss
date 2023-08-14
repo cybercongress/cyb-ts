@@ -1,0 +1,87 @@
+.toggle {
+  --length: 0;
+  --height: 22px;
+  --width: max(calc(var(--length) * 9.5px + var(--height)), 60px);
+
+  position: relative;
+  display: inline-block;
+  width: var(--width);
+  height: var(--height);
+  border-radius: var(--height);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggle .slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 15px;
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle .slider::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: calc(var(--height));
+  height: calc(var(--height));
+  border-radius: calc(var(--height) / 2);
+  border: 1px solid rgba(31, 203, 255, 0.7);
+  filter: drop-shadow(0px 0px 5px rgba(31, 203, 255, 0.5));
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle input:checked + .slider {
+  border-color: #2196f3;
+}
+
+.toggle input:checked + .slider::before {
+  border-color: #2196f3;
+  background-color: rgba(31, 203, 255, 0.7);
+  transform: translateX(calc(var(--width) - var(--height)));
+}
+
+.toggle .labels {
+  text-transform: lowercase;
+  position: absolute;
+  top: 0.5px;
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+  color: rgba(31, 203, 255, 0.38);
+  font-family: sans-serif;
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle .labels::after {
+  content: attr(data-off);
+  position: absolute;
+  right: 8px;
+  opacity: 1;
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle .labels::before {
+  content: attr(data-on);
+  position: absolute;
+  left: 8px;
+  color: rgba(31, 203, 255, 1);
+  opacity: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle input:checked ~ .labels::after {
+  opacity: 0;
+}
+
+.toggle input:checked ~ .labels::before {
+  opacity: 1;
+}
