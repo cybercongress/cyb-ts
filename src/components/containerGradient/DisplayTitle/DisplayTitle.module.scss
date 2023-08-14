@@ -60,15 +60,18 @@
   }
 }
 
-.titleImage {
-  height: 70px;
-  width: 70px;
-  border-radius: 50%;
-  object-fit: cover;
+.imageWrapper {
+  img {
+    border-radius: 50%;
+    height: 70px;
+    width: 70px;
+  }
 
-  &.big {
-    height: 112px;
-    width: 112px;
+  &.large {
+    img {
+      height: 112px;
+      width: 112px;
+    }
   }
 }
 

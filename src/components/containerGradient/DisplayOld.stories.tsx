@@ -3,7 +3,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 
 import DisplayOld from './ContainerGradient';
-import { text100, title } from '../../../.storybook/stubTexts';
+import { text100, title } from '../../../.storybook/stubs';
 import { figmaDisplayUrl } from './Display/storybook.temp';
 
 const meta: Meta<typeof DisplayOld> = {

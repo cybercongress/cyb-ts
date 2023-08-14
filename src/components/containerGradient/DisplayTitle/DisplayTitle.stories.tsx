@@ -2,7 +2,8 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import DisplayTitle, { Props } from './DisplayTitle';
+import { img } from '../../../../.storybook/stubs';
+import DisplayTitle from './DisplayTitle';
 import { figmaDisplayUrl } from '../Display/storybook.temp';
 
 const meta: Meta<typeof DisplayTitle> = {
@@ -20,10 +21,7 @@ export default meta;
 type Story = StoryObj<typeof DisplayTitle>;
 
 const defaultTitle = 'Moon Citizenship';
-const defaultImage: Props['image'] = {
-  src: 'https://cyb.ai/images/preview.png',
-  alt: 'cyb.ai',
-};
+const defaultImage = <img src={img} alt="cyb" />;
 
 export const Main: Story = {
   args: {
@@ -41,9 +39,7 @@ export const WithImage: Story = {
 export const WithImageLarge: Story = {
   args: {
     title: defaultTitle,
-    image: {
-      ...defaultImage,
-      isLarge: true,
-    },
+    image: defaultImage,
+    isImgLarge: true,
   },
 };

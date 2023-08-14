@@ -129,15 +129,10 @@ function Sigma() {
         }}
       >
         <Display
-          status="green"
+          color="green"
           titleProps={{
             title: superSigma ? 'Supersigma' : 'Sigma',
-            image: {
-              src: require('../../image/sigma.png'),
-              alt: 'sigma',
-              isLarge: false,
-            },
-
+            image: <img src={require('../../image/sigma.png')} alt="sigma" />,
             children: (
               <TokenChange
                 total={value.totalCap}

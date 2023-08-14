@@ -1,19 +1,14 @@
-import { CYBER } from '../../../../../utils/config';
-import { formatNumber } from '../../../../../utils/utils';
-import { FormatNumberTokens } from '../../../../nebula/components';
-import { Signatures } from '../../../../portal/components';
-import styles from './styles.module.scss';
-import { Citizenship } from 'src/types/citizenship';
-import { ContainerGradientText, DenomArr } from 'src/components';
+import { DenomArr } from 'src/components';
 import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
 import TokenChange from 'src/components/TokenChange/TokenChange';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import styles from './TitleCard.module.scss';
+import { Signatures } from '../../../../portal/components';
 
 interface Props {
   address: string;
-  passport: Citizenship;
   totalLiquid?: {
     currentCap: number;
     change: number;
@@ -22,17 +17,13 @@ interface Props {
   selected: boolean;
 }
 
-function TitleCard({
-  address,
-  passport,
-  totalLiquid,
-  selectAddress,
-  selected,
-}: Props) {
+function TitleCard({ address, totalLiquid, selectAddress, selected }: Props) {
   const addressNetwork = getTypeFromAddress(address);
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={cx(styles.container, {
         [styles.select]: selectAddress,
         [styles.selected]: selected,
@@ -41,17 +32,15 @@ function TitleCard({
     >
       <DisplayTitle
         inDisplay
-        image={{
-          content: (
-            <DenomArr
-              denomValue={addressNetwork}
-              onlyImg
-              tooltipStatusImg={false}
-              type="network"
-              size={37}
-            />
-          ),
-        }}
+        image={
+          <DenomArr
+            denomValue={addressNetwork}
+            onlyImg
+            tooltipStatusImg={false}
+            type="network"
+            size={37}
+          />
+        }
         title={
           <div className={styles.address}>
             <Signatures

@@ -3,7 +3,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 
 import Display from './Display';
-import { text100, title } from '../../../../.storybook/stubTexts';
+import { text100, title } from '../../../../.storybook/stubs';
 import { figmaDisplayUrl } from './storybook.temp';
 
 const meta: Meta<typeof Display> = {

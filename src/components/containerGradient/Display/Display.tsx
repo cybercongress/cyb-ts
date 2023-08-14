@@ -8,7 +8,10 @@ import { ColorLamp, Colors } from '../types';
 
 type Props = {
   children: React.ReactNode;
-  status?: ColorLamp;
+
+  // deprecated
+  // status?: ColorLamp;
+
   color?: ColorLamp;
   titleProps?: Pick<DisplayTitleProps, 'title' | 'image' | 'children'>;
   isVertical?: boolean;
@@ -19,9 +22,9 @@ function Display({
   titleProps,
   isVertical,
   color = Colors.GREEN,
-  status = Colors.GREEN,
+  ...props
 }: Props) {
-  const colorTemp = color || status;
+  const colorTemp = color || props.status;
 
   return (
     <div

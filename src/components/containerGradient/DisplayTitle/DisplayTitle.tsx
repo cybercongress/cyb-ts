@@ -2,34 +2,31 @@ import cx from 'classnames';
 import styles from './DisplayTitle.module.scss';
 import { ColorLamp } from '../types';
 
-export type Props = {
-  title: string;
-
+type Props = {
+  title: string | React.ReactNode;
   children?: React.ReactNode;
+  color?: ColorLamp;
+
   // temp prop
   animationState?: string;
 
   // to remove padding
   inDisplay?: boolean;
 
-  color?: ColorLamp;
-
-  image?: {
-    src?: string;
-    content?: React.ReactNode;
-    alt?: string;
-    isLarge?: boolean;
-  };
+  image?: React.ReactNode;
+  isImgLarge?: boolean;
 };
 
-// need split this component
+// TODO: need remove animation from this component
 function DisplayTitle({
   title,
-  animationState: state = 'entered',
-  image,
   children,
-  inDisplay,
   color = 'white',
+  inDisplay,
+  image,
+  isImgLarge,
+
+  animationState: state = 'entered',
 }: Props) {
   const content = (
     <div className={cx(styles.displayTitle, styles[color])}>
@@ -39,16 +36,14 @@ function DisplayTitle({
           styles[`displayTitleContent${state}`]
         )}
       >
-        {image && image.src ? (
-          <img
-            src={image.src}
-            alt={image.alt}
-            className={cx(styles.titleImage, {
-              [styles.big]: image.isLarge,
+        {image && (
+          <div
+            className={cx(styles.imageWrapper, {
+              [styles.large]: isImgLarge,
             })}
-          />
-        ) : (
-          image?.content
+          >
+            {image}
+          </div>
         )}
 
         {title}
