@@ -1,5 +1,7 @@
-// Example 2
-// https://www.tutorialstonight.com/css-toggle-switch-with-text
+/*
+  https://www.tutorialstonight.com/css-toggle-switch-with-text
+  Example 2
+*/
 
 .switch {
   --length: 0;
@@ -25,9 +27,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-
   border-radius: 15px;
-  transition: all 0.4s ease-in-out;
+
+  &::before,
+  &::after {
+    transition: all 0.3s ease-in-out;
+  }
 }
 
 .switch .slider::before {
@@ -39,7 +44,6 @@
   border-radius: calc(var(--height) / 2);
   border: 1px solid rgba(31, 203, 255, 0.7);
   filter: drop-shadow(0px 0px 5px rgba(31, 203, 255, 0.5));
-  transition: all 0.4s ease-in-out;
 }
 
 .switch input:checked + .slider {
@@ -60,8 +64,12 @@
   height: 100%;
   white-space: nowrap;
   color: rgba(31, 203, 255, 0.38);
-  font-family: sans-serif;
-  transition: all 0.4s ease-in-out;
+
+  &,
+  &::before,
+  &::after {
+    transition: all 0.2s ease-in-out;
+  }
 }
 
 .switch .labels::after {
@@ -69,7 +77,6 @@
   position: absolute;
   right: 8px;
   opacity: 1;
-  transition: all 0.4s ease-in-out;
 }
 
 .switch .labels::before {
@@ -78,7 +85,6 @@
   left: 8px;
   color: rgba(31, 203, 255, 1);
   opacity: 0;
-  transition: all 0.4s ease-in-out;
 }
 
 .switch input:checked ~ .labels::after {

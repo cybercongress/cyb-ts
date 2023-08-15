@@ -3,9 +3,8 @@ import styles from './Switch.module.scss';
 
 type Props = {
   label?: string;
-
-  onChange: (checked: boolean) => void;
   value?: boolean;
+  onChange: (checked: boolean) => void;
 };
 
 function Switch({ label, onChange, value }: Props) {
