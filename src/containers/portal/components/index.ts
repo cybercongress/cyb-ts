@@ -1,4 +1,3 @@
-import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
 import CurrentGift from './currentGift';
@@ -13,7 +12,6 @@ import Stars from './stars';
 
 // eslint-disable-next-line import/no-unused-modules
 export {
-  Signatures,
   ScrollableTabs,
   ParseAddressesImg,
   CurrentGift,

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { Signatures, ParseAddressesImg } from '../components';
+import { MusicalAddress, ParseAddressesImg } from '../components';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
@@ -259,7 +259,7 @@ function PasportCitizenship({
                 </BtnPasport>
               )}
             </div>
-            <Signatures addressActive={addressActiveSignatures} />
+            <MusicalAddress address={addressActiveSignatures.bech32} />
           </div>
         )}
       </div>

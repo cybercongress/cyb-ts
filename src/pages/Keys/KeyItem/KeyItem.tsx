@@ -1,6 +1,5 @@
 import { ContainerGradientText } from 'src/components';
-import Pill, { Colors } from 'src/components/Pill/Pill';
-import { Signatures } from 'src/containers/portal/components';
+import Pill from 'src/components/Pill/Pill';
 import { AccountValue } from 'src/types/defaultAccount';
 import styles from './KeyItem.module.scss';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
@@ -13,6 +12,7 @@ import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 
 type Props = {
   account: AccountValue;
@@ -101,24 +101,20 @@ function KeyItem({ account, selected, selectKey }: Props) {
           <img src={require('./images/1.png')} alt="" />
 
           {isActive && (
-            <Pill
-              text="active"
-              color={Colors.green}
-              className={styles.active}
-            />
+            <Pill text="active" color="green" className={styles.active} />
           )}
         </div>
 
         <div className={styles.content}>
-          key <Pill color={Colors.white} text={name || 'noname'} /> <br />
+          key <Pill color="white" text={name || 'noname'} /> <br />
           {['keplr'].includes(keys) && (
             <>
-              signed by <Pill color={Colors.red} text={keys} />{' '}
+              signed by <Pill color="red" text={keys} />{' '}
             </>
           )}
           {isHardware && (
             <>
-              stored in <Pill color={Colors.red} text={keys} />
+              stored in <Pill color="red" text={keys} />
             </>
           )}{' '}
           {path && (
@@ -126,11 +122,10 @@ function KeyItem({ account, selected, selectKey }: Props) {
               and located at the path <Pill text={path.join('/')} /> <br />
             </>
           )}
-          from neuron <Pill text={<Signatures addressActive={{ bech32 }} />} />{' '}
-          <br />
+          from neuron <Pill text={<MusicalAddress address={bech32} />} /> <br />
           gives{' '}
           <Pill
-            color={isReadOnly ? Colors.blue : Colors.green}
+            color={isReadOnly ? 'blue' : 'green'}
             text={isReadOnly ? 'read' : 'write'}
           />{' '}
           access

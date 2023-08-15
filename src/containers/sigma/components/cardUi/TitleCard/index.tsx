@@ -1,7 +1,6 @@
 import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
-import { Signatures } from '../../../../portal/components';
 import styles from './styles.scss';
 import { Citizenship } from 'src/types/citizenship';
 import { ContainerGradientText, DenomArr } from 'src/components';
@@ -9,6 +8,7 @@ import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 
 interface Props {
   address: string;
@@ -53,7 +53,7 @@ function TitleCard({
       />
 
       <div className={styles.address}>
-        <Signatures
+        <MusicalAddress
           addressActive={{ bech32: address }}
           disabled={
             ![Networks.BOSTROM, Networks.SPACE_PUSSY].includes(addressNetwork)
