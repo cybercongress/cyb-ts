@@ -24,7 +24,7 @@ function AnswersTab({ dataAnswer, mobile, parent }) {
               className="hover-rank"
               display="flex"
               alignItems="center"
-              marginBottom="10px"
+              marginBottom="-2px"
               key={`${item.cid}_${index}`}
             >
               {!mobile && (
