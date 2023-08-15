@@ -1,9 +1,7 @@
+import React from 'react';
 import cx from 'classnames';
-
 import styles from './Display.module.scss';
-import DisplayTitle, {
-  Props as DisplayTitleProps,
-} from '../DisplayTitle/DisplayTitle';
+import DisplayTitle from '../DisplayTitle/DisplayTitle';
 import { ColorLamp, Colors } from '../types';
 
 type Props = {
@@ -13,14 +11,14 @@ type Props = {
   // status?: ColorLamp;
 
   color?: ColorLamp;
-  titleProps?: Pick<DisplayTitleProps, 'title' | 'image' | 'children'>;
+  title: React.ReactElement<typeof DisplayTitle>;
   isVertical?: boolean;
 };
 
 function Display({
   children,
-  titleProps,
   isVertical,
+  title,
   color = Colors.GREEN,
   ...props
 }: Props) {
@@ -32,17 +30,12 @@ function Display({
         [styles.vertical]: isVertical,
       })}
     >
-      {titleProps && (
+      {title && (
         <header className={styles.header}>
-          <DisplayTitle
-            inDisplay
-            title={titleProps.title}
-            image={titleProps.image}
-          >
-            {titleProps.children}
-          </DisplayTitle>
+          {React.cloneElement(title, { inDisplay: true })}
         </header>
       )}
+
       {children}
     </div>
   );

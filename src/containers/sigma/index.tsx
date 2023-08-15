@@ -14,6 +14,7 @@ import { CardPassport } from './components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
 const valueContext = {
   totalCap: 0,
@@ -130,16 +131,17 @@ function Sigma() {
       >
         <Display
           color="green"
-          titleProps={{
-            title: superSigma ? 'Supersigma' : 'Sigma',
-            image: <img src={require('../../image/sigma.png')} alt="sigma" />,
-            children: (
+          title={
+            <DisplayTitle
+              title={superSigma ? 'Supersigma' : 'Sigma'}
+              image={<img src={require('../../image/sigma.png')} alt="sigma" />}
+            >
               <TokenChange
                 total={value.totalCap}
                 // change={value.changeCap}
               />
-            ),
-          }}
+            </DisplayTitle>
+          }
         >
           <div className={styles.addresses}>
             {accountsData?.map(({ bech32: address }) => {

@@ -5,6 +5,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import Display from './Display';
 import { text100, title } from '../../../../.storybook/stubs';
 import { figmaDisplayUrl } from './storybook.temp';
+import DisplayTitle from '../DisplayTitle/DisplayTitle';
 
 const meta: Meta<typeof Display> = {
   component: Display,
@@ -31,9 +32,7 @@ export const Main: Story = {
 export const WithTitle: Story = {
   args: {
     ...defaultArgs,
-    titleProps: {
-      title,
-    },
+    title: <DisplayTitle title={title} />,
   },
 };
 
