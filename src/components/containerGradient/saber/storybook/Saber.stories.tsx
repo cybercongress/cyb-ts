@@ -33,14 +33,14 @@ export const Group: Story = {
       <div>
         <h3>Colors:</h3>
         {Object.keys(Colors).map((color) => (
-          <Saber color={Colors[color]} position={Positions.RIGHT} />
+          <Saber key={color} color={Colors[color]} position={Positions.RIGHT} />
         ))}
       </div>
 
       <div>
         <h3>Positions:</h3>
         {Object.keys(Positions).map((position) => (
-          <Saber position={Positions[position]} />
+          <Saber key={position} position={Positions[position]} />
         ))}
       </div>
     </div>

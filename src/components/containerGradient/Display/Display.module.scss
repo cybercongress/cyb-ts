@@ -24,6 +24,11 @@ $display-padding-x: 20px;
       }
     }
   }
+
+  &.noPaddingX {
+    padding-left: unset;
+    padding-right: unset;
+  }
 }
 
 .header {

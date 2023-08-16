@@ -39,7 +39,7 @@ function Relevance({ items, fetchMoreData, page, allPage }) {
             className="hover-rank"
             display="flex"
             alignItems="center"
-            marginBottom="10px"
+            marginBottom="-2px"
           >
             {!mobile && (
               <Pane

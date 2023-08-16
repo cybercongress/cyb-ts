@@ -7,18 +7,23 @@ import cx from 'classnames';
 import React from 'react';
 import { LinkWindow } from '../link/link';
 import styles from './styles.module.scss';
+import TextCenterer from '../containerGradient/TextCenterer/TextCenterer';
 
 function TextMarkdown({
   children,
   preview,
 }: {
-  children: React.ReactNode;
+  children: string;
   preview?: boolean;
 }) {
+  const { length } = children;
+
   return (
     <div
       // className="container-text-SearchItem"
-      className={cx({
+      className={cx(styles.wrapper, {
+        [styles.center]: !preview && length <= 64,
+        [styles.title]: !preview && length <= 16,
         [styles.markdownContainerPreview]: preview,
         [styles.markdownContainer]: !preview,
       })}

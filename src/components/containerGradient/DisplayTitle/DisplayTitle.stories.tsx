@@ -8,7 +8,7 @@ import { figmaDisplayUrl } from '../Display/storybook.temp';
 
 const meta: Meta<typeof DisplayTitle> = {
   component: DisplayTitle,
-  title: 'atoms/display/DisplayTitle',
+  title: 'atoms/Display/DisplayTitle',
   parameters: {
     design: {
       type: 'figma',

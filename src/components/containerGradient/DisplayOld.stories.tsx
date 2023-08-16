@@ -8,7 +8,7 @@ import { figmaDisplayUrl } from './Display/storybook.temp';
 
 const meta: Meta<typeof DisplayOld> = {
   component: DisplayOld,
-  title: 'atoms/display/DisplayOld(refactor)',
+  title: 'atoms/Display/DisplayOld(refactor)',
   parameters: {
     design: {
       type: 'figma',
@@ -26,7 +26,7 @@ const defaultArgs = {
   children: text100,
 };
 
-export const Main: Story = {
+export const Default: Story = {
   args: {
     ...defaultArgs,
   },

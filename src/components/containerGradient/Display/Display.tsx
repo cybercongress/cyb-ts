@@ -7,11 +7,15 @@ import { ColorLamp, Colors } from '../types';
 type Props = {
   children: React.ReactNode;
 
-  // deprecated
-  // status?: ColorLamp;
+  /**
+   * @deprecated use color props
+   */
+  status?: ColorLamp;
+
+  noPaddingX?: boolean;
 
   color?: ColorLamp;
-  title: React.ReactElement<typeof DisplayTitle>;
+  title?: React.ReactElement<typeof DisplayTitle>;
   isVertical?: boolean;
 };
 
@@ -19,6 +23,7 @@ function Display({
   children,
   isVertical,
   title,
+  noPaddingX,
   color = Colors.GREEN,
   ...props
 }: Props) {
@@ -28,6 +33,7 @@ function Display({
     <div
       className={cx(styles.wrapper, styles[colorTemp], {
         [styles.vertical]: isVertical,
+        [styles.noPaddingX]: noPaddingX,
       })}
     >
       {title && (

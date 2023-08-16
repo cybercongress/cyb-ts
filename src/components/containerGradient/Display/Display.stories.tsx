@@ -2,14 +2,14 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import Display from './Display';
+import Display, { Center } from './Display';
 import { text100, title } from '../../../../.storybook/stubs';
 import { figmaDisplayUrl } from './storybook.temp';
 import DisplayTitle from '../DisplayTitle/DisplayTitle';
 
 const meta: Meta<typeof Display> = {
   component: Display,
-  title: 'atoms/display/Display',
+  title: 'atoms/Display/Display',
   parameters: {
     design: {
       type: 'figma',
@@ -25,8 +25,10 @@ const defaultArgs = {
   children: text100,
 };
 
-export const Main: Story = {
-  args: defaultArgs,
+export const Default: Story = {
+  args: {
+    children: <Center text={'Moon Moon Moon Moon Moon'}></Center>,
+  },
 };
 
 export const WithTitle: Story = {
@@ -40,5 +42,12 @@ export const Vertical: Story = {
   args: {
     ...defaultArgs,
     isVertical: true,
+  },
+};
+
+export const WithNoPadding: Story = {
+  args: {
+    ...defaultArgs,
+    noPaddingX: true,
   },
 };
