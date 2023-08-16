@@ -21,9 +21,17 @@ export default meta;
 type Story = StoryObj<typeof DisplayTitle>;
 
 const defaultTitle = 'Moon Citizenship';
-const defaultImage = <img src={img} alt="cyb" />;
+const defaultImage = (
+  <img
+    src={img}
+    alt="cyb"
+    style={{
+      objectFit: 'cover',
+    }}
+  />
+);
 
-export const Main: Story = {
+export const Default: Story = {
   args: {
     title: defaultTitle,
   },

@@ -2,7 +2,7 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import Display, { Center } from './Display';
+import Display from './Display';
 import { text100, title } from '../../../../.storybook/stubs';
 import { figmaDisplayUrl } from './storybook.temp';
 import DisplayTitle from '../DisplayTitle/DisplayTitle';
@@ -26,9 +26,7 @@ const defaultArgs = {
 };
 
 export const Default: Story = {
-  args: {
-    children: <Center text={'Moon Moon Moon Moon Moon'}></Center>,
-  },
+  args: defaultArgs,
 };
 
 export const WithTitle: Story = {
