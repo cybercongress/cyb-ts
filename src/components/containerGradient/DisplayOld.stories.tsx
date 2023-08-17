@@ -8,7 +8,7 @@ import { figmaDisplayUrl } from './Display/storybook.temp';
 
 const meta: Meta<typeof DisplayOld> = {
   component: DisplayOld,
-  title: 'atoms/Display/DisplayOld (refactor)',
+  title: 'Tech debt/Display',
   parameters: {
     design: {
       type: 'figma',

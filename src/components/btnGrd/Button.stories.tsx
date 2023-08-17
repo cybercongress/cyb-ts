@@ -5,7 +5,7 @@ const Button = BtnGrd;
 
 const meta: Meta<typeof Button> = {
   component: Button,
-  title: 'Atoms/buttons/Button',
+  title: 'Atoms/Buttons/Button',
   // argTypes: { onClick: { action: 'clicked' } },
 };
 

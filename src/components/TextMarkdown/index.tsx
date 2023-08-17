@@ -7,7 +7,6 @@ import cx from 'classnames';
 import React from 'react';
 import { LinkWindow } from '../link/link';
 import styles from './styles.module.scss';
-import TextCenterer from '../containerGradient/TextCenterer/TextCenterer';
 
 function TextMarkdown({
   children,

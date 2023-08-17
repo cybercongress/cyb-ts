@@ -8,7 +8,14 @@ import { figmaDisplayUrl } from '../Display/storybook.temp';
 
 const meta: Meta<typeof DisplayTitle> = {
   component: DisplayTitle,
-  title: 'atoms/Display/DisplayTitle',
+  title: 'atoms/Title',
+  argTypes: {
+    animationState: {
+      table: {
+        disable: true,
+      },
+    },
+  },
   parameters: {
     design: {
       type: 'figma',

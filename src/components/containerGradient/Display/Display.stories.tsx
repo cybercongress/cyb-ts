@@ -9,7 +9,14 @@ import DisplayTitle from '../DisplayTitle/DisplayTitle';
 
 const meta: Meta<typeof Display> = {
   component: Display,
-  title: 'atoms/Display/Display',
+  title: 'atoms/Display',
+  argTypes: {
+    status: {
+      table: {
+        disable: true,
+      },
+    },
+  },
   parameters: {
     design: {
       type: 'figma',
@@ -25,7 +32,7 @@ const defaultArgs = {
   children: text100,
 };
 
-export const Default: Story = {
+export const Horizontal: Story = {
   args: defaultArgs,
 };
 

@@ -1,7 +1,7 @@
 @import '../index.module.scss';
 
 .saber {
-  height: 120px;
+  height: 200px;
   width: 120px;
 
   @each $color in $valid-colors {
