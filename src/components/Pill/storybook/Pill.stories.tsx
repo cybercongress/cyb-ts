@@ -27,7 +27,7 @@ const defaultArgs: Props = {
 };
 const img = <img src={cyber} alt="" />;
 
-export const Main: Story = {
+export const Default: Story = {
   args: defaultArgs,
 };
 

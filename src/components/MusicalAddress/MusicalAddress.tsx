@@ -100,12 +100,7 @@ function MusicalAddress({ address: bech32, disabled }: Props) {
         <div>
           <Tooltip
             strategy="fixed"
-            tooltip={
-              <Pill
-                text={!addressCopied ? 'Copy address' : 'Address copied!'}
-                color={!addressCopied ? 'white' : 'green'}
-              />
-            }
+            tooltip={!addressCopied ? 'Copy address' : 'Address copied!'}
           >
             <button
               className={styles.music}

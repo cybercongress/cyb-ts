@@ -27,7 +27,7 @@ const defaultArgs = {
   address: stubAddress,
 };
 
-export const Main: Story = {
+export const Default: Story = {
   args: defaultArgs,
 };
 
