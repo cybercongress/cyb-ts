@@ -1,0 +1,37 @@
+@import '../saber/index.module.scss';
+
+$display-padding-top: 23px;
+$display-padding-x: 20px;
+
+.wrapper {
+  padding: $display-padding-top $display-padding-x 24px;
+
+  // TODO: remove this
+  z-index: 0;
+
+  &:not(.vertical) {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-horizontal($color);
+      }
+    }
+  }
+
+  &.vertical {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-vertical($color);
+      }
+    }
+  }
+
+  &.noPaddingX {
+    padding-left: unset;
+    padding-right: unset;
+  }
+}
+
+.header {
+  position: relative;
+  top: -$display-padding-top;
+}

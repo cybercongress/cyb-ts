@@ -1,3 +1,17 @@
+.wrapper {
+  &.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+
+    min-height: 200px;
+  }
+
+  &.title {
+    font-size: 42px;
+  }
+}
 .markdownContainer {
   width: 80%;
   margin: 0 auto;

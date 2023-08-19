@@ -5,7 +5,7 @@ import TabBtn, { TabBtnProps } from '.';
 
 export default {
   component: TabBtn,
-  title: 'Atoms/TabBtn',
+  title: 'Tech debt/TabBtn',
 } as Meta;
 
 function Template(args: TabBtnProps) {

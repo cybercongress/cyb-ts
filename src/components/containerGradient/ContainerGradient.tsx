@@ -1,14 +1,17 @@
+// TODO: need use Display component for this
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
-import cx from 'classnames';
 
 import styles from './ContainerGradient.module.scss';
 import { trimString } from '../../utils/utils';
+import Display from './Display/Display';
+import { ColorLamp } from './types';
+import DisplayTitle from './DisplayTitle/DisplayTitle';
 
 const classNames = require('classnames');
 
-function ContainerLamp({ style, children }) {
+export function ContainerLamp({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLamp, {
@@ -35,7 +38,7 @@ function ContainerLampAfter({ style, children }) {
         [styles.wrapContainerLampAfterRed]: style === 'red',
         [styles.wrapContainerLampAfterYellow]: style === 'yellow',
         [styles.wrapContainerLampAfterPurple]: style === 'purple',
-        [styles.wrapContainerLampAfterDefault]: !style,
+        [styles.wrapContainerLampAfterDefault]: !style || style === 'grey',
       })}
     >
       {children}
@@ -43,7 +46,7 @@ function ContainerLampAfter({ style, children }) {
   );
 }
 
-function ContainerLampBefore({ style, children }) {
+export function ContainerLampBefore({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLampBefore, {
@@ -52,7 +55,7 @@ function ContainerLampBefore({ style, children }) {
         [styles.wrapContainerLampBeforeRed]: style === 'red',
         [styles.wrapContainerLampBeforeYellow]: style === 'yellow',
         [styles.wrapContainerLampBeforePurple]: style === 'purple',
-        [styles.wrapContainerLampBeforeDefault]: !style,
+        [styles.wrapContainerLampBeforeDefault]: !style || style === 'grey',
       })}
     >
       {children}
@@ -60,7 +63,18 @@ function ContainerLampBefore({ style, children }) {
   );
 }
 
-function TxsStatus({ data }) {
+type Txs = {
+  status: 'pending' | 'confirmed' | 'error';
+  txHash?: string;
+  rawLog?: string;
+};
+
+type TxsProps = {
+  data: Txs;
+};
+
+// TODO: move to action bar
+function TxsStatus({ data }: TxsProps) {
   let style;
   switch (data.status) {
     case 'pending':
@@ -90,7 +104,6 @@ function TxsStatus({ data }) {
             <Link to={`/network/bostrom/tx/${data.txHash}`}>
               <div>{trimString(data.txHash, 5, 5)}</div>
             </Link>
-            {/* <div>5 min ago</div> */}
             <div>{data.status}</div>
           </div>
         )}
@@ -102,55 +115,18 @@ function TxsStatus({ data }) {
   );
 }
 
-export type ColorLamp = 'blue' | 'red' | 'green' | 'pink' | 'grey';
-
-type ContainerGradientText = {
-  children: React.ReactNode;
-  userStyleContent?: object;
-  status?: ColorLamp;
-  className?: string;
-};
-
-export function ContainerGradientText({
-  children,
-  userStyleContent = {},
-  className,
-  status = 'blue',
-}: ContainerGradientText) {
-  return (
-    <ContainerLamp style={status}>
-      <div
-        className={classNames(styles.containerGradientText, {
-          [styles.containerGradientTextPrimary]: status === 'blue',
-          [styles.containerGradientTextDanger]: status === 'red',
-          [styles.containerGradientTextGreen]: status === 'green',
-          [styles.containerGradientTextPink]: status === 'pink',
-          [styles.containerGradientTextGrey]: status === 'grey',
-        })}
-      >
-        <div
-          style={userStyleContent}
-          className={cx(styles.containerGradientTextContent, className)}
-        >
-          {children}
-        </div>
-      </div>
-    </ContainerLamp>
-  );
-}
-
 interface Props {
   title?: string;
   closedTitle?: string;
+
   children?: React.ReactNode;
-  txs?: any;
-  danger?: boolean;
+  txs?: Txs;
   userStyleContent?: React.CSSProperties;
   stateOpen?: boolean;
   initState?: boolean;
-  styleLampContent?: string;
-  styleLampTitle?: any;
-  togglingDisable?: any;
+  styleLampContent?: ColorLamp;
+  styleLampTitle?: ColorLamp;
+  togglingDisable?: boolean;
 }
 
 function ContainerGradient({
@@ -158,7 +134,6 @@ function ContainerGradient({
   closedTitle,
   children,
   txs,
-  danger,
   userStyleContent,
   stateOpen,
   initState = true,
@@ -202,6 +177,7 @@ function ContainerGradient({
 
   return (
     <div>
+      {/* TODO: use Display component */}
       <ContainerLampAfter style={styleLampContent}>
         <div
           className={classNames(styles.containerContainerGradient, {
@@ -211,8 +187,6 @@ function ContainerGradient({
               styleLampContent === 'blue',
             [styles.containerContainerGradientDanger]:
               styleLampContent === 'red',
-            [styles.containerContainerGradientPurple]:
-              styleLampContent === 'purple',
             [styles.containerContainerGradientGreen]:
               styleLampContent === 'green',
           })}
@@ -221,35 +195,20 @@ function ContainerGradient({
             {(state) => {
               return (
                 <>
-                  <ContainerLampBefore style={styleLampTitle}>
-                    <div
-                      onClick={() => toggling()}
-                      role="presentation"
-                      className={classNames(
-                        styles.containerContainerGradientTitle,
-                        {
-                          [styles.containerContainerGradientTitlePrimary]:
-                            !styleLampTitle,
-                          [styles.containerContainerGradientTitleDanger]:
-                            styleLampTitle === 'red',
-                          [styles.containerContainerGradientTitleGreen]:
-                            styleLampTitle === 'green',
-                        }
-                      )}
-                    >
-                      <div
-                        className={classNames(
-                          styles.containerContainerGradientTitleContent,
-                          styles[
-                            `containerContainerGradientTitleContent${state}`
-                          ]
-                        )}
-                      >
-                        {/*  eslint-disable-next-line react-hooks/rules-of-hooks */}
-                        {useTitle(state)}
-                      </div>
-                    </div>
-                  </ContainerLampBefore>
+                  <div
+                    onClick={!togglingDisable ? toggling : undefined}
+                    role={!togglingDisable ? 'presentation' : undefined}
+                    className={classNames({
+                      [styles.titleTogglingActive]: !togglingDisable,
+                    })}
+                  >
+                    <DisplayTitle
+                      title={useTitle(state)}
+                      animationState={state}
+                      color={styleLampTitle}
+                    />
+                  </div>
+
                   <ContainerLampBefore style={styleLampContent}>
                     <div
                       style={userStyleContent}
@@ -262,8 +221,6 @@ function ContainerGradient({
                             styleLampContent === 'blue',
                           [styles.containerContainerGradientContentDanger]:
                             styleLampContent === 'red',
-                          [styles.containerContainerGradientContentPurple]:
-                            styleLampContent === 'purple',
                           [styles.containerContainerGradientContentGreen]:
                             styleLampContent === 'green',
                         },
@@ -279,9 +236,11 @@ function ContainerGradient({
           </Transition>
         </div>
       </ContainerLampAfter>
-      {txs && txs !== null && <TxsStatus data={txs} />}
+      {txs && <TxsStatus data={txs} />}
     </div>
   );
 }
+
+export const ContainerGradientText = Display;
 
 export default ContainerGradient;

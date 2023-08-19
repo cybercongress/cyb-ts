@@ -54,10 +54,7 @@ function CardPassport({
   }, [reduceDataBalanceTokenRow]);
 
   return (
-    <ContainerGradientText
-      status="green"
-      userStyleContent={{ height: 'auto', padding: '0 23px' }}
-    >
+    <>
       <TitleCard
         address={address}
         passport={passport}
@@ -89,7 +86,7 @@ function CardPassport({
           />
         );
       })}
-    </ContainerGradientText>
+    </>
   );
 }
 
