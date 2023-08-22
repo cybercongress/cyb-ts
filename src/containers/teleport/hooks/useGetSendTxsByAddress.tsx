@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable, Option } from 'src/types';
+import { Log } from '@cosmjs/stargate/build/logs';
 import { CYBER } from '../../../utils/config';
 
 const { CYBER_INDEX_HTTPS } = CYBER;
@@ -17,6 +18,8 @@ const messagesByAddress = gql(`
     value
     transaction {
         success
+        height
+        logs
         block {
           timestamp
         }
@@ -26,6 +29,23 @@ const messagesByAddress = gql(`
   }
 }
 `);
+
+type Txs = {
+  success: boolean;
+  height: number;
+  logs: Log[];
+  memo: string;
+  block: {
+    timestamp: string;
+  };
+};
+
+export type ResponseTxsByType = {
+  transaction_hash: string;
+  type: string;
+  transaction: Txs;
+  value: any;
+};
 
 const limit = '5';
 
@@ -51,7 +71,10 @@ function useGetSendTxsByAddressByType(
         offset: new BigNumber(limit).multipliedBy(pageParam).toString(),
         type: `{${type}}`,
       });
-      return { data: res.messages_by_address, page: pageParam };
+      return {
+        data: res.messages_by_address as ResponseTxsByType[],
+        page: pageParam,
+      };
     },
     {
       enabled: Boolean(addressBech32) && Boolean(type),

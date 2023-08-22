@@ -16,6 +16,7 @@ import {
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { Nullable } from 'src/types';
 import TokenSetterSwap, { TokenSetterId } from './comp/TokenSetterSwap';
 import { getBalances, useGetParams, useGetSwapPrice } from './hooks';
 import {
@@ -28,7 +29,6 @@ import ActionBar from './actionBar.swap';
 import { TeleportContainer } from './comp/grid';
 import useGetSendTxsByAddressByType from './hooks/useGetSendTxsByAddress';
 import DataSwapTxs from './comp/dataSwapTxs/DataSwapTxs';
-import { Nullable } from 'src/types';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -206,7 +206,6 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  console.log('useGetSlippage', useGetSlippage);
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {

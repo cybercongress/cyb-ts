@@ -7,6 +7,8 @@ import coinDecimalsConfig from '../../utils/configToken';
 import { MyPoolsT } from './type';
 import { getDisplayAmount } from 'src/utils/utils';
 import { Log } from '@cosmjs/stargate/build/logs';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
+import { Event } from '@cosmjs/tendermint-rpc';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
@@ -344,4 +346,90 @@ export const networkList = {
   'desmos-mainnet': 'desmos-mainnet',
   // evmos: 'evmos_9001-2',
   // chihuahua: 'chihuahua-1',
+};
+
+export const parseEventsEndBlockEvents = (events: readonly Event[]) => {
+  try {
+    const data = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const event of events) {
+      if (event.type === 'swap_transacted') {
+        const { attributes } = event;
+        const exchangedDemandCoinAmountAttr = attributes.find(
+          (attr) =>
+            uint8ArrayToAsciiString(attr.key) === 'exchanged_demand_coin_amount'
+        );
+
+        const exchangedDemandCoinAmountValue = exchangedDemandCoinAmountAttr
+          ? uint8ArrayToAsciiString(exchangedDemandCoinAmountAttr.value)
+          : undefined;
+
+        const batchIndexAttr = attributes.find(
+          (attr) => uint8ArrayToAsciiString(attr.key) === 'batch_index'
+        );
+
+        const successAttr = attributes.find(
+          (attr) => uint8ArrayToAsciiString(attr.key) === 'success'
+        );
+
+        const successValue = successAttr
+          ? uint8ArrayToAsciiString(successAttr.value)
+          : undefined;
+
+        const batchIndexValue = batchIndexAttr
+          ? uint8ArrayToAsciiString(batchIndexAttr.value)
+          : undefined;
+
+        data.push({
+          batchIndex: batchIndexValue,
+          exchangedDemandCoinAmount: exchangedDemandCoinAmountValue,
+          success: successValue,
+        });
+      }
+    }
+    return data;
+  } catch (error) {
+    return undefined;
+  }
+};
+
+export const parseEventsTxsSwap = (log: Log[]) => {
+  try {
+    if (log && Object.keys(log).length) {
+      const [{ events }] = log;
+
+      if (events) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const event of events) {
+          if (event.type === 'swap_within_batch') {
+            const { attributes } = event;
+
+            const demandCoinDenomAttr = attributes.find(
+              (attr) => attr.key === 'demand_coin_denom'
+            );
+            const demandCoinDenomValue = demandCoinDenomAttr
+              ? demandCoinDenomAttr.value
+              : undefined;
+
+            const batchIndexAttr = attributes.find(
+              (attr) => attr.key === 'batch_index'
+            );
+            const batchIndexValue = batchIndexAttr
+              ? batchIndexAttr.value
+              : undefined;
+
+            if (demandCoinDenomValue && batchIndexValue) {
+              return {
+                batchIndex: batchIndexValue,
+                demandCoinDenom: demandCoinDenomValue,
+              };
+            }
+          }
+        }
+      }
+    }
+    return undefined;
+  } catch (error) {
+    return undefined;
+  }
 };
