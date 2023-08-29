@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import styles from './Signatures.module.scss';
+import styles from './MusicalAddress.module.scss';
 import {
   DICTIONARY_ABC,
   getHeight,
@@ -9,18 +9,19 @@ import {
   cutAddress,
 } from './utils';
 import { Link } from 'react-router-dom';
+import { Tooltip } from 'src/components';
+import Pill from '../Pill/Pill';
 
 const classNames = require('classnames');
 
 type Props = {
-  addressActive: { bech32: string };
+  address: string;
   disabled?: boolean;
 };
 
-function Signatures({ addressActive, disabled }: Props) {
+function MusicalAddress({ address: bech32, disabled }: Props) {
   const [playing, setPlaying] = useState(true);
-
-  const bech32 = addressActive?.bech32;
+  const [addressCopied, setAddressCopied] = useState(false);
 
   const address = useMemo(() => {
     return cutAddress(bech32);
@@ -48,18 +49,21 @@ function Signatures({ addressActive, disabled }: Props) {
   }, [address]);
 
   const copyAddress = useCallback(() => {
-    if (addressActive !== null) {
-      const { bech32 } = addressActive;
-      navigator.clipboard.writeText(bech32);
-    }
-  }, [addressActive]);
+    navigator.clipboard.writeText(bech32);
+
+    setAddressCopied(true);
+
+    setTimeout(() => {
+      setAddressCopied(false);
+    }, 3000);
+  }, [bech32]);
 
   const onClickMusicalAddress = useCallback(() => {
     if (!playing) {
       return;
     }
 
-    if (address !== null) {
+    if (address) {
       copyAddress();
       const { address: sliceAddress } = address;
       const arrNote = getNoteFromAdd(sliceAddress);
@@ -77,7 +81,7 @@ function Signatures({ addressActive, disabled }: Props) {
       return text;
     }
 
-    return <Link to={`/neuron/${addressActive.bech32}`}>{text}</Link>;
+    return <Link to={`/neuron/${bech32}`}>{text}</Link>;
   }
 
   return (
@@ -93,26 +97,33 @@ function Signatures({ addressActive, disabled }: Props) {
       >
         {address && renderAddressPart(address.prefix)}
 
-        <button
-          className={styles.music}
-          onClick={onClickMusicalAddress}
-          type="button"
-        >
-          {useGetItems.map((item) => {
-            const key = uuidv4();
-            return (
-              <div
-                key={key}
-                className={styles.containerSignaturesItemNote}
-                style={{
-                  background: item.color,
-                  color: item.color,
-                  height: `${getHeight(item.code)}px`,
-                }}
-              />
-            );
-          })}
-        </button>
+        <div>
+          <Tooltip
+            strategy="fixed"
+            tooltip={!addressCopied ? 'copy address' : 'address copied!'}
+          >
+            <button
+              className={styles.music}
+              onClick={onClickMusicalAddress}
+              type="button"
+            >
+              {useGetItems.map((item) => {
+                const key = uuidv4();
+                return (
+                  <div
+                    key={key}
+                    className={styles.containerSignaturesItemNote}
+                    style={{
+                      background: item.color,
+                      color: item.color,
+                      height: `${getHeight(item.code)}px`,
+                    }}
+                  />
+                );
+              })}
+            </button>
+          </Tooltip>
+        </div>
 
         {address && renderAddressPart(address.end)}
       </div>
@@ -120,4 +131,4 @@ function Signatures({ addressActive, disabled }: Props) {
   );
 }
 
-export default Signatures;
+export default MusicalAddress;

@@ -3,9 +3,9 @@ import { getTypeFromAddress } from 'src/utils/address';
 import { Networks } from 'src/types/networks';
 import cx from 'classnames';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import styles from './TitleCard.module.scss';
-import { Signatures } from '../../../../portal/components';
 
 interface Props {
   address: string;
@@ -43,8 +43,8 @@ function TitleCard({ address, totalLiquid, selectAddress, selected }: Props) {
         }
         title={
           <div className={styles.address}>
-            <Signatures
-              addressActive={{ bech32: address }}
+            <MusicalAddress
+              address={address}
               disabled={
                 ![Networks.BOSTROM, Networks.SPACE_PUSSY].includes(
                   addressNetwork

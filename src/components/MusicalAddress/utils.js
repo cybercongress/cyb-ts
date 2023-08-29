@@ -6,7 +6,7 @@ import {
   PATTERN_COSMOS,
   PATTERN_OSMOS,
   PATTERN_TERRA,
-} from '../../../../utils/config';
+} from '../../utils/config';
 
 const DICTIONARY_ABC = {
   a: { note: 'E3', height: 16, gain: 1, color: '#36D6AE' },
@@ -113,7 +113,7 @@ const makeSound = (arrNote) => {
   }
 };
 
-const padseAddress = (address, value) => {
+const parseAddress = (address, value) => {
   return {
     prefix: address.slice(0, value),
     address: address.slice(value, address.length - 3),
@@ -122,30 +122,30 @@ const padseAddress = (address, value) => {
 };
 
 const cutAddress = (address) => {
-  if (address === null) {
+  if (!address) {
     return null;
   }
 
   let sliceAddress = null;
 
   if (address.match(PATTERN_ETH)) {
-    sliceAddress = padseAddress(address, 7);
+    sliceAddress = parseAddress(address, 7);
   }
 
   if (address.match(PATTERN_COSMOS)) {
-    sliceAddress = padseAddress(address, 10);
+    sliceAddress = parseAddress(address, 10);
   }
 
   if (address.match(PATTERN_CYBER)) {
-    sliceAddress = padseAddress(address, 11);
+    sliceAddress = parseAddress(address, 11);
   }
 
   if (address.match(PATTERN_OSMOS)) {
-    sliceAddress = padseAddress(address, 8);
+    sliceAddress = parseAddress(address, 8);
   }
 
   if (address.match(PATTERN_TERRA)) {
-    sliceAddress = padseAddress(address, 9);
+    sliceAddress = parseAddress(address, 9);
   }
 
   return sliceAddress;
