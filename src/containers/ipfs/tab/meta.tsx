@@ -3,6 +3,7 @@ import Creator from '../components/creator';
 import Backlinks from '../components/backlinks';
 import MetaInfo from '../components/metaInfo';
 import Community from '../components/community';
+import Display from 'src/components/containerGradient/Display/Display';
 
 function Container({ children }) {
   return (
@@ -24,18 +25,19 @@ function MetaTab({ creator, backlinks, parent, communityData, content, cid }) {
   try {
     return (
       <>
-        <Container>
+        <Display>
           <Text>Creator</Text>
           {creator && <Creator creator={creator} />}
           <Text>Community</Text>
           <Community community={communityData} />
-          <Text>Backlinks</Text>
-        </Container>
-        <Backlinks data={backlinks} parent={parent} />
-        <Container>
+          {/* <Text>Backlinks</Text> */}
+        </Display>
+        <br />
+        {/* <Backlinks data={backlinks} parent={parent} /> */}
+        <Display>
           <Text>Meta</Text>
           {content && <MetaInfo cid={cid} data={content?.meta} />}
-        </Container>
+        </Display>
       </>
     );
   } catch (error) {

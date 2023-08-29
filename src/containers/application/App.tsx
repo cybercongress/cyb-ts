@@ -55,7 +55,10 @@ function App() {
   }, [community, dispatch]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // temp
+    if (!location.pathname.includes('/ipfs')) {
+      window.scrollTo(0, 0);
+    }
   }, [location.pathname]);
 
   useEffect(() => {

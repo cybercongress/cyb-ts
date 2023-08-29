@@ -17,11 +17,13 @@ import ContentIpfsCid from './components/ContentIpfsCid';
 import { Carousel } from '../temple/components';
 import Pill from 'src/components/Pill/Pill';
 import styles from './IPFS.module.scss';
+import Backlinks from './components/backlinks';
 
 enum Tab {
   Discussion = 'discussion',
   Answers = 'answers',
   Meta = 'meta',
+  Incoming = 'incoming',
 }
 
 function Ipfs() {
@@ -63,6 +65,10 @@ function Ipfs() {
     {
       name: Tab.Meta,
       content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
+    },
+    {
+      name: Tab.Incoming,
+      content: <Link to={`/ipfs/${cid}/incoming`}>incoming ~</Link>,
     },
   ];
 
@@ -121,13 +127,16 @@ function Ipfs() {
           )}
           {tab === Tab.Meta && (
             <MetaTab
-              backlinks={backlinks}
+              // backlinks={backlinks}
               creator={creator}
               content={content}
               cid={cid}
-              parent={queryParamsId}
+              // parent={queryParamsId}
               communityData={community}
             />
+          )}
+          {tab === Tab.Incoming && (
+            <Backlinks data={backlinks} parent={queryParamsId} />
           )}
         </Pane>
       </main>
