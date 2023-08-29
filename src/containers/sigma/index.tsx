@@ -1,20 +1,20 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 
 import { useLocation } from 'react-router-dom';
 import { useRobotContext } from 'src/pages/robot/robot.context';
-import { RootState } from 'src/redux/store';
 import TokenChange from 'src/components/TokenChange/TokenChange';
 import { routes } from 'src/routes';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import Display from 'src/components/containerGradient/Display/Display';
+import { useAppSelector } from 'src/redux/hooks';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
-import { ContainerGradientText } from '../../components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
 const valueContext = {
   totalCap: 0,
@@ -34,7 +34,7 @@ function Sigma() {
 
   const {
     pocket: { accounts, defaultAccount },
-  } = useSelector((state: RootState) => {
+  } = useAppSelector((state) => {
     return {
       pocket: state.pocket,
     };
@@ -129,48 +129,34 @@ function Sigma() {
           overflowX: 'auto',
         }}
       >
-        <ContainerGradientText
-          status="grey"
-          userStyleContent={{
-            // need debug why
-            paddingRight: 23.5,
-            paddingLeft: 10,
-          }}
-        >
-          <header className={styles.totalHeader}>
-            <div className={styles.image}>
-              <div className={styles.circle}>
-                <img src={require('../../image/sigma.png')} />
-              </div>
-              <h3>{superSigma ? 'Supersigma' : 'Sigma'}</h3>
-            </div>
-
-            <TokenChange
-              total={value.totalCap}
-              // change={value.changeCap}
-            />
-          </header>
-        </ContainerGradientText>
-
-        <div
-          style={{
-            display: 'grid',
-            gap: '20px 0',
-            gridTemplateColumns: 'minmax(0, 1fr)',
-          }}
-        >
-          {accountsData?.map(({ bech32: address }) => {
-            return (
-              <CardPassport
-                key={address}
-                address={address}
-                passport={currentPassport}
-                selectAddress={isCurrentOwner ? selectAddress : undefined}
-                selectedAddress={selectedAddress}
+        <Display
+          color="green"
+          title={
+            <DisplayTitle
+              title={superSigma ? 'Supersigma' : 'Sigma'}
+              image={<img src={require('../../image/sigma.png')} alt="sigma" />}
+            >
+              <TokenChange
+                total={value.totalCap}
+                // change={value.changeCap}
               />
-            );
-          })}
-        </div>
+            </DisplayTitle>
+          }
+        >
+          <div className={styles.addresses}>
+            {accountsData?.map(({ bech32: address }) => {
+              return (
+                <CardPassport
+                  key={address}
+                  address={address}
+                  passport={currentPassport}
+                  selectAddress={isCurrentOwner ? selectAddress : undefined}
+                  selectedAddress={selectedAddress}
+                />
+              );
+            })}
+          </div>
+        </Display>
       </div>
 
       {isCurrentOwner && currentPassport && (
@@ -198,22 +184,3 @@ function Sigma() {
 }
 
 export default Sigma;
-
-// базаво давать добавть адрес и все
-// для того что бы доваить космос , эфир , аватар надо создать паспорт
-// можно сделать урезанный функционал
-// надо добвать иконку что бы создал паспорт, можно другим цветм подсветить
-
-// save address
-// {
-//     "bech32": "bostrom16macu2qtc0jmqc7txvf0wkz84cycsx728ah0xc",
-//     "keyWallet": "keplr",
-//     "name": "ledger S"
-// }
-
-// pasport sigma
-// {
-//  bostrom16macu2qtc0jmqc7txvf0wkz84cycsx728ah0xc: {
-//     null;
-//   }
-// }

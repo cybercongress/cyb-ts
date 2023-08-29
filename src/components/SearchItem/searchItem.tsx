@@ -1,6 +1,6 @@
 import styles from './styles.module.scss';
 import Status, { StatusType } from './status';
-import { ContainerGradientText } from '../containerGradient2/ContainerGradient';
+import Display from '../containerGradient/Display/Display';
 
 const gradeColorRank = (grade) => {
   let classColor = 'grey';
@@ -19,7 +19,7 @@ const gradeColorRank = (grade) => {
       classColor = 'blue';
       break;
     case 7:
-      classColor = 'pink';
+      classColor = 'purple';
       break;
     default:
       classColor = 'grey';
@@ -45,7 +45,7 @@ function SearchItem({ status, grade, children }: Props) {
   }
 
   const item = (
-    <ContainerGradientText status={colorRank}>
+    <Display color={colorRank === 'grey' ? 'white' : colorRank} isVertical>
       <div
         style={{
           display: 'flex',
@@ -75,7 +75,7 @@ function SearchItem({ status, grade, children }: Props) {
           {status !== 'completed' && <Status status={status} />}
         </div>
       </div>
-    </ContainerGradientText>
+    </Display>
   );
 
   return item;

@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { MainContainer } from '../portal/components';
 import { Carousel, Canvas } from './components';
 import { BOOT_ICON } from '../portal/utils';
-import { PlayContent, PlayBanerContent } from './pages';
+import { PlayContent, PlayBanerContent as PlayBannerContent } from './pages';
 import { ActionBar, ContainerGradientText } from '../../components';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -67,26 +67,16 @@ function Temple() {
           heightSlide="80px"
         />
 
-        <ContainerGradientText
-          userStyleContent={{ padding: 0, paddingTop: 30 }}
-          status="green"
-        >
-          <PlayBanerContent />
+        <ContainerGradientText noPaddingX color="green">
+          <PlayBannerContent />
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              color: '#36D6AE',
-              padding: '10px 50px',
-            }}
-          >
-            {itemLinks.map((item) => (
-              <Link to={item.to} key={item.to}>
-                <div>{item.title}</div>
-              </Link>
+          <ul className={styles.itemLinks}>
+            {itemLinks.map(({ to, title }) => (
+              <li key={to}>
+                <Link to={to}>{title}</Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </ContainerGradientText>
 
         <Carousel

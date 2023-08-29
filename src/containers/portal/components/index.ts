@@ -9,6 +9,7 @@ import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
 import MoonAnimation from './MoonAnimation/MoonAnimation';
 import Stars from './stars';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 
 // eslint-disable-next-line import/no-unused-modules
 export {
@@ -21,6 +22,7 @@ export {
   ActionBarContainer,
   ActionBarSteps,
   AboutGift,
+  MusicalAddress,
   MoonAnimation,
   Stars,
 };

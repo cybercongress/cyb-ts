@@ -1,0 +1,86 @@
+@import '../saber/index.module.scss';
+
+@import '../Display/Display.module.scss';
+
+.noPaddingWrapper {
+  $offset: -$display-padding-x - $saber-border-width;
+  position: relative;
+  left: $offset;
+  margin-right: $offset;
+}
+
+.displayTitle {
+  min-height: 70px;
+  padding: 10px 0;
+  font-size: 18px;
+  display: flex;
+  text-transform: lowercase;
+  align-items: center;
+
+  position: relative;
+  padding-left: $display-padding-x;
+
+  @each $color in $valid-colors {
+    &.#{$color} {
+      @include saber($color, left);
+    }
+  }
+
+  &Content {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    gap: 0 10px;
+    line-height: 25px;
+    width: 100%;
+    transition: 1.5s ease-in-out;
+    opacity: 0;
+
+    .content {
+      margin-left: auto;
+    }
+
+    &entering {
+      opacity: 0;
+      transition: 1ms ease-in-out;
+    }
+
+    &entered {
+      opacity: 1;
+    }
+
+    &exiting {
+      opacity: 0;
+      transition: 1ms ease-in-out;
+    }
+
+    &exited {
+      opacity: 1;
+    }
+  }
+}
+
+.imageWrapper {
+  img {
+    border-radius: 50%;
+    height: 70px;
+    width: 70px;
+  }
+
+  &.large {
+    img {
+      height: 112px;
+      width: 112px;
+    }
+  }
+}
+
+// .image {
+//   .circle {
+//     display: flex;
+//     padding: 5px;
+//     align-items: center;
+//     justify-content: center;
+//     border-radius: 67px;
+//     background: rgba(255, 255, 255, 0.05);
+//   }
