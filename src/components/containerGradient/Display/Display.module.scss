@@ -1,7 +1,5 @@
 @import '../saber/index.module.scss';
-
-$display-padding-top: 23px;
-$display-padding-x: 20px;
+@import './variables.module.scss';
 
 .wrapper {
   padding: $display-padding-top $display-padding-x 24px;

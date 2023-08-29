@@ -68,7 +68,12 @@ function Ipfs() {
 
   return (
     <>
-      <main className="block-body">
+      <main
+        className="block-body"
+        style={{
+          width: '62%',
+        }}
+      >
         {/* <div
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
@@ -77,11 +82,7 @@ function Ipfs() {
         )}
 
         {status === 'completed' && (
-          <ContainerGradientText
-            userStyleContent={{
-              minHeight: 250,
-            }}
-          >
+          <ContainerGradientText>
             <ContentIpfs status={status} content={content} cid={cid} />
           </ContainerGradientText>
         )}

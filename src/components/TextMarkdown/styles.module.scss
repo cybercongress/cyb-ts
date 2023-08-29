@@ -1,10 +1,11 @@
+@import '../containerGradient/Display/variables.module.scss';
+
 .wrapper {
   &.center {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 30px;
-
     min-height: 200px;
   }
 
@@ -13,7 +14,8 @@
   }
 }
 .markdownContainer {
-  width: 80%;
+  --width-ratio: 0.62;
+  width: calc(var(--width-ratio) * 100%);
   margin: 0 auto;
 
   @media (max-width: 480px) {
@@ -22,7 +24,13 @@
 }
 
 .markdownContainer img {
-  width: 100%;
+  position: relative;
+
+  --offset: calc(
+    ((100% / var(--width-ratio) - 100%) / 2) + #{$display-padding-x}
+  );
+  left: calc(var(--offset) * -1);
+  width: calc(100% + (var(--offset) * 2));
 }
 
 .markdownContainer pre {
