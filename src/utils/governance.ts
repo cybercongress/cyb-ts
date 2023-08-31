@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CYBER } from './config';
+import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
 
 export const getProposals = async () => {
   try {
@@ -93,10 +94,13 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
         offset * limit
       }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
     });
+    let r: Omit<GetTxsEventResponse, 'txResponses'> & {
+      tx_responses: GetTxsEventResponse['txResponses'];
+    } = response.data;
 
-    return response.data;
+    return r;
   } catch (error) {
-    return [];
+    return null;
   }
 };
 
@@ -116,10 +120,15 @@ export const getTallyingProposals = async (id) => {
 export const reduceTxsVoters = (txs) => {
   return txs.reduce((prevObj, item) => {
     const { txhash, timestamp } = item;
-    const messagesItems = item.tx.body.messages.reduce(
-      (mPrevObj, itemM) => ({ ...mPrevObj, ...itemM }),
-      {}
-    );
+    const messagesItems = item.tx.body.messages.reduce((mPrevObj, value) => {
+      let v = value;
+
+      if (value['@type'] === '/cosmos.authz.v1beta1.MsgExec') {
+        v = value.msgs?.[0];
+      }
+
+      return { ...mPrevObj, ...v };
+    }, {});
     return [...prevObj, { txhash, timestamp, ...messagesItems }];
   }, []);
 };
