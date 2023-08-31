@@ -1,5 +1,5 @@
 // TODO: Refactor this component - too heavy
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
@@ -24,6 +24,12 @@ enum Tab {
   Answers = 'answers',
   Meta = 'meta',
   Incoming = 'incoming',
+  Outcoming = 'outcoming',
+}
+
+enum Filter {
+  Rank = 'rank',
+  Date = 'date',
 }
 
 function Ipfs() {
@@ -34,6 +40,10 @@ function Ipfs() {
   const dataAnswer = useGetAnswers(cid);
   const dataDiscussion = useGetDiscussion(cid);
   const { community } = useGetCommunity(cid);
+  const navigate = useNavigate();
+
+  const [filter, setFilter] = useState(Filter.Rank);
+
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
   const { isMobile: mobile } = useDevice();
@@ -46,19 +56,10 @@ function Ipfs() {
 
   const slides = [
     {
-      name: Tab.Answers,
+      name: Tab.Outcoming,
       content: (
-        <Link to={`/ipfs/${cid}/answers`}>
-          Answers {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
-        </Link>
-      ),
-    },
-    {
-      name: Tab.Discussion,
-      content: (
-        <Link to={`/ipfs/${cid}/`}>
-          Discussion{' '}
-          {!!dataDiscussion.total && <Pill text={dataDiscussion.total} />}
+        <Link to={`/ipfs/${cid}/outcoming`}>
+          outcoming ~ {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
         </Link>
       ),
     },
@@ -95,6 +96,23 @@ function Ipfs() {
 
         <div className={styles.tabs}>
           <Carousel
+            onChange={(index) => {
+              // temp
+              const slide = slides[index];
+              if (slide) {
+                switch (slide.name) {
+                  case Tab.Outcoming:
+                    navigate(`/ipfs/${cid}/outcoming`);
+                    break;
+                  case Tab.Meta:
+                    navigate(`/ipfs/${cid}/meta`);
+                    break;
+                  case Tab.Incoming:
+                    navigate(`/ipfs/${cid}/incoming`);
+                    break;
+                }
+              }
+            }}
             slides={slides.map((slide) => {
               return {
                 title: slide.content,
@@ -104,6 +122,24 @@ function Ipfs() {
           />
         </div>
 
+        {tab === Tab.Outcoming && (
+          <>
+            <select
+              style={{
+                margin: '10px auto',
+              }}
+              onChange={(e) => {
+                setFilter(e.target.value);
+              }}
+            >
+              <option value="rank">Rank</option>
+              <option value="date">Date</option>
+            </select>
+
+            <br />
+          </>
+        )}
+
         <Pane
           width="90%"
           marginX="auto"
@@ -111,19 +147,22 @@ function Ipfs() {
           display="flex"
           flexDirection="column"
         >
-          {tab === Tab.Discussion && (
-            <DiscussionTab
-              dataDiscussion={dataDiscussion}
-              mobile={mobile}
-              parent={queryParamsId}
-            />
-          )}
-          {tab === Tab.Answers && (
-            <AnswersTab
-              dataAnswer={dataAnswer}
-              mobile={mobile}
-              parent={queryParamsId}
-            />
+          {tab === Tab.Outcoming && (
+            <div>
+              {filter === Filter.Rank ? (
+                <AnswersTab
+                  dataAnswer={dataAnswer}
+                  mobile={mobile}
+                  parent={queryParamsId}
+                />
+              ) : (
+                <DiscussionTab
+                  dataDiscussion={dataDiscussion}
+                  mobile={mobile}
+                  parent={queryParamsId}
+                />
+              )}
+            </div>
           )}
           {tab === Tab.Meta && (
             <MetaTab

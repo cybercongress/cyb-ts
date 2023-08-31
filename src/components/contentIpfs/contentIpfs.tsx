@@ -12,6 +12,8 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
+import { useGetCreator } from '../particle/hooks';
+import Account from '../account/account';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 
 const getContentDetails = async (
@@ -77,6 +79,8 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   const contentType = ipfsDataDetails?.type;
 
+  const { creator } = useGetCreator(cid);
+
   return (
     <>
       {/* <DebugContentInfo
@@ -86,6 +90,19 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
         status={status}
       /> */}
       {/* Default */}
+
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Account address={creator.address} />
+        {/* <span>{creator.address}</span> */}
+
+        <span>{new Date(creator.timestamp).toLocaleDateString()}</span>
+      </header>
+      <br />
       {!content && <div>{cid.toString()}</div>}
 
       {content?.availableDownload && (
