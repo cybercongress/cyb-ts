@@ -4,6 +4,7 @@
 .wrapper {
   padding: $display-padding-top $display-padding-x 24px;
 
+  overflow-x: auto;
   // TODO: remove this
   z-index: 0;
 

@@ -121,7 +121,7 @@ const slice = createSlice({
       };
     });
 
-    builder.addCase(getPassport.rejected, (state, action) => {
+    builder.addCase(getPassport.rejected, (_, action) => {
       console.error(action);
     });
   },

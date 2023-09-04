@@ -18,6 +18,7 @@ import { Carousel } from '../temple/components';
 import Pill from 'src/components/Pill/Pill';
 import styles from './IPFS.module.scss';
 import Backlinks from './components/backlinks';
+import Dropdown from 'src/components/Dropdown/Dropdown';
 
 enum Tab {
   Discussion = 'discussion',
@@ -124,17 +125,27 @@ function Ipfs() {
 
         {tab === Tab.Outcoming && (
           <>
-            <select
+            <div
               style={{
-                margin: '10px auto',
-              }}
-              onChange={(e) => {
-                setFilter(e.target.value);
+                display: 'flex',
+                justifyContent: 'center',
               }}
             >
-              <option value="rank">Rank</option>
-              <option value="date">Date</option>
-            </select>
+              <Dropdown
+                options={[
+                  {
+                    label: 'Rank',
+                    value: 'rank',
+                  },
+                  {
+                    label: 'Date',
+                    value: 'date',
+                  },
+                ]}
+                value={filter}
+                onChange={(value) => setFilter(value)}
+              />
+            </div>
 
             <br />
           </>

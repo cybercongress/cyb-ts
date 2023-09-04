@@ -133,6 +133,7 @@ function TxsTable() {
 
   return (
     <ContainerGradientText
+      noPaddingX
       userStyleContent={{
         padding: '15px 0',
         minHeight: '70vh',

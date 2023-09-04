@@ -289,6 +289,7 @@ function SearchResults() {
       </Pane>
     );
   }
+
   // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
   if (Object.keys(searchResults).length > 0) {
     searchItems.push(
@@ -332,14 +333,6 @@ function SearchResults() {
     );
   }
 
-  // console.log(
-  //   `searchResults`,
-  //   searchResults,
-  //   Object.keys(searchResults).length
-  // );
-  // console.log(`total`, total);
-  console.log(Object.keys(searchResults).length, total);
-
   return (
     <>
       <MainContainer width="90%">
@@ -351,6 +344,7 @@ function SearchResults() {
           loader={
             <h4
               style={{
+                marginTop: 15,
                 textAlign: 'center',
               }}
             >

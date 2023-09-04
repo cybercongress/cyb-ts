@@ -14,7 +14,13 @@ import Pdf from '../PDF';
 import Img from './component/img';
 import { useGetCreator } from '../particle/hooks';
 import Account from '../account/account';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import Pill from '../Pill/Pill';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import { routes } from 'src/routes';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+import dateFormat from 'dateformat';
+import styles from './ContentIpfs.module.scss';
 
 const getContentDetails = async (
   cid: string,
@@ -69,6 +75,8 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
+  console.log(setIpfsDatDetails);
+
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     if (status === 'completed') {
@@ -81,6 +89,8 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
 
   const { creator } = useGetCreator(cid);
 
+  // const { passport } = usePassportByAddress(creator.address);
+
   return (
     <>
       {/* <DebugContentInfo
@@ -91,16 +101,19 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
       /> */}
       {/* Default */}
 
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Account address={creator.address} />
-        {/* <span>{creator.address}</span> */}
+      <header className={styles.header}>
+        {/* <Link to={routes.}>
+        <Pill
+          image={<AvataImgIpfs cidAvatar={passport?.extension.avatar} />}
+          text={passport?.extension.nickname || creator.address}
+        />
+        </Link> */}
 
-        <span>{new Date(creator.timestamp).toLocaleDateString()}</span>
+        <Account address={creator.address} avatar />
+
+        <span className={styles.date}>
+          {dateFormat(creator.timestamp, 'dd/mm/yyyy')}
+        </span>
       </header>
       <br />
       {!content && <div>{cid.toString()}</div>}
