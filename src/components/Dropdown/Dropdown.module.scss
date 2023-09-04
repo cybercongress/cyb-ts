@@ -20,7 +20,17 @@
 
   ul {
     margin-top: 15px;
-    background-color: rgba(0, 17, 22, 1);
+    &::before {
+      background-color: rgba(0, 17, 22, 0.37);
+      filter: blur(10px);
+      content: '';
+      height: 100%;
+      left: 0;
+      z-index: -1;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
     position: absolute;
     padding: 15px;
 
