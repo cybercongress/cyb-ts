@@ -36,6 +36,7 @@ import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassp
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import Pill from 'src/components/Pill/Pill';
 import styles from './SearchResults.module.scss';
+import Dropdown from 'src/components/Dropdown/Dropdown';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -100,6 +101,7 @@ function SearchResults() {
   }>({});
 
   const [filters, setFilters] = useState(deF);
+  const [filter2, setFilter2] = useState('rank');
 
   const { isMobile: mobile } = useDevice();
   useCommunityPassports();
@@ -374,38 +376,64 @@ function SearchResults() {
     <>
       <MainContainer width="90%">
         <header className={styles.header}>
-          <button
-            onClick={() => {
-              setFilters(deF);
-            }}
-          >
-            <Pill
-              text="all"
-              color={
-                Object.values(filters).some((filter) => filter)
-                  ? 'white'
-                  : 'blue'
+          <div>
+            <button
+              // style={{
+              //   cursor: ''
+              // }}
+              onClick={() => {
+                setFilters(deF);
+              }}
+            >
+              <Pill
+                text="all"
+                color={
+                  Object.values(filters).some((filter) => filter)
+                    ? 'black'
+                    : 'blue'
+                }
+              />
+            </button>
+            {Object.keys(filters).map((filter) => {
+              if (!Object.values(contentType).includes(filter)) {
+                return null;
               }
-            />
-          </button>
-          {Object.keys(filters).map((filter) => {
-            if (!Object.values(contentType).includes(filter)) {
-              return null;
-            }
 
-            return (
-              <button
-                onClick={() => {
-                  setFilters((item) => ({ ...item, [filter]: !item[filter] }));
-                }}
-              >
-                <Pill
-                  text={filter}
-                  color={filters[filter] ? 'blue' : 'white'}
-                />
-              </button>
-            );
-          })}
+              return (
+                <button
+                  onClick={() => {
+                    setFilters((item) => ({
+                      ...item,
+                      [filter]: !item[filter],
+                    }));
+                  }}
+                >
+                  <Pill
+                    text={filter}
+                    color={filters[filter] ? 'blue' : 'black'}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          <Dropdown
+            options={[
+              {
+                label: 'Rank',
+                value: 'rank',
+              },
+              {
+                label: 'Date',
+                value: 'date',
+              },
+            ]}
+            value={filter2}
+            onChange={(value) => {
+              setFilter2(value);
+              window.alert('not working yet');
+            }}
+          />
         </header>
         <InfiniteScroll
           pageStart={-1}

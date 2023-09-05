@@ -1,10 +1,13 @@
 .header {
-  position: sticky;
-  top: 110px;
-  z-index: 10;
-  width: 62%;
-  display: inline-block;
-  margin: 10px auto 0;
+  // position: sticky;
+  // top: 110px;
+  // z-index: 10;
+  width: 70%;
+  display: flex;
+  margin: 10px auto -5px;
+  padding-left: 12px;
+  justify-content: space-between;
+  align-content: center;
 
   &::before {
     border: 1px solid red;

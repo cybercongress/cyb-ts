@@ -130,7 +130,7 @@ function ContentIpfs({
           {dateFormat(creator.timestamp, 'dd/mm/yyyy')}
         </span>
       </header>
-      <br />
+      {/* <br /> */}
       {!content && <div>{cid.toString()}</div>}
 
       {content?.availableDownload && (
