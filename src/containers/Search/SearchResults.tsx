@@ -33,6 +33,9 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import Pill from 'src/components/Pill/Pill';
+import styles from './SearchResults.module.scss';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -68,6 +71,15 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
+const deF = {
+  text: false,
+  image: false,
+  video: false,
+  // audio: true,
+  // application: true,
+  // other: true,
+};
+
 function SearchResults() {
   const queryClient = useQueryClient();
   const { query } = useParams();
@@ -83,6 +95,12 @@ function SearchResults() {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
+  const [contentType, setContentType] = useState<{
+    [key: string]: IpfsContentType;
+  }>({});
+
+  const [filters, setFilters] = useState(deF);
+
   const { isMobile: mobile } = useDevice();
   useCommunityPassports();
 
@@ -92,6 +110,11 @@ function SearchResults() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [query]);
+
+  useEffect(() => {
+    setContentType({});
+    setFilters(deF);
+  }, [query]);
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -293,49 +316,97 @@ function SearchResults() {
   // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
   if (Object.keys(searchResults).length > 0) {
     searchItems.push(
-      Object.keys(searchResults).map((key) => {
-        return (
-          <Pane
-            key={key}
-            position="relative"
-            className="hover-rank"
-            display="flex"
-            alignItems="center"
-            marginBottom="-2px"
-          >
-            {!mobile && (
-              <Pane
-                className={`time-discussion ${
-                  rankLink === key ? '' : 'hover-rank-contentItem'
-                }`}
-                position="absolute"
-                cursor="pointer"
-              >
-                <Rank
-                  hash={key}
-                  rank={exponentialToDecimal(
-                    parseFloat(searchResults[key].rank).toPrecision(3)
-                  )}
-                  grade={searchResults[key].grade}
-                  onClick={() => onClickRank(key)}
-                />
-              </Pane>
-            )}
-            <ContentItem
-              cid={key}
-              item={searchResults[key]}
-              parent={query}
-              className="SearchItem"
-            />
-          </Pane>
-        );
-      })
+      Object.keys(searchResults)
+        .filter((item) => {
+          if (!Object.values(filters).some((value) => value)) {
+            return true;
+          } else {
+            if (!contentType[item]) {
+              return true;
+            }
+            return filters[contentType[item]];
+          }
+        })
+        .map((key) => {
+          return (
+            <Pane
+              key={key}
+              position="relative"
+              className="hover-rank"
+              display="flex"
+              alignItems="center"
+              marginBottom="-2px"
+            >
+              {!mobile && (
+                <Pane
+                  className={`time-discussion ${
+                    rankLink === key ? '' : 'hover-rank-contentItem'
+                  }`}
+                  position="absolute"
+                  cursor="pointer"
+                >
+                  <Rank
+                    hash={key}
+                    rank={exponentialToDecimal(
+                      parseFloat(searchResults[key].rank).toPrecision(3)
+                    )}
+                    grade={searchResults[key].grade}
+                    onClick={() => onClickRank(key)}
+                  />
+                </Pane>
+              )}
+              <ContentItem
+                setType={(type) => {
+                  setContentType((item) => ({ ...item, [key]: type }));
+                }}
+                cid={key}
+                item={searchResults[key]}
+                parent={query}
+                className="SearchItem"
+              />
+            </Pane>
+          );
+        })
     );
   }
 
   return (
     <>
       <MainContainer width="90%">
+        <header className={styles.header}>
+          <button
+            onClick={() => {
+              setFilters(deF);
+            }}
+          >
+            <Pill
+              text="all"
+              color={
+                Object.values(filters).some((filter) => filter)
+                  ? 'white'
+                  : 'blue'
+              }
+            />
+          </button>
+          {Object.keys(filters).map((filter) => {
+            if (!Object.values(contentType).includes(filter)) {
+              return null;
+            }
+
+            return (
+              <button
+                onClick={() => {
+                  setFilters((item) => ({ ...item, [filter]: !item[filter] }));
+                }}
+              >
+                <Pill
+                  text={filter}
+                  color={filters[filter] ? 'blue' : 'white'}
+                />
+              </button>
+            );
+          })}
+        </header>
         <InfiniteScroll
           pageStart={-1}
           // initialLoad

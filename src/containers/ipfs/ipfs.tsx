@@ -128,7 +128,9 @@ function Ipfs() {
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'flex-end',
+                width: '62%',
+                margin: '10px auto',
               }}
             >
               <Dropdown

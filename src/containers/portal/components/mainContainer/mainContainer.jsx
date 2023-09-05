@@ -5,7 +5,7 @@ function MainContainer({ children, minHeight, width = '62%', ...props }) {
     <main
       style={{
         minHeight: minHeight || 'calc(100vh - 162px)',
-        overflow: 'hidden',
+        // overflow: 'hidden',
       }}
       className="block-body"
       {...props}

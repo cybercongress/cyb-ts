@@ -1,0 +1,21 @@
+.header {
+  position: sticky;
+  top: 110px;
+  z-index: 10;
+  width: 62%;
+  display: inline-block;
+  margin: 10px auto 0;
+
+  &::before {
+    border: 1px solid red;
+    content: '';
+    width: 100%;
+    left: 0;
+    height: 110%;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    z-index: -1;
+    filter: blur(8px);
+  }
+}

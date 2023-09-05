@@ -2,6 +2,7 @@ import {
   IPFSContent,
   IPFSContentDetails,
   IPFSContentMaybe,
+  IpfsContentType,
 } from 'src/utils/ipfs/ipfs';
 import { useEffect, useState } from 'react';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
@@ -69,19 +70,33 @@ type ContentTabProps = {
   status: string | undefined;
   cid: string;
   search?: boolean;
+  setType?: (type: IpfsContentType) => void;
 };
 
-function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  status,
+  content,
+  cid,
+  search,
+  setType,
+}: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
-  console.log(setIpfsDatDetails);
+  // console.log(ipfsDataDetails?.type);
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     if (status === 'completed') {
       // && !content?.availableDownload
-      getContentDetails(cid, content).then(setIpfsDatDetails);
+      (async () => {
+        const details = await getContentDetails(cid, content);
+        setIpfsDatDetails(details);
+
+        if (setType && details?.type) {
+          setType(details.type);
+        }
+      })();
     }
   }, [content, status, cid]);
 
