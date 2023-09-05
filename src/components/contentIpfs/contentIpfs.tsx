@@ -107,7 +107,7 @@ function ContentIpfs({
   // const { passport } = usePassportByAddress(creator.address);
 
   return (
-    <>
+    <div className={styles.wrapper}>
       {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
@@ -116,6 +116,16 @@ function ContentIpfs({
       /> */}
       {/* Default */}
 
+      <div className={styles.left}>
+        <Account address={creator.address} avatar />
+      </div>
+
+      <div className={styles.right}>
+        <span className={styles.date}>
+          {dateFormat(creator.timestamp, 'dd/mm/yyyy')}
+        </span>
+      </div>
+
       <header className={styles.header}>
         {/* <Link to={routes.}>
         <Pill
@@ -123,12 +133,6 @@ function ContentIpfs({
           text={passport?.extension.nickname || creator.address}
         />
         </Link> */}
-
-        <Account address={creator.address} avatar />
-
-        <span className={styles.date}>
-          {dateFormat(creator.timestamp, 'dd/mm/yyyy')}
-        </span>
       </header>
       {/* <br /> */}
       {!content && <div>{cid.toString()}</div>}
@@ -162,7 +166,7 @@ function ContentIpfs({
           )}
         </>
       )}
-    </>
+    </div>
   );
 }
 export default ContentIpfs;
