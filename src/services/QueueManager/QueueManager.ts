@@ -23,7 +23,6 @@ import {
 } from 'src/utils/ipfs/utils-ipfs';
 import {
   AppIPFS,
-  IPFSContent,
   IPFSContentMaybe,
   IpfsContentSource,
 } from 'src/utils/ipfs/ipfs';

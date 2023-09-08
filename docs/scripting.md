@@ -9,7 +9,7 @@ rune is virtual machine that runs inside cyb and process all commands and render
 
 ## why we choose new language?
 
-rune is dynamic, compact, portable, async and fast scripting language which is specially targeted to rust developers. 
+rune is dynamic, compact, portable, async and fast scripting language which is specially targeted to rust developers.
 
 to our dismay we was not able to find any other way to provide dynamic execution in existing browsers which are compatable with future wasm based browsers.
 
@@ -18,6 +18,7 @@ rune is wasm module written in rust.
 we hope you will enjoy it.
 
 Using cybscript any cyber citizen can
+
 - tune-up his [[soul]]
 - extend and modify robot behaivior and functionality
 
@@ -317,14 +318,14 @@ pub async fn personal_processor(params) {
         }
     }
 
-    let one_guy = 'Mark Zukerberg'
+    let one_guy = 'Mark Zukerberg';
 
     if content.contains(one_guy) {
         cyb::log(`Update ${cid} content, replace ${one_guy} to 'Elon Musk'`);
         return content_result(content.replace(one_guy, "Elon Musk"))
     }
 
-    let buzz_word = "хуярта"
+    let buzz_word = "хуярта";
 
     if content.contains(buzz_word) {
         cyb::log(`Hide ${cid} item because of '${buzz_word}' in the content`);
@@ -343,11 +344,11 @@ pub async fn personal_processor(params) {
 
     if content.contains("openai@me") {
         // get path from url
-        let path = cyb::context.app.params.path;
+        let path = cyb::context.params.path;
         if path.len() >= 2 && path[0] == "ipfs" {
 
             // get openAI api key from secrets
-            let openAI_api_key = cyb::context.app.secrets.openAI_api_key;
+            let openAI_api_key = cyb::context.secrets.openAI_api_key;
 
             // get current item CID fro url cyb.ap/ipfs/Qm.....
             let cid = path[1];

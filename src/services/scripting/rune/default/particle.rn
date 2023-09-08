@@ -1,5 +1,4 @@
-// any ipfs content with <your-nickname>.moon trigger this function execution.
-// You can apply any logic and return CID/text here.
+// empty params
 pub async fn moon_domain_resolver(params) {
     dbg("moon_domain_resolver fired");
     // QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17 - is html app hosted in IPFS
@@ -7,9 +6,9 @@ pub async fn moon_domain_resolver(params) {
 }
 
 // params:
-//  - cid: CID of the content
-//  - contentType: text, image, video, audio, pdf, etc...
-//  - content: content itself(text only supported for now)
+//      cid: CID of the content
+//      contentType: text, image, video, pdf, etc...
+//      content: content itself(text only supported for now)
 pub async fn personal_processor(params) {
     let cid = params.cid;
     let content_type = params.contentType;
@@ -33,16 +32,21 @@ pub async fn personal_processor(params) {
         }
     }
 
-    if content.contains("dasein") {
-        cyb::log(`Update ${cid} content, replace 'Mark Zukerberg' to 'Elon Musk'`);
-        return content_result(content.replace("Mark Zukerberg", "Elon Musk"))
+    let one_guy = "Mark Zukerberg";
+
+    if content.contains(one_guy) {
+        cyb::log(`Update ${cid} content, replace ${one_guy} to 'Elon Musk'`);
+        return content_result(content.replace(one_guy, "Elon Musk"))
     }
 
-    if content.contains("хуярта") {
-        cyb::log(`Hide ${cid} item because of 'хуярта' in the content`);
+    let buzz_word = "хуярта";
+
+    if content.contains(buzz_word) {
+        cyb::log(`Hide ${cid} item because of '${buzz_word}' in the content`);
         return hide()
     }
 
+    // <ticker>@NOW btcusd@NOW
     if content.contains("@NOW") {
         let left_part = content.split("@NOW").next().unwrap();
         let symbol = left_part.split(" ").rev().next().unwrap();
@@ -54,11 +58,11 @@ pub async fn personal_processor(params) {
 
     if content.contains("openai@me") {
         // get path from url
-        let path = cyb::context.app.params.path;
+        let path = cyb::context.params.path;
         if path.len() >= 2 && path[0] == "ipfs" {
 
             // get openAI api key from secrets
-            let openAI_api_key = cyb::context.app.secrets.openAI_api_key;
+            let openAI_api_key = cyb::context.secrets.openAI_api_key;
 
             // get current item CID fro url cyb.ap/ipfs/Qm.....
             let cid = path[1];

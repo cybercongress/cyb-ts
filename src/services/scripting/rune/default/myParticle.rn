@@ -1,7 +1,7 @@
 // params:
 //  - inupt: user search input
 pub async fn particle_inference(params) {
-    let nickname =  cyb::context.app.user.nickname;
+    let nickname =  cyb::context.user.nickname;
 
     //return cid_result("QmYWfDTQKzQ52aJhbFedj4izvZKkvVRtFsJ9hyCup4EPKi");
 
