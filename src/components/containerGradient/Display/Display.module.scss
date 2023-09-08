@@ -9,6 +9,8 @@ $display-padding-x: 20px;
   // TODO: remove this
   z-index: 0;
 
+  overflow-x: auto;
+
   &:not(.vertical) {
     @each $color in $valid-colors {
       &.#{$color} {
