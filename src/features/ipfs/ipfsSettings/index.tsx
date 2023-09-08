@@ -39,7 +39,7 @@ function IpfsSettings() {
   const adviserContext = useAdviser();
 
   useEffect(() => {
-    adviserContext.setAdviser(pending ? 'trying to connect to ipfs...' : null);
+    adviserContext.setAdviser(pending ? 'trying to connect to ipfs...' : null, 'yellow');
   }, [adviserContext, pending]);
 
   const onChangeSelect = (item) => {
