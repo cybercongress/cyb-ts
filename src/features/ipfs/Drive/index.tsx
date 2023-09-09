@@ -280,7 +280,7 @@ function Drive() {
 
   const renderCell = (colIdx: number) => (rowIdx: number) =>
     <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>;
-
+  console.log('log---queryResults', queryResults, queryResults?.rows.length);
   return (
     <div>
       <Pane width="100%" marginBottom={20} padding={10}>
@@ -364,14 +364,16 @@ function Drive() {
       <Pane width="100%" marginTop={10}>
         {queryResults ? (
           queryResults.rows && queryResults.headers ? (
-            <Table2
-              cellRendererDependencies={queryResults.rows}
-              numRows={queryResults.rows.length}
-            >
-              {queryResults.headers.map((n, idx) => (
-                <Column name={n} key={idx} cellRenderer={renderCell(idx)} />
-              ))}
-            </Table2>
+            <div style={{ height: '600px' }}>
+              <Table2
+                cellRendererDependencies={queryResults.rows}
+                numRows={queryResults.rows.length}
+              >
+                {queryResults.headers.map((n, idx) => (
+                  <Column name={n} key={idx} cellRenderer={renderCell(idx)} />
+                ))}
+              </Table2>
+            </div>
           ) : null
         ) : (
           <div className={styles.errorMessage}>{errorMessage}</div>
