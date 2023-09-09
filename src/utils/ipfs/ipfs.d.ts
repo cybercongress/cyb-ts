@@ -19,6 +19,7 @@ export type getIpfsUserGatewanAndNodeType = {
 export type IPFSContentMeta = {
   type: 'file' | 'directory';
   size: number;
+  sizeLocal: number;
   blockSizes?: never[]; // ???
   blocks?: number;
   data?: string; // ???

@@ -1,0 +1,21 @@
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.statusMessage {
+  display: flex;
+  align-items: center;
+  color: magenta;
+  &::before {
+    content: '⚡️';
+  }
+}
+
+.errorMessage {
+  color: red;
+  font-family: monospace;
+  font-size: 1.2em;
+}

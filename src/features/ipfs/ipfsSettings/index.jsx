@@ -19,6 +19,7 @@ import {
   Input,
   ActionBar,
 } from 'src/components';
+import Drive from '../Drive';
 
 const dataOpts = ['external', 'embedded'];
 
@@ -158,6 +159,7 @@ function IpfsSettings() {
           }}
         />
       </div>
+      <Drive />
     </ContainerGradientText>
   );
 }

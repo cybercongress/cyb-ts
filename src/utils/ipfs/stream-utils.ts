@@ -19,8 +19,11 @@ type StreamDoneCallback = (
 // }
 
 export const getMimeFromUint8Array = async (
-  raw: Uint8Array
+  raw: Uint8Array | undefined
 ): Promise<string | undefined> => {
+  if (!raw) {
+    return 'unknown';
+  }
   // TODO: try to pass only first N-bytes
   const fileType = await fileTypeFromBuffer(raw);
 
@@ -88,6 +91,19 @@ export async function toReadableStreamWithMime(
   return { mime, result: modifiedStream };
 }
 export type onProgressCallback = (progress: number) => void;
+
+export const getResponseAsTextPreview = async (
+  response: IpfsRawDataResponse | undefined
+) => {
+  if (!response || response instanceof ReadableStream) {
+    return new Uint8Array();
+  }
+  if (response instanceof Uint8Array) {
+    return response;
+  }
+
+  return response[Symbol.asyncIterator]().next().value;
+};
 
 export const getResponseResult = async (
   response: IpfsRawDataResponse,

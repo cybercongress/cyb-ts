@@ -83,14 +83,18 @@ const fetchIPFSContentMeta = async (
   if (node) {
     const path = `/ipfs/${cid}`;
 
-    const { type, size, local, blocks } = await node.files.stat(path, {
-      signal,
-      withLocal: true,
-      size: true,
-    });
+    const { type, size, sizeLocal, local, blocks } = await node.files.stat(
+      path,
+      {
+        signal,
+        withLocal: true,
+        size: true,
+      }
+    );
     return {
       type,
       size: size || -1,
+      sizeLocal: sizeLocal || -1,
       local,
       blocks,
     };
@@ -143,7 +147,8 @@ const fetchIPFSContentFromNode = async (
           .next();
 
         const mime = await getMimeFromUint8Array(firstChunk);
-        const fullyDownloaded = firstChunk.length >= meta.size;
+        const fullyDownloaded =
+          meta.size > -1 || firstChunk.length >= meta.size;
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded

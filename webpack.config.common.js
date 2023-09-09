@@ -175,6 +175,10 @@ const config = {
           fullySpecified: false,
         },
       },
+      {
+        test: /\.cozo$/,
+        use: 'raw-loader',
+      },
     ],
   },
 };
