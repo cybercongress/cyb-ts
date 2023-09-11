@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
+import { importCyberlinks } from 'src/services/CozoDb/importer';
+
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
@@ -858,5 +860,40 @@ export const getDenomTraces = async () => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const searchByHash = async (
+  client,
+  hash,
+  page,
+  options = { storeToCozo: false, callback: undefined }
+) => {
+  try {
+    const responseSearchResults = await client.search(hash, page);
+
+    // TODO: refactor ???
+
+    const results = responseSearchResults.result ? responseSearchResults : [];
+
+    if (
+      page === 0 &&
+      options.callback &&
+      responseSearchResults.pagination.total
+    ) {
+      options.callback(responseSearchResults.pagination.total);
+    }
+
+    if (options.storeToCozo) {
+      await importCyberlinks(
+        responseSearchResults.result.map((item) => ({
+          from: hash,
+          to: item.particle,
+        }))
+      );
+    }
+    return results;
+  } catch (error) {
+    return [];
   }
 };

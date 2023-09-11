@@ -1,10 +1,8 @@
 /* eslint-disable import/no-unused-modules */
 import { multiaddr } from '@multiformats/multiaddr';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
-import { AddResult } from 'kubo-rpc-client/types';
-
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { Option } from 'src/types';
 import {
   getIpfsUserGatewanAndNodeType,
@@ -25,7 +23,7 @@ import { CYBER } from '../config';
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { convertTimeToMilliseconds } from '../helpers';
 import { addToIpfsCluster } from './cluster-utils';
-import { contentToUint8Array, detectCybContentType } from './content-utils';
+import { contentToUint8Array } from './content-utils';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -150,6 +148,11 @@ const fetchIPFSContentFromNode = async (
         const fullyDownloaded =
           meta.size > -1 || firstChunk.length >= meta.size;
 
+        const textPreview =
+          firstChunk && mime === 'text/plain'
+            ? uint8ArrayToAsciiString(firstChunk).slice(0, 150)
+            : undefined;
+
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
           ? firstChunk
@@ -171,6 +174,7 @@ const fetchIPFSContentFromNode = async (
 
         return {
           result: stream,
+          textPreview,
           cid,
           meta: { ...meta, mime },
           source: 'node',

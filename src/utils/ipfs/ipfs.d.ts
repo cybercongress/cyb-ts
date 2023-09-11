@@ -77,6 +77,7 @@ export type IPFSContent = {
   meta: IPFSContentMeta;
   source: IpfsContentSource;
   contentUrl?: string;
+  textPreview?: string;
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;

@@ -37,6 +37,7 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import { importParicle } from '../CozoDb/importer';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -137,13 +138,19 @@ class QueueManager<T> {
 
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(() =>
+    return promiseToObservable(async () => {
       // fetch by item source
-      fetchIpfsContent<T>(cid, source, {
+      const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      })
-    ).pipe(
+      });
+      // TODO: make pipeline
+      if (content) {
+        await importParicle(content);
+      }
+
+      return content;
+    }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -281,7 +288,6 @@ class QueueManager<T> {
         }
 
         this.executing[source].delete(item.cid);
-
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);

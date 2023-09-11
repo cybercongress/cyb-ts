@@ -19,7 +19,6 @@ import { useIpfs } from 'src/contexts/ipfs';
 import { Pane, Text } from '@cybercongress/gravity';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { getResponseAsTextPreview } from 'src/utils/ipfs/stream-utils';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
 
 import 'normalize.css';
@@ -28,6 +27,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/table/lib/css/table.css';
 
 import styles from './drive.scss';
+import { mapParticleToCozoEntity } from 'src/services/CozoDb/utils';
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
@@ -209,27 +209,9 @@ function Drive() {
 
       const contentPromises = contents
         .filter((c) => !!c)
-        .map(async (content) => {
-          const { cid, result, meta } = content as IPFSContent;
-          const { size, mime, type, blocks, sizeLocal } = meta;
-          const isText = mime && mime.indexOf('text/plain') > -1;
-
-          const text = isText
-            ? uint8ArrayToAsciiString(await getResponseAsTextPreview(result))
-                .replace(/"/g, '%20')
-                .slice(0, 150)
-            : '';
-
-          return {
-            cid,
-            size,
-            mime: mime || 'unknown',
-            type,
-            text,
-            sizeLocal,
-            blocks: blocks || 0,
-          };
-        });
+        .map(async (content) =>
+          mapParticleToCozoEntity(content as IPFSContent)
+        );
 
       const particles = await Promise.all(contentPromises);
 
@@ -257,22 +239,47 @@ function Drive() {
     }
   };
 
-  const runExampleScript = async (name: 'sort' | 'filter' | 'stats') => {
+  const runExampleScript = async (
+    name:
+      | 'sort_particle'
+      | 'filter_particle'
+      | 'stats_particle'
+      | 'pin_stats'
+      | 'link_stats'
+      | 'link_text'
+  ) => {
     let cmd = '';
-    const baseCmd =
+    const baseCmdParticle =
       '?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}';
     switch (name) {
-      case 'sort':
-        cmd = `${baseCmd}\r\n :order -size`;
+      case 'pin_stats':
+        cmd = `?[type_as_str, count(cid)] := *pin{cid, type}, type_as_str = get(list('indirect','direct','recursive'),type+1)`;
         break;
-      case 'filter':
-        cmd = `${baseCmd}, mime="text/plain"`;
+      case 'sort_particle':
+        cmd = `r[cid,  pin] := *particle{cid}, not *pin{cid: cid, type}, pin=0
+        r[cid, pin] := *particle{cid}, *pin{cid: cid, type}, pin=1
+        ?[pinned, cid, mime, text, size] := r[cid, pinned], *particle{cid:cid, mime, text, size}
+        :order -size`;
         break;
-      case 'stats':
+      case 'filter_particle':
+        cmd = `?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime="text/plain"`;
+        break;
+      case 'stats_particle':
         cmd = `?[mime, sum(size), count(mime), sum(blocks)] := *particle{mime, blocks, size}\r\n :order -sum(size)\r\n:limit 10`;
         break;
+      case 'link_stats':
+        cmd = `r[from, count(to), side] := *link{from, to}, side="from"
+        r[to, count(from), side] := *link{from, to}, side="to"
+        ?[side, lnk, cnt] := r[lnk, cnt, side]
+        :order -cnt`;
+        break;
+      case 'link_text':
+        cmd = `rt[text, from] := *link{from, to}, *particle{cid: from, text}
+        rf[text, to] := *link{from, to}, *particle{cid: to, text}
+        ?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''`;
+        break;
       default:
-        cmd = baseCmd;
+        cmd = baseCmdParticle;
     }
     setQueryText(cmd);
     runQuery(cmd);
@@ -331,29 +338,59 @@ function Drive() {
             disabled={!isLoaded || inProgress}
             intent={Intent.PRIMARY}
           />
-          <Divider />
-          <div className={styles.centered}>Particle query examples:</div>
-          <Button
-            icon="sort"
-            text="order"
-            intent={Intent.SUCCESS}
-            onClick={() => runExampleScript('sort')}
-          />
-          <Divider />
-          <Button
-            icon="filter"
-            text="filter"
-            intent={Intent.SUCCESS}
-            onClick={() => runExampleScript('filter')}
-          />
-          <Divider />
-          <Button
-            icon="search-template"
-            text="Top 10"
-            intent={Intent.SUCCESS}
-            onClick={() => runExampleScript('stats')}
-          />
         </ButtonGroup>
+      </Pane>
+      <Pane marginTop={10} marginBottom={20}>
+        <Text color="#fff">
+          Query Examples. Click on the button to run the script:
+        </Text>
+        <Pane marginTop={10}>
+          <ButtonGroup>
+            <div className={styles.centered}>Pin:</div>
+            <Button
+              icon="pin"
+              text="Stats"
+              intent={Intent.WARNING}
+              onClick={() => runExampleScript('pin_stats')}
+            />
+            <div className={styles.centered}>Particle:</div>
+            <Button
+              icon="sort"
+              text="list with pin"
+              intent={Intent.SUCCESS}
+              onClick={() => runExampleScript('sort_particle')}
+            />
+            <Divider />
+            <Button
+              icon="filter"
+              text="filter"
+              intent={Intent.SUCCESS}
+              onClick={() => runExampleScript('filter_particle')}
+            />
+            <Divider />
+            <Button
+              icon="search-template"
+              text="Top 10"
+              intent={Intent.SUCCESS}
+              onClick={() => runExampleScript('stats_particle')}
+            />
+            <div className={styles.centered}>Links:</div>
+            <Button
+              icon="exchange"
+              text="Stats"
+              intent={Intent.NONE}
+              onClick={() => runExampleScript('link_stats')}
+            />
+            <Divider />
+            <Button
+              icon="comparison"
+              text="text links"
+              intent={Intent.NONE}
+              onClick={() => runExampleScript('link_text')}
+            />
+            <Divider />
+          </ButtonGroup>
+        </Pane>
       </Pane>
       {statusMessage && (
         <Pane width="100%" marginTop={10}>

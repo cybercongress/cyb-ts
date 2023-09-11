@@ -139,7 +139,6 @@ function DbService() {
     }
     const resultStr = db.run(command, '', immutable);
     const result: DBResult = JSON.parse(resultStr);
-    console.log('----runCommand: ', command, result);
 
     return result;
   };
@@ -167,12 +166,13 @@ function DbService() {
   const executePutCommand = async (
     tableName: string,
     array: any[]
-  ): Promise<void> => {
-    const atomCommand = generateAtomCommand(tableName, array);
+  ): Promise<DBResult | DBResultError> => {
+    const atomCommand = generateAtomCommand(tableName, [array]);
     const putCommand = generatePutCommand(tableName);
     const command = `${atomCommand}\r\n${putCommand}`;
-    runCommand(command);
+    const result = runCommand(command);
     await CozoDb.wait_for_indexed_db_writes();
+    return result;
   };
 
   const executeBatchPutCommand = async (
