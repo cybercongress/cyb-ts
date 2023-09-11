@@ -123,6 +123,10 @@ const slice = createSlice({
 
     builder.addCase(getPassport.rejected, (state, action) => {
       console.error(action);
+
+      state[action.meta.arg.address] = {
+        loading: false,
+      };
     });
   },
 });
