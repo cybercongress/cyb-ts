@@ -11,28 +11,3 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
 }
-
-.wrapper {
-  &:hover {
-    .left,
-    .right {
-      display: block;
-    }
-  }
-}
-
-.left,
-.right {
-  display: none;
-  position: absolute;
-}
-
-.left {
-  right: -160px;
-  top: 35px;
-}
-
-.right {
-  top: 10px;
-  right: -100px;
-}

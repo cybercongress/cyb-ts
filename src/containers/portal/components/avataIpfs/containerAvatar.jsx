@@ -1,4 +1,4 @@
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 const cx = require('classnames');
 

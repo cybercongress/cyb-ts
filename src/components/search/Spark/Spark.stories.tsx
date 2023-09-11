@@ -2,11 +2,12 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import _Component from './_Component';
+import Spark from './Spark';
+import stub from './stub';
 
-const meta: Meta<typeof _Component> = {
-  component: _Component,
-  title: 'atoms/_Component',
+const meta: Meta<typeof Spark> = {
+  component: Spark,
+  title: 'Molecules/Spark',
   parameters: {
     design: {
       type: 'figma',
@@ -16,9 +17,12 @@ const meta: Meta<typeof _Component> = {
 };
 export default meta;
 
-type Story = StoryObj<typeof _Component>;
+type Story = StoryObj<typeof Spark>;
 
-const defaultArgs = {};
+const defaultArgs = {
+  itemData: stub,
+  cid: stub.particle,
+};
 
 export const Main: Story = {
   args: defaultArgs,

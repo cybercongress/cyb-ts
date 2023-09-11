@@ -5,7 +5,7 @@ import { useDevice } from 'src/contexts/device';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useCallback, useState } from 'react';
-import { ContainerGradientText } from '../../components';
+import { Account, ContainerGradientText } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetBackLink from './hooks/useGetBackLink';
@@ -19,6 +19,7 @@ import Pill from 'src/components/Pill/Pill';
 import styles from './IPFS.module.scss';
 import Backlinks from './components/backlinks';
 import Dropdown from 'src/components/Dropdown/Dropdown';
+import { Avatar } from '../portal/stateComponent';
 
 enum Tab {
   Discussion = 'discussion',
@@ -34,7 +35,7 @@ enum Filter {
 }
 
 function Ipfs() {
-  const { cid, tab = Tab.Discussion } = useParams();
+  const { cid, tab = Tab.Incoming } = useParams();
   const { status, content, source } = useQueueIpfsContent(cid, 1, cid);
   const { backlinks } = useGetBackLink(cid);
   const { creator } = useGetCreator(cid);
@@ -57,20 +58,31 @@ function Ipfs() {
 
   const slides = [
     {
-      name: Tab.Outcoming,
-      content: (
-        <Link to={`/ipfs/${cid}/outcoming`}>
-          outcoming ~ {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
-        </Link>
-      ),
-    },
-    {
       name: Tab.Meta,
       content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
     },
     {
       name: Tab.Incoming,
-      content: <Link to={`/ipfs/${cid}/incoming`}>incoming ~</Link>,
+      content: (
+        <>
+          <Link to={`/ipfs/${cid}/incoming`} className={styles.tabLink}>
+            incoming
+          </Link>
+
+          {!!backlinks?.length && <Pill text={backlinks?.length} />}
+        </>
+      ),
+    },
+    {
+      name: Tab.Outcoming,
+      content: (
+        <>
+          <Link to={`/ipfs/${cid}/outcoming`} className={styles.tabLink}>
+            outcoming
+          </Link>
+          {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
+        </>
+      ),
     },
   ];
 

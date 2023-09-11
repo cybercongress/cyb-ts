@@ -83,8 +83,6 @@ function ContentIpfs({
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
-  // console.log(ipfsDataDetails?.type);
-
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     if (status === 'completed') {
@@ -102,8 +100,6 @@ function ContentIpfs({
 
   const contentType = ipfsDataDetails?.type;
 
-  const { creator } = useGetCreator(cid);
-
   // const { passport } = usePassportByAddress(creator.address);
 
   return (
@@ -115,16 +111,6 @@ function ContentIpfs({
         status={status}
       /> */}
       {/* Default */}
-
-      <div className={styles.left}>
-        <Account address={creator.address} avatar />
-      </div>
-
-      <div className={styles.right}>
-        <span className={styles.date}>
-          {dateFormat(creator.timestamp, 'dd/mm/yyyy')}
-        </span>
-      </div>
 
       <header className={styles.header}>
         {/* <Link to={routes.}>

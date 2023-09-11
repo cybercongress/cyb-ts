@@ -37,6 +37,8 @@ import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import Pill from 'src/components/Pill/Pill';
 import styles from './SearchResults.module.scss';
 import Dropdown from 'src/components/Dropdown/Dropdown';
+import Spark from 'src/components/search/Spark/Spark';
+import { SearchItemResult } from 'src/soft.js/api/search';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -45,16 +47,30 @@ const textPreviewSparkApp = (text, value) => (
   </div>
 );
 
-const search = async (client, hash, page) => {
+const search = async (
+  client,
+  hash,
+  page
+): Promise<
+  | {
+      result?: SearchItemResult[];
+      pagination?: {
+        total: string;
+      };
+    }
+  | []
+> => {
   try {
     const responseSearchResults = await client.search(hash, page);
+    console.log(responseSearchResults);
+
     return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
   }
 };
 
-const reduceSearchResults = (data, query) => {
+const reduceSearchResults = (data: SearchItemResult[], query: string) => {
   return data.reduce(
     (obj, item) => ({
       ...obj,
@@ -83,7 +99,7 @@ const deF = {
 
 function SearchResults() {
   const queryClient = useQueryClient();
-  const { query } = useParams();
+  const { query = '' } = useParams();
 
   const location = useLocation();
   // const navigate = useNavigate();
@@ -151,6 +167,12 @@ function SearchResults() {
           responseSearchResults.result &&
           responseSearchResults.result.length > 0
         ) {
+          // responseSearchResults = searchResultsData as {
+          //   result: SearchItemResult[];
+          // };
+
+          console.log(responseSearchResults);
+
           searchResultsData = reduceSearchResults(
             responseSearchResults.result,
             query
@@ -164,6 +186,8 @@ function SearchResults() {
         }
 
         setKeywordHash(keywordHashTemp);
+        console.log(searchResultsData);
+
         setSearchResults(searchResultsData);
         setLoading(false);
       }
@@ -324,49 +348,28 @@ function SearchResults() {
             return true;
           } else {
             if (!contentType[item]) {
-              return true;
+              return false;
             }
             return filters[contentType[item]];
           }
         })
         .map((key) => {
           return (
-            <Pane
+            <Spark
+              itemData={searchResults[key]}
+              cid={key}
               key={key}
-              position="relative"
-              className="hover-rank"
-              display="flex"
-              alignItems="center"
-              marginBottom="-2px"
-            >
-              {!mobile && (
-                <Pane
-                  className={`time-discussion ${
-                    rankLink === key ? '' : 'hover-rank-contentItem'
-                  }`}
-                  position="absolute"
-                  cursor="pointer"
-                >
-                  <Rank
-                    hash={key}
-                    rank={exponentialToDecimal(
-                      parseFloat(searchResults[key].rank).toPrecision(3)
-                    )}
-                    grade={searchResults[key].grade}
-                    onClick={() => onClickRank(key)}
-                  />
-                </Pane>
-              )}
-              <ContentItem
-                setType={(type) => {
-                  setContentType((item) => ({ ...item, [key]: type }));
-                }}
-                cid={key}
-                item={searchResults[key]}
-                parent={query}
-                className="SearchItem"
-              />
-            </Pane>
+              query={query}
+              handleRankClick={onClickRank}
+              handleContentType={(type) =>
+                setContentType((items) => {
+                  return {
+                    ...items,
+                    [key]: type,
+                  };
+                })
+              }
+            />
           );
         })
     );

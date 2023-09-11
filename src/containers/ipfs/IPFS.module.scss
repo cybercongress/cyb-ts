@@ -5,4 +5,12 @@
   @media (max-width: 768px) {
     width: 100%;
   }
+
+  .tabLink {
+    padding-right: 20px;
+    background-image: url('../../components/buttons/AddFile/images/attach.svg');
+    background-position: right 3px;
+    background-repeat: no-repeat;
+    background-size: 14px auto;
+  }
 }
