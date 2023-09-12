@@ -14,3 +14,44 @@
     background-size: 14px auto;
   }
 }
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  min-width: 62vw;
+  font-size: 14px;
+  padding: 0 10px;
+
+  .left {
+    display: flex;
+    gap: 7px;
+
+    span:first-of-type {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .rank {
+      text-emphasis: none;
+      color: #f62bfd;
+      font-size: 14px;
+    }
+  }
+
+  .center {
+    display: flex;
+
+    .date {
+      margin-right: 10px;
+    }
+  }
+
+  .right {
+    display: flex;
+    gap: 10px;
+
+    button {
+      opacity: 0.6;
+    }
+  }
+}

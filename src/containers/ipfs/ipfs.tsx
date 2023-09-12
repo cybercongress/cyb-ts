@@ -2,9 +2,11 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
-import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
+import ContentIpfs, {
+  getContentDetails,
+} from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Account, ContainerGradientText } from '../../components';
 import { DiscussionTab, AnswersTab, MetaTab } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -20,6 +22,10 @@ import styles from './IPFS.module.scss';
 import Backlinks from './components/backlinks';
 import Dropdown from 'src/components/Dropdown/Dropdown';
 import { Avatar } from '../portal/stateComponent';
+import { useAdviser } from 'src/features/adviser/context';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { coinDecimals, exponentialToDecimal, timeSince } from 'src/utils/utils';
+import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 
 enum Tab {
   Discussion = 'discussion',
@@ -48,6 +54,33 @@ function Ipfs() {
 
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
+
+  const [ipfsDataDetails, setIpfsDatDetails] =
+    useState<IPFSContentDetails>(undefined);
+
+  useEffect(() => {
+    // TODO: cover case with content === 'availableDownload'
+    if (status === 'completed') {
+      // && !content?.availableDownload
+      (async () => {
+        const details = await getContentDetails(cid, content);
+        setIpfsDatDetails(details);
+
+        // if (setType && details?.type) {
+        //   setType(details.type);
+        // }
+
+        // const response = await queryClient?.rank(cid);
+        // const rank = coinDecimals(parseFloat(response.rank));
+        // const rankData = {
+        //   rank: exponentialToDecimal(rank.toPrecision(3)),
+        //   // grade: getRankGrade(rank),
+        // };
+        // setRankInfo(rankData.rank);
+      })();
+    }
+  }, [content, status, cid]);
+
   const { isMobile: mobile } = useDevice();
   const queryParamsId = `${cid}.${tab}`;
 
@@ -56,11 +89,77 @@ function Ipfs() {
     dataAnswer.refetch();
   }, [dataAnswer, dataDiscussion]);
 
+  const queryClient = useQueryClient();
+
+  // console.log(ipfsDataDetails);
+
+  const [rankInfo, setRankInfo] = useState(null);
+
+  useEffect(() => {
+    if (!cid) {
+      return;
+    }
+    // TODO: cover case with content === 'availableDownload'
+    // if (status === 'completed') {
+    // && !content?.availableDownload
+    (async () => {
+      // const details = await getContentDetails(cid, content);
+      // setIpfsDatDetails(details);
+
+      // if (setType && details?.type) {
+      //   setType(details.type);
+      // }
+
+      const response = await queryClient?.rank(cid);
+      const rank = coinDecimals(parseFloat(response.rank));
+      const rankData = {
+        rank: exponentialToDecimal(rank.toPrecision(3)),
+        // grade: getRankGrade(rank),
+      };
+      setRankInfo(rankData.rank);
+    })();
+    // }
+  }, [cid]);
+
+  const adviserContext = useAdviser();
+
+  useEffect(() => {
+    // console.log(ipfsDataDetails);
+
+    if (!ipfsDataDetails) {
+      return;
+    }
+
+    adviserContext.setAdviser(
+      <div className={styles.meta}>
+        <div className={styles.left}>
+          {ipfsDataDetails?.type} <span>with rank</span>
+          <span className={styles.rank}>{rankInfo}</span>
+          <button>❓</button>
+        </div>
+        {creator && (
+          <div className={styles.center}>
+            <span className={styles.date}>
+              {timeSince(Date.parse(creator.timestamp) / 1000)} ago
+            </span>
+            <Account sizeAvatar="20px" address={creator.address} avatar />
+          </div>
+        )}
+        <div className={styles.right}>
+          <span>🧼</span>
+          <span>🟥 142 kb</span>
+          <button disabled>🌓</button>
+        </div>
+      </div>,
+      'purple'
+    );
+  }, [ipfsDataDetails, creator, adviserContext, rankInfo]);
+
   const slides = [
-    {
-      name: Tab.Meta,
-      content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
-    },
+    // {
+    //   name: Tab.Meta,
+    //   content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
+    // },
     {
       name: Tab.Incoming,
       content: (

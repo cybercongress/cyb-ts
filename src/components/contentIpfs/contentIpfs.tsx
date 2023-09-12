@@ -22,8 +22,13 @@ import { routes } from 'src/routes';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 import dateFormat from 'dateformat';
 import styles from './ContentIpfs.module.scss';
+import { useAdviser } from 'src/features/adviser/context';
+import { coinDecimals, exponentialToDecimal, timeSince } from 'src/utils/utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { getRankGrade } from 'src/utils/search/utils';
+import useGetCreator from '../../containers/ipfs/hooks/useGetCreator';
 
-const getContentDetails = async (
+export const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
@@ -94,6 +99,14 @@ function ContentIpfs({
         if (setType && details?.type) {
           setType(details.type);
         }
+
+        // const response = await queryClient?.rank(cid);
+        // const rank = coinDecimals(parseFloat(response.rank));
+        // const rankData = {
+        //   rank: exponentialToDecimal(rank.toPrecision(3)),
+        //   // grade: getRankGrade(rank),
+        // };
+        // setRankInfo(rankData.rank);
       })();
     }
   }, [content, status, cid]);

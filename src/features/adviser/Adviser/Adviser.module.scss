@@ -33,6 +33,13 @@ $animation-time: 2.3s;
       --color-b: 250;
       --color-g: 161;
     }
+
+    &purple {
+      // 246, 43, 253
+      --color-r: 246;
+      --color-b: 43;
+      --color-g: 253;
+    }
   }
 
   &:disabled {
