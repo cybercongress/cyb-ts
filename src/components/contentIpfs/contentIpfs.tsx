@@ -1,5 +1,4 @@
 import {
-  IPFSContent,
   IPFSContentDetails,
   IPFSContentMaybe,
   IpfsContentType,
@@ -13,20 +12,8 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-import { useGetCreator } from '../particle/hooks';
-import Account from '../account/account';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
-import Pill from '../Pill/Pill';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
-import { routes } from 'src/routes';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
-import dateFormat from 'dateformat';
 import styles from './ContentIpfs.module.scss';
-import { useAdviser } from 'src/features/adviser/context';
-import { coinDecimals, exponentialToDecimal, timeSince } from 'src/utils/utils';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { getRankGrade } from 'src/utils/search/utils';
-import useGetCreator from '../../containers/ipfs/hooks/useGetCreator';
 
 export const getContentDetails = async (
   cid: string,
@@ -90,8 +77,9 @@ function ContentIpfs({
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
+    // && !content?.availableDownload
+
     if (status === 'completed') {
-      // && !content?.availableDownload
       (async () => {
         const details = await getContentDetails(cid, content);
         setIpfsDatDetails(details);
@@ -99,21 +87,11 @@ function ContentIpfs({
         if (setType && details?.type) {
           setType(details.type);
         }
-
-        // const response = await queryClient?.rank(cid);
-        // const rank = coinDecimals(parseFloat(response.rank));
-        // const rankData = {
-        //   rank: exponentialToDecimal(rank.toPrecision(3)),
-        //   // grade: getRankGrade(rank),
-        // };
-        // setRankInfo(rankData.rank);
       })();
     }
   }, [content, status, cid]);
 
   const contentType = ipfsDataDetails?.type;
-
-  // const { passport } = usePassportByAddress(creator.address);
 
   return (
     <div className={styles.wrapper}>
@@ -125,15 +103,6 @@ function ContentIpfs({
       /> */}
       {/* Default */}
 
-      <header className={styles.header}>
-        {/* <Link to={routes.}>
-        <Pill
-          image={<AvataImgIpfs cidAvatar={passport?.extension.avatar} />}
-          text={passport?.extension.nickname || creator.address}
-        />
-        </Link> */}
-      </header>
-      {/* <br /> */}
       {!content && <div>{cid.toString()}</div>}
 
       {content?.availableDownload && (
@@ -152,7 +121,9 @@ function ContentIpfs({
             </TextMarkdown>
           )}
           {contentType === 'image' && <Img content={ipfsDataDetails.content} />}
-          {contentType === 'pdf' && <Pdf content={ipfsDataDetails.content} />}
+          {contentType === 'pdf' && ipfsDataDetails.content && (
+            <Pdf content={ipfsDataDetails.content} />
+          )}
           {contentType === 'link' && (
             <LinkHttp content={ipfsDataDetails.content} preview />
           )}

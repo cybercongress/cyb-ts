@@ -9,19 +9,11 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
-  exponentialToDecimal,
   trimString,
   coinDecimals,
   encodeSlash,
 } from '../../utils/utils';
-import {
-  Loading,
-  Account,
-  Rank,
-  NoItems,
-  Dots,
-  SearchItem,
-} from '../../components';
+import { Loading, Account, NoItems, Dots, SearchItem } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   PATTERN_CYBER,
@@ -30,13 +22,11 @@ import {
   PATTERN_BLOCK,
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
-import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import Pill from 'src/components/Pill/Pill';
 import styles from './SearchResults.module.scss';
-import Dropdown from 'src/components/Dropdown/Dropdown';
 import Spark from 'src/components/search/Spark/Spark';
 import { SearchItemResult } from 'src/soft.js/api/search';
 
@@ -62,7 +52,6 @@ const search = async (
 > => {
   try {
     const responseSearchResults = await client.search(hash, page);
-    console.log(responseSearchResults);
 
     return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
@@ -88,13 +77,12 @@ const reduceSearchResults = (data: SearchItemResult[], query: string) => {
   );
 };
 
-const deF = {
+const initialFiltersState = {
   text: false,
   image: false,
   video: false,
-  // audio: true,
-  // application: true,
-  // other: true,
+  pdf: false,
+  link: false,
 };
 
 function SearchResults() {
@@ -116,8 +104,8 @@ function SearchResults() {
     [key: string]: IpfsContentType;
   }>({});
 
-  const [filters, setFilters] = useState(deF);
-  const [filter2, setFilter2] = useState('rank');
+  const [filters, setFilters] = useState(initialFiltersState);
+  // const [filter2, setFilter2] = useState('rank');
 
   const { isMobile: mobile } = useDevice();
   useCommunityPassports();
@@ -131,7 +119,7 @@ function SearchResults() {
 
   useEffect(() => {
     setContentType({});
-    setFilters(deF);
+    setFilters(initialFiltersState);
   }, [query]);
 
   useEffect(() => {
@@ -167,12 +155,6 @@ function SearchResults() {
           responseSearchResults.result &&
           responseSearchResults.result.length > 0
         ) {
-          // responseSearchResults = searchResultsData as {
-          //   result: SearchItemResult[];
-          // };
-
-          console.log(responseSearchResults);
-
           searchResultsData = reduceSearchResults(
             responseSearchResults.result,
             query
@@ -339,7 +321,6 @@ function SearchResults() {
     );
   }
 
-  // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
   if (Object.keys(searchResults).length > 0) {
     searchItems.push(
       Object.keys(searchResults)
@@ -381,11 +362,9 @@ function SearchResults() {
         <header className={styles.header}>
           <div>
             <button
-              // style={{
-              //   cursor: ''
-              // }}
+              type="button"
               onClick={() => {
-                setFilters(deF);
+                setFilters(initialFiltersState);
               }}
             >
               <Pill
@@ -404,6 +383,8 @@ function SearchResults() {
 
               return (
                 <button
+                  key={filter}
+                  type="button"
                   onClick={() => {
                     setFilters((item) => ({
                       ...item,
@@ -420,7 +401,7 @@ function SearchResults() {
             })}
           </div>
 
-          <Dropdown
+          {/* <Dropdown
             options={[
               {
                 label: 'Rank',
@@ -436,7 +417,7 @@ function SearchResults() {
               setFilter2(value);
               window.alert('not working yet');
             }}
-          />
+          /> */}
         </header>
         <InfiniteScroll
           pageStart={-1}

@@ -26,15 +26,11 @@ function Meta({ content, cid }: Props) {
       <span>🟥 4.877 KB</span>
       <span>🟢 (type)</span>
       <div className={styles.links}>
-        {backlinks?.length} &rarr; <span></span> &rarr; {dataAnswer.total}
+        {backlinks?.length} &rarr; <span>-</span> &rarr; {dataAnswer.total}
       </div>
       <div className={styles.community}>
         {community?.map((item) => {
-          return (
-            <div>
-              <Account address={item} onlyAvatar avatar />
-            </div>
-          );
+          return <Account key={item} address={item} onlyAvatar avatar />;
         })}
       </div>
     </div>

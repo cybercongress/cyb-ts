@@ -87,6 +87,7 @@ function Rank({ rank, hash, ...props }) {
   return (
     <Tooltip
       placement="bottom"
+      strategy="fixed"
       tooltip={
         <GradeTooltipContent
           grade={gradeValue}

@@ -20,11 +20,16 @@
   justify-content: space-between;
   min-width: 62vw;
   font-size: 14px;
-  padding: 0 10px;
+  padding: 0 20px;
+
+  > * {
+    flex-grow: 1;
+  }
 
   .left {
     display: flex;
     gap: 7px;
+    align-items: center;
 
     span:first-of-type {
       color: rgba(255, 255, 255, 0.5);
@@ -40,6 +45,7 @@
 
   .center {
     display: flex;
+    justify-content: center;
 
     .date {
       margin-right: 10px;
@@ -48,10 +54,11 @@
 
   .right {
     display: flex;
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 14px;
 
     button {
-      opacity: 0.6;
+      opacity: 0.35;
     }
   }
 }
