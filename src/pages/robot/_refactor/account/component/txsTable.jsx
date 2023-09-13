@@ -1,24 +1,21 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
-import { TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Link } from 'react-router-dom';
-import { Dots, MsgType, NoItems, TextTable } from '../../../../../components';
+import statusTrueImg from 'src/image/ionicons_svg_ios-checkmark-circle.svg';
+import statusFalseImg from 'src/image/ionicons_svg_ios-close-circle.svg';
+import Table from 'src/components/Table/Table';
+import { useRobotContext } from 'src/pages/robot/robot.context';
+import Display from 'src/components/containerGradient/Display/Display';
+import { MsgType, TextTable } from '../../../../../components';
 import {
   getNowUtcTime,
   timeSince,
   trimString,
 } from '../../../../../utils/utils';
-import statusTrueImg from 'src/image/ionicons_svg_ios-checkmark-circle.svg';
-import statusFalseImg from 'src/image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
-import { ContainerGradientText } from '../../../../../components/containerGradient/ContainerGradient';
+
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
-import Loader2 from 'src/components/ui/Loader2';
-import Table from 'src/components/Table/Table';
-import { useRobotContext } from 'src/pages/robot/robot.context';
 
 function TxsTable() {
   const { address: accountUser } = useRobotContext();
@@ -27,7 +24,7 @@ function TxsTable() {
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
     dataGetTsxByAddress;
 
-  let validatorRows = [[]];
+  let validatorRows = [];
 
   if (data) {
     validatorRows = data?.pages?.map((page) => {
@@ -129,36 +126,33 @@ function TxsTable() {
     []
   );
 
-  const tableData = React.useMemo(() => [...validatorRows[0]], [validatorRows]);
+  const tableData = React.useMemo(
+    () =>
+      validatorRows.reduce((acc, value) => {
+        return acc.concat(value);
+      }, []),
+    [validatorRows]
+  );
 
   return (
-    <ContainerGradientText
+    <Display
       noPaddingX
       userStyleContent={{
-        padding: '15px 0',
         minHeight: '70vh',
       }}
     >
-      <Table columns={columns} data={tableData} isLoading={isFetching}>
-        <InfiniteScroll
-          dataLength={Object.keys(validatorRows).length}
-          next={fetchNextPageFnc}
-          style={{ display: 'grid', gap: '15px' }}
-          hasMore={hasNextPage}
-          loader={isFetching && <Loader2 />}
-        >
-          {status === 'loading' ? (
-            <Dots />
-          ) : status === 'error' ? (
-            <span>Error: {error.message}</span>
-          ) : validatorRows.length > 0 ? (
-            validatorRows
-          ) : (
-            <NoItems text="No txs" />
-          )}
-        </InfiniteScroll>
-      </Table>
-    </ContainerGradientText>
+      <InfiniteScroll
+        dataLength={Object.keys(validatorRows).length}
+        next={fetchNextPageFnc}
+        style={{ display: 'grid', gap: '15px' }}
+        hasMore={hasNextPage}
+        // loader={isFetching && <Loader2 />}
+      >
+        <Table columns={columns} data={tableData} isLoading={isFetching} />
+      </InfiniteScroll>
+
+      {status === 'error' && <span>Error: {error.message}</span>}
+    </Display>
   );
 }
 

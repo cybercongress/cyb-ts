@@ -25,9 +25,9 @@ function Display({
   title,
   noPaddingX,
   color = Colors.GREEN,
-  ...props
+  status,
 }: Props) {
-  const colorTemp = color || props.status;
+  const colorTemp = color || status;
 
   return (
     <div

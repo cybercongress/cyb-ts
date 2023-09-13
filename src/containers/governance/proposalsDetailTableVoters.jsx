@@ -66,7 +66,8 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
     let firstItem = [];
 
     const response = await getTableVoters(proposalId, page, LIMIT);
-    if (response && Object.keys(response).length > 0) {
+
+    if (response) {
       const { pagination, tx_responses: txs } = response;
       const { total } = pagination;
       tempAllPage = Math.ceil(total / LIMIT);
@@ -85,7 +86,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     const response = await getTableVoters(proposalId, page, LIMIT);
-    if (response && Object.keys(response).length > 0) {
+    if (response) {
       const { tx_responses: txs } = response;
 
       nextItem = reduceTxsVoters(txs);

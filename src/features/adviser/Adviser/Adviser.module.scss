@@ -35,10 +35,15 @@ $animation-time: 2.3s;
     }
 
     &purple {
-      // 246, 43, 253
       --color-r: 246;
       --color-b: 43;
       --color-g: 253;
+    }
+
+    &yellow {
+      --color-r: 255;
+      --color-g: 0;
+      --color-b: 217;
     }
   }
 
