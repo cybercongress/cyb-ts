@@ -33,6 +33,12 @@ $animation-time: 2.3s;
       --color-b: 250;
       --color-g: 161;
     }
+
+    &yellow {
+      --color-r: 255;
+      --color-g: 0;
+      --color-b: 217;
+    }
   }
 
   &:disabled {
