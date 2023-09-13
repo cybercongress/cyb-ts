@@ -58,6 +58,7 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
+import Search from './pages/Search/Search';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -119,6 +120,7 @@ function AppRouter() {
           {/* <Route path="/@:passport" element={<Robot />} /> */}
 
           <Route path="/oracle" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
           <Route

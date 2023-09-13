@@ -35,7 +35,8 @@ type Props = {
   text?: string | React.ReactNode;
   button?: {
     text: string | React.ReactNode;
-    onClick: () => void;
+    onClick?: () => void;
+    link?: string;
     disabled?: boolean;
   };
 };
@@ -93,7 +94,11 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {content && <ActionBarContentText>{content}</ActionBarContentText>}
 
       {button?.text && (
-        <Button disabled={button.disabled} onClick={button.onClick}>
+        <Button
+          disabled={button.disabled}
+          link={button.link}
+          onClick={button.onClick}
+        >
           {button.text}
         </Button>
       )}
