@@ -9,13 +9,13 @@ const configIpfs = (): Options => ({
   repo: 'ipfs-repo-cyber-v2',
   // repo: `ok${Math.random()}`, // TODO: refactor! every launch new repo created
   relay: {
-    enabled: true,
+    enabled: false,
     hop: {
-      enabled: true,
+      enabled: false,
     },
   },
   preload: {
-    enabled: true,
+    enabled: false,
   },
   config: {
     API: {
@@ -32,7 +32,7 @@ const configIpfs = (): Options => ({
     Addresses: {
       Gateway: '/ip4/127.0.0.1/tcp/8080',
       Swarm: [
-        '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+        // '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
         // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
         // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
       ],
@@ -48,7 +48,7 @@ const configIpfs = (): Options => ({
         Interval: 10,
       },
       webRTCStar: {
-        Enabled: true,
+        Enabled: false,
       },
     },
     Bootstrap: [
@@ -57,7 +57,7 @@ const configIpfs = (): Options => ({
       // '/dnsaddr/bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp',
       // '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
       // '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
-      '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
+      // '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
     ],
     Pubsub: {
       Enabled: true,
