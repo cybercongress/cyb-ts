@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import { MainContainer } from '../../../containers/portal/components';
-import BtnPasport from '../../../containers/portal/pasport/btnPasport';
+import { ContainerGradientText, Input, ActionBar } from 'src/components';
+import { useAdviser } from 'src/features/adviser/context';
+import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import Select from '../../../containers/teleport/components/select';
 import {
   updateIpfsStateUrl,
@@ -11,30 +12,23 @@ import {
   ContainerKeyValue,
 } from './ipfsComponents/utilsComponents';
 import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
-import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
-import {
-  Button,
-  ContainerGradientText,
-  Input,
-  ActionBar,
-} from 'src/components';
+import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
-
 const dataOpts = ['external', 'embedded'];
 
 function IpfsSettings() {
-  const [valueSelect, setValueSelec] = useState('external');
+  const [valueSelect, setValueSelect] = useState('external');
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
-  const { node: ipfs, isLoading: pending, error: failed } = useIpfs();
+  const { isLoading: pending, error: failed } = useIpfs();
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
     if (lsTypeIpfs !== null) {
       const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
       const { ipfsNodeType, urlOpts, userGateway } = lsTypeIpfsData;
-      setValueSelec(ipfsNodeType);
+      setValueSelect(ipfsNodeType);
       setValueInput(urlOpts);
       if (userGateway) {
         setValueInputGateway(userGateway);
@@ -42,8 +36,17 @@ function IpfsSettings() {
     }
   }, []);
 
+  const adviserContext = useAdviser();
+
+  useEffect(() => {
+    adviserContext.setAdviser(
+      pending ? 'trying to connect to ipfs...' : null,
+      'yellow'
+    );
+  }, [adviserContext, pending]);
+
   const onChangeSelect = (item) => {
-    setValueSelec(item);
+    setValueSelect(item);
     updateIpfsStateType(item);
   };
 
@@ -71,11 +74,7 @@ function IpfsSettings() {
     setNewUrl,
   };
 
-  if (pending) {
-    return <PendingIpfsSettings />;
-  }
-
-  if (!pending && failed !== null) {
+  if (!pending && failed) {
     return <ErrorIpfsSettings stateErrorIpfsSettings={stateProps} />;
   }
 
@@ -91,7 +90,7 @@ function IpfsSettings() {
             textSelectValue={valueSelect !== '' ? valueSelect : ''}
             onChangeSelect={(item) => onChangeSelect(item)}
             custom
-            disabled={pending}
+            // disabled={pending}
           >
             {renderOptions(dataOpts, valueSelect)}
           </Select>
@@ -114,13 +113,13 @@ function IpfsSettings() {
                   value={valueInput}
                   onChange={(e) => setValueInput(e.target.value)}
                 />
-                <BtnPasport
+                <BtnPassport
                   style={{ maxWidth: '100px' }}
                   typeBtn="blue"
                   onClick={() => setNewUrl()}
                 >
                   edit
-                </BtnPasport>
+                </BtnPassport>
               </div>
             </ContainerKeyValue>
             <ContainerKeyValue>
@@ -138,19 +137,26 @@ function IpfsSettings() {
                   value={valueInputGateway}
                   onChange={(e) => setValueInputGateway(e.target.value)}
                 />
-                <BtnPasport
+                <BtnPassport
                   style={{ maxWidth: '100px' }}
                   typeBtn="blue"
                   onClick={() => setNewUrlGateway()}
                 >
                   edit
-                </BtnPasport>
+                </BtnPassport>
               </div>
             </ContainerKeyValue>
           </>
         )}
 
         <InfoIpfsNode />
+
+        {pending && (
+          <ComponentLoader
+            style={{ margin: '20px auto 10px', width: '100px' }}
+          />
+        )}
+        <Drive />
 
         <ActionBar
           button={{
@@ -159,7 +165,6 @@ function IpfsSettings() {
           }}
         />
       </div>
-      <Drive />
     </ContainerGradientText>
   );
 }
