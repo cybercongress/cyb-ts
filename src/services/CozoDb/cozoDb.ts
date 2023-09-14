@@ -1,6 +1,6 @@
 import initCozoDb, { CozoDb } from 'cyb-cozo-lib-wasm';
 import initializeScript from './migrations/schema.cozo';
-import { type } from 'ramda';
+
 let db: CozoDb | undefined;
 
 interface Column {
