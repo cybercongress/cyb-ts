@@ -1,5 +1,5 @@
 // TODO: Refactor this component - too heavy
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import ContentIpfs, {
@@ -55,6 +55,7 @@ function Ipfs() {
   const dataDiscussion = useGetDiscussion(cid);
   const { community } = useGetCommunity(cid);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [filter, setFilter] = useState(Filter.Rank);
   const [rankInfo, setRankInfo] = useState(null);
@@ -92,8 +93,6 @@ function Ipfs() {
 
   const { setAdviser } = useAdviser();
 
-  console.log(creator?.timestamp);
-
   useEffect(() => {
     if (!ipfsDataDetails) {
       return;
@@ -125,7 +124,17 @@ function Ipfs() {
       </div>,
       'purple'
     );
-  }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content]);
+
+    // location.pathname because of tabs, need refactor
+  }, [
+    ipfsDataDetails,
+    creator,
+    setAdviser,
+    rankInfo,
+    cid,
+    content,
+    location.pathname,
+  ]);
 
   const queryParamsId = `${cid}.${tab}`;
 

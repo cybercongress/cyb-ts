@@ -11,7 +11,9 @@
   position: absolute;
   z-index: 1;
   padding: 10px;
-  top: 10px;
+  top: calc(45% - (40px / 2));
+
+  // border: 1px solid red;
 
   // background-color: rgba(0, 17, 22, 0.37);
   // filter: drop-shadow(0px 0px 10px rgba(0, 196, 255, 0.1));
@@ -22,8 +24,6 @@
   right: 85%;
   display: flex;
   align-items: center;
-  justify-content: stretch;
-  flex-grow: 1;
   gap: 0 10px;
   font-size: 14px;
 
@@ -34,5 +34,6 @@
 }
 
 .right {
+  padding-top: 15px;
   left: 85%;
 }
