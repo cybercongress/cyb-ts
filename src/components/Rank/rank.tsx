@@ -4,6 +4,7 @@ import Tooltip from '../tooltip/tooltip';
 import { LinkWindow } from '../link/link';
 import { trimString, exponentialToDecimal } from '../../utils/utils';
 import { getRankGrade } from 'src/utils/search/utils';
+import styles from './Rank.module.scss';
 
 function GradeTooltipContent({ grade, hash, color, rank }) {
   return (
@@ -27,7 +28,7 @@ function GradeTooltipContent({ grade, hash, color, rank }) {
           {exponentialToDecimal(parseFloat(grade.to).toPrecision(3))}
           &nbsp; recieve grade
           <Pane
-            className="rank"
+            className={styles.rank}
             style={{ display: 'inline-flex' }}
             marginLeft="5px"
             backgroundColor={color}
@@ -84,6 +85,7 @@ const gradeColorRank = (rank) => {
 function Rank({ rank, hash, ...props }) {
   const gradeValue = getRankGrade(rank);
   const color = gradeColorRank(gradeValue.value);
+
   return (
     <Tooltip
       placement="bottom"
@@ -97,9 +99,15 @@ function Rank({ rank, hash, ...props }) {
         />
       }
     >
-      <Pane className="rank" backgroundColor={color} {...props}>
+      <div
+        className={styles.rank}
+        style={{
+          backgroundColor: color,
+        }}
+        {...props}
+      >
         {gradeValue.value}
-      </Pane>
+      </div>
     </Tooltip>
   );
 }

@@ -7,7 +7,7 @@ function Search() {
   return (
     <div>
       <header className={styles.header}>
-        {['superintelligence', 'donut of knowledge', 'help'].map((keyword) => {
+        {['superintelligence', 'help', 'donut of knowledge'].map((keyword) => {
           return (
             <Link
               className={styles.keywordBtn}

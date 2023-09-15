@@ -1,16 +1,16 @@
-import { Pane } from '@cybercongress/gravity';
 import { useDevice } from 'src/contexts/device';
 import { exponentialToDecimal, timeSince } from 'src/utils/utils';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import ContentItem from 'src/components/ContentItem/contentItem';
 import Rank from 'src/components/Rank/rank';
 import { useHover } from 'src/hooks/useHover';
-import Meta from './Meta/Meta';
 import styles from './Spark.module.scss';
 import cx from 'classnames';
 import useGetCreator from 'src/containers/ipfs/hooks/useGetCreator';
 import dateFormat from 'dateformat';
 import Account from 'src/components/account/account';
+import Tooltip from 'src/components/tooltip/tooltip';
+import Meta from './Meta/Meta';
 
 type Props = {
   cid: string;
@@ -35,25 +35,25 @@ function Spark({
 
   return (
     <div className={cx(styles.wrapper, 'hover-rank')} ref={ref}>
-      {hovering && creator && (
+      {!isMobile && hovering && creator && (
         <div className={styles.left}>
-          <Account address={creator.address} avatar />
-          <span className={styles.date}>
-            {timeSince(Date.parse(creator.timestamp) / 1000)} ago
-            {/* {dateFormat(creator.timestamp, 'dd/mm/yyyy')} */}
-          </span>
-
-          <Pane
-            className={cx(
-              'time-discussion hover-rank-contentItem',
-              styles.rank
+          <Tooltip
+            placement="bottom"
+            tooltip={dateFormat(
+              new Date(creator.timestamp),
+              'dd/mm/yyyy, HH:MM'
             )}
-            //   ${
-            //     rankLink === key ? '' : ''
-            //   }
+          >
+            <span className={styles.date}>
+              {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
+            </span>
+          </Tooltip>
 
-            position="absolute"
-            cursor="pointer"
+          <Account address={creator.address} avatar />
+
+          <button
+            className={cx('hover-rank-contentItem', styles.rank)}
+            type="button"
           >
             <Rank
               hash={cid}
@@ -63,11 +63,15 @@ function Spark({
               grade={itemData.grade}
               onClick={() => handleRankClick(cid)}
             />
-          </Pane>
+          </button>
         </div>
       )}
 
-      <div className={styles.right}>{hovering && <Meta cid={cid} />}</div>
+      {!isMobile && hovering && (
+        <div className={styles.right}>
+          <Meta cid={cid} />
+        </div>
+      )}
 
       <ContentItem
         setType={handleContentType}
