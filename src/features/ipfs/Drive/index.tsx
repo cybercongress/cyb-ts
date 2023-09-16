@@ -6,20 +6,20 @@ import {
   Divider,
   ButtonGroup,
   Intent,
-  TextArea,
 } from '@blueprintjs/core';
 import { Cell, Column, Table2 } from '@blueprintjs/table';
 
-import cozoDb, {
-  DBResult,
-  DBResultWithColIndex,
-} from 'src/services/CozoDb/cozoDb';
+import { IDBResult, PinTypeEnum } from 'src/services/CozoDb/cozoDb.d';
+import { withColIndex } from 'src/services/CozoDb/utils';
+import cozoDb from 'src/services/CozoDb/db.service';
+import useLog from 'src/hooks/useLog';
+
 import { useIpfs } from 'src/contexts/ipfs';
 // import Button from 'src/components/btnGrd';
 import { Pane, Text } from '@cybercongress/gravity';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
-import { getResponseAsTextPreview } from 'src/utils/ipfs/stream-utils';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
+import { mapParticleToCozoEntity } from 'src/services/CozoDb/dto';
 
 import 'normalize.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -27,7 +27,6 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/table/lib/css/table.css';
 
 import styles from './drive.scss';
-import { mapParticleToCozoEntity } from 'src/services/CozoDb/utils';
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
@@ -40,6 +39,7 @@ async function processByBatches<T, K>(
   const result = [];
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
+    // eslint-disable-next-line no-await-in-loop
     const batchResult = await Promise.all(batch.map((item) => processFn(item)));
     result.push(...batchResult);
     onProgress && onProgress(i + batchSize);
@@ -57,6 +57,7 @@ async function processAsyncIterableByBatches<T, K>(
   let batch = [];
   const result = [];
   let counter = 0;
+  // eslint-disable-next-line no-restricted-syntax
   for await (const item of items) {
     batch.push(item);
     if (batch.length === batchSize) {
@@ -77,19 +78,6 @@ async function processAsyncIterableByBatches<T, K>(
   return result;
 }
 
-// const  displayValue(v) {
-//   if (typeof v === 'string') {
-//     return v;
-//   }
-//   return <span style={{ color: '#184A90' }}>{JSON.stringify(v)}</span>;
-// }
-
-const PinTypeEnum = {
-  indirect: -1,
-  direct: 0,
-  recursive: 1,
-};
-
 function Drive() {
   const { node } = useIpfs();
   const [queryText, setQueryText] = useState('');
@@ -98,12 +86,13 @@ function Drive() {
   const [importInProgress, setImportInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [queryResults, setQueryResults] = useState<DBResult | undefined>();
-  const [logMessages, setLogMessages] = useState<string[]>([]);
+  const [queryResults, setQueryResults] = useState<IDBResult | undefined>();
+  const [logs, appendLog, updateLastLog, clearLog] = useLog();
 
   useEffect(() => {
     cozoDb.init().then(() => {
       setIsLoaded(true);
+      console.log('------czsd init', cozoDb);
     });
   }, []);
 
@@ -115,13 +104,13 @@ function Drive() {
       setStatusMessage('');
       setQueryResults(undefined);
       requestAnimationFrame(() => {
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             const t0 = performance.now();
-            const result = cozoDb.runCommand(query);
+            const result = await cozoDb.runCommand(query);
             const t1 = performance.now();
 
-            if (result.ok) {
+            if (result.ok === true) {
               setStatusMessage(
                 `finished with ${result.rows.length} rows in ${diffMs(t0, t1)}`
               );
@@ -148,23 +137,18 @@ function Drive() {
     }
   }
 
-  const appendLog = (messages: string[]) => {
-    setLogMessages((prev) => [...prev, ...messages]);
-  };
-  const updateLastLog = (message: string) => {
-    setLogMessages((prev) => [...prev.slice(0, prev.length - 1), message]);
-  };
-
   const importIpfs = async () => {
     if (!node) {
-      setLogMessages(['Ipfs node is not available...']);
+      appendLog('Ipfs node is not available...');
       return;
     }
     setImportInProgress(true);
     try {
+      clearLog();
+
       const t0 = performance.now();
       let t1 = performance.now();
-      setLogMessages(['Loading pins...', '']);
+      appendLog(['Loading pins...', '']);
 
       const pins = await processAsyncIterableByBatches(
         node.pin.ls({ type: 'recursive' }),
@@ -184,9 +168,12 @@ function Drive() {
         `☑️ Imported ${pins.length} pins in ${diffMs(t1, performance.now())}`
       );
 
-      const pinsResult = cozoDb.executeGetCommand('pin', [
-        `type = ${PinTypeEnum.recursive}`,
-      ]) as DBResultWithColIndex;
+      // Can use same pins cids
+      const pinsResult = withColIndex(
+        await cozoDb.executeGetCommand('pin', [
+          `type = ${PinTypeEnum.recursive}`,
+        ])
+      );
       const { cid: cidIdx } = pinsResult.index;
 
       const recursivePins = pinsResult.rows.map(
@@ -234,6 +221,7 @@ function Drive() {
       appendLog(['', `🎉 All done in ${diffMs(t0, performance.now())}`]);
     } catch (e) {
       console.log('import error', e);
+      appendLog(e);
     } finally {
       setImportInProgress(false);
     }
@@ -287,6 +275,7 @@ function Drive() {
 
   const renderCell = (colIdx: number) => (rowIdx: number) =>
     <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>;
+
   console.log('log---queryResults', queryResults, queryResults?.rows.length);
   return (
     <div>
@@ -304,12 +293,12 @@ function Drive() {
             intent={Intent.WARNING}
           />
         )}
-        {logMessages.length > 0 && (
+        {logs.length > 0 && (
           <div>
             <Text color="#fff" fontSize="20px" lineHeight="30px">
               Importing from IPFS:
             </Text>
-            {logMessages.map((m, i) => (
+            {logs.map((m, i) => (
               <div key={`ipfs_log_${i}`}>{m}</div>
             ))}
           </div>
