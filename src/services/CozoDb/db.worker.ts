@@ -26,6 +26,11 @@ const api = {
   executeGetCommand: async (tableName: string, conditionArr: string[]) =>
     cozoDb.get(tableName, conditionArr),
 
+  importRelations: async (content: string) => cozoDb.importRelations(content),
+
+  exportRelations: async (relations: string[]) =>
+    cozoDb.exportRelations(relations),
+
   async executeBatchPutCommand(
     tableName: string,
     array: any[],

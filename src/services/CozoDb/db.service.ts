@@ -46,12 +46,20 @@ function dbService() {
       onProgress ? proxy(onProgress) : undefined
     );
 
+  const importRelations = async (content: string) =>
+    dbServiceProxy.importRelations(content);
+
+  const exportRelations = async (relations: string[]) =>
+    dbServiceProxy.exportRelations(relations);
+
   return {
     init,
     executePutCommand,
     executeBatchPutCommand,
     runCommand,
     executeGetCommand,
+    importRelations,
+    exportRelations,
   };
 }
 

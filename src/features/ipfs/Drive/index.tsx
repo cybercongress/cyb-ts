@@ -7,12 +7,19 @@ import {
   ButtonGroup,
   Intent,
 } from '@blueprintjs/core';
-import { Cell, Column, Table2 } from '@blueprintjs/table';
+import {
+  Cell,
+  Column,
+  Table2,
+  TruncatedFormat,
+  ColumnHeaderCell,
+} from '@blueprintjs/table';
 
 import { IDBResult, PinTypeEnum } from 'src/services/CozoDb/cozoDb.d';
 import { withColIndex } from 'src/services/CozoDb/utils';
-import cozoDb from 'src/services/CozoDb/db.service';
 import useLog from 'src/hooks/useLog';
+import { saveAs } from 'file-saver';
+import cozoDb from 'src/services/CozoDb/db.service';
 
 import { useIpfs } from 'src/contexts/ipfs';
 // import Button from 'src/components/btnGrd';
@@ -20,6 +27,8 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { mapParticleToCozoEntity } from 'src/services/CozoDb/dto';
+
+import FileInputButton from './FileInputButton';
 
 import 'normalize.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -276,7 +285,35 @@ function Drive() {
   const renderCell = (colIdx: number) => (rowIdx: number) =>
     <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>;
 
-  console.log('log---queryResults', queryResults, queryResults?.rows.length);
+  const renderColumn = (name: string, colIdx: number) => {
+    let cellRenderer = null;
+    if (['cid', 'text'].indexOf(name) > -1) {
+      cellRenderer = (rowIdx: number) => (
+        <Cell>
+          <TruncatedFormat detectTruncation>
+            {queryResults.rows[rowIdx][colIdx]}
+          </TruncatedFormat>
+        </Cell>
+      );
+    } else {
+      cellRenderer = (rowIdx: number) => (
+        <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>
+      );
+    }
+    const headerCellRenderer = (colIdx: number) => (
+      <ColumnHeaderCell>{name}</ColumnHeaderCell>
+    );
+
+    return (
+      <Column
+        name={name}
+        key={colIdx}
+        cellRenderer={cellRenderer}
+        columnHeaderCellRenderer={headerCellRenderer}
+      />
+    );
+  };
+
   return (
     <div>
       <Pane width="100%" marginBottom={20} padding={10}>
@@ -326,6 +363,37 @@ function Drive() {
             onClick={() => runQuery()}
             disabled={!isLoaded || inProgress}
             intent={Intent.PRIMARY}
+          />
+          <Divider />
+          <Button
+            icon="export"
+            text="Export..."
+            intent={Intent.NONE}
+            onClick={async () => {
+              const result = await cozoDb.exportRelations([
+                'pin',
+                'particle',
+                'link',
+              ]);
+              console.log('---export data', result);
+              if (result.ok) {
+                const blob = new Blob([JSON.stringify(result.data)], {
+                  type: 'text/plain;charset=utf-8',
+                });
+                saveAs(blob, 'export.json');
+              } else {
+                console.log('CozoDb: Failed to import', result);
+              }
+            }}
+          />
+          <Divider />
+          <FileInputButton
+            caption="Import..."
+            processFile={async (file) => {
+              const content = await file.text();
+              const res = await cozoDb.importRelations(content);
+              console.log('----import result', res);
+            }}
           />
         </ButtonGroup>
       </Pane>
@@ -390,14 +458,13 @@ function Drive() {
       <Pane width="100%" marginTop={10}>
         {queryResults ? (
           queryResults.rows && queryResults.headers ? (
-            <div style={{ height: '600px' }}>
+            <div style={{ height: '600px' }} className="bp5-dark">
               <Table2
                 cellRendererDependencies={queryResults.rows}
                 numRows={queryResults.rows.length}
+                // columnWidths={[100, 100, 50, 20, 10]}
               >
-                {queryResults.headers.map((n, idx) => (
-                  <Column name={n} key={idx} cellRenderer={renderCell(idx)} />
-                ))}
+                {queryResults.headers.map((n, idx) => renderColumn(n, idx))}
               </Table2>
             </div>
           ) : null

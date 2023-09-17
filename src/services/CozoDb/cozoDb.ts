@@ -152,12 +152,20 @@ function DbService() {
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(commandFactory!.generateGet(tableName, conditionArr), true);
 
+  const importRelations = (content: string) =>
+    JSON.parse(db!.import_relations(content));
+
+  const exportRelations = (relations: string[]) =>
+    JSON.parse(db!.export_relations(JSON.stringify({ relations })));
+
   return {
     init,
     put,
     get,
     runCommand,
     getCommandFactory: () => commandFactory,
+    importRelations,
+    exportRelations,
   };
 }
 

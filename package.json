@@ -188,6 +188,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "ethers": "^5.0.26",
+    "file-saver": "^2.0.5",
     "file-type": "^18.2.1",
     "graphql": "^16.5.0",
     "graphql-request": "^5.1.0",
@@ -234,7 +235,8 @@
     "ts-jest-resolver": "^2.0.1",
     "videostream": "^3.2.2",
     "web3": "1.2.4",
-    "web3-utils": "^1.2.4"
+    "web3-utils": "^1.2.4",
+    "worker-loader": "^3.0.8"
   },
   "prec-commit": [
     "lint"
