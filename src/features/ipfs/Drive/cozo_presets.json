@@ -1,0 +1,23 @@
+{
+  "pin: ls": "?[cid, type] := *pin{cid, type}",
+  "pin: stats": "?[type_as_str, count(cid)] := *pin{cid, type}, type_as_str = get(list('indirect','direct','recursive'),type+1)",
+  "particle: pin | ls": [
+    "r[cid,  pin] := *particle{cid}, not *pin{cid: cid, type}, pin=0",
+    "r[cid, pin] := *particle{cid}, *pin{cid: cid, type}, pin=1",
+    "?[pinned, cid, mime, text, size] := r[cid, pinned], *particle{cid:cid, mime, text, size}",
+    ":order -size"
+  ],
+  "particle: filter": "?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime=\"text/plain\"",
+  "particle: stats": "?[mime, sum(size), count(mime), sum(blocks)] := *particle{mime, blocks, size}\r\n :order -sum(size)\r\n:limit 10",
+  "link: stats": [
+    "r[from, count(to), side] := *link{from, to}, side=\"from\"",
+    "r[to, count(from), side] := *link{from, to}, side=\"to\"",
+    "?[side, lnk, cnt] := r[lnk, cnt, side]",
+    ":order -cnt"
+  ],
+  "link: text-to-text": [
+    "rt[text, from] := *link{from, to}, *particle{cid: from, text}",
+    "rf[text, to] := *link{from, to}, *particle{cid: to, text}",
+    "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
+  ]
+}

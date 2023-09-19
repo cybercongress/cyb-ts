@@ -92,7 +92,7 @@ function IpfsSettings() {
             custom
             // disabled={pending}
           >
-            {renderOptions(dataOpts, valueSelect)}
+            {renderOptions(dataOpts)}
           </Select>
         </ContainerKeyValue>
 

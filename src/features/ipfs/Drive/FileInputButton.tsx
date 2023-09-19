@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Intent } from '@blueprintjs/core';
+import { Button } from 'src/components';
 function FileInputButton({
   caption,
   processFile,
@@ -30,12 +30,9 @@ function FileInputButton({
         ref={fileInputRef}
         onChange={handleFileChange}
       />
-      <Button
-        icon="import"
-        text={caption}
-        intent={Intent.NONE}
-        onClick={handleClick}
-      />
+      <Button onClick={handleClick} small>
+        {caption}
+      </Button>
     </div>
   );
 }

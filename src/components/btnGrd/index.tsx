@@ -39,6 +39,7 @@ export type Props = {
   children?: React.ReactNode;
   link?: string;
   onClick?: () => void;
+  small?: boolean;
 };
 
 function Button({
@@ -51,6 +52,7 @@ function Button({
   onClick,
   link,
   className,
+  small,
   ...props
 }: Props) {
   // useEffect(() => {
@@ -100,7 +102,9 @@ function Button({
       type="button"
       id="BtnGrd"
       onClick={handleClick}
-      className={cx(styles.containerBtnGrd, className)}
+      className={cx(styles.containerBtnGrd, className, {
+        [styles.smallBtn]: small,
+      })}
       disabled={disabled || pending}
       {...props}
       {...componentProps}

@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  Button,
-  Spinner,
-  Divider,
-  ButtonGroup,
-  Intent,
-} from '@blueprintjs/core';
-import {
-  Cell,
-  Column,
-  Table2,
-  TruncatedFormat,
-  ColumnHeaderCell,
-} from '@blueprintjs/table';
+import Table from 'src/components/Table/Table';
 
 import { IDBResult, PinTypeEnum } from 'src/services/CozoDb/cozoDb.d';
 import { withColIndex } from 'src/services/CozoDb/utils';
@@ -27,15 +14,24 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { mapParticleToCozoEntity } from 'src/services/CozoDb/dto';
-
+import { Button as CybButton, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
 
-import 'normalize.css';
-import '@blueprintjs/core/lib/css/blueprint.css';
-import '@blueprintjs/icons/lib/css/blueprint-icons.css';
-import '@blueprintjs/table/lib/css/table.css';
+import { toListOfObjects } from 'src/services/CozoDb/utils';
 
 import styles from './drive.scss';
+
+import cozoPresets from './cozo_presets.json';
+
+const DEFAULT_PRESET_NAME = '💡 defaul commands...';
+
+const presetsAsSelectOptions = [
+  { text: DEFAULT_PRESET_NAME, value: '' },
+  ...Object.entries(cozoPresets).map(([key, value]) => ({
+    text: key,
+    value: Array.isArray(value) ? value.join('\r\n') : value,
+  })),
+];
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
@@ -95,7 +91,7 @@ function Drive() {
   const [importInProgress, setImportInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [queryResults, setQueryResults] = useState<IDBResult | undefined>();
+  const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
   const [logs, appendLog, updateLastLog, clearLog] = useLog();
 
   useEffect(() => {
@@ -127,7 +123,12 @@ function Drive() {
                 result.headers =
                   result.rows[0].map((_, i) => i.toString()) || [];
               }
-              setQueryResults(result);
+              const rows = toListOfObjects(result);
+              const cols = result.headers.map((n) => ({
+                header: n,
+                accessorKey: n,
+              }));
+              setQueryResults({ rows, cols });
             } else {
               console.error('Query failed', result);
               setStatusMessage(`finished with errors`);
@@ -236,99 +237,85 @@ function Drive() {
     }
   };
 
-  const runExampleScript = async (
-    name:
-      | 'sort_particle'
-      | 'filter_particle'
-      | 'stats_particle'
-      | 'pin_stats'
-      | 'link_stats'
-      | 'link_text'
-  ) => {
-    let cmd = '';
-    const baseCmdParticle =
-      '?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}';
-    switch (name) {
-      case 'pin_stats':
-        cmd = `?[type_as_str, count(cid)] := *pin{cid, type}, type_as_str = get(list('indirect','direct','recursive'),type+1)`;
-        break;
-      case 'sort_particle':
-        cmd = `r[cid,  pin] := *particle{cid}, not *pin{cid: cid, type}, pin=0
-        r[cid, pin] := *particle{cid}, *pin{cid: cid, type}, pin=1
-        ?[pinned, cid, mime, text, size] := r[cid, pinned], *particle{cid:cid, mime, text, size}
-        :order -size`;
-        break;
-      case 'filter_particle':
-        cmd = `?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime="text/plain"`;
-        break;
-      case 'stats_particle':
-        cmd = `?[mime, sum(size), count(mime), sum(blocks)] := *particle{mime, blocks, size}\r\n :order -sum(size)\r\n:limit 10`;
-        break;
-      case 'link_stats':
-        cmd = `r[from, count(to), side] := *link{from, to}, side="from"
-        r[to, count(from), side] := *link{from, to}, side="to"
-        ?[side, lnk, cnt] := r[lnk, cnt, side]
-        :order -cnt`;
-        break;
-      case 'link_text':
-        cmd = `rt[text, from] := *link{from, to}, *particle{cid: from, text}
-        rf[text, to] := *link{from, to}, *particle{cid: to, text}
-        ?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''`;
-        break;
-      default:
-        cmd = baseCmdParticle;
-    }
-    setQueryText(cmd);
-    runQuery(cmd);
-  };
-
-  const renderCell = (colIdx: number) => (rowIdx: number) =>
-    <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>;
-
-  const renderColumn = (name: string, colIdx: number) => {
-    let cellRenderer = null;
-    if (['cid', 'text'].indexOf(name) > -1) {
-      cellRenderer = (rowIdx: number) => (
-        <Cell>
-          <TruncatedFormat detectTruncation>
-            {queryResults.rows[rowIdx][colIdx]}
-          </TruncatedFormat>
-        </Cell>
-      );
+  const exportReations = async () => {
+    const result = await cozoDb.exportRelations(['pin', 'particle', 'link']);
+    console.log('---export data', result);
+    if (result.ok) {
+      const blob = new Blob([JSON.stringify(result.data)], {
+        type: 'text/plain;charset=utf-8',
+      });
+      saveAs(blob, 'export.json');
     } else {
-      cellRenderer = (rowIdx: number) => (
-        <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>
-      );
+      console.log('CozoDb: Failed to import', result);
     }
-    const headerCellRenderer = (colIdx: number) => (
-      <ColumnHeaderCell>{name}</ColumnHeaderCell>
-    );
-
-    return (
-      <Column
-        name={name}
-        key={colIdx}
-        cellRenderer={cellRenderer}
-        columnHeaderCellRenderer={headerCellRenderer}
-      />
-    );
   };
 
+  const importReations = async (file: any) => {
+    const content = await file.text();
+    const res = await cozoDb.importRelations(content);
+    console.log('----import result', res);
+  };
+
+  const runExampleScript = async (value: string) => {
+    console.log('---', value);
+    setQueryText(value);
+    runQuery(value);
+  };
+
+  // const renderColumn = (name: string, colIdx: number) => {
+  //   let cellRenderer = null;
+  //   if (['cid', 'text'].indexOf(name) > -1) {
+  //     cellRenderer = (rowIdx: number) => (
+  //       <Cell>
+  //         <TruncatedFormat detectTruncation>
+  //           {queryResults.rows[rowIdx][colIdx]}
+  //         </TruncatedFormat>
+  //       </Cell>
+  //     );
+  //   } else {
+  //     cellRenderer = (rowIdx: number) => (
+  //       <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>
+  //     );
+  //   }
+
+  //   // const headerCellRenderer = (colIdx: number) => (
+  //   //   <ColumnHeaderCell>{name}</ColumnHeaderCell>
+  //   // );
+
+  //   return (
+  //     <Column
+  //       name={name}
+  //       key={colIdx}
+  //       cellRenderer={cellRenderer}
+  //       // columnHeaderCellRenderer={headerCellRenderer}
+  //     />
+  //   );
+  // };
   return (
     <div>
-      <Pane width="100%" marginBottom={20} padding={10}>
-        {importInProgress && <Spinner size={50} />}
+      <Pane
+        width="100%"
+        display="flex"
+        marginBottom={20}
+        padding={10}
+        justifyContent="center"
+        alignItems="center"
+      >
+        {importInProgress && <Loading />}
         {!importInProgress && (
-          <Button
-            icon="refresh"
-            fill
-            active
-            large
-            disabled={!isLoaded || !node}
-            onClick={importIpfs}
-            text="Sync with Ipfs Node"
-            intent={Intent.WARNING}
-          />
+          <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+            sync drive
+          </CybButton>
+          // <Button
+          //   icon="refresh"
+          //   fill
+          //   active
+          //   large
+          //   disabled={!isLoaded || !node}
+          //   onClick={importIpfs}
+          //   text="Sync with Ipfs Node"
+          //   intent={Intent.WARNING}
+          // />
         )}
         {logs.length > 0 && (
           <div>
@@ -350,122 +337,51 @@ function Drive() {
           className="resize-none"
           rows={10}
         />
-        <ButtonGroup>
-          <Button
-            icon="play"
-            text={
-              isLoaded
+        <div className={styles.commandPanel}>
+          <div className={styles.subPanel}>
+            <CybButton
+              disabled={!isLoaded || inProgress}
+              onClick={() => runQuery()}
+              small
+            >
+              {isLoaded
                 ? inProgress
                   ? 'Query is running'
-                  : 'Run script'
-                : 'Loading WASM ...'
-            }
-            onClick={() => runQuery()}
-            disabled={!isLoaded || inProgress}
-            intent={Intent.PRIMARY}
-          />
-          <Divider />
-          <Button
-            icon="export"
-            text="Export..."
-            intent={Intent.NONE}
-            onClick={async () => {
-              const result = await cozoDb.exportRelations([
-                'pin',
-                'particle',
-                'link',
-              ]);
-              console.log('---export data', result);
-              if (result.ok) {
-                const blob = new Blob([JSON.stringify(result.data)], {
-                  type: 'text/plain;charset=utf-8',
-                });
-                saveAs(blob, 'export.json');
-              } else {
-                console.log('CozoDb: Failed to import', result);
-              }
-            }}
-          />
-          <Divider />
-          <FileInputButton
-            caption="Import..."
-            processFile={async (file) => {
-              const content = await file.text();
-              const res = await cozoDb.importRelations(content);
-              console.log('----import result', res);
-            }}
-          />
-        </ButtonGroup>
-      </Pane>
-      <Pane marginTop={10} marginBottom={20}>
-        <Text color="#fff">
-          Query Examples. Click on the button to run the script:
-        </Text>
-        <Pane marginTop={10}>
-          <ButtonGroup>
-            <div className={styles.centered}>Pin:</div>
-            <Button
-              icon="pin"
-              text="Stats"
-              intent={Intent.WARNING}
-              onClick={() => runExampleScript('pin_stats')}
+                  : '🟧 Run script'
+                : 'Loading WASM ...'}
+            </CybButton>
+            <Select
+              width="180px"
+              valueSelect=""
+              small
+              // textSelectValue="select preset..."
+              onChangeSelect={runExampleScript}
+              options={presetsAsSelectOptions}
+              // disabled={pending}
             />
-            <div className={styles.centered}>Particle:</div>
-            <Button
-              icon="sort"
-              text="list with pin"
-              intent={Intent.SUCCESS}
-              onClick={() => runExampleScript('sort_particle')}
-            />
-            <Divider />
-            <Button
-              icon="filter"
-              text="filter"
-              intent={Intent.SUCCESS}
-              onClick={() => runExampleScript('filter_particle')}
-            />
-            <Divider />
-            <Button
-              icon="search-template"
-              text="Top 10"
-              intent={Intent.SUCCESS}
-              onClick={() => runExampleScript('stats_particle')}
-            />
-            <div className={styles.centered}>Links:</div>
-            <Button
-              icon="exchange"
-              text="Stats"
-              intent={Intent.NONE}
-              onClick={() => runExampleScript('link_stats')}
-            />
-            <Divider />
-            <Button
-              icon="comparison"
-              text="text links"
-              intent={Intent.NONE}
-              onClick={() => runExampleScript('link_text')}
-            />
-            <Divider />
-          </ButtonGroup>
-        </Pane>
+          </div>
+          <div className={styles.subPanel}>
+            <CybButton
+              disabled={!isLoaded || !node}
+              onClick={exportReations}
+              small
+            >
+              export
+            </CybButton>
+            <FileInputButton caption="import" processFile={importReations} />
+          </div>
+        </div>
       </Pane>
       {statusMessage && (
         <Pane width="100%" marginTop={10}>
           <div className={styles.statusMessage}>{statusMessage}</div>
         </Pane>
       )}
-
       <Pane width="100%" marginTop={10}>
         {queryResults ? (
-          queryResults.rows && queryResults.headers ? (
+          queryResults.cols.length > 0 ? (
             <div style={{ height: '600px' }} className="bp5-dark">
-              <Table2
-                cellRendererDependencies={queryResults.rows}
-                numRows={queryResults.rows.length}
-                // columnWidths={[100, 100, 50, 20, 10]}
-              >
-                {queryResults.headers.map((n, idx) => renderColumn(n, idx))}
-              </Table2>
+              <Table columns={queryResults.cols} data={queryResults.rows} />
             </div>
           ) : null
         ) : (
