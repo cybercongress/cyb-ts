@@ -9,7 +9,8 @@ const fixedValue = '~/';
 
 function Commander() {
   const navigate = useNavigate();
-  const { query } = useParams();
+  const { query: q, cid } = useParams();
+  const query = q || cid;
   const [search, setSearch] = useState(fixedValue + (query || ''));
 
   const ref = React.useRef<HTMLInputElement>(null);

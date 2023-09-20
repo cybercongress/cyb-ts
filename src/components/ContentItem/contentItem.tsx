@@ -32,7 +32,7 @@ function ContentItem({
   setType,
   className,
 }: ContentItemProps): JSX.Element {
-  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+  const { status, content } = useQueueIpfsContent(cid, item?.rank, parentId);
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
@@ -40,7 +40,7 @@ function ContentItem({
         key={cid}
         status={status}
         grade={
-          item.rank
+          item?.rank
             ? getRankGrade(item.rank)
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }

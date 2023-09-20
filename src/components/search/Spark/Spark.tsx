@@ -1,5 +1,5 @@
 import { useDevice } from 'src/contexts/device';
-import { exponentialToDecimal, timeSince } from 'src/utils/utils';
+import { coinDecimals, exponentialToDecimal, timeSince } from 'src/utils/utils';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import ContentItem from 'src/components/ContentItem/contentItem';
 import Rank from 'src/components/Rank/rank';
@@ -11,6 +11,9 @@ import dateFormat from 'dateformat';
 import Account from 'src/components/account/account';
 import Tooltip from 'src/components/tooltip/tooltip';
 import Meta from './Meta/Meta';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { getRankGrade } from 'src/utils/search/utils';
 
 type Props = {
   cid: string;
@@ -31,7 +34,27 @@ function Spark({
 
   const [ref, hovering] = useHover();
 
+  const queryClient = useQueryClient();
+
   const { creator } = useGetCreator(cid);
+
+  const [rankInfo, setRankInfo] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      if (itemData.rank) {
+        return;
+      }
+      const response = await queryClient?.rank(cid);
+
+      const rank = coinDecimals(parseFloat(response.rank));
+      const rankData = {
+        rank: exponentialToDecimal(rank.toPrecision(3)),
+        grade: getRankGrade(rank),
+      };
+      setRankInfo(rankData);
+    })();
+  }, [cid, queryClient]);
 
   return (
     <div className={cx(styles.wrapper, 'hover-rank')} ref={ref}>
@@ -58,9 +81,9 @@ function Spark({
             <Rank
               hash={cid}
               rank={exponentialToDecimal(
-                parseFloat(itemData.rank).toPrecision(3)
+                parseFloat(itemData.rank || rankInfo?.rank).toPrecision(3)
               )}
-              grade={itemData.grade}
+              grade={itemData?.grade || rankInfo?.grade}
               onClick={() => handleRankClick(cid)}
             />
           </button>

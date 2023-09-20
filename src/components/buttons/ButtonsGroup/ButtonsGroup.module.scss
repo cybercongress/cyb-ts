@@ -1,0 +1,51 @@
+.wrapper {
+  list-style-type: none;
+
+  display: flex;
+  gap: 10px;
+
+  li {
+    color: #1fcbff;
+  }
+
+  li.--disabled {
+    &,
+    label {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  li.--checked {
+    text-shadow: 0px 0px 10px #1fcbff;
+
+    position: relative;
+
+    &::before {
+      content: '';
+      width: 16px;
+      display: block;
+      position: absolute;
+      //   z-index: ;
+      top: -18px;
+      height: 36px;
+      background: #1fcbff;
+      border-top: 2px solid #1fcbff;
+      /* saber/saber-blue */
+      //   box-shadow: 0px 0px 10px 1px rgba(31, 203, 255, 0.5);
+      background: linear-gradient(
+        0,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(31, 203, 255, 0.11) 100%
+      );
+    }
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  input {
+    display: none;
+  }
+}

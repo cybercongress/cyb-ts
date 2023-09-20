@@ -1,3 +1,5 @@
+@import '../../components/containerGradient/saber/index.module.scss';
+
 .header {
   // position: sticky;
   // top: 110px;
@@ -9,6 +11,11 @@
   justify-content: space-between;
   align-content: center;
   // position: relative;
+
+  @include saber('blue', top);
+  padding-top: 17px;
+
+  padding-bottom: 20px;
 
   // &::before {
   //   border: 1px solid red;

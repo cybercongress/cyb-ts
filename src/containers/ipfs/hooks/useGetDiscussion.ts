@@ -52,7 +52,7 @@ const getTo = async (
   }
 };
 
-function useGetDiscussion(hash: string) {
+function useGetDiscussion(hash: string, skip?: boolean) {
   const [total, setTotal] = useState(0);
   const {
     status,
@@ -76,7 +76,7 @@ function useGetDiscussion(hash: string) {
       return { data: reduceArr, page: pageParam };
     },
     {
-      enabled: Boolean(hash),
+      enabled: !skip && Boolean(hash),
       getNextPageParam: (lastPage) => {
         if (lastPage.data && lastPage.data.length === 0) {
           return undefined;

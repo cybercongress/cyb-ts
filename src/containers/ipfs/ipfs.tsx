@@ -32,6 +32,7 @@ import {
 } from 'src/utils/utils';
 import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 import { PREFIXES } from './components/metaInfo';
+import SearchResults from '../Search/SearchResults';
 
 enum Tab {
   Discussion = 'discussion',
@@ -62,6 +63,8 @@ function Ipfs() {
 
   const { isMobile: mobile } = useDevice();
   const queryClient = useQueryClient();
+
+  console.log(content, source, status);
 
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
@@ -178,6 +181,7 @@ function Ipfs() {
       <main
         className="block-body"
         style={{
+          paddingBottom: 30,
           width: '62%',
         }}
       >
@@ -193,7 +197,7 @@ function Ipfs() {
             <ContentIpfs status={status} content={content} cid={cid} />
           </ContainerGradientText>
         )}
-
+        {/* 
         <div className={styles.tabs}>
           <Carousel
             onChange={(index) => {
@@ -220,9 +224,9 @@ function Ipfs() {
             })}
             activeStep={slides.findIndex((slide) => slide.name === tab)}
           />
-        </div>
+        </div> */}
 
-        {tab === Tab.Outcoming && (
+        {/* {tab === Tab.Outcoming && (
           <>
             <div
               style={{
@@ -250,9 +254,9 @@ function Ipfs() {
 
             <br />
           </>
-        )}
+        )} */}
 
-        <Pane
+        {/* <Pane
           width="90%"
           marginX="auto"
           marginY={0}
@@ -289,8 +293,18 @@ function Ipfs() {
           {tab === Tab.Incoming && (
             <Backlinks data={backlinks} parent={queryParamsId} />
           )}
-        </Pane>
+        </Pane> */}
       </main>
+
+      <div
+        style={{
+          width: '90%',
+          margin: '0 auto',
+        }}
+      >
+        <SearchResults />
+      </div>
+
       {!mobile && (tab === 'discussion' || tab === 'answers') && (
         <ActionBarContainer
           placeholder={

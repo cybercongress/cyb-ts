@@ -29,6 +29,10 @@ import Pill from 'src/components/Pill/Pill';
 import styles from './SearchResults.module.scss';
 import Spark from 'src/components/search/Spark/Spark';
 import { SearchItemResult } from 'src/soft.js/api/search';
+import useGetDiscussion from '../ipfs/hooks/useGetDiscussion';
+import Dropdown from 'src/components/Dropdown/Dropdown';
+import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
+import useGetBackLink from '../ipfs/hooks/useGetBackLink';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -83,11 +87,53 @@ const initialFiltersState = {
   video: false,
   pdf: false,
   link: false,
+  // audio: false,
+};
+
+const mapF = {
+  text: '📄',
+  image: '🖼️',
+  video: '🎞️',
+  pdf: '📑',
+  link: '🔗',
+  // a: '🎧',
+};
+
+type SearchItemType = {
+  cid: string;
+
+  rank?: string;
+  grade?: string;
+  timestamp?: string;
+};
+
+enum LinksFilter {
+  backlinks = 'backlinks',
+  all = 'all',
+  cyberLinks = 'cyberLinks',
+}
+
+enum SortBy {
+  'rank' = 'rank',
+  'date' = 'date',
+  popular = 'popular',
+  mine = 'mine',
+}
+
+const mapS = {
+  [SortBy.rank]: '⭐',
+  [SortBy.date]: '📅',
+  [SortBy.popular]: '🔥',
+  [SortBy.mine]: '👤',
 };
 
 function SearchResults() {
   const queryClient = useQueryClient();
-  const { query = '' } = useParams();
+  const { query: q, cid } = useParams();
+
+  let query = q || cid || '';
+
+  console.log(query);
 
   const location = useLocation();
   // const navigate = useNavigate();
@@ -104,8 +150,15 @@ function SearchResults() {
     [key: string]: IpfsContentType;
   }>({});
 
+  const [linksFilter, setLinksFilter] = useState(LinksFilter.all);
+  const backlinks = useGetBackLink(
+    keywordHash,
+    linksFilter === LinksFilter.cyberLinks
+  );
+  console.log(backlinks);
+
   const [filters, setFilters] = useState(initialFiltersState);
-  // const [filter2, setFilter2] = useState('rank');
+  const [filter2, setFilter2] = useState(SortBy.rank);
 
   const { isMobile: mobile } = useDevice();
   useCommunityPassports();
@@ -121,6 +174,47 @@ function SearchResults() {
     setContentType({});
     setFilters(initialFiltersState);
   }, [query]);
+
+  console.log(filters);
+
+  const d = useGetDiscussion(keywordHash, filter2 !== 'date');
+
+  const total2 = total || d.total;
+
+  const dateResults =
+    (d.data?.pages.reduce((acc, page) => {
+      return acc.concat(page.data);
+    }, []) as SearchItemType[]) || [];
+
+  useEffect(() => {
+    (async () => {
+      let keywordHashTemp = '';
+
+      if (query.match(PATTERN_IPFS_HASH)) {
+        keywordHashTemp = query;
+      } else {
+        keywordHashTemp = await getIpfsHash(encodeSlash(query));
+      }
+
+      setKeywordHash(keywordHashTemp);
+    })();
+  }, [query]);
+
+  const items: SearchItemType[] = (() => {
+    if (filter2 === 'date') {
+      return dateResults;
+    } else if (linksFilter === LinksFilter.backlinks) {
+      return backlinks.backlinks;
+    } else {
+      return Object.values(searchResults).map((item) => {
+        return {
+          cid: item.particle,
+          rank: item.rank,
+          grade: item.grade,
+        };
+      });
+    }
+  })();
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -179,6 +273,16 @@ function SearchResults() {
   }, [query, location, update, queryClient]);
 
   const fetchMoreData = async (page) => {
+    if (filter2 === 'date') {
+      d.fetchNextPage();
+      return;
+    }
+
+    if (linksFilter === 'backlinks') {
+      backlinks.fetchNextPage();
+      return;
+    }
+
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
@@ -321,32 +425,35 @@ function SearchResults() {
     );
   }
 
+  console.log(items);
+
   if (Object.keys(searchResults).length > 0) {
     searchItems.push(
-      Object.keys(searchResults)
+      items
         .filter((item) => {
+          const cid = item.cid;
           if (!Object.values(filters).some((value) => value)) {
             return true;
           } else {
-            if (!contentType[item]) {
+            if (!contentType[cid]) {
               return false;
             }
-            return filters[contentType[item]];
+            return filters[contentType[cid]];
           }
         })
-        .map((key) => {
+        .map((key, i) => {
           return (
             <Spark
-              itemData={searchResults[key]}
-              cid={key}
-              key={key}
+              itemData={key}
+              cid={key.cid}
+              key={key.cid + i}
               query={query}
               handleRankClick={onClickRank}
               handleContentType={(type) =>
                 setContentType((items) => {
                   return {
                     ...items,
-                    [key]: type,
+                    [key.cid]: type,
                   };
                 })
               }
@@ -361,63 +468,84 @@ function SearchResults() {
       <MainContainer width="90%">
         <header className={styles.header}>
           <div>
-            <button
-              type="button"
-              onClick={() => {
-                setFilters(initialFiltersState);
-              }}
-            >
-              <Pill
-                text="all"
-                color={
-                  Object.values(filters).some((filter) => filter)
-                    ? 'black'
-                    : 'blue'
+            <ButtonsGroup
+              type="checkbox"
+              onChange={(filter) => {
+                if (filter === 'all') {
+                  setFilters(initialFiltersState);
+                  return;
                 }
-              />
-            </button>
-            {Object.keys(filters).map((filter) => {
-              if (!Object.values(contentType).includes(filter)) {
-                return null;
-              }
+                const k = Object.keys(mapF).find((key) => mapF[key] === filter);
+                setFilters((item) => ({
+                  ...item,
+                  [k]: !item[k],
+                }));
+              }}
+              items={[
+                {
+                  label: 'all',
+                  checked: !Object.values(filters).some((filter) => filter),
+                },
+              ].concat(
+                Object.keys(filters)
+                  .map((filter) => {
+                    if (!Object.values(contentType).includes(filter)) {
+                      return null;
+                    }
 
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => {
-                    setFilters((item) => ({
-                      ...item,
-                      [filter]: !item[filter],
-                    }));
-                  }}
-                >
-                  <Pill
-                    text={filter}
-                    color={filters[filter] ? 'blue' : 'black'}
-                  />
-                </button>
-              );
-            })}
+                    return {
+                      label: mapF[filter],
+                      checked: filters[filter],
+                    };
+                  })
+                  .filter((item) => !!item)
+              )}
+            />
           </div>
 
-          {/* <Dropdown
-            options={[
-              {
-                label: 'Rank',
-                value: 'rank',
-              },
-              {
-                label: 'Date',
-                value: 'date',
-              },
-            ]}
-            value={filter2}
-            onChange={(value) => {
-              setFilter2(value);
-              window.alert('not working yet');
+          <ButtonsGroup
+            type="radio"
+            items={Object.values(SortBy).map((item) => {
+              return {
+                label: mapS[item],
+                disabled: item === SortBy.mine || item === SortBy.popular,
+                checked: filter2 === item,
+              };
+            })}
+            onChange={(val) => {
+              const k = Object.keys(mapS).find((key) => mapS[key] === val);
+              setFilter2(k);
             }}
-          /> */}
+          />
+
+          {backlinks.total && (
+            <ButtonsGroup
+              type="radio"
+              onChange={(val) => {
+                setLinksFilter(val);
+              }}
+              items={Object.keys(LinksFilter).map((item) => {
+                return {
+                  label: (() => {
+                    switch (item) {
+                      case LinksFilter.backlinks:
+                        return backlinks.total + ' →';
+                      case LinksFilter.cyberLinks:
+                        return total2;
+                      case LinksFilter.all:
+                        return 'all' + ' →';
+                    }
+                  })(),
+
+                  name: item,
+
+                  checked: linksFilter === item,
+                };
+              })}
+            />
+          )}
+
+          <span>{total2 + backlinks.total} particles</span>
         </header>
         <InfiniteScroll
           pageStart={-1}
