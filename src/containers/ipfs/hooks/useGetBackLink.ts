@@ -29,12 +29,12 @@ function useGetBackLink(cid: string, skip?: boolean) {
     async ({ pageParam = 0 }) => {
       const res = await queryClient?.backlinks(cid, pageParam);
       console.log(res);
-      return res;
+      return { res, page: pageParam };
     },
     {
       enabled: Boolean(queryClient && cid),
       getNextPageParam: (lastPage) => {
-        if (!lastPage.pagination.total) {
+        if (!lastPage.res.pagination.total) {
           return undefined;
         }
 
