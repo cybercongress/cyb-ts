@@ -14,6 +14,7 @@ import Pdf from '../PDF';
 import Img from './component/img';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 import styles from './ContentIpfs.module.scss';
+import Audio from './component/Audio/Audio';
 
 export const getContentDetails = async (
   cid: string,
@@ -108,6 +109,8 @@ function ContentIpfs({
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
       )}
+
+      {content?.meta.mime?.includes('audio') && <Audio content={content} />}
 
       {contentType === 'video' && content && (
         <VideoPlayerGatewayOnly content={content} />
