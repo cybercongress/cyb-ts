@@ -63,7 +63,7 @@ function useGetBackLink(cid: string, skip?: boolean) {
 
       const reduceArr = reduceParticleArr(d);
       setBacklinks(reduceArr);
-      setTotal(data.pages[0].pagination.total);
+      setTotal(data.pages[0].res.pagination.total);
     };
     feachBacklinks();
   }, [data]);
