@@ -1,3 +1,5 @@
+import { PinType } from 'ipfs-core-types/src/pin';
+
 export interface Column {
   column: string;
   type: 'String' | 'Int' | 'Bool' | 'Float';
@@ -23,7 +25,7 @@ export interface IDBResultError {
   severity: string;
   ok: false;
 }
-export const PinTypeEnum = {
+export const PinTypeMap: Record<Exclude<PinType, 'all'>, number> = {
   indirect: -1,
   direct: 0,
   recursive: 1,

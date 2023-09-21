@@ -2,26 +2,25 @@ import React, { useEffect, useState } from 'react';
 
 import Table from 'src/components/Table/Table';
 
-import { IDBResult, PinTypeEnum } from 'src/services/CozoDb/cozoDb.d';
-import { withColIndex } from 'src/services/CozoDb/utils';
-import useLog from 'src/hooks/useLog';
+import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
-import cozoDb from 'src/services/CozoDb/db.service';
+import dbService from 'src/services/CozoDb/db.service';
 
 import { useIpfs } from 'src/contexts/ipfs';
-// import Button from 'src/components/btnGrd';
 import { Pane, Text } from '@cybercongress/gravity';
-import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
-import { IPFSContent } from 'src/utils/ipfs/ipfs';
-import { mapParticleToCozoEntity } from 'src/services/CozoDb/dto';
 import { Button as CybButton, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
-
-import { toListOfObjects } from 'src/services/CozoDb/utils';
+import { useAppSelector } from 'src/redux/hooks';
 
 import styles from './drive.scss';
 
 import cozoPresets from './cozo_presets.json';
+
+// TODO: refactor
+import { useRobotContext } from 'src/pages/robot/robot.context';
+
+import { useBackend } from 'src/contexts/backend';
+import { SyncEntry, SyncProgress, SyncState } from 'src/services/backend/types';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -35,52 +34,38 @@ const presetsAsSelectOptions = [
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
-async function processByBatches<T, K>(
-  items: T[],
-  processFn: (arg: T) => Promise<K>,
-  batchSize = 10,
-  onProgress?: (counter: number) => void
-): Promise<K[]> {
-  const result = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    // eslint-disable-next-line no-await-in-loop
-    const batchResult = await Promise.all(batch.map((item) => processFn(item)));
-    result.push(...batchResult);
-    onProgress && onProgress(i + batchSize);
+function SyncEntryStatus({
+  entry,
+  status,
+}: {
+  entry: SyncEntry;
+  status: SyncProgress;
+}) {
+  if (status.done) {
+    return <div>{`☑️ ${entry} synchronized.`}</div>;
   }
-
-  return result;
+  if (status.error) {
+    return <div>{`❌ ${entry} syncronization failed - ${status.error}`}</div>;
+  }
+  return <div>{`⏳ ${entry}  ${status.progress} items syncronized...`}</div>;
 }
-
-async function processAsyncIterableByBatches<T, K>(
-  items: AsyncIterable<T>,
-  processFn: (arg: T) => Promise<K>,
-  batchSize = 10,
-  onProgress?: (counter: number) => void
-): Promise<K[]> {
-  let batch = [];
-  const result = [];
-  let counter = 0;
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const item of items) {
-    batch.push(item);
-    if (batch.length === batchSize) {
-      const batchResult = await Promise.all(
-        batch.map((item) => processFn(item))
-      );
-      result.push(...batchResult);
-      batch = [];
-    }
-    counter++;
-    onProgress && onProgress(counter);
-  }
-
-  // rest of the batch
-  const batchResult = await Promise.all(batch.map((item) => processFn(item)));
-  result.push(...batchResult);
-
-  return result;
+function SyncInfo({ syncState }: { syncState: SyncState }) {
+  console.log('----ssss', syncState);
+  return (
+    <div>
+      <Loading />
+      <div className={styles.logs}>
+        <div>Sync DB in progress...</div>
+        {Object.keys(syncState.entryStatus).map((name) => (
+          <SyncEntryStatus
+            key={`log_${name}`}
+            entry={name}
+            status={syncState.entryStatus[name]}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function Drive() {
@@ -88,16 +73,17 @@ function Drive() {
   const [queryText, setQueryText] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
   const [inProgress, setInProgress] = useState(false);
-  const [importInProgress, setImportInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const [logs, appendLog, updateLastLog, clearLog] = useLog();
+  const { address: userAddress } = useRobotContext();
+  const { startSyncTask } = useBackend();
+  const { syncState } = useAppSelector((store) => store.backend);
 
+  console.log('-----syncStatus', syncState);
   useEffect(() => {
-    cozoDb.init().then(() => {
+    dbService.init().then(() => {
       setIsLoaded(true);
-      console.log('------czsd init', cozoDb);
     });
   }, []);
 
@@ -112,7 +98,7 @@ function Drive() {
         setTimeout(async () => {
           try {
             const t0 = performance.now();
-            const result = await cozoDb.runCommand(query);
+            const result = await dbService.runCommand(query);
             const t1 = performance.now();
 
             if (result.ok === true) {
@@ -125,8 +111,25 @@ function Drive() {
               }
               const rows = toListOfObjects(result);
               const cols = result.headers.map((n) => ({
-                header: n,
+                // header: n,
                 accessorKey: n,
+                header: () => n,
+                cell: (item) => {
+                  const value = item.getValue();
+                  if (['cid'].indexOf(n) > -1) {
+                    return (
+                      <a
+                        href={`/ipfs/${value}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {`${value.slice(0, 10)}...${value.slice(-10)}`}
+                      </a>
+                    );
+                  }
+
+                  return value;
+                },
               }));
               setQueryResults({ rows, cols });
             } else {
@@ -147,98 +150,11 @@ function Drive() {
     }
   }
 
-  const importIpfs = async () => {
-    if (!node) {
-      appendLog('Ipfs node is not available...');
-      return;
-    }
-    setImportInProgress(true);
-    try {
-      clearLog();
-
-      const t0 = performance.now();
-      let t1 = performance.now();
-      appendLog(['Loading pins...', '']);
-
-      const pins = await processAsyncIterableByBatches(
-        node.pin.ls({ type: 'recursive' }),
-        async (pin) => ({
-          cid: pin.cid.toString(),
-          type: PinTypeEnum[pin.type],
-        }),
-        100,
-        (counter) => updateLastLog(`☑️ Loaded ${counter} pins.`)
-      );
-
-      appendLog(['Import pins to db...']);
-      await cozoDb.executeBatchPutCommand('pin', pins, 100, (counter) =>
-        updateLastLog(`⏳ Imported ${counter}/${pins.length} pins.`)
-      );
-      updateLastLog(
-        `☑️ Imported ${pins.length} pins in ${diffMs(t1, performance.now())}`
-      );
-
-      // Can use same pins cids
-      const pinsResult = withColIndex(
-        await cozoDb.executeGetCommand('pin', [
-          `type = ${PinTypeEnum.recursive}`,
-        ])
-      );
-      const { cid: cidIdx } = pinsResult.index;
-
-      const recursivePins = pinsResult.rows.map(
-        (row) => row[cidIdx]
-      ) as string[];
-      t1 = performance.now();
-      appendLog([`Loading particles from ipfs...`, '']);
-
-      const contents = await processByBatches(
-        recursivePins,
-        async (cid: string) => getIPFSContent(node, cid),
-        10,
-        (counter) => {
-          updateLastLog(
-            `⏳ Loading ${counter}/ ${recursivePins.length} particles`
-          );
-        }
-      );
-      updateLastLog(`☑️ Loaded ${recursivePins.length} particles.`);
-
-      const contentPromises = contents
-        .filter((c) => !!c)
-        .map(async (content) =>
-          mapParticleToCozoEntity(content as IPFSContent)
-        );
-
-      const particles = await Promise.all(contentPromises);
-
-      appendLog([`Import ${particles.length} particles to db...`]);
-      t1 = performance.now();
-
-      await cozoDb.executeBatchPutCommand(
-        'particle',
-        particles,
-        10,
-        (counter) =>
-          updateLastLog(`⏳ imported ${counter}/${pins.length} particles.`)
-      );
-      updateLastLog(
-        `☑️ Imported ${pins.length} particles in ${diffMs(
-          t1,
-          performance.now()
-        )}.`
-      );
-      appendLog(['', `🎉 All done in ${diffMs(t0, performance.now())}`]);
-    } catch (e) {
-      console.log('import error', e);
-      appendLog(e);
-    } finally {
-      setImportInProgress(false);
-    }
-  };
+  const importIpfs = async () => startSyncTask!();
 
   const exportReations = async () => {
-    const result = await cozoDb.exportRelations(['pin', 'particle', 'link']);
+    // TODO: refactor
+    const result = await dbService.exportRelations(['pin', 'particle', 'link']);
     console.log('---export data', result);
     if (result.ok) {
       const blob = new Blob([JSON.stringify(result.data)], {
@@ -252,7 +168,7 @@ function Drive() {
 
   const importReations = async (file: any) => {
     const content = await file.text();
-    const res = await cozoDb.importRelations(content);
+    const res = await dbService.importRelations(content);
     console.log('----import result', res);
   };
 
@@ -300,25 +216,22 @@ function Drive() {
         padding={10}
         justifyContent="center"
         alignItems="center"
+        flexDirection="column"
       >
-        {importInProgress && <Loading />}
-        {!importInProgress && (
+        {syncState?.status && (
+          <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
+            Drive sync status - {syncState?.status}
+          </Text>
+        )}
+        {syncState?.status === 'syncing' && <SyncInfo syncState={syncState} />}
+        {syncState?.status === 'idle' && (
           <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
             sync drive
           </CybButton>
-          // <Button
-          //   icon="refresh"
-          //   fill
-          //   active
-          //   large
-          //   disabled={!isLoaded || !node}
-          //   onClick={importIpfs}
-          //   text="Sync with Ipfs Node"
-          //   intent={Intent.WARNING}
-          // />
         )}
-        {logs.length > 0 && (
-          <div>
+        {/* {logs.length > 0 && (
+          <div className={styles.logs}>
+            {Object.keys(syncStatus?.logs).map((m, i) => <div key={`ipfs_log_${i}`}>{m}</div>)
             <Text color="#fff" fontSize="20px" lineHeight="30px">
               Importing from IPFS:
             </Text>
@@ -326,7 +239,7 @@ function Drive() {
               <div key={`ipfs_log_${i}`}>{m}</div>
             ))}
           </div>
-        )}
+        )} */}
       </Pane>
 
       <Pane width="100%">

@@ -37,7 +37,7 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { importParicle } from '../CozoDb/importer';
+import { importParicle } from '../CozoDb/importers/ipfs';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;

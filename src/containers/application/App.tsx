@@ -16,7 +16,7 @@ import AdviserContainer from '../../features/adviser/AdviserContainer';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import cozoDb from 'src/services/CozoDb/cozoDb';
+
 export const PORTAL_ID = 'portal';
 
 function App() {
@@ -31,12 +31,8 @@ function App() {
   const adviserContext = useAdviser();
 
   const ipfs = useIpfs();
-
   useEffect(() => {
     dispatch(initPocket());
-    cozoDb.init().then(() => {
-      console.log('CozoDb initialized');
-    });
   }, []);
 
   useEffect(() => {

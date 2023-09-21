@@ -18,12 +18,15 @@ import {
   getMimeFromUint8Array,
 } from './stream-utils';
 
-import { CYBER } from '../config';
-
 import { getIpfsContentFromDb, addIpfsContentToDb } from './db-utils';
 import { convertTimeToMilliseconds } from '../helpers';
 import { addToIpfsCluster } from './cluster-utils';
 import { contentToUint8Array } from './content-utils';
+
+// import { CYBER } from '../config';
+
+// TODO: fix to get working inside web worker, REFACTOR
+const CYBER_GATEWAY = 'https://gateway.ipfs.cybernode.ai';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
@@ -202,7 +205,7 @@ const fetchIPFSContentFromGateway = async (
     ? await fetchIPFSContentMeta(node, cid, controller?.signal)
     : emptyMeta;
 
-  const contentUrl = `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+  const contentUrl = `${CYBER_GATEWAY}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
@@ -437,7 +440,7 @@ const reconnectToCyberSwarm = async (node?: AppIPFS, lastCallTime: number) => {
   }
 };
 
-const DEFAULT_AUTO_DIAL_INTERVAL = 20000;
+const DEFAULT_AUTO_DIAL_INTERVAL = 10000;
 const GET_CONFIG_TIMEOUT = 3000;
 
 const getNodeAutoDialInterval = async (node: AppIPFS) => {
@@ -456,7 +459,7 @@ const getNodeAutoDialInterval = async (node: AppIPFS) => {
 
 const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
   if (node.nodeType === 'embedded') {
-    return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+    return `${CYBER_GATEWAY}/ipfs/${cid}`;
   }
 
   const response = await node.config.get('Addresses.Gateway');
@@ -465,7 +468,7 @@ const getIpfsGatewayUrl = async (node: AppIPFS, cid: string) => {
   try {
     return `http://${address.address}:${address.port}/ipfs/${cid}`;
   } catch (error) {
-    return `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
+    return `${CYBER_GATEWAY}/ipfs/${cid}`;
   }
 };
 

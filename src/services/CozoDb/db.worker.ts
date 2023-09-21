@@ -1,6 +1,7 @@
 import { expose } from 'comlink';
 
 import cozoDb from './cozoDb';
+import { importTransactions } from './importers/transactions';
 
 const api = {
   writesCount: 0,
@@ -18,13 +19,21 @@ const api = {
     await cozoDb.init(onWriteCallback);
   },
 
+  importTransactions: async (address: string, cyberIndexHttps: string) => {
+    const res = await importTransactions(address, cyberIndexHttps);
+    console.log('-----data', res);
+  },
+
   runCommand: async (command: string) => cozoDb.runCommand(command),
 
   executePutCommand: async (tableName: string, array: any[]) =>
     cozoDb.put(tableName, array),
 
-  executeGetCommand: async (tableName: string, conditionArr: string[]) =>
-    cozoDb.get(tableName, conditionArr),
+  executeGetCommand: async (
+    tableName: string,
+    conditionArr?: string[],
+    keys?: string[]
+  ) => cozoDb.get(tableName, conditionArr, keys),
 
   importRelations: async (content: string) => cozoDb.importRelations(content),
 

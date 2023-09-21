@@ -1,17 +1,4 @@
-import { IPFSContent } from 'src/utils/ipfs/ipfs';
-import { mapParticleToCozoEntity } from './dto';
-import dbService from './db.service';
-
-export const importParicle = async (particle: IPFSContent) => {
-  try {
-    const entity = mapParticleToCozoEntity(particle);
-    const result = (await dbService.executePutCommand('particle', entity)).ok;
-    // console.log('importParicle', result, entity);
-    return result;
-  } catch (e) {
-    console.error('importParicle', e);
-  }
-};
+import dbService from '../db.service';
 
 export const importCyberlink = async ({
   from,

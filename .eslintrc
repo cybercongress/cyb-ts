@@ -129,7 +129,8 @@
     "no-unused-expressions": [
       "error",
       { "allowShortCircuit": true, "allowTernary": true }
-    ]
+    ],
+    "no-underscore-dangle": "off"
   },
   "settings": {
     "import/resolver": {

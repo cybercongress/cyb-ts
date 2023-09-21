@@ -155,6 +155,7 @@
     "@tanstack/react-query": "^4.22.0",
     "@tanstack/react-query-devtools": "^4.22.0",
     "@tanstack/react-table": "^8.9.1",
+    "@types/file-saver": "^2.0.5",
     "@types/history": "^5.0.0",
     "@types/jest": "^29.5.0",
     "@types/ramda": "^0.28.23",

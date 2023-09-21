@@ -41,11 +41,15 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
     return `${atomCommand}\r\n${putCommand}`;
   };
 
-  const generateGet = (tableName: string, conditionArr: string[] = []) => {
+  const generateGet = (
+    tableName: string,
+    conditionArr: string[] = [],
+    keys: string[] = []
+  ) => {
     const conditionsStr =
       conditionArr.length > 0 ? `, ${conditionArr.join(', ')} ` : '';
     const tableSchema = dbSchema[tableName];
-    const queryKeys = Object.keys(tableSchema.columns);
+    const queryKeys = keys.length > 0 ? keys : Object.keys(tableSchema.columns);
     return `?[${queryKeys.join(', ')}] := *${tableName}{${queryKeys.join(
       ', '
     )}} ${conditionsStr}`;
@@ -148,9 +152,13 @@ function DbService() {
 
   const get = (
     tableName: string,
-    conditionArr: string[] = []
+    conditionArr: string[] = [],
+    keys: string[] = []
   ): Promise<IDBResult | IDBResultError> =>
-    runCommand(commandFactory!.generateGet(tableName, conditionArr), true);
+    runCommand(
+      commandFactory!.generateGet(tableName, conditionArr, keys),
+      true
+    );
 
   const importRelations = (content: string) =>
     JSON.parse(db!.import_relations(content));

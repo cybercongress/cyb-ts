@@ -1,6 +1,7 @@
 import * as external from './external';
 import * as embedded from './embedded';
 import { getNodeAutoDialInterval, reconnectToCyberSwarm } from './utils-ipfs';
+import { AppIPFS } from './ipfs';
 
 let client;
 
@@ -21,7 +22,7 @@ export async function initIpfsClient(opts) {
 
   const instance = await backend.init(opts);
   instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
-  window.ipfs = instance;
+  // window.ipfs = instance;
 
   // Only for embedded node
   if (instance.libp2p) {
@@ -43,7 +44,7 @@ export async function initIpfsClient(opts) {
   }
   await reconnectToCyberSwarm(instance);
   client = backend;
-  return instance;
+  return instance as AppIPFS;
 }
 
 export async function destroyIpfsClient() {

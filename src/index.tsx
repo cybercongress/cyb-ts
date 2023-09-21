@@ -35,6 +35,8 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import BackendProvider from './contexts/backend';
+
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
 
@@ -94,29 +96,31 @@ const root = createRoot(container);
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <IpfsProvider>
-        <NetworksProvider>
-          <SdkQueryClientProvider>
-            <SigningClientProvider>
-              <QueryClientProvider client={queryClient}>
-                <IbcDenomProvider>
-                  <WebsocketsProvider>
-                    <DataProvider>
-                      <ApolloProvider client={client}>
-                        <DeviceProvider>
-                          <AdviserProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
-                          </AdviserProvider>
-                        </DeviceProvider>
-                      </ApolloProvider>
-                    </DataProvider>
-                  </WebsocketsProvider>
-                </IbcDenomProvider>
-              </QueryClientProvider>
-            </SigningClientProvider>
-          </SdkQueryClientProvider>
-        </NetworksProvider>
-      </IpfsProvider>
+      <BackendProvider>
+        <IpfsProvider>
+          <NetworksProvider>
+            <SdkQueryClientProvider>
+              <SigningClientProvider>
+                <QueryClientProvider client={queryClient}>
+                  <IbcDenomProvider>
+                    <WebsocketsProvider>
+                      <DataProvider>
+                        <ApolloProvider client={client}>
+                          <DeviceProvider>
+                            <AdviserProvider>
+                              <ErrorBoundary>{children}</ErrorBoundary>
+                            </AdviserProvider>
+                          </DeviceProvider>
+                        </ApolloProvider>
+                      </DataProvider>
+                    </WebsocketsProvider>
+                  </IbcDenomProvider>
+                </QueryClientProvider>
+              </SigningClientProvider>
+            </SdkQueryClientProvider>
+          </NetworksProvider>
+        </IpfsProvider>
+      </BackendProvider>
     </Provider>
   );
 }
