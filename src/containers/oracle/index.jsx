@@ -5,6 +5,7 @@ import { formatNumber } from '../../utils/utils';
 import AccountCount from '../brain/accountCount';
 import useGetStatisticsCyber from './useGetStatisticsCyber';
 import ForceGraph from '../forceGraph/forceGraph';
+import { routes } from 'src/routes';
 
 function Oracle() {
   const { knowledge } = useGetStatisticsCyber();
@@ -44,7 +45,7 @@ function Oracle() {
               styleContainer={{ minWidth: 'unset' }}
             />
           </Link>
-          <Link to="/search/neurons">
+          <Link to={routes.search.getLink('neurons')}>
             <CardStatisics value={<AccountCount />} title="Neurons" />
           </Link>
         </Pane>
