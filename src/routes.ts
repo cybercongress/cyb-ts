@@ -46,7 +46,7 @@ export const routes = {
   },
   search: {
     path: '/search',
-    getLink: (search: string) => `/search/${search}`,
+    getLink: (search: string) => `/oracle/ask/${search}`,
   },
   teleport: {
     path: '/teleport',

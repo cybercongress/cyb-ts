@@ -23,11 +23,12 @@
 
     &::before {
       content: '';
-      width: 16px;
+      width: 120%;
+      left: -10%;
       display: block;
       position: absolute;
-      //   z-index: ;
-      top: -18px;
+      pointer-events: none;
+      top: -19px;
       height: 36px;
       background: #1fcbff;
       border-top: 2px solid #1fcbff;

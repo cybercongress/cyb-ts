@@ -106,6 +106,11 @@ function RedirectToRobot() {
   return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
+// function RedirectToRobot() {
+//   const params = useParams();
+//   return <Navigate to={`/search/${params.address}`} replace />;
+// }
+
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -119,9 +124,11 @@ function AppRouter() {
           <Route path={routes.neuron.path} element={<Robot />} />
           {/* <Route path="/@:passport" element={<Robot />} /> */}
 
-          <Route path="/oracle" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/search/:query" element={<SearchResults />} />
+          <Route path="/oracle/stats" element={<Home />} />
+          <Route path="/oracle2" element={<Oracle />} />
+
+          <Route path="/oracle" element={<Search />} />
+          <Route path="/oracle/ask/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
           <Route
             path={routes.senateProposal.path}
@@ -165,7 +172,6 @@ function AppRouter() {
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/token" element={<Market />} />
           <Route path="/token/:tab" element={<Market />} />
-          <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/teleport" element={<TeleportTs />} />
           <Route path="/warp" element={<WarpDashboardPools />} />

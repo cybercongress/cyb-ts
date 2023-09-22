@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, Link } from 'react-router-dom';
 // import InfiniteScroll from 'react-infinite-scroll-component';
-import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
@@ -33,6 +33,7 @@ import useGetDiscussion from '../ipfs/hooks/useGetDiscussion';
 import Dropdown from 'src/components/Dropdown/Dropdown';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import useGetBackLink from '../ipfs/hooks/useGetBackLink';
+import { set } from 'ramda';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -42,7 +43,7 @@ const textPreviewSparkApp = (text, value) => (
 );
 
 const search = async (
-  client,
+  client: ReturnType<typeof useQueryClient>,
   hash,
   page
 ): Promise<
@@ -55,7 +56,7 @@ const search = async (
   | []
 > => {
   try {
-    const responseSearchResults = await client.search(hash, page);
+    const responseSearchResults = await client.search(hash, page, 10);
 
     return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
@@ -133,8 +134,6 @@ function SearchResults() {
 
   let query = q || cid || '';
 
-  console.log(query);
-
   const location = useLocation();
   // const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState({});
@@ -146,6 +145,8 @@ function SearchResults() {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
+  const [page, setPage] = useState(0);
+
   const [contentType, setContentType] = useState<{
     [key: string]: IpfsContentType;
   }>({});
@@ -155,7 +156,8 @@ function SearchResults() {
     keywordHash,
     linksFilter === LinksFilter.cyberLinks
   );
-  console.log(backlinks);
+
+  // const backlinks = [];
 
   const [filters, setFilters] = useState(initialFiltersState);
   const [filter2, setFilter2] = useState(SortBy.rank);
@@ -174,8 +176,6 @@ function SearchResults() {
     setContentType({});
     setFilters(initialFiltersState);
   }, [query]);
-
-  console.log(filters);
 
   const d = useGetDiscussion(keywordHash, filter2 !== 'date');
 
@@ -216,6 +216,8 @@ function SearchResults() {
     }
   })();
 
+  console.log(items);
+
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
@@ -232,7 +234,7 @@ function SearchResults() {
         let responseSearchResults = await search(
           queryClient,
           keywordHashTemp,
-          0
+          page
         );
 
         if (
@@ -262,7 +264,6 @@ function SearchResults() {
         }
 
         setKeywordHash(keywordHashTemp);
-        console.log(searchResultsData);
 
         setSearchResults(searchResultsData);
         setLoading(false);
@@ -271,6 +272,14 @@ function SearchResults() {
     getFirstItem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, location, update, queryClient]);
+
+  useEffect(() => {
+    if (page === 0) {
+      return;
+    }
+
+    fetchMoreData(page);
+  }, [page]);
 
   const fetchMoreData = async (page) => {
     if (filter2 === 'date') {
@@ -292,11 +301,10 @@ function SearchResults() {
     } else {
       setHasMore(false);
     }
-
-    setTimeout(() => {
-      setSearchResults((itemState) => ({ ...itemState, ...links }));
-      // setPage((itemPage) => itemPage + 1);
-    }, 500);
+    // setTimeout(() => {
+    setSearchResults((itemState) => ({ ...itemState, ...links }));
+    // setPage((itemPage) => itemPage + 1);
+    // }, 500);
   };
 
   useEffect(() => {
@@ -425,9 +433,7 @@ function SearchResults() {
     );
   }
 
-  console.log(items);
-
-  if (Object.keys(searchResults).length > 0) {
+  if (Object.keys(items).length > 0) {
     searchItems.push(
       items
         .filter((item) => {
@@ -476,6 +482,7 @@ function SearchResults() {
                   return;
                 }
                 const k = Object.keys(mapF).find((key) => mapF[key] === filter);
+
                 setFilters((item) => ({
                   ...item,
                   [k]: !item[k],
@@ -545,12 +552,14 @@ function SearchResults() {
             />
           )}
 
-          <span>{total2 + backlinks.total} particles</span>
+          <div className={styles.total}>
+            <span>{total2 + backlinks.total}</span> particles
+          </div>
         </header>
+
         <InfiniteScroll
-          pageStart={-1}
-          // initialLoad
-          loadMore={fetchMoreData}
+          dataLength={items.length}
+          next={() => setPage((item) => item + 1)}
           hasMore={hasMore}
           loader={
             <h4

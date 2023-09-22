@@ -45,7 +45,7 @@ function SearchItem({ status, grade, children }: Props) {
   }
 
   const item = (
-    <Display color={colorRank === 'grey' ? 'white' : colorRank} isVertical>
+    <Display color={colorRank === 'grey' ? 'white' : colorRank}>
       <div
         style={{
           display: 'flex',

@@ -1,13 +1,20 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { Option } from 'src/types';
 import { CyberLink } from 'src/types/cyberLink';
 import { coinDecimals } from 'src/utils/utils';
 
 type BackLink = {
   particle: string;
   rank: string;
+};
+
+type PaginationData = {
+  total: number;
+};
+
+type Res = {
+  result: BackLink[];
+  pagination: PaginationData;
 };
 
 export const reduceParticleArr = (data: BackLink[]) => {
@@ -22,53 +29,48 @@ export const reduceParticleArr = (data: BackLink[]) => {
 
 function useGetBackLink(cid: string, skip?: boolean) {
   const queryClient = useQueryClient();
-  const [backlinks, setBacklinks] = useState<Option<CyberLink[]>>(undefined);
-  const [total, setTotal] = useState();
+
   const { data, fetchNextPage } = useInfiniteQuery(
     ['useGetBackLink', cid],
-    async ({ pageParam = 0 }) => {
-      const res = await queryClient?.backlinks(cid, pageParam);
-      console.log(res);
-      return { res, page: pageParam };
+    async ({ pageParam = 0 }: { pageParam?: number }) => {
+      const response = (await queryClient?.backlinks(
+        cid,
+        pageParam,
+        20
+      )) as Res;
+
+      return { data: response, page: pageParam };
     },
     {
-      enabled: Boolean(queryClient && cid),
+      enabled: Boolean(queryClient && cid) && !skip,
       getNextPageParam: (lastPage) => {
-        if (!lastPage.res.pagination.total) {
+        if (!lastPage.data.pagination.total) {
           return undefined;
         }
 
-        console.log(lastPage);
+        const nextPage = lastPage.page++;
 
-        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
+        console.log(lastPage);
+        console.log(nextPage);
+
         return nextPage;
       },
     }
   );
 
-  useEffect(() => {
-    const feachBacklinks = async () => {
-      setBacklinks(undefined);
+  // TODO: combine 2 reduce
+  const d =
+    data?.pages?.reduce((acc, page) => {
+      return acc.concat(page.data.result);
+    }, []) || [];
 
-      if (!data?.pages) {
-        return;
-      }
+  const backlinks = reduceParticleArr(d);
 
-      const d = data.pages.reduce((acc, item) => {
-        if (item.result) {
-          return [...acc, ...item.result];
-        }
-        return acc;
-      }, []);
-
-      const reduceArr = reduceParticleArr(d);
-      setBacklinks(reduceArr);
-      setTotal(data.pages[0].res.pagination.total);
-    };
-    feachBacklinks();
-  }, [data]);
-
-  return { backlinks, total, fetchNextPage };
+  return {
+    backlinks,
+    total: data?.pages[0].data.pagination.total || 0,
+    fetchNextPage,
+  };
 }
 
 export default useGetBackLink;

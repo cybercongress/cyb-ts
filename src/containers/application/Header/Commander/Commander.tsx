@@ -4,6 +4,7 @@ import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { routes } from 'src/routes';
 
 const fixedValue = '~/';
 
@@ -60,7 +61,9 @@ function Commander() {
       return;
     }
 
-    navigate(`/search/${replaceSlash(search.replace(fixedValue, ''))}`);
+    navigate(
+      routes.search.getLink(replaceSlash(search.replace(fixedValue, '')))
+    );
   }
 
   return (
