@@ -12,6 +12,7 @@ function GradientContainer({ children }: { children: React.ReactNode }) {
 }
 
 const audioBtnObg = new Audio(audioBtn);
+audioBtnObg.volume = 0.5;
 // const audioBtnHoverObg = new Audio(audioBtnHover);
 
 const playAudioClick = () => {

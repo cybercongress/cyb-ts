@@ -111,6 +111,11 @@ function RedirectToRobot() {
 //   return <Navigate to={`/search/${params.address}`} replace />;
 // }
 
+function RedirectToRobotBrain() {
+  const params = useParams();
+  return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
+}
+
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -146,7 +151,7 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
           <Route path="/graph" element={<ForceGraph />} />
-          <Route path="/pgraph/:agent" element={<ForceGraph />} />
+          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
           <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
