@@ -27,6 +27,7 @@ function Spark({
   cid,
   itemData,
   query,
+  linkType,
   handleContentType,
   handleRankClick,
 }: Props) {
@@ -101,6 +102,7 @@ function Spark({
         cid={cid}
         item={itemData}
         parent={query}
+        linkType={linkType}
         className="SearchItem"
       />
     </div>

@@ -56,6 +56,7 @@ const itemsMenu = () => {
       icon: oracle,
       subItems: [
         { name: 'Particles', to: '/particles' },
+        { name: 'Stats', to: '/oracle/stats' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
         { name: 'Txs', to: '/network/bostrom/tx' },
         { name: 'Contracts', to: '/contracts' },

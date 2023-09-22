@@ -28,6 +28,7 @@ function ContentItem({
   item,
   cid,
   grade,
+  linkType,
   parent: parentId,
   setType,
   className,
@@ -38,6 +39,7 @@ function ContentItem({
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
       <SearchItem
         key={cid}
+        linkType={linkType}
         status={status}
         grade={
           item?.rank

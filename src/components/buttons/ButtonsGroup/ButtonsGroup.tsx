@@ -17,7 +17,7 @@ function ButtonsGroup({ items, onChange, type }: Props) {
     <ul className={styles.wrapper}>
       {items.map((item, i) => (
         <li
-          key={item.label}
+          key={i}
           className={cx({
             [styles['--checked']]: item.checked,
             [styles['--disabled']]: item.disabled,

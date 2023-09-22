@@ -13,26 +13,6 @@
   // backdrop-filter: blur(15px);
 }
 
-.links,
 .size {
   white-space: nowrap;
-}
-
-.links {
-  color: var(--blue-light);
-  display: flex;
-  gap: 0 5px;
-  align-items: center;
-
-  span {
-    display: inline-block;
-    // background-image: url('../../../buttons/AddFile/images/attach.svg');
-    background-image: url('./link.svg');
-    background-repeat: no-repeat;
-    width: 18px;
-    height: 21px;
-    background-size: contain;
-    position: relative;
-    top: 3px;
-  }
 }

@@ -34,6 +34,7 @@ import Dropdown from 'src/components/Dropdown/Dropdown';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import useGetBackLink from '../ipfs/hooks/useGetBackLink';
 import { set } from 'ramda';
+import Links from 'src/components/search/Spark/Meta/Links/Links';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -74,6 +75,7 @@ const reduceSearchResults = (data: SearchItemResult[], query: string) => {
         grade: getRankGrade(coinDecimals(item.rank)),
         status: 'impossibleLoad',
         query,
+        type: 'outcoming',
         text: item.particle,
         content: false,
       },
@@ -204,13 +206,19 @@ function SearchResults() {
     if (filter2 === 'date') {
       return dateResults;
     } else if (linksFilter === LinksFilter.backlinks) {
-      return backlinks.backlinks;
+      return backlinks.backlinks.map((item) => {
+        return {
+          ...item,
+          type: 'backlink',
+        };
+      });
     } else {
       return Object.values(searchResults).map((item) => {
         return {
           cid: item.particle,
           rank: item.rank,
           grade: item.grade,
+          type: item.type,
         };
       });
     }
@@ -453,6 +461,7 @@ function SearchResults() {
               itemData={key}
               cid={key.cid}
               key={key.cid + i}
+              linkType={key.type}
               query={query}
               handleRankClick={onClickRank}
               handleContentType={(type) =>
@@ -525,32 +534,14 @@ function SearchResults() {
             }}
           />
 
-          {backlinks.total && (
-            <ButtonsGroup
-              type="radio"
-              onChange={(val) => {
-                setLinksFilter(val);
-              }}
-              items={Object.keys(LinksFilter).map((item) => {
-                return {
-                  label: (() => {
-                    switch (item) {
-                      case LinksFilter.backlinks:
-                        return backlinks.total + ' →';
-                      case LinksFilter.cyberLinks:
-                        return total2;
-                      case LinksFilter.all:
-                        return 'all' + ' →';
-                    }
-                  })(),
-
-                  name: item,
-
-                  checked: linksFilter === item,
-                };
-              })}
-            />
-          )}
+          <Links
+            backlinks={backlinks.total}
+            outcoming={total2}
+            value={linksFilter}
+            onChange={(val) => {
+              setLinksFilter(val);
+            }}
+          />
 
           <div className={styles.total}>
             <span>{total2 + backlinks.total}</span> particles

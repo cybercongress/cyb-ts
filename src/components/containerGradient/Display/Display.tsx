@@ -14,6 +14,8 @@ type Props = {
 
   noPaddingX?: boolean;
 
+  sideSaber?: 'left' | 'right';
+
   color?: ColorLamp;
   title?: React.ReactElement<typeof DisplayTitle>;
   isVertical?: boolean;
@@ -24,6 +26,7 @@ function Display({
   isVertical,
   title,
   noPaddingX,
+  sideSaber,
   color = Colors.GREEN,
   status,
 }: Props) {
@@ -34,6 +37,7 @@ function Display({
       className={cx(styles.wrapper, styles[colorTemp], {
         [styles.vertical]: isVertical,
         [styles.noPaddingX]: noPaddingX,
+        [sideSaber ? styles[sideSaber] : undefined]: sideSaber,
       })}
     >
       {title && (

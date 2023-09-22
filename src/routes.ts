@@ -21,6 +21,7 @@ export const routes = {
   },
   ipfs: {
     path: '/ipfs',
+    getLink: (param: string) => `/ipfs/${param}`,
   },
   citizenship: {
     path: '/citizenship',

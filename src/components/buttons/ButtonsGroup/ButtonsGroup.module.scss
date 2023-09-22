@@ -11,12 +11,13 @@
   li.--disabled {
     &,
     label {
-      cursor: not-allowed;
+      cursor: unset;
       opacity: 0.5;
     }
   }
 
-  li.--checked {
+  li.--checked,
+  li:hover:not(li.--disabled) {
     text-shadow: 0px 0px 10px #1fcbff;
 
     position: relative;
