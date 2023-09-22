@@ -35,7 +35,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (async () => {
       workerApi
         .init(getIpfsOpts())
-        .then(() => console.log('[!]  Backend initialized context'));
+        .then(() => console.log('⚙️ Backend initialized'));
     })();
 
     // Channel to sync backend(workers) state with reducer

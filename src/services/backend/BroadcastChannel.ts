@@ -22,7 +22,6 @@ class BcChannel {
   }
 
   post(msg: BroadcastChannelMessage) {
-    console.log('----bg BcChannel msg', msg);
     this.channel.postMessage(msg);
   }
 }
