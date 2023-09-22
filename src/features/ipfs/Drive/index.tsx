@@ -4,7 +4,6 @@ import Table from 'src/components/Table/Table';
 
 import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
-import dbService from 'src/services/CozoDb/db.service';
 
 import { useIpfs } from 'src/contexts/ipfs';
 import { Pane, Text } from '@cybercongress/gravity';
@@ -12,15 +11,19 @@ import { Button as CybButton, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 
-import styles from './drive.scss';
-
-import cozoPresets from './cozo_presets.json';
-
-// TODO: refactor
+// TODO: refactor / move to worker
 import { useRobotContext } from 'src/pages/robot/robot.context';
 
 import { useBackend } from 'src/contexts/backend';
-import { SyncEntry, SyncProgress, SyncState } from 'src/services/backend/types';
+import {
+  SyncEntry,
+  SyncProgress,
+  WorkerState,
+} from 'src/services/backend/types';
+
+import styles from './drive.scss';
+
+import cozoPresets from './cozo_presets.json';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -49,8 +52,7 @@ function SyncEntryStatus({
   }
   return <div>{`⏳ ${entry}  ${status.progress} items syncronized...`}</div>;
 }
-function SyncInfo({ syncState }: { syncState: SyncState }) {
-  console.log('----ssss', syncState);
+function SyncInfo({ syncState }: { syncState: WorkerState }) {
   return (
     <div>
       <Loading />
@@ -71,21 +73,18 @@ function SyncInfo({ syncState }: { syncState: SyncState }) {
 function Drive() {
   const { node } = useIpfs();
   const [queryText, setQueryText] = useState('');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
   const { address: userAddress } = useRobotContext();
-  const { startSyncTask } = useBackend();
-  const { syncState } = useAppSelector((store) => store.backend);
+  const { startSyncTask, getDbApi } = useBackend();
+  const { syncState, dbPendingWrites } = useAppSelector(
+    (store) => store.backend
+  );
 
-  console.log('-----syncStatus', syncState);
-  useEffect(() => {
-    dbService.init().then(() => {
-      setIsLoaded(true);
-    });
-  }, []);
+  console.log('-----syncStatus', syncState, dbPendingWrites);
 
   function runQuery(queryArg?: string) {
     const query = queryArg || queryText.trim();
@@ -97,6 +96,7 @@ function Drive() {
       requestAnimationFrame(() => {
         setTimeout(async () => {
           try {
+            const dbService = await getDbApi();
             const t0 = performance.now();
             const result = await dbService.runCommand(query);
             const t1 = performance.now();
@@ -142,6 +142,7 @@ function Drive() {
           } catch (e) {
             setStatusMessage(`query failed`);
             setErrorMessage(e.message);
+            console.log(e);
           } finally {
             setInProgress(false);
           }

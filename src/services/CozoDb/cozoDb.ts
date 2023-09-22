@@ -7,7 +7,7 @@ import {
   DBSchema,
   IDBResultError,
   TableSchema,
-} from './cozoDb.d';
+} from './types';
 
 import { toListOfObjects, mapObjectToArray } from './utils';
 
@@ -65,7 +65,7 @@ function DbService() {
   let commandFactory: ReturnType<typeof CozoDbCommandFactory> | undefined;
 
   async function init(
-    callback?: (writesCount: number) => void
+    onWrite?: (writesCount: number) => void
   ): Promise<CozoDb> {
     if (db) {
       return db;
@@ -73,7 +73,7 @@ function DbService() {
 
     await initCozoDb();
 
-    db = await CozoDb.new_from_indexed_db(DB_NAME, DB_STORE_NAME, callback);
+    db = await CozoDb.new_from_indexed_db(DB_NAME, DB_STORE_NAME, onWrite);
     dbSchema = await initDbSchema();
     commandFactory = CozoDbCommandFactory(dbSchema);
 

@@ -1,20 +1,16 @@
 import { expose } from 'comlink';
+import BcChannel from 'src/services/backend/BroadcastChannel';
 
 import cozoDb from './cozoDb';
 import { importTransactions } from './importers/transactions';
 
 const api = {
-  writesCount: 0,
-
   async init() {
+    const channel = new BcChannel();
+
     // callback to sync writes count worker -> main thread
-    const onWriteCallback = (writesCount: number) => {
-      this.writesCount = writesCount;
-      postMessage({
-        type: 'writesCountUpdate',
-        value: writesCount,
-      });
-    };
+    const onWriteCallback = (writesCount: number) =>
+      channel.post({ type: 'indexeddb_write', value: writesCount });
 
     await cozoDb.init(onWriteCallback);
   },
@@ -44,7 +40,7 @@ const api = {
     tableName: string,
     array: any[],
     batchSize: number,
-    onProgress: (count: number) => void
+    onProgress?: (count: number) => void
   ) {
     const { getCommandFactory, runCommand } = cozoDb;
 

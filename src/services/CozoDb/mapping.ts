@@ -1,6 +1,6 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
-import { PinTypeMap } from './cozoDb.d';
+import { PinTypeMap } from './types';
 
 export const mapParticleToCozoEntity = (particle: IPFSContent): any => {
   const { cid, result, meta, textPreview } = particle;

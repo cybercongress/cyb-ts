@@ -4,17 +4,32 @@ export type SyncProgress = {
   done?: boolean;
   error?: string;
 };
-export type SyncEntryStatus = Partial<Record<SyncEntry, SyncProgress>>;
 
 export type WorkerStatus = 'inactive' | 'idle' | 'syncing' | 'error';
-export type SyncState = {
+
+export type SyncBroadcastType = 'sender' | 'reciever';
+
+export type SyncEntryStatus = Partial<Record<SyncEntry, SyncProgress>>;
+
+export type WorkerState = {
   status: WorkerStatus;
   entryStatus: SyncEntryStatus;
   lastError?: string;
 };
+
+export type WorkerStatusUpdate = Omit<WorkerState, 'entryStatus'>;
+
 export type SyncEntryUpdate = {
   entry: SyncEntry;
   state: SyncProgress;
 };
 
-export type SyncBroadcastType = 'sender' | 'reciever';
+export type WorkerStatusMessage = {
+  type: 'worker_status';
+  value: WorkerStatusUpdate;
+};
+
+export type SyncEntryMessage = {
+  type: 'sync_entry';
+  value: SyncEntryUpdate;
+};

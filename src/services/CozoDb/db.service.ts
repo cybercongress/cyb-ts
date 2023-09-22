@@ -1,8 +1,8 @@
 import { wrap, proxy } from 'comlink';
-import DbWorker from 'worker-loader!./db.worker';
 import { DbWorkerApi } from './db.worker';
+import BcChannel from 'src/services/backend/BroadcastChannel';
 
-const worker = new DbWorker();
+const worker = new Worker(new URL('./db.worker.ts', import.meta.url));
 
 async function waitUntiCondition(cond: () => boolean, timeoutDuration = 60000) {
   if (cond()) {
@@ -28,21 +28,26 @@ async function waitUntiCondition(cond: () => boolean, timeoutDuration = 60000) {
 }
 
 function dbService() {
-  const dbServiceProxy = wrap<DbWorkerApi>(worker);
   let isInitialized = false;
-  let writesCount = 0;
+  // let writesCount = 0;
+
+  const dbServiceProxy = wrap<DbWorkerApi>(worker);
 
   const init = async () => {
+    // if (isInitialized) {
+    //   throw new Error('CozoDb is already initialized');
+    // }
+
     await dbServiceProxy.init();
     isInitialized = true;
 
-    // Sync writesCount, main thread <- worker
-    worker.onmessage = (event: any) => {
-      const { type, value } = event.data;
-      if (type === 'writesCountUpdate') {
-        writesCount = value;
-      }
-    };
+    // // Sync writesCount, main thread <- worker
+    // worker.onmessage = (event: any) => {
+    //   const { type, value } = event.data;
+    //   if (type === 'writesCountUpdate') {
+    //     writesCount = value;
+    //   }
+    // };
   };
 
   const runCommand = async (command: string) =>

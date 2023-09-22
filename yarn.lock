@@ -28366,14 +28366,6 @@ wordwrap@^1.0.0:
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
-worker-loader@^3.0.8:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/worker-loader/-/worker-loader-3.0.8.tgz#5fc5cda4a3d3163d9c274a4e3a811ce8b60dbb37"
-  integrity sha512-XQyQkIFeRVC7f7uRhFdNMe/iJOdO6zxAaR3EWbDp45v3mDhrTi+++oswKNxShUNjPC/1xUp5DB29YKLhFo129g==
-  dependencies:
-    loader-utils "^2.0.0"
-    schema-utils "^3.0.0"
-
 world-calendars@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/world-calendars/-/world-calendars-1.0.3.tgz#b25c5032ba24128ffc41d09faf4a5ec1b9c14335"

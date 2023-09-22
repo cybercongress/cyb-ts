@@ -2,9 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "sourceMap": true,
-    "module": "Node16",
-    "target": "es2018",
-    "lib": ["dom", "es2018"],
+    "module": "ES2020",
+    "target": "ES2020",
+    "lib": ["webworker", "dom", "es2022"],
     "allowJs": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -16,11 +16,6 @@
     "noEmit": true,
     "types": ["node", "jest", "@types/jest"],
     "jsx": "react-jsx",
-    // "paths": {
-    //   "components": ["src/components"],
-    //   "images": ["src/image"],
-    //   "src": ["src"]
-    // },
     "typeRoots": ["./src/types"]
   },
   "include": ["src"]

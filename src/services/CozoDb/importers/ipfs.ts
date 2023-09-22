@@ -10,13 +10,15 @@ import {
   mapPinToEntity,
 } from '../mapping';
 
-import dbService from '../db.service';
+// import dbService from '../db.service';
+import { DbWorkerApi } from '../db.worker';
 
 type onProgressCallback = (count: number) => void;
 type onCompleteCallback = (total: number) => void;
 
 const importPins = async (
   node: AppIPFS,
+  dbService: DbWorkerApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -42,6 +44,7 @@ const importPins = async (
 const importParticles = async (
   node: AppIPFS,
   cids: string[],
+  dbService: DbWorkerApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -69,7 +72,7 @@ const importParticles = async (
   onComplete && onComplete(conter);
 };
 
-const importParicle = async (particle: IPFSContent) => {
+const importParicle = async (particle: IPFSContent, dbService: DbWorkerApi) => {
   try {
     const entity = mapParticleToEntity(particle);
     const result = (await dbService.executePutCommand('particle', entity)).ok;

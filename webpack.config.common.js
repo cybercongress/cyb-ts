@@ -114,7 +114,7 @@ const config = {
           loader: 'esbuild-loader',
           options: {
             loader: 'tsx',
-            target: 'es2018', // Syntax to compile to (see options below for possible values)
+            target: 'es2020', // Syntax to compile to (see options below for possible values)
           },
         },
       },

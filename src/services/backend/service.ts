@@ -1,23 +1,6 @@
 import { wrap } from 'comlink';
-import BackgroundWorker from 'worker-loader!./worker';
-import { BackgroundWorkerApi } from './worker';
+import { BackendWorkerApi } from './worker';
 
-// Initialize the worker and wrap it with Comlink
-export const workerApi = wrap<BackgroundWorkerApi>(new BackgroundWorker());
+const worker = new Worker(new URL('./worker.ts', import.meta.url));
 
-// Listen to messages from the BroadcastChannel
-
-// Example usage:
-
-// Initialize the worker
-// workerApi.init();
-
-// Call sync in a non-blocking way
-async function syncData() {
-  //   await workerApi.syncIPFS(node);
-}
-
-// syncData();
-
-export default { syncData };
-// requestSyncState();
+export const workerApi = wrap<BackendWorkerApi>(worker);

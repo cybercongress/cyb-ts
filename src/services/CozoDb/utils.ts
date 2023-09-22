@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IDBResult, DBResultWithColIndex, DBValue, Column } from './cozoDb.d';
+import { IDBResult, DBResultWithColIndex, DBValue, Column } from './types';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
   const index = result.headers.reduce((acc, column, index) => {

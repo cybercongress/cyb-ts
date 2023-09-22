@@ -1,18 +1,21 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { SyncState, WorkerStatus } from 'src/services/backend/types';
-import { workerApi } from 'src/services/backend/service';
-import { DualChannelSyncState } from 'src/services/backend/DualChannel';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { useAppDispatch } from 'src/redux/hooks';
-import dbService from 'src/services/CozoDb/db.service';
+import { workerApi } from 'src/services/backend/service';
+import BcChannel from 'src/services/backend/BroadcastChannel';
+
+import { DbWorkerApi } from 'src/services/CozoDb/db.worker';
 
 import { getIpfsOpts } from './ipfs';
 
 type BackendProviderContextType = {
-  syncStatus?: SyncState;
-  startSyncTask?: () => void;
+  startSyncTask: () => void;
+  getDbApi: () => Promise<DbWorkerApi>;
 };
 
-const valueContext = {};
+const valueContext = {
+  startSyncTask: () => {},
+  getDbApi: () => Promise.resolve({}),
+};
 
 const BackendContext =
   React.createContext<BackendProviderContextType>(valueContext);
@@ -24,31 +27,25 @@ export function useBackend() {
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
 
-  // const [syncStatus, setSyncStatus] = useState<SyncState>({ status: 'idle' });
-  // const [contentUrl, setContentUrl] = useState<string>('');
-  const channelRef = useRef<DualChannelSyncState>();
+  const channelRef = useRef<BcChannel>();
 
+  // Init backend worker
+  // TODO: move DbApi as return ???
   useEffect(() => {
-    const init = async () => workerApi.init(getIpfsOpts());
-    init();
-    dbService.init().then(() => {
-      console.log('CozoDb initialized');
-    });
-    console.log('----init backend');
-    channelRef.current = new DualChannelSyncState(
-      'reciever',
-      'cyb-broadcast-channel',
-      (actionFactory: Function) => {
-        dispatch(actionFactory());
-      }
-    );
+    (async () => {
+      workerApi
+        .init(getIpfsOpts())
+        .then(() => console.log('[!]  Backend initialized context'));
+    })();
+
+    // Channel to sync backend(workers) state with reducer
+    channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, []);
 
   const valueMemo = useMemo(
     () => ({
-      startSyncTask: async () => {
-        await workerApi.syncIPFS();
-      },
+      startSyncTask: async () => workerApi.syncIPFS(),
+      getDbApi: async () => workerApi.getDbApi(),
     }),
     []
   );
