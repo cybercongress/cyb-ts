@@ -1,20 +1,19 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { useAppDispatch } from 'src/redux/hooks';
-import { workerApi } from 'src/services/backend/service';
-import BcChannel from 'src/services/backend/BroadcastChannel';
+import { proxy } from 'comlink';
+import { workerApi } from 'src/services/backend/workers/background/service';
 
-import { DbWorkerApi } from 'src/services/CozoDb/db.worker';
+import BcChannel from 'src/services/backend/channels/BroadcastChannel';
+import dbService from 'src/services/backend/workers/db/service';
 
 import { getIpfsOpts } from './ipfs';
 
 type BackendProviderContextType = {
   startSyncTask: () => void;
-  getDbApi: () => Promise<DbWorkerApi>;
 };
 
 const valueContext = {
   startSyncTask: () => {},
-  getDbApi: () => Promise.resolve({}),
 };
 
 const BackendContext =
@@ -29,23 +28,29 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const channelRef = useRef<BcChannel>();
 
-  // Init backend worker
-  // TODO: move DbApi as return ???
   useEffect(() => {
     (async () => {
-      workerApi
-        .init(getIpfsOpts())
-        .then(() => console.log('⚙️ Backend initialized'));
+      console.log(
+        process.env.IS_DEV
+          ? '🧪 Starting backend in DEV mode...'
+          : '🧬 Starting backend in PROD mode...'
+      );
+      await dbService
+        .init()
+        .then(() => console.log('🔋 CozoDb initialized.', dbService));
+      await workerApi
+        .init(getIpfsOpts(), proxy(dbService))
+        .then(() => console.log('🔋 Background initialized.'));
     })();
 
-    // Channel to sync backend(workers) state with reducer
+    // Channel to sync worker's state with redux store
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, []);
 
   const valueMemo = useMemo(
     () => ({
       startSyncTask: async () => workerApi.syncIPFS(),
-      getDbApi: async () => workerApi.getDbApi(),
+      getDbApi: async () => dbService,
     }),
     []
   );

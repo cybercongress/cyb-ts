@@ -1,4 +1,4 @@
-import { BroadcastChannelMessage } from 'src/services/backend/BroadcastChannel';
+import { BroadcastChannelMessage } from 'src/services/backend/channels/BroadcastChannel';
 import { WorkerState } from 'src/services/backend/types';
 import { assocPath } from 'ramda';
 

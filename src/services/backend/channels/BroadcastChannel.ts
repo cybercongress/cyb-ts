@@ -1,5 +1,5 @@
-import { IndexedDbWriteMessage } from '../CozoDb/types';
-import { SyncEntryMessage, WorkerStatusMessage } from './types';
+import { IndexedDbWriteMessage } from '../../CozoDb/types';
+import { SyncEntryMessage, WorkerStatusMessage } from '../types';
 
 const CYB_BROADCAST_CHANNEL = 'cyb-broadcast-channel';
 

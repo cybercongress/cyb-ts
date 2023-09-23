@@ -1,8 +1,11 @@
 import { wrap, proxy } from 'comlink';
-import { DbWorkerApi } from './db.worker';
-import BcChannel from 'src/services/backend/BroadcastChannel';
+import { DbWorkerApi } from './worker';
 
-const worker = new Worker(new URL('./db.worker.ts', import.meta.url));
+// const worker = new Worker(new URL('./db.worker.ts', import.meta.url));
+// const dbServiceProxy = wrap<DbWorkerApi>(worker);
+
+const worker = new SharedWorker(new URL('./worker.ts', import.meta.url));
+const dbServiceProxy = wrap<DbWorkerApi>(worker.port);
 
 async function waitUntiCondition(cond: () => boolean, timeoutDuration = 60000) {
   if (cond()) {
@@ -29,9 +32,6 @@ async function waitUntiCondition(cond: () => boolean, timeoutDuration = 60000) {
 
 function dbService() {
   let isInitialized = false;
-  // let writesCount = 0;
-
-  const dbServiceProxy = wrap<DbWorkerApi>(worker);
 
   const init = async () => {
     // if (isInitialized) {
@@ -40,14 +40,6 @@ function dbService() {
 
     await dbServiceProxy.init();
     isInitialized = true;
-
-    // // Sync writesCount, main thread <- worker
-    // worker.onmessage = (event: any) => {
-    //   const { type, value } = event.data;
-    //   if (type === 'writesCountUpdate') {
-    //     writesCount = value;
-    //   }
-    // };
   };
 
   const runCommand = async (command: string) =>
@@ -85,8 +77,8 @@ function dbService() {
   const exportRelations = async (relations: string[]) =>
     dbServiceProxy.exportRelations(relations);
 
-  const importTransactions = async (address: string, cyberIndexHttps: string) =>
-    dbServiceProxy.importTransactions(address, cyberIndexHttps);
+  // const importTransactions = async (address: string, cyberIndexHttps: string) =>
+  //   dbServiceProxy.importTransactions(address, cyberIndexHttps);
 
   return {
     init,
@@ -96,7 +88,7 @@ function dbService() {
     executeGetCommand,
     importRelations,
     exportRelations,
-    importTransactions,
+    // importTransactions,
   };
 }
 

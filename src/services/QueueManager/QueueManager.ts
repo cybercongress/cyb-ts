@@ -37,7 +37,7 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { importParicle } from '../CozoDb/importers/ipfs';
+// import { importParicle } from '../CozoDb/importers/ipfs';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -145,9 +145,10 @@ class QueueManager<T> {
         node: this.node,
       });
       // TODO: make pipeline
-      if (content) {
-        await importParicle(content);
-      }
+      // NOT WORKING
+      // if (content) {
+      //   await importParicle(content);
+      // }
 
       return content;
     }).pipe(

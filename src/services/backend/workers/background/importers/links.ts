@@ -1,13 +1,15 @@
-import dbService from '../db.service';
+import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
 export const importCyberlink = async ({
   from,
   to,
   neuronAddress = '',
+  dbService,
 }: {
   from: string;
   to: string;
   neuronAddress: string;
+  dbService: DbWorkerApi;
 }) => {
   try {
     const entity = { from, to, neuron_address: neuronAddress };

@@ -8,10 +8,10 @@ import {
 import {
   mapParticleToCozoEntity as mapParticleToEntity,
   mapPinToEntity,
-} from '../mapping';
+} from 'src/services/CozoDb/mapping';
 
 // import dbService from '../db.service';
-import { DbWorkerApi } from '../db.worker';
+import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
 type onProgressCallback = (count: number) => void;
 type onCompleteCallback = (total: number) => void;

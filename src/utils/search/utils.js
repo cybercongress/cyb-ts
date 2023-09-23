@@ -683,7 +683,10 @@ export const getTweet = async (address) => {
     return null;
   }
 };
+
 // TODO: IPFS move to utils
+// !!! REFACTORING PRIORITY !!!
+// REPLACE WITH queueManager.enqueue with awaitable result from feat/rune
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   // const timeoutPromise = () =>
   //   new Promise((reject) => {
@@ -883,14 +886,14 @@ export const searchByHash = async (
     ) {
       options.callback(responseSearchResults.pagination.total);
     }
-
+    console.log('----results', results, responseSearchResults);
     if (options.storeToCozo) {
-      await importCyberlinks(
-        responseSearchResults.result.map((item) => ({
-          from: hash,
-          to: item.particle,
-        }))
-      );
+      // await importCyberlinks(
+      //   responseSearchResults.result.map((item) => ({
+      //     from: hash,
+      //     to: item.particle,
+      //   }))
+      // );
     }
     return results;
   } catch (error) {
