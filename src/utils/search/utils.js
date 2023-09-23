@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
-import { importCyberlinks } from 'src/services/CozoDb/importers/links';
+// import { importCyberlinks } from 'src/services/CozoDb/importers/links';
 
 import * as config from '../config';
 
