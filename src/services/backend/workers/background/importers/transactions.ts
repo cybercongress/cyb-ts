@@ -52,6 +52,7 @@ async function* fetchTransactionsAsyncIterable(
   }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const importTransactions = async (
   dbService: DbWorkerApi,
   address: string,
@@ -64,8 +65,9 @@ export const importTransactions = async (
     address,
     cyberIndexUrl
   );
+  // eslint-disable-next-line no-restricted-syntax
   for await (const entries of transactionsAsyncIterable) {
-    conter += transactionsEntities.length;
+    conter += entries.length;
     await dbService.executeBatchPutCommand(
       'transaction',
       entries,
