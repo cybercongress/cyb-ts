@@ -1,19 +1,22 @@
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-export const importCyberlink = async ({
-  from,
-  to,
-  neuronAddress = '',
-  dbService,
-}: {
+type PlainCyberLink = {
   from: string;
   to: string;
-  neuronAddress: string;
+  neuronAddress?: string;
+};
+
+export const importCyberlink = async ({
+  dbService,
+  link,
+}: {
   dbService: DbWorkerApi;
+  link: PlainCyberLink;
 }) => {
   try {
+    const { from, to, neuronAddress } = link;
     const entity = { from, to, neuron_address: neuronAddress };
-    const result = (await dbService.executePutCommand('link', entity)).ok;
+    const result = (await dbService.executePutCommand('link', [entity])).ok;
     console.log('importCyberlink', result, entity);
     return result;
   } catch (e) {
@@ -21,11 +24,10 @@ export const importCyberlink = async ({
   }
 };
 
-type PlainCyberLink = {
-  from: string;
-  to: string;
-};
-export const importCyberlinks = async (links: PlainCyberLink[]) => {
+export const importCyberlinks = async (
+  dbService: DbWorkerApi,
+  links: PlainCyberLink[]
+) => {
   try {
     await dbService.executeBatchPutCommand(
       'link',

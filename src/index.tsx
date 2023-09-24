@@ -96,31 +96,31 @@ const root = createRoot(container);
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <BackendProvider>
-        <IpfsProvider>
-          <NetworksProvider>
-            <SdkQueryClientProvider>
-              <SigningClientProvider>
-                <QueryClientProvider client={queryClient}>
-                  <IbcDenomProvider>
-                    <WebsocketsProvider>
-                      <DataProvider>
-                        <ApolloProvider client={client}>
+      <IpfsProvider>
+        <NetworksProvider>
+          <SdkQueryClientProvider>
+            <SigningClientProvider>
+              <QueryClientProvider client={queryClient}>
+                <IbcDenomProvider>
+                  <WebsocketsProvider>
+                    <DataProvider>
+                      <ApolloProvider client={client}>
+                        <BackendProvider>
                           <DeviceProvider>
                             <AdviserProvider>
                               <ErrorBoundary>{children}</ErrorBoundary>
                             </AdviserProvider>
                           </DeviceProvider>
-                        </ApolloProvider>
-                      </DataProvider>
-                    </WebsocketsProvider>
-                  </IbcDenomProvider>
-                </QueryClientProvider>
-              </SigningClientProvider>
-            </SdkQueryClientProvider>
-          </NetworksProvider>
-        </IpfsProvider>
-      </BackendProvider>
+                        </BackendProvider>
+                      </ApolloProvider>
+                    </DataProvider>
+                  </WebsocketsProvider>
+                </IbcDenomProvider>
+              </QueryClientProvider>
+            </SigningClientProvider>
+          </SdkQueryClientProvider>
+        </NetworksProvider>
+      </IpfsProvider>
     </Provider>
   );
 }

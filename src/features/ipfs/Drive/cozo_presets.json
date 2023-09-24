@@ -19,5 +19,9 @@
     "rt[text, from] := *link{from, to}, *particle{cid: from, text}",
     "rf[text, to] := *link{from, to}, *particle{cid: to, text}",
     "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
+  ],
+  "transactions: ls": [
+    "?[type, value, timestamp] := *transaction{type, value, timestamp}",
+    ":order -timestamp"
   ]
 }

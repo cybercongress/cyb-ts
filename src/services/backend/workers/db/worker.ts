@@ -1,7 +1,6 @@
 import { expose } from 'comlink';
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
-// import { importTransactions } from 'src/services/CozoDb/importers/transactions';
 
 const dbApiFactory = () => {
   const init = async () => {
@@ -13,14 +12,6 @@ const dbApiFactory = () => {
 
     await cozoDb.init(onWriteCallback);
   };
-
-  // const importTransactions = async (
-  //   address: string,
-  //   cyberIndexHttps: string
-  // ) => {
-  //   const res = await importTransactions(address, cyberIndexHttps);
-  //   console.log('-----data', res);
-  // };
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
 
@@ -76,6 +67,6 @@ const dbApi = dbApiFactory();
 
 export type DbWorkerApi = typeof dbApi;
 
-// Expose the API to the main thread
+// Expose the \API to the main thread
 // expose(api);
 onconnect = (e) => expose(dbApi, e.ports[0]);

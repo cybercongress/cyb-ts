@@ -28,3 +28,11 @@
         neuron_address: String
     }
 }
+{
+    :create transaction {
+        hash: String,
+        type: String =>
+        timestamp: Int,
+        value: Json
+    }
+}

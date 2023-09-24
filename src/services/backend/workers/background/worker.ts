@@ -9,13 +9,13 @@ import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { PinTypeMap } from 'src/services/CozoDb/types';
 import { initIpfsClient, destroyIpfsClient } from 'src/utils/ipfs/init';
 
-// import { importTransactions } from 'src/services/CozoDb/importers/transactions';
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import {
   SyncEntry,
   SyncProgress,
   WorkerStatus,
 } from 'src/services/backend/types';
+import { importTransactions } from './importers/transactions';
 
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
@@ -36,8 +36,16 @@ const backendApiFactory = () => {
     postWorkerStatus('idle');
   };
 
-  const syncIPFS = async (): Promise<void> => {
+  // TODO: refact, params need to be synced with main thread
+  const syncIPFS = async (
+    address: string | null,
+    cyberIndexUrl: string
+  ): Promise<void> => {
     try {
+      if (!address) {
+        postWorkerStatus('error', 'Connect your wallet');
+        return;
+      }
       if (!ipfsNode) {
         postWorkerStatus('error', 'IPFS node is not initialized');
         return;
@@ -48,8 +56,15 @@ const backendApiFactory = () => {
         return;
       }
 
-      console.log('----sync ipfs start', ipfsNode);
+      console.log('----sync start', ipfsNode, dbService);
       postWorkerStatus('syncing');
+      await importTransactions(
+        dbService,
+        address,
+        cyberIndexUrl,
+        async (progress) => postEntrySyncStatus('transaction', { progress }),
+        async (total) => postEntrySyncStatus('transaction', { done: true })
+      );
 
       await importPins(
         ipfsNode,

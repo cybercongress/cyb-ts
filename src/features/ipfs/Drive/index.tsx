@@ -11,9 +11,6 @@ import { Button as CybButton, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 
-// TODO: refactor / move to worker
-import { useRobotContext } from 'src/pages/robot/robot.context';
-
 import { useBackend } from 'src/contexts/backend';
 import {
   SyncEntry,
@@ -78,7 +75,6 @@ function Drive() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { address: userAddress } = useRobotContext();
   const { startSyncTask, getDbApi } = useBackend();
   const { syncState, dbPendingWrites } = useAppSelector(
     (store) => store.backend
@@ -131,7 +127,22 @@ function Drive() {
                   return value;
                 },
               }));
-              setQueryResults({ rows, cols });
+
+              // parse object-type values to string to be able to display them in the table
+              const rowsNormalized = rows.map((row) => {
+                const updatedRow = {};
+
+                for (const [key, value] of Object.entries(row)) {
+                  if (typeof value === 'object') {
+                    updatedRow[key] = JSON.stringify(value);
+                  } else {
+                    updatedRow[key] = value;
+                  }
+                }
+                return updatedRow;
+              });
+
+              setQueryResults({ rows: rowsNormalized, cols });
             } else {
               console.error('Query failed', result);
               setStatusMessage(`finished with errors`);
@@ -154,7 +165,8 @@ function Drive() {
   const importIpfs = async () => startSyncTask!();
 
   const exportReations = async () => {
-    // TODO: refactor
+    const dbService = await getDbApi();
+
     const result = await dbService.exportRelations(['pin', 'particle', 'link']);
     console.log('---export data', result);
     if (result.ok) {
@@ -169,6 +181,8 @@ function Drive() {
 
   const importReations = async (file: any) => {
     const content = await file.text();
+    const dbService = await getDbApi();
+
     const res = await dbService.importRelations(content);
     console.log('----import result', res);
   };
@@ -179,35 +193,6 @@ function Drive() {
     runQuery(value);
   };
 
-  // const renderColumn = (name: string, colIdx: number) => {
-  //   let cellRenderer = null;
-  //   if (['cid', 'text'].indexOf(name) > -1) {
-  //     cellRenderer = (rowIdx: number) => (
-  //       <Cell>
-  //         <TruncatedFormat detectTruncation>
-  //           {queryResults.rows[rowIdx][colIdx]}
-  //         </TruncatedFormat>
-  //       </Cell>
-  //     );
-  //   } else {
-  //     cellRenderer = (rowIdx: number) => (
-  //       <Cell>{queryResults.rows[rowIdx][colIdx]}</Cell>
-  //     );
-  //   }
-
-  //   // const headerCellRenderer = (colIdx: number) => (
-  //   //   <ColumnHeaderCell>{name}</ColumnHeaderCell>
-  //   // );
-
-  //   return (
-  //     <Column
-  //       name={name}
-  //       key={colIdx}
-  //       cellRenderer={cellRenderer}
-  //       // columnHeaderCellRenderer={headerCellRenderer}
-  //     />
-  //   );
-  // };
   return (
     <div>
       <Pane
@@ -221,15 +206,17 @@ function Drive() {
       >
         {syncState?.status && (
           <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-            Drive sync status - {syncState?.status}
+            Drive sync status - {syncState?.status}{' '}
+            {syncState.lastError && `(${syncState.lastError})`}
           </Text>
         )}
         {syncState?.status === 'syncing' && <SyncInfo syncState={syncState} />}
-        {syncState?.status === 'idle' && (
-          <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
-            sync drive
-          </CybButton>
-        )}
+        {syncState?.status === 'idle' ||
+          (syncState?.status === 'error' && (
+            <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+              sync drive
+            </CybButton>
+          ))}
         {/* {logs.length > 0 && (
           <div className={styles.logs}>
             {Object.keys(syncStatus?.logs).map((m, i) => <div key={`ipfs_log_${i}`}>{m}</div>)

@@ -8,7 +8,7 @@ const { CYBER_INDEX_HTTPS } = CYBER;
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"}, 
+  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
     order_by: {transaction: {block: {height: desc}}}) {
     transaction_hash
     value
@@ -23,7 +23,7 @@ const messagesByAddress = gql(`
 }
 `);
 
-const limit = '100';
+const limit = '1000';
 
 function useGetTsxByAddress(address) {
   const { status, data, error, isFetching, fetchNextPage, hasNextPage } =

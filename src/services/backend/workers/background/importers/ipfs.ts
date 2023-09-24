@@ -12,9 +12,7 @@ import {
 
 // import dbService from '../db.service';
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
-
-type onProgressCallback = (count: number) => void;
-type onCompleteCallback = (total: number) => void;
+import { onProgressCallback, onCompleteCallback } from './types';
 
 const importPins = async (
   node: AppIPFS,

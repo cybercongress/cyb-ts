@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
-import { useAppDispatch } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy } from 'comlink';
 import { workerApi } from 'src/services/backend/workers/background/service';
 
@@ -7,6 +7,8 @@ import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import dbService from 'src/services/backend/workers/db/service';
 
 import { getIpfsOpts } from './ipfs';
+import { useRobotContext } from 'src/pages/robot/robot.context';
+import { CYBER } from 'src/utils/config';
 
 type BackendProviderContextType = {
   startSyncTask: () => void;
@@ -25,6 +27,9 @@ export function useBackend() {
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
+  const { defaultAccount } = useAppSelector((state) => state.pocket);
+
+  const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   const channelRef = useRef<BcChannel>();
 
@@ -47,12 +52,15 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, []);
 
+  console.log('------userAddress2 ', useGetAddress);
+
   const valueMemo = useMemo(
     () => ({
-      startSyncTask: async () => workerApi.syncIPFS(),
+      startSyncTask: async () =>
+        workerApi.syncIPFS(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
       getDbApi: async () => dbService,
     }),
-    []
+    [useGetAddress]
   );
 
   return (
