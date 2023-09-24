@@ -211,12 +211,11 @@ function Drive() {
           </Text>
         )}
         {syncState?.status === 'syncing' && <SyncInfo syncState={syncState} />}
-        {syncState?.status === 'idle' ||
-          (syncState?.status === 'error' && (
-            <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
-              sync drive
-            </CybButton>
-          ))}
+        {(syncState?.status === 'idle' || syncState?.status === 'error') && (
+          <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+            sync drive
+          </CybButton>
+        )}
         {/* {logs.length > 0 && (
           <div className={styles.logs}>
             {Object.keys(syncStatus?.logs).map((m, i) => <div key={`ipfs_log_${i}`}>{m}</div>)
