@@ -37,7 +37,8 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-// import { importParicle } from '../CozoDb/importers/ipfs';
+import { importParicle } from '../backend/workers/background/importers/ipfs';
+import { BackendWorkerApi } from '../backend/workers/background/worker';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -72,6 +73,8 @@ class QueueManager<T> {
 
   private node: AppIPFS | undefined = undefined;
 
+  private backendApi: BackendWorkerApi | undefined = undefined;
+
   private strategy: QueueStrategy;
 
   private queueDebounceMs: number;
@@ -93,6 +96,10 @@ class QueueManager<T> {
 
     this.node = node;
     this.switchStrategy(strategies[node.nodeType]);
+  }
+
+  public setBackendApi(api: BackendWorkerApi) {
+    this.backendApi = api;
   }
 
   private getItemBySourceAndPriority(queue: QueueMap<T>) {
@@ -144,11 +151,9 @@ class QueueManager<T> {
         controller,
         node: this.node,
       });
-      // TODO: make pipeline
-      // NOT WORKING
-      // if (content) {
-      //   await importParicle(content);
-      // }
+
+      // non awaitable call
+      content && this.backendApi?.importParicleContent(content);
 
       return content;
     }).pipe(

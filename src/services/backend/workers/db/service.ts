@@ -1,36 +1,14 @@
 import { wrap, proxy } from 'comlink';
+import { waitUntil } from 'src/utils/async/utils';
+
 import { DbWorkerApi } from './worker';
 
-// const worker = new Worker(new URL('./db.worker.ts', import.meta.url));
-// const dbServiceProxy = wrap<DbWorkerApi>(worker);
+const worker = new SharedWorker(new URL('./worker.ts', import.meta.url), {
+  name: 'db-worker',
+});
+const dbApiProxy = wrap<DbWorkerApi>(worker.port);
 
-const worker = new SharedWorker(new URL('./worker.ts', import.meta.url));
-const dbServiceProxy = wrap<DbWorkerApi>(worker.port);
-
-async function waitUntiCondition(cond: () => boolean, timeoutDuration = 60000) {
-  if (cond()) {
-    return true;
-  }
-
-  const waitPromise = new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (cond()) {
-        clearInterval(interval);
-        resolve(true);
-      }
-    }, 10);
-  });
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-      reject(new Error('waitUntiCondition timed out!'));
-    }, timeoutDuration);
-  });
-
-  return Promise.race([waitPromise, timeoutPromise]);
-}
-
-function dbService() {
+function dbServiceApi() {
   let isInitialized = false;
 
   const init = async () => {
@@ -38,22 +16,21 @@ function dbService() {
     //   throw new Error('CozoDb is already initialized');
     // }
 
-    await dbServiceProxy.init();
+    await dbApiProxy.init();
     isInitialized = true;
   };
 
-  const runCommand = async (command: string) =>
-    dbServiceProxy.runCommand(command);
+  const runCommand = async (command: string) => dbApiProxy.runCommand(command);
 
   const executeGetCommand = async (
     tableName: string,
     conditionArr?: string[],
     keys?: string[]
-  ) => dbServiceProxy.executeGetCommand(tableName, conditionArr, keys);
+  ) => dbApiProxy.executeGetCommand(tableName, conditionArr, keys);
 
   const executePutCommand = async (tableName: string, array: any[][]) => {
-    await waitUntiCondition(() => isInitialized);
-    return dbServiceProxy.executePutCommand(tableName, array);
+    await waitUntil(() => isInitialized);
+    return dbApiProxy.executePutCommand(tableName, array);
   };
 
   const executeBatchPutCommand = async (
@@ -62,9 +39,9 @@ function dbService() {
     batchSize: number,
     onProgress?: (count: number) => void
   ) => {
-    await waitUntiCondition(() => isInitialized);
+    await waitUntil(() => isInitialized);
 
-    return dbServiceProxy.executeBatchPutCommand(
+    return dbApiProxy.executeBatchPutCommand(
       tableName,
       array,
       batchSize,
@@ -72,13 +49,10 @@ function dbService() {
     );
   };
   const importRelations = async (content: string) =>
-    dbServiceProxy.importRelations(content);
+    dbApiProxy.importRelations(content);
 
   const exportRelations = async (relations: string[]) =>
-    dbServiceProxy.exportRelations(relations);
-
-  // const importTransactions = async (address: string, cyberIndexHttps: string) =>
-  //   dbServiceProxy.importTransactions(address, cyberIndexHttps);
+    dbApiProxy.exportRelations(relations);
 
   return {
     init,
@@ -88,8 +62,7 @@ function dbService() {
     executeGetCommand,
     importRelations,
     exportRelations,
-    // importTransactions,
   };
 }
 
-export default dbService();
+export default dbServiceApi();

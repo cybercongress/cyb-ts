@@ -6,17 +6,17 @@ import {
 } from 'src/utils/async/iterable';
 
 import {
-  mapParticleToCozoEntity as mapParticleToEntity,
+  mapParticleToEntity,
   mapPinToEntity,
 } from 'src/services/CozoDb/mapping';
 
-// import dbService from '../db.service';
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
+
 import { onProgressCallback, onCompleteCallback } from './types';
 
 const importPins = async (
   node: AppIPFS,
-  dbService: DbWorkerApi,
+  dbApi: DbWorkerApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -26,7 +26,7 @@ const importPins = async (
     async (pinsBatch) => {
       const pinsEntities = pinsBatch.map(mapPinToEntity);
       conter += pinsBatch.length;
-      await dbService.executeBatchPutCommand(
+      await dbApi.executeBatchPutCommand(
         'pin',
         pinsEntities,
         pinsBatch.length
@@ -42,7 +42,7 @@ const importPins = async (
 const importParticles = async (
   node: AppIPFS,
   cids: string[],
-  dbService: DbWorkerApi,
+  dbApi: DbWorkerApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -57,7 +57,7 @@ const importParticles = async (
         .filter((c) => !!c)
         .map((content) => mapParticleToEntity(content as IPFSContent));
       conter += pinsEntities.length;
-      await dbService.executeBatchPutCommand(
+      await dbApi.executeBatchPutCommand(
         'particle',
         pinsEntities,
         pinsEntities.length
@@ -70,16 +70,31 @@ const importParticles = async (
   onComplete && onComplete(conter);
 };
 
-const importParicle = async (particle: IPFSContent, dbService: DbWorkerApi) => {
+const importParticle = async (
+  cid: string,
+  node: AppIPFS,
+  dbApi: DbWorkerApi
+) => {
+  return getIPFSContent(node, cid).then((content) => {
+    if (content) {
+      return importParicleContent(content, dbApi);
+    }
+    return false;
+  });
+};
+
+const importParicleContent = async (
+  particle: IPFSContent,
+  dbApi: DbWorkerApi
+) => {
   try {
     const entity = mapParticleToEntity(particle);
-    const result = (await dbService.executePutCommand('particle', entity)).ok;
-    // console.log('importParicle', result, entity);
+    const result = (await dbApi!.executePutCommand('particle', [entity])).ok;
     return result;
   } catch (e) {
-    console.error('importParicle', e);
+    console.error('importParicleContent', e);
     return false;
   }
 };
 
-export { importPins, importParticles, importParicle };
+export { importPins, importParticles, importParicleContent, importParticle };

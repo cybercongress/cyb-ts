@@ -75,7 +75,7 @@ function Drive() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { startSyncTask, getDbApi } = useBackend();
+  const { startSyncTask, dbApi } = useBackend();
   const { syncState, dbPendingWrites } = useAppSelector(
     (store) => store.backend
   );
@@ -92,9 +92,8 @@ function Drive() {
       requestAnimationFrame(() => {
         setTimeout(async () => {
           try {
-            const dbService = await getDbApi();
             const t0 = performance.now();
-            const result = await dbService.runCommand(query);
+            const result = await dbApi!.runCommand(query);
             const t1 = performance.now();
 
             if (result.ok === true) {
@@ -165,9 +164,7 @@ function Drive() {
   const importIpfs = async () => startSyncTask!();
 
   const exportReations = async () => {
-    const dbService = await getDbApi();
-
-    const result = await dbService.exportRelations(['pin', 'particle', 'link']);
+    const result = await dbApi!.exportRelations(['pin', 'particle', 'link']);
     console.log('---export data', result);
     if (result.ok) {
       const blob = new Blob([JSON.stringify(result.data)], {
@@ -181,9 +178,8 @@ function Drive() {
 
   const importReations = async (file: any) => {
     const content = await file.text();
-    const dbService = await getDbApi();
 
-    const res = await dbService.importRelations(content);
+    const res = await dbApi!.importRelations(content);
     console.log('----import result', res);
   };
 

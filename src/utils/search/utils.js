@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
-// import { importCyberlinks } from 'src/services/CozoDb/importers/links';
+import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
@@ -886,14 +886,14 @@ export const searchByHash = async (
     ) {
       options.callback(responseSearchResults.pagination.total);
     }
-    console.log('----results', results, responseSearchResults);
     if (options.storeToCozo) {
-      // await importCyberlinks(
-      //   responseSearchResults.result.map((item) => ({
-      //     from: hash,
-      //     to: item.particle,
-      //   }))
-      // );
+      backendApi.importParticle(hash);
+      backendApi.importCyberlinks(
+        responseSearchResults.result.map((item) => ({
+          from: hash,
+          to: item.particle,
+        }))
+      );
     }
     return results;
   } catch (error) {

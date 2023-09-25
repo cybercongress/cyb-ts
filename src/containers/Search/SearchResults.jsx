@@ -37,7 +37,6 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { MainContainer } from '../portal/components';
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
-import { importCyberlinks } from 'src/services/CozoDb/importers/links';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>

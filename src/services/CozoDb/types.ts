@@ -25,6 +25,8 @@ export interface IDBResultError {
   severity: string;
   ok: false;
 }
+
+// example of db optimization for classifiers
 export const PinTypeMap: Record<Exclude<PinType, 'all'>, number> = {
   indirect: -1,
   direct: 0,

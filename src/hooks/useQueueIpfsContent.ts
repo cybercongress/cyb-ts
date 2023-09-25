@@ -5,6 +5,7 @@ import { useIpfs } from 'src/contexts/ipfs';
 import { IPFSContentMaybe, IpfsContentSource } from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
+import { useBackend } from 'src/contexts/backend';
 
 // TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
 const queueManager = new QueueManager<IPFSContentMaybe>();
@@ -28,6 +29,11 @@ function useQueueIpfsContent(
   const prevParentIdRef = useRef<string | undefined>();
   const [prevNodeType, setPrevNodeType] = useState<string | undefined>();
   const { node } = useIpfs();
+  const { backendApi } = useBackend();
+
+  useEffect(() => {
+    queueManager.setBackendApi(backendApi);
+  }, [backendApi]);
 
   useEffect(() => {
     const callback = (

@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy } from 'comlink';
-import { workerApi } from 'src/services/backend/workers/background/service';
+import { backendApi } from 'src/services/backend/workers/background/service';
 
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
-import dbService from 'src/services/backend/workers/db/service';
-
-import { getIpfsOpts } from './ipfs';
-import { useRobotContext } from 'src/pages/robot/robot.context';
+import dbApiService from 'src/services/backend/workers/db/service';
 import { CYBER } from 'src/utils/config';
 
+import { getIpfsOpts } from './ipfs';
+
 type BackendProviderContextType = {
-  startSyncTask: () => void;
+  startSyncTask?: () => void;
+  backendApi?: typeof backendApi;
 };
 
 const valueContext = {
-  startSyncTask: () => {},
+  startSyncTask: undefined,
+  backendApi: undefined,
 };
 
 const BackendContext =
@@ -28,6 +29,7 @@ export function useBackend() {
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const { defaultAccount } = useAppSelector((state) => state.pocket);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
@@ -40,27 +42,27 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
-      await dbService
+      await dbApiService
         .init()
-        .then(() => console.log('🔋 CozoDb initialized.', dbService));
-      await workerApi
-        .init(getIpfsOpts(), proxy(dbService))
+        .then(() => console.log('🔋 CozoDb initialized.', dbApiService));
+      await backendApi
+        .init(getIpfsOpts(), proxy(dbApiService))
         .then(() => console.log('🔋 Background initialized.'));
+
+      setIsInitialized(true);
     })();
 
     // Channel to sync worker's state with redux store
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, []);
 
-  console.log('------userAddress2 ', useGetAddress);
-
   const valueMemo = useMemo(
     () => ({
       startSyncTask: async () =>
-        workerApi.syncDrive(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
-      getDbApi: async () => dbService,
+        backendApi.syncDrive(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
+      backendApi: isInitialized ? backendApi : undefined,
     }),
-    [useGetAddress]
+    [useGetAddress, isInitialized]
   );
 
   return (

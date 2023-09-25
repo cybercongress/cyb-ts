@@ -2,6 +2,7 @@ import { request } from 'graphql-request';
 import gql from 'graphql-tag';
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
+import { Transaction } from 'src/types/transaction';
 import { onCompleteCallback, onProgressCallback } from './types';
 
 const messagesByAddress = gql(`
@@ -21,27 +22,36 @@ const messagesByAddress = gql(`
 }
 `);
 
-const limit = '100';
+const BATCH_LIMIT = '100';
+
+type TransactionsByAddressResponse = {
+  messages_by_address: Transaction[];
+};
 
 const fetchTransactions = async (
   address: string,
   cyberIndexUrl: string,
   offset = 0
 ) => {
-  const res = await request(cyberIndexUrl, messagesByAddress, {
-    address: `{${address}}`,
-    limit,
-    offset,
-  });
+  const res = await request<TransactionsByAddressResponse>(
+    cyberIndexUrl,
+    messagesByAddress,
+    {
+      address: `{${address}}`,
+      limit: BATCH_LIMIT,
+      offset,
+    }
+  );
   return res.messages_by_address;
 };
 
 async function* fetchTransactionsAsyncIterable(
   address: string,
   cyberIndexUrl: string
-): AsyncIterable<any> {
+): AsyncIterable<ReturnType<typeof mapTransactionToEntity>[]> {
   let offset = 0;
   while (true) {
+    // eslint-disable-next-line no-await-in-loop
     const items = await fetchTransactions(address, cyberIndexUrl, offset);
     if (items.length === 0) {
       break;
@@ -55,8 +65,8 @@ async function* fetchTransactionsAsyncIterable(
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export const importTransactions = async (
-  dbService: DbWorkerApi,
+const importTransactions = async (
+  dbApi: DbWorkerApi,
   address: string,
   cyberIndexUrl: string,
   onProgress?: onProgressCallback,
@@ -70,12 +80,10 @@ export const importTransactions = async (
   // eslint-disable-next-line no-restricted-syntax
   for await (const entries of transactionsAsyncIterable) {
     conter += entries.length;
-    await dbService.executeBatchPutCommand(
-      'transaction',
-      entries,
-      entries.length
-    );
+    await dbApi.executeBatchPutCommand('transaction', entries, entries.length);
     onProgress && onProgress(conter);
   }
   onComplete && onComplete(conter);
 };
+
+export { importTransactions };

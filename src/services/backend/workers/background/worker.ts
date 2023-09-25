@@ -1,36 +1,49 @@
-import { expose, proxy } from 'comlink';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { expose } from 'comlink';
+import { AppIPFS, IPFSContent } from 'src/utils/ipfs/ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
-import { importParticles, importPins } from './importers/ipfs';
-// import dbService from '../CozoDb/db.service';
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
 import { PinTypeMap } from 'src/services/CozoDb/types';
+
 import { initIpfsClient, destroyIpfsClient } from 'src/utils/ipfs/init';
 
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
+
 import {
   SyncEntry,
   SyncProgress,
   WorkerStatus,
 } from 'src/services/backend/types';
+
+import {
+  importParticles,
+  importPins,
+  importParicleContent as importParicleContent_,
+  importParticle as importParticle_,
+} from './importers/ipfs';
 import { importTransactions } from './importers/transactions';
+import {
+  PlainCyberLink,
+  importCyberlinks as importCyberlinks_,
+} from './importers/links';
+import { node } from 'prop-types';
 
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
-  let dbService: DbWorkerApi | undefined;
+  let dbApi: DbWorkerApi | undefined;
 
   const channel = new BcChannel();
 
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>
     channel.post({ type: 'worker_status', value: { status, lastError } });
+
   const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
-  const init = async (ipfsOpts: IpfsOptsType, dbServiceProxy: DbWorkerApi) => {
+  const init = async (ipfsOpts: IpfsOptsType, dbApiProxy: DbWorkerApi) => {
     // proxy to worker with db
-    dbService = dbServiceProxy;
+    dbApi = dbApiProxy;
 
     ipfsNode = await initIpfsClient(ipfsOpts);
     postWorkerStatus('idle');
@@ -43,7 +56,7 @@ const backendApiFactory = () => {
   ): Promise<void> => {
     try {
       if (!address) {
-        postWorkerStatus('error', 'Connect your wallet');
+        postWorkerStatus('error', 'Wallet is not connected');
         return;
       }
       if (!ipfsNode) {
@@ -51,15 +64,14 @@ const backendApiFactory = () => {
         return;
       }
 
-      if (!dbService) {
+      if (!dbApi) {
         postWorkerStatus('error', 'CozoDb is not initialized');
         return;
       }
 
-      console.log('----sync start', ipfsNode, dbService);
       postWorkerStatus('syncing');
       const transactionPromise = await importTransactions(
-        dbService,
+        dbApi,
         address,
         cyberIndexUrl,
         async (progress) => postEntrySyncStatus('transaction', { progress }),
@@ -68,12 +80,12 @@ const backendApiFactory = () => {
 
       const importIpfs = async () => {
         await importPins(
-          ipfsNode,
-          dbService,
+          ipfsNode!,
+          dbApi!,
           async (progress) => postEntrySyncStatus('pin', { progress }),
-          async (total) => postEntrySyncStatus('pin', { done: true })
+          async () => postEntrySyncStatus('pin', { done: true })
         );
-        const pinsData = await dbService.executeGetCommand(
+        const pinsData = await dbApi!.executeGetCommand(
           'pin',
           [`type = ${PinTypeMap.recursive}`],
           ['cid']
@@ -87,11 +99,11 @@ const backendApiFactory = () => {
         const cids = pinsData.rows.map((row) => row[0]) as string[];
 
         await importParticles(
-          ipfsNode,
+          ipfsNode!,
           cids,
-          dbService,
+          dbApi!,
           async (progress) => postEntrySyncStatus('particle', { progress }),
-          async (total) => postEntrySyncStatus('particle', { done: true })
+          async () => postEntrySyncStatus('particle', { done: true })
         );
       };
 
@@ -103,14 +115,21 @@ const backendApiFactory = () => {
     }
   };
 
-  // const syncTransactions = async (address: string, cyberIndexHttps: string) => {
-  //   const res = await importTransactions(address, cyberIndexHttps);
-  //   console.log('-----data', res);
-  // };
+  const importParicleContent = async (particle: IPFSContent) =>
+    importParicleContent_(particle, dbApi!);
+
+  const importCyberlinks = async (links: PlainCyberLink[]) =>
+    importCyberlinks_(links, dbApi!);
+
+  const importParticle = async (cid: string) =>
+    importParticle_(cid, ipfsNode!, dbApi!);
 
   return {
     init,
     syncDrive,
+    importParicleContent,
+    importCyberlinks,
+    importParticle,
   };
 };
 
