@@ -37,7 +37,7 @@ const backendApiFactory = () => {
   };
 
   // TODO: refact, params need to be synced with main thread
-  const syncIPFS = async (
+  const syncDrive = async (
     address: string | null,
     cyberIndexUrl: string
   ): Promise<void> => {
@@ -58,7 +58,7 @@ const backendApiFactory = () => {
 
       console.log('----sync start', ipfsNode, dbService);
       postWorkerStatus('syncing');
-      await importTransactions(
+      const transactionPromise = await importTransactions(
         dbService,
         address,
         cyberIndexUrl,
@@ -66,36 +66,39 @@ const backendApiFactory = () => {
         async (total) => postEntrySyncStatus('transaction', { done: true })
       );
 
-      await importPins(
-        ipfsNode,
-        dbService,
-        async (progress) => postEntrySyncStatus('pin', { progress }),
-        async (total) => postEntrySyncStatus('pin', { done: true })
-      );
-      const pinsData = await dbService.executeGetCommand(
-        'pin',
-        [`type = ${PinTypeMap.recursive}`],
-        ['cid']
-      );
+      const importIpfs = async () => {
+        await importPins(
+          ipfsNode,
+          dbService,
+          async (progress) => postEntrySyncStatus('pin', { progress }),
+          async (total) => postEntrySyncStatus('pin', { done: true })
+        );
+        const pinsData = await dbService.executeGetCommand(
+          'pin',
+          [`type = ${PinTypeMap.recursive}`],
+          ['cid']
+        );
 
-      if (pinsData.ok === false) {
-        postWorkerStatus('error', pinsData.message);
-        return;
-      }
+        if (pinsData.ok === false) {
+          postWorkerStatus('error', pinsData.message);
+          return;
+        }
 
-      const cids = pinsData.rows.map((row) => row[0]) as string[];
+        const cids = pinsData.rows.map((row) => row[0]) as string[];
 
-      await importParticles(
-        ipfsNode,
-        cids,
-        dbService,
-        async (progress) => postEntrySyncStatus('particle', { progress }),
-        async (total) => postEntrySyncStatus('particle', { done: true })
-      );
+        await importParticles(
+          ipfsNode,
+          cids,
+          dbService,
+          async (progress) => postEntrySyncStatus('particle', { progress }),
+          async (total) => postEntrySyncStatus('particle', { done: true })
+        );
+      };
 
+      await Promise.all([transactionPromise, importIpfs()]);
       postWorkerStatus('idle');
     } catch (e) {
-      console.error('syncIPFS', e);
+      console.error('syncDrive', e);
       postWorkerStatus('error', e.toString());
     }
   };
@@ -107,7 +110,7 @@ const backendApiFactory = () => {
 
   return {
     init,
-    syncIPFS,
+    syncDrive,
   };
 };
 

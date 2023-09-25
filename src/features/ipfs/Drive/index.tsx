@@ -251,7 +251,7 @@ function Drive() {
                 : 'Loading WASM ...'}
             </CybButton>
             <Select
-              width="180px"
+              width="250px"
               valueSelect=""
               small
               // textSelectValue="select preset..."

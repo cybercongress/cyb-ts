@@ -57,7 +57,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const valueMemo = useMemo(
     () => ({
       startSyncTask: async () =>
-        workerApi.syncIPFS(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
+        workerApi.syncDrive(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
       getDbApi: async () => dbService,
     }),
     [useGetAddress]

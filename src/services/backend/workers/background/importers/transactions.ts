@@ -46,7 +46,9 @@ async function* fetchTransactionsAsyncIterable(
     if (items.length === 0) {
       break;
     }
-    const txEntries = items.map((t) => mapTransactionToEntity(t));
+    const txEntries = items
+      .filter((t) => t.transaction.success)
+      .map((t) => mapTransactionToEntity(t));
     yield txEntries;
     offset += txEntries.length;
   }

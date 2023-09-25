@@ -20,8 +20,16 @@
     "rf[text, to] := *link{from, to}, *particle{cid: to, text}",
     "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
   ],
-  "transactions: ls": [
-    "?[type, value, timestamp] := *transaction{type, value, timestamp}",
+  "transactions: ls | trim": [
+    "?[type, v_trim, t] := *transaction{type, value, timestamp}, v_trim = from_substrings(slice(chars(dump_json(value)),0, 100)),  t = format_timestamp(timestamp/1000)",
+    ":order -t"
+  ],
+  "transactions: parse | delegate": [
+    "?[a, d, timestamp] := *transaction{type, value, timestamp}, type = 'cosmos.staking.v1beta1.MsgDelegate', a_ = get(value,'amount'), a = get(a_, 'amount'), d = get(a_, 'denom')",
     ":order -timestamp"
+  ],
+  "transactions: parse | link": [
+    "?[from, to, t] := *transaction{type, value, timestamp}, type = 'cyber.graph.v1beta1.MsgCyberlink', links = get(value, 'links'), l_ = get(links, 0), from =get(l_,'from'), to =get(l_,'to'), t = format_timestamp(timestamp/1000)",
+    ":order -t"
   ]
 }
