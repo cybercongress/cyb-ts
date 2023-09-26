@@ -35,6 +35,7 @@ import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import useGetBackLink from '../ipfs/hooks/useGetBackLink';
 import { set } from 'ramda';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -71,11 +72,9 @@ const reduceSearchResults = (data: SearchItemResult[], query: string) => {
       ...obj,
       [item.particle]: {
         particle: item.particle,
-        rank: coinDecimals(item.rank),
-        grade: getRankGrade(coinDecimals(item.rank)),
+
         status: 'impossibleLoad',
         query,
-        type: 'outcoming',
         text: item.particle,
         content: false,
       },
@@ -130,42 +129,155 @@ const mapS = {
   [SortBy.mine]: '👤',
 };
 
-function SearchResults() {
+const LIMIT = 15;
+
+const useSearch = (hash: string, skip?: boolean) => {
+  const cid = hash;
+
   const queryClient = useQueryClient();
+
+  const { data, fetchNextPage, error, isLoading } = useInfiniteQuery(
+    ['useSearch', cid],
+    async ({ pageParam = 0 }: { pageParam?: number }) => {
+      const response = await queryClient?.search(cid, pageParam, LIMIT);
+
+      return { data: response, page: pageParam };
+    },
+    {
+      enabled: Boolean(queryClient && cid) && !skip,
+      getNextPageParam: (lastPage) => {
+        if (!lastPage.data.pagination.total) {
+          return undefined;
+        }
+
+        const nextPage = lastPage.page++;
+
+        console.log(lastPage);
+        console.log(nextPage);
+
+        return nextPage;
+      },
+    }
+  );
+
+  return {
+    data: data?.pages.reduce((acc, page) => {
+      return acc.concat(
+        page.data.result.map((item) => {
+          return {
+            cid: item.particle,
+            rank: coinDecimals(item.rank),
+            grade: getRankGrade(coinDecimals(item.rank)),
+            type: 'outcoming',
+          };
+        })
+      );
+    }, []),
+    total: data?.pages[0].data.pagination.total,
+    next: fetchNextPage,
+    error,
+    loading: isLoading,
+  };
+};
+
+const useSearchData = (
+  hash: string,
+  sort: SortBy.rank | SortBy.date = SortBy.rank
+): {
+  // total: {
+  //   to: number;
+  //   from: number;
+  // };
+  // data: SearchItemType[];
+  // loading: boolean;
+  // error: any;
+} => {
+  const search = useSearch(hash);
+  const backlinks = useGetBackLink(hash);
+  const data = useGetDiscussion(hash, {
+    skip: sort !== SortBy.date,
+  });
+
+  function next() {}
+
+  // if (searchHook.data || backlinksHook.backlinks.length > 0) {
+  //   debugger;
+  // }
+
+  // const backlinks = useGetBackLink(
+  //   keywordHash,
+  //   linksFilter === LinksFilter.cyberLinks
+  // );
+
+  // const queryNull = '0';
+  // keywordHashNull = await getIpfsHash(queryNull);
+
+  return {
+    data: (() => {
+      // (search.data || []).concat(backlinks.backlinks);
+
+      if (sort === SortBy.rank) {
+        return search.data || [];
+        // eslint-disable-next-line no-else-return
+      } else if (sort === SortBy.date) {
+        return (
+          data.data?.pages.reduce((acc, item) => {
+            return acc.concat(item.data);
+          }, []) || []
+        );
+      }
+    })(),
+    total: {
+      to: backlinks.total,
+      from: search.total,
+    },
+    next,
+    loading: (() => {
+      if (sort === SortBy.rank) {
+        return search.loading;
+        // eslint-disable-next-line no-else-return
+      } else if (sort === SortBy.date) {
+        return data.isFetching;
+      }
+    })(),
+    error: null,
+  };
+};
+
+function SearchResults() {
   const { query: q, cid } = useParams();
 
   let query = q || cid || '';
 
   const location = useLocation();
   // const navigate = useNavigate();
-  const [searchResults, setSearchResults] = useState({});
-  const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-  const [total, setTotal] = useState(0);
-  // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  const [page, setPage] = useState(0);
+  console.log(keywordHash);
 
   const [contentType, setContentType] = useState<{
     [key: string]: IpfsContentType;
   }>({});
 
-  const [linksFilter, setLinksFilter] = useState(LinksFilter.all);
-  const backlinks = useGetBackLink(
-    keywordHash,
-    linksFilter === LinksFilter.cyberLinks
-  );
-
-  // const backlinks = [];
-
   const [filters, setFilters] = useState(initialFiltersState);
-  const [filter2, setFilter2] = useState(SortBy.rank);
+  const [filter2, setFilter2] = useState(
+    localStorage.getItem('search-sort') || SortBy.rank
+  );
+  const [linksFilter, setLinksFilter] = useState(LinksFilter.all);
+
+  const {
+    data: items,
+    total,
+    loading,
+    next,
+  } = useSearchData(keywordHash, filter2);
+
+  console.log(items);
 
   const { isMobile: mobile } = useDevice();
-  useCommunityPassports();
 
   // useEffect(() => {
   //   if (query.match(/\//g)) {
@@ -178,15 +290,6 @@ function SearchResults() {
     setContentType({});
     setFilters(initialFiltersState);
   }, [query]);
-
-  const d = useGetDiscussion(keywordHash, filter2 !== 'date');
-
-  const total2 = total || d.total;
-
-  const dateResults =
-    (d.data?.pages.reduce((acc, page) => {
-      return acc.concat(page.data);
-    }, []) as SearchItemType[]) || [];
 
   useEffect(() => {
     (async () => {
@@ -201,119 +304,6 @@ function SearchResults() {
       setKeywordHash(keywordHashTemp);
     })();
   }, [query]);
-
-  const items: SearchItemType[] = (() => {
-    if (filter2 === 'date') {
-      return dateResults;
-    } else if (linksFilter === LinksFilter.backlinks) {
-      return backlinks.backlinks.map((item) => {
-        return {
-          ...item,
-          type: 'backlink',
-        };
-      });
-    } else {
-      return Object.values(searchResults).map((item) => {
-        return {
-          cid: item.particle,
-          rank: item.rank,
-          grade: item.grade,
-          type: item.type,
-        };
-      });
-    }
-  })();
-
-  console.log(items);
-
-  useEffect(() => {
-    const getFirstItem = async () => {
-      setLoading(true);
-      if (queryClient) {
-        let keywordHashTemp = '';
-        let keywordHashNull = '';
-        let searchResultsData = [];
-        if (query.match(PATTERN_IPFS_HASH)) {
-          keywordHashTemp = query;
-        } else {
-          keywordHashTemp = await getIpfsHash(encodeSlash(query));
-        }
-
-        let responseSearchResults = await search(
-          queryClient,
-          keywordHashTemp,
-          page
-        );
-
-        if (
-          responseSearchResults.length === 0 ||
-          (responseSearchResults.result &&
-            responseSearchResults.result.length === 0)
-        ) {
-          const queryNull = '0';
-          keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(queryClient, keywordHashNull, 0);
-        }
-
-        if (
-          responseSearchResults.result &&
-          responseSearchResults.result.length > 0
-        ) {
-          searchResultsData = reduceSearchResults(
-            responseSearchResults.result,
-            query
-          );
-
-          setTotal(parseFloat(responseSearchResults.pagination.total));
-          setHasMore(true);
-          // setPage((item) => item + 1);
-        } else {
-          setHasMore(false);
-        }
-
-        setKeywordHash(keywordHashTemp);
-
-        setSearchResults(searchResultsData);
-        setLoading(false);
-      }
-    };
-    getFirstItem();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, location, update, queryClient]);
-
-  useEffect(() => {
-    if (page === 0) {
-      return;
-    }
-
-    fetchMoreData(page);
-  }, [page]);
-
-  const fetchMoreData = async (page) => {
-    if (filter2 === 'date') {
-      d.fetchNextPage();
-      return;
-    }
-
-    if (linksFilter === 'backlinks') {
-      backlinks.fetchNextPage();
-      return;
-    }
-
-    // a fake async api call like which sends
-    // 20 more records in 1.5 secs
-    let links = [];
-    const data = await search(queryClient, keywordHash, page);
-    if (data && Object.keys(data).length > 0 && data.result) {
-      links = reduceSearchResults(data.result, encodeSlash(query));
-    } else {
-      setHasMore(false);
-    }
-    // setTimeout(() => {
-    setSearchResults((itemState) => ({ ...itemState, ...links }));
-    // setPage((itemPage) => itemPage + 1);
-    // }, 500);
-  };
 
   useEffect(() => {
     setRankLink(null);
@@ -485,16 +475,15 @@ function SearchResults() {
           <div>
             <ButtonsGroup
               type="checkbox"
-              onChange={(filter) => {
+              onChange={(filter: typeof initialFiltersState & 'all') => {
                 if (filter === 'all') {
                   setFilters(initialFiltersState);
                   return;
                 }
-                const k = Object.keys(mapF).find((key) => mapF[key] === filter);
 
-                setFilters((item) => ({
-                  ...item,
-                  [k]: !item[k],
+                setFilters((filters) => ({
+                  ...initialFiltersState,
+                  [filter]: !filters[filter],
                 }));
               }}
               items={[
@@ -511,6 +500,7 @@ function SearchResults() {
 
                     return {
                       label: mapF[filter],
+                      name: filter,
                       checked: filters[filter],
                     };
                   })
@@ -521,36 +511,38 @@ function SearchResults() {
 
           <ButtonsGroup
             type="radio"
-            items={Object.values(SortBy).map((item) => {
+            items={Object.values(SortBy).map((sortType) => {
               return {
-                label: mapS[item],
-                disabled: item === SortBy.mine || item === SortBy.popular,
-                checked: filter2 === item,
+                label: mapS[sortType],
+                disabled:
+                  sortType === SortBy.mine || sortType === SortBy.popular,
+                name: sortType,
+                checked: filter2 === sortType,
               };
             })}
-            onChange={(val) => {
-              const k = Object.keys(mapS).find((key) => mapS[key] === val);
-              setFilter2(k);
+            onChange={(sortType: SortBy) => {
+              setFilter2(sortType);
+              localStorage.setItem('search-sort', sortType);
             }}
           />
 
           <Links
-            backlinks={backlinks.total}
-            outcoming={total2}
+            backlinks={total.to}
+            outcoming={total.from}
             value={linksFilter}
-            onChange={(val) => {
+            onChange={(val: LinksFilter) => {
               setLinksFilter(val);
             }}
           />
 
           <div className={styles.total}>
-            <span>{total2 + backlinks.total}</span> particles
+            <span>{total.to + total.from}</span> particles
           </div>
         </header>
 
         <InfiniteScroll
           dataLength={items.length}
-          next={() => setPage((item) => item + 1)}
+          next={next}
           hasMore={hasMore}
           loader={
             <h4

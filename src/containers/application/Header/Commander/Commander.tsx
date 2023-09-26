@@ -8,6 +8,9 @@ import { routes } from 'src/routes';
 
 const fixedValue = '~/';
 
+// replace with more declarative way
+export const id = 'commander';
+
 function Commander() {
   const navigate = useNavigate();
   const { query: q, cid } = useParams();
@@ -72,6 +75,7 @@ function Commander() {
         ref={ref}
         color={Color.Pink}
         value={search}
+        id={id}
         onChange={onChange}
         autoFocus={window.self === window.top}
         className={styles.input}

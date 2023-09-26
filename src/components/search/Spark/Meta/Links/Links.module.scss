@@ -2,7 +2,6 @@
   color: var(--blue-light);
   display: flex;
   gap: 0 5px;
-  align-items: center;
 
   white-space: nowrap;
 
@@ -15,6 +14,6 @@
     height: 21px;
     background-size: contain;
     position: relative;
-    top: 3px;
+    top: -2px;
   }
 }

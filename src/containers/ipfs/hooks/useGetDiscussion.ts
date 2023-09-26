@@ -52,7 +52,7 @@ const getTo = async (
   }
 };
 
-function useGetDiscussion(hash: string, skip?: boolean) {
+function useGetDiscussion(hash: string, { skip = false }) {
   const [total, setTotal] = useState(0);
   const {
     status,

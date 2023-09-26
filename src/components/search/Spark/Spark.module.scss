@@ -24,7 +24,9 @@
   right: 85%;
   display: flex;
   align-items: center;
-  gap: 0 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px 10px;
   font-size: 14px;
 
   span:nth-of-type(1) {

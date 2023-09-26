@@ -50,8 +50,8 @@ function useGetBackLink(cid: string, skip?: boolean) {
 
         const nextPage = lastPage.page++;
 
-        console.log(lastPage);
-        console.log(nextPage);
+        // console.log(lastPage);
+        // console.log(nextPage);
 
         return nextPage;
       },

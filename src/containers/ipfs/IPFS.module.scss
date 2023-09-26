@@ -16,11 +16,21 @@
 }
 
 .meta {
-  display: flex;
-  justify-content: space-between;
   min-width: 62vw;
   font-size: 14px;
   padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 768px) {
+    display: block;
+    text-align: center;
+
+    .left,
+    .right {
+      justify-content: center !important;
+    }
+  }
 
   > * {
     flex-grow: 1;

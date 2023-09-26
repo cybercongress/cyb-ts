@@ -643,11 +643,23 @@ export const getFromLink = async (cid, offset, limit) => {
   }
 };
 
-export const getToLink = async (cid, offset, limit) => {
+enum Order {
+  ASC = 'ORDER_BY_ASC',
+  DESC = 'ORDER_BY_DESC',
+}
+
+export const getToLink = async (cid: string, offset, limit) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`,
+      params: {
+        // ?=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27
+        'pagination.offset': offset,
+        'pagination.limit': limit,
+        orderBy: Order.DESC,
+        events: `cyberlink.particleFrom='${cid}'`,
+      },
     });
     return response.data;
   } catch (e) {

@@ -2,8 +2,19 @@ import { Link } from 'react-router-dom';
 import { ActionBar } from 'src/components';
 import { routes } from 'src/routes';
 import styles from './Search.module.scss';
+import { id } from 'src/containers/application/Header/Commander/Commander';
+import { useEffect } from 'react';
+import useCanvas from 'src/containers/temple/components/canvasOne/useCanvas';
 
 function Search() {
+  const { canvasRef } = useCanvas();
+
+  useEffect(() => {
+    const commander = document.getElementById(id);
+    if (commander) {
+      commander.focus();
+    }
+  }, []);
   return (
     <div>
       <header className={styles.header}>
@@ -21,7 +32,20 @@ function Search() {
       </header>
 
       <div className={styles.content}>
-        <img src={require('./oracle.png')} alt="cyber" />
+        <canvas
+          className={styles.slider}
+          // style={{ top: mediaQuery ? '12%' : '6%' }}
+          ref={canvasRef}
+          id="canvasOne"
+          width="300"
+          height="320"
+        />
+
+        <img
+          className={styles.image}
+          src={require('./oracle.png')}
+          alt="cyber"
+        />
 
         <div className={styles.info}>
           <h2>decentralized search is here</h2>
