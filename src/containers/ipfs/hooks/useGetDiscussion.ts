@@ -1,26 +1,35 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { getToLink } from 'src/utils/search/utils';
+import { getFromLink, getLinks } from 'src/utils/search/utils';
 import BigNumber from 'bignumber.js';
 
 const limit = '10';
 
+export enum LinkType {
+  to = 'to',
+  from = 'from',
+}
+
 const reduceLinks = (data, cid, time) => {
   return data.reduce((acc, item) => {
+    debugger;
     if (item.from === cid) {
-      return [...acc, { cid: item.to, timestamp: time }];
+      return [...acc, { cid: item.from, timestamp: time }];
     }
     return [...acc];
   }, []);
 };
 
-const reduceParticleArr = (data, cidFrom: string) => {
+const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
   return data.reduce((acc, item) => {
     const { timestamp } = item;
     if (
       item.tx.body.messages[0]['@type'] === '/cyber.graph.v1beta1.MsgCyberlink'
     ) {
-      const cid = item.tx.body.messages[0].links[0].to;
+      const cid =
+        item.tx.body.messages[0].links[0][
+          type === LinkType.from ? 'to' : 'from'
+        ];
       return [...acc, { cid, timestamp }];
     }
 
@@ -29,20 +38,23 @@ const reduceParticleArr = (data, cidFrom: string) => {
       '/cosmwasm.wasm.v1.MsgExecuteContract'
     ) {
       const { links } = item.tx.body.messages[0].msg.cyberlink;
-      const linksReduce = reduceLinks(links, cidFrom, timestamp);
+
+      debugger;
+      const linksReduce = reduceLinks(links, cid, timestamp, type);
       return [...acc, ...linksReduce];
     }
     return [...acc];
   }, []);
 };
 
-const getTo = async (
+const request = async (
   hash: string,
   offset: string,
-  callBack: (total: number) => void
+  callBack: (total: number) => void,
+  type: LinkType
 ) => {
   try {
-    const response = await getToLink(hash, offset, limit);
+    const response = await getLinks(hash, type, { offset, limit });
     if (callBack && offset === '0' && response) {
       callBack(Number(response.pagination.total));
     }
@@ -52,7 +64,7 @@ const getTo = async (
   }
 };
 
-function useGetDiscussion(hash: string, { skip = false }) {
+function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
   const [total, setTotal] = useState(0);
   const {
     status,
@@ -63,15 +75,16 @@ function useGetDiscussion(hash: string, { skip = false }) {
     hasNextPage,
     refetch,
   } = useInfiniteQuery(
-    ['useGetDiscussion', hash],
+    ['useGetDiscussion', hash + type],
     async ({ pageParam = 0 }) => {
-      const response = await getTo(
+      const response = await request(
         hash,
         new BigNumber(limit).multipliedBy(pageParam).toString(),
-        setTotal
+        setTotal,
+        type
       );
 
-      const reduceArr = reduceParticleArr(response, hash);
+      const reduceArr = reduceParticleArr(response, hash, type);
 
       return { data: reduceArr, page: pageParam };
     },
@@ -81,9 +94,7 @@ function useGetDiscussion(hash: string, { skip = false }) {
         if (lastPage.data && lastPage.data.length === 0) {
           return undefined;
         }
-
-        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-        return nextPage;
+        return lastPage.page + 1;
       },
     }
   );
@@ -100,4 +111,4 @@ function useGetDiscussion(hash: string, { skip = false }) {
   };
 }
 
-export default useGetDiscussion;
+export default useGetLinks;

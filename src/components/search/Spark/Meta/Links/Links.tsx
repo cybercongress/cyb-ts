@@ -1,17 +1,11 @@
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import styles from './Links.module.scss';
+import { LinksTypeFilter } from 'src/containers/Search/types';
 
 type Props = {
   backlinks: number;
   outcoming: number;
 };
-
-// reuse
-enum LinksFilter {
-  backlinks = 'backlinks',
-  all = 'all',
-  cyberLinks = 'cyberLinks',
-}
 
 function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
   return (
@@ -22,8 +16,8 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
         items={[
           {
             label: backlinks,
-            name: 'backlinks',
-            checked: value === LinksFilter.backlinks,
+            name: 'to',
+            checked: value === LinksTypeFilter.to,
           },
           {
             label: <>&rarr;</>,
@@ -32,7 +26,7 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
           {
             label: <span></span>,
             name: 'all',
-            checked: value === LinksFilter.all,
+            checked: value === LinksTypeFilter.all,
           },
           {
             label: <>&rarr;</>,
@@ -40,8 +34,8 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
           },
           {
             label: outcoming,
-            name: 'cyberLinks',
-            checked: value === LinksFilter.cyberLinks,
+            name: 'from',
+            checked: value === LinksTypeFilter.from,
           },
         ]}
       />

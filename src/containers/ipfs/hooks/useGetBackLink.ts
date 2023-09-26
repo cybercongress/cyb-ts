@@ -21,13 +21,13 @@ export const reduceParticleArr = (data: BackLink[]) => {
   return data.reduce<CyberLink[]>(
     (acc, item) => [
       ...acc,
-      { cid: item.particle, rank: coinDecimals(item.rank) },
+      { cid: item.particle, rank: coinDecimals(item.rank), type: 'backlink' },
     ],
     []
   );
 };
 
-function useGetBackLink(cid: string, skip?: boolean) {
+function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
   const { data, fetchNextPage } = useInfiniteQuery(
@@ -48,12 +48,7 @@ function useGetBackLink(cid: string, skip?: boolean) {
           return undefined;
         }
 
-        const nextPage = lastPage.page++;
-
-        // console.log(lastPage);
-        // console.log(nextPage);
-
-        return nextPage;
+        return lastPage.page + 1;
       },
     }
   );
