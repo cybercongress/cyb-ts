@@ -27,12 +27,11 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
-import { node } from 'prop-types';
 
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
   let dbApi: DbWorkerApi | undefined;
-
+  console.log('----backendApiFactory!');
   const channel = new BcChannel();
 
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>

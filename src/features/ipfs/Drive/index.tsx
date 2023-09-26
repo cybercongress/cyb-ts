@@ -184,13 +184,12 @@ function Drive() {
   };
 
   const runExampleScript = async (value: string) => {
-    console.log('---', value);
     setQueryText(value);
     runQuery(value);
   };
 
   return (
-    <div>
+    <div className={styles.main}>
       <Pane
         width="100%"
         display="flex"
@@ -273,7 +272,7 @@ function Drive() {
           <div className={styles.statusMessage}>{statusMessage}</div>
         </Pane>
       )}
-      <Pane width="100%" marginTop={10}>
+      <Pane width="100%" marginTop={10} overflowX="scroll">
         {queryResults ? (
           queryResults.cols.length > 0 ? (
             <div style={{ height: '600px' }} className="bp5-dark">

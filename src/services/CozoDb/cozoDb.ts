@@ -67,9 +67,9 @@ function DbService() {
   async function init(
     onWrite?: (writesCount: number) => void
   ): Promise<CozoDb> {
-    if (db) {
-      return db;
-    }
+    // if (db) {
+    //   return db;
+    // }
 
     await initCozoDb();
 

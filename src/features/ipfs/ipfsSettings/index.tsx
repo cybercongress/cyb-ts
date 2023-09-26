@@ -104,7 +104,7 @@ function IpfsSettings() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '300px',
+                  gridTemplateColumns: '280px 50px',
                   gap: '20px',
                   position: 'relative',
                 }}
@@ -128,7 +128,7 @@ function IpfsSettings() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '300px',
+                  gridTemplateColumns: '280px 50px',
                   gap: '20px',
                   position: 'relative',
                 }}
