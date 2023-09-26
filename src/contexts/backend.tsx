@@ -55,7 +55,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     // Channel to sync worker's state with redux store
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, []);
-  console.log('-----backend context', isInitialized, backendApi);
+
   const valueMemo = useMemo(
     () => ({
       startSyncTask: async () =>

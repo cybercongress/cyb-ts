@@ -152,8 +152,11 @@ class QueueManager<T> {
         node: this.node,
       });
 
+      // We need to remove unserializable fields(ReadableStream) from content
+      // before sending it to worker
+      const threadSafeContent = { ...content, result: undefined };
       // non awaitable call
-      content && this.backendApi?.importParicleContent(content);
+      content && this.backendApi?.importParicleContent(threadSafeContent);
 
       return content;
     }).pipe(

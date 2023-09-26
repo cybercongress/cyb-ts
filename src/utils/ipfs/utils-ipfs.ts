@@ -30,6 +30,11 @@ const CYBER_GATEWAY = 'https://gateway.ipfs.cybernode.ai';
 
 const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
+const getTextPreview = (firstChunk: Uint8Array | undefined, mime?: string) => {
+  return firstChunk && mime && mime === 'text/plain'
+    ? uint8ArrayToAsciiString(firstChunk).slice(0, 150)
+    : undefined;
+};
 // Get IPFS node from local storage
 // TODO: refactor
 const getIpfsUserGatewanAndNode = (): getIpfsUserGatewanAndNodeType => {
@@ -58,13 +63,15 @@ const loadIPFSContentFromDb = async (
   if (data && data.length) {
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
+    const textPreview = getTextPreview(data, mime);
 
     const meta: IPFSContentMeta = {
       type: 'file', // dir support ?
       size: data.length,
+      sizeLocal: data.length,
       mime,
     };
-    return { result: data, cid, meta, source: 'db' };
+    return { result: data, cid, meta, source: 'db', textPreview };
   }
 
   return undefined;
@@ -74,6 +81,7 @@ const emptyMeta: IPFSContentMeta = {
   type: 'file',
   size: -1,
   local: undefined,
+  sizeLocal: -1,
 };
 
 const fetchIPFSContentMeta = async (
@@ -151,10 +159,7 @@ const fetchIPFSContentFromNode = async (
         const fullyDownloaded =
           meta.size > -1 || firstChunk.length >= meta.size;
 
-        const textPreview =
-          firstChunk && mime === 'text/plain'
-            ? uint8ArrayToAsciiString(firstChunk).slice(0, 150)
-            : undefined;
+        const textPreview = getTextPreview(firstChunk, mime);
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
@@ -231,13 +236,15 @@ const fetchIPFSContentFromGateway = async (
         ? addIpfsContentToDb(cid, uint8ArrayConcat(chunks))
         : Promise.resolve();
 
-    const { mime, result } = await toReadableStreamWithMime(
+    const { mime, result, firstChunk } = await toReadableStreamWithMime(
       response.body,
       flushResults
     );
 
+    const textPreview = getTextPreview(firstChunk, mime);
     return {
       cid,
+      textPreview,
       meta: { ...meta, mime },
       result,
       source: 'gateway',

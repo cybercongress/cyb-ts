@@ -7,6 +7,7 @@ import { IpfsRawDataResponse } from './ipfs';
 type ResultWithMime = {
   result: IpfsRawDataResponse;
   mime: string | undefined;
+  firstChunk: Uint8Array | undefined;
 };
 
 type StreamDoneCallback = (
@@ -88,7 +89,7 @@ export async function toReadableStreamWithMime(
     },
   });
 
-  return { mime, result: modifiedStream };
+  return { mime, result: modifiedStream, firstChunk: value };
 }
 export type onProgressCallback = (progress: number) => void;
 
