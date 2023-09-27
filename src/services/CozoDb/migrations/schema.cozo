@@ -32,6 +32,7 @@
     :create transaction {
         hash: String,
         type: String =>
+        success: Bool,
         timestamp: Int,
         value: Json
     }

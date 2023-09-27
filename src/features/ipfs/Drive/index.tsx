@@ -10,6 +10,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { Button as CybButton, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
+import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend';
 import {
@@ -21,6 +22,8 @@ import {
 import styles from './drive.scss';
 
 import cozoPresets from './cozo_presets.json';
+import { Link } from 'react-router-dom';
+import { Colors } from 'src/components/containerGradient/types';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -195,6 +198,31 @@ function Drive() {
 
   return (
     <div className={styles.main}>
+      <Display color={Colors.ORANGE}>
+        <p>
+          this is tech preview of cyb brain. it does not adds any new
+          functionality across the app, yet features
+        </p>
+        <div>- log you links while you surf</div>
+        <div>- connect external ipfs node for performance</div>
+        <div>
+          - sync your <Link to="/search/ipfs">ipfs</Link> pins
+        </div>
+        <div>
+          - import your transactions and cybergraph from{' '}
+          <Link to="/search/bostrom">bostrom</Link>
+        </div>
+        <div>
+          - query using ai oriented{' '}
+          <a href="https://www.cozodb.org/" target="_blank">
+            datalog
+          </a>
+        </div>
+        <p>
+          link your feedback{' '}
+          <Link to="/search/brain%20feedback">brain feedback</Link>
+        </p>
+      </Display>
       <Pane
         width="100%"
         display="flex"
@@ -216,17 +244,6 @@ function Drive() {
             sync drive
           </CybButton>
         )}
-        {/* {logs.length > 0 && (
-          <div className={styles.logs}>
-            {Object.keys(syncStatus?.logs).map((m, i) => <div key={`ipfs_log_${i}`}>{m}</div>)
-            <Text color="#fff" fontSize="20px" lineHeight="30px">
-              Importing from IPFS:
-            </Text>
-            {logs.map((m, i) => (
-              <div key={`ipfs_log_${i}`}>{m}</div>
-            ))}
-          </div>
-        )} */}
       </Pane>
 
       <Pane width="100%">
@@ -235,6 +252,7 @@ function Drive() {
           onChange={(e) => setQueryText(e.target.value)}
           value={queryText}
           className="resize-none"
+          className={styles.queryInput}
           rows={10}
         />
         <div className={styles.commandPanel}>
