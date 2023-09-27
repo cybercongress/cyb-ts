@@ -39,6 +39,10 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
     ) {
       const links = item.tx.body.messages[0].msg?.cyberlink?.links;
 
+      // if (!links) {
+      //   debugger;
+      // }
+
       if (links) {
         const linksReduce = reduceLinks(links, cid, timestamp, type);
         return [...acc, ...linksReduce];

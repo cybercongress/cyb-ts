@@ -34,7 +34,7 @@ function Meta({ cid }: Props) {
 
       {size && (
         <span className={styles.size}>
-          🟥 {formatCurrency(size, 'B', 3, PREFIXES)}
+          🟥 {formatCurrency(size, 'B', 0, PREFIXES)}
         </span>
       )}
     </div>

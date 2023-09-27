@@ -141,42 +141,42 @@ function Ipfs() {
     location.pathname,
   ]);
 
-  const queryParamsId = `${cid}.${tab}`;
+  // const queryParamsId = `${cid}.${tab}`;
 
   const update = useCallback(() => {
     dataDiscussion.refetch();
     dataAnswer.refetch();
   }, [dataAnswer, dataDiscussion]);
 
-  const slides = [
-    {
-      name: Tab.Meta,
-      content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
-    },
-    {
-      name: Tab.Incoming,
-      content: (
-        <>
-          <Link to={`/ipfs/${cid}/incoming`} className={styles.tabLink}>
-            incoming
-          </Link>
+  // const slides = [
+  //   {
+  //     name: Tab.Meta,
+  //     content: <Link to={`/ipfs/${cid}/meta`}>Meta</Link>,
+  //   },
+  //   {
+  //     name: Tab.Incoming,
+  //     content: (
+  //       <>
+  //         <Link to={`/ipfs/${cid}/incoming`} className={styles.tabLink}>
+  //           incoming
+  //         </Link>
 
-          {!!backlinks?.length && <Pill text={backlinks?.length} />}
-        </>
-      ),
-    },
-    {
-      name: Tab.Outcoming,
-      content: (
-        <>
-          <Link to={`/ipfs/${cid}/outcoming`} className={styles.tabLink}>
-            outcoming
-          </Link>
-          {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
-        </>
-      ),
-    },
-  ];
+  //         {!!backlinks?.length && <Pill text={backlinks?.length} />}
+  //       </>
+  //     ),
+  //   },
+  //   {
+  //     name: Tab.Outcoming,
+  //     content: (
+  //       <>
+  //         <Link to={`/ipfs/${cid}/outcoming`} className={styles.tabLink}>
+  //           outcoming
+  //         </Link>
+  //         {!!dataAnswer.total && <Pill text={dataAnswer.total} />}
+  //       </>
+  //     ),
+  //   },
+  // ];
 
   return (
     <>
@@ -307,7 +307,7 @@ function Ipfs() {
       <SearchResults />
       {/* </div> */}
 
-      {!mobile && (tab === 'discussion' || tab === 'answers') && (
+      {/* {!mobile && (tab === 'discussion' || tab === 'answers') && (
         <ActionBarContainer
           placeholder={
             tab === 'answers' ? 'add keywords, hash or file' : 'add message'
@@ -316,7 +316,7 @@ function Ipfs() {
           keywordHash={cid}
           update={update}
         />
-      )}
+      )} */}
     </>
   );
 }

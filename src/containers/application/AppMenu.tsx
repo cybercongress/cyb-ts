@@ -52,7 +52,7 @@ const itemsMenu = () => {
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
     {
       name: 'Oracle',
-      to: '/oracle',
+      to: '/oracle/ask/cyberlink',
       icon: oracle,
       subItems: [
         { name: 'Particles', to: '/particles' },

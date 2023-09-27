@@ -1,4 +1,4 @@
-@import '../containerGradient/Display/variables.module.scss';
+// @import '../containerGradient/Display/variables.module.scss';
 
 .wrapper {
   &.center {
@@ -26,9 +26,7 @@
 .markdownContainer img {
   position: relative;
 
-  --offset: calc(
-    ((100% / var(--width-ratio) - 100%) / 2) + #{$display-padding-x}
-  );
+  --offset: calc(((100% / var(--width-ratio) - 100%) / 2));
   left: calc(var(--offset) * -1);
   width: calc(100% + (var(--offset) * 2));
 }
