@@ -12,7 +12,14 @@ const useSearch = (hash: string, skip?: boolean) => {
 
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, error, isLoading } = useInfiniteQuery(
+  const {
+    data,
+    fetchNextPage,
+    error,
+    isLoading,
+    hasNextPage,
+    isInitialLoading,
+  } = useInfiniteQuery(
     ['useSearch', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -40,7 +47,7 @@ const useSearch = (hash: string, skip?: boolean) => {
             cid: item.particle,
             rank: coinDecimals(item.rank),
             grade: getRankGrade(coinDecimals(item.rank)),
-            type: 'outcoming',
+            type: 'from',
           };
         })
       );
@@ -48,6 +55,8 @@ const useSearch = (hash: string, skip?: boolean) => {
     total: data?.pages[0].data.pagination.total,
     next: fetchNextPage,
     error,
+    hasNextPage,
+    isInitialLoading,
     loading: isLoading,
   };
 };
@@ -65,10 +74,11 @@ const useSearchData = (
   const sort = sortBy;
   const linkType = linksType;
 
-  const search = useSearch(hash);
+  const searchRank = useSearch(hash);
   const backlinksRank = useGetBackLink(hash, {
     skip: sort !== SortBy.rank && linkType !== LinksTypeFilter.from,
   });
+
   const data = useGetDiscussion(
     { hash },
     {
@@ -83,8 +93,6 @@ const useSearchData = (
     }
   );
 
-  console.log(dataBacklinks);
-
   function next() {
     if (sort === SortBy.rank) {
       switch (linkType) {
@@ -93,19 +101,29 @@ const useSearchData = (
           break;
         case LinksTypeFilter.all:
           backlinksRank.fetchNextPage();
-          search.next();
+          searchRank.next();
           break;
         case LinksTypeFilter.from:
         default:
-          search.next();
+          searchRank.next();
           break;
       }
     } else if (sort === SortBy.date) {
-      data.fetchNextPage();
+      switch (linkType) {
+        case LinksTypeFilter.to:
+          dataBacklinks.fetchNextPage();
+          break;
+        case LinksTypeFilter.all:
+          data.fetchNextPage();
+          dataBacklinks.fetchNextPage();
+          break;
+        case LinksTypeFilter.from:
+        default:
+          data.fetchNextPage();
+          break;
+      }
     }
   }
-
-  console.log(search);
 
   // const queryNull = '0';
   // keywordHashNull = await getIpfsHash(queryNull);
@@ -113,41 +131,62 @@ const useSearchData = (
   return {
     data:
       (() => {
-        // (search.data || []).concat(backlinks.backlinks);
-
         if (sort === SortBy.rank) {
           if (linkType === LinksTypeFilter.to) {
             return backlinksRank.backlinks;
           } else if (linkType === LinksTypeFilter.all) {
-            return (search.data || [])
+            return (searchRank.data || [])
               .concat(backlinksRank.backlinks)
               .sort((a, b) => {
                 return parseFloat(b.rank) - parseFloat(a.rank);
               });
           }
-          return search.data || [];
+          return searchRank.data || [];
           // eslint-disable-next-line no-else-return
         } else if (sort === SortBy.date) {
-          if (linkType === LinksTypeFilter.to) {
-            return (
-              dataBacklinks.data?.pages.reduce((acc, item) => {
-                return acc.concat(item.data);
-              }, []) || []
-            );
-          }
+          switch (linkType) {
+            case LinksTypeFilter.to:
+              return dataBacklinks.data;
 
-          return (
-            data.data?.pages.reduce((acc, item) => {
-              return acc.concat(item.data);
-            }, []) || []
-          );
+            case LinksTypeFilter.all:
+              const fromCids = data.data.map((item) => item.cid);
+              const allCids = [];
+
+              return data.data
+                .concat(dataBacklinks.data)
+                .reduce((acc, item) => {
+                  if (allCids.includes(item.cid)) {
+                    return acc;
+                  }
+
+                  if (fromCids.includes(item.cid)) {
+                    allCids.push(item.cid);
+
+                    return acc.concat({
+                      ...item,
+                      type: 'all',
+                    });
+                  }
+
+                  return acc.concat(item);
+                }, [])
+                .sort((a, b) => {
+                  return (
+                    new Date(b.timestamp).getTime() -
+                    new Date(a.timestamp).getTime()
+                  );
+                });
+            case LinksTypeFilter.from:
+            default:
+              return data.data;
+          }
         }
       })() || [],
     total: (() => {
       if (sort === SortBy.rank) {
         return {
           to: backlinksRank.total,
-          from: search.total,
+          from: searchRank.total,
         };
         // eslint-disable-next-line no-else-return
       } else if (sort === SortBy.date) {
@@ -158,8 +197,56 @@ const useSearchData = (
       }
     })(),
     next,
-    loading: (() => {
-      return false;
+    hasMore: (() => {
+      if (sort === SortBy.rank) {
+        switch (linkType) {
+          case LinksTypeFilter.to:
+            return backlinksRank.hasNextPage;
+          case LinksTypeFilter.all:
+            return backlinksRank.hasNextPage || searchRank.hasNextPage;
+          case LinksTypeFilter.from:
+          default:
+            return searchRank.hasNextPage;
+        }
+        // eslint-disable-next-line no-else-return
+      } else if (sort === SortBy.date) {
+        switch (linkType) {
+          case LinksTypeFilter.to:
+            return dataBacklinks.hasNextPage;
+          case LinksTypeFilter.all:
+            return dataBacklinks.hasNextPage || data.hasNextPage;
+          case LinksTypeFilter.from:
+          default:
+            return data.hasNextPage;
+        }
+      }
+    })(),
+    isInitialLoading: (() => {
+      if (sort === SortBy.rank) {
+        switch (linkType) {
+          case LinksTypeFilter.to:
+            return backlinksRank.isInitialLoading;
+          case LinksTypeFilter.all:
+            return (
+              backlinksRank.isInitialLoading || searchRank.isInitialLoading
+            );
+          case LinksTypeFilter.from:
+          default:
+            return searchRank.isInitialLoading;
+        }
+        // eslint-disable-next-line no-else-return
+      } else if (sort === SortBy.date) {
+        switch (linkType) {
+          case LinksTypeFilter.to:
+            return dataBacklinks.isInitialLoading;
+          case LinksTypeFilter.all:
+            return dataBacklinks.isInitialLoading || data.isInitialLoading;
+          case LinksTypeFilter.from:
+          default:
+            return data.isInitialLoading;
+        }
+      }
+
       //   if (sort === SortBy.rank) {
       //     return search.loading;
       //     // eslint-disable-next-line no-else-return

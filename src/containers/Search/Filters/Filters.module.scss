@@ -4,7 +4,9 @@
   // position: sticky;
   // top: 110px;
   // z-index: 10;
-  width: 70%;
+  width: 100%;
+  max-width: 62vw;
+  box-sizing: border-box;
   display: flex;
   margin: 10px auto -5px;
   padding-left: 12px;

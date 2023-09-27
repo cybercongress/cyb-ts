@@ -50,12 +50,14 @@ function SearchResults() {
   const [sortBy, setSortBy] = useState(
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
-  const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
+  const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.from);
 
   const {
     data: items,
     total,
     loading,
+    hasMore,
+    isInitialLoading,
     next,
   } = useSearchData(keywordHash, {
     sortBy,
@@ -155,6 +157,8 @@ function SearchResults() {
 
   console.log(items);
 
+  console.log(items.length, total?.to);
+
   return (
     <>
       <MainContainer width="90%">
@@ -166,13 +170,14 @@ function SearchResults() {
           linksFilter={linksTypeFilter}
           setLinksFilter={setLinksTypeFilter}
           total={total}
+          total2={items.length}
           contentType={contentType}
         />
 
         <InfiniteScroll
           dataLength={items.length}
           next={next}
-          hasMore={true}
+          hasMore={hasMore}
           loader={
             <h4
               style={{
@@ -194,7 +199,7 @@ function SearchResults() {
 
           <FirstItems query={query} />
 
-          {Object.keys(renderItems).length > 0 ? (
+          {Object.keys(renderItems).length > 0 && !isInitialLoading ? (
             renderItems
           ) : (
             <NoItems text={`No information about ${query}`} />

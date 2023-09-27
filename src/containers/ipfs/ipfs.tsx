@@ -96,6 +96,8 @@ function Ipfs() {
 
   const { setAdviser } = useAdviser();
 
+  console.log(content, source, status, ipfsDataDetails);
+
   useEffect(() => {
     if (!ipfsDataDetails) {
       return;
@@ -193,9 +195,9 @@ function Ipfs() {
         )}
 
         {status === 'completed' && (
-          <ContainerGradientText>
-            <ContentIpfs status={status} content={content} cid={cid} />
-          </ContainerGradientText>
+          // <ContainerGradientText>
+          <ContentIpfs status={status} content={content} cid={cid} />
+          // </ContainerGradientText>
         )}
         {/* 
         <div className={styles.tabs}>
@@ -296,14 +298,14 @@ function Ipfs() {
         </Pane> */}
       </main>
 
-      <div
+      {/* <div
         style={{
           width: '90%',
           margin: '0 auto',
         }}
-      >
-        <SearchResults />
-      </div>
+      > */}
+      <SearchResults />
+      {/* </div> */}
 
       {!mobile && (tab === 'discussion' || tab === 'answers') && (
         <ActionBarContainer

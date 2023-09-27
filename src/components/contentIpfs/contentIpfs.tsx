@@ -13,7 +13,6 @@ import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
-import styles from './ContentIpfs.module.scss';
 import Audio from './component/Audio/Audio';
 
 export const getContentDetails = async (
@@ -95,7 +94,7 @@ function ContentIpfs({
   const contentType = ipfsDataDetails?.type;
 
   return (
-    <div className={styles.wrapper}>
+    <div>
       {/* <DebugContentInfo
         cid={cid}
         source={content?.source}

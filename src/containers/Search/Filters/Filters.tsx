@@ -29,6 +29,7 @@ function Filters({
   linksFilter,
   setLinksFilter,
   total,
+  total2,
   contentType,
 }) {
   return (
@@ -96,7 +97,7 @@ function Filters({
       />
 
       <div className={styles.total}>
-        <span>{total.to + total.from}</span> particles
+        <span>{total2}</span> particles
       </div>
     </header>
   );

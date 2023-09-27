@@ -30,28 +30,29 @@ export const reduceParticleArr = (data: BackLink[]) => {
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage } = useInfiniteQuery(
-    ['useGetBackLink', cid],
-    async ({ pageParam = 0 }: { pageParam?: number }) => {
-      const response = (await queryClient?.backlinks(
-        cid,
-        pageParam,
-        20
-      )) as Res;
+  const { data, fetchNextPage, hasNextPage, isInitialLoading } =
+    useInfiniteQuery(
+      ['useGetBackLink', cid],
+      async ({ pageParam = 0 }: { pageParam?: number }) => {
+        const response = (await queryClient?.backlinks(
+          cid,
+          pageParam,
+          20
+        )) as Res;
 
-      return { data: response, page: pageParam };
-    },
-    {
-      enabled: Boolean(queryClient && cid) && !skip,
-      getNextPageParam: (lastPage) => {
-        if (!lastPage.data.pagination.total) {
-          return undefined;
-        }
-
-        return lastPage.page + 1;
+        return { data: response, page: pageParam };
       },
-    }
-  );
+      {
+        enabled: Boolean(queryClient && cid) && !skip,
+        getNextPageParam: (lastPage) => {
+          if (!lastPage.data.pagination.total) {
+            return undefined;
+          }
+
+          return lastPage.page + 1;
+        },
+      }
+    );
 
   // TODO: combine 2 reduce
   const d =
@@ -64,6 +65,8 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
   return {
     backlinks,
     total: data?.pages[0].data.pagination.total || 0,
+    hasNextPage,
+    isInitialLoading,
     fetchNextPage,
   };
 }

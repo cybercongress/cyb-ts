@@ -48,11 +48,7 @@ function SearchItem({ status, grade, children, linkType }: Props) {
     <Display
       color={colorRank === 'grey' ? 'white' : colorRank}
       sideSaber={
-        linkType === 'backlink'
-          ? 'left'
-          : linkType === 'outcoming'
-          ? 'right'
-          : undefined
+        linkType === 'to' ? 'left' : linkType === 'from' ? 'right' : undefined
       }
     >
       <div
