@@ -1,8 +1,17 @@
 .main {
-  overflow-x: scroll;
   max-width: 100%;
-  padding-bottom: 75px;
+  overflow: visible;
 }
+.results {
+  max-width: 100%;
+  overflow-x: auto;
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
 .centered {
   display: flex;
   justify-content: center;
@@ -55,4 +64,8 @@
   padding: 10px;
   color: white;
   resize: vertical;
+}
+
+.logItems {
+  // padding-left: 25px;
 }

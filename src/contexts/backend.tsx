@@ -42,12 +42,18 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
+
       await dbApiService
         .init()
-        .then(() => console.log('🔋 CozoDb thread up', dbApiService));
+        .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
+
+      const ipfsOpts = getIpfsOpts();
+
+      console.log('Loading backend worker...', ipfsOpts);
+
       await backendApi
-        .init(getIpfsOpts(), proxy(dbApiService))
-        .then(() => console.log('🔋 Background thread up'));
+        .init(ipfsOpts, proxy(dbApiService))
+        .then(() => console.log('🔋 Background worker started.'));
 
       setIsInitialized(true);
     })();

@@ -4,7 +4,7 @@ import { waitUntil } from 'src/utils/async/utils';
 import { DbWorkerApi } from './worker';
 
 const worker = new SharedWorker(new URL('./worker.ts', import.meta.url), {
-  name: 'db-worker',
+  name: 'cyb~cozodb',
 });
 const dbApiProxy = wrap<DbWorkerApi>(worker.port);
 

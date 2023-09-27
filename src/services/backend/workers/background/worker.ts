@@ -31,7 +31,7 @@ import {
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
   let dbApi: DbWorkerApi | undefined;
-  console.log('----backendApiFactory!');
+  console.log('----backendApi worker constructor!');
   const channel = new BcChannel();
 
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>
@@ -41,6 +41,8 @@ const backendApiFactory = () => {
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
   const init = async (ipfsOpts: IpfsOptsType, dbApiProxy: DbWorkerApi) => {
+    console.log('----backendApi worker init! ');
+
     // proxy to worker with db
     dbApi = dbApiProxy;
 

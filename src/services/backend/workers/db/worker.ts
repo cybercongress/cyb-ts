@@ -3,7 +3,9 @@ import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
 
 const dbApiFactory = () => {
+  console.log('----dbApi worker constructor!');
   const init = async () => {
+    console.log('----dbApi worker init!');
     const channel = new BcChannel();
 
     // callback to sync writes count worker -> main thread

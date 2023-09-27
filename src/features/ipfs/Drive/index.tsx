@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 
 import { useIpfs } from 'src/contexts/ipfs';
 import { Pane, Text } from '@cybercongress/gravity';
-import { Button as CybButton, Loading, Select } from 'src/components';
+import { Button as CybButton, Dots, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
@@ -24,6 +24,7 @@ import styles from './drive.scss';
 import cozoPresets from './cozo_presets.json';
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
+import classNames from 'classnames';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -44,8 +45,13 @@ function SyncEntryStatus({
   entry: SyncEntry;
   status: SyncProgress;
 }) {
-  if (status.progress == 0) {
-    return <div>{`▫️ ${entry} items pending...`}</div>;
+  if (status.progress === 0) {
+    return (
+      <div>
+        {`▫️ ${entry} items pending`}
+        <Dots />
+      </div>
+    );
   }
   if (status.done) {
     return <div>{`☑️ ${entry} items synchronized.`}</div>;
@@ -55,21 +61,27 @@ function SyncEntryStatus({
       <div>{`❌ ${entry} items syncronization failed - ${status.error}`}</div>
     );
   }
-  return <div>{`⏳ ${entry} ${status.progress} items syncronized...`}</div>;
+  return (
+    <div>
+      {`⏳ ${status.progress} ${entry} items syncronized`}
+      <Dots />
+    </div>
+  );
 }
 function SyncInfo({ syncState }: { syncState: WorkerState }) {
   return (
     <div>
-      <Loading />
       <div className={styles.logs}>
-        <div>Sync DB in progress...</div>
-        {Object.keys(syncState.entryStatus).map((name) => (
-          <SyncEntryStatus
-            key={`log_${name}`}
-            entry={name}
-            status={syncState.entryStatus[name]}
-          />
-        ))}
+        <div>sync db in progress:</div>
+        <div className={styles.logItems}>
+          {Object.keys(syncState.entryStatus).map((name) => (
+            <SyncEntryStatus
+              key={`log_${name}`}
+              entry={name}
+              status={syncState.entryStatus[name]}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -234,7 +246,7 @@ function Drive() {
       >
         {syncState?.status && (
           <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-            Drive sync status - {syncState?.status}{' '}
+            backend status - {syncState?.status}{' '}
             {syncState.lastError && `(${syncState.lastError})`}
           </Text>
         )}
@@ -295,10 +307,10 @@ function Drive() {
           <div className={styles.statusMessage}>{statusMessage}</div>
         </Pane>
       )}
-      <Pane width="100%" marginTop={10} overflowX="scroll">
+      <Pane width="100%" marginTop={10}>
         {queryResults ? (
           queryResults.cols.length > 0 ? (
-            <div className="bp5-dark">
+            <div className={classNames('bp5-dark', styles.results)}>
               <Table columns={queryResults.cols} data={queryResults.rows} />
             </div>
           ) : null
