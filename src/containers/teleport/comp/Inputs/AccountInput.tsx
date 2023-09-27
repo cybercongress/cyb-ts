@@ -42,6 +42,9 @@ function AccountInput({ recipient, setRecipient }: Props) {
   const [valueRecipient, setValueRecipient] = useState<string>('');
   const { debounce } = useDebounce();
   const selectCommunity = useAppSelector(selectCommunityPassports);
+  const { accounts } = useAppSelector((state) => state.pocket);
+  console.log('accounts', accounts)
+
   const [listRecipient, setListRecipient] = useState<SliceState>({});
 
   const clickOutsideHandler = () => setIsOpen(false);

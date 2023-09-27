@@ -206,6 +206,7 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
+  console.log('useGetSlippage', useGetSlippage)
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {

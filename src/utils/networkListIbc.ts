@@ -14,7 +14,11 @@ type NetworkCons = {
 };
 
 const networkList: ObjectKey<NetworkCons> = {
-  bostrom: { chainId: 'bostrom', rpc: CYBER.CYBER_NODE_URL_API },
+  bostrom: {
+    chainId: 'bostrom',
+    rpc: CYBER.CYBER_NODE_URL_API,
+    coinMinimalDenom: CYBER.DENOM_CYBER,
+  },
   'osmosis-1': {
     chainId: 'osmosis-1',
     sourceChannelId: 'channel-95',
@@ -53,7 +57,7 @@ const networkList: ObjectKey<NetworkCons> = {
     coinDecimals: 6,
     denom: 'JUNO',
     coinMinimalDenom: 'ujuno',
-    rpc: 'https://rpc.uni.junonetwork.io',
+    rpc: 'https://rpc-juno.itastakers.com',
     sourceChannelId: 'channel-93',
     destChannelId: 'channel-10',
     prefix: 'juno',

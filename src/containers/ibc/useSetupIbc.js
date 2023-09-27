@@ -6,6 +6,26 @@ import { stringToPath } from '@cosmjs/crypto';
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { config, STEPS } from './utils';
 
+import { configKeplr } from './configKepler';
+import { getKeplr } from 'src/utils/keplrUtils';
+
+const init = async (option) => {
+  let signer = null;
+  console.log(`window.keplr `, window.keplr);
+  console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
+  if (window.keplr || window.getOfflineSignerAuto) {
+    if (window.keplr.experimentalSuggestChain) {
+      await window.keplr.experimentalSuggestChain(configKeplr(option));
+      await window.keplr.enable(option.chainId);
+      const offlineSigner = await window.getOfflineSignerAuto(option.chainId);
+      signer = offlineSigner;
+      console.log(`offlineSigner`, offlineSigner);
+      // setSigner(offlineSigner);
+    }
+  }
+  return signer;
+};
+
 const sleep = (ms) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -111,25 +131,25 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
   }, [link, running]);
 
   const initSigner = async () => {
-    // const signerChainA = await init(configChains.chainA);
-    const signerChainA = await DirectSecp256k1HdWallet.fromMnemonic(
-      config.chainA.mnemonic,
-      {
-        hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
-        prefix: config.chainA.addrPrefix,
-      }
-    );
+    const signerChainA = await init(configChains.chainA);
+    // const signerChainA = await DirectSecp256k1HdWallet.fromMnemonic(
+    //   config.chainA.mnemonic,
+    //   {
+    //     hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
+    //     prefix: config.chainA.addrPrefix,
+    //   }
+    // );
     console.log(`signerChainA`, signerChainA);
     // console.warn(`signerChainA`, signerChainA);
     setSignerA(signerChainA);
-    // const signerChainB = await init(configChains.chainB);
-    const signerChainB = await DirectSecp256k1HdWallet.fromMnemonic(
-      config.chainB.mnemonic,
-      {
-        hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
-        prefix: config.chainB.addrPrefix,
-      }
-    );
+    const signerChainB = await init(configChains.chainB);
+    // const signerChainB = await DirectSecp256k1HdWallet.fromMnemonic(
+    //   config.chainB.mnemonic,
+    //   {
+    //     hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
+    //     prefix: config.chainB.addrPrefix,
+    //   }
+    // );
     console.log(`signerChainB`, signerChainB);
     setSignerB(signerChainB);
     setStep(STEPS.INIT_RELAYER);

@@ -61,6 +61,7 @@ import Bridge from './containers/teleport/bridge';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
+import Relayer from './containers/ibc/Relayer';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -180,7 +181,7 @@ function AppRouter() {
           <Route path="/gift" element={<PortalGift />} />
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
-          <Route path="/ibc" element={<Ibc />} />
+          <Route path="/ibc" element={<Relayer />} />
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />

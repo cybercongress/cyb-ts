@@ -4,7 +4,7 @@ import Button from 'src/components/btnGrd';
 
 const styleLog = {
   width: '720px',
-  overflow: 'auto',
+  // overflow: 'auto',
   height: '400px',
   border: '1px solid black',
   textAlign: 'left',
@@ -182,7 +182,7 @@ function StateSetUpChain({
   return null;
 }
 
-function LogRelayer({ relayerLog }) {
+export function LogRelayer({ relayerLog }) {
   return (
     <div style={styleLog}>
       {relayerLog &&

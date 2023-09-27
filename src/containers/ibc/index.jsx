@@ -81,18 +81,15 @@ function Ibc() {
   );
   // console.log(`relayerLog`, relayerLog)
 
-  useEffect(() => {
-    const createClient = async () => {
-      const keplr = await getKeplr();
+  const createClient = async () => {
+    const keplr = await getKeplr();
 
-      const clientA = await setupClient(keplr, configChains.chainA);
-      setCyberClientA(clientA);
+    const clientA = await setupClient(keplr, configChains.chainA);
+    setCyberClientA(clientA);
 
-      const clientB = await setupClient(keplr, configChains.chainB);
-      setCyberClientB(clientB);
-    };
-    createClient();
-  }, [configChains]);
+    const clientB = await setupClient(keplr, configChains.chainB);
+    setCyberClientB(clientB);
+  };
 
   const sendIBCtransaction = async (
     cyberClient,
@@ -186,7 +183,7 @@ function Ibc() {
       style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
     >
       <div>
-        chainA
+        {/* chainA
         <IbcTxs
           id="A"
           onChangeAmount={setAmountA}
@@ -215,7 +212,7 @@ function Ibc() {
         />
         <br />
         <hr />
-        <br />
+        <br /> */}
         <div>
           {channels !== null && (
             <>
