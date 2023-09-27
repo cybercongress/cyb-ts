@@ -41,13 +41,16 @@ function SyncEntryStatus({
   entry: SyncEntry;
   status: SyncProgress;
 }) {
+  if (status.progress == 0) {
+    return <div>{`▫️ ${entry} items pending...`}</div>;
+  }
   if (status.done) {
-    return <div>{`☑️ ${entry} synchronized.`}</div>;
+    return <div>{`☑️ ${entry} items synchronized.`}</div>;
   }
   if (status.error) {
-    return <div>{`❌ ${entry} syncronization failed - ${status.error}`}</div>;
+    return <div>{`❌ ${entry} items syncronization failed - ${status.error}`}</div>;
   }
-  return <div>{`⏳ ${entry}  ${status.progress} items syncronized...`}</div>;
+  return <div>{`⏳ ${entry} ${status.progress} items syncronized...`}</div>;
 }
 function SyncInfo({ syncState }: { syncState: WorkerState }) {
   return (
@@ -199,7 +202,7 @@ function Drive() {
         alignItems="center"
         flexDirection="column"
       >
-        {syncState?.status && (
+        {syncState?.status? && (
           <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
             Drive sync status - {syncState?.status}{' '}
             {syncState.lastError && `(${syncState.lastError})`}
