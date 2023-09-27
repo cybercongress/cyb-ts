@@ -50,7 +50,7 @@ function SearchResults() {
   const [sortBy, setSortBy] = useState(
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
-  const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.from);
+  const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
 
   const {
     data: items,
