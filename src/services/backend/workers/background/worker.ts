@@ -53,6 +53,14 @@ const backendApiFactory = () => {
     address: string | null,
     cyberIndexUrl: string
   ): Promise<void> => {
+    ['transaction', 'pin', 'particle'].forEach((entry) =>
+      postEntrySyncStatus(entry as SyncEntry, {
+        progress: 0,
+        done: false,
+        error: undefined,
+      })
+    );
+
     try {
       if (!address) {
         postWorkerStatus('error', 'Wallet is not connected');
@@ -69,15 +77,9 @@ const backendApiFactory = () => {
       }
 
       postWorkerStatus('syncing');
-      const transactionPromise = await importTransactions(
-        dbApi,
-        address,
-        cyberIndexUrl,
-        async (progress) => postEntrySyncStatus('transaction', { progress }),
-        async (total) => postEntrySyncStatus('transaction', { done: true })
-      );
 
       const importIpfs = async () => {
+        console.log('-----import ipfs');
         await importPins(
           ipfsNode!,
           dbApi!,
@@ -89,6 +91,7 @@ const backendApiFactory = () => {
           [`type = ${PinTypeMap.recursive}`],
           ['cid']
         );
+        console.log('-----import ipfs pinsData', pinsData);
 
         if (pinsData.ok === false) {
           postWorkerStatus('error', pinsData.message);
@@ -104,9 +107,21 @@ const backendApiFactory = () => {
           async (progress) => postEntrySyncStatus('particle', { progress }),
           async () => postEntrySyncStatus('particle', { done: true })
         );
+        console.log('-----import ipfs done');
       };
 
-      await Promise.all([transactionPromise, importIpfs()]);
+      const transactionPromise = importTransactions(
+        dbApi,
+        address,
+        cyberIndexUrl,
+        async (progress) => postEntrySyncStatus('transaction', { progress }),
+        async (total) => postEntrySyncStatus('transaction', { done: true })
+      );
+
+      const ipfsPromise = importIpfs();
+
+      await Promise.all([transactionPromise, ipfsPromise]);
+
       postWorkerStatus('idle');
     } catch (e) {
       console.error('syncDrive', e);

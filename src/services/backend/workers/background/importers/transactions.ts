@@ -72,6 +72,7 @@ const importTransactions = async (
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
+  console.log('---importTransactions');
   let conter = 0;
   const transactionsAsyncIterable = fetchTransactionsAsyncIterable(
     address,

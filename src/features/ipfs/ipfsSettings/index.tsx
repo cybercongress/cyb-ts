@@ -81,6 +81,8 @@ function IpfsSettings() {
   return (
     <ContainerGradientText>
       <div style={{ display: 'grid', gap: '20px' }}>
+        <Drive />
+
         <ContainerKeyValue>
           <div>client</div>
 
@@ -156,7 +158,6 @@ function IpfsSettings() {
             style={{ margin: '20px auto 10px', width: '100px' }}
           />
         )}
-        <Drive />
 
         <ActionBar
           button={{

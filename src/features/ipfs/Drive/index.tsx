@@ -275,7 +275,7 @@ function Drive() {
       <Pane width="100%" marginTop={10} overflowX="scroll">
         {queryResults ? (
           queryResults.cols.length > 0 ? (
-            <div style={{ height: '600px' }} className="bp5-dark">
+            <div className="bp5-dark">
               <Table columns={queryResults.cols} data={queryResults.rows} />
             </div>
           ) : null
