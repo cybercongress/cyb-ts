@@ -4,9 +4,22 @@
 }
 
 .contentValueInput {
-  input {
+  input, textarea {
+    padding-right: 35px;
     @include text-input;
   }
+}
+
+.containerInputMemo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.containerAddFileButton {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 
 .containerBtnValue {
