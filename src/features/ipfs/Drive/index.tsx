@@ -209,116 +209,118 @@ function Drive() {
   };
 
   return (
-    <div className={styles.main}>
-      <Display color={Colors.ORANGE}>
-        <p>
-          this is tech preview of cyb brain. it does not adds any new
-          functionality across the app, yet features
-        </p>
-        <div>- log you links while you surf</div>
-        <div>- connect external ipfs node for performance</div>
-        <div>
-          - sync your <Link to="/search/ipfs">ipfs</Link> pins
-        </div>
-        <div>
-          - import your transactions and cybergraph from{' '}
-          <Link to="/search/bostrom">bostrom</Link>
-        </div>
-        <div>
-          - query using ai oriented{' '}
-          <a href="https://www.cozodb.org/" target="_blank">
-            datalog
-          </a>
-        </div>
-        <p>
-          link your feedback{' '}
-          <Link to="/search/brain%20feedback">brain feedback</Link>
-        </p>
-      </Display>
-      <Pane
-        width="100%"
-        display="flex"
-        marginBottom={20}
-        padding={10}
-        justifyContent="center"
-        alignItems="center"
-        flexDirection="column"
-      >
-        {syncState?.status && (
-          <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-            backend status - {syncState?.status}{' '}
-            {syncState.lastError && `(${syncState.lastError})`}
-          </Text>
-        )}
-        {syncState?.status === 'syncing' && <SyncInfo syncState={syncState} />}
-        {(syncState?.status === 'idle' || syncState?.status === 'error') && (
-          <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
-            sync drive
-          </CybButton>
-        )}
-      </Pane>
-
-      <Pane width="100%">
-        <textarea
-          placeholder="Enter your query here..."
-          onChange={(e) => setQueryText(e.target.value)}
-          value={queryText}
-          className="resize-none"
-          className={styles.queryInput}
-          rows={10}
-        />
-        <div className={styles.commandPanel}>
-          <div className={styles.subPanel}>
-            <CybButton
-              disabled={!isLoaded || inProgress}
-              onClick={() => runQuery()}
-              small
-            >
-              {isLoaded
-                ? inProgress
-                  ? 'Query is running'
-                  : '🟧 Run script'
-                : 'Loading WASM ...'}
-            </CybButton>
-            <Select
-              width="250px"
-              valueSelect=""
-              small
-              // textSelectValue="select preset..."
-              onChangeSelect={runExampleScript}
-              options={presetsAsSelectOptions}
-              // disabled={pending}
-            />
+    <>
+      <div className={styles.main}>
+        <Display color={Colors.ORANGE}>
+          <p>
+            this is tech preview of cyb brain. it does not adds any new
+            functionality across the app, yet features
+          </p>
+          <div>- log you links while you surf</div>
+          <div>- connect external ipfs node for performance</div>
+          <div>
+            - sync your <Link to="/search/ipfs">ipfs</Link> pins
           </div>
-          <div className={styles.subPanel}>
-            <CybButton
-              disabled={!isLoaded || !node}
-              onClick={exportReations}
-              small
-            >
-              export
-            </CybButton>
-            <FileInputButton caption="import" processFile={importReations} />
+          <div>
+            - import your transactions and cybergraph from{' '}
+            <Link to="/search/bostrom">bostrom</Link>
           </div>
-        </div>
-      </Pane>
-      {statusMessage && (
-        <Pane width="100%" marginTop={10}>
-          <div className={styles.statusMessage}>{statusMessage}</div>
+          <div>
+            - query using ai oriented{' '}
+            <a href="https://www.cozodb.org/" target="_blank">
+              datalog
+            </a>
+          </div>
+          <p>
+            link your feedback{' '}
+            <Link to="/search/brain%20feedback">brain feedback</Link>
+          </p>
+        </Display>
+        <Pane
+          width="100%"
+          display="flex"
+          marginBottom={20}
+          padding={10}
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+        >
+          {syncState?.status && (
+            <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
+              backend status - {syncState?.status}{' '}
+              {syncState.lastError && `(${syncState.lastError})`}
+            </Text>
+          )}
+          {syncState?.status === 'syncing' && (
+            <SyncInfo syncState={syncState} />
+          )}
+          {(syncState?.status === 'idle' || syncState?.status === 'error') && (
+            <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+              sync drive
+            </CybButton>
+          )}
         </Pane>
-      )}
-      <Pane width="100%" marginTop={10}>
-        {queryResults ? (
-          queryResults.cols.length > 0 ? (
-            <div className={classNames('bp5-dark', styles.results)}>
-              <Table columns={queryResults.cols} data={queryResults.rows} />
+
+        <Pane width="100%">
+          <textarea
+            placeholder="Enter your query here..."
+            onChange={(e) => setQueryText(e.target.value)}
+            value={queryText}
+            className="resize-none"
+            className={styles.queryInput}
+            rows={10}
+          />
+          <div className={styles.commandPanel}>
+            <div className={styles.subPanel}>
+              <CybButton
+                disabled={!isLoaded || inProgress}
+                onClick={() => runQuery()}
+                small
+              >
+                {isLoaded
+                  ? inProgress
+                    ? 'Query is running'
+                    : '🟧 Run script'
+                  : 'Loading WASM ...'}
+              </CybButton>
+              <Select
+                width="250px"
+                valueSelect=""
+                small
+                // textSelectValue="select preset..."
+                onChangeSelect={runExampleScript}
+                options={presetsAsSelectOptions}
+                // disabled={pending}
+              />
             </div>
-          ) : null
-        ) : (
-          <div className={styles.errorMessage}>{errorMessage}</div>
+            <div className={styles.subPanel}>
+              <CybButton
+                disabled={!isLoaded || !node}
+                onClick={exportReations}
+                small
+              >
+                export
+              </CybButton>
+              <FileInputButton caption="import" processFile={importReations} />
+            </div>
+          </div>
+        </Pane>
+        {statusMessage && (
+          <Pane width="100%" marginTop={10}>
+            <div className={styles.statusMessage}>{statusMessage}</div>
+          </Pane>
         )}
-      </Pane>
-    </div>
+      </div>
+      {queryResults ? (
+        queryResults.cols.length > 0 ? (
+          <div className={classNames('bp5-dark', styles.results)}>
+            <Table columns={queryResults.cols} data={queryResults.rows} />
+          </div>
+        ) : null
+      ) : (
+        <div className={styles.errorMessage}>{errorMessage}</div>
+      )}
+    </>
   );
 }
 

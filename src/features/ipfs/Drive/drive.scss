@@ -1,15 +1,10 @@
 .main {
-  max-width: 100%;
-  overflow: visible;
+  overflow: visible; /* Vertical overflow is visible */
 }
+
 .results {
   max-width: 100%;
-  overflow-x: auto;
-  &::after {
-    content: '';
-    display: table;
-    clear: both;
-  }
+  overflow-x: scroll;
 }
 
 .centered {
