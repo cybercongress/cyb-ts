@@ -47,9 +47,19 @@
     }
 
     .rank {
-      text-emphasis: none;
-      color: #f62bfd;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      color: rgba(221, 255, 255, 0.38);
+
+      // text-emphasis: none;
       font-size: 14px;
+
+      > span {
+        color: #f62bfd;
+        line-height: 23px;
+      }
     }
   }
 

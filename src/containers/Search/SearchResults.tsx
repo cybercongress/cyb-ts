@@ -155,10 +155,6 @@ function SearchResults() {
       );
     });
 
-  console.log(items);
-
-  console.log(items.length, total?.to);
-
   return (
     <>
       <MainContainer width="90%">

@@ -24,8 +24,8 @@
   right: 85%;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  // flex-wrap: wrap;
+  // justify-content: flex-end;
   gap: 7px 10px;
   font-size: 14px;
 
@@ -38,4 +38,17 @@
 .right {
   padding-top: 15px;
   left: 85%;
+}
+
+.rank {
+  svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  &:hover {
+    svg {
+      fill: #f62bfd;
+    }
+  }
 }

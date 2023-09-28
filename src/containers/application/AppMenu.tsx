@@ -52,11 +52,11 @@ const itemsMenu = () => {
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
     {
       name: 'Oracle',
-      to: '/oracle/ask/cyberlink',
+      to: '/oracle/stats',
       icon: oracle,
       subItems: [
         { name: 'Particles', to: '/particles' },
-        { name: 'Stats', to: '/oracle/stats' },
+        // { name: 'Stats', to: '/oracle/stats' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
         { name: 'Txs', to: '/network/bostrom/tx' },
         { name: 'Contracts', to: '/contracts' },

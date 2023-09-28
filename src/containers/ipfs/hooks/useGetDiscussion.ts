@@ -55,7 +55,6 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
 function graphQLQuery(cid, limit, offset, type) {
   let where = '';
 
-  debugger;
   if (type === LinkType.from) {
     where = `{particle_from: {_eq: "${cid}"}}`;
   } else {
@@ -126,8 +125,6 @@ const request = async (
 const limit = 10;
 
 function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
-  console.log(skip);
-
   // const d = useGraphQLQuery(graphQLQuery(hash, limit, 0, type));
 
   const [total, setTotal] = useState(0);

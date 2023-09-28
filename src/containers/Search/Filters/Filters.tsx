@@ -21,6 +21,10 @@ const mapS = {
   [SortBy.mine]: '👤',
 };
 
+type Props = {
+  linksFilter: LinksTypeFilter;
+};
+
 function Filters({
   filters,
   setFilters,
@@ -31,7 +35,7 @@ function Filters({
   total,
   total2,
   contentType,
-}) {
+}: Props) {
   return (
     <header className={styles.header}>
       <div>
@@ -97,7 +101,22 @@ function Filters({
       />
 
       <div className={styles.total}>
-        <span>{total2}</span> particles
+        <span>
+          {(() => {
+            switch (linksFilter) {
+              case LinksTypeFilter.all:
+                return total.to + total.from;
+
+              case LinksTypeFilter.to:
+                return total.to;
+
+              case LinksTypeFilter.from:
+              default:
+                return total.from;
+            }
+          })()}
+        </span>{' '}
+        particles
       </div>
     </header>
   );

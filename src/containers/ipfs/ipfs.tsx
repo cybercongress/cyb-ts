@@ -64,8 +64,6 @@ function Ipfs() {
   const { isMobile: mobile } = useDevice();
   const queryClient = useQueryClient();
 
-  console.log(content, source, status);
-
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
 
@@ -106,10 +104,13 @@ function Ipfs() {
     setAdviser(
       <div className={styles.meta}>
         <div className={styles.left}>
-          {ipfsDataDetails?.type} <span>with rank</span>
-          {cid && <Rank hash={cid} rank={rankInfo} />}
-          {/* <span className={styles.rank}>{rankInfo}</span> */}
-          {/* <button>❓</button> */}
+          {ipfsDataDetails?.type}
+
+          <div className={styles.rank}>
+            with rank
+            <span>{rankInfo}</span>
+            <Rank hash={cid} rank={rankInfo} />
+          </div>
         </div>
         {creator && (
           <div className={styles.center}>
@@ -122,7 +123,7 @@ function Ipfs() {
         <div className={styles.right}>
           {/* <span>🧼</span> */}
           <span>
-            🟥 {formatCurrency(content?.meta?.size, 'B', 3, PREFIXES)}
+            🟥 {formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)}
           </span>
           <button disabled>🌓</button>
         </div>
