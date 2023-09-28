@@ -14,7 +14,7 @@ type Props = {
 };
 
 function Meta({ cid }: Props) {
-  const { backlinks, total } = useGetBackLink(cid);
+  const { total } = useGetBackLink(cid);
   const dataAnswer = useGetAnswers(cid);
   const { content } = useQueueIpfsContent(cid, 1, cid);
 
@@ -25,8 +25,8 @@ function Meta({ cid }: Props) {
   return (
     <div className={styles.meta}>
       <Links
-        backlinks={total}
-        outcoming={dataAnswer?.total}
+        to={total}
+        from={dataAnswer?.total}
         onChange={() => {
           navigate(routes.ipfs.getLink(cid));
         }}

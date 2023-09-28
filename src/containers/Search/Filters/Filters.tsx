@@ -92,8 +92,8 @@ function Filters({
       />
 
       <Links
-        backlinks={total.to}
-        outcoming={total.from}
+        to={total.to}
+        from={total.from}
         value={linksFilter}
         onChange={(val: LinksTypeFilter) => {
           setLinksFilter(val);

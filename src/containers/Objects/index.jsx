@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDevice } from 'src/contexts/device';
+import Spark from 'src/components/search/Spark/Spark';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading, Rank } from '../../components';
-import ContentItem from '../../components/ContentItem/contentItem';
+import { Dots, Loading } from '../../components';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
-import Spark from 'src/components/search/Spark/Spark';
 
-function Relevance({ items, fetchMoreData, page, allPage }) {
+function Relevance({ items, fetchMoreData }) {
   return (
     <InfiniteScroll
       dataLength={Object.keys(items).length}

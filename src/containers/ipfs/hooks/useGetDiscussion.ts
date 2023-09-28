@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { getFromLink, getGraphQLQuery, getLinks } from 'src/utils/search/utils';
+import { useState } from 'react';
+import { getLinks } from 'src/utils/search/utils';
 import BigNumber from 'bignumber.js';
 
 export enum LinkType {
@@ -52,57 +52,6 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
   }, []);
 };
 
-function graphQLQuery(cid, limit, offset, type) {
-  let where = '';
-
-  if (type === LinkType.from) {
-    where = `{particle_from: {_eq: "${cid}"}}`;
-  } else {
-    where = `{particle_to: {_eq: "${cid}"}}`;
-  }
-
-  const GET_CYBERLINKS = `
-  query Cyberlinks {
-    cyberlinks(limit: ${String(
-      limit
-    )}, order_by: {height: desc}, where: ${where}) {
-      particle_from
-      particle_to
-      neuron
-      transaction_hash
-    }
-  }
-  `;
-
-  return GET_CYBERLINKS;
-}
-
-const useGraphQLQuery = (query: string, { skip = false } = {}) => {
-  const [data, setData] = useState();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (skip) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const response = await getGraphQLQuery(query);
-        setData(response);
-      } catch (e) {
-        console.error(e);
-        setError(e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [query, skip]);
-
-  return { data, loading, error };
-};
-
 const request = async (
   hash: string,
   offset: string,
@@ -125,8 +74,6 @@ const request = async (
 const limit = 10;
 
 function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
-  // const d = useGraphQLQuery(graphQLQuery(hash, limit, 0, type));
-
   const [total, setTotal] = useState(0);
   const {
     status,

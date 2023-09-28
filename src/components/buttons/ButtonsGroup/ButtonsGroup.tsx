@@ -1,9 +1,9 @@
-import styles from './ButtonsGroup.module.scss';
 import cx from 'classnames';
+import styles from './ButtonsGroup.module.scss';
 
 type Props = {
   items: {
-    label: string;
+    label: string | JSX.Element;
     checked?: boolean;
     disabled?: boolean;
     name?: string;
@@ -26,7 +26,7 @@ function ButtonsGroup({ items, onChange, type }: Props) {
           <label>
             <input
               type={type}
-              name={item.label}
+              name={item.name}
               checked={item.checked}
               onChange={() =>
                 !item.disabled && onChange(item.name || item.label)

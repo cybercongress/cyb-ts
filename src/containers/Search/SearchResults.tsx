@@ -124,7 +124,8 @@ function SearchResults() {
 
   const renderItems = items
     .filter((item) => {
-      const cid = item.cid;
+      const { cid } = item;
+
       if (!Object.values(contentTypeFilter).some((value) => value)) {
         return true;
       } else {
@@ -186,13 +187,6 @@ function SearchResults() {
             </h4>
           }
         >
-          {/* <ContentItem
-            cid={'QmP2rY3uUn3TfBYJVFKc7nTjDY82YnAAn7Ui8EcWL1zr5Y'}
-            item={{ rank: 9999 }}
-            parent={query}
-            className="SearchItem"
-          /> */}
-
           <FirstItems query={query} />
 
           {Object.keys(renderItems).length > 0 && !isInitialLoading ? (

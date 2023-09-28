@@ -1,13 +1,15 @@
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
-import styles from './Links.module.scss';
 import { LinksTypeFilter } from 'src/containers/Search/types';
+import styles from './Links.module.scss';
 
 type Props = {
-  backlinks: number;
-  outcoming: number;
+  to: number;
+  from: number;
+  value: LinksTypeFilter;
+  onChange: () => void;
 };
 
-function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
+function Links({ to = 0, from = 0, value, onChange }: Props) {
   return (
     <div className={styles.links}>
       <ButtonsGroup
@@ -15,8 +17,8 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
         onChange={onChange}
         items={[
           {
-            label: backlinks,
-            name: 'to',
+            label: String(to),
+            name: LinksTypeFilter.to,
             checked: value === LinksTypeFilter.to,
           },
           {
@@ -24,8 +26,8 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
             disabled: true,
           },
           {
-            label: <span></span>,
-            name: 'all',
+            label: <span />,
+            name: LinksTypeFilter.all,
             checked: value === LinksTypeFilter.all,
           },
           {
@@ -33,8 +35,8 @@ function Links({ backlinks = 0, outcoming = 0, value, onChange }: Props) {
             disabled: true,
           },
           {
-            label: outcoming,
-            name: 'from',
+            label: String(from),
+            name: LinksTypeFilter.from,
             checked: value === LinksTypeFilter.from,
           },
         ]}
