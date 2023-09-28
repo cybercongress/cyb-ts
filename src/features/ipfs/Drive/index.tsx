@@ -214,7 +214,10 @@ function Drive() {
         <Display color={Colors.ORANGE}>
           <p>
             this is tech preview of cyb brain. it does not adds any new
-            functionality across the app, yet features
+            functionality across the app, yet
+          </p>
+          <p>
+            features:
           </p>
           <div>- log you links while you surf</div>
           <div>- connect external ipfs node for performance</div>
