@@ -6,7 +6,11 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
+import {
+  getIpfsHash,
+  getRankGrade,
+  searchByHash,
+} from '../../utils/search/utils';
 import {
   formatNumber,
   exponentialToDecimal,
@@ -41,15 +45,6 @@ const textPreviewSparkApp = (text, value) => (
   </div>
 );
 
-const search = async (client, hash, page) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
-  }
-};
-
 const reduceSearchResults = (data, query) => {
   return data.reduce(
     (obj, item) => ({
@@ -77,6 +72,7 @@ function SearchResults() {
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
+  const [hasEmptyResultHash, setHasEmptyResultHash] = useState(false);
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
   const [total, setTotal] = useState(0);
@@ -106,10 +102,11 @@ function SearchResults() {
           keywordHashTemp = await getIpfsHash(encodeSlash(query));
         }
 
-        let responseSearchResults = await search(
+        let responseSearchResults = await searchByHash(
           queryClient,
           keywordHashTemp,
-          0
+          0,
+          { storeToCozo: true }
         );
 
         if (
@@ -119,7 +116,12 @@ function SearchResults() {
         ) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(queryClient, keywordHashNull, 0);
+          setHasEmptyResultHash(true);
+          responseSearchResults = await searchByHash(
+            queryClient,
+            keywordHashNull,
+            0
+          );
         }
 
         if (
@@ -151,7 +153,9 @@ function SearchResults() {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(queryClient, keywordHash, page);
+    const data = await searchByHash(queryClient, keywordHash, page, {
+      storeToCozo: hasEmptyResultHash,
+    });
     if (data && Object.keys(data).length > 0 && data.result) {
       links = reduceSearchResults(data.result, encodeSlash(query));
     } else {

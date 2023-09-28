@@ -8,9 +8,13 @@ let node: null | AppIPFS = null;
 export async function init() {
   if (node !== null) {
     console.log('IPFS already started');
-  } else if (window.ipfs && window.ipfs.enable) {
+  } else if (
+    typeof window !== 'undefined' &&
+    window?.ipfs &&
+    window?.ipfs?.enable
+  ) {
     console.log('Found window.ipfs');
-    node = await window.ipfs.enable({ commands: ['id'] });
+    node = await window?.ipfs?.enable({ commands: ['id'] });
   } else {
     try {
       // await deleteStore(path);

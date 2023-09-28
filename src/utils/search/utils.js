@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
+import { backendApi } from 'src/services/backend/workers/background/service';
+
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
@@ -681,7 +683,10 @@ export const getTweet = async (address) => {
     return null;
   }
 };
+
 // TODO: IPFS move to utils
+// !!! REFACTORING PRIORITY !!!
+// REPLACE WITH queueManager.enqueue with awaitable result from feat/rune
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   // const timeoutPromise = () =>
   //   new Promise((reject) => {
@@ -858,5 +863,40 @@ export const getDenomTraces = async () => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const searchByHash = async (
+  client,
+  hash,
+  page,
+  options = { storeToCozo: false, callback: undefined }
+) => {
+  try {
+    const responseSearchResults = await client.search(hash, page);
+
+    // TODO: refactor ???
+
+    const results = responseSearchResults.result ? responseSearchResults : [];
+
+    if (
+      page === 0 &&
+      options.callback &&
+      responseSearchResults.pagination.total
+    ) {
+      options.callback(responseSearchResults.pagination.total);
+    }
+    if (options.storeToCozo) {
+      backendApi.importParticle(hash);
+      backendApi.importCyberlinks(
+        responseSearchResults.result.map((item) => ({
+          from: hash,
+          to: item.particle,
+        }))
+      );
+    }
+    return results;
+  } catch (error) {
+    return [];
   }
 };
