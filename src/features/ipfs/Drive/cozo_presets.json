@@ -6,7 +6,7 @@
     "?[pinned, cid, mime, text, size] := r[cid, pinned], *particle{cid:cid, mime, text, size}",
     ":order -size"
   ],
-  "particle: filter": "?[cid, mime, text, blocks, size, sizeLocal, type] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime=\"text/plain\"",
+  "particle: filter": "?[cid, text] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime=\"text/plain\"",
   "particle: stats": "?[mime, sum(size), count(mime), sum(blocks)] := *particle{mime, blocks, size}\r\n :order -sum(size)\r\n:limit 10",
   "link: stats": [
     "r[from, count(to), side] := *link{from, to}, side=\"from\"",
