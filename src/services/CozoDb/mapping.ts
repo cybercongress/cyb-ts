@@ -23,12 +23,12 @@ export const mapPinToEntity = (pin: LsResult) => ({
 });
 
 export const mapTransactionToEntity = (tx: Transaction) => {
-  const { transaction_hash, transaction, type, value, success } = tx;
+  const { transaction_hash, transaction, type, value } = tx;
   return {
     hash: transaction_hash,
     type,
     timestamp: new Date(transaction.block.timestamp).getTime(),
     value: JSON.stringify(value),
-    success,
+    success: transaction.success,
   };
 };

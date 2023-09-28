@@ -150,14 +150,17 @@ function Drive() {
               // parse object-type values to string to be able to display them in the table
               const rowsNormalized = rows.map((row) => {
                 const updatedRow = {};
-
                 for (const [key, value] of Object.entries(row)) {
                   if (typeof value === 'object') {
                     updatedRow[key] = JSON.stringify(value);
+                  } else if (typeof value === 'boolean') {
+                    updatedRow[key] = value.toString();
                   } else {
                     updatedRow[key] = value;
                   }
                 }
+                console.log('===row', row, updatedRow);
+
                 return updatedRow;
               });
 
@@ -216,9 +219,7 @@ function Drive() {
             this is tech preview of cyb brain. it does not adds any new
             functionality across the app, yet
           </p>
-          <p>
-            features:
-          </p>
+          <p>features:</p>
           <div>- log you links while you surf</div>
           <div>- connect external ipfs node for performance</div>
           <div>

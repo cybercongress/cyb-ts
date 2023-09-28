@@ -22,7 +22,7 @@
     "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
   ],
   "tx: list with trim": [
-    "?[type, v_trim, t] := *transaction{type, value, timestamp}, v_trim = from_substrings(slice(chars(dump_json(value)),0, 100)),  t = format_timestamp(timestamp/1000)",
+    "?[type, v_trim, success, t] := *transaction{type, value, success, timestamp}, v_trim = from_substrings(slice(chars(dump_json(value)),0, 100)),  t = format_timestamp(timestamp/1000)",
     ":order -t"
   ],
   "tx: parse delegations": [
