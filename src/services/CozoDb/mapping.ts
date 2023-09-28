@@ -6,12 +6,15 @@ import { PinTypeMap } from './types';
 export const mapParticleToEntity = (particle: IPFSContent): any => {
   const { cid, result, meta, textPreview } = particle;
   const { size, mime, type, blocks, sizeLocal } = meta;
+
+  // hack to fix string command
+  const text = textPreview?.replace(/"/g, "'") || '';
   return {
     cid,
     size,
     mime: mime || 'unknown',
     type,
-    text: textPreview || '',
+    text,
     sizeLocal: sizeLocal || -1,
     blocks: blocks || 0,
   };
