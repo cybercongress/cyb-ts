@@ -1,6 +1,6 @@
 {
   "display brain entities": "::relations",
-  "display brain columns": "::columns",
+  "display brain columns": "::columns particle",
   "ipfs: list pins": "?[cid, type] := *pin{cid, type}",
   "particle: pin | ls": [
     "r[cid,  pin] := *particle{cid}, not *pin{cid: cid, type}, pin=0",
@@ -32,7 +32,5 @@
   "tx: parse cyberlinks": [
     "?[from, to, t] := *transaction{type, value, timestamp}, type = 'cyber.graph.v1beta1.MsgCyberlink', links = get(value, 'links'), l_ = get(links, 0), from =get(l_,'from'), to =get(l_,'to'), t = format_timestamp(timestamp/1000)",
     ":order -t"
-  ],
-  "relations": "::relations",
-  "columns": "::columns particle"
+  ]
 }
