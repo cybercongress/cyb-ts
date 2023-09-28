@@ -1,5 +1,7 @@
 {
-  "pin: ls": "?[cid, type] := *pin{cid, type}",
+  "display brain entities": "::relations",
+  "display brain columns": "::columns",
+  "ipfs: list pins": "?[cid, type] := *pin{cid, type}",
   "particle: pin | ls": [
     "r[cid,  pin] := *particle{cid}, not *pin{cid: cid, type}, pin=0",
     "r[cid, pin] := *particle{cid}, *pin{cid: cid, type}, pin=1",
@@ -14,20 +16,20 @@
     "?[side, lnk, cnt] := r[lnk, cnt, side]",
     ":order -cnt"
   ],
-  "link: text-to-text": [
+  "link: list text-to-text": [
     "rt[text, from] := *link{from, to}, *particle{cid: from, text}",
     "rf[text, to] := *link{from, to}, *particle{cid: to, text}",
     "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
   ],
-  "transactions: ls | trim": [
+  "tx: list with trim": [
     "?[type, v_trim, t] := *transaction{type, value, timestamp}, v_trim = from_substrings(slice(chars(dump_json(value)),0, 100)),  t = format_timestamp(timestamp/1000)",
     ":order -t"
   ],
-  "transactions: parse | delegate": [
+  "tx: parse delegations": [
     "?[a, d, timestamp] := *transaction{type, value, timestamp}, type = 'cosmos.staking.v1beta1.MsgDelegate', a_ = get(value,'amount'), a = get(a_, 'amount'), d = get(a_, 'denom')",
     ":order -timestamp"
   ],
-  "transactions: parse | link": [
+  "tx: parse cyberlinks": [
     "?[from, to, t] := *transaction{type, value, timestamp}, type = 'cyber.graph.v1beta1.MsgCyberlink', links = get(value, 'links'), l_ = get(links, 0), from =get(l_,'from'), to =get(l_,'to'), t = format_timestamp(timestamp/1000)",
     ":order -t"
   ],
