@@ -16,7 +16,7 @@ function ContainerKeyValue({ children }) {
   );
 }
 
-const renderOptions = (data, selected, valueSelect) => {
+const renderOptions = (data, selected) => {
   let items = {};
   if (data !== null) {
     items = (

@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import { ContainerGradientText, Input, ActionBar } from 'src/components';
+import {
+  ContainerGradientText,
+  Input,
+  ActionBar,
+  Button,
+} from 'src/components';
+import { Pane } from '@cybercongress/gravity';
+
 import { useAdviser } from 'src/features/adviser/context';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import Select from '../../../containers/teleport/components/select';
@@ -14,7 +21,7 @@ import {
 import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
-
+import Drive from '../Drive';
 const dataOpts = ['external', 'embedded'];
 
 function IpfsSettings() {
@@ -39,7 +46,10 @@ function IpfsSettings() {
   const adviserContext = useAdviser();
 
   useEffect(() => {
-    adviserContext.setAdviser(pending ? 'trying to connect to ipfs...' : null, 'yellow');
+    adviserContext.setAdviser(
+      pending ? 'trying to connect to ipfs...' : null,
+      'yellow'
+    );
   }, [adviserContext, pending]);
 
   const onChangeSelect = (item) => {
@@ -78,88 +88,102 @@ function IpfsSettings() {
   return (
     <ContainerGradientText>
       <div style={{ display: 'grid', gap: '20px' }}>
-        <ContainerKeyValue>
-          <div>client</div>
-
-          <Select
-            width="300px"
-            valueSelect={valueSelect}
-            textSelectValue={valueSelect !== '' ? valueSelect : ''}
-            onChangeSelect={(item) => onChangeSelect(item)}
-            custom
-            // disabled={pending}
-          >
-            {renderOptions(dataOpts, valueSelect)}
-          </Select>
-        </ContainerKeyValue>
-
-        {valueSelect === 'external' && (
-          <>
+        <Drive />
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
             <ContainerKeyValue>
-              <div>api</div>
+              <div>client</div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '300px',
-                  gap: '20px',
-                  position: 'relative',
-                }}
+              <Select
+                width="300px"
+                valueSelect={valueSelect}
+                textSelectValue={valueSelect !== '' ? valueSelect : ''}
+                onChangeSelect={(item) => onChangeSelect(item)}
+                custom
+                // disabled={pending}
               >
-                <Input
-                  value={valueInput}
-                  onChange={(e) => setValueInput(e.target.value)}
-                />
-                <BtnPassport
-                  style={{ maxWidth: '100px' }}
-                  typeBtn="blue"
-                  onClick={() => setNewUrl()}
-                >
-                  edit
-                </BtnPassport>
-              </div>
+                {renderOptions(dataOpts)}
+              </Select>
             </ContainerKeyValue>
-            <ContainerKeyValue>
-              <div>gateway</div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '300px',
-                  gap: '20px',
-                  position: 'relative',
-                }}
-              >
-                <Input
-                  value={valueInputGateway}
-                  onChange={(e) => setValueInputGateway(e.target.value)}
-                />
-                <BtnPassport
-                  style={{ maxWidth: '100px' }}
-                  typeBtn="blue"
-                  onClick={() => setNewUrlGateway()}
-                >
-                  edit
-                </BtnPassport>
-              </div>
-            </ContainerKeyValue>
-          </>
-        )}
+            {valueSelect === 'external' && (
+              <>
+                <ContainerKeyValue>
+                  <div>api</div>
 
-        <InfoIpfsNode />
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '280px 50px',
+                      gap: '20px',
+                      position: 'relative',
+                    }}
+                  >
+                    <Input
+                      value={valueInput}
+                      onChange={(e) => setValueInput(e.target.value)}
+                    />
+                    <BtnPassport
+                      style={{ maxWidth: '100px' }}
+                      typeBtn="blue"
+                      onClick={() => setNewUrl()}
+                    >
+                      edit
+                    </BtnPassport>
+                  </div>
+                </ContainerKeyValue>
+                <ContainerKeyValue>
+                  <div>gateway</div>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '280px 50px',
+                      gap: '20px',
+                      position: 'relative',
+                    }}
+                  >
+                    <Input
+                      value={valueInputGateway}
+                      onChange={(e) => setValueInputGateway(e.target.value)}
+                    />
+                    <BtnPassport
+                      style={{ maxWidth: '100px' }}
+                      typeBtn="blue"
+                      onClick={() => setNewUrlGateway()}
+                    >
+                      edit
+                    </BtnPassport>
+                  </div>
+                </ContainerKeyValue>
+              </>
+            )}
+          </div>
+          <div>
+            <InfoIpfsNode />
+          </div>
+        </div>
 
         {pending && (
           <ComponentLoader
             style={{ margin: '20px auto 10px', width: '100px' }}
           />
         )}
-
-        <ActionBar
-          button={{
-            text: 'Reconnect',
-            onClick: onClickReConnect,
-          }}
-        />
+        <Pane
+          width="100%"
+          display="flex"
+          marginBottom={20}
+          padding={10}
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+        >
+          <Button onClick={onClickReConnect}>Reconnect</Button>
+        </Pane>
+        {/* <ActionBar>
+          <Button onClick={onClickReConnect}>Reconnect</Button>
+          <Button onClick={console.log}>Sync drive</Button>
+        </ActionBar> */}
       </div>
     </ContainerGradientText>
   );

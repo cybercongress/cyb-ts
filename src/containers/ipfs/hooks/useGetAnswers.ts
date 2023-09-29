@@ -2,18 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useState } from 'react';
 import { reduceParticleArr } from './useGetBackLink';
-
-const search = async (client, hash, page, callBack) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    if (page === 0 && callBack && responseSearchResults.pagination.total) {
-      callBack(responseSearchResults.pagination.total);
-    }
-    return responseSearchResults.result || [];
-  } catch (error) {
-    return [];
-  }
-};
+import { searchByHash } from 'src/utils/search/utils';
 
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
@@ -29,9 +18,13 @@ function useGetAnswers(hash) {
   } = useInfiniteQuery(
     ['useGetAnswers', hash],
     async ({ pageParam = 0 }) => {
-      const response = await search(queryClient, hash, pageParam, setTotal);
-
-      const reduceArr = reduceParticleArr(response);
+      const response = await searchByHash(queryClient, hash, pageParam, {
+        storeToCozo: true,
+        callback: setTotal,
+      });
+      const reduceArr = response.result
+        ? reduceParticleArr(response.result)
+        : [];
 
       return { data: reduceArr, page: pageParam };
     },

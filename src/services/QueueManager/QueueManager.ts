@@ -37,6 +37,8 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import { importParicle } from '../backend/workers/background/importers/ipfs';
+import { BackendWorkerApi } from '../backend/workers/background/worker';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -71,6 +73,8 @@ class QueueManager<T> {
 
   private node: AppIPFS | undefined = undefined;
 
+  private backendApi: BackendWorkerApi | undefined = undefined;
+
   private strategy: QueueStrategy;
 
   private queueDebounceMs: number;
@@ -92,6 +96,10 @@ class QueueManager<T> {
 
     this.node = node;
     this.switchStrategy(strategies[node.nodeType]);
+  }
+
+  public setBackendApi(api: BackendWorkerApi) {
+    this.backendApi = api;
   }
 
   private getItemBySourceAndPriority(queue: QueueMap<T>) {
@@ -137,13 +145,21 @@ class QueueManager<T> {
 
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(() =>
+    return promiseToObservable(async () => {
       // fetch by item source
-      fetchIpfsContent<T>(cid, source, {
+      const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
-      })
-    ).pipe(
+      });
+
+      // We need to remove unserializable fields(ReadableStream) from content
+      // before sending it to worker
+      const threadSafeContent = { ...content, result: undefined };
+      // non awaitable call
+      content && this.backendApi?.importParicleContent(threadSafeContent);
+
+      return content;
+    }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -281,7 +297,6 @@ class QueueManager<T> {
         }
 
         this.executing[source].delete(item.cid);
-
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // console.log('------done', item, status, source, result);

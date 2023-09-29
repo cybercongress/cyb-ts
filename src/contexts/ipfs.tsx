@@ -9,11 +9,24 @@ import { AppIPFS } from 'src/utils/ipfs/ipfs';
 
 import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
 
+export type IpfsOptsType = {
+  ipfsNodeType: 'external' | 'embedded';
+  urlOpts: string;
+  userGateway: string;
+};
+
+type IpfsContextType = {
+  node: null | AppIPFS;
+  isReady: boolean;
+  error: null | string;
+  isLoading: boolean;
+};
+
 let ipfs = null;
 
-const getOpts = () => {
+export const getIpfsOpts = () => {
   let ipfsOpts = {
-    ipfsNodeType: 'embedded', // external || embedded
+    ipfsNodeType: 'embedded' as IpfsOptsType['ipfsNodeType'], // external || embedded
     urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
     userGateway: 'http://127.0.0.1:8080',
   };
@@ -27,14 +40,7 @@ const getOpts = () => {
 
   localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
 
-  return { ipfsOpts };
-};
-
-type IpfsContextType = {
-  node: null | AppIPFS;
-  isReady: boolean;
-  error: null | string;
-  isLoading: boolean;
+  return ipfsOpts;
 };
 
 // eslint-disable-next-line import/no-unused-modules
@@ -56,7 +62,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     setIsIpfsPending(true);
     setIpfsInitError(null);
 
-    const { ipfsOpts } = getOpts();
+    const ipfsOpts = getIpfsOpts();
 
     try {
       ipfs = await initIpfsClient(ipfsOpts);

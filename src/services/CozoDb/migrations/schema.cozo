@@ -1,0 +1,39 @@
+{
+    :create pin {
+        cid: String =>
+        type: Int
+    }
+}
+{
+    :create particle {
+        cid: String =>
+        mime: String,
+        text: String,
+        blocks: Int,
+        size: Int,
+        sizeLocal: Int,
+        type: String
+    }
+}
+{
+    :create refs {
+        parent: String,
+        child: String
+    }
+}
+{
+    :create link {
+        from: String,
+        to: String =>
+        neuron_address: String
+    }
+}
+{
+    :create transaction {
+        hash: String,
+        type: String =>
+        success: Bool,
+        timestamp: Int,
+        value: Json
+    }
+}

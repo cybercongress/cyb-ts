@@ -61,15 +61,6 @@ const config = {
   },
   plugins: [
     new NodePolyfillPlugin(),
-    // Note: stream-browserify has assumption about `Buffer` global in its
-    // dependencies causing runtime errors. This is a workaround to provide
-    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
-    // is fixed.
-    // new webpack.ProvidePlugin({
-    //   Buffer: ['buffer', 'Buffer'],
-    //   process: 'process/browser',
-    //   stream: 'readable-stream',
-    // }),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {
@@ -114,13 +105,9 @@ const config = {
           loader: 'esbuild-loader',
           options: {
             loader: 'tsx',
-            target: 'es2018', // Syntax to compile to (see options below for possible values)
+            target: 'es2020', // Syntax to compile to (see options below for possible values)
           },
         },
-      },
-      {
-        test: /\.worker\.js$/,
-        use: { loader: 'worker-loader' },
       },
       {
         include: /node_modules/,
@@ -174,6 +161,10 @@ const config = {
         resolve: {
           fullySpecified: false,
         },
+      },
+      {
+        test: /\.cozo$/,
+        use: 'raw-loader',
       },
     ],
   },

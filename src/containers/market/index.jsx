@@ -4,7 +4,11 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
-import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
+import {
+  getIpfsHash,
+  getRankGrade,
+  searchByHash,
+} from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
 import SearchTokenInfo from './searchTokensInfo';
@@ -26,16 +30,6 @@ function ContainerGrid({ children }) {
     </Pane>
   );
 }
-
-const search = async (client, hash, page) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
-  }
-};
 
 const reduceSearchResults = (data, query) => {
   return data.reduce(
@@ -79,7 +73,9 @@ function Market({ defaultAccount }) {
         setLoadingSearch(true);
         const hash = await getIpfsHash(tab);
         setKeywordHash(hash);
-        const responseApps = await search(queryClient, hash, 0);
+        const responseApps = await searchByHash(queryClient, hash, 0, {
+          storeToCozo: true,
+        });
         if (responseApps.result && responseApps.result.length > 0) {
           const dataApps = reduceSearchResults(responseApps.result, tab);
           setResultSearch(dataApps);
@@ -102,9 +98,11 @@ function Market({ defaultAccount }) {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await search(queryClient, keywordHash, page);
+    const data = await searchByHash(queryClient, keywordHash, page, {
+      storeToCozo: true,
+    });
     if (data.result) {
-      links = reduceSearchResults(data.result, tab);
+      links = reduceSearchResults(data, tab);
     }
 
     setTimeout(() => {

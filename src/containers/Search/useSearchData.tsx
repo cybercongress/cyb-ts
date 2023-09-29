@@ -1,11 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { getRankGrade } from 'src/utils/search/utils';
+import { getRankGrade, searchByHash } from 'src/utils/search/utils';
 import { coinDecimals } from 'src/utils/utils';
 import useGetBackLink from '../ipfs/hooks/useGetBackLink';
 import useGetDiscussion from '../ipfs/hooks/useGetDiscussion';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { LinksTypeFilter, SortBy } from './types';
-import { LIMIT } from './constants';
 
 const useSearch = (hash: string, skip?: boolean) => {
   const cid = hash;
@@ -23,7 +22,9 @@ const useSearch = (hash: string, skip?: boolean) => {
     ['useSearch', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const response = await queryClient!.search(cid, pageParam, LIMIT);
+      const response = await searchByHash(queryClient, cid, pageParam, {
+        storeToCozo: true,
+      });
 
       return { data: response, page: pageParam };
     },

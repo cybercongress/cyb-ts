@@ -60,7 +60,7 @@ const configIpfs = (): Options => ({
       // '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
     ],
     Pubsub: {
-      Enabled: true,
+      Enabled: false,
     },
     Swarm: {
       ConnMgr: {
@@ -83,7 +83,7 @@ const configIpfs = (): Options => ({
       }),
     ],
     nat: {
-      enabled: true,
+      enabled: false,
     },
   },
   EXPERIMENTAL: {

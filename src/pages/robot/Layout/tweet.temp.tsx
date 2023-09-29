@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import {
-  getFollows,
-  getContent,
-  getGraphQLQuery,
-} from '../../../utils/search/utils';
+import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
+import { useIpfs } from 'src/contexts/ipfs';
+import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
 const dateFormat = require('dateformat');
 
@@ -26,6 +24,7 @@ export const useNewsToday = (account) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [follows, setFollows] = useState([]);
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (account?.match(PATTERN_CYBER)) {
@@ -34,7 +33,8 @@ export const useNewsToday = (account) => {
         if (responseFollows !== null && responseFollows.total_count > 0) {
           responseFollows.txs.forEach(async (item) => {
             const cid = item.tx.value.msg[0].value.links[0].to;
-            const addressResolve = await getContent(cid);
+            const addressResolve = (await getIPFSContent(node, cid))
+              ?.textPreview;
             if (addressResolve) {
               if (addressResolve.match(PATTERN_CYBER)) {
                 setFollows((itemState) => [

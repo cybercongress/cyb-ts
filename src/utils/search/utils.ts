@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
+import { backendApi } from 'src/services/backend/workers/background/service';
+
 import * as config from '../config';
 
-import { getIPFSContent } from '../ipfs/utils-ipfs';
+import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils-ipfs';
 import { getResponseResult } from '../ipfs/stream-utils';
 import { parseRawIpfsData } from '../ipfs/content-utils';
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
@@ -694,25 +696,6 @@ export const getTweet = async (address) => {
     return null;
   }
 };
-// TODO: IPFS move to utils
-export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
-  // const timeoutPromise = () =>
-  //   new Promise((reject) => {
-  //     timerId = setTimeout(reject, timeout);
-  //   });
-
-  const ipfsGetPromise = () =>
-    new Promise((resolve, reject) => {
-      axios({
-        method: 'get',
-        url: `${CYBER_GATEWAY}/ipfs/${cid}`,
-      }).then((response) => {
-        // clearTimeout(timerId);
-        resolve(response.data);
-      });
-    });
-  return Promise.race([ipfsGetPromise()]);
-};
 
 export const chekFollow = async (address, addressFollowHash) => {
   try {
@@ -871,5 +854,40 @@ export const getDenomTraces = async () => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const searchByHash = async (
+  client,
+  hash,
+  page,
+  options = { storeToCozo: false, callback: undefined }
+) => {
+  try {
+    const responseSearchResults = await client.search(hash, page);
+
+    // TODO: refactor ???
+
+    const results = responseSearchResults.result ? responseSearchResults : [];
+
+    if (
+      page === 0 &&
+      options.callback &&
+      responseSearchResults.pagination.total
+    ) {
+      options.callback(responseSearchResults.pagination.total);
+    }
+    if (options.storeToCozo) {
+      backendApi.importParticle(hash);
+      backendApi.importCyberlinks(
+        responseSearchResults.result.map((item) => ({
+          from: hash,
+          to: item.particle,
+        }))
+      );
+    }
+    return results;
+  } catch (error) {
+    return [];
   }
 };

@@ -5,14 +5,12 @@ import {
   IpfsContentType,
   IpfsRawDataResponse,
 } from './ipfs';
-import {
-  CYBER,
-  PATTERN_HTML,
-  PATTERN_HTTP,
-  PATTERN_IPFS_HASH,
-} from '../config';
-
 import { getResponseResult, onProgressCallback } from './stream-utils';
+
+// TODO: fix to get working inside web worker, REFACTOR
+// import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
+const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
+const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
