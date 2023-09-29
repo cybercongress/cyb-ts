@@ -3,6 +3,9 @@ export const routes = {
   home: {
     path: '/',
   },
+  temple: {
+    path: '/temple',
+  },
   senateProposal: {
     path: '/senate/:proposalId',
     getLink: (proposalId: number) => `/senate/${proposalId}`,
@@ -61,5 +64,11 @@ export const routes = {
   neuron: {
     path: '/neuron/:address/*',
     getLink: (address: string) => `/neuron/${address}`,
+  },
+  oracle: {
+    ask: {
+      path: '/oracle/ask/:query',
+      getLink: (query: string) => `/oracle/ask/${query}`,
+    },
   },
 };

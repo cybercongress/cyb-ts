@@ -4,6 +4,7 @@ import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import { LinksTypeFilter, SortBy } from '../types';
 import { initialContentTypeFilterState } from '../SearchResults';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
+import { Tooltip } from 'src/components';
 
 const mapF = {
   text: '📄',
@@ -100,24 +101,26 @@ function Filters({
         }}
       />
 
-      <div className={styles.total}>
-        <span>
-          {(() => {
-            switch (linksFilter) {
-              case LinksTypeFilter.all:
-                return total.to + total.from;
+      <Tooltip tooltip="text for this" placement="bottom">
+        <div className={styles.total}>
+          <span>
+            {(() => {
+              switch (linksFilter) {
+                case LinksTypeFilter.all:
+                  return total.to + total.from;
 
-              case LinksTypeFilter.to:
-                return total.to;
+                case LinksTypeFilter.to:
+                  return total.to;
 
-              case LinksTypeFilter.from:
-              default:
-                return total.from;
-            }
-          })()}
-        </span>{' '}
-        particles
-      </div>
+                case LinksTypeFilter.from:
+                default:
+                  return total.from;
+              }
+            })()}
+          </span>{' '}
+          particles
+        </div>
+      </Tooltip>
     </header>
   );
 }

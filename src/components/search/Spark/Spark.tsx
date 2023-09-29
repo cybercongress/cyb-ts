@@ -28,6 +28,8 @@ function Spark({
   itemData,
   query,
   linkType,
+  rankSelected,
+
   handleContentType,
   handleRankClick,
 }: Props) {
@@ -76,7 +78,9 @@ function Spark({
           <Account address={creator.address} avatar />
 
           <button
-            className={cx('hover-rank-contentItem', styles.rank)}
+            className={cx('hover-rank-contentItem', styles.rank, {
+              [styles.rankSelected]: rankSelected,
+            })}
             type="button"
             onClick={() => handleRankClick(cid)}
           >

@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import styles from './ButtonsGroup.module.scss';
+import Tooltip from 'src/components/tooltip/tooltip';
 
 type Props = {
   items: {
@@ -23,17 +24,23 @@ function ButtonsGroup({ items, onChange, type }: Props) {
             [styles['--disabled']]: item.disabled,
           })}
         >
-          <label>
-            <input
-              type={type}
-              name={item.name}
-              checked={item.checked}
-              onChange={() =>
-                !item.disabled && onChange(item.name || item.label)
-              }
-            />
-            {item.label}
-          </label>
+          <Tooltip
+            tooltip={!item.disabled && item.name}
+            placement="bottom"
+            strategy="fixed"
+          >
+            <label>
+              <input
+                type={type}
+                name={item.name}
+                checked={item.checked}
+                onChange={() =>
+                  !item.disabled && onChange(item.name || item.label)
+                }
+              />
+              {item.label}
+            </label>
+          </Tooltip>
         </li>
       ))}
     </ul>

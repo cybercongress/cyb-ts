@@ -6,13 +6,10 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
-import {
-  coinDecimals,
-  exponentialToDecimal,
-  formatCurrency,
-  timeSince,
-} from 'src/utils/utils';
+import { encodeSlash, formatCurrency, timeSince } from 'src/utils/utils';
 import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
+import { PATTERN_IPFS_HASH } from 'src/utils/config';
+import { getIpfsHash } from 'src/utils/search/utils';
 import { Account, Rank } from '../../components';
 import useGetCreator from './hooks/useGetCreator';
 import ContentIpfsCid from './components/ContentIpfsCid';
@@ -21,13 +18,37 @@ import { PREFIXES } from './components/metaInfo';
 import SearchResults from '../Search/SearchResults';
 
 function Ipfs() {
-  const { cid = '' } = useParams();
+  const { query = '' } = useParams();
+
+  const [cid, setKeywordHash] = useState<string>(
+    query.match(PATTERN_IPFS_HASH) ? query : ''
+  );
+
   const { status, content } = useQueueIpfsContent(cid, 1, cid);
   const { creator } = useGetCreator(cid);
 
-  const [rankInfo, setRankInfo] = useState(null);
+  const [rankInfo, setRankInfo] = useState<number>();
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (query.match(PATTERN_IPFS_HASH)) {
+      if (query !== cid) {
+        setKeywordHash(query);
+      }
+
+      return;
+    }
+
+    (async () => {
+      let keywordHashTemp = '';
+
+      // TODO: handle error and types
+      keywordHashTemp = await getIpfsHash(encodeSlash(query));
+
+      setKeywordHash(keywordHashTemp);
+    })();
+  }, [cid, query]);
 
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
@@ -48,12 +69,7 @@ function Ipfs() {
       setIpfsDatDetails(details);
 
       const response = await queryClient?.rank(cid);
-      const rank = coinDecimals(parseFloat(response.rank));
-      const rankData = {
-        rank: exponentialToDecimal(rank.toPrecision(3)),
-        // grade: getRankGrade(rank),
-      };
-      setRankInfo(rankData.rank);
+      setRankInfo(Number(response.rank));
     })();
   }, [content, status, cid, queryClient]);
 
@@ -69,11 +85,13 @@ function Ipfs() {
         <div className={styles.left}>
           {ipfsDataDetails?.type}
 
-          <div className={styles.rank}>
-            with rank
-            <span>{rankInfo}</span>
-            <Rank hash={cid} rank={rankInfo} />
-          </div>
+          {rankInfo && (
+            <div className={styles.rank}>
+              with rank
+              <span>{rankInfo}</span>
+              <Rank hash={cid} rank={rankInfo} />
+            </div>
+          )}
         </div>
         {creator && (
           <div className={styles.center}>
@@ -93,11 +111,6 @@ function Ipfs() {
       'purple'
     );
   }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content]);
-
-  // const update = useCallback(() => {
-  //   dataDiscussion.refetch();
-  //   dataAnswer.refetch();
-  // }, [dataAnswer, dataDiscussion]);
 
   return (
     <>
@@ -120,19 +133,24 @@ function Ipfs() {
       </main>
 
       <SearchResults />
-
-      {/* {!mobile && (tab === 'discussion' || tab === 'answers') && (
-        <ActionBarContainer
-          placeholder={
-            tab === 'answers' ? 'add keywords, hash or file' : 'add message'
-          }
-          textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
-          keywordHash={cid}
-          update={update}
-        />
-      )} */}
     </>
   );
 }
 
 export default Ipfs;
+
+// const update = useCallback(() => {
+//   dataDiscussion.refetch();
+//   dataAnswer.refetch();
+// }, [dataAnswer, dataDiscussion]);
+
+// {!mobile && (tab === 'discussion' || tab === 'answers') && (
+//   <ActionBarContainer
+//     placeholder={
+//       tab === 'answers' ? 'add keywords, hash or file' : 'add message'
+//     }
+//     textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
+//     keywordHash={cid}
+//     update={update}
+//   />
+// )}

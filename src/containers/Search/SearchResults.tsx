@@ -122,6 +122,8 @@ function SearchResults() {
     );
   }
 
+  console.log(rankLink);
+
   const renderItems = items
     .filter((item) => {
       const { cid } = item;
@@ -143,6 +145,7 @@ function SearchResults() {
           key={key.cid + i}
           linkType={key.type}
           query={query}
+          rankSelected={rankLink === key.cid}
           handleRankClick={onClickRank}
           handleContentType={(type) =>
             setContentType((items) => {

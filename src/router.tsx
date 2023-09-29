@@ -116,15 +116,21 @@ function RedirectToRobotBrain() {
   return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
 }
 
+function RedirectToOracleAsk() {
+  const { query } = useParams();
+  return <Navigate to={routes.oracle.ask.getLink(query)} replace />;
+}
+
 function AppRouter() {
   return (
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<Temple />} />
+          <Route index element={<Search />} />
 
           {/* <Route path="/passport" element={<Wallet />} /> */}
           <Route path="/robot/*" element={<Robot />} />
+          <Route path={routes.temple.path} element={<Temple />} />
           {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
           <Route path={routes.neuron.path} element={<Robot />} />
           {/* <Route path="/@:passport" element={<Robot />} /> */}
@@ -133,7 +139,6 @@ function AppRouter() {
           <Route path="/oracle2" element={<Oracle />} />
 
           <Route path="/oracle" element={<Search />} />
-          <Route path="/oracle/ask/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
           <Route
             path={routes.senateProposal.path}
@@ -153,8 +158,9 @@ function AppRouter() {
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
-          <Route path="/ipfs/:cid" element={<Ipfs />} />
-          <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
+          <Route path="/ipfs/:query" element={<RedirectToOracleAsk />} />
+          <Route path={routes.oracle.ask.path} element={<Ipfs />} />
+
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
