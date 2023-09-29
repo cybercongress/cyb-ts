@@ -41,10 +41,8 @@ function Ipfs() {
     }
 
     (async () => {
-      let keywordHashTemp = '';
-
       // TODO: handle error and types
-      keywordHashTemp = await getIpfsHash(encodeSlash(query));
+      const keywordHashTemp = await getIpfsHash(encodeSlash(query));
 
       setKeywordHash(keywordHashTemp);
     })();

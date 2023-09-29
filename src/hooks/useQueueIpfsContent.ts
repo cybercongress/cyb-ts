@@ -36,7 +36,8 @@ function useQueueIpfsContent(
   }, [backendApi]);
 
   useEffect(() => {
-    if (!isReady) {
+    // In case cid should awaited and passed in async-way
+    if (!cid) {
       return;
     }
 
