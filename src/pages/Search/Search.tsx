@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ActionBar } from 'src/components';
+import { ActionBar, Button, MainContainer } from 'src/components';
 import { routes } from 'src/routes';
 import styles from './Search.module.scss';
 import { id } from 'src/containers/application/Header/Commander/Commander';
@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import useCanvas from 'src/containers/temple/components/canvasOne/useCanvas';
 
 function Search() {
-  const { canvasRef } = useCanvas();
+  // const { canvasRef } = useCanvas();
 
   useEffect(() => {
     const commander = document.getElementById(id);
@@ -16,7 +16,7 @@ function Search() {
     }
   }, []);
   return (
-    <div>
+    <MainContainer width="100%">
       <header className={styles.header}>
         {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
           return (
@@ -32,27 +32,30 @@ function Search() {
       </header>
 
       <div className={styles.content}>
-        <canvas
+        {/* <canvas
           className={styles.slider}
           // style={{ top: mediaQuery ? '12%' : '6%' }}
           ref={canvasRef}
           id="canvasOne"
           width="300"
           height="320"
-        />
-
-        <img
-          className={styles.image}
-          src={require('./oracle.png')}
-          alt="cyber"
-        />
+        /> */}
 
         <div className={styles.info}>
-          <h2>decentralized search is here</h2>
+          <h2>
+            decentralized <span>search</span> <br />
+            is here
+          </h2>
 
-          <div>
+          <img
+            className={styles.image}
+            src={require('./img.png')}
+            alt="cyber"
+          />
+
+          <div className={styles.particles}>
             <h4>111 000 particles</h4>
-            <span>+ 5% in 3 hours</span>
+            <span>+ 5%</span> <span>in 3 hours</span>
           </div>
         </div>
 
@@ -93,13 +96,11 @@ function Search() {
         </ul>
       </div>
 
-      <ActionBar
-        button={{
-          text: 'Ask me anything',
-          link: routes.search.getLink('cyber'),
-        }}
-      />
-    </div>
+      <ActionBar>
+        <Button link={routes.search.getLink('particles')}>Get high</Button>
+        <Button link={routes.oracle.learn.path}>How to learn</Button>
+      </ActionBar>
+    </MainContainer>
   );
 }
 

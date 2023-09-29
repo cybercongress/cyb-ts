@@ -59,6 +59,7 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Search from './pages/Search/Search';
+import Learn from './pages/Search/Learn/Learn';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -128,15 +129,13 @@ function AppRouter() {
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<Search />} />
 
-          {/* <Route path="/passport" element={<Wallet />} /> */}
           <Route path="/robot/*" element={<Robot />} />
-          <Route path={routes.temple.path} element={<Temple />} />
-          {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
-          <Route path={routes.neuron.path} element={<Robot />} />
-          {/* <Route path="/@:passport" element={<Robot />} /> */}
 
+          <Route path={routes.temple.path} element={<Temple />} />
+          <Route path={routes.neuron.path} element={<Robot />} />
+          <Route path={routes.oracle.learn.path} element={<Learn />} />
           <Route path="/oracle/stats" element={<Home />} />
-          <Route path="/oracle2" element={<Oracle />} />
+          <Route path="/oracle-old" element={<Oracle />} />
 
           <Route path="/oracle" element={<Search />} />
           <Route path="/senate" element={<Governance />} />
