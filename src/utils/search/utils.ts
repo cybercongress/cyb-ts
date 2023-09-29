@@ -888,6 +888,8 @@ export const searchByHash = async (
     }
     return results;
   } catch (error) {
+    // TODO: handle
+    console.error(error);
     return [];
   }
 };

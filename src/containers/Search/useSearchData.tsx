@@ -31,7 +31,7 @@ const useSearch = (hash: string, skip?: boolean) => {
     {
       enabled: Boolean(queryClient && cid) && !skip,
       getNextPageParam: (lastPage) => {
-        if (!lastPage.data.pagination.total) {
+        if (!lastPage.data.pagination?.total) {
           return undefined;
         }
 
@@ -41,19 +41,22 @@ const useSearch = (hash: string, skip?: boolean) => {
   );
 
   return {
-    data: data?.pages.reduce((acc, page) => {
-      return acc.concat(
-        page.data.result.map((item) => {
-          return {
-            cid: item.particle,
-            rank: coinDecimals(item.rank),
-            grade: getRankGrade(coinDecimals(item.rank)),
-            type: 'from',
-          };
-        })
-      );
-    }, []),
-    total: data?.pages[0].data.pagination.total,
+    data:
+      data?.pages
+        .reduce((acc, page) => {
+          return acc.concat(
+            page.data.result?.map((item) => {
+              return {
+                cid: item.particle,
+                rank: coinDecimals(item.rank),
+                grade: getRankGrade(coinDecimals(item.rank)),
+                type: 'from',
+              };
+            })
+          );
+        }, [])
+        .filter(Boolean) || [],
+    total: data?.pages[0].data.pagination?.total || 0,
     next: fetchNextPage,
     error,
     hasNextPage,
@@ -76,6 +79,7 @@ const useSearchData = (
   const linkType = linksType;
 
   const searchRank = useSearch(hash);
+
   const backlinksRank = useGetBackLink(hash, {
     skip: sort !== SortBy.rank && linkType !== LinksTypeFilter.from,
   });
