@@ -20,6 +20,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: String(to),
             name: LinksTypeFilter.to,
             checked: value === LinksTypeFilter.to,
+            tooltip: 'show only incoming particles - asks',
           },
           {
             label: <>&rarr;</>,
@@ -29,6 +30,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: <span />,
             name: LinksTypeFilter.all,
             checked: value === LinksTypeFilter.all,
+            tooltip: 'show all particles',
           },
           {
             label: <>&rarr;</>,
@@ -38,6 +40,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: String(from),
             name: LinksTypeFilter.from,
             checked: value === LinksTypeFilter.from,
+            tooltip: 'show only outcoming particles - answers',
           },
         ]}
       />

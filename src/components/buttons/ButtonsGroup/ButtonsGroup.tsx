@@ -8,6 +8,7 @@ type Props = {
     checked?: boolean;
     disabled?: boolean;
     name?: string;
+    tooltip?: string;
   }[];
   onChange: (value: string) => void;
   type: 'radio' | 'checkbox';
@@ -25,7 +26,7 @@ function ButtonsGroup({ items, onChange, type }: Props) {
           })}
         >
           <Tooltip
-            tooltip={!item.disabled && item.name}
+            tooltip={!item.disabled && item.tooltip}
             placement="bottom"
             strategy="fixed"
           >

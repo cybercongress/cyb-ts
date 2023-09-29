@@ -21,7 +21,7 @@ export const reduceParticleArr = (data: BackLink[]) => {
   return data.reduce<CyberLink[]>(
     (acc, item) => [
       ...acc,
-      { cid: item.particle, rank: coinDecimals(item.rank), type: 'backlink' },
+      { cid: item.particle, rank: coinDecimals(item.rank), type: 'to' },
     ],
     []
   );

@@ -6,20 +6,50 @@ import { initialContentTypeFilterState } from '../SearchResults';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { Tooltip } from 'src/components';
 
-const mapF = {
-  text: '📄',
-  image: '🖼️',
-  video: '🎞️',
-  pdf: '📑',
-  link: '🔗',
-  // audio: '🎧',
+const contentTypeConfig = {
+  text: {
+    label: '📄',
+    tooltip: 'show only articles with text',
+  },
+  image: {
+    label: '🖼️',
+    tooltip: 'show only images',
+  },
+  video: {
+    label: '🎞️',
+    tooltip: 'show only video content',
+  },
+  pdf: {
+    label: '📑',
+    tooltip: 'show only pdf files',
+  },
+  link: {
+    label: '🔗',
+    tooltip: 'show only particles with links',
+  },
+  audio: {
+    label: '🎧',
+    tooltip: 'show only audio content',
+  },
 };
 
-const mapS = {
-  [SortBy.rank]: '⭐',
-  [SortBy.date]: '📅',
-  [SortBy.popular]: '🔥',
-  [SortBy.mine]: '👤',
+const sortConfig = {
+  [SortBy.rank]: {
+    label: '⭐',
+    tooltip: 'sort particles by cyberrank',
+  },
+  [SortBy.date]: {
+    label: '📅',
+    tooltip: 'sort particles by date of creation',
+  },
+  [SortBy.popular]: {
+    label: '🔥',
+    tooltip: '',
+  },
+  [SortBy.mine]: {
+    label: '👤',
+    tooltip: '',
+  },
 };
 
 type Props = {
@@ -66,9 +96,10 @@ function Filters({
                 }
 
                 return {
-                  label: mapF[filter],
+                  label: contentTypeConfig[filter].label,
                   name: filter,
                   checked: filters[filter],
+                  tooltip: contentTypeConfig[filter].tooltip,
                 };
               })
               .filter((item) => !!item)
@@ -80,10 +111,11 @@ function Filters({
         type="radio"
         items={Object.values(SortBy).map((sortType) => {
           return {
-            label: mapS[sortType],
+            label: sortConfig[sortType].label,
             disabled: sortType === SortBy.mine || sortType === SortBy.popular,
             name: sortType,
             checked: filter2 === sortType,
+            tooltip: sortConfig[sortType].tooltip,
           };
         })}
         onChange={(sortType: SortBy) => {
@@ -101,7 +133,7 @@ function Filters({
         }}
       />
 
-      <Tooltip tooltip="text for this" placement="bottom">
+      <Tooltip tooltip="total particles in result" placement="bottom">
         <div className={styles.total}>
           <span>
             {(() => {

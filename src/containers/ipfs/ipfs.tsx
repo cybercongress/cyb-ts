@@ -88,7 +88,7 @@ function Ipfs() {
           {rankInfo && (
             <div className={styles.rank}>
               with rank
-              <span>{rankInfo}</span>
+              <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>
               <Rank hash={cid} rank={rankInfo} />
             </div>
           )}

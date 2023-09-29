@@ -133,16 +133,39 @@ const useSearchData = (
     data:
       (() => {
         if (sort === SortBy.rank) {
-          if (linkType === LinksTypeFilter.to) {
-            return backlinksRank.backlinks;
-          } else if (linkType === LinksTypeFilter.all) {
-            return (searchRank.data || [])
-              .concat(backlinksRank.backlinks)
-              .sort((a, b) => {
-                return parseFloat(b.rank) - parseFloat(a.rank);
-              });
+          switch (linkType) {
+            case LinksTypeFilter.to:
+              return backlinksRank.backlinks;
+            case LinksTypeFilter.all:
+              const fromCids = searchRank.data.map((item) => item.cid);
+              const allCids = [];
+
+              return (searchRank.data || [])
+                .concat(backlinksRank.backlinks)
+                .reduce((acc, item) => {
+                  if (allCids.includes(item.cid)) {
+                    return acc;
+                  }
+
+                  if (fromCids.includes(item.cid)) {
+                    allCids.push(item.cid);
+
+                    return acc.concat({
+                      ...item,
+                      type: 'all',
+                    });
+                  }
+
+                  return acc.concat(item);
+                }, [])
+                .sort((a, b) => {
+                  return parseFloat(b.rank) - parseFloat(a.rank);
+                });
+            case LinksTypeFilter.from:
+            default:
+              return searchRank.data || [];
           }
-          return searchRank.data || [];
+
           // eslint-disable-next-line no-else-return
         } else if (sort === SortBy.date) {
           switch (linkType) {
