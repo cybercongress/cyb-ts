@@ -5,7 +5,7 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
-import { getIPFSContent } from '../ipfs/utils-ipfs';
+import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils-ipfs';
 import { getResponseResult } from '../ipfs/stream-utils';
 import { parseRawIpfsData } from '../ipfs/content-utils';
 
@@ -682,28 +682,6 @@ export const getTweet = async (address) => {
     console.log(error);
     return null;
   }
-};
-
-// TODO: IPFS move to utils
-// !!! REFACTORING PRIORITY !!!
-// REPLACE WITH queueManager.enqueue with awaitable result from feat/rune
-export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
-  // const timeoutPromise = () =>
-  //   new Promise((reject) => {
-  //     timerId = setTimeout(reject, timeout);
-  //   });
-
-  const ipfsGetPromise = () =>
-    new Promise((resolve, reject) => {
-      axios({
-        method: 'get',
-        url: `${CYBER_GATEWAY}/ipfs/${cid}`,
-      }).then((response) => {
-        // clearTimeout(timerId);
-        resolve(response.data);
-      });
-    });
-  return Promise.race([ipfsGetPromise()]);
 };
 
 export const chekFollow = async (address, addressFollowHash) => {

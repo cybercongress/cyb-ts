@@ -157,7 +157,7 @@ const fetchIPFSContentFromNode = async (
 
         const mime = await getMimeFromUint8Array(firstChunk);
         const fullyDownloaded =
-          meta.size > -1 || firstChunk.length >= meta.size;
+          meta.size > -1 && firstChunk.length >= meta.size;
 
         const textPreview = getTextPreview(firstChunk, mime);
 

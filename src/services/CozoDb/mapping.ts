@@ -6,12 +6,15 @@ import { PinTypeMap } from './types';
 export const mapParticleToEntity = (particle: IPFSContent): any => {
   const { cid, result, meta, textPreview } = particle;
   const { size, mime, type, blocks, sizeLocal } = meta;
+
+  // hack to fix string command
+  const text = textPreview?.replace(/"/g, "'") || '';
   return {
     cid,
     size,
     mime: mime || 'unknown',
     type,
-    text: textPreview || '',
+    text,
     sizeLocal: sizeLocal || -1,
     blocks: blocks || 0,
   };
@@ -23,12 +26,12 @@ export const mapPinToEntity = (pin: LsResult) => ({
 });
 
 export const mapTransactionToEntity = (tx: Transaction) => {
-  const { transaction_hash, transaction, type, value, success } = tx;
+  const { transaction_hash, transaction, type, value } = tx;
   return {
     hash: transaction_hash,
     type,
     timestamp: new Date(transaction.block.timestamp).getTime(),
     value: JSON.stringify(value),
-    success,
+    success: transaction.success,
   };
 };
