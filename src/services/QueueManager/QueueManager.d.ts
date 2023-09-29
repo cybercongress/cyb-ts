@@ -1,7 +1,7 @@
 import type { IpfsContentSource } from 'src/utils/ipfs/ipfs';
 
 /* eslint-disable import/no-unused-modules */
-type QueueItemStatus =
+export type QueueItemStatus =
   | 'pending'
   | 'executing'
   | 'timeout'

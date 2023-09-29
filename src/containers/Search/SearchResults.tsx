@@ -38,7 +38,7 @@ function SearchResults() {
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
 
-  console.log(keywordHash);
+  // console.log(keywordHash);
 
   const [contentType, setContentType] = useState<{
     [key: string]: IpfsContentType;
@@ -121,8 +121,6 @@ function SearchResults() {
       </div>
     );
   }
-
-  console.log(rankLink);
 
   const renderItems = items
     .filter((item) => {
