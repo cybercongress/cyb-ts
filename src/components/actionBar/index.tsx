@@ -64,7 +64,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
     // maybe change to props
     location.pathname !== routes.keys.path &&
     !location.pathname.includes('/drive') &&
-    !location.pathname.includes('/search')
+    !location.pathname.includes('/oracle') &&
+    location.pathname !== '/'
   ) {
     return (
       <ActionBarContainer>
