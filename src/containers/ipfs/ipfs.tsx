@@ -128,7 +128,7 @@ function Ipfs() {
         {status === 'completed' ? (
           <ContentIpfs status={status} content={content} cid={cid} />
         ) : (
-          <ContentIpfsCid loading status={status} />
+          <ContentIpfsCid loading={status === 'executing'} status={status} />
         )}
       </main>
 
