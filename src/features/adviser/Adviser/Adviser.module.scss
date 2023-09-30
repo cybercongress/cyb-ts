@@ -102,6 +102,10 @@ $animation-time: 2.3s;
   .content {
     transition: all 0.7s;
   }
+
+  @media (max-width: 480px) {
+    min-width: unset;
+  }
 }
 
 .summary {

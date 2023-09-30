@@ -16,7 +16,7 @@
   width: calc(var(--width-ratio) * 100%);
   margin: 0 auto;
 
-  @media (max-width: 480px) {
+  @media (max-width: 680px) {
     width: unset;
   }
 }

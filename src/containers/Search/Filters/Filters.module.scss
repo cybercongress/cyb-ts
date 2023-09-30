@@ -20,4 +20,10 @@
       color: rgba(255, 255, 255, 0.78);
     }
   }
+
+  @media (max-width: 680px) {
+    max-width: unset;
+    gap: 40px 0;
+    flex-wrap: wrap;
+  }
 }

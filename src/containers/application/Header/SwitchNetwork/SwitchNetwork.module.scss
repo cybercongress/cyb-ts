@@ -168,3 +168,10 @@
   position: relative;
   transition: 0.2s;
 }
+
+.buttonWrapper {
+  @media (max-width: 480px) {
+    height: unset !important;
+    grid-template-columns: unset !important;
+  }
+}
