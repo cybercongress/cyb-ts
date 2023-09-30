@@ -4,12 +4,7 @@ import { Nullable } from 'src/types';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { trimString } from 'src/utils/utils';
 import styles from './styles.module.scss';
-
-type DataItem = {
-  nickname: string | undefined;
-  cidAvatar: undefined | string;
-  owner: string;
-};
+import { DataItem } from './type';
 
 type PropsOptionItem = {
   data: DataItem;
@@ -74,7 +69,7 @@ function AccountInputOptionList({
   onClickByNickname: OnClickByNickname;
 }) {
   return (
-    <div className={styles.containerList}>
+    <div className={styles.containerOption}>
       {Object.keys(data).map((key) => (
         <AccountInputOption
           key={key}

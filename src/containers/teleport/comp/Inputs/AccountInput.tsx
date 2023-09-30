@@ -12,6 +12,7 @@ import LinearGradientContainer, {
 import { PATTERN_CYBER } from 'src/utils/config';
 import {
   SliceState,
+  selectAccountsPassports,
   selectCommunityPassports,
 } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
@@ -23,6 +24,9 @@ import useDebounce from '../../useDebounce';
 import styles from './styles.module.scss';
 import { contains } from './utils';
 import AccountInputOptionList from './AccountInputItem';
+import AccountInputListContainer from './AccountInputContainer';
+import { TypeRecipient } from './type';
+import ButtonText from './ButtonText';
 
 type Props = {
   recipient: string | undefined;
@@ -36,16 +40,18 @@ function AccountInput({ recipient, setRecipient }: Props) {
   const [searchParams] = useSearchParams();
   const inputElem = useRef(null);
   const selectContainerRef = useRef(null);
-
-  const firstEffectOccured = useRef(false);
-  const [isOpen, setIsOpen] = useState(true);
-  const [valueRecipient, setValueRecipient] = useState<string>('');
   const { debounce } = useDebounce();
-  const selectCommunity = useAppSelector(selectCommunityPassports);
-  const { accounts } = useAppSelector((state) => state.pocket);
-  console.log('accounts', accounts)
+  const firstEffectOccured = useRef(false);
 
+  const [isOpen, setIsOpen] = useState(true);
+  const [selectedTypeRecipient, setSelectedTypeRecipient] = useState(
+    TypeRecipient.friends
+  );
+  const [valueRecipient, setValueRecipient] = useState<string>('');
   const [listRecipient, setListRecipient] = useState<SliceState>({});
+
+  const selectCommunity = useAppSelector(selectCommunityPassports);
+  const { accounts } = useAppSelector(selectAccountsPassports);
 
   const clickOutsideHandler = () => setIsOpen(false);
 
@@ -71,6 +77,18 @@ function AccountInput({ recipient, setRecipient }: Props) {
     }
   }, [searchParams]);
 
+  const selectedDataRecipient = useMemo(() => {
+    if (selectedTypeRecipient === TypeRecipient.my) {
+      return accounts;
+    }
+
+    if (selectedTypeRecipient === TypeRecipient.following) {
+      return selectCommunity.following;
+    }
+
+    return selectCommunity.friends;
+  }, [selectedTypeRecipient, accounts, selectCommunity]);
+
   const getRecipient = useCallback(
     async (value: string) => {
       if (!value) {
@@ -84,8 +102,8 @@ function AccountInput({ recipient, setRecipient }: Props) {
       }
 
       let listRecipientTemp: SliceState = {};
-      if (Object.keys(selectCommunity.friends).length > 0) {
-        const result = contains(value, selectCommunity.friends);
+      if (Object.keys(selectedDataRecipient).length > 0) {
+        const result = contains(value, selectedDataRecipient);
         if (Object.keys(result).length) {
           listRecipientTemp = { ...result };
         }
@@ -106,7 +124,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
 
       setListRecipient(listRecipientTemp);
     },
-    [selectCommunity.friends, queryClient]
+    [selectedDataRecipient, queryClient]
   );
 
   const handleSearch = useCallback(
@@ -117,20 +135,20 @@ function AccountInput({ recipient, setRecipient }: Props) {
   const onChangeRecipient = useCallback(
     (inputVal: string) => {
       if (!inputVal.length) {
-        setListRecipient(selectCommunity.friends);
+        setListRecipient(selectedDataRecipient);
       }
       setValueRecipient(inputVal);
       handleSearch(inputElem.current?.value);
     },
-    [selectCommunity.friends]
+    [selectedDataRecipient]
   );
 
   const useListRecipient = useMemo(() => {
     if (!valueRecipient.length || !Object.keys(listRecipient).length) {
-      return selectCommunity.friends;
+      return selectedDataRecipient;
     }
     return listRecipient;
-  }, [listRecipient, valueRecipient, selectCommunity.friends]);
+  }, [listRecipient, valueRecipient, selectedDataRecipient]);
 
   const onClickByNickname = (owner: string, nickname: string | undefined) => {
     setValueRecipient(nickname || owner);
@@ -172,14 +190,34 @@ function AccountInput({ recipient, setRecipient }: Props) {
         // onClick={}
       />
 
-      {isOpen &&
-        useListRecipient &&
-        Object.keys(useListRecipient).length > 0 && (
-          <AccountInputOptionList
-            data={useListRecipient}
-            onClickByNickname={onClickByNickname}
-          />
-        )}
+      {isOpen && (
+        <AccountInputListContainer>
+          <div className={styles.containerButtonText}>
+            <ButtonText
+              active={selectedTypeRecipient === TypeRecipient.friends}
+              text={TypeRecipient.friends}
+              onClick={() => setSelectedTypeRecipient(TypeRecipient.friends)}
+            />
+            <ButtonText
+              active={selectedTypeRecipient === TypeRecipient.my}
+              text={TypeRecipient.my}
+              onClick={() => setSelectedTypeRecipient(TypeRecipient.my)}
+            />
+            <ButtonText
+              active={selectedTypeRecipient === TypeRecipient.following}
+              text={TypeRecipient.following}
+              onClick={() => setSelectedTypeRecipient(TypeRecipient.following)}
+            />
+          </div>
+
+          {useListRecipient && Object.keys(useListRecipient).length > 0 && (
+            <AccountInputOptionList
+              data={useListRecipient}
+              onClickByNickname={onClickByNickname}
+            />
+          )}
+        </AccountInputListContainer>
+      )}
     </div>
   );
 }

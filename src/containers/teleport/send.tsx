@@ -21,11 +21,9 @@ import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
-import {
-  SliceState,
-  selectCommunityPassports,
-} from 'src/features/passport/passports.redux';
+
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
 import { Col, GridContainer, TeleportContainer } from './comp/grid';
 import Slider from './components/slider';
 import { getBalances } from './hooks';
@@ -44,6 +42,7 @@ function Send() {
   const { traseDenom } = useIbcDenom();
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useCommunityPassports();
+  useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
   const [recipient, setRecipient] = useState<string | undefined>(undefined);
