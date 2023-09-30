@@ -97,8 +97,10 @@ function Search() {
       </div>
 
       <ActionBar>
-        <Button link={routes.oracle.particles.path}>get high</Button>
-        <Button link={routes.search.getLink('how to learn')}>how to learn</Button>
+        <Button link={'/particles'}>get high</Button>
+        <Button link={routes.search.getLink('how to learn')}>
+          how to learn
+        </Button>
       </ActionBar>
     </MainContainer>
   );
