@@ -62,6 +62,8 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Relayer from './containers/ibc/Relayer';
+import Teleport from './containers/teleport/pages/Teleport';
+import TeleportMainScreen from './containers/teleport/pages/mainScreen/mainScreen';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -169,11 +171,14 @@ function AppRouter() {
           <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
-          <Route path="/teleport">
-            <Route path="swap" element={<Swap />} />
-            <Route path="send" element={<Send />} />
-            <Route path="bridge" element={<Bridge />} />
-          </Route>
+
+          <Route path="/teleport/*" element={<Teleport />} />
+
+          {/* <Route path="/teleport" element={<TeleportMainScreen />} />
+          <Route path="/teleport/swap" element={<Swap />} />
+          <Route path="/teleport/send" element={<Send />} />
+          <Route path="/teleport/bridge" element={<Bridge />} /> */}
+
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />

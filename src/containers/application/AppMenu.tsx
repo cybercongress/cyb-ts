@@ -28,9 +28,10 @@ const itemsMenu = () => {
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Teleport',
-      to: '/teleport/swap',
+      to: '/teleport',
       icon: teleport,
       subItems: [
+        { name: 'Swap', to: '/teleport/swap' },
         { name: 'Bridge', to: '/teleport/bridge' },
         { name: 'Send', to: '/teleport/send' },
       ],
