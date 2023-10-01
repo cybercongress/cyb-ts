@@ -107,3 +107,17 @@
   display: flex;
   justify-content: space-around;
 }
+
+.containerAvailableAmount {
+  height: 42px;
+}
+
+.containerValue {
+  padding: 0 13px;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}

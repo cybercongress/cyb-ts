@@ -175,20 +175,6 @@ function Swap() {
     return false;
   }, [tokenAAmount, tokenA, traseDenom, accountBalances]);
 
-  useEffect(() => {
-    // validation swap
-    let exceeded = true;
-
-    const validTokenAmountA =
-      !validInputAmountTokenA && Number(tokenAAmount) > 0;
-
-    if (poolPrice !== 0 && validTokenAmountA) {
-      exceeded = false;
-    }
-
-    setIsExceeded(exceeded);
-  }, [poolPrice, tokenAAmount, validInputAmountTokenA]);
-
   const useGetSlippage = useMemo(() => {
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
@@ -206,7 +192,22 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  console.log('useGetSlippage', useGetSlippage)
+  console.log('useGetSlippage', useGetSlippage);
+
+  useEffect(() => {
+    // validation swap
+    let exceeded = true;
+
+    const validTokenAmountA =
+      !validInputAmountTokenA && Number(tokenAAmount) > 0;
+
+    // check pool , check slippage 3%
+    if (poolPrice !== 0 && validTokenAmountA && useGetSlippage < 3) {
+      exceeded = false;
+    }
+
+    setIsExceeded(exceeded);
+  }, [poolPrice, tokenAAmount, validInputAmountTokenA, useGetSlippage]);
 
   const getPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {
@@ -353,6 +354,10 @@ function Swap() {
             selected={tokenA}
             onChangeSelect={setTokenB}
             amountChangeHandler={amountChangeHandler}
+            validAmountMessage={
+              poolPrice === 0 && tokenA.length !== 0 && tokenB.length !== 0
+            }
+            validAmountMessageText="no pool"
           />
         </TeleportContainer>
         <TeleportContainer>
