@@ -6,7 +6,7 @@ import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { routes } from 'src/routes';
 
-const fixedValue = '~/';
+const fixedValue = '~';
 
 // replace with more declarative way
 export const id = 'commander';
