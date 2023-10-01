@@ -8,8 +8,8 @@ import {
   TransactionSubmitted,
   Confirmed,
   TransactionError,
-} from '../../components';
-import { LEDGER } from '../../utils/config';
+} from '../../../components';
+import { LEDGER } from '../../../utils/config';
 
 const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
   LEDGER;

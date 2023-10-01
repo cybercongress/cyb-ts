@@ -14,19 +14,19 @@ import {
   ActionBarContentText,
   LinkWindow,
   ActionBar as ActionBarCenter,
-} from '../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
+} from '../../../../components';
+import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../../utils/config';
 import {
   fromBech32,
   trimString,
   convertAmountReverce,
   getNowUtcTime,
-} from '../../utils/utils';
-import networks from '../../utils/networkListIbc';
+} from '../../../../utils/utils';
+import networks from '../../../../utils/networkListIbc';
 
-import { TxsType } from './type';
-import ActionBarPingTxs from './actionBarPingTxs';
-import { useIbcHistory } from './ibc-history/historyContext';
+import { TxsType } from '../../type';
+import ActionBarPingTxs from '../../comp/actionBarPingTxs';
+import { useIbcHistory } from '../../ibc-history/historyContext';
 
 const {
   STAGE_INIT,

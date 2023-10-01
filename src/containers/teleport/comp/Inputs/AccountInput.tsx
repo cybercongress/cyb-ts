@@ -20,7 +20,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { useSearchParams } from 'react-router-dom';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
-import useDebounce from '../../useDebounce';
+import useDebounce from '../../hooks/useDebounce';
 import styles from './styles.module.scss';
 import { contains } from './utils';
 import AccountInputOptionList from './AccountInputItem';

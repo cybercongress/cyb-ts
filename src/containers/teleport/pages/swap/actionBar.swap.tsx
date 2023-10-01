@@ -18,22 +18,21 @@ import {
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
-} from '../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
+} from '../../../../components';
+import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../../utils/config';
 import {
   fromBech32,
   trimString,
   convertAmountReverce,
   convertAmount,
-} from '../../utils/utils';
-import networks from '../../utils/networkListIbc';
+} from '../../../../utils/utils';
+import networks from '../../../../utils/networkListIbc';
 
-import ActionBarStaps from './actionBarSteps';
-import { TxsType } from './type';
+import { TxsType } from '../../type';
 import { RootState } from 'src/redux/store';
-import ActionBarPingTxs from './actionBarPingTxs';
+import ActionBarPingTxs from '../../comp/actionBarPingTxs';
 import { useNavigate } from 'react-router-dom';
-import { sortReserveCoinDenoms } from './utils';
+import { sortReserveCoinDenoms } from '../../utils';
 
 const POOL_TYPE_INDEX = 1;
 

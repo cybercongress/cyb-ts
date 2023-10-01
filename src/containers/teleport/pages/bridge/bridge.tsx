@@ -14,19 +14,19 @@ import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
-import { getMyTokenBalanceNumber, networkList } from './utils';
-import { getBalances, useSetupIbcClient } from './hooks';
-import Slider from './components/slider';
-import { Col, GridContainer, TeleportContainer } from './comp/grid';
-import { TypeTxsT } from './type';
+import { getMyTokenBalanceNumber, networkList } from '../../utils';
+import { getBalances, useSetupIbcClient } from '../../hooks';
+import Slider from '../../components/slider';
+import { Col, GridContainer, TeleportContainer } from '../../comp/grid';
+import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
-import HistoryContextProvider from './ibc-history/historyContext';
-import DataIbcHistory from './comp/dataIbcHistory/DataIbcHistory';
+import HistoryContextProvider from '../../ibc-history/historyContext';
+import DataIbcHistory from '../../comp/dataIbcHistory/DataIbcHistory';
 import { Networks } from 'src/types/networks';
-import InputNumberDecimalScale from './comp/Inputs/InputNumberDecimalScale';
+import InputNumberDecimalScale from '../../comp/Inputs/InputNumberDecimalScale';
 
 type Query = {
   networkFrom: string;

@@ -24,16 +24,16 @@ import { useAppSelector } from 'src/redux/hooks';
 
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
-import { Col, GridContainer, TeleportContainer } from './comp/grid';
-import Slider from './components/slider';
-import { getBalances } from './hooks';
+import { Col, GridContainer, TeleportContainer } from '../../comp/grid';
+import Slider from '../../components/slider';
+import { getBalances } from '../../hooks';
 import ActionBar from './actionBar.send';
-import { getMyTokenBalanceNumber } from './utils';
-import DataSendTxs from './comp/dataSendTxs/DataSendTxs';
-import AccountInput from './comp/Inputs/AccountInput';
-import useGetSendTxsByAddressByLcd from './hooks/useGetSendTxsByAddressByLcd';
-import InputMemo from './comp/Inputs/InputMemo';
-import InputNumberDecimalScale from './comp/Inputs/InputNumberDecimalScale';
+import { getMyTokenBalanceNumber } from '../../utils';
+import DataSendTxs from '../../comp/dataSendTxs/DataSendTxs';
+import AccountInput from '../../comp/Inputs/AccountInput';
+import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd';
+import InputMemo from '../../comp/Inputs/InputMemo';
+import InputNumberDecimalScale from '../../comp/Inputs/InputNumberDecimalScale';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 

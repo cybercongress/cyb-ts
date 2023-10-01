@@ -55,9 +55,9 @@ import {
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
-import Swap from './containers/teleport/swap';
-import Send from './containers/teleport/send';
-import Bridge from './containers/teleport/bridge';
+import Swap from './containers/teleport/pages/swap/swap';
+import Send from './containers/teleport/pages/send/send';
+import Bridge from './containers/teleport/pages/bridge/bridge';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
