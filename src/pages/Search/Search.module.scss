@@ -106,7 +106,7 @@
         }
       }
 
-      animation: identifier2 140s infinite;
+      // animation: identifier2 140s infinite;
     }
 
     > * {
@@ -250,5 +250,11 @@
     // margin-top: 15px;
     line-height: 30px;
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  a {
+    &:hover {
+      opacity: 0.7;
+    }
   }
 }

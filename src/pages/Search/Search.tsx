@@ -88,7 +88,9 @@ function Search() {
           ].map(({ title, text }) => {
             return (
               <li key={title}>
-                <h6>{title}</h6>
+                <Link to={routes.search.getLink(title)}>
+                  <h6>{title}</h6>
+                </Link>
                 <p>{text}</p>
               </li>
             );
