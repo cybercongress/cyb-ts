@@ -50,6 +50,13 @@ export const Vertical: Story = {
   },
 };
 
+export const Left: Story = {
+  args: {
+    ...defaultArgs,
+    sideSaber: 'left',
+  },
+};
+
 export const WithNoPadding: Story = {
   args: {
     ...defaultArgs,

@@ -1,13 +1,16 @@
+import { QueueItemStatus } from 'src/services/QueueManager/QueueManager';
 import ComponentLoader from '../../../features/ipfs/ipfsSettings/ipfsComponents/ipfsLoader';
 
 type Props = {
   loading?: boolean;
   statusFetching?: string;
-  status?: string;
+  status?: QueueItemStatus;
 };
 
 function ContentIpfsCid({ loading, statusFetching, status }: Props) {
   // const loading = dataGetIpfsContent.loading;
+
+  console.log(status, loading, statusFetching);
 
   if (loading) {
     return (
@@ -31,7 +34,7 @@ function ContentIpfsCid({ loading, statusFetching, status }: Props) {
     );
   }
 
-  if (!loading && status === 'error') {
+  if (!loading && 'error, timeout'.includes(status)) {
     return (
       <div
         style={{

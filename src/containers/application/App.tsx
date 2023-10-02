@@ -86,7 +86,9 @@ function App() {
     <MainLayout>
       <>
         {/* not move portal order */}
-        {location.pathname.includes('/brain') && (
+        {(location.pathname.includes('/brain') ||
+          location.pathname.includes('/oracle2') ||
+          location.pathname.includes('/graph')) && (
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 

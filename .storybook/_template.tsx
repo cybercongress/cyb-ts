@@ -2,11 +2,11 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import $Component from './$Component';
+import _Component from './_Component';
 
-const meta: Meta<typeof $Component> = {
-  component: $Component,
-  title: 'atoms/$Component',
+const meta: Meta<typeof _Component> = {
+  component: _Component,
+  title: 'atoms/_Component',
   parameters: {
     design: {
       type: 'figma',
@@ -16,7 +16,7 @@ const meta: Meta<typeof $Component> = {
 };
 export default meta;
 
-type Story = StoryObj<typeof $Component>;
+type Story = StoryObj<typeof _Component>;
 
 const defaultArgs = {};
 

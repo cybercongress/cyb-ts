@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDevice } from 'src/contexts/device';
+import Spark from 'src/components/search/Spark/Spark';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading, Rank } from '../../components';
-import ContentItem from '../../components/ContentItem/contentItem';
+import { Dots, Loading } from '../../components';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
 
-function Relevance({ items, fetchMoreData, page, allPage }) {
-  const { isMobile: mobile } = useDevice();
-
+function Relevance({ items, fetchMoreData }) {
   return (
     <InfiniteScroll
       dataLength={Object.keys(items).length}
       next={fetchMoreData}
       hasMore
       loader={
-        <h4>
+        <h4
+          style={{
+            textAlign: 'center',
+          }}
+        >
           Loading
           <Dots />
         </h4>
@@ -33,33 +33,7 @@ function Relevance({ items, fetchMoreData, page, allPage }) {
     >
       {Object.keys(items).map((key) => {
         return (
-          <Pane
-            key={key}
-            position="relative"
-            className="hover-rank"
-            display="flex"
-            alignItems="center"
-            marginBottom="-2px"
-          >
-            {!mobile && (
-              <Pane
-                className="time-discussion rank-contentItem"
-                position="absolute"
-              >
-                <Rank
-                  hash={key}
-                  rank={items[key].rank}
-                  grade={items[key].grade}
-                />
-              </Pane>
-            )}
-            <ContentItem
-              cid={key}
-              item={items[key]}
-              className="contentItem"
-              parent="particles"
-            />
-          </Pane>
+          <Spark cid={key} key={key} itemData={items[key]} query="particles" />
         );
       })}
     </InfiniteScroll>

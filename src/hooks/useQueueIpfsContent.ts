@@ -28,7 +28,7 @@ function useQueueIpfsContent(
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
   const [prevNodeType, setPrevNodeType] = useState<string | undefined>();
-  const { node } = useIpfs();
+  const { node, isReady } = useIpfs();
   const { backendApi } = useBackend();
 
   useEffect(() => {
@@ -36,6 +36,11 @@ function useQueueIpfsContent(
   }, [backendApi]);
 
   useEffect(() => {
+    // In case cid should awaited and passed in async-way
+    if (!cid) {
+      return;
+    }
+
     const callback = (
       cid: string,
       status: QueueItemStatus,

@@ -332,7 +332,7 @@ class ActionBarContainer extends Component {
             <ButtonImgText
               text={
                 <Pane alignItems="center" display="flex">
-                  Rank{' '}
+                  Learn{' '}
                   <img
                     src={imgCyber}
                     alt="cyber"

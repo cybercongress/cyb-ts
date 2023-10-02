@@ -36,11 +36,11 @@ function Table<T extends object>({
       rowSelection: {},
     },
     // debugTable: true,
-    enableRowSelection: true,
-    onRowSelectionChange: (state) => {
-      console.log(state);
-      debugger;
-    },
+    // enableRowSelection: true,
+    // onRowSelectionChange: (state) => {
+    //   console.log(state);
+    //   debugger;
+    // },
     getCoreRowModel: getCoreRowModel(),
   });
 

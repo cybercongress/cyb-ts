@@ -73,6 +73,8 @@ export const parseRawIpfsData = async (
       ? await getResponseResult(rawDataResponse, onProgress)
       : undefined;
 
+    // console.log(rawData);
+
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;
       response.gateway = true; // ???

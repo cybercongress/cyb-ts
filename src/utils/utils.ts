@@ -217,7 +217,7 @@ const convertResources = (number) => {
   return Math.floor(number * 10 ** -3);
 };
 
-function timeSince(timeMS) {
+function timeSince(timeMS: number) {
   const seconds = Math.floor(timeMS / 1000);
 
   if (seconds === 0) {

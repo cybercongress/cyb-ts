@@ -1,11 +1,10 @@
 @import '../saber/index.module.scss';
-
-$display-padding-top: 23px;
-$display-padding-x: 20px;
+@import './variables.module.scss';
 
 .wrapper {
   padding: $display-padding-top $display-padding-x 24px;
 
+  overflow-x: auto;
   // TODO: remove this
   z-index: 0;
 
@@ -25,6 +24,22 @@ $display-padding-x: 20px;
         @include saber-vertical($color);
       }
     }
+  }
+
+  &.left {
+    &::after {
+      content: '';
+      display: none;
+    }
+    border-right: unset !important;
+  }
+
+  &.right {
+    &::before {
+      content: '';
+      display: none;
+    }
+    border-left: unset !important;
   }
 
   &.noPaddingX {

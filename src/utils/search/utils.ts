@@ -8,6 +8,7 @@ import * as config from '../config';
 import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils-ipfs';
 import { getResponseResult } from '../ipfs/stream-utils';
 import { parseRawIpfsData } from '../ipfs/content-utils';
+import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -632,11 +633,28 @@ export const getImportLink = async (address) => {
   }
 };
 
-export const getFromLink = async (cid, offset, limit) => {
+enum Order {
+  ASC = 'ORDER_BY_ASC',
+  DESC = 'ORDER_BY_DESC',
+}
+
+export const getLinks = async (
+  cid: string,
+  type: LinkType = LinkType.from,
+  { offset, limit, order = Order.DESC }
+) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`,
+      params: {
+        'pagination.offset': offset,
+        'pagination.limit': limit,
+        orderBy: Order.DESC,
+        events: `cyberlink.particle${
+          type === LinkType.to ? 'To' : 'From'
+        }='${cid}'`,
+      },
     });
     return response.data;
   } catch (e) {
@@ -645,17 +663,12 @@ export const getFromLink = async (cid, offset, limit) => {
   }
 };
 
+export const getFromLink = async (cid, offset, limit) => {
+  return getLink(cid, LinkType.from, { offset, limit });
+};
+
 export const getToLink = async (cid, offset, limit) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
+  return getLink(cid, LinkType.to, { offset, limit });
 };
 
 export const getFollows = async (address) => {
@@ -875,6 +888,8 @@ export const searchByHash = async (
     }
     return results;
   } catch (error) {
+    // TODO: handle
+    console.error(error);
     return [];
   }
 };

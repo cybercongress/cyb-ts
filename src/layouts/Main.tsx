@@ -8,6 +8,7 @@ import AppSideBar from 'src/containers/application/AppSideBar';
 import Header from 'src/containers/application/Header/Header';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { RootState } from 'src/redux/store';
+import styles from './Main.module.scss';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { pocket } = useSelector((state: RootState) => state);
@@ -35,7 +36,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   }
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <Header
         menuProps={{
           toggleMenu: useMemo(() => () => toggleMenu(!openMenu), [openMenu]),

@@ -120,7 +120,11 @@ function Account({
       )}
       {!onlyAvatar && (
         <Link
-          style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
+          style={{
+            color: colorText || '#36d6ae',
+            padding: margin || 0,
+            whiteSpace: 'nowrap',
+          }}
           to={linkAddress}
         >
           {moniker === null ? trimAddress : moniker}

@@ -10,6 +10,8 @@ import './styles.scss';
 // storybook error that React not defined, may be fixed in future
 import React from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import store from '../src/redux/store';
+import { Provider } from 'react-redux';
 window.React = React;
 
 export const queryClient = new QueryClient({
@@ -39,13 +41,15 @@ const preview: Preview = {
     (Story) => (
       <div style={{ margin: '3em' }}>
         <BrowserRouter>
-          <SdkQueryClientProvider>
-            <QueryClientProvider client={queryClient}>
-              <IbcDenomProvider>
-                <Story />
-              </IbcDenomProvider>
-            </QueryClientProvider>
-          </SdkQueryClientProvider>
+          <Provider store={store}>
+            <SdkQueryClientProvider>
+              <QueryClientProvider client={queryClient}>
+                <IbcDenomProvider>
+                  <Story />
+                </IbcDenomProvider>
+              </QueryClientProvider>
+            </SdkQueryClientProvider>
+          </Provider>
         </BrowserRouter>
       </div>
     ),

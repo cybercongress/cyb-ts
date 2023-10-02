@@ -58,6 +58,8 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
+import Search from './pages/Search/Search';
+import Learn from './pages/Search/Learn/Learn';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -105,9 +107,19 @@ function RedirectToRobot() {
   return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
+// function RedirectToRobot() {
+//   const params = useParams();
+//   return <Navigate to={`/search/${params.address}`} replace />;
+// }
+
 function RedirectToRobotBrain() {
   const params = useParams();
   return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
+}
+
+function RedirectToOracleAsk() {
+  const { query } = useParams();
+  return <Navigate to={routes.oracle.ask.getLink(query)} replace />;
 }
 
 function AppRouter() {
@@ -115,16 +127,17 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<Temple />} />
+          <Route index element={<Search />} />
 
-          {/* <Route path="/passport" element={<Wallet />} /> */}
           <Route path="/robot/*" element={<Robot />} />
-          {/* <Route path="/robot/:address/*" element={<Robot />} /> */}
-          <Route path={routes.neuron.path} element={<Robot />} />
-          {/* <Route path="/@:passport" element={<Robot />} /> */}
 
-          <Route path="/oracle" element={<Home />} />
-          <Route path="/search/:query" element={<SearchResults />} />
+          <Route path={routes.temple.path} element={<Temple />} />
+          <Route path={routes.neuron.path} element={<Robot />} />
+          <Route path={routes.oracle.learn.path} element={<Learn />} />
+          <Route path="/oracle/stats" element={<Home />} />
+          <Route path="/oracle-old" element={<Oracle />} />
+
+          <Route path="/oracle" element={<Search />} />
           <Route path="/senate" element={<Governance />} />
           <Route
             path={routes.senateProposal.path}
@@ -144,8 +157,9 @@ function AppRouter() {
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
-          <Route path="/ipfs/:cid" element={<Ipfs />} />
-          <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
+          <Route path="/ipfs/:query" element={<RedirectToOracleAsk />} />
+          <Route path={routes.oracle.ask.path} element={<Ipfs />} />
+
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
@@ -168,7 +182,6 @@ function AppRouter() {
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/token" element={<Market />} />
           <Route path="/token/:tab" element={<Market />} />
-          <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/teleport" element={<TeleportTs />} />
           <Route path="/warp" element={<WarpDashboardPools />} />

@@ -34,6 +34,12 @@ $animation-time: 2.3s;
       --color-g: 161;
     }
 
+    &purple {
+      --color-r: 246;
+      --color-b: 43;
+      --color-g: 253;
+    }
+
     &yellow {
       --color-r: 255;
       --color-g: 0;
@@ -95,6 +101,10 @@ $animation-time: 2.3s;
   .summary,
   .content {
     transition: all 0.7s;
+  }
+
+  @media (max-width: 480px) {
+    min-width: unset;
   }
 }
 

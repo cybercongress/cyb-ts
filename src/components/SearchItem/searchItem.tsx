@@ -37,7 +37,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-function SearchItem({ status, grade, children }: Props) {
+function SearchItem({ status, grade, children, linkType }: Props) {
   let colorRank = 'grey';
 
   if (grade && grade.value) {
@@ -45,7 +45,12 @@ function SearchItem({ status, grade, children }: Props) {
   }
 
   const item = (
-    <Display color={colorRank === 'grey' ? 'white' : colorRank} isVertical>
+    <Display
+      color={colorRank === 'grey' ? 'white' : colorRank}
+      sideSaber={
+        linkType === 'to' ? 'left' : linkType === 'from' ? 'right' : undefined
+      }
+    >
       <div
         style={{
           display: 'flex',

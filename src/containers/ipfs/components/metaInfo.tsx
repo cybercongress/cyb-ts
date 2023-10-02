@@ -11,7 +11,7 @@ const objectInspectorTheme = {
   TREENODE_LINE_HEIGHT: '19px',
 };
 
-const PREFIXES = [
+export const PREFIXES = [
   {
     prefix: 'T',
     power: 1024 * 10 ** 9,

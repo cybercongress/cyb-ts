@@ -32,6 +32,7 @@ function Carousel({
   slideWidth = 200,
   heightSlide,
   disableNext,
+  onChange,
   disableMode,
   displaySlide = 3,
 }: CarouselProps) {
@@ -152,7 +153,10 @@ function Carousel({
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={index}
-                onClick={() => setActiveItem(index)}
+                onClick={() => {
+                  setActiveItem(index);
+                  onChange?.(slides.indexOf(slide));
+                }}
                 className={cx(styles.slide, {
                   [styles.active]: index === visibleSlide,
                   [styles.left]:

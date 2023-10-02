@@ -4,12 +4,17 @@ import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { routes } from 'src/routes';
 
-const fixedValue = '~/';
+const fixedValue = '~';
+
+// replace with more declarative way
+export const id = 'commander';
 
 function Commander() {
   const navigate = useNavigate();
-  const { query } = useParams();
+  const { query: q, cid } = useParams();
+  const query = q || cid;
   const [search, setSearch] = useState(fixedValue + (query || ''));
 
   const ref = React.useRef<HTMLInputElement>(null);
@@ -59,7 +64,9 @@ function Commander() {
       return;
     }
 
-    navigate(`/search/${replaceSlash(search.replace(fixedValue, ''))}`);
+    navigate(
+      routes.search.getLink(replaceSlash(search.replace(fixedValue, '')))
+    );
   }
 
   return (
@@ -68,6 +75,7 @@ function Commander() {
         ref={ref}
         color={Color.Pink}
         value={search}
+        id={id}
         onChange={onChange}
         autoFocus={window.self === window.top}
         className={styles.input}

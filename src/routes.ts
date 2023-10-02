@@ -3,6 +3,9 @@ export const routes = {
   home: {
     path: '/',
   },
+  temple: {
+    path: '/temple',
+  },
   senateProposal: {
     path: '/senate/:proposalId',
     getLink: (proposalId: number) => `/senate/${proposalId}`,
@@ -21,6 +24,7 @@ export const routes = {
   },
   ipfs: {
     path: '/ipfs',
+    getLink: (param: string) => `/ipfs/${param}`,
   },
   citizenship: {
     path: '/citizenship',
@@ -46,7 +50,7 @@ export const routes = {
   },
   search: {
     path: '/search',
-    getLink: (search: string) => `/search/${search}`,
+    getLink: (search: string) => `/oracle/ask/${search}`,
   },
   teleport: {
     path: '/teleport',
@@ -60,5 +64,14 @@ export const routes = {
   neuron: {
     path: '/neuron/:address/*',
     getLink: (address: string) => `/neuron/${address}`,
+  },
+  oracle: {
+    learn: {
+      path: '/oracle/learn',
+    },
+    ask: {
+      path: '/oracle/ask/:query',
+      getLink: (query: string) => `/oracle/ask/${query}`,
+    },
   },
 };
