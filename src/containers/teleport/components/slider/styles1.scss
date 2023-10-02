@@ -96,7 +96,7 @@ $col-width: math.div(100%, $number-of-options);
         width: 23px;
         height: 25px;
         border: 0;
-        //background: red;
+        // background: red;
         //z-index: 200000;
         cursor: pointer;
         z-index: 2;
@@ -104,15 +104,17 @@ $col-width: math.div(100%, $number-of-options);
       }
 
       &::-webkit-slider-thumb {
-        background: transparent;
+        // background: transparent;
+        // background: red;
         -webkit-appearance: none;
         appearance: none;
         //width: 23px;
         //height: 25px;
-        width: 25px;
-        height: 25px;
+        width: 20px;
+        height: 10px;
         z-index: 2;
-        margin-top: 15px;
+        margin-top: 0px;
+        transform: translate(-5px, 0px);
         //background: transparent;
         //background:  ;;
         //https://localhost:3001/exchange-arrows.2cba7bc0f9.svg
