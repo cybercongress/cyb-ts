@@ -1,4 +1,4 @@
-import { wrap, Remote } from 'comlink';
+import { wrap, Remote, expose } from 'comlink';
 
 type WorkerType = SharedWorker | Worker;
 
@@ -23,4 +23,8 @@ export function createWorker<T>(
   const apiProxy = wrap<T>(port || worker);
 
   return { worker, apiProxy };
+}
+
+export function onConnect(api, e) {
+  return expose(api, e.ports[0]);
 }

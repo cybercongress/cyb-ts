@@ -27,6 +27,7 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
+import { onConnect } from '../workerUtils';
 
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
@@ -155,9 +156,7 @@ export type BackendWorkerApi = typeof backendApi;
 
 // Expose the API to the main thread as shared/regular worker
 if (typeof onconnect !== 'undefined') {
-  onconnect = (e) => {
-    expose(backendApi, e.ports[0]);
-  };
+  onconnect = (e) => onConnect(backendApi, e);
 } else {
   expose(backendApi);
 }
