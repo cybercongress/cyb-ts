@@ -8,24 +8,18 @@ export function createWorker<T>(
   workerUrl: URL,
   workerName: string
 ): { worker: WorkerType; apiProxy: Remote<T> } {
-  let worker: WorkerType;
-  let port: MessagePort | null = null;
   const isSharedWorkersSupported = typeof SharedWorker !== 'undefined';
-  const isDev = process.env.IS_DEV;
-  if (isSharedWorkersSupported && !isDev) {
-    worker = new SharedWorker(workerUrl, { name: workerName });
-    port = (worker as SharedWorker).port;
-  } else {
-    worker = new Worker(workerUrl);
-    port = null;
+
+  if (isSharedWorkersSupported && !process.env.IS_DEV) {
+    const worker = new SharedWorker(workerUrl, { name: workerName });
+    return { worker, apiProxy: wrap<T>(worker.port) };
   }
 
-  const apiProxy = wrap<T>(port || worker);
-
-  return { worker, apiProxy };
+  const worker = new Worker(workerUrl);
+  return { worker, apiProxy: wrap<T>(worker) };
 }
 
-export function exposeWorker(worker, api) {
+export function exposeWorker<T>(worker: WorkerType, api: T) {
   if (typeof worker.onconnect !== 'undefined') {
     worker.onconnect = (e) => expose(api, e.ports[0]);
   } else {
