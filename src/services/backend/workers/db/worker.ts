@@ -1,7 +1,6 @@
-import { expose } from 'comlink';
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { onConnect } from '../workerUtils';
+import { exposeWorker } from '../workerUtils';
 
 const dbApiFactory = () => {
   console.log('----dbApi worker constructor!');
@@ -71,8 +70,4 @@ const dbApi = dbApiFactory();
 export type DbWorkerApi = typeof dbApi;
 
 // Expose the API to the main thread as shared/regular worker
-if (typeof onconnect !== 'undefined') {
-  onconnect = (e) => onConnect(dbApi, e);
-} else {
-  expose(dbApi);
-}
+exposeWorker(self, dbApi);

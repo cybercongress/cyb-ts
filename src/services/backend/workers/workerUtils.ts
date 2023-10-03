@@ -25,6 +25,10 @@ export function createWorker<T>(
   return { worker, apiProxy };
 }
 
-export function onConnect(api, e) {
-  return expose(api, e.ports[0]);
+export function exposeWorker(worker, api) {
+  if (typeof worker.onconnect !== 'undefined') {
+    worker.onconnect = (e) => expose(api, e.ports[0]);
+  } else {
+    expose(api);
+  }
 }

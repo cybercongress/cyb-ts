@@ -1,4 +1,3 @@
-import { expose } from 'comlink';
 import { AppIPFS, IPFSContent } from 'src/utils/ipfs/ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
@@ -27,7 +26,7 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
-import { onConnect } from '../workerUtils';
+import { exposeWorker, onConnect } from '../workerUtils';
 
 const backendApiFactory = () => {
   let ipfsNode: AppIPFS | undefined;
@@ -155,8 +154,4 @@ const backendApi = backendApiFactory();
 export type BackendWorkerApi = typeof backendApi;
 
 // Expose the API to the main thread as shared/regular worker
-if (typeof onconnect !== 'undefined') {
-  onconnect = (e) => onConnect(backendApi, e);
-} else {
-  expose(backendApi);
-}
+exposeWorker(self, backendApi);
