@@ -93,20 +93,38 @@
 
     gap: 0 40px;
 
+    .imgWrapper {
+      position: relative;
+      border-radius: 50%;
+
+      &::after {
+        // content: '';
+        position: absolute;
+        border-radius: 50%;
+
+        left: 0;
+        right: 0;
+        height: 100%;
+      }
+    }
+
     img {
       max-width: 100%;
+      box-shadow: 0px 0px 15px -2px #76ff03;
+      border-radius: 50%;
+      border: 1px solid #fff;
 
-      @keyframes identifier2 {
-        from {
-          rotate: 0;
-        }
+      // @keyframes anim {
+      //   from {
+      //     box-shadow: 0px 0px 15px 2px #76ff03;
+      //   }
 
-        to {
-          rotate: 360deg;
-        }
-      }
+      //   to {
+      //     box-shadow: 0px 0px 0px 2px #76ff03;
+      //   }
+      // }
 
-      // animation: identifier2 140s infinite;
+      // animation: anim 8s infinite alternate;
     }
 
     > * {
@@ -140,33 +158,21 @@
     }
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 580px) {
     .info {
       display: unset;
-
+      h2 {
+        position: relative;
+        // left: -20px;
+      }
       &::before {
         content: unset;
       }
 
-      .image {
+      .imgWrapper {
         position: absolute;
-        right: -65%;
+        right: -80%;
         top: 85px;
-
-        @keyframes anim {
-          from {
-            box-shadow: 0px 0px 25px 2px #76ff03;
-          }
-
-          to {
-            box-shadow: 0px 0px 0px 2px #76ff03;
-          }
-        }
-
-        animation: anim 8s infinite alternate;
-
-        border: 1px solid #fff;
-        border-radius: 50%;
       }
 
       .particles {
@@ -247,8 +253,8 @@
   }
 
   p {
-    // margin-top: 15px;
-    line-height: 30px;
+    margin-top: 7px;
+    line-height: 23px;
     color: rgba(255, 255, 255, 0.5);
   }
 
