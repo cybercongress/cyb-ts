@@ -28359,6 +28359,11 @@ wordwrap@^1.0.0:
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
+worker-url@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/worker-url/-/worker-url-1.1.0.tgz#607b92f36822061dca8363d9208fea3dec6a0bcb"
+  integrity sha512-HDLF1ZcIsb9gGGUgYkvOmr4AJVkLLuWCdpJ4/xyETDYCQMuqmp3DvKkj7EGepQXvowaETg32lENI6Dmqq59ywA==
+
 world-calendars@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/world-calendars/-/world-calendars-1.0.3.tgz#b25c5032ba24128ffc41d09faf4a5ec1b9c14335"

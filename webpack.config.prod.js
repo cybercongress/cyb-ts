@@ -3,6 +3,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
+const BundleInfoPlugin = require('./webpack/BundleInfoPlugin.js');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
@@ -36,7 +37,7 @@ module.exports = merge(commonConfig, {
             new CompressionWebpackPlugin({
               filename: '[path][base].gz',
               algorithm: 'gzip',
-              test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg?.+$/,
+              test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
               threshold: 10240,
               minRatio: 0.8,
             }),

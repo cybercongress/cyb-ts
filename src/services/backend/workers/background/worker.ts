@@ -153,6 +153,11 @@ const backendApi = backendApiFactory();
 
 export type BackendWorkerApi = typeof backendApi;
 
-// Expose the API to the main thread
-// expose(backendApi);
-onconnect = (e) => expose(backendApi, e.ports[0]);
+// Expose the API to the main thread as shared/regular worker
+if (typeof onconnect !== 'undefined') {
+  onconnect = (e) => {
+    expose(backendApi, e.ports[0]);
+  };
+} else {
+  expose(backendApi);
+}

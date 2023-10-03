@@ -69,6 +69,11 @@ const dbApi = dbApiFactory();
 
 export type DbWorkerApi = typeof dbApi;
 
-// Expose the \API to the main thread
-// expose(api);
-onconnect = (e) => expose(dbApi, e.ports[0]);
+// Expose the API to the main thread as shared/regular worker
+if (typeof onconnect !== 'undefined') {
+  onconnect = (e) => {
+    expose(dbApi, e.ports[0]);
+  };
+} else {
+  expose(dbApi);
+}

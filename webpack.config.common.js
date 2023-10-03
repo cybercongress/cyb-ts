@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const WorkerUrlPlugin = require('worker-url/plugin');
 
 require('dotenv').config();
 
@@ -60,6 +60,7 @@ const config = {
     },
   },
   plugins: [
+    new WorkerUrlPlugin(),
     new NodePolyfillPlugin(),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
       const mod = resource.request.replace(/^node:/, '');
@@ -78,7 +79,7 @@ const config = {
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
     }),
-    new ReactRefreshWebpackPlugin(),
+
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
