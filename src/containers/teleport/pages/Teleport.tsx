@@ -9,7 +9,7 @@ import Relayer from './relayer/Relayer';
 function TeleportRouter() {
   return (
     <Routes>
-      {/* <Route index element={<TeleportMainScreen />} /> */}
+      <Route index element={<TeleportMainScreen />} />
       <Route path="swap" element={<Swap />} />
       <Route path="send" element={<Send />} />
       <Route path="bridge" element={<Bridge />} />

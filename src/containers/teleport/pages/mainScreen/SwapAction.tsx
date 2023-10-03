@@ -1,39 +1,60 @@
 import { useMemo } from 'react';
-import BigNumber from 'bignumber.js';
-import {
-  getDisplayAmount,
-  getDisplayAmountReverce,
-  isNative,
-} from 'src/utils/utils';
+import { isNative } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import useWarpDexTickers, {
-  responseWarpDexTickersItem,
-} from './useGetWarpPools';
-import Denom from 'src/components/denom';
 import rectangle from 'images/rectangle.svg';
 import { DenomArr } from 'src/components';
 import { Link } from 'react-router-dom';
+import useWarpDexTickers, {
+  responseWarpDexTickersItem,
+} from './useGetWarpPools';
 
-const defaultPairPoolId = [12, 19, 5, 6, 1];
+type DefaultPairPoolIdItem = {
+  reverse: boolean;
+};
 
-function include(arr: number[], item: number) {
-  return arr.indexOf(item) !== -1;
-}
+type DefaultPairPoolIdObj = {
+  [key: number]: DefaultPairPoolIdItem;
+};
+
+const defaultPairPoolId: DefaultPairPoolIdObj = {
+  12: {
+    reverse: true,
+  },
+
+  19: {
+    reverse: true,
+  },
+
+  5: {
+    reverse: false,
+  },
+
+  6: {
+    reverse: false,
+  },
+
+  1: {
+    reverse: false,
+  },
+};
 
 function SwapAction() {
-  const { traseDenom } = useIbcDenom();
   const dataPoolsWarpDex = useWarpDexTickers();
 
   const dataRender = useMemo(() => {
-    const selectedPools: responseWarpDexTickersItem[] = [];
+    const selectedPools: Array<
+      DefaultPairPoolIdItem & responseWarpDexTickersItem
+    > = [];
     if (dataPoolsWarpDex) {
       dataPoolsWarpDex.forEach((item) => {
-        if (include(defaultPairPoolId, item.pool_id)) {
-          selectedPools.push(item);
+        if (
+          Object.prototype.hasOwnProperty.call(defaultPairPoolId, item.pool_id)
+        ) {
+          const { reverse } = defaultPairPoolId[item.pool_id];
+          selectedPools.push({ ...item, reverse });
         }
       });
     }
-
     return selectedPools;
   }, [dataPoolsWarpDex]);
 
@@ -42,6 +63,7 @@ function SwapAction() {
   return (
     <div>
       Swap
+      <br />
       <div
         style={{
           gap: '25px',
@@ -55,7 +77,7 @@ function SwapAction() {
 
           // const amountTokenA = getDisplayAmountReverce(1, coinDecimals);
           // const counterPairAmount = item.last_price * parseFloat(amountTokenA);
-          const searchParam = isNative(item.target_currency)
+          const searchParam = item.reverse
             ? `from=${item.base_currency}&to=${item.target_currency}`
             : `from=${item.target_currency}&to=${item.base_currency}`;
           return (
@@ -72,9 +94,7 @@ function SwapAction() {
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: isNative(item.target_currency)
-                    ? 'row'
-                    : 'row-reverse',
+                  flexDirection: item.reverse ? 'row' : 'row-reverse',
                 }}
               >
                 <DenomArr
@@ -92,9 +112,7 @@ function SwapAction() {
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: isNative(item.target_currency)
-                    ? 'row'
-                    : 'row-reverse',
+                  flexDirection: item.reverse ? 'row' : 'row-reverse',
                 }}
               >
                 {/* #{item.pool_id} {item.ticker_id} */}
