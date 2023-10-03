@@ -17,6 +17,8 @@
 
     padding: 0 50px;
     gap: 15px;
+    // margin-top: -3px;
+    z-index: 1;
 
     grid-template-columns: repeat(2, 1fr);
 
@@ -161,8 +163,29 @@
   @media (max-width: 580px) {
     .info {
       display: unset;
+      margin-top: -20px;
       h2 {
         position: relative;
+        text-shadow: 0px 0px 15px #ffd900;
+
+        // &::before {
+        //   content: '';
+        //   position: absolute;
+        //   left: -30%;
+        //   right: -30%;
+
+        //   margin-top: auto;
+        //   height: 100%;
+        //   z-index: -1;
+        //   filter: blur(20px);
+        //   background: linear-gradient(
+        //     90deg,
+        //     rgba(0, 0, 0, 0) 3.92%,
+        //     rgba(118, 255, 3, 0.2) 43.95%,
+        //     rgba(118, 255, 3, 0.2) 55.96%,
+        //     rgba(0, 0, 0, 0) 100%
+        //   );
+        // }
         // left: -20px;
       }
       &::before {
@@ -171,8 +194,14 @@
 
       .imgWrapper {
         position: absolute;
-        right: -80%;
-        top: 85px;
+        right: -105%;
+
+        img {
+          // box-shadow: 0px 0px 30px -1px #76ff03;
+
+          box-shadow: 0px 0px 25px -10px #76ff03, 0px 0px 200px -20px #76ff03;
+        }
+        top: 45px;
       }
 
       .particles {
@@ -182,9 +211,9 @@
 
     .advantages {
       // text-align: left;
-      margin-top: 40px;
+      margin-top: 20px;
       position: relative;
-      left: -40px;
+      left: -25px;
       display: flex;
       flex-direction: column;
     }
