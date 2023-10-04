@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
@@ -25,5 +27,6 @@ module.exports = merge(commonConfig, {
       ).definitions,
       'process.env.IS_DEV': JSON.stringify(true),
     }),
+    new ReactRefreshWebpackPlugin(),
   ],
 });
