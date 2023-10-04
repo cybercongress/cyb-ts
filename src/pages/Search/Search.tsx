@@ -46,12 +46,13 @@ function Search() {
             decentralized <span>search</span> <br />
             is here
           </h2>
-
-          <img
-            className={styles.image}
-            src={require('./img.png')}
-            alt="cyber"
-          />
+          <div className={styles.imgWrapper}>
+            <img
+              className={styles.image}
+              src={require('./img.png')}
+              alt="cyber"
+            />
+          </div>
 
           <div className={styles.particles}>
             <h4>111 000 particles</h4>
@@ -88,7 +89,9 @@ function Search() {
           ].map(({ title, text }) => {
             return (
               <li key={title}>
-                <h6>{title}</h6>
+                <Link to={routes.search.getLink(title)}>
+                  <h6>{title}</h6>
+                </Link>
                 <p>{text}</p>
               </li>
             );

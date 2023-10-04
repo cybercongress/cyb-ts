@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { replaceSlash } from '../../../../utils/utils';
+import { encodeSlash, replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { routes } from 'src/routes';
+import { getIpfsHash } from 'src/utils/search/utils';
+import { PATTERN_IPFS_HASH } from 'src/utils/config';
 
 const fixedValue = '~';
 
@@ -41,7 +43,15 @@ function Commander() {
   }, []);
 
   useEffect(() => {
-    setSearch(fixedValue + (query || ''));
+    (async () => {
+      let search = query || '';
+
+      if (!search.match(PATTERN_IPFS_HASH) && search) {
+        search = await getIpfsHash(encodeSlash(query));
+      }
+
+      setSearch(fixedValue + (search || ''));
+    })();
   }, [query]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
