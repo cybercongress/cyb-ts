@@ -81,8 +81,8 @@ async function relay(
           senderB,
           tmA,
           tmB,
-          2,
-          6,
+          1000000000,
+          1000000000,
           logger!
         );
         relayFrom = out.heights;
