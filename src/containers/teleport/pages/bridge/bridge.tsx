@@ -104,7 +104,7 @@ function Bridge() {
       networkB === CYBER.CHAIN_ID
     ) {
       setTypeTxs('deposit');
-      const { destination_channel_id: destChannelId } = channels[networkA];
+      const { destChannelId } = channels[networkA];
       setSourceChannel(destChannelId);
     }
 
@@ -117,7 +117,7 @@ function Bridge() {
     ) {
       setTypeTxs('withdraw');
 
-      const { source_channel_id: sourceChannelId } = channels[networkB];
+      const { sourceChannelId } = channels[networkB];
       setSourceChannel(sourceChannelId);
     }
   }, [networkB, networkA, channels]);

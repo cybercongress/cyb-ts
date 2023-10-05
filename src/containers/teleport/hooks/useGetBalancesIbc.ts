@@ -44,7 +44,7 @@ function useGetBalancesIbc(client: SigningStargateClient, denom) {
             [
               {
                 portId: 'transfer',
-                channelId: networkList[responseChainId].sourceChannelId,
+                channelId: networkList[responseChainId].destChannelId,
               },
             ],
             denom

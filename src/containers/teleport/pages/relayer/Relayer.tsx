@@ -22,7 +22,7 @@ function Relayer() {
           text: (
             <DenomArr
               type="network"
-              denomValue={item.destination_chain_id}
+              denomValue={item.destinationChainId}
               onlyText
               tooltipStatusText={false}
             />
@@ -30,7 +30,7 @@ function Relayer() {
           img: (
             <DenomArr
               type="network"
-              denomValue={item.destination_chain_id}
+              denomValue={item.destinationChainId}
               onlyImg
               tooltipStatusImg={false}
             />

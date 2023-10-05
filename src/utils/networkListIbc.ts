@@ -1,9 +1,11 @@
 import { ObjectKey } from 'src/types/data';
 import { CYBER } from './config';
 
-type NetworkCons = {
+export type NetworkCons = {
   chainId: string;
+  sourceChainId: string;
   sourceChannelId: string;
+  destinationChainId: string;
   destChannelId: string;
   coinMinimalDenom: string;
   coinDecimals: number;
@@ -21,8 +23,10 @@ const networkList: ObjectKey<NetworkCons> = {
   },
   'osmosis-1': {
     chainId: 'osmosis-1',
-    sourceChannelId: 'channel-95',
-    destChannelId: 'channel-2',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-2',
+    destinationChainId: 'osmosis-1',
+    destChannelId: 'channel-95',
     coinMinimalDenom: 'uosmo',
     coinDecimals: 6,
     denom: 'OSMO',
@@ -32,8 +36,10 @@ const networkList: ObjectKey<NetworkCons> = {
   },
   'cosmoshub-4': {
     chainId: 'cosmoshub-4',
-    sourceChannelId: 'channel-341',
-    destChannelId: 'channel-8',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-8',
+    destinationChainId: 'cosmoshub-4',
+    destChannelId: 'channel-341',
     coinMinimalDenom: 'uatom',
     coinDecimals: 6,
     denom: 'ATOM',
@@ -48,8 +54,10 @@ const networkList: ObjectKey<NetworkCons> = {
     coinMinimalDenom: 'pussy',
     rpc: 'https://rpc.space-pussy.cybernode.ai/',
     prefix: 'pussy',
-    sourceChannelId: 'channel-0',
-    destChannelId: 'channel-11',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-11',
+    destinationChainId: 'space-pussy',
+    destChannelId: 'channel-0',
     explorerUrlToTx: 'https://space-pussy.cyb.ai/network/bostrom/tx/{txHash}',
   },
   'juno-1': {
@@ -58,8 +66,10 @@ const networkList: ObjectKey<NetworkCons> = {
     denom: 'JUNO',
     coinMinimalDenom: 'ujuno',
     rpc: 'https://rpc-juno.itastakers.com',
-    sourceChannelId: 'channel-93',
-    destChannelId: 'channel-10',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-10',
+    destinationChainId: 'juno-1',
+    destChannelId: 'channel-93',
     prefix: 'juno',
     explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
   },
@@ -69,8 +79,10 @@ const networkList: ObjectKey<NetworkCons> = {
     denom: 'GRAV',
     coinMinimalDenom: 'ugraviton',
     rpc: 'https://gravitychain.io:26657',
-    sourceChannelId: 'channel-103',
-    destChannelId: 'channel-12',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-12',
+    destinationChainId: 'gravity-bridge-3',
+    destChannelId: 'channel-103',
     prefix: 'gravity',
     explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
   },
@@ -80,16 +92,20 @@ const networkList: ObjectKey<NetworkCons> = {
     denom: 'DSM',
     coinMinimalDenom: 'udsm',
     rpc: 'https://rpc.mainnet.desmos.network',
-    sourceChannelId: 'channel-6',
-    destChannelId: 'channel-13',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-13',
+    destinationChainId: 'desmos-mainnet',
+    destChannelId: 'channel-6',
     prefix: 'desmos',
     explorerUrlToTx: 'https://www.mintscan.io/desmos/txs/{txHash}',
   },
   'evmos_9001-2': {
     chainId: 'evmos_9001-2',
     rpc: 'https://tendermint.bd.evmos.org:26657',
-    sourceChannelId: 'channel-19',
-    destChannelId: 'channel-9',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-9',
+    destinationChainId: 'evmos_9001-2',
+    destChannelId: 'channel-19',
     prefix: 'evmos',
     explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
     coinDecimals: 18,
@@ -102,8 +118,10 @@ const networkList: ObjectKey<NetworkCons> = {
     denom: 'HUAHUA',
     coinMinimalDenom: 'uhuahua',
     rpc: 'https://rpc.chihuahua.wtf',
-    sourceChannelId: 'channel-6',
-    destChannelId: 'channel-13',
+    sourceChainId: 'bostrom',
+    sourceChannelId: 'channel-13',
+    destinationChainId: 'chihuahua-1',
+    destChannelId: 'channel-6',
     prefix: 'chihuahua',
     explorerUrlToTx: 'https://www.mintscan.io/chihuahua/txs/{txHash}',
   },
@@ -113,7 +131,9 @@ const networkList: ObjectKey<NetworkCons> = {
     denom: 'AXL',
     coinMinimalDenom: 'uaxl',
     rpc: 'https://rpc-1.axelar.nodes.guru',
+    sourceChainId: 'bostrom',
     sourceChannelId: 'channel-14',
+    destinationChainId: 'axelar-dojo-1',
     destChannelId: 'channel-52',
     prefix: 'axelar',
     explorerUrlToTx: 'https://mintscan.io/axelar/txs/{txHash}',

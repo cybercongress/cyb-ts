@@ -8,10 +8,10 @@ import { useChannels } from 'src/hooks/useHub';
 import { ObjectKey } from 'src/types/data';
 import { Channel } from 'src/types/hub';
 import { getKeplr } from 'src/utils/keplrUtils';
-import networkList from 'src/utils/networkListIbc';
+import networkList, { NetworkCons } from 'src/utils/networkListIbc';
 
 const TeleportContext = React.createContext<{
-  channels: undefined | ObjectKey<Channel>;
+  channels: undefined | ObjectKey<NetworkCons>;
   relayerLog: any[];
   isRelaying: boolean;
   selectChain: string;
@@ -35,6 +35,7 @@ export const useTeleportContext = () => React.useContext(TeleportContext);
 function TeleportContextProvider({ children }: { children: React.ReactNode }) {
   useCommunityPassports();
   const { channels } = useChannels();
+
   const stopFn = useRef<() => void>();
 
   const [selectChain, setSelectChain] = useState('');
@@ -95,7 +96,7 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
 
         const chainInfos = await keplrWindow.getChainInfosWithoutEndpoints();
 
-        const { source_chain_id: chainIdA, destination_chain_id: chainIdB } =
+        const { sourceChainId: chainIdA, destinationChainId: chainIdB } =
           channels[selectChain];
 
         const chainInfoA = chainInfos.find((item) => item.chainId === chainIdA);
@@ -138,6 +139,8 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
         if (!cxns.length) {
           return;
         }
+
+        console.log('cxns', cxns)
 
         const [{ cxnA, cxnB }] = cxns;
 

@@ -38,11 +38,12 @@ async function relay(
 
   if (initHeightA === undefined) {
     const abciA = await tmA.abciInfo();
-    console.table(abciA);
+    console.log('abciA', abciA)
     initHeightA = abciA.lastBlockHeight! - 50_000;
   }
   if (initHeightB === undefined) {
     const abciB = await tmB.abciInfo();
+    console.log('abciB', abciB)
     initHeightB = abciB.lastBlockHeight! - 50_000;
   }
   const link = await IbcLink.createWithExistingConnections(
