@@ -17,11 +17,8 @@ import {
 
 import * as R from 'ramda';
 
-import {
-  fetchIpfsContent,
-  reconnectToCyberSwarm,
-} from 'src/utils/ipfs/utils-ipfs';
-import { AppIPFS, IpfsContentSource } from 'src/utils/ipfs/ipfs';
+import { fetchIpfsContent } from 'src/utils/ipfs/utils/utils-ipfs';
+import { IpfsContentSource, IpfsNode } from 'src/utils/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -47,6 +44,16 @@ function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
+const embeddedStrategy = new QueueStrategy(
+  {
+    db: { timeout: 5000, maxConcurrentExecutions: 999 },
+    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+    node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+  },
+  // ['db', 'gateway', 'node']
+  ['db', 'node', 'gateway']
+);
+
 const strategies = {
   external: new QueueStrategy(
     {
@@ -56,14 +63,8 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: new QueueStrategy(
-    {
-      db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-    },
-    ['db', 'gateway', 'node']
-  ),
+  embedded: embeddedStrategy,
+  helia: embeddedStrategy,
 };
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
@@ -71,7 +72,7 @@ type QueueMap<T> = Map<string, QueueItem<T>>;
 class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
-  private node: AppIPFS | undefined = undefined;
+  private node: IpfsNode | undefined = undefined;
 
   private backendApi: BackendWorkerApi | undefined = undefined;
 
@@ -91,7 +92,7 @@ class QueueManager<T> {
     this.strategy = strategy;
   }
 
-  public setNode(node: AppIPFS) {
+  public setNode(node: IpfsNode) {
     // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
     this.node = node;
@@ -267,7 +268,7 @@ class QueueManager<T> {
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
     interval(CONNECTION_KEEPER_RETRY_MS)
       .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
-      .subscribe(() => reconnectToCyberSwarm(this.node, this.lastNodeCallTime));
+      .subscribe(() => this.node?.reconnectToSwarm(this.lastNodeCallTime));
 
     this.queue$
       .pipe(
@@ -279,7 +280,7 @@ class QueueManager<T> {
           // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
-            reconnectToCyberSwarm(this.node, this.lastNodeCallTime);
+            this.node?.reconnectToSwarm(this.lastNodeCallTime);
 
             return merge(...workItems.map((item) => this.fetchData$(item)));
           }
@@ -299,10 +300,10 @@ class QueueManager<T> {
         this.executing[source].delete(item.cid);
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
-          // console.log('------done', item, status, source, result);
+          console.log('------done', item, status, source, result);
           this.removeAndNext(item.cid);
         } else {
-          // console.log('------error', item, status, source, result);
+          console.log('------error', item, status, source, result);
           // Retry -> (next sources) or -> next
           const nextSource = this.strategy.getNextSource(source);
 

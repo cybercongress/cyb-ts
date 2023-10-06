@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { IpfsRawDataResponse } from './ipfs';
+import { IpfsRawDataResponse } from '../ipfs';
 
 type ResultWithMime = {
   result: IpfsRawDataResponse;

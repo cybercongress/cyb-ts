@@ -4,7 +4,7 @@ import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { Readable } from 'readable-stream';
 import VideoStream from 'videostream';
 import { useIpfs } from 'src/contexts/ipfs';
-import { catIPFSContentFromNode } from 'src/utils/ipfs/utils-ipfs';
+import { catIPFSContentFromNode } from 'src/utils/ipfs/utils/utils-ipfs';
 import { CYBER } from 'src/utils/config';
 import { multiaddr } from '@multiformats/multiaddr';
 
@@ -25,7 +25,7 @@ function VideoPlayer({ content }: VideoPlayerProps) {
         streamRef.current.destroy();
       }
       streamRef.current = Readable.from(
-        catIPFSContentFromNode(node, content.cid, offset) // TODO: add abortController
+        catIPFSContentFromNode(content.cid, node, offset) // TODO: add abortController
       );
     } else {
       streamRef.current = Readable.from(content.result);

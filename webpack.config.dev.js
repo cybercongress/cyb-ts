@@ -19,7 +19,7 @@ module.exports = merge(commonConfig, {
     historyApiFallback: true,
   },
   plugins: [
-    // Only update what has changed on hot reload
+    new ReactRefreshWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       ...commonConfig.plugins.find(
@@ -27,6 +27,5 @@ module.exports = merge(commonConfig, {
       ).definitions,
       'process.env.IS_DEV': JSON.stringify(true),
     }),
-    new ReactRefreshWebpackPlugin(),
   ],
 });

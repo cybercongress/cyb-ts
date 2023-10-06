@@ -22,7 +22,7 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
-const dataOpts = ['external', 'embedded'];
+const dataOpts = ['external', 'embedded', 'helia'];
 
 function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState('external');

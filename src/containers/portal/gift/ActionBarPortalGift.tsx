@@ -9,7 +9,7 @@ import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
-import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import { addContenToIpfs } from 'src/utils/ipfs/utils/utils-ipfs';
 import txs from '../../../utils/txs';
 import {
   Dots,

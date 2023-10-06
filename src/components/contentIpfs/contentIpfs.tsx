@@ -4,7 +4,7 @@ import {
   IpfsContentType,
 } from 'src/utils/ipfs/ipfs';
 import { useEffect, useState } from 'react';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
+import { parseRawIpfsData } from 'src/utils/ipfs/utils/content-utils';
 import { CYBER } from 'src/utils/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';

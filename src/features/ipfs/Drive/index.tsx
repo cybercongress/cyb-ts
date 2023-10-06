@@ -159,8 +159,6 @@ function Drive() {
                     updatedRow[key] = value;
                   }
                 }
-                console.log('===row', row, updatedRow);
-
                 return updatedRow;
               });
 

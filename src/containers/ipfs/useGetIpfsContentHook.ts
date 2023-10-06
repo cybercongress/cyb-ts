@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
 import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
 import { IPFSContentMaybe, IpfsContentSource } from '../../utils/ipfs/ipfs.d';
-import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
+import { getIPFSContent } from '../../utils/ipfs/utils/utils-ipfs';
 
 const useGetIpfsContent = (cid: string) => {
   const { node } = useIpfs();

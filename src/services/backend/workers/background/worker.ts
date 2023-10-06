@@ -1,11 +1,10 @@
-import { AppIPFS, IPFSContent } from 'src/utils/ipfs/ipfs';
+import { initIpfsNode } from 'src/utils/ipfs/node/factory';
+import { IPFSContent, IpfsNode } from 'src/utils/ipfs/ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
 import { PinTypeMap } from 'src/services/CozoDb/types';
-
-import { initIpfsClient, destroyIpfsClient } from 'src/utils/ipfs/init';
 
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 
@@ -26,10 +25,10 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
-import { exposeWorker, onConnect } from '../workerUtils';
+import { exposeWorker } from '../workerUtils';
 
 const backendApiFactory = () => {
-  let ipfsNode: AppIPFS | undefined;
+  let ipfsNode: IpfsNode | undefined;
   let dbApi: DbWorkerApi | undefined;
   console.log('----backendApi worker constructor!');
   const channel = new BcChannel();
@@ -46,7 +45,7 @@ const backendApiFactory = () => {
     // proxy to worker with db
     dbApi = dbApiProxy;
 
-    ipfsNode = await initIpfsClient(ipfsOpts);
+    ipfsNode = await initIpfsNode(ipfsOpts);
     postWorkerStatus('idle');
   };
 
@@ -55,14 +54,6 @@ const backendApiFactory = () => {
     address: string | null,
     cyberIndexUrl: string
   ): Promise<void> => {
-    ['transaction', 'pin', 'particle'].forEach((entry) =>
-      postEntrySyncStatus(entry as SyncEntry, {
-        progress: 0,
-        done: false,
-        error: undefined,
-      })
-    );
-
     try {
       if (!address) {
         postWorkerStatus('error', 'Wallet is not connected');
@@ -80,6 +71,14 @@ const backendApiFactory = () => {
 
       postWorkerStatus('syncing');
 
+      ['transaction', 'pin', 'particle'].forEach((entry) =>
+        postEntrySyncStatus(entry as SyncEntry, {
+          progress: 0,
+          done: false,
+          error: undefined,
+        })
+      );
+
       const importIpfs = async () => {
         console.log('-----import ipfs');
         await importPins(
@@ -93,8 +92,6 @@ const backendApiFactory = () => {
           [`type = ${PinTypeMap.recursive}`],
           ['cid']
         );
-        console.log('-----import ipfs pinsData', pinsData);
-
         if (pinsData.ok === false) {
           postWorkerStatus('error', pinsData.message);
           return;
@@ -119,9 +116,9 @@ const backendApiFactory = () => {
         async (progress) => postEntrySyncStatus('transaction', { progress }),
         async (total) => postEntrySyncStatus('transaction', { done: true })
       );
-
+      // const transactionPromise = Promise.resolve();
       const ipfsPromise = importIpfs();
-
+      //
       await Promise.all([transactionPromise, ipfsPromise]);
 
       postWorkerStatus('idle');

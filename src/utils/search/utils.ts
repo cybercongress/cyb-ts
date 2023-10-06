@@ -5,9 +5,9 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
-import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils-ipfs';
-import { getResponseResult } from '../ipfs/stream-utils';
-import { parseRawIpfsData } from '../ipfs/content-utils';
+import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils/utils-ipfs';
+import { getResponseResult } from '../ipfs/utils/stream-utils';
+import { parseRawIpfsData } from '../ipfs/utils/content-utils';
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -802,8 +802,8 @@ export const authAccounts = async (address) => {
 
 export const getAvatarIpfs = async (cid, ipfs) => {
   try {
-    const response = await getIPFSContent(ipfs, cid);
-
+    const response = await getIPFSContent(cid, ipfs);
+    console.log('--------getAvatarIpfs', cid, response);
     if (response?.result) {
       const rawData = await getResponseResult(response.result);
       const details = await parseRawIpfsData(rawData, response.meta.mime, cid);

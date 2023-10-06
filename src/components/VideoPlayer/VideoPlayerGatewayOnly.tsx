@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { useIpfs } from 'src/contexts/ipfs';
-import { getIpfsGatewayUrl } from 'src/utils/ipfs/utils-ipfs';
+import { getIpfsGatewayUrl } from 'src/utils/ipfs/utils/utils-ipfs';
 
 interface VideoPlayerProps {
   content: IPFSContent;

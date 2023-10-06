@@ -1,27 +1,69 @@
 /* eslint-disable import/no-unused-modules */
-import { IPFS } from 'kubo-rpc-client/types';
+import { LsResult } from 'ipfs-core-types/dist/src/pin';
 
 export type CallBackFuncStatus = (a: string) => void;
 
-export type NodeType = 'external' | 'embedded';
+type IpfsNodeType = 'embedded' | 'external' | 'helia';
 
-export type AppIPFS = IPFS & { nodeType: NodeType; connMgrGracePeriod: number };
+export type IpfsFileStats = {
+  type: 'file' | 'directory' | 'raw';
+  size: number | bigint;
+  sizeLocal: number | bigint;
+  blocks?: number;
+  // mtime?: number;
+};
 
-export type IPFSMaybe = IPFS | null;
+export interface AbortOptions {
+  signal?: AbortSignal;
+}
 
-type IPFSNodeType = 'emdedded' | 'external';
+export interface CatOptions extends AbortOptions {
+  length?: number;
+  offset?: number;
+}
+
+export type InitOptions = { url: string };
+
+export interface IpfsNodeFeatures {
+  tcp: boolean;
+  webRTC: boolean;
+}
+
+export interface IpfsNodeInfo {
+  id: string;
+  agentVersion: string;
+  repoSize: number | bigint;
+}
+
+export interface IpfsNode {
+  readonly nodeType: IpfsNodeType;
+
+  init: (options?: InitOptions) => Promise<void>;
+  stop: () => Promise<void>;
+  start: () => Promise<void>;
+  cat: (cid: string, options?: CatOptions) => AsyncIterable<Uint8Array>;
+  stat: (cid: string, options?: AbortOptions) => Promise<IpfsFileStats>;
+  add: (content: File | string, options?: AbortOptions) => Promise<string>;
+  pin: (cid: string, options?: AbortOptions) => Promise<string | undefined>;
+  ls: () => AsyncIterable<LsResult>;
+  getPeers: () => Promise<string[]>;
+  connectPeer: (address: string) => Promise<boolean>;
+  info: () => Promise<IpfsNodeInfo>;
+}
+
+// export interface ExtendedIpfsNode<T extends IpfsNode> {
+//   node: T;
+//   isConnectedToSwarm: () => Promise<boolean>;
+//   reconnectToSwarm: (lastConnectedTimestamp?: number) => Promise<void>;
+// }
 
 export type getIpfsUserGatewanAndNodeType = {
-  ipfsNodeType: IPFSNodeType | undefined;
+  ipfsNodeType: IpfsNodeType | undefined;
   userGateway: string | undefined;
 };
 
-export type IPFSContentMeta = {
-  type: 'file' | 'directory';
-  size: number;
-  sizeLocal: number;
+export type IPFSContentMeta = IpfsFileStats & {
   blockSizes?: never[]; // ???
-  blocks?: number;
   data?: string; // ???
   mime?: string;
   local?: boolean;

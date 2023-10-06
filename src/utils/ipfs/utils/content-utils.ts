@@ -4,7 +4,7 @@ import {
   IPFSContentDetails,
   IpfsContentType,
   IpfsRawDataResponse,
-} from './ipfs';
+} from '../ipfs';
 import { getResponseResult, onProgressCallback } from './stream-utils';
 
 // TODO: fix to get working inside web worker, REFACTOR

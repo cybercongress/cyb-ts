@@ -6,16 +6,17 @@ import { getFollows, getTweet } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
 import { useIpfs } from 'src/contexts/ipfs';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
-import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
+import { IpfsNode } from 'src/utils/ipfs/ipfs';
+import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
 
-const getIndexdDb = async (node: AppIPFS | null, cid: string) => {
+//TODO: dublicate - fix!
+const getIndexdDb = async (node?: IpfsNode, cid: string) => {
   let addressResolve = null;
   const dataIndexdDb = await db.table('following').get({ cid });
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    const responseGetContent = await getIPFSContent(node, cid);
+    const responseGetContent = await getIPFSContent(cid, node);
     addressResolve = responseGetContent?.textPreview;
     const ipfsContentAddtToInddexdDB = {
       cid,

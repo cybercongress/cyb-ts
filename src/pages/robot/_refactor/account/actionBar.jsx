@@ -23,7 +23,7 @@ import {
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
-import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import { addContenToIpfs } from 'src/utils/ipfs/utils/utils-ipfs';
 import Button from 'src/components/btnGrd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
 

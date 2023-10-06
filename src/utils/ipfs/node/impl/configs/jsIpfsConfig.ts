@@ -2,12 +2,10 @@
 import { webSockets } from '@libp2p/websockets';
 import * as filters from '@libp2p/websockets/filters';
 import { Options } from 'ipfs-core/dist/src/types';
-// import { createNodeLibp2p } from './libp2pFactory';
 
 const configIpfs = (): Options => ({
   start: true,
   repo: 'ipfs-repo-cyber-v2',
-  // repo: `ok${Math.random()}`, // TODO: refactor! every launch new repo created
   relay: {
     enabled: false,
     hop: {

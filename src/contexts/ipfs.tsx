@@ -3,30 +3,28 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { AppIPFS } from 'src/utils/ipfs/ipfs';
-
-import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
+import { IpfsNode } from 'src/utils/ipfs/ipfs';
+import { initIpfsNode } from 'src/utils/ipfs/node/factory';
 
 export type IpfsOptsType = {
-  ipfsNodeType: 'external' | 'embedded';
+  ipfsNodeType: 'external' | 'embedded' | 'helia';
   urlOpts: string;
   userGateway: string;
 };
 
 type IpfsContextType = {
-  node: null | AppIPFS;
+  node: null | IpfsNode;
   isReady: boolean;
   error: null | string;
   isLoading: boolean;
 };
 
-let ipfs = null;
-
 export const getIpfsOpts = () => {
   let ipfsOpts = {
-    ipfsNodeType: 'embedded' as IpfsOptsType['ipfsNodeType'], // external || embedded
+    ipfsNodeType: 'embedded',
     urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
     userGateway: 'http://127.0.0.1:8080',
   };
@@ -58,6 +56,8 @@ export function useIpfs() {
 function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
+  const ipfsNode = useRef<IpfsNode | null>(null);
+
   const startConnectionIpfs = useCallback(async () => {
     setIsIpfsPending(true);
     setIpfsInitError(null);
@@ -65,7 +65,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     const ipfsOpts = getIpfsOpts();
 
     try {
-      ipfs = await initIpfsClient(ipfsOpts);
+      ipfsNode.current = await initIpfsNode(ipfsOpts);
     } catch (err) {
       setIpfsInitError(err instanceof Error ? err.message : (err as string));
     }
@@ -77,8 +77,10 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       (async () => {
-        await destroyIpfsClient();
-        ipfs = null;
+        if (ipfsNode.current) {
+          ipfsNode.current.stop();
+          ipfsNode.current = null;
+        }
       })();
     };
   }, [startConnectionIpfs]);
@@ -98,10 +100,8 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
       value={useMemo(
         () =>
           ({
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            node: ipfs,
-            isReady: ipfs !== null,
+            node: ipfsNode.current,
+            isReady: ipfsNode.current !== null,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),

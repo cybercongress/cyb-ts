@@ -33,22 +33,13 @@ export function useGetIpfsInfo() {
     const getIpfsStat = async () => {
       setLoading(true);
       if (ipfs !== null) {
-        const response = await ipfs.stats.repo();
-        const repoSize = formatCurrency(
-          Number(response.repoSize),
-          'B',
-          2,
-          PREFIXES
-        );
-        setRepoSizeValue(repoSize);
-
-        const responseId = await ipfs.id();
-        const { agentVersion, id } = responseId;
-        const idString = id.toString();
-        setIdIpfs({
-          id: idString,
-          agentVersion: agentVersion.replace(/\//g, ' '),
-        });
+        const { id, agentVersion, repoSize } = await ipfs.info();
+        setIdIpfs({ id, agentVersion });
+        const repoSizeString =
+          repoSize > -1
+            ? formatCurrency(Number(repoSize), 'B', 2, PREFIXES)
+            : 'not implemented';
+        setRepoSizeValue(repoSizeString);
       }
       setLoading(false);
     };

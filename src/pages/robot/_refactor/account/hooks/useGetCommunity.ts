@@ -6,7 +6,7 @@ import {
 } from '../../../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
-import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
+import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
 
 function useGetCommunity(address: string | null, skip?: boolean) {
   const { node } = useIpfs();
@@ -68,7 +68,7 @@ function useGetCommunity(address: string | null, skip?: boolean) {
       if (responseFollows !== null && responseFollows.txs) {
         responseFollows.txs.forEach(async (item) => {
           const cid = item.tx.value.msg[0].value.links[0].to;
-          const addressResolve = (await getIPFSContent(node, cid))?.textPreview;
+          const addressResolve = (await getIPFSContent(cid, node))?.textPreview;
           if (addressResolve) {
             const addressFollow = addressResolve;
             // console.log('addressResolve :>> ', addressResolve);
