@@ -421,7 +421,6 @@ export const parseEventsTxsSwap = (log: Log[]) => {
         for (const event of events) {
           if (event.type === 'swap_within_batch') {
             const { attributes } = event;
-            console.log('attributes', attributes);
 
             const demandCoinDenomAttr = attributes.find(
               (attr) => attr.key === 'demand_coin_denom'
