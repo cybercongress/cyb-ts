@@ -162,7 +162,7 @@
     "@tanstack/react-table": "^8.9.1",
     "@types/file-saver": "^2.0.5",
     "@types/history": "^5.0.0",
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.5",
     "@types/ramda": "^0.28.23",
     "@types/react-dom": "^18.0.11",
     "@types/react-router-dom": "^5.3.3",
@@ -208,6 +208,8 @@
     "ipfs-unixfs": "^0.2.0",
     "ipld-dag-pb": "0.15.3",
     "is-svg": "^4.2.1",
+    "jest-fetch-mock": "^3.0.3",
+    "jest-text-transformer": "^1.0.4",
     "kubo-rpc-client": "^3.0.1",
     "ledger-cosmos-js": "2.1.7",
     "libp2p": "^0.46.12",
@@ -250,43 +252,5 @@
   },
   "prec-commit": [
     "lint"
-  ],
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}"
-    ],
-    "testEnvironment": "jsdom",
-    "transform": {
-      "^.+\\.(ts|tsx|js|jsx|mjs)$": [
-        "esbuild-jest",
-        {
-          "sourcemap": true,
-          "loaders": {
-            ".test.ts": "tsx"
-          }
-        }
-      ]
-    },
-    "moduleDirectories": [
-      "node_modules",
-      "<rootDir>/src"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "mjs",
-      "ts",
-      "tsx"
-    ],
-    "moduleNameMapper": {
-      "^src(.*)$": "<rootDir>/src/$1"
-    },
-    "preset": "ts-jest",
-    "resolver": "ts-jest-resolver",
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
-  }
+  ]
 }

@@ -1,16 +1,11 @@
-import { IpfsContentSource } from 'src/utils/ipfs/ipfs';
 import QueueManager from './QueueManager';
 import { QueueStrategy } from './QueueStrategy';
 
-import {
-  fetchIpfsContent,
-  // reconnectToCyberSwarm,
-} from 'src/utils/ipfs/utils/utils-ipfs';
+import { fetchIpfsContent } from 'src/utils/ipfs/utils/utils-ipfs';
 import { QueueItemStatus } from './QueueManager';
 
-jest.mock('src/utils/ipfs/utils-ipfs', () => ({
+jest.mock('src/utils/ipfs/utils/utils-ipfs', () => ({
   fetchIpfsContent: jest.fn(),
-  // reconnectToCyberSwarm: jest.fn(),
 }));
 
 const QUEUE_DEBOUNCE_MS = 100;
@@ -57,7 +52,7 @@ const getPromise = (
     signal
   );
 
-describe.skip('QueueManager', () => {
+describe('QueueManager', () => {
   let queueManager: QueueManager<string>;
   const strategy = new QueueStrategy(
     {

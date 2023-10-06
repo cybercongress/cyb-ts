@@ -38,7 +38,7 @@ export function useGetIpfsInfo() {
         const repoSizeString =
           repoSize > -1
             ? formatCurrency(Number(repoSize), 'B', 2, PREFIXES)
-            : 'not implemented';
+            : 'n/a';
         setRepoSizeValue(repoSizeString);
       }
       setLoading(false);

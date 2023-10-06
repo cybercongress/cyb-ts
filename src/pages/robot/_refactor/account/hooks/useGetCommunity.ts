@@ -68,7 +68,10 @@ function useGetCommunity(address: string | null, skip?: boolean) {
       if (responseFollows !== null && responseFollows.txs) {
         responseFollows.txs.forEach(async (item) => {
           const cid = item.tx.value.msg[0].value.links[0].to;
+
+          // TODO: ipfs refactor
           const addressResolve = (await getIPFSContent(cid, node))?.textPreview;
+
           if (addressResolve) {
             const addressFollow = addressResolve;
             // console.log('addressResolve :>> ', addressResolve);

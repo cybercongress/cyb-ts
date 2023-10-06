@@ -802,6 +802,7 @@ export const authAccounts = async (address) => {
 
 export const getAvatarIpfs = async (cid, ipfs) => {
   try {
+    // TODO: ipfs refactor
     const response = await getIPFSContent(cid, ipfs);
     console.log('--------getAvatarIpfs', cid, response);
     if (response?.result) {

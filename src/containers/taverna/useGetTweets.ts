@@ -9,7 +9,7 @@ import { useIpfs } from 'src/contexts/ipfs';
 import { IpfsNode } from 'src/utils/ipfs/ipfs';
 import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
 
-//TODO: dublicate - fix!
+//TODO: ipfs refactor
 const getIndexdDb = async (node?: IpfsNode, cid: string) => {
   let addressResolve = null;
   const dataIndexdDb = await db.table('following').get({ cid });

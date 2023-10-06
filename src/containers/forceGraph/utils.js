@@ -4,7 +4,7 @@ import { getResponseResult } from 'src/utils/ipfs/utils/stream-utils';
 import { parseRawIpfsData } from 'src/utils/ipfs/utils/content-utils';
 import { PATTERN_CYBER } from '../../utils/config';
 
-// TODO: IPFS move to utils
+// TODO: ipfs refactor IPFS move to utils
 const getIndexdDb = async (cid, nodeIpfs) => {
   let addressResolve = null;
   if (nodeIpfs !== null) {
