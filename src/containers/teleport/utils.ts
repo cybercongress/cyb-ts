@@ -355,17 +355,34 @@ export const parseEventsEndBlockEvents = (events: readonly Event[]) => {
     for (const event of events) {
       if (event.type === 'swap_transacted') {
         const { attributes } = event;
+
+        // attributes.map((item) =>
+        //   console.log(
+        //     uint8ArrayToAsciiString(item.key),
+        //     uint8ArrayToAsciiString(item.value)
+        //   )
+        // );
+
         const exchangedDemandCoinAmountAttr = attributes.find(
           (attr) =>
             uint8ArrayToAsciiString(attr.key) === 'exchanged_demand_coin_amount'
+        );
+
+        const exchangedOfferCoinAmountAttr = attributes.find(
+          (attr) =>
+            uint8ArrayToAsciiString(attr.key) === 'exchanged_offer_coin_amount'
         );
 
         const exchangedDemandCoinAmountValue = exchangedDemandCoinAmountAttr
           ? uint8ArrayToAsciiString(exchangedDemandCoinAmountAttr.value)
           : undefined;
 
-        const batchIndexAttr = attributes.find(
-          (attr) => uint8ArrayToAsciiString(attr.key) === 'batch_index'
+        const exchangedOfferCoinAmountValue = exchangedOfferCoinAmountAttr
+          ? uint8ArrayToAsciiString(exchangedOfferCoinAmountAttr.value)
+          : undefined;
+
+        const msgIndexAttr = attributes.find(
+          (attr) => uint8ArrayToAsciiString(attr.key) === 'msg_index'
         );
 
         const successAttr = attributes.find(
@@ -376,13 +393,14 @@ export const parseEventsEndBlockEvents = (events: readonly Event[]) => {
           ? uint8ArrayToAsciiString(successAttr.value)
           : undefined;
 
-        const batchIndexValue = batchIndexAttr
-          ? uint8ArrayToAsciiString(batchIndexAttr.value)
+        const msgIndexValue = msgIndexAttr
+          ? uint8ArrayToAsciiString(msgIndexAttr.value)
           : undefined;
 
         data.push({
-          batchIndex: batchIndexValue,
+          msgIndex: msgIndexValue,
           exchangedDemandCoinAmount: exchangedDemandCoinAmountValue,
+          exchangedOfferCoinAmount: exchangedOfferCoinAmountValue,
           success: successValue,
         });
       }
@@ -403,6 +421,7 @@ export const parseEventsTxsSwap = (log: Log[]) => {
         for (const event of events) {
           if (event.type === 'swap_within_batch') {
             const { attributes } = event;
+            console.log('attributes', attributes);
 
             const demandCoinDenomAttr = attributes.find(
               (attr) => attr.key === 'demand_coin_denom'
@@ -411,17 +430,23 @@ export const parseEventsTxsSwap = (log: Log[]) => {
               ? demandCoinDenomAttr.value
               : undefined;
 
-            const batchIndexAttr = attributes.find(
-              (attr) => attr.key === 'batch_index'
+            const offerCoinDenomAttr = attributes.find(
+              (attr) => attr.key === 'offer_coin_denom'
             );
-            const batchIndexValue = batchIndexAttr
-              ? batchIndexAttr.value
+            const offerCoinDenomValue = offerCoinDenomAttr
+              ? offerCoinDenomAttr.value
               : undefined;
 
-            if (demandCoinDenomValue && batchIndexValue) {
+            const msgIndexAttr = attributes.find(
+              (attr) => attr.key === 'msg_index'
+            );
+            const msgIndexValue = msgIndexAttr ? msgIndexAttr.value : undefined;
+
+            if (demandCoinDenomValue && msgIndexValue && offerCoinDenomValue) {
               return {
-                batchIndex: batchIndexValue,
+                msgIndex: msgIndexValue,
                 demandCoinDenom: demandCoinDenomValue,
+                offerCoinDenom: offerCoinDenomValue,
               };
             }
           }

@@ -6,8 +6,9 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { parseEventsEndBlockEvents, parseEventsTxsSwap } from '../utils';
 
 type endBlockEventsState = {
-  batchIndex: string | undefined;
+  msgIndex: string | undefined;
   exchangedDemandCoinAmount: string | undefined;
+  exchangedOfferCoinAmount: string | undefined;
   success: undefined | string | 'success' | 'failure';
 };
 
@@ -46,6 +47,7 @@ function useGetBlockResults(height: number) {
 type ResultSwap = {
   success: endBlockEventsState['success'];
   demandCoin: Coin;
+  offerCoin: Coin;
 };
 
 function useGetResultSwap(height: number, logs: Log[]) {
@@ -60,12 +62,12 @@ function useGetResultSwap(height: number, logs: Log[]) {
 
   useEffect(() => {
     if (data && resultparseEventsTxs) {
-      const { batchIndex, demandCoinDenom } = resultparseEventsTxs;
+      const { msgIndex, demandCoinDenom, offerCoinDenom } =
+        resultparseEventsTxs;
 
       const findBatch = data.find(
         (item) =>
-          item.batchIndex &&
-          parseFloat(item.batchIndex) === parseFloat(batchIndex)
+          item.msgIndex && parseFloat(item.msgIndex) === parseFloat(msgIndex)
       );
 
       if (findBatch) {
@@ -74,9 +76,15 @@ function useGetResultSwap(height: number, logs: Log[]) {
           amount: findBatch.exchangedDemandCoinAmount || '0',
         };
 
+        const offerCoin = {
+          denom: offerCoinDenom,
+          amount: findBatch.exchangedOfferCoinAmount || '0',
+        };
+
         setResultSwap({
           success: findBatch.success,
           demandCoin,
+          offerCoin,
         });
       }
     }

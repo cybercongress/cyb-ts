@@ -75,7 +75,9 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
           <div className={styles.containerAmountCoins}>
             <AmountDenom
               denom={tokenA}
-              amountValue={tokenAAmount}
+              amountValue={
+                dataResultSwap ? dataResultSwap.offerCoin.amount : tokenAAmount
+              }
               styleValue={{ color: '#FF5C00' }}
             />
             {dataResultSwap?.demandCoin && (
