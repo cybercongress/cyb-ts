@@ -24,7 +24,7 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
-export const getIpfsHash = (string) =>
+export const getIpfsHash = (string: string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
 
@@ -879,6 +879,7 @@ export const searchByHash = async (
       options.callback(responseSearchResults.pagination.total);
     }
     if (options.storeToCozo) {
+      console.log('-----searc', hash);
       backendApi.importParticle(hash);
       backendApi.importCyberlinks(
         responseSearchResults.result.map((item) => ({

@@ -35,6 +35,7 @@ import type {
   QueueItemOptions,
   QueueStats,
   QueueSource,
+  QueueItemAsyncResult,
 } from './QueueManager.d';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -151,23 +152,20 @@ class QueueManager<T> {
 
     return promiseToObservable(async () => {
       // fetch by item source
-      console.log('-----promiseToObservable fetchIpfsContent', cid, source);
       const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
       }).then((content: T) => {
-        if (!item.postProcessing) {
-          return content;
-        }
-        // const result = content
-        //   ? postProcessIpfContent(item, content, this.node)
-        //   : undefined;
-        // return result;
         // We need to remove unserializable fields(ReadableStream) from content
         // before sending it to worker
         const threadSafeContent = { ...content, result: undefined };
         // non awaitable call
         content && this.backendApi?.importParicleContent(threadSafeContent);
+
+        // if (!item.postProcessing) {
+        //   return content;
+        // }
+
         return content;
       });
 
@@ -371,14 +369,11 @@ class QueueManager<T> {
   public enqueueAndWait(
     cid: string,
     options: QueueItemOptions = {}
-  ): Promise<Omit<QueueItemResult<T>, 'item'> | undefined> {
+  ): Promise<QueueItemAsyncResult<T> | undefined> {
     return new Promise((resolve) => {
       const callback = ((cid, status, source, result) => {
-        if (status === 'completed') {
+        if (status === 'completed' || status === 'not_found') {
           resolve({ status, source, result });
-        } else if (status === 'not_found') {
-          console.log('---enqueueAndWait  NOT FOUND');
-          resolve(undefined);
         }
       }) as QueueItemCallback<T>;
 

@@ -348,7 +348,7 @@ describe('QueueManager', () => {
         Promise.reject()
       );
       const result = await queueManager.enqueueAndWait('xxx');
-      expect(result).toBe(undefined);
+      expect(result?.status).toBe('not_found');
     } finally {
       (fetchIpfsContent as jest.Mock).mockClear();
     }

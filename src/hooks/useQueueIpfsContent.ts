@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import {
+  QueueItemAsyncResult,
+  QueueItemOptions,
+  QueueItemStatus,
+} from 'src/services/QueueManager/QueueManager.d';
 import { useIpfs } from 'src/contexts/ipfs';
 import { queueManager } from 'src/services/QueueManager/QueueManager';
 
-import { IPFSContentMaybe, IpfsContentSource } from 'src/services/ipfs/ipfs';
+import {
+  IPFSContent,
+  IPFSContentMaybe,
+  IpfsContentSource,
+} from 'src/services/ipfs/ipfs';
+import { useBackend } from 'src/contexts/backend';
 
 import QueueManager from '../services/QueueManager/QueueManager';
-import { useBackend } from 'src/contexts/backend';
 
 type UseIpfsContentReturn = {
   status?: QueueItemStatus;
@@ -14,13 +22,13 @@ type UseIpfsContentReturn = {
   content: IPFSContentMaybe;
   clear: () => void;
   cancel: (cid: string) => void;
+  fetchParticle: (cid: string, rank?: number) => void;
+  fetchParticleAsync: (
+    cid: string
+  ) => Promise<QueueItemAsyncResult<IPFSContentMaybe> | undefined>;
 };
 
-function useQueueIpfsContent(
-  cid?: string,
-  rank?: number,
-  parentId?: string
-): UseIpfsContentReturn {
+function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus | undefined>();
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
@@ -29,50 +37,62 @@ function useQueueIpfsContent(
   const { node } = useIpfs();
   const { backendApi } = useBackend();
 
-  useEffect(() => {
-    queueManager.setBackendApi(backendApi!);
-  }, [backendApi]);
+  const fetchParticle = useCallback(
+    (cid: string, rank?: number) => {
+      const callback = (
+        cid: string,
+        status: QueueItemStatus,
+        source: IpfsContentSource,
+        result: IPFSContentMaybe
+      ): void => {
+        setStatus(status);
+        setSource(source);
+        if (status === 'completed') {
+          setContent(result);
+        }
+      };
 
-  useEffect(() => {
-    if (node) {
-      if (prevNodeType !== node.nodeType) {
-        queueManager.setNode(node);
-        setPrevNodeType(node.nodeType);
-      }
-    }
-  }, [node, prevNodeType]);
-
-  useEffect(() => {
-    const callback = (
-      cid: string,
-      status: QueueItemStatus,
-      source: IpfsContentSource,
-      result: IPFSContentMaybe
-    ): void => {
-      // if (!node) {
-      //   return;
-      // }
-      setStatus(status);
-      setSource(source);
-      if (status === 'completed') {
-        setContent(result);
-      }
-    };
-
-    if (cid) {
       queueManager.enqueue(cid, callback, {
         parent: parentId,
         priority: rank || 0,
         viewPortPriority: 0,
       });
+    },
+    [parentId]
+  );
+
+  const fetchParticleAsync = useCallback(
+    (cid: string, options?: QueueItemOptions) =>
+      queueManager.enqueueAndWait(cid, options),
+    []
+  );
+
+  useEffect(() => {
+    queueManager.setBackendApi(backendApi!);
+  }, [backendApi]);
+
+  useEffect(() => {
+    console.log('----q node', node, node?.nodeType, prevNodeType);
+    if (node && prevNodeType !== node.nodeType) {
+      queueManager.setNode(node);
+      setPrevNodeType(node.nodeType);
     }
+  }, [node]);
+
+  useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
+      console.log(
+        '----q node prevParentIdRef',
+        parentId,
+        prevParentIdRef.current
+      );
+
       if (prevParentIdRef.current) {
         queueManager.cancelByParent(prevParentIdRef.current);
       }
       prevParentIdRef.current = parentId;
     }
-  }, [cid, rank, parentId, node]);
+  }, [parentId]);
 
   return {
     status,
@@ -80,6 +100,8 @@ function useQueueIpfsContent(
     content,
     cancel: (cid: string) => queueManager.cancel(cid),
     clear: queueManager.clear.bind(queueManager),
+    fetchParticle,
+    fetchParticleAsync,
   };
 }
 

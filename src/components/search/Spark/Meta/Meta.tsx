@@ -8,6 +8,7 @@ import styles from './Meta.module.scss';
 import Links from './Links/Links';
 import { useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
+import { useEffect } from 'react';
 
 type Props = {
   cid: string;
@@ -16,7 +17,9 @@ type Props = {
 function Meta({ cid }: Props) {
   const { total } = useGetBackLink(cid);
   const dataAnswer = useGetAnswers(cid);
-  const { content } = useQueueIpfsContent(cid, 1, cid);
+  const { content, fetchParticle } = useQueueIpfsContent(cid);
+
+  useEffect(() => fetchParticle(cid), [cid, fetchParticle]);
 
   const navigate = useNavigate();
 

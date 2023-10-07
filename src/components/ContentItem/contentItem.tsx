@@ -1,5 +1,5 @@
 // TODO: refactor needed
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
@@ -33,7 +33,12 @@ function ContentItem({
   setType,
   className,
 }: ContentItemProps): JSX.Element {
-  const { status, content } = useQueueIpfsContent(cid, item?.rank, parentId);
+  const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
+
+  useEffect(
+    () => fetchParticle(cid, item?.rank),
+    [cid, item?.rank, fetchParticle]
+  );
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>

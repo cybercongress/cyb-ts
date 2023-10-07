@@ -60,3 +60,5 @@ export type QueueItemResult<T> = {
   source: QueueSource;
   result?: T;
 };
+
+export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;

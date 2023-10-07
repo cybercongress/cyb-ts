@@ -24,7 +24,7 @@ function Ipfs() {
     query.match(PATTERN_IPFS_HASH) ? query : ''
   );
 
-  const { status, content } = useQueueIpfsContent(cid, 1, cid);
+  const { fetchParticle, status, content } = useQueueIpfsContent(cid);
   const { creator } = useGetCreator(cid);
 
   const [rankInfo, setRankInfo] = useState<number>();
@@ -45,6 +45,7 @@ function Ipfs() {
       const keywordHashTemp = await getIpfsHash(encodeSlash(query));
 
       setKeywordHash(keywordHashTemp);
+      fetchParticle(keywordHashTemp);
     })();
   }, [cid, query]);
 
