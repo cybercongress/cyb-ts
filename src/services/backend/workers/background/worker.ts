@@ -1,5 +1,5 @@
-import { initIpfsNode } from 'src/utils/ipfs/node/factory';
-import { IPFSContent, IpfsNode } from 'src/utils/ipfs/ipfs';
+import { initIpfsNode } from 'src/services/ipfs/node/factory';
+import { IPFSContent, IpfsNode } from 'src/services/ipfs/ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';

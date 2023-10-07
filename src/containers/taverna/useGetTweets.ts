@@ -7,7 +7,7 @@ import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { IpfsNode } from 'src/utils/ipfs/ipfs';
-import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
 
 //TODO: ipfs refactor
 const getIndexdDb = async (node?: IpfsNode, cid: string) => {

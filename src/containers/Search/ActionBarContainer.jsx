@@ -22,7 +22,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-import { addContenToIpfs } from 'src/utils/ipfs/utils/utils-ipfs';
+import { addContenToIpfs } from 'src/services/ipfs/utils/utils-ipfs';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 
 const imgKeplr = require('../../image/keplr-icon.svg');

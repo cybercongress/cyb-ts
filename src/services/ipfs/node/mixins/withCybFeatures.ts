@@ -1,15 +1,15 @@
-import { IpfsNode } from '../../ipfs';
+import { IpfsNode, CybIpfsNode, IPFSContentMeta } from '../../ipfs';
 
-type WithSwarmReconnectOptions = {
+type WithCybFeaturesOptions = {
   swarmPeerId: string;
   swarmPeerAddress: string;
 };
 
-function withSwarmReconnect<TBase extends new (...args: any[]) => IpfsNode>(
+function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   Base: TBase,
-  options: WithSwarmReconnectOptions
+  options: WithCybFeaturesOptions
 ) {
-  return class extends Base {
+  return class SwarmReconnect extends Base implements CybIpfsNode {
     async isConnectedToSwarm() {
       return !!(await super.getPeers()).find(
         (peerId) => peerId === options.swarmPeerId
@@ -40,4 +40,4 @@ function withSwarmReconnect<TBase extends new (...args: any[]) => IpfsNode>(
   };
 }
 
-export { withSwarmReconnect };
+export { withCybFeatures };

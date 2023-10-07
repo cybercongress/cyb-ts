@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { addContenToIpfs } from 'src/utils/ipfs/utils/utils-ipfs';
+import { addContenToIpfs } from 'src/services/ipfs/utils/utils-ipfs';
 import { Nullable } from 'src/types';
 import txs from '../../utils/txs';
 import { ActionBarSteps, ActionBarContainer } from './components';

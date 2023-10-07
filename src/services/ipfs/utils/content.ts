@@ -5,7 +5,7 @@ import {
   IpfsContentType,
   IpfsRawDataResponse,
 } from '../ipfs';
-import { getResponseResult, onProgressCallback } from './stream-utils';
+import { getResponseResult, onProgressCallback } from './stream';
 
 // TODO: fix to get working inside web worker, REFACTOR
 // import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
@@ -140,4 +140,14 @@ export const contentToUint8Array = async (
       ? Buffer.from(content)
       : await content.arrayBuffer()
   );
+};
+
+export const createTextPreview = (
+  array: Uint8Array | undefined,
+  mime?: string,
+  previewLength = 150
+) => {
+  return array && mime && mime === 'text/plain'
+    ? uint8ArrayToAsciiString(array).slice(0, previewLength)
+    : undefined;
 };

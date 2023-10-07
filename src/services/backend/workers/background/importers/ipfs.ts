@@ -1,4 +1,4 @@
-import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
 import { IpfsNode, IPFSContent } from 'src/utils/ipfs/ipfs';
 import {
   asyncIterableBatchProcessor,

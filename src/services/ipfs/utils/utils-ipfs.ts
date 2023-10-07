@@ -13,21 +13,19 @@ import {
   IpfsNode,
 } from '../ipfs';
 
-import {
-  toReadableStreamWithMime,
-  getMimeFromUint8Array,
-} from './stream-utils';
+import { toReadableStreamWithMime, getMimeFromUint8Array } from './stream';
 
 import ipfsCacheDb from './ipfsCacheDb';
 import cyberCluster from './cluster';
 
-import { contentToUint8Array } from './content-utils';
+import { contentToUint8Array, createTextPreview } from './content';
 
 import {
   // CYBERNODE_SWARM_ADDR_WSS,
   // CYBERNODE_SWARM_ADDR_TCP,
   // CYBER_NODE_SWARM_PEER_ID,
-  CYBER_GATEWAY,
+  CYBER_GATEWAY_URL,
+  FILE_SIZE_DOWNLOAD,
 } from '../config';
 
 // import { convertTimeToMilliseconds } from '../helpers';
@@ -35,17 +33,6 @@ import {
 
 // TODO: fix to get working inside web worker, REFACTOR
 
-const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
-
-const getTextPreview = (
-  firstChunk: Uint8Array | undefined,
-  mime?: string,
-  chunkLength = 150
-) => {
-  return firstChunk && mime && mime === 'text/plain'
-    ? uint8ArrayToAsciiString(firstChunk).slice(0, chunkLength)
-    : undefined;
-};
 // Get IPFS node from local storage
 // TODO: refactor
 // const getIpfsUserGatewanAndNode = (): getIpfsUserGatewanAndNodeType => {
@@ -67,17 +54,17 @@ const loadIPFSContentFromDb = async (
   cid: string
 ): Promise<IPFSContentMaybe> => {
   // TODO: enable, disabled for tests
-  // return undefined;
+  return undefined;
 
   // TODO: use cursor
   const data = await ipfsCacheDb.get(cid);
   if (data && data.length) {
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
-    const textPreview = getTextPreview(data, mime);
+    const textPreview = createTextPreview(data, mime);
 
     const meta: IPFSContentMeta = {
-      type: 'file', // dir support ?
+      type: 'file', // `TODO: ipfs refactor dir support ?
       size: data.length,
       sizeLocal: data.length,
       mime,
@@ -153,7 +140,7 @@ const fetchIPFSContentFromNode = async (
         const fullyDownloaded =
           meta.size > -1 && firstChunk.length >= meta.size;
 
-        const textPreview = getTextPreview(firstChunk, mime);
+        const textPreview = createTextPreview(firstChunk, mime);
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
@@ -204,7 +191,7 @@ const fetchIPFSContentFromGateway = async (
     ? await fetchIPFSContentMeta(cid, node, controller?.signal)
     : emptyMeta;
 
-  const contentUrl = `${CYBER_GATEWAY}/ipfs/${cid}`;
+  const contentUrl = `${CYBER_GATEWAY_URL}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
@@ -235,7 +222,7 @@ const fetchIPFSContentFromGateway = async (
       flushResults
     );
 
-    const textPreview = getTextPreview(firstChunk, mime);
+    const textPreview = createTextPreview(firstChunk, mime);
     return {
       cid,
       textPreview,
@@ -322,9 +309,8 @@ const catIPFSContentFromNode = (
   }
 
   // TODO: cover ipns case
-  const path = `/ipfs/${cid}`;
 
-  return node.cat(path, { offset, signal: controller?.signal });
+  return node.cat(cid, { offset, signal: controller?.signal });
 };
 
 // const nodeContentFindProvs = async (
@@ -363,16 +349,15 @@ const addContenToIpfs = async (
   node: IpfsNode,
   content: File | string
 ): Promise<Option<string>> => {
-  // let arrayBuffer: Buffer | ArrayBuffer | undefined;
-  let addResult;
+  let cid;
   if (node) {
-    addResult = await node.add(content, { pin: true });
+    cid = await node.add(content);
   }
   const pinResponse = await cyberCluster.add(content);
 
-  const cid = addResult?.path || pinResponse?.cid;
+  cid = cid ?? pinResponse?.cid;
 
-  await ipfsCacheDb.add(cid, await contentToUint8Array(content));
+  cid && (await ipfsCacheDb.add(cid, await contentToUint8Array(content)));
 
   return cid;
 };
@@ -449,8 +434,8 @@ const addContenToIpfs = async (
 //   }
 // };
 
-const DEFAULT_AUTO_DIAL_INTERVAL = 10000;
-const GET_CONFIG_TIMEOUT = 3000;
+// const DEFAULT_AUTO_DIAL_INTERVAL = 10000;
+// const GET_CONFIG_TIMEOUT = 3000;
 // TODO: REFACTOR
 // const getNodeAutoDialInterval = async (node: IpfsNode) => {
 //   try {
@@ -466,28 +451,27 @@ const GET_CONFIG_TIMEOUT = 3000;
 //   }
 // };
 
-const getIpfsGatewayUrl = async (node: IpfsNode, cid: string) => {
-  if (node.nodeType !== 'external') {
-    return `${CYBER_GATEWAY}/ipfs/${cid}`;
-  }
+// const getIpfsGatewayUrl = async (node: IpfsNode, cid: string) => {
+//   if (node.nodeType !== 'external') {
+//     return `${CYBER_GATEWAY_URL}/ipfs/${cid}`;
+//   }
 
-  const response = await node.config.get('Addresses.Gateway');
-  const address = multiaddr(response).nodeAddress();
+//   const response = await node.config.get('Addresses.Gateway');
+//   const address = multiaddr(response).nodeAddress();
 
-  try {
-    return `http://${address.address}:${address.port}/ipfs/${cid}`;
-  } catch (error) {
-    return `${CYBER_GATEWAY}/ipfs/${cid}`;
-  }
-};
+//   try {
+//     return `http://${address.address}:${address.port}/ipfs/${cid}`;
+//   } catch (error) {
+//     return `${CYBER_GATEWAY_URL}/ipfs/${cid}`;
+//   }
+// };
 
 export {
   getIPFSContent,
-  getIpfsUserGatewanAndNode,
   catIPFSContentFromNode,
   fetchIpfsContent,
   addContenToIpfs,
   // reconnectToCyberSwarm,
-  getIpfsGatewayUrl,
+  // getIpfsGatewayUrl,
   // getNodeAutoDialInterval,
 };

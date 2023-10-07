@@ -1,13 +1,14 @@
 import type { IpfsContentSource } from 'src/utils/ipfs/ipfs';
 
 /* eslint-disable import/no-unused-modules */
-export type QueueItemStatus =
+type QueueItemStatus =
   | 'pending'
   | 'executing'
   | 'timeout'
   | 'completed'
   | 'cancelled'
-  | 'error';
+  | 'error'
+  | 'not_found';
 
 export type QueueSourceSettings = {
   timeout: number;
@@ -34,6 +35,7 @@ export type QueueItemOptions = {
   priority?: number;
   viewPortPriority?: number;
   initialSource?: QueueSource;
+  postProcessing?: boolean;
 };
 
 export type QueueItemCallback<T> = (

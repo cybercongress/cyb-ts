@@ -8,7 +8,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
-import { addContenToIpfs } from 'src/utils/ipfs/utils/utils-ipfs';
+import { addContenToIpfs } from 'src/services/ipfs/utils/utils-ipfs';
 import { Nullable } from 'src/types';
 import txs from '../../../utils/txs';
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
-import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
 
 const dateFormat = require('dateformat');
 

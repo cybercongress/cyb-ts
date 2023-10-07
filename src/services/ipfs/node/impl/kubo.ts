@@ -1,7 +1,7 @@
 import { IPFSHTTPClient, create as createKuboClient } from 'kubo-rpc-client';
 import { multiaddr } from '@multiformats/multiaddr';
 
-import { stringToIpfsPath, stringToCid } from '../../utils/cid';
+import { stringToCid, stringToIpfsPath } from '../../utils/cid';
 import {
   AbortOptions,
   CatOptions,
@@ -9,15 +9,35 @@ import {
   InitOptions,
   IpfsFileStats,
   IpfsNode,
+  IpfsNodePrperties,
 } from '../../ipfs';
+import { CYBER_GATEWAY_URL } from '../../config';
 
 class KuboNode implements IpfsNode {
   readonly nodeType: IpfsNodeType = 'external';
 
   private node?: IPFSHTTPClient;
 
+  private _config: IpfsNodePrperties = {};
+
+  get config() {
+    return this._config;
+  }
+
+  private async initConfig() {
+    const response = await this.node!.config.get('Addresses.Gateway');
+    if (!response) {
+      return { gatewayUrl: CYBER_GATEWAY_URL };
+    }
+    const address = multiaddr(response as string).nodeAddress();
+
+    return { gatewayUrl: `http://${address.address}:${address.port}` };
+  }
+
   async init(options?: InitOptions) {
     this.node = createKuboClient(options);
+    this._config = await this.initConfig();
+
     if (typeof window !== 'undefined') {
       window.node = this.node;
       window.toCid = stringToCid;

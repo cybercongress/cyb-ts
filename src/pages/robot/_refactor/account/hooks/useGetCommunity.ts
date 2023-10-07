@@ -6,7 +6,7 @@ import {
 } from '../../../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
-import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
 
 function useGetCommunity(address: string | null, skip?: boolean) {
   const { node } = useIpfs();

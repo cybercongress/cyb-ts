@@ -5,9 +5,9 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
-import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils/utils-ipfs';
-import { getResponseResult } from '../ipfs/utils/stream-utils';
-import { parseRawIpfsData } from '../ipfs/utils/content-utils';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
+import { getResponseResult } from 'src/services/ipfs/utils/stream';
+import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;

@@ -4,7 +4,7 @@ import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import { Readable } from 'readable-stream';
 import VideoStream from 'videostream';
 import { useIpfs } from 'src/contexts/ipfs';
-import { catIPFSContentFromNode } from 'src/utils/ipfs/utils/utils-ipfs';
+import { catIPFSContentFromNode } from 'src/services/ipfs/utils/utils-ipfs';
 import { CYBER } from 'src/utils/config';
 import { multiaddr } from '@multiformats/multiaddr';
 

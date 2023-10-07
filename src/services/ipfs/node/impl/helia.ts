@@ -18,10 +18,12 @@ import {
   IpfsNodeType,
   IpfsFileStats,
   IpfsNode,
+  IpfsNodePrperties,
 } from '../../ipfs';
 // import { all } from '@libp2p/websockets/filters';
 import { stringToCid } from '../../utils/cid';
 import { LsResult } from 'ipfs-core-types/src/pin';
+import { CYBER_GATEWAY_URL } from '../../config';
 
 const libp2pFactory = async (
   datastore: IDBDatastore,
@@ -57,6 +59,10 @@ const addOptionsV0: Partial<AddOptions> = {
 
 class HeliaNode implements IpfsNode {
   readonly nodeType: IpfsNodeType = 'helia';
+
+  get config() {
+    return { gatewayUrl: CYBER_GATEWAY_URL };
+  }
 
   private node?: Helia;
 

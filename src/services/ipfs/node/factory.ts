@@ -10,7 +10,7 @@ import {
   CYBERNODE_SWARM_ADDR_WSS,
   CYBER_NODE_SWARM_PEER_ID,
 } from '../config';
-import { withSwarmReconnect } from './mixins/withSwarmReconnect';
+import { withCybFeatures } from './mixins/withCybFeatures';
 
 const nodeClassMap: Record<IpfsNodeType, new () => IpfsNode> = {
   helia: HeliaNode,
@@ -29,12 +29,13 @@ export async function initIpfsNode(options: IpfsOptsType) {
       ? CYBERNODE_SWARM_ADDR_TCP
       : CYBERNODE_SWARM_ADDR_WSS;
 
-  const EnhancedClass = withSwarmReconnect(nodeClassMap[ipfsNodeType], {
+  const EnhancedClass = withCybFeatures(nodeClassMap[ipfsNodeType], {
     swarmPeerId,
     swarmPeerAddress,
   });
 
   const instance = new EnhancedClass();
+
   await instance.init({ url: restOptions.urlOpts });
   // TODO: REFACT
   //   instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);

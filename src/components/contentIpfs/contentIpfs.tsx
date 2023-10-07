@@ -2,9 +2,9 @@ import {
   IPFSContentDetails,
   IPFSContentMaybe,
   IpfsContentType,
-} from 'src/utils/ipfs/ipfs';
+} from 'src/services/ipfs/ipfs';
 import { useEffect, useState } from 'react';
-import { parseRawIpfsData } from 'src/utils/ipfs/utils/content-utils';
+import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
 import { CYBER } from 'src/utils/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
@@ -15,6 +15,7 @@ import Img from './component/img';
 // import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 import Audio from './component/Audio/Audio';
 
+// TODO: ipfs refactor
 export const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe

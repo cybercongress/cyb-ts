@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import { proxy } from 'comlink';
+import { proxy, Remote } from 'comlink';
 import { backendApi } from 'src/services/backend/workers/background/service';
 
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';

@@ -1,7 +1,7 @@
 // TODO: move ipfs calls to ipfs-utils
-import { getIPFSContent } from 'src/utils/ipfs/utils/utils-ipfs';
-import { getResponseResult } from 'src/utils/ipfs/utils/stream-utils';
-import { parseRawIpfsData } from 'src/utils/ipfs/utils/content-utils';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
+import { getResponseResult } from 'src/services/ipfs/utils/stream';
+import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
 import { PATTERN_CYBER } from '../../utils/config';
 
 // TODO: ipfs refactor IPFS move to utils

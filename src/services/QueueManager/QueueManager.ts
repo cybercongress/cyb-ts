@@ -15,10 +15,16 @@ import {
   filter,
 } from 'rxjs';
 
+import { Remote } from 'comlink';
+
 import * as R from 'ramda';
 
-import { fetchIpfsContent } from 'src/utils/ipfs/utils/utils-ipfs';
-import { IpfsContentSource, IpfsNode } from 'src/utils/ipfs/ipfs';
+import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
+import {
+  CybIpfsNode,
+  IPFSContentMaybe,
+  IpfsContentSource,
+} from 'src/services/ipfs/ipfs';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -34,8 +40,8 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { importParicle } from '../backend/workers/background/importers/ipfs';
 import { BackendWorkerApi } from '../backend/workers/background/worker';
+// import { postProcessIpfContent } from './utils';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -43,16 +49,6 @@ const CONNECTION_KEEPER_RETRY_MS = 5000;
 function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
-
-const embeddedStrategy = new QueueStrategy(
-  {
-    db: { timeout: 5000, maxConcurrentExecutions: 999 },
-    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-    node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-  },
-  // ['db', 'gateway', 'node']
-  ['db', 'node', 'gateway']
-);
 
 const strategies = {
   external: new QueueStrategy(
@@ -63,8 +59,14 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: embeddedStrategy,
-  helia: embeddedStrategy,
+  embedded: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 999 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+    },
+    ['db', 'gateway', 'node']
+  ),
 };
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
@@ -72,9 +74,9 @@ type QueueMap<T> = Map<string, QueueItem<T>>;
 class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
-  private node: IpfsNode | undefined = undefined;
+  private node: CybIpfsNode | undefined = undefined;
 
-  private backendApi: BackendWorkerApi | undefined = undefined;
+  private backendApi: Remote<BackendWorkerApi> | undefined = undefined;
 
   private strategy: QueueStrategy;
 
@@ -92,15 +94,15 @@ class QueueManager<T> {
     this.strategy = strategy;
   }
 
-  public setNode(node: IpfsNode) {
+  public setBackendApi(api: Remote<BackendWorkerApi>) {
+    this.backendApi = api;
+  }
+
+  public setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
     // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
     this.node = node;
-    this.switchStrategy(strategies[node.nodeType]);
-  }
-
-  public setBackendApi(api: BackendWorkerApi) {
-    this.backendApi = api;
+    this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
 
   private getItemBySourceAndPriority(queue: QueueMap<T>) {
@@ -124,6 +126,7 @@ class QueueManager<T> {
           (a, b) => getQueueItemTotalPriority(b) - getQueueItemTotalPriority(a)
         )
         .slice(0, executeCount);
+
       itemsToExecute.push(...itemsByPriority);
     }
 
@@ -148,18 +151,27 @@ class QueueManager<T> {
 
     return promiseToObservable(async () => {
       // fetch by item source
+      console.log('-----promiseToObservable fetchIpfsContent', cid, source);
       const content = await fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
+      }).then((content: T) => {
+        if (!item.postProcessing) {
+          return content;
+        }
+        // const result = content
+        //   ? postProcessIpfContent(item, content, this.node)
+        //   : undefined;
+        // return result;
+        // We need to remove unserializable fields(ReadableStream) from content
+        // before sending it to worker
+        const threadSafeContent = { ...content, result: undefined };
+        // non awaitable call
+        content && this.backendApi?.importParicleContent(threadSafeContent);
+        return content;
       });
 
-      // We need to remove unserializable fields(ReadableStream) from content
-      // before sending it to worker
-      const threadSafeContent = { ...content, result: undefined };
-      // non awaitable call
-      content && this.backendApi?.importParicleContent(threadSafeContent);
-
-      return content;
+      return content; // pass
     }).pipe(
       timeout({
         each: settings.timeout,
@@ -186,7 +198,8 @@ class QueueManager<T> {
             source,
           });
         }
-        if (error.name === 'AbortError') {
+
+        if (error?.name === 'AbortError') {
           return of({ item, status: 'cancelled', source });
         }
         return of({ item, status: 'error', source });
@@ -207,7 +220,7 @@ class QueueManager<T> {
       queue.set(cid, { ...item, ...changes });
     }
 
-    return queue;
+    return this.queue$.next(queue);
   }
 
   private removeAndNext(cid: string): void {
@@ -223,9 +236,7 @@ class QueueManager<T> {
   ): void {
     item.callbacks.map((callback) => callback(item.cid, 'pending', nextSource));
 
-    this.queue$.next(
-      this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource })
-    );
+    this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource });
   }
 
   private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
@@ -268,7 +279,7 @@ class QueueManager<T> {
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
     interval(CONNECTION_KEEPER_RETRY_MS)
       .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
-      .subscribe(() => this.node?.reconnectToSwarm(this.lastNodeCallTime));
+      .subscribe(() => this.node!.reconnectToSwarm(this.lastNodeCallTime));
 
     this.queue$
       .pipe(
@@ -280,7 +291,7 @@ class QueueManager<T> {
           // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
-            this.node?.reconnectToSwarm(this.lastNodeCallTime);
+            this.node!.reconnectToSwarm(this.lastNodeCallTime);
 
             return merge(...workItems.map((item) => this.fetchData$(item)));
           }
@@ -288,29 +299,37 @@ class QueueManager<T> {
         })
       )
       .subscribe(({ item, status, source, result }) => {
-        item.callbacks.map((callback) =>
-          callback(item.cid, status, source, result)
-        );
+        const { cid } = item;
+
+        const callbacks = this.queue$.value.get(cid)?.callbacks || [];
+        // fix to process dublicated items
+
+        callbacks.map((callback) => callback(cid, status, source, result));
 
         // HACK to use with GracePeriod for reconnection
         if (source === 'node') {
           this.lastNodeCallTime = Date.now();
         }
 
-        this.executing[source].delete(item.cid);
+        this.executing[source].delete(cid);
+
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
-          console.log('------done', item, status, source, result);
-          this.removeAndNext(item.cid);
+          // console.log('------done', item, status, source, result);
+          this.removeAndNext(cid);
         } else {
-          console.log('------error', item, status, source, result);
+          // console.log('------error', item, status, source, result);
           // Retry -> (next sources) or -> next
           const nextSource = this.strategy.getNextSource(source);
 
           if (nextSource) {
             this.switchSourceAndNext(item, nextSource);
           } else {
-            this.removeAndNext(item.cid);
+            this.removeAndNext(cid);
+            // notify thatn nothing found from all sources
+            callbacks.map((callback) =>
+              callback(cid, 'not_found', source, result)
+            );
           }
         }
       });
@@ -338,8 +357,10 @@ class QueueManager<T> {
         callbacks: [callback],
         source, // initial method to fetch
         status: 'pending',
+        postProcessing: true, // by default rune-post-processing enabled
         ...options,
       };
+
       callback(cid, 'pending', source);
 
       queue.set(cid, item);
@@ -347,8 +368,26 @@ class QueueManager<T> {
     }
   }
 
+  public enqueueAndWait(
+    cid: string,
+    options: QueueItemOptions = {}
+  ): Promise<Omit<QueueItemResult<T>, 'item'> | undefined> {
+    return new Promise((resolve) => {
+      const callback = ((cid, status, source, result) => {
+        if (status === 'completed') {
+          resolve({ status, source, result });
+        } else if (status === 'not_found') {
+          console.log('---enqueueAndWait  NOT FOUND');
+          resolve(undefined);
+        }
+      }) as QueueItemCallback<T>;
+
+      this.enqueue(cid, callback, options);
+    });
+  }
+
   public updateViewPortPriority(cid: string, viewPortPriority: number) {
-    this.queue$.next(this.mutateQueueItem(cid, { viewPortPriority }));
+    this.mutateQueueItem(cid, { viewPortPriority });
   }
 
   public cancel(cid: string): void {
@@ -379,6 +418,18 @@ class QueueManager<T> {
     this.queue$.next(queue);
   }
 
+  public clear(): void {
+    const queue = this.queue$.value;
+
+    queue.forEach((item, cid) => {
+      this.releaseExecution(cid);
+      item.controller?.abort('cancelled');
+      queue.delete(cid);
+    });
+
+    this.queue$.next(new Map());
+  }
+
   public getQueueMap(): QueueMap<T> {
     return this.queue$.value;
   }
@@ -398,4 +449,10 @@ class QueueManager<T> {
   }
 }
 
+// TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
+const queueManager = new QueueManager<IPFSContentMaybe>();
+
+window.qm = queueManager;
+
+export { queueManager };
 export default QueueManager;

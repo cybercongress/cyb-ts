@@ -6,8 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { IpfsNode } from 'src/utils/ipfs/ipfs';
-import { initIpfsNode } from 'src/utils/ipfs/node/factory';
+import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { initIpfsNode } from 'src/services/ipfs/node/factory';
 
 export type IpfsOptsType = {
   ipfsNodeType: 'external' | 'embedded' | 'helia';
@@ -16,7 +16,7 @@ export type IpfsOptsType = {
 };
 
 type IpfsContextType = {
-  node: null | IpfsNode;
+  node: null | CybIpfsNode;
   isReady: boolean;
   error: null | string;
   isLoading: boolean;
@@ -56,7 +56,7 @@ export function useIpfs() {
 function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
-  const ipfsNode = useRef<IpfsNode | null>(null);
+  const ipfsNode = useRef<CybIpfsNode | null>(null);
 
   const startConnectionIpfs = useCallback(async () => {
     setIsIpfsPending(true);

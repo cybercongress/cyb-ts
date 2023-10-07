@@ -6,4 +6,6 @@ export const CYBERNODE_SWARM_ADDR_TCP = `/ip4/88.99.105.146/tcp/4001/p2p/${CYBER
 
 export const IPFS_CLUSTER_URL = 'https://io.cybernode.ai';
 
-export const CYBER_GATEWAY = 'https://gateway.ipfs.cybernode.ai';
+export const CYBER_GATEWAY_URL = 'https://gateway.ipfs.cybernode.ai';
+
+export const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;

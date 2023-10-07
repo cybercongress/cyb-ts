@@ -4,15 +4,20 @@ import {
   IpfsNodeType,
   IpfsFileStats,
   IpfsNode,
+  IpfsNodePrperties,
 } from '../../ipfs';
 import { create as createJsIpfsClient, IPFS } from 'ipfs-core';
-import { stringToIpfsPath, stringToCid } from '../../utils/cid';
+import { stringToCid, stringToIpfsPath } from '../../utils/cid';
 import { multiaddr } from '@multiformats/multiaddr';
 
 import configIpfs from './configs/jsIpfsConfig';
+import { CYBER_GATEWAY_URL } from '../../config';
 
 class JsIpfsNode implements IpfsNode {
   readonly nodeType: IpfsNodeType = 'embedded';
+  get config() {
+    return { gatewayUrl: CYBER_GATEWAY_URL };
+  }
 
   private node?: IPFS;
 
