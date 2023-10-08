@@ -1,10 +1,6 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import {
-  IPFSContentDetails,
-  IpfsContentType,
-  IpfsRawDataResponse,
-} from '../ipfs';
+import { IPFSContentDetails, IpfsContentType, Uint8ArrayLike } from '../ipfs';
 import { getResponseResult, onProgressCallback } from './stream';
 
 // TODO: fix to get working inside web worker, REFACTOR
@@ -49,8 +45,8 @@ export const chunksToBlob = (
 ) => new Blob(chunks, mime ? { type: mime } : {});
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
-export const parseRawIpfsData = async (
-  rawDataResponse: IpfsRawDataResponse,
+export const parseArrayLikeToDetails = async (
+  rawDataResponse: Uint8ArrayLike,
   mime: string | undefined,
   cid: string,
   onProgress?: onProgressCallback

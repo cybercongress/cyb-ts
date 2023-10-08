@@ -1,22 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useIpfs } from 'src/contexts/ipfs';
-import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.module.scss';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
 function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
-  const { node } = useIpfs();
+  // const { node } = useIpfs();
+  const { fetchParticleDetailsDirect } = useQueueIpfsContent();
+
   const [avatar, setAvatar] = useState<string | null>(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
-    async () => {
-      return getAvatarIpfs(cidAvatar, node);
-    },
+    async () =>
+      fetchParticleDetailsDirect
+        ? fetchParticleDetailsDirect(cidAvatar, 'image').then(
+            (details) => details?.content
+          )
+        : null,
+
     {
-      enabled: Boolean(node && cidAvatar),
+      enabled: Boolean(fetchParticleDetailsDirect && cidAvatar),
       staleTime: 10 * (60 * 1000), // 10 mins
       cacheTime: 15 * (60 * 1000), // 15 mins
       retry: 0,

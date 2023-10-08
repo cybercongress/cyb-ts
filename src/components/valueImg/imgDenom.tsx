@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useIpfs } from 'src/contexts/ipfs';
 
 import eth from 'images/Ethereum_logo_2014.svg';
 import pool from 'images/gravitydexPool.png';
@@ -13,7 +12,7 @@ import pussy from 'images/large-purple-circle.png';
 import defaultImg from 'images/large-orange-circle.png';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
-import { getAvatarIpfs } from '../../utils/search/utils';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 const nativeImageMap = {
   millivolt: voltImg,
@@ -58,18 +57,18 @@ function ImgDenom({
 }: ImgDenomProps) {
   const [imgDenom, setImgDenom] = useState<string>();
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
-  const { node } = useIpfs();
+  const { fetchParticleDetailsDirect } = useQueueIpfsContent();
 
   const getImgFromIpfsByCid = useCallback(
-    async (cidAvatar) => {
-      if (cidAvatar) {
-        const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg) {
-          setImgDenom(responseImg);
-        }
+    async (cidAvatar: string) => {
+      if (cidAvatar && fetchParticleDetailsDirect) {
+        return fetchParticleDetailsDirect(cidAvatar, 'image').then(
+          (details) => details?.content && setImgDenom(details?.content)
+        );
       }
+      return null;
     },
-    [node]
+    [fetchParticleDetailsDirect]
   );
 
   useEffect(() => {
@@ -78,7 +77,7 @@ function ImgDenom({
       Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')
     ) {
       const { coinImageCid, path, native } = infoDenom;
-      if (coinImageCid && coinImageCid.length > 0) {
+      if (coinImageCid && fetchParticleDetailsDirect) {
         getImgFromIpfsByCid(coinImageCid);
       } else if (native) {
         if (coinDenom.includes('pool')) {
@@ -102,7 +101,7 @@ function ImgDenom({
     } else {
       setImgDenom(defaultImg);
     }
-  }, [node, coinDenom, infoDenom, getImgFromIpfsByCid]);
+  }, [coinDenom, infoDenom, fetchParticleDetailsDirect]);
 
   const img = (
     <img

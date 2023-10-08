@@ -4,7 +4,7 @@ import {
   IpfsContentType,
 } from 'src/services/ipfs/ipfs';
 import { useEffect, useState } from 'react';
-import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { CYBER } from 'src/utils/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
@@ -22,7 +22,7 @@ export const getContentDetails = async (
 ): Promise<IPFSContentDetails> => {
   // if (content?.result) {
 
-  const details = await parseRawIpfsData(
+  const details = await parseArrayLikeToDetails(
     content?.result,
     content?.meta?.mime,
     cid

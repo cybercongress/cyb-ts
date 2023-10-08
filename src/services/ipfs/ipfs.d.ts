@@ -42,6 +42,7 @@ export interface IpfsNodePrperties {
 export interface IpfsNode {
   readonly nodeType: IpfsNodeType;
   readonly config: IpfsNodePrperties;
+  readonly isStarted: boolean;
   init: (options?: InitOptions) => Promise<void>;
   stop: () => Promise<void>;
   start: () => Promise<void>;
@@ -95,7 +96,7 @@ export type Uint8ArrayWithMime = {
   rawData: Uint8Array;
 };
 
-export type IpfsRawDataResponse =
+export type Uint8ArrayLike =
   | ReadableStream<Uint8Array>
   | Uint8Array
   | AsyncIterator<Uint8Array>;
@@ -123,7 +124,7 @@ export type IPFSContentDetails =
 
 export type IPFSContent = {
   availableDownload?: boolean;
-  result?: IpfsRawDataResponse;
+  result?: Uint8ArrayLike;
   cid: string;
   meta: IPFSContentMeta;
   source: IpfsContentSource;
@@ -132,3 +133,8 @@ export type IPFSContent = {
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;
+
+export type FetchParticleDetailsDirect = (
+  cid: string,
+  type: IpfsContentType
+) => Promise<IPFSContentDetails>;

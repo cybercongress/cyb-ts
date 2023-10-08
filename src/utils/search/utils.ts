@@ -5,9 +5,6 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
-import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
-import { getResponseResult } from 'src/services/ipfs/utils/stream';
-import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -800,26 +797,30 @@ export const authAccounts = async (address) => {
   }
 };
 
-export const getAvatarIpfs = async (cid, ipfs) => {
-  try {
-    // TODO: ipfs refactor
-    const response = await getIPFSContent(cid, ipfs);
-    console.log('--------getAvatarIpfs', cid, response);
-    if (response?.result) {
-      const rawData = await getResponseResult(response.result);
-      const details = await parseRawIpfsData(rawData, response.meta.mime, cid);
-      if (details.type === 'image') {
-        return details.content;
-      }
+// export const getAvatarIpfs = async (cid, ipfs) => {
+//   try {
+//     // TODO: ipfs refactor
+//     const response = await getIPFSContent(cid, ipfs);
+//     console.log('--------getAvatarIpfs', cid, response);
+//     if (response?.result) {
+//       // const rawData = await getResponseResult(response.result);
+//       const details = await parseArrayLikeToDetails(
+//         response.result,
+//         response.meta.mime,
+//         cid
+//       );
+//       if (details.type === 'image') {
+//         return details.content;
+//       }
 
-      return undefined;
-    }
+//       return undefined;
+//     }
 
-    return undefined;
-  } catch (error) {
-    return undefined;
-  }
-};
+//     return undefined;
+//   } catch (error) {
+//     return undefined;
+//   }
+// };
 
 // Access-Control-Allow-Origin
 export const getCredit = async (address) => {

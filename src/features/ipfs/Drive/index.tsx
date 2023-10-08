@@ -88,7 +88,7 @@ function SyncInfo({ syncState }: { syncState: WorkerState }) {
 }
 
 function Drive() {
-  const { node } = useIpfs();
+  const { isReady } = useIpfs();
   const [queryText, setQueryText] = useState('');
   const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
@@ -257,7 +257,7 @@ function Drive() {
             <SyncInfo syncState={syncState} />
           )}
           {(syncState?.status === 'idle' || syncState?.status === 'error') && (
-            <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+            <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
               sync drive
             </CybButton>
           )}
@@ -297,7 +297,7 @@ function Drive() {
             </div>
             <div className={styles.subPanel}>
               <CybButton
-                disabled={!isLoaded || !node}
+                disabled={!isLoaded || !isReady}
                 onClick={exportReations}
                 small
               >

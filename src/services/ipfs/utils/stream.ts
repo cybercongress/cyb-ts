@@ -2,10 +2,10 @@
 /* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { IpfsRawDataResponse } from '../ipfs';
+import { Uint8ArrayLike } from '../ipfs';
 
 type ResultWithMime = {
-  result: IpfsRawDataResponse;
+  result: Uint8ArrayLike;
   mime: string | undefined;
   firstChunk: Uint8Array | undefined;
 };
@@ -94,7 +94,7 @@ export async function toReadableStreamWithMime(
 export type onProgressCallback = (progress: number) => void;
 
 export const getResponseResult = async (
-  response: IpfsRawDataResponse,
+  response: Uint8ArrayLike,
   onProgress?: onProgressCallback
 ) => {
   let bytesDownloaded = 0;
@@ -107,18 +107,42 @@ export const getResponseResult = async (
 
     if (response instanceof ReadableStream) {
       const reader = response.getReader();
-      return reader.read().then(function readStream({ done, value }) {
+
+      const readStream = async ({
+        done,
+        value,
+      }: ReadableStreamReadResult<Uint8Array>): Promise<Uint8Array> => {
         if (done) {
           return uint8ArrayConcat(chunks);
         }
 
-        chunks.push(value);
-        bytesDownloaded += value.byteLength;
+        chunks.push(value!);
+        bytesDownloaded += value!.byteLength;
         onProgress && onProgress(bytesDownloaded);
         return reader.read().then(readStream);
-      });
-    }
+      };
 
+      const readArray: Uint8Array = await reader.read().then(readStream);
+      // const readArray = await reader
+      //   .read()
+      //   .then(function readStream({
+      //     done,
+      //     value,
+      //   }: {
+      //     done: boolean;
+      //     value: Uint8Array;
+      //   }) {
+      //     if (done) {
+      //       return uint8ArrayConcat(chunks);
+      //     }
+
+      //     chunks.push(value);
+      //     bytesDownloaded += value.byteLength;
+      //     onProgress && onProgress(bytesDownloaded);
+      //     return reader.read().then(readStream);
+      //   });
+      return readArray;
+    }
     const reader = response[Symbol.asyncIterator]();
     // eslint-disable-next-line no-restricted-syntax
     for await (const chunk of reader) {

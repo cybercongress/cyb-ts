@@ -15,18 +15,27 @@ import { CYBER_GATEWAY_URL } from '../../config';
 
 class JsIpfsNode implements IpfsNode {
   readonly nodeType: IpfsNodeType = 'embedded';
+
   get config() {
     return { gatewayUrl: CYBER_GATEWAY_URL };
+  }
+
+  private _isStarted: boolean = false;
+
+  get isStarted() {
+    return this._isStarted;
   }
 
   private node?: IPFS;
 
   async init() {
-    this.node = createJsIpfsClient(configIpfs());
+    this.node = await createJsIpfsClient(configIpfs());
     if (typeof window !== 'undefined') {
       window.node = this.node;
       window.toCid = stringToCid;
     }
+
+    this._isStarted = true;
   }
 
   async stat(cid: string, options: AbortOptions = {}): Promise<IpfsFileStats> {

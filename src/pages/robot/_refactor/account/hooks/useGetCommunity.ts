@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+
 import {
   getFollowers,
   getIpfsHash,
   getFollows,
 } from '../../../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../../../utils/config';
-import { useIpfs } from 'src/contexts/ipfs';
-import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
 
 function useGetCommunity(address: string | null, skip?: boolean) {
-  const { node } = useIpfs();
+  const { fetchParticleAsync } = useQueueIpfsContent();
 
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
@@ -70,7 +70,9 @@ function useGetCommunity(address: string | null, skip?: boolean) {
           const cid = item.tx.value.msg[0].value.links[0].to;
 
           // TODO: ipfs refactor
-          const addressResolve = (await getIPFSContent(cid, node))?.textPreview;
+          const addressResolve = fetchParticleAsync
+            ? (await fetchParticleAsync(cid))?.result?.textPreview
+            : undefined;
 
           if (addressResolve) {
             const addressFollow = addressResolve;

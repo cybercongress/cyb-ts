@@ -1,31 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import dateFormat from 'dateformat';
 import { useWebsockets } from 'src/websockets/context';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import db from '../../db';
 import { getFollows, getTweet } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
-import { useIpfs } from 'src/contexts/ipfs';
-import { IpfsNode } from 'src/utils/ipfs/ipfs';
-import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
-
-//TODO: ipfs refactor
-const getIndexdDb = async (node?: IpfsNode, cid: string) => {
-  let addressResolve = null;
-  const dataIndexdDb = await db.table('following').get({ cid });
-  if (dataIndexdDb !== undefined) {
-    addressResolve = dataIndexdDb.content;
-  } else {
-    const responseGetContent = await getIPFSContent(cid, node);
-    addressResolve = responseGetContent?.textPreview;
-    const ipfsContentAddtToInddexdDB = {
-      cid,
-      content: addressResolve,
-    };
-    db.table('following').add(ipfsContentAddtToInddexdDB);
-  }
-  return addressResolve;
-};
 
 interface Tweet {
   status: string;
@@ -46,7 +26,8 @@ const useGetTweets = (address) => {
   const [loadingTweets, setLoadingTweets] = useState(false);
   const [addressFollowData, setAddressFollowData] = useState({});
   const { cyber } = useWebsockets();
-  const { node } = useIpfs();
+  // const { node } = useIpfs();
+  const { fetchParticleAsync } = useQueueIpfsContent();
 
   const addressActive = useMemo(() => {
     return {
@@ -163,21 +144,30 @@ const useGetTweets = (address) => {
 
   const getFollow = async (responseFollows) => {
     responseFollows.txs.forEach(async (item) => {
-      let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
-      const response = await getIndexdDb(node, cid);
-      addressResolve = response;
-      if (addressResolve && addressResolve !== null) {
-        let addressFollow = null;
-        addressFollow = addressResolve;
 
-        if (addressFollow.match(PATTERN_CYBER)) {
+      // let addressResolve = null;
+      let addressResolve = await db.table('following').get({ cid })?.content;
+      if (!addressResolve && fetchParticleAsync) {
+        const addressFromIpfs = (await fetchParticleAsync(cid))?.result
+          ?.textPreview;
+
+        if (addressFromIpfs) {
+          db.table('following').add({
+            cid,
+            content: addressFromIpfs,
+          });
+        }
+      }
+
+      if (addressResolve) {
+        if (addressResolve.match(PATTERN_CYBER)) {
           setAddressFollowData((itemState) => ({
             ...itemState,
-            [addressFollow]: cid,
+            [addressResolve]: cid,
           }));
 
-          const responseTweet = await getTweet(addressFollow);
+          const responseTweet = await getTweet(addressResolve);
           if (
             responseTweet &&
             responseTweet.txs &&

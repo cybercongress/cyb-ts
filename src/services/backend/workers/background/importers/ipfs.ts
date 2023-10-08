@@ -1,5 +1,5 @@
 import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
-import { IpfsNode, IPFSContent } from 'src/utils/ipfs/ipfs';
+import { IpfsNode, IPFSContent } from 'src/services/ipfs/ipfs';
 import {
   asyncIterableBatchProcessor,
   arrayToAsyncIterable,
@@ -77,12 +77,9 @@ const importParticle = async (
   node: IpfsNode,
   dbApi: DbWorkerApi
 ) => {
-  return getIPFSContent(cid, node).then((content) => {
-    if (content) {
-      return importParicleContent(content, dbApi);
-    }
-    return false;
-  });
+  return getIPFSContent(cid, node).then((content) =>
+    content ? importParicleContent(content, dbApi) : false
+  );
 };
 
 const importParicleContent = async (

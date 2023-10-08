@@ -8,7 +8,7 @@ import {
   IPFSContentMaybe,
   IpfsContentType,
 } from 'src/utils/ipfs/ipfs';
-import { parseRawIpfsData } from 'src/services/ipfs/utils/content';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 import SearchItem from '../SearchItem/searchItem';
 

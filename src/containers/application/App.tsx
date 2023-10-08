@@ -30,7 +30,7 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
 
-  const ipfs = useIpfs();
+  const { error: ipfsError } = useIpfs();
   useEffect(() => {
     dispatch(initPocket());
   }, []);
@@ -58,7 +58,7 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (ipfs.error && !location.pathname.includes('/drive')) {
+    if (ipfsError && !location.pathname.includes('/drive')) {
       adviserContext.setAdviser(
         <p>
           Could not connect to the IPFS API <br />
@@ -69,7 +69,7 @@ function App() {
 
       adviserContext.setIsOpen(true);
     }
-  }, [ipfs.error, location.pathname]);
+  }, [ipfsError, location.pathname]);
 
   // chekEvangelism = () => {
   //   const { location } = this.props;

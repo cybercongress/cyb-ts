@@ -49,9 +49,6 @@ function Ipfs() {
     })();
   }, [cid, query]);
 
-  // const { statusFetching, content, status, source, loading } =
-  //   useGetIpfsContent(cid);
-
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 

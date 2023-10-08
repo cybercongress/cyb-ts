@@ -64,6 +64,12 @@ class HeliaNode implements IpfsNode {
     return { gatewayUrl: CYBER_GATEWAY_URL };
   }
 
+  private _isStarted: boolean = false;
+
+  get isStarted() {
+    return this._isStarted;
+  }
+
   private node?: Helia;
 
   private fs?: UnixFS;
@@ -102,6 +108,8 @@ class HeliaNode implements IpfsNode {
     libp2p.addEventListener('peer:disconnect', (evt) => {
       console.log(`Disconnected from ${evt.detail.toString()}`);
     });
+
+    this._isStarted = true;
   }
 
   async stat(cid: string, options: AbortOptions = {}): Promise<IpfsFileStats> {

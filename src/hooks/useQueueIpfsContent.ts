@@ -8,24 +8,27 @@ import { useIpfs } from 'src/contexts/ipfs';
 import { queueManager } from 'src/services/QueueManager/QueueManager';
 
 import {
-  IPFSContent,
+  FetchParticleDetailsDirect,
   IPFSContentMaybe,
   IpfsContentSource,
+  IpfsContentType,
 } from 'src/services/ipfs/ipfs';
 import { useBackend } from 'src/contexts/backend';
-
-import QueueManager from '../services/QueueManager/QueueManager';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 type UseIpfsContentReturn = {
+  isReady: boolean;
   status?: QueueItemStatus;
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
   clear: () => void;
   cancel: (cid: string) => void;
-  fetchParticle: (cid: string, rank?: number) => void;
-  fetchParticleAsync: (
+  fetchParticle?: (cid: string, rank?: number) => void;
+  fetchParticleAsync?: (
     cid: string
   ) => Promise<QueueItemAsyncResult<IPFSContentMaybe> | undefined>;
+  fetchParticleDetailsDirect?: FetchParticleDetailsDirect;
 };
 
 function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
@@ -67,17 +70,36 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
     []
   );
 
+  const fetchParticleDetailsDirect = useCallback(
+    async (cid: string, parseAs?: IpfsContentType) => {
+      const response = await getIPFSContent(cid, node!);
+
+      const details = response?.result
+        ? await parseArrayLikeToDetails(
+            response.result,
+            response.meta.mime,
+            cid
+          )
+        : undefined;
+      return !parseAs
+        ? details
+        : details?.type === parseAs
+        ? details
+        : undefined;
+    },
+    [node]
+  );
+
   useEffect(() => {
     queueManager.setBackendApi(backendApi!);
   }, [backendApi]);
 
   useEffect(() => {
-    console.log('----q node', node, node?.nodeType, prevNodeType);
     if (node && prevNodeType !== node.nodeType) {
       queueManager.setNode(node);
       setPrevNodeType(node.nodeType);
     }
-  }, [node]);
+  }, [node, prevNodeType]);
 
   useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
@@ -95,13 +117,15 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   }, [parentId]);
 
   return {
+    isReady: !!node,
     status,
     source,
     content,
     cancel: (cid: string) => queueManager.cancel(cid),
     clear: queueManager.clear.bind(queueManager),
-    fetchParticle,
-    fetchParticleAsync,
+    fetchParticle: node ? fetchParticle : undefined,
+    fetchParticleAsync: node ? fetchParticleAsync : undefined,
+    fetchParticleDetailsDirect: node ? fetchParticleDetailsDirect : undefined,
   };
 }
 

@@ -24,6 +24,12 @@ class KuboNode implements IpfsNode {
     return this._config;
   }
 
+  private _isStarted: boolean = false;
+
+  get isStarted() {
+    return this._isStarted;
+  }
+
   private async initConfig() {
     const response = await this.node!.config.get('Addresses.Gateway');
     if (!response) {
@@ -42,6 +48,8 @@ class KuboNode implements IpfsNode {
       window.node = this.node;
       window.toCid = stringToCid;
     }
+
+    this._isStarted = true;
   }
 
   async stat(cid: string, options: AbortOptions = {}): Promise<IpfsFileStats> {
