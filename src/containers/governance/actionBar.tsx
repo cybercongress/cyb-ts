@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Component } from 'react';
 import { coins } from '@cosmjs/launchpad';
 import {
@@ -14,9 +13,9 @@ import {
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import { useIpfs } from 'src/contexts/ipfs';
-import { useSigningClient } from 'src/contexts/signerClient';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
+import withAccount from '../../hocs/withAccount';
+import { DefaultAccount } from 'src/types/defaultAccount';
 
 const STAGE_TYPE_GOV = 9;
 
@@ -29,8 +28,15 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-class ActionBar extends Component {
-  constructor(props) {
+interface ActionBarProps {
+  update: () => void;
+  account: DefaultAccount;
+  signer: any;
+  signingClient: any;
+}
+
+class ActionBar extends Component<ActionBarProps> {
+  constructor(props: ActionBarProps) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
@@ -164,12 +170,15 @@ class ActionBar extends Component {
   };
 
   generateTxInit = async () => {
-    const { account } = this.props;
-    console.log('account', account);
-    if (account !== null) {
-      if (account.keys === 'keplr') {
-        this.generateTxKeplr();
-      }
+    const account = this.props.account.account?.cyber;
+
+    if (!account) {
+      console.error('no account');
+      return;
+    }
+
+    if (account.keys === 'keplr') {
+      this.generateTxKeplr();
     }
   };
 
@@ -459,4 +468,4 @@ class ActionBar extends Component {
   }
 }
 
-export default withIpfsAndKeplr(ActionBar);
+export default withAccount(withIpfsAndKeplr(ActionBar));
