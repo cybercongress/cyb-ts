@@ -1,14 +1,14 @@
-import { ContainerGradientText } from 'src/components';
 import { HistoriesItem } from '../../ibc-history/HistoriesItem';
 import useGetStatus from '../../ibc-history/useGetStatus';
 import { AmountSend, CreatedAt, RouteAddress, Status, TypeTsx } from './compDataHstory';
 import styles from './styles.module.scss'
+import Display from 'src/components/containerGradient/Display/Display';
 
 function DataIbcHistoryItem({ item }: { item: HistoriesItem }) {
   const statusTrace = useGetStatus(item);
 
   return (
-    <ContainerGradientText>
+    <Display>
       <div className={styles.containerDataIbc}>
         <div className={styles.containerDataIbcFlexBetween}>
           <TypeTsx sourceChainId={item.sourceChainId} />
@@ -26,7 +26,7 @@ function DataIbcHistoryItem({ item }: { item: HistoriesItem }) {
           </div>
         </div>
       </div>
-    </ContainerGradientText>
+    </Display>
   );
 }
 

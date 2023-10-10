@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import rectangle from 'images/rectangle.svg';
 import swapImg from 'images/sync-outline.svg';
-import { ContainerGradientText } from 'src/components';
 import { AmountDenom } from 'src/containers/txs/Activites';
 import { FormatNumberTokens } from 'src/containers/nebula/components';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
@@ -10,6 +9,8 @@ import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './styles.module.scss';
 import Timestamp from './Timestamp';
+import Display from 'src/components/containerGradient/Display/Display';
+import { Colors } from 'src/components/containerGradient/types';
 
 function getDataOrder(value, coinDecimalsA: number) {
   const orderPrice = value.order_price;
@@ -48,48 +49,49 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
 
   return (
     <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
-      <ContainerGradientText
-        status={item.transaction.success ? 'blue' : 'red'}
-        userStyleContent={{ display: 'grid', gap: '10px' }}
-      >
-        <div className={styles.containerTitle}>
-          <div className={styles.containerSwapImg}>
-            <img src={swapImg} alt="swapImg" /> <span>swap</span>
-          </div>
-          <div className={styles.containerPrice}>
-            <FormatNumberTokens text={tokenA} value={1} />
-            <img src={rectangle} alt="img" />
-            <FormatNumberTokens
-              text={tokenB}
-              value={counterPairAmount}
-              styleContainer={{
-                display: 'flex',
-                flexDirection: 'row-reverse',
-              }}
-            />
-          </div>
-        </div>
-        <div className={styles.containerContent}>
-          <Timestamp timestamp={item.transaction.block.timestamp} />
-          <div>{dataResultSwap?.success && dataResultSwap.success}</div>
-          <div className={styles.containerAmountCoins}>
-            <AmountDenom
-              denom={tokenA}
-              amountValue={
-                dataResultSwap ? dataResultSwap.offerCoin.amount : tokenAAmount
-              }
-              styleValue={{ color: '#FF5C00' }}
-            />
-            {dataResultSwap?.demandCoin && (
-              <AmountDenom
-                denom={dataResultSwap.demandCoin.denom}
-                amountValue={dataResultSwap.demandCoin.amount}
-                styleValue={{ color: '#76FF03' }}
+      <Display color={item.transaction.success ? Colors.BLUE : Colors.RED}>
+        <div style={{ display: 'grid', gap: '10px' }}>
+          <div className={styles.containerTitle}>
+            <div className={styles.containerSwapImg}>
+              <img src={swapImg} alt="swapImg" /> <span>swap</span>
+            </div>
+            <div className={styles.containerPrice}>
+              <FormatNumberTokens text={tokenA} value={1} />
+              <img src={rectangle} alt="img" />
+              <FormatNumberTokens
+                text={tokenB}
+                value={counterPairAmount}
+                styleContainer={{
+                  display: 'flex',
+                  flexDirection: 'row-reverse',
+                }}
               />
-            )}
+            </div>
+          </div>
+          <div className={styles.containerContent}>
+            <Timestamp timestamp={item.transaction.block.timestamp} />
+            <div>{dataResultSwap?.success && dataResultSwap.success}</div>
+            <div className={styles.containerAmountCoins}>
+              <AmountDenom
+                denom={tokenA}
+                amountValue={
+                  dataResultSwap
+                    ? dataResultSwap.offerCoin.amount
+                    : tokenAAmount
+                }
+                styleValue={{ color: '#FF5C00' }}
+              />
+              {dataResultSwap?.demandCoin && (
+                <AmountDenom
+                  denom={dataResultSwap.demandCoin.denom}
+                  amountValue={dataResultSwap.demandCoin.amount}
+                  styleValue={{ color: '#76FF03' }}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </ContainerGradientText>
+      </Display>
     </Link>
   );
 }

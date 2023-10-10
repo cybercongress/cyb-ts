@@ -1,7 +1,7 @@
 export enum TypeRecipient {
-  'my' = 'my',
-  'friends' = 'friends',
-  'following' = 'following',
+  friends = 'friends',
+  my = 'my',
+  following = 'following',
 }
 
 export type DataItem = {

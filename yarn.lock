@@ -3302,10 +3302,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-3.0.0.tgz#798622546b63847e82389e473fd67f2707d82247"
   integrity sha512-hBI9tfBtuPIi885ZsZ32IMEU/5nlZH/KOVYJCOh7gyMxaVLGmLedYqFN6Ui1LXkI8JlC8IsuC0rF0btcRZKd5g==
 
-"@cybercongress/cyber-js@0.3.5":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@cybercongress/cyber-js/-/cyber-js-0.3.5.tgz#fd286d6a4c2bb1c5bec514b0a238c29f364fc85c"
-  integrity sha512-x3FXb2m1bs+t4fNo0FTnfDLYfW1BHeiLe9G//FaLs9ZQo6hNqwZD6U3nfX6yM6b4KYRDxAD070gIEw10dRU2qA==
+"@cybercongress/cyber-js@0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@cybercongress/cyber-js/-/cyber-js-0.3.6.tgz#3e871505548d2bee4fd0b00feb872e40bed9adeb"
+  integrity sha512-IebByz05YMhPKSjVkbHZrUqVId+D7VPSuohr3kbaKcJ5q0LUGGFRFDXbsF2/tF7DIsWNgK/pNSJp8Zt7LucuYA==
   dependencies:
     "@cosmjs/amino" "0.28.4"
     "@cosmjs/cosmwasm-stargate" "0.28.4"

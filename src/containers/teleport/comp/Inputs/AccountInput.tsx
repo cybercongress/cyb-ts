@@ -27,6 +27,7 @@ import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';
 import { TypeRecipient } from './type';
 import ButtonText from './ButtonText';
+import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 
 type Props = {
   recipient: string | undefined;
@@ -34,6 +35,18 @@ type Props = {
 };
 
 const PLACEHOLDER_TITLE = 'choose recipient';
+
+const configRecipient = {
+  [TypeRecipient.friends]: {
+    label: '🫂',
+  },
+  [TypeRecipient.my]: {
+    label: '🔑',
+  },
+  [TypeRecipient.following]: {
+    label: '👀',
+  },
+};
 
 function AccountInput({ recipient, setRecipient }: Props) {
   const queryClient = useQueryClient();
@@ -193,20 +206,17 @@ function AccountInput({ recipient, setRecipient }: Props) {
       {isOpen && (
         <AccountInputListContainer>
           <div className={styles.containerButtonText}>
-            <ButtonText
-              active={selectedTypeRecipient === TypeRecipient.friends}
-              text={TypeRecipient.friends}
-              onClick={() => setSelectedTypeRecipient(TypeRecipient.friends)}
-            />
-            <ButtonText
-              active={selectedTypeRecipient === TypeRecipient.my}
-              text={TypeRecipient.my}
-              onClick={() => setSelectedTypeRecipient(TypeRecipient.my)}
-            />
-            <ButtonText
-              active={selectedTypeRecipient === TypeRecipient.following}
-              text={TypeRecipient.following}
-              onClick={() => setSelectedTypeRecipient(TypeRecipient.following)}
+            <ButtonsGroup
+              type="radio"
+              items={Object.values(TypeRecipient).map((recipType) => {
+                return {
+                  label: configRecipient[recipType].label,
+                  name: recipType,
+                  checked: selectedTypeRecipient === recipType,
+                  // tooltip: recipType,
+                };
+              })}
+              onChange={(val: TypeRecipient) => setSelectedTypeRecipient(val)}
             />
           </div>
 
