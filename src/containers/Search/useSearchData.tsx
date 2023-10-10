@@ -4,8 +4,9 @@ import { coinDecimals } from 'src/utils/utils';
 import useGetBackLink from '../ipfs/hooks/useGetBackLink';
 import useGetDiscussion from '../ipfs/hooks/useGetDiscussion';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { LinksTypeFilter, SortBy } from './types';
+import { LinksTypeFilter, SearchItem, SortBy } from './types';
 
+// module is bullshit
 const useSearch = (hash: string, skip?: boolean) => {
   const cid = hash;
 
@@ -133,6 +134,33 @@ const useSearchData = (
   // const queryNull = '0';
   // keywordHashNull = await getIpfsHash(queryNull);
 
+  function merge(fromArr: SearchItem[], toArr: SearchItem[]) {
+    // maybe not good algorithm
+    const fromCids = fromArr.map((item) => item.cid);
+    const toCids = toArr.map((item) => item.cid);
+
+    const allCids = fromCids.filter((item) => toCids.includes(item));
+
+    const added: string[] = [];
+
+    return fromArr.concat(toArr).reduce<SearchItem[]>((acc, item) => {
+      if (added.includes(item.cid)) {
+        return acc;
+      }
+
+      if (allCids.includes(item.cid)) {
+        added.push(item.cid);
+
+        return acc.concat({
+          ...item,
+          type: 'all',
+        });
+      }
+
+      return acc.concat(item);
+    }, []);
+  }
+
   return {
     data:
       (() => {
@@ -141,30 +169,11 @@ const useSearchData = (
             case LinksTypeFilter.to:
               return backlinksRank.backlinks;
             case LinksTypeFilter.all:
-              const fromCids = searchRank.data.map((item) => item.cid);
-              const allCids = [];
-
-              return (searchRank.data || [])
-                .concat(backlinksRank.backlinks)
-                .reduce((acc, item) => {
-                  if (allCids.includes(item.cid)) {
-                    return acc;
-                  }
-
-                  if (fromCids.includes(item.cid)) {
-                    allCids.push(item.cid);
-
-                    return acc.concat({
-                      ...item,
-                      type: 'all',
-                    });
-                  }
-
-                  return acc.concat(item);
-                }, [])
-                .sort((a, b) => {
+              return merge(searchRank.data, backlinksRank.backlinks).sort(
+                (a, b) => {
                   return parseFloat(b.rank) - parseFloat(a.rank);
-                });
+                }
+              );
             case LinksTypeFilter.from:
             default:
               return searchRank.data || [];
@@ -177,33 +186,12 @@ const useSearchData = (
               return dataBacklinks.data;
 
             case LinksTypeFilter.all:
-              const fromCids = data.data.map((item) => item.cid);
-              const allCids = [];
-
-              return data.data
-                .concat(dataBacklinks.data)
-                .reduce((acc, item) => {
-                  if (allCids.includes(item.cid)) {
-                    return acc;
-                  }
-
-                  if (fromCids.includes(item.cid)) {
-                    allCids.push(item.cid);
-
-                    return acc.concat({
-                      ...item,
-                      type: 'all',
-                    });
-                  }
-
-                  return acc.concat(item);
-                }, [])
-                .sort((a, b) => {
-                  return (
-                    new Date(b.timestamp).getTime() -
-                    new Date(a.timestamp).getTime()
-                  );
-                });
+              return merge(data.data, dataBacklinks.data).sort((a, b) => {
+                return (
+                  new Date(b.timestamp).getTime() -
+                  new Date(a.timestamp).getTime()
+                );
+              });
             case LinksTypeFilter.from:
             default:
               return data.data;
