@@ -39,14 +39,14 @@ const config: StorybookConfig = {
           ...webpackConfig.resolve.alias,
         },
       },
-      module: {
-        rules: [
-          ...(config.module?.rules || []),
-          ...webpackConfig.module.rules.filter(
-            (rule) => !['.cozo'].includes(rule.test.toString())
-          ),
-        ],
-      },
+      // module: {
+      //   rules: [
+      //     ...(config.module?.rules || []),
+      //     ...webpackConfig.module.rules.filter(
+      //       (rule) => !['.cozo'].includes(rule.test.toString())
+      //     ),
+      //   ],
+      // },
       plugins: [
         ...webpackConfig.plugins.filter((plugin) =>
           ['NodePolyfillPlugin', 'NormalModuleReplacementPlugin'].includes(
