@@ -31,12 +31,21 @@ const config: StorybookConfig = {
 
     return {
       ...config,
+
       resolve: {
         ...config.resolve,
         alias: {
           ...config.resolve.alias,
           ...webpackConfig.resolve.alias,
         },
+      },
+      module: {
+        rules: [
+          ...(config.module?.rules || []),
+          ...webpackConfig.module.rules.filter(
+            (rule) => !['.cozo'].includes(rule.test.toString())
+          ),
+        ],
       },
       plugins: [
         ...webpackConfig.plugins.filter((plugin) =>
