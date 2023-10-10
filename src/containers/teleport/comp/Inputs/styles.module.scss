@@ -72,12 +72,18 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  &:hover {
+    .containerNickName {
+      color: #1FCBFF;
+    }
+  }
 }
 
 .containerAvatarNickName {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 15px;
 }
 
 .containerAvatar {
