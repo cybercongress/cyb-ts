@@ -28,9 +28,6 @@ async function doCheckAndRelayPrivate(
   timedoutThresholdSeconds = 0,
   logger: Logger
 ): Promise<{ heights: RelayedHeights; info: RelayInfo }> {
-  const qcA = QueryClient.withExtensions(tmA, setupIbcExtension);
-  const qcB = QueryClient.withExtensions(tmB, setupIbcExtension);
-
   const privateEndA = new EndpointPrivate(
     link.endA.client,
     link.endA.clientID,
