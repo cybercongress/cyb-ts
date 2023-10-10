@@ -11,18 +11,19 @@ export enum LinkType {
 const reduceLinks = (data, cid, time, type: LinkType) => {
   return data.reduce((acc, item) => {
     if (item[type] === cid) {
-      return [
-        ...acc,
-        { cid: item[type === LinkType.from ? 'to' : 'from'], timestamp: time },
-      ];
+      return acc.concat({
+        cid: item[type === LinkType.from ? 'to' : 'from'],
+        timestamp: time,
+      });
     }
-    return [...acc];
+    return acc;
   }, []);
 };
 
 const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
   return data.reduce((acc, item) => {
     const { timestamp } = item;
+
     if (
       item.tx.body.messages[0]['@type'] === '/cyber.graph.v1beta1.MsgCyberlink'
     ) {
@@ -48,7 +49,7 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
         return [...acc, ...linksReduce];
       }
     }
-    return [...acc];
+    return acc;
   }, []);
 };
 
@@ -116,7 +117,19 @@ function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
 
   return {
     status,
-    data: data?.pages?.reduce((acc, page) => acc.concat(page.data), []) || [],
+    data:
+      data?.pages?.reduce(
+        (acc, page) =>
+          acc.concat(
+            page.data.map((item) => {
+              return {
+                ...item,
+                type,
+              };
+            })
+          ),
+        []
+      ) || [],
     error,
     isFetching,
     fetchNextPage,
