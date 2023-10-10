@@ -27,6 +27,8 @@ export const reduceParticleArr = (data: BackLink[]) => {
   );
 };
 
+const LIMIT = 20;
+
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
@@ -37,7 +39,7 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
         const response = (await queryClient?.backlinks(
           cid,
           pageParam,
-          20
+          LIMIT
         )) as Res;
 
         return { data: response, page: pageParam };
@@ -45,11 +47,18 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
       {
         enabled: Boolean(queryClient && cid) && !skip,
         getNextPageParam: (lastPage) => {
-          if (!lastPage.data.pagination.total) {
+          const {
+            page,
+            data: {
+              pagination: { total },
+            },
+          } = lastPage;
+
+          if (!total || (page + 1) * LIMIT > total) {
             return undefined;
           }
 
-          return lastPage.page + 1;
+          return page + 1;
         },
       }
     );
