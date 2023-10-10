@@ -1,5 +1,5 @@
 import { ContainerGradient } from '../../../components';
-import { Signatures, ParseAddressesImg } from '../components';
+import { MusicalAddress, ParseAddressesImg } from '../components';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 
 function Passport({ txs, valueNickname, avatar, addressActive }) {
@@ -34,7 +34,7 @@ function Passport({ txs, valueNickname, avatar, addressActive }) {
             />
           </div>
         )}
-        <Signatures addressActive={addressActive} />
+        <MusicalAddress address={addressActive.bech32} />
       </div>
     </ContainerGradient>
   );

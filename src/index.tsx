@@ -35,6 +35,8 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import BackendProvider from './contexts/backend';
+
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
 
@@ -103,11 +105,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   <WebsocketsProvider>
                     <DataProvider>
                       <ApolloProvider client={client}>
-                        <DeviceProvider>
-                          <AdviserProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
-                          </AdviserProvider>
-                        </DeviceProvider>
+                        <BackendProvider>
+                          <DeviceProvider>
+                            <AdviserProvider>
+                              <ErrorBoundary>{children}</ErrorBoundary>
+                            </AdviserProvider>
+                          </DeviceProvider>
+                        </BackendProvider>
                       </ApolloProvider>
                     </DataProvider>
                   </WebsocketsProvider>

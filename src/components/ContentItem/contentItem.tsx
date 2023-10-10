@@ -3,7 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/utils/ipfs/ipfs';
+import {
+  IPFSContentDetails,
+  IPFSContentMaybe,
+  IpfsContentType,
+} from 'src/utils/ipfs/ipfs';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
 
 import SearchItem from '../SearchItem/searchItem';
@@ -17,29 +21,39 @@ type ContentItemProps = {
   grade?: $TsFixMe;
   className?: string;
   parent?: string;
+  setType?: (type: IpfsContentType) => void;
 };
 
 function ContentItem({
   item,
   cid,
   grade,
+  linkType,
   parent: parentId,
+  setType,
   className,
 }: ContentItemProps): JSX.Element {
-  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
+  const { status, content } = useQueueIpfsContent(cid, item?.rank, parentId);
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
       <SearchItem
         key={cid}
+        linkType={linkType}
         status={status}
         grade={
-          item.rank
+          item?.rank
             ? getRankGrade(item.rank)
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        <ContentIpfs status={status} content={content} cid={cid} search />
+        <ContentIpfs
+          status={status}
+          content={content}
+          cid={cid}
+          search
+          setType={setType}
+        />
       </SearchItem>
     </Link>
   );

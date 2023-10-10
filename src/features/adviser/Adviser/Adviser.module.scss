@@ -5,7 +5,7 @@ $animation-time: 2.3s;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  width: 500px;
+  min-width: 400px;
   font-size: 16px;
   color: white;
   overflow: hidden;
@@ -33,13 +33,25 @@ $animation-time: 2.3s;
       --color-b: 250;
       --color-g: 161;
     }
+
+    &purple {
+      --color-r: 246;
+      --color-b: 43;
+      --color-g: 253;
+    }
+
+    &yellow {
+      --color-r: 255;
+      --color-g: 0;
+      --color-b: 217;
+    }
   }
 
   &:disabled {
     cursor: unset;
 
     &::before {
-      filter: blur(11px);
+      filter: blur(15px);
     }
 
     --color-r: 255;
@@ -79,8 +91,9 @@ $animation-time: 2.3s;
 
   &.open,
   &:disabled {
-    &::before {
-      animation: none;
+    &::before,
+    .summary {
+      animation-name: none;
     }
   }
 
@@ -88,6 +101,10 @@ $animation-time: 2.3s;
   .summary,
   .content {
     transition: all 0.7s;
+  }
+
+  @media (max-width: 480px) {
+    min-width: unset;
   }
 }
 
@@ -121,7 +138,7 @@ $animation-time: 2.3s;
     transition: all 1s;
     opacity: 1;
 
-    animation: pulse 2.3s infinite alternate;
+    animation: pulse $animation-time infinite alternate;
 
     width: $size;
     height: $size;
@@ -151,7 +168,6 @@ $animation-time: 2.3s;
 }
 
 .content {
-  // width: 670px;
   text-align: center;
   text-shadow: 0px 0px 5px
     rgba(var(--color-r), var(--color-b), var(--color-g), 0.7);
@@ -166,7 +182,7 @@ $animation-time: 2.3s;
 
   .open & {
     padding: 5px 0;
-    min-height: 55px;
+    min-height: 62px;
     height: auto;
     opacity: 1;
   }

@@ -1,4 +1,3 @@
-import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
 import CurrentGift from './currentGift';
@@ -10,10 +9,10 @@ import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
 import MoonAnimation from './MoonAnimation/MoonAnimation';
 import Stars from './stars';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 
 // eslint-disable-next-line import/no-unused-modules
 export {
-  Signatures,
   ScrollableTabs,
   ParseAddressesImg,
   CurrentGift,
@@ -23,6 +22,7 @@ export {
   ActionBarContainer,
   ActionBarSteps,
   AboutGift,
+  MusicalAddress,
   MoonAnimation,
   Stars,
 };

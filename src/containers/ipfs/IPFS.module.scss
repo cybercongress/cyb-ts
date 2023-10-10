@@ -1,0 +1,84 @@
+.tabs {
+  width: 62%;
+  margin: 40px auto;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  .tabLink {
+    padding-right: 20px;
+    background-image: url('../../components/buttons/AddFile/images/attach.svg');
+    background-position: right 3px;
+    background-repeat: no-repeat;
+    background-size: 14px auto;
+  }
+}
+
+.meta {
+  min-width: 62vw;
+  font-size: 14px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 768px) {
+    display: block;
+    text-align: center;
+
+    .left,
+    .right {
+      justify-content: center !important;
+    }
+  }
+
+  > * {
+    flex-grow: 1;
+  }
+
+  .left {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+
+    span:first-of-type {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .rank {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      color: rgba(221, 255, 255, 0.38);
+
+      // text-emphasis: none;
+      font-size: 14px;
+
+      > span {
+        color: #f62bfd;
+        line-height: 23px;
+      }
+    }
+  }
+
+  .center {
+    display: flex;
+    justify-content: center;
+
+    .date {
+      margin-right: 10px;
+    }
+  }
+
+  .right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+
+    button {
+      opacity: 0.35;
+    }
+  }
+}

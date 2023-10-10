@@ -1,0 +1,54 @@
+@import '../saber/index.module.scss';
+@import './variables.module.scss';
+
+.wrapper {
+  padding: $display-padding-top $display-padding-x 24px;
+
+  overflow-x: auto;
+  // TODO: remove this
+  z-index: 0;
+
+  overflow-x: auto;
+
+  &:not(.vertical) {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-horizontal($color);
+      }
+    }
+  }
+
+  &.vertical {
+    @each $color in $valid-colors {
+      &.#{$color} {
+        @include saber-vertical($color);
+      }
+    }
+  }
+
+  &.left {
+    &::after {
+      content: '';
+      display: none;
+    }
+    border-right: unset !important;
+  }
+
+  &.right {
+    &::before {
+      content: '';
+      display: none;
+    }
+    border-left: unset !important;
+  }
+
+  &.noPaddingX {
+    padding-left: unset;
+    padding-right: unset;
+  }
+}
+
+.header {
+  position: relative;
+  top: -$display-padding-top;
+}

@@ -16,11 +16,12 @@ function useGetValidatorInfo(address: string) {
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      const response = await queryClient!.validator(address);
-      if (response !== null) {
-        return response;
+      if (!queryClient) {
+        return null;
       }
-      return null;
+
+      const response = await queryClient.validator(address);
+      return response;
     },
     {
       enabled: Boolean(
@@ -123,7 +124,11 @@ function Account({
       {!onlyAvatar && (
         <Link
           onClick={(e) => disabled && e.preventDefault()}
-          style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
+          style={{
+            color: colorText || '#36d6ae',
+            padding: margin || 0,
+            whiteSpace: 'nowrap',
+          }}
           to={linkAddress}
         >
           {moniker === null ? trimAddress : moniker}

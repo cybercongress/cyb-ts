@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
@@ -19,5 +21,12 @@ module.exports = merge(commonConfig, {
   plugins: [
     // Only update what has changed on hot reload
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      ...commonConfig.plugins.find(
+        (plugin) => plugin.constructor.name === 'DefinePlugin'
+      ).definitions,
+      'process.env.IS_DEV': JSON.stringify(true),
+    }),
+    new ReactRefreshWebpackPlugin(),
   ],
 });

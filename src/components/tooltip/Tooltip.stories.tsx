@@ -45,12 +45,12 @@ const Template: Story<TooltipProps> = (args) => (
     }}
   >
     <Tooltip {...args}>
-      <span>Hover or click me</span>
+      <span>Moon citizenship</span>
     </Tooltip>
   </div>
 );
 
 export const Default = Template.bind({});
 Default.args = {
-  tooltip: 'This is a tooltip',
+  tooltip: 'Moon citizenship info',
 };

@@ -1,8 +1,9 @@
 import React from 'react';
-import { usePopperTooltip } from 'react-popper-tooltip';
+import Popper, { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
 import cx from 'classnames';
 
+import { PositioningStrategy } from '@popperjs/core';
 import styles from './Tooltip.module.scss';
 
 export type TooltipProps = {
@@ -10,7 +11,12 @@ export type TooltipProps = {
   trigger?: 'click' | 'hover';
   tooltip: React.ReactNode;
   hideBorder?: boolean;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  placement?: Popper.Config['placement'];
+
+  /**
+   * @deprecated not use
+   */
+  strategy?: PositioningStrategy;
 };
 
 function Tooltip({
@@ -18,6 +24,7 @@ function Tooltip({
   trigger = 'hover',
   tooltip,
   hideBorder = true,
+  strategy = 'absolute',
   placement = 'top',
 }: TooltipProps) {
   const [mounted, setMounted] = React.useState(false);
@@ -29,13 +36,18 @@ function Tooltip({
   };
 
   const { visible, getTooltipProps, setTooltipRef, setTriggerRef } =
-    usePopperTooltip({
-      trigger,
-      delayHide: 100,
-      interactive: true,
-      onVisibleChange: setMountedOnceVisible,
-      placement,
-    });
+    usePopperTooltip(
+      {
+        trigger,
+        delayHide: 100,
+        interactive: true,
+        onVisibleChange: setMountedOnceVisible,
+        placement,
+      },
+      {
+        strategy,
+      }
+    );
 
   return (
     <>

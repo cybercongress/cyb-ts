@@ -1,82 +1,20 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryObj, Story } from '@storybook/react';
 import { useState } from 'react';
 import Carousel, { Props } from './Carousel';
 
-export default {
-  title: 'Molecules/Carousel',
+const meta: Meta<typeof Carousel> = {
   component: Carousel,
-  argTypes: {
-    slides: {
-      control: {
-        type: 'array',
-        defaultValue: [
-          {
-            title: 'Slide 1',
-            step: 1,
-          },
-          {
-            title: 'Slide 2',
-            step: 2,
-          },
-          {
-            title: 'Slide 3',
-            step: 3,
-          },
-          {
-            title: 'Slide 4',
-            step: 4,
-          },
-          {
-            title: 'Slide 5',
-            step: 5,
-          },
-        ],
-      },
-    },
-    speed: {
-      control: {
-        type: 'number',
-      },
-      defaultValue: 3000,
-    },
-    activeStep: {
-      control: {
-        type: 'number',
-      },
-      defaultValue: 1,
-    },
-    transitionSpeed: {
-      control: {
-        type: 'number',
-      },
-      defaultValue: 500,
-    },
-    slideWidth: {
-      control: {
-        type: 'number',
-      },
-      defaultValue: 200,
-    },
-    disableNext: {
-      control: {
-        type: 'boolean',
-      },
-      defaultValue: false,
-    },
-    disableMode: {
-      control: {
-        type: 'boolean',
-      },
-      defaultValue: false,
-    },
-    heightSlide: {
-      control: {
-        type: 'string',
-      },
-      defaultValue: '40px',
-    },
-  },
-} as Meta;
+  title: 'molecules/carousels/CarouselOld',
+  //   parameters: {
+  //     design: {
+  //       type: 'figma',
+  //       url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=18318-21114',
+  //     },
+  //   },
+};
+export default meta;
+
+type Story = StoryObj<typeof Carousel>;
 
 const slides = [
   {

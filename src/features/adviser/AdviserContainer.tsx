@@ -15,15 +15,17 @@ function AdviserContainer() {
 
   return (
     <div className={styles.wrapper}>
-      <Adviser
-        disabled={!content}
-        className={styles.adviser}
-        isOpen={isOpen && !!content}
-        color={color}
-        openCallback={setIsOpen}
-      >
-        {content}
-      </Adviser>
+      <div className={styles.blurWrapper}>
+        <Adviser
+          disabled={!content}
+          className={styles.adviser}
+          isOpen={isOpen && !!content}
+          color={color}
+          openCallback={setIsOpen}
+        >
+          {content}
+        </Adviser>
+      </div>
     </div>
   );
 }

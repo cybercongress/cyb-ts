@@ -1,0 +1,24 @@
+@import 'src/style/mixins.scss';
+
+.container {
+  font-size: 20px;
+
+  &.selected,
+  &.select:hover {
+    position: relative;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: 0;
+
+      left: -20px;
+      right: -20px;
+
+      height: 100%;
+
+      @include tableHover;
+    }
+  }
+}

@@ -6,6 +6,8 @@ export enum AdviserColors {
   blue = 'blue',
   green = 'green',
   red = 'red',
+  purple = 'purple',
+  yellow = 'yellow',
 }
 
 type Props = {

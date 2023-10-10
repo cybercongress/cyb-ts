@@ -143,6 +143,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   return (
     <>
       <div
+        className={styles.buttonWrapper}
         style={{
           display: 'grid',
           gridTemplateColumns: mediaQuery ? '100px 1fr' : '100px',

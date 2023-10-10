@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { replaceSlash } from '../../../../utils/utils';
+import { encodeSlash, replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
 import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { routes } from 'src/routes';
+import { getIpfsHash } from 'src/utils/search/utils';
+import { PATTERN_IPFS_HASH } from 'src/utils/config';
 
-const fixedValue = '~/';
+const fixedValue = '~';
+
+// replace with more declarative way
+export const id = 'commander';
 
 function Commander() {
   const navigate = useNavigate();
-  const { query } = useParams();
+  const { query: q, cid } = useParams();
+  const query = q || cid;
   const [search, setSearch] = useState(fixedValue + (query || ''));
 
   const ref = React.useRef<HTMLInputElement>(null);
@@ -36,7 +43,15 @@ function Commander() {
   }, []);
 
   useEffect(() => {
-    setSearch(fixedValue + (query || ''));
+    (async () => {
+      let search = query || '';
+
+      if (!search.match(PATTERN_IPFS_HASH) && search) {
+        search = await getIpfsHash(encodeSlash(query));
+      }
+
+      setSearch(fixedValue + (search || ''));
+    })();
   }, [query]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -59,7 +74,9 @@ function Commander() {
       return;
     }
 
-    navigate(`/search/${replaceSlash(search.replace(fixedValue, ''))}`);
+    navigate(
+      routes.search.getLink(replaceSlash(search.replace(fixedValue, '')))
+    );
   }
 
   return (
@@ -68,6 +85,7 @@ function Commander() {
         ref={ref}
         color={Color.Pink}
         value={search}
+        id={id}
         onChange={onChange}
         autoFocus={window.self === window.top}
         className={styles.input}

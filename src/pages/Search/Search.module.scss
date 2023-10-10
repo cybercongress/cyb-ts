@@ -1,0 +1,295 @@
+.wrapper {
+}
+
+.header {
+  gap: 40px;
+  display: flex;
+  justify-content: center;
+  // margin-top: 20px;
+  flex-wrap: wrap;
+
+  // > * {
+  // flex: 1;
+  // }
+
+  @media (max-width: 480px) {
+    display: grid;
+
+    padding: 0 50px;
+    gap: 15px;
+    // margin-top: -3px;
+    z-index: 1;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    > :nth-child(2) {
+      order: 1;
+      grid-column: span 2;
+    }
+  }
+}
+
+.keywordBtn {
+  color: var(--blue-light);
+  font-size: 20px;
+  padding: 3px 15px;
+  text-align: center;
+  opacity: 0.7;
+
+  border-radius: 15px;
+  border: 1px solid rgba(31, 203, 255, 0.2);
+
+  &:hover {
+    color: var(--blue-light);
+    opacity: 1;
+  }
+}
+
+.content {
+  margin: 20px auto 0;
+  // width: 70vw;
+  // height: 100%;
+  // min-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+
+  .info {
+    width: 100%;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+
+      margin-top: auto;
+      height: 50%;
+      z-index: -1;
+      filter: blur(20px);
+      background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 3.92%,
+        rgba(118, 255, 3, 0.2) 43.95%,
+        rgba(118, 255, 3, 0.2) 55.96%,
+        rgba(0, 0, 0, 0) 100%
+      );
+
+      @keyframes identifier {
+        from {
+          left: 0;
+          right: 0;
+        }
+
+        to {
+          left: 100px;
+          right: 100px;
+        }
+      }
+
+      animation: identifier 3s infinite alternate;
+    }
+
+    gap: 0 40px;
+
+    .imgWrapper {
+      position: relative;
+      border-radius: 50%;
+
+      &::after {
+        // content: '';
+        position: absolute;
+        border-radius: 50%;
+
+        left: 0;
+        right: 0;
+        height: 100%;
+      }
+    }
+
+    img {
+      max-width: 100%;
+      box-shadow: 0px 0px 15px -2px #76ff03;
+      border-radius: 50%;
+      border: 1px solid #fff;
+
+      // @keyframes anim {
+      //   from {
+      //     box-shadow: 0px 0px 15px 2px #76ff03;
+      //   }
+
+      //   to {
+      //     box-shadow: 0px 0px 0px 2px #76ff03;
+      //   }
+      // }
+
+      // animation: anim 8s infinite alternate;
+    }
+
+    > * {
+      font-size: 30px;
+    }
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 33%));
+    align-items: center;
+    position: relative;
+
+    h2,
+    h4,
+    span {
+      font-weight: 400;
+      text-shadow: 0px 0px 15px #ffd900;
+    }
+
+    h2 {
+      text-align: right;
+
+      span {
+        color: #ffd900;
+      }
+    }
+
+    .particles {
+      span:first-of-type {
+        color: var(--green-light);
+      }
+    }
+  }
+
+  @media (max-width: 580px) {
+    .info {
+      display: unset;
+      margin-top: -20px;
+      h2 {
+        position: relative;
+        text-shadow: 0px 0px 15px #ffd900;
+
+        // &::before {
+        //   content: '';
+        //   position: absolute;
+        //   left: -30%;
+        //   right: -30%;
+
+        //   margin-top: auto;
+        //   height: 100%;
+        //   z-index: -1;
+        //   filter: blur(20px);
+        //   background: linear-gradient(
+        //     90deg,
+        //     rgba(0, 0, 0, 0) 3.92%,
+        //     rgba(118, 255, 3, 0.2) 43.95%,
+        //     rgba(118, 255, 3, 0.2) 55.96%,
+        //     rgba(0, 0, 0, 0) 100%
+        //   );
+        // }
+        // left: -20px;
+      }
+      &::before {
+        content: unset;
+      }
+
+      .imgWrapper {
+        position: absolute;
+        right: -105%;
+
+        img {
+          // box-shadow: 0px 0px 30px -1px #76ff03;
+
+          box-shadow: 0px 0px 25px -10px #76ff03, 0px 0px 200px -20px #76ff03;
+        }
+        top: 45px;
+      }
+
+      .particles {
+        display: none;
+      }
+    }
+
+    .advantages {
+      // text-align: left;
+      margin-top: 20px;
+      position: relative;
+      left: -25px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.advantages {
+  display: grid;
+  width: 62vw;
+  list-style-type: none;
+  margin: -30px auto 0;
+  gap: 20px 0;
+
+  grid-template-columns: repeat(3, minmax(0, 33%));
+  grid-template-rows: repeat(2, 1fr);
+  text-align: center;
+  justify-items: center;
+
+  li {
+    max-width: 200px;
+  }
+
+  li:nth-child(1) {
+    grid-column: 1 / 2;
+    grid-row: 1;
+  }
+
+  li:nth-child(2) {
+    grid-column: 2 /3;
+    grid-row: 2;
+  }
+
+  li:nth-child(3) {
+    grid-column: 3 / 4;
+    grid-row: 1;
+  }
+
+  h6,
+  p {
+    font-weight: 400;
+  }
+
+  h6 {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+    font-size: 20px;
+    position: relative;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      left: -20%;
+      right: -20%;
+      height: 100%;
+      filter: blur(7.5px);
+      background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 3.92%,
+        rgba(54, 214, 174, 0.15) 46.46%,
+        rgba(54, 214, 174, 0.15) 56.46%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+  }
+
+  p {
+    margin-top: 7px;
+    line-height: 23px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  a {
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}

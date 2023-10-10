@@ -4,7 +4,7 @@ import ButtonIcon, { Props } from '.';
 
 export default {
   component: ButtonIcon,
-  title: 'atoms/buttons/ButtonIcon',
+  title: 'atoms/Buttons/ButtonIcon',
 } as Meta;
 
 const defaultArgs: Props = {

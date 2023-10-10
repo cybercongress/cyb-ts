@@ -5,6 +5,7 @@ import bandwidthReducer from './bandwidth';
 import pocketReducer from '../features/pocket';
 import currentAccountReducer from '../features/currentAccount';
 import passportsReducer from '../../features/passport/passports.redux';
+import backendReducer from './backend';
 
 const rootReducer = {
   gol: golReducer,
@@ -12,6 +13,7 @@ const rootReducer = {
   pocket: pocketReducer,
   passports: passportsReducer,
   currentAccount: currentAccountReducer,
+  backend: backendReducer,
 };
 
 export default rootReducer;

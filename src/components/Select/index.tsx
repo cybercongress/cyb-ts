@@ -53,10 +53,10 @@ type SelectProps = {
   width?: string;
   disabled?: boolean;
   options?: SelectOption[];
-  placeholder?: string;
   currentValue: React.ReactNode;
   color?: Color;
   title?: string;
+  small?: boolean;
 };
 
 function Select({
@@ -67,7 +67,7 @@ function Select({
   disabled,
   options,
   currentValue,
-  placeholder,
+  small,
   color = Color.Yellow,
   title,
 }: SelectProps) {
@@ -94,8 +94,7 @@ function Select({
 
   function renderTitle() {
     let value = currentValue;
-
-    if (valueSelect && options) {
+    if (valueSelect !== undefined && options) {
       const item = options.find((item) => item.value === valueSelect);
 
       if (item) {
@@ -120,7 +119,7 @@ function Select({
     >
       <div
         style={{ width: width || '120px' }}
-        className={styles.dropDown}
+        className={classNames(styles.dropDown, { [styles.small]: small })}
         ref={selectContainerRef}
       >
         <div className={styles.dropDownContainer}>

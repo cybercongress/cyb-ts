@@ -1,7 +1,7 @@
 import {
-  IPFSContent,
   IPFSContentDetails,
   IPFSContentMaybe,
+  IpfsContentType,
 } from 'src/utils/ipfs/ipfs';
 import { useEffect, useState } from 'react';
 import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
@@ -12,9 +12,10 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+// import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
+import Audio from './component/Audio/Audio';
 
-const getContentDetails = async (
+export const getContentDetails = async (
   cid: string,
   content: IPFSContentMaybe
 ): Promise<IPFSContentDetails> => {
@@ -61,24 +62,39 @@ type ContentTabProps = {
   status: string | undefined;
   cid: string;
   search?: boolean;
+  setType?: (type: IpfsContentType) => void;
 };
 
-function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  status,
+  content,
+  cid,
+  search,
+  setType,
+}: ContentTabProps) {
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
+    // && !content?.availableDownload
+
     if (status === 'completed') {
-      // && !content?.availableDownload
-      getContentDetails(cid, content).then(setIpfsDatDetails);
+      (async () => {
+        const details = await getContentDetails(cid, content);
+        setIpfsDatDetails(details);
+
+        if (setType && details?.type) {
+          setType(details.type);
+        }
+      })();
     }
   }, [content, status, cid]);
 
   const contentType = ipfsDataDetails?.type;
 
   return (
-    <>
+    <div>
       {/* <DebugContentInfo
         cid={cid}
         source={content?.source}
@@ -86,11 +102,14 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
         status={status}
       /> */}
       {/* Default */}
+
       {!content && <div>{cid.toString()}</div>}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
       )}
+
+      {content?.meta.mime?.includes('audio') && <Audio content={content} />}
 
       {contentType === 'video' && content && (
         <VideoPlayerGatewayOnly content={content} />
@@ -104,7 +123,9 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
             </TextMarkdown>
           )}
           {contentType === 'image' && <Img content={ipfsDataDetails.content} />}
-          {contentType === 'pdf' && <Pdf content={ipfsDataDetails.content} />}
+          {contentType === 'pdf' && ipfsDataDetails.content && (
+            <Pdf content={ipfsDataDetails.content} />
+          )}
           {contentType === 'link' && (
             <LinkHttp content={ipfsDataDetails.content} preview />
           )}
@@ -117,7 +138,7 @@ function ContentIpfs({ status, content, cid, search }: ContentTabProps) {
           )}
         </>
       )}
-    </>
+    </div>
   );
 }
 export default ContentIpfs;

@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const WorkerUrlPlugin = require('worker-url/plugin');
 
 require('dotenv').config();
 
@@ -60,16 +60,8 @@ const config = {
     },
   },
   plugins: [
+    new WorkerUrlPlugin(),
     new NodePolyfillPlugin(),
-    // Note: stream-browserify has assumption about `Buffer` global in its
-    // dependencies causing runtime errors. This is a workaround to provide
-    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
-    // is fixed.
-    // new webpack.ProvidePlugin({
-    //   Buffer: ['buffer', 'Buffer'],
-    //   process: 'process/browser',
-    //   stream: 'readable-stream',
-    // }),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {
@@ -87,7 +79,7 @@ const config = {
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
     }),
-    new ReactRefreshWebpackPlugin(),
+
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
@@ -114,13 +106,9 @@ const config = {
           loader: 'esbuild-loader',
           options: {
             loader: 'tsx',
-            target: 'es2018', // Syntax to compile to (see options below for possible values)
+            target: 'es2020', // Syntax to compile to (see options below for possible values)
           },
         },
-      },
-      {
-        test: /\.worker\.js$/,
-        use: { loader: 'worker-loader' },
       },
       {
         include: /node_modules/,
@@ -174,6 +162,10 @@ const config = {
         resolve: {
           fullySpecified: false,
         },
+      },
+      {
+        test: /\.cozo$/,
+        use: 'raw-loader',
       },
     ],
   },

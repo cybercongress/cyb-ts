@@ -2,18 +2,21 @@ import { useEffect, useMemo, useState } from 'react';
 import dateFormat from 'dateformat';
 import { useWebsockets } from 'src/websockets/context';
 import db from '../../db';
-import { getFollows, getTweet, getContent } from '../../utils/search/utils';
+import { getFollows, getTweet } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
+import { useIpfs } from 'src/contexts/ipfs';
+import { AppIPFS } from 'src/utils/ipfs/ipfs';
+import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
-const getIndexdDb = async (cid) => {
+const getIndexdDb = async (node: AppIPFS | null, cid: string) => {
   let addressResolve = null;
   const dataIndexdDb = await db.table('following').get({ cid });
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    const responseGetContent = await getContent(cid);
-    addressResolve = responseGetContent;
+    const responseGetContent = await getIPFSContent(node, cid);
+    addressResolve = responseGetContent?.textPreview;
     const ipfsContentAddtToInddexdDB = {
       cid,
       content: addressResolve,
@@ -42,6 +45,7 @@ const useGetTweets = (address) => {
   const [loadingTweets, setLoadingTweets] = useState(false);
   const [addressFollowData, setAddressFollowData] = useState({});
   const { cyber } = useWebsockets();
+  const { node } = useIpfs();
 
   const addressActive = useMemo(() => {
     return {
@@ -160,7 +164,7 @@ const useGetTweets = (address) => {
     responseFollows.txs.forEach(async (item) => {
       let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
-      const response = await getIndexdDb(cid);
+      const response = await getIndexdDb(node, cid);
       addressResolve = response;
       if (addressResolve && addressResolve !== null) {
         let addressFollow = null;

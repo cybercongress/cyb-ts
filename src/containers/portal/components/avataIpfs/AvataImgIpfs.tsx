@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
