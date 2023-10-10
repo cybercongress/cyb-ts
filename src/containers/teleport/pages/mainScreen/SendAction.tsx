@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Account } from 'src/components';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import {
   SliceState,
@@ -19,26 +20,14 @@ function SendAction() {
       }, {});
 
     return Object.keys(sliceData).map((key) => {
-      const item = sliceData[key];
-      let cidAvatar;
-      let nickname: string | undefined;
-      let owner = key;
-
-      if (item?.data) {
-        const { extension } = item.data;
-        nickname = extension.nickname;
-        owner = item.data.owner;
-        cidAvatar = extension.avatar;
-      }
-
-      const ownerTrim = trimString(owner, 10, 3);
-
       return (
         <Link key={key} to={`send?recipient=${key}&token=boot`}>
-          <div style={{ width: '50px', height: '50px' }}>
-            <AvataImgIpfs addressCyber={owner} cidAvatar={cidAvatar} />
-          </div>
-          <div>{nickname || ownerTrim}</div>
+          <Account
+            address={key}
+            avatar
+            sizeAvatar="50px"
+            styleUser={{ flexDirection: 'column' }}
+          />
         </Link>
       );
     });
@@ -50,7 +39,7 @@ function SendAction() {
       <br />
       connected: top 5 friends
       <br />
-      <div>{renderItems}</div>
+      <div style={{ display: 'flex', gap: '20px' }}>{renderItems}</div>
       <br />
       not connected: send
     </div>

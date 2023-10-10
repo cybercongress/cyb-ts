@@ -21,6 +21,8 @@
   display: grid;
   gap: 20px;
   color: #777777;
+  position: relative;
+  overflow: hidden;
 
   &FlexBetween {
     display: flex;

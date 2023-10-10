@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { DenomArr } from 'src/components';
+import fromToIbc from 'images/fromToIbc.svg';
 
 const defaultData = [
   {
@@ -20,10 +21,31 @@ function BridgeAction() {
   const renderItem = defaultData.map((item, index) => {
     const searchParam = `networkFrom=${item.networkFrom}&networkTo=${item.networkTo}&token=${item.token}`;
     return (
-      <Link to={`bridge?${searchParam}`} key={index}>
-        <DenomArr denomValue={item.token} />
-        <DenomArr type="network" denomValue={item.networkFrom} />
-        <DenomArr type="network" denomValue={item.networkTo} />
+      <Link
+        to={`bridge?${searchParam}`}
+        key={index}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <DenomArr denomValue={item.token} size={30} />
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <DenomArr type="network" denomValue={item.networkFrom} />
+          <img
+            src={fromToIbc}
+            alt="fromToIbc"
+            // className={styles.fromToIbcImg}
+            style={{
+              width: '40px',
+              height: '30px',
+              marginLeft: '-5px',
+            }}
+          />
+
+          <DenomArr type="network" denomValue={item.networkTo} />
+        </div>
       </Link>
     );
   });
@@ -31,7 +53,15 @@ function BridgeAction() {
     <div>
       Bridge
       <br />
-      <div style={{ display: 'grid', gap: '20px' }}>{renderItem}</div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}
+      >
+        {renderItem}
+      </div>
     </div>
   );
 }
