@@ -12,9 +12,11 @@ import { getBalances } from '../teleport/hooks';
 import styles from './pool/styles.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
+import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 
 function WarpDashboardPools() {
   const { defaultAccount } = useSelector((state) => state.pocket);
+  const { vol24 } = useWarpDexTickers();
   const data = usePoolListInterval();
   const { poolsData, totalCap } = usePoolsAssetAmount(data);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -60,6 +62,7 @@ function WarpDashboardPools() {
           myCap={myCap}
           totalCap={totalCap}
           useMyProcent={useMyProcent}
+          vol24={vol24}
         />
         {Object.keys(itemsPools).length > 0 ? (
           itemsPools

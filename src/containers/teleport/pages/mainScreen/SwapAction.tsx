@@ -6,7 +6,7 @@ import { DenomArr } from 'src/components';
 import { Link } from 'react-router-dom';
 import useWarpDexTickers, {
   responseWarpDexTickersItem,
-} from './useGetWarpPools';
+} from 'src/hooks/useGetWarpPools';
 import BigNumber from 'bignumber.js';
 import Display from 'src/components/containerGradient/Display/Display';
 import { AmountDenom } from 'src/containers/txs/Activites';

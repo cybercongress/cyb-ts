@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/launchpad';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
@@ -5,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAppData } from 'src/contexts/appData';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { Nullable } from 'src/types';
+import { CYBER } from 'src/utils/config';
 import { getDisplayAmount } from 'src/utils/utils';
 
 export type responseWarpDexTickersItem = {
@@ -35,7 +37,7 @@ const getWarpDexTickers = async (): Promise<
 
 export default function useWarpDexTickers() {
   const { marketData } = useAppData();
-  const [vol24, setVol24] = useState<number>(0);
+  const [vol24, setVol24] = useState<Coin | undefined>(undefined);
   const { traseDenom } = useIbcDenom();
 
   const { data } = useQuery({
@@ -76,7 +78,10 @@ export default function useWarpDexTickers() {
         }
       });
 
-      setVol24(vol24Temp.dp(0, BigNumber.ROUND_FLOOR).toNumber());
+      setVol24({
+        denom: CYBER.DENOM_LIQUID_TOKEN,
+        amount: vol24Temp.dp(0, BigNumber.ROUND_FLOOR).toString(10),
+      });
     }
   }, [marketData, data, traseDenom]);
 
