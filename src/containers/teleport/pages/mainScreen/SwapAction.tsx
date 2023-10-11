@@ -61,8 +61,6 @@ function SwapAction() {
     return selectedPools;
   }, [dataPoolsWarpDex]);
 
-  console.log('dataRender', dataRender);
-
   return (
     <div>
       Swap
