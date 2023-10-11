@@ -32,7 +32,7 @@ const LIMIT = 20;
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, isInitialLoading } =
+  const { data, fetchNextPage, hasNextPage, refetch, error, isInitialLoading } =
     useInfiniteQuery(
       ['useGetBackLink', cid],
       async ({ pageParam = 0 }: { pageParam?: number }) => {
@@ -75,6 +75,8 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     backlinks,
     total: data?.pages[0].data.pagination.total || 0,
     hasNextPage,
+    refetch,
+    error,
     isInitialLoading,
     fetchNextPage,
   };

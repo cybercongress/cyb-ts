@@ -40,9 +40,9 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
     ) {
       const links = item.tx.body.messages[0].msg?.cyberlink?.links;
 
-      // if (!links) {
-      //   debugger;
-      // }
+      if (!links) {
+        debugger;
+      }
 
       if (links) {
         const linksReduce = reduceLinks(links, cid, timestamp, type);
@@ -72,7 +72,7 @@ const request = async (
   }
 };
 
-const limit = 10;
+const limit = 15;
 
 function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
   const [total, setTotal] = useState(0);
@@ -102,15 +102,13 @@ function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
     {
       enabled: !skip && Boolean(hash),
       getNextPageParam: (lastPage) => {
-        if (
-          lastPage.data &&
-          total &&
-          (lastPage.page + 1) * Number(limit) < total
-        ) {
-          return lastPage.page + 1;
+        const { page } = lastPage;
+
+        if (!total || (page + 1) * limit >= total) {
+          return undefined;
         }
 
-        return undefined;
+        return page + 1;
       },
     }
   );

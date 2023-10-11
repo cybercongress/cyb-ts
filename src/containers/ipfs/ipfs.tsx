@@ -29,7 +29,11 @@ function Ipfs() {
 
   const [rankInfo, setRankInfo] = useState<number>();
 
+  const [ipfsDataDetails, setIpfsDatDetails] =
+    useState<IPFSContentDetails>(undefined);
+
   const queryClient = useQueryClient();
+  const { setAdviser } = useAdviser();
 
   useEffect(() => {
     if (query.match(PATTERN_IPFS_HASH)) {
@@ -51,9 +55,6 @@ function Ipfs() {
   // const { statusFetching, content, status, source, loading } =
   //   useGetIpfsContent(cid);
 
-  const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(undefined);
-
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     // && !content?.availableDownload
@@ -70,8 +71,6 @@ function Ipfs() {
       setRankInfo(Number(response.rank));
     })();
   }, [content, status, cid, queryClient]);
-
-  const { setAdviser } = useAdviser();
 
   useEffect(() => {
     if (!ipfsDataDetails) {
