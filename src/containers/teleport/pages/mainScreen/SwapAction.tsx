@@ -42,7 +42,7 @@ const defaultPairPoolId: DefaultPairPoolIdObj = {
 };
 
 function SwapAction() {
-  const dataPoolsWarpDex = useWarpDexTickers();
+  const { data: dataPoolsWarpDex } = useWarpDexTickers();
 
   const dataRender = useMemo(() => {
     const selectedPools: Array<
