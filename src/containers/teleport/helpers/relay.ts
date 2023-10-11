@@ -11,6 +11,7 @@ const sleep = (ms: number) => {
     setTimeout(resolve, ms);
   });
 };
+const options = { poll: 4000, maxAgeDest: 86400, maxAgeSrc: 86400 };
 
 async function relay(
   offlineSignerA: OfflineAminoSigner | OfflineDirectSigner,
@@ -81,18 +82,22 @@ async function relay(
           senderB,
           tmA,
           tmB,
-          2,
-          6,
+          1000000000,
+          1000000000,
           logger!
         );
         relayFrom = out.heights;
         console.log(out.info);
+        // eslint-disable-next-line no-await-in-loop
+        await link.updateClientIfStale('A', options.maxAgeDest);
+        // eslint-disable-next-line no-await-in-loop
+        await link.updateClientIfStale('B', options.maxAgeSrc);
       } catch (error) {
         console.error(`Caught error: `, error);
       }
       console.log('sleeping for 6 seconds');
       // eslint-disable-next-line no-await-in-loop
-      await sleep(5000);
+      await sleep(options.poll);
     }
   })();
 

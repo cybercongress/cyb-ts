@@ -5,8 +5,8 @@ import { getKeplr } from 'src/utils/keplrUtils';
 import networkList from 'src/utils/networkListIbc';
 import { GasPrice } from '@cosmjs/stargate';
 import { Decimal } from '@cosmjs/math';
-import loadConnections from './helpers/loadConnections';
-import relay from './helpers/relay';
+import loadConnections from '../teleport/helpers/loadConnections';
+import relay from '../teleport/helpers/relay';
 import { LogRelayer } from './components/relayer';
 
 function findNetwork(chainId: string) {

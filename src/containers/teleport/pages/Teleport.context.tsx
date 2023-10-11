@@ -1,8 +1,8 @@
 import { Decimal } from '@cosmjs/math';
 import { GasPrice } from '@cosmjs/stargate';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import loadConnections from 'src/containers/ibc/helpers/loadConnections';
-import relay from 'src/containers/ibc/helpers/relay';
+import loadConnections from 'src/containers/teleport/helpers/loadConnections';
+import relay from 'src/containers/teleport/helpers/relay';
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { useChannels } from 'src/hooks/useHub';
 import { ObjectKey } from 'src/types/data';
