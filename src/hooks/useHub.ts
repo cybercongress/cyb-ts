@@ -91,45 +91,31 @@ export function useTokens() {
 }
 
 export function useChannels() {
-  const [channels, setChannels] = useState<ObjectKey<NetworkCons> | undefined>(
-    undefined
+  const queryClient = useQueryClient();
+  const [channels, setChannels] =
+    useState<Option<ObjectKey<Channel>>>(undefined);
+  const { data } = useQuery(
+    ['hub-channels'],
+    () => fetcher(queryClient, TypeFetcher.CHANNELS),
+    {
+      enabled: Boolean(queryClient),
+    }
   );
-  // const queryClient = useQueryClient();
-  // const [channels, setChannels] =
-  //   useState<Option<ObjectKey<Channel>>>(undefined);
-  // const { data } = useQuery(
-  //   ['hub-channels'],
-  //   () => fetcher(queryClient, TypeFetcher.CHANNELS),
-  //   {
-  //     enabled: Boolean(queryClient),
-  //   }
-  // );
-
-  // useEffect(() => {
-  //   const objectMappedResult: ObjectKey<Channel> = {};
-  //   if (data) {
-  //     data.entries.forEach((row: Channel) => {
-  //       if (row.active === 'true') {
-  //         objectMappedResult[row.destination_chain_id] = row;
-  //       }
-  //     });
-
-  //     if (Object.keys(objectMappedResult).length > 0) {
-  //       setChannels(objectMappedResult);
-  //     }
-  //   }
-  // }, [data]);
 
   useEffect(() => {
-    const findData = Object.keys(networkList)
-      .filter((key) => key !== CYBER.CHAIN_ID)
-      .reduce<ObjectKey<NetworkCons>>(
-        (obj, key) => ({ ...obj, [key]: networkList[key] }),
-        {}
-      );
+    const objectMappedResult: ObjectKey<Channel> = {};
+    if (data) {
+      data.entries.forEach((row: Channel) => {
+        if (row.active === 'true') {
+          objectMappedResult[row.destination_chain_id] = row;
+        }
+      });
 
-    setChannels(findData);
-  }, []);
+      if (Object.keys(objectMappedResult).length > 0) {
+        setChannels(objectMappedResult);
+      }
+    }
+  }, [data]);
 
   return { channels };
 }

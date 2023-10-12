@@ -1,9 +1,4 @@
-import {
-  AvailableAmount,
-  DenomArr,
-  InputNumber,
-  MainContainer,
-} from 'src/components';
+import { AvailableAmount, DenomArr, MainContainer } from 'src/components';
 import Select, { OptionSelect, SelectOption } from 'src/components/Select';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,18 +9,17 @@ import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
-import { getMyTokenBalanceNumber, networkList } from '../../utils';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { useChannels } from 'src/hooks/useHub';
+import { Networks } from 'src/types/networks';
+import { getMyTokenBalanceNumber } from '../../utils';
 import { getBalances, useSetupIbcClient } from '../../hooks';
 import Slider from '../../components/slider';
 import { Col, GridContainer, TeleportContainer } from '../../comp/grid';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
-import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
-import { createSearchParams, useSearchParams } from 'react-router-dom';
-import { useChannels } from 'src/hooks/useHub';
 import HistoryContextProvider from '../../ibc-history/historyContext';
 import DataIbcHistory from '../../comp/dataIbcHistory/DataIbcHistory';
-import { Networks } from 'src/types/networks';
 import InputNumberDecimalScale from '../../comp/Inputs/InputNumberDecimalScale';
 
 type Query = {
@@ -104,7 +98,7 @@ function Bridge() {
       networkB === CYBER.CHAIN_ID
     ) {
       setTypeTxs('deposit');
-      const { destChannelId } = channels[networkA];
+      const { destination_channel_id: destChannelId } = channels[networkA];
       setSourceChannel(destChannelId);
     }
 
@@ -117,7 +111,7 @@ function Bridge() {
     ) {
       setTypeTxs('withdraw');
 
-      const { sourceChannelId } = channels[networkB];
+      const { source_channel_id: sourceChannelId } = channels[networkB];
       setSourceChannel(sourceChannelId);
     }
   }, [networkB, networkA, channels]);
@@ -164,13 +158,19 @@ function Bridge() {
       Object.keys(totalSupply).forEach((key) => {
         tempList.push({
           value: key,
-          text: <DenomArr denomValue={key} onlyText />,
+          text: (
+            <DenomArr
+              denomValue={key}
+              onlyText
+              tooltipStatusText={tokenSelect !== key}
+            />
+          ),
           img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
         });
       });
     }
     return tempList;
-  }, [totalSupply]);
+  }, [totalSupply, tokenSelect]);
 
   const getAccountBalancesToken = useCallback(
     (selectNetwork: string) => {

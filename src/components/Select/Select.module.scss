@@ -23,14 +23,16 @@
   &Header {
     font-weight: 400;
     color: #36d6ae;
-    display: flex;
+    display: grid;
+    grid-template-columns: 28px 80px;
+    grid-gap: 10px;
     align-items: center;
-    gap: 10px;
     position: absolute;
     bottom: 10px;
     z-index: 1;
     font-size: 1rem;
     padding-left: 5px;
+    white-space: nowrap;
   }
 
   &ListContainer {
@@ -60,10 +62,12 @@
     grid-gap: 13px;
     align-items: center;
     white-space: nowrap;
+
     &:hover {
       color: #c7c7c7;
       cursor: pointer;
     }
+
     .bgrImg {
       width: 28px;
       height: 28px;

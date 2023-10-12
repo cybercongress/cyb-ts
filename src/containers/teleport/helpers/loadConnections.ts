@@ -3,7 +3,7 @@ import { QueryClient, setupIbcExtension } from '@cosmjs/stargate';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 import { State } from 'cosmjs-types/ibc/core/channel/v1/channel';
 import { Channel as ChannelHub } from 'src/types/hub';
-import networkList, { NetworkCons } from 'src/utils/networkListIbc';
+import networkList from 'src/utils/networkListIbc';
 
 const PORT_ID = 'transfer';
 
@@ -35,13 +35,13 @@ interface MatchingCxn {
   cxnB: string;
 }
 async function loadConnections(
-  channel: NetworkCons
+  channel: ChannelHub
 ): Promise<readonly MatchingCxn[]> {
   const {
-    sourceChainId: chainA,
-    destinationChainId: chainB,
-    sourceChannelId: channelA,
-    destChannelId: channelB,
+    source_chain_id: chainA,
+    destination_chain_id: chainB,
+    source_channel_id: channelA,
+    destination_channel_id: channelB,
   } = channel;
 
   const matchingCxns: MatchingCxn[] = [];

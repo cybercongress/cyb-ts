@@ -8,10 +8,10 @@ import { useChannels } from 'src/hooks/useHub';
 import { ObjectKey } from 'src/types/data';
 import { Channel } from 'src/types/hub';
 import { getKeplr } from 'src/utils/keplrUtils';
-import networkList, { NetworkCons } from 'src/utils/networkListIbc';
+import networkList from 'src/utils/networkListIbc';
 
 const TeleportContext = React.createContext<{
-  channels: undefined | ObjectKey<NetworkCons>;
+  channels: undefined | ObjectKey<Channel>;
   relayerLog: any[];
   isRelaying: boolean;
   selectChain: string;
@@ -96,7 +96,7 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
 
         const chainInfos = await keplrWindow.getChainInfosWithoutEndpoints();
 
-        const { sourceChainId: chainIdA, destinationChainId: chainIdB } =
+        const { source_chain_id: chainIdA, destination_chain_id: chainIdB } =
           channels[selectChain];
 
         const chainInfoA = chainInfos.find((item) => item.chainId === chainIdA);
