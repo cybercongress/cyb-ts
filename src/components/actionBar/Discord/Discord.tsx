@@ -1,3 +1,4 @@
+import { LinkWindow } from 'src/components/link/link';
 import discordIcon from './discord.png';
 
 import styles from './Discord.module.scss';
@@ -5,9 +6,9 @@ import styles from './Discord.module.scss';
 function Discord() {
   return (
     <div className={styles.wrapper}>
-      <a href="https://discord.gg/jjEaDKmq" target="_blank" rel="noreferrer">
+      <LinkWindow to="https://discord.gg/jjEaDKmq">
         <img className={styles.icon} src={discordIcon} alt="Cyber Discord" />
-      </a>
+      </LinkWindow>
     </div>
   );
 }
