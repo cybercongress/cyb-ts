@@ -31,6 +31,7 @@ const config: StorybookConfig = {
 
     return {
       ...config,
+
       resolve: {
         ...config.resolve,
         alias: {

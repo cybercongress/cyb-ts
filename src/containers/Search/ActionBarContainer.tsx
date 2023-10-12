@@ -24,6 +24,7 @@ import {
 import { trimString } from '../../utils/utils';
 import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
+import { DefaultAccount } from 'src/types/defaultAccount';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -41,8 +42,22 @@ const {
 const STAGE_IPFS_HASH = 3.1;
 const STAGE_KEPLR_APPROVE = 3.2;
 
-class ActionBarContainer extends Component {
-  constructor(props) {
+// generated
+interface Props {
+  defaultAccount: DefaultAccount;
+
+  textBtn?: string;
+  placeholder?: string;
+  rankLink?: string;
+  update: () => void;
+  signer: any;
+  node: any;
+  signingClient: any;
+  keywordHash: string;
+}
+
+class ActionBarContainer extends Component<Props, any> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
@@ -60,9 +75,8 @@ class ActionBarContainer extends Component {
     this.transport = null;
   }
 
-  async componentDidMount() {
-    console.warn('Looking for Ledger Nano');
-    await this.checkAddressLocalStorage();
+  componentDidMount() {
+    this.checkAddressLocalStorage();
   }
 
   componentDidUpdate(prevProps) {

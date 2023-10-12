@@ -12,9 +12,10 @@ import { PATTERN_IPFS_HASH } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 import Spark from 'src/components/search/Spark/Spark';
 import FirstItems from './_FirstItems.refactor';
-import useSearchData from './useSearchData';
+import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
+import { useAdviser } from 'src/features/adviser/context';
 
 export const initialContentTypeFilterState = {
   text: false,
@@ -35,10 +36,7 @@ function SearchResults() {
   // const location = useLocation();
   // const navigate = useNavigate();
   const [keywordHash, setKeywordHash] = useState('');
-  const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-
-  // console.log(keywordHash);
 
   const [contentType, setContentType] = useState<{
     [key: string]: IpfsContentType;
@@ -56,9 +54,11 @@ function SearchResults() {
     data: items,
     total,
     loading,
+    error,
     hasMore,
     isInitialLoading,
-    next,
+    refetch,
+    fetchNextPage: next,
   } = useSearchData(keywordHash, {
     sortBy,
     linksType: linksTypeFilter,
@@ -72,6 +72,16 @@ function SearchResults() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [query]);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    setAdviser(JSON.stringify(error), 'red');
+  }, [error, setAdviser]);
 
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
@@ -89,10 +99,6 @@ function SearchResults() {
       setKeywordHash(keywordHashTemp);
     })();
   }, [query]);
-
-  useEffect(() => {
-    setRankLink(null);
-  }, [update]);
 
   const onClickRank = async (key) => {
     if (rankLink === key) {
@@ -201,7 +207,10 @@ function SearchResults() {
       {!mobile && (
         <ActionBarContainer
           keywordHash={keywordHash}
-          update={() => setUpdate(update + 1)}
+          update={() => {
+            refetch();
+            setRankLink(null);
+          }}
           rankLink={rankLink}
         />
       )}

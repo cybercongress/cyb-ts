@@ -31,10 +31,10 @@ export async function initIpfsClient(opts) {
     //   // console.log(`Discovered peer ${evt.detail.id.toString()}`);
     // });
     instance.libp2p.addEventListener('peer:connect', (evt) => {
-      console.log(`Connected to ${evt.detail.remotePeer.toString()}`);
+      console.debug(`Connected to ${evt.detail.remotePeer.toString()}`);
     });
     instance.libp2p.addEventListener('peer:disconnect', (evt) => {
-      console.log(`Disconnected from ${evt.detail.remotePeer.toString()}`);
+      console.debug(`Disconnected from ${evt.detail.remotePeer.toString()}`);
     });
 
     // connectToSwarm(

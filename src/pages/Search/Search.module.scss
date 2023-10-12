@@ -226,6 +226,7 @@
   list-style-type: none;
   margin: -30px auto 0;
   gap: 20px 0;
+  z-index: 1;
 
   grid-template-columns: repeat(3, minmax(0, 33%));
   grid-template-rows: repeat(2, 1fr);
