@@ -1,4 +1,10 @@
 .wrapper {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  // gap: 30px 0;
+
+  justify-content: center;
 }
 
 .titleText {
@@ -12,11 +18,12 @@
 
 .tilde {
   font-size: 42px;
+  line-height: 26px;
 }
 
 .info {
   p {
-    margin: 0 auto;
+    margin: 15px auto 0;
     text-align: center;
     max-width: 380px;
     color: rgba(255, 255, 255, 0.78);
@@ -25,7 +32,7 @@
 
 .list {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   flex-wrap: wrap;
 
   @media (max-width: 480px) {
@@ -36,15 +43,18 @@
 }
 
 .linksExample,
-.learn {
+.learn,
+.list,
+.energy {
   margin-top: 30px;
 }
 
 .linksExample {
   ul {
+    max-width: 880px;
     display: flex;
-    justify-content: space-between;
-
+    margin: 0 auto;
+    justify-content: space-around;
     flex-wrap: wrap;
     gap: 20px 10px;
 
@@ -52,7 +62,6 @@
       display: flex;
       align-items: center;
       gap: 0 15px;
-      // width: 33%;
     }
   }
 
@@ -78,6 +87,23 @@
   @media (max-width: 480px) {
     .inputs {
       flex-direction: column;
+    }
+  }
+}
+
+.energy {
+  display: flex;
+  gap: 0 23px;
+  align-items: center;
+  margin: 30px auto 10px;
+
+  > :first-child {
+    min-width: 75px;
+  }
+
+  > :last-child {
+    span + span {
+      margin-left: 13px;
     }
   }
 }

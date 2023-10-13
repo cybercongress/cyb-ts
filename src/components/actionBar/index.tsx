@@ -113,10 +113,11 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   if (
     (noAccount || noPassport) &&
     // maybe change to props
-    location.pathname !== routes.keys.path &&
-    !location.pathname.includes('/drive') &&
-    !location.pathname.includes('/oracle') &&
-    location.pathname !== '/'
+    ((location.pathname !== routes.keys.path &&
+      !location.pathname.includes('/drive') &&
+      !location.pathname.includes('/oracle') &&
+      location.pathname !== '/') ||
+      location.pathname === '/oracle/learn')
   ) {
     return (
       <ActionBarContainer>
