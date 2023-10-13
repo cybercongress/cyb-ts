@@ -11,6 +11,7 @@ import { RootState } from 'src/redux/store';
 import styles from './Main.module.scss';
 import { useDevice } from 'src/contexts/device';
 import Discord from 'src/components/actionBar/Discord/Discord';
+import Twitter from 'src/components/actionBar/Twitter/Twitter';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { pocket } = useSelector((state: RootState) => state);
@@ -59,6 +60,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
       <footer>
         <Telegram />
         <Discord />
+        <Twitter />
         <GitHub />
       </footer>
     </div>
