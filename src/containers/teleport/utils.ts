@@ -3,12 +3,12 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { ObjKeyValue } from 'src/types/data';
 import { Option } from 'src/types';
 import { IbcDenomsArr } from 'src/types/ibc';
-import coinDecimalsConfig from '../../utils/configToken';
-import { MyPoolsT } from './type';
 import { getDisplayAmount } from 'src/utils/utils';
 import { Log } from '@cosmjs/stargate/build/logs';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import { Event } from '@cosmjs/tendermint-rpc';
+import { MyPoolsT } from './type';
+import coinDecimalsConfig from '../../utils/configToken';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
@@ -235,7 +235,8 @@ export function calculatePairAmount(inputAmount: string | number, state) {
   let counterPairAmount = new BigNumber(0);
   let swapPrice = new BigNumber(0);
   let price = new BigNumber(0);
-  const swapFeeRatio = new BigNumber(1).minus(0.003); // TO DO get params
+  const feeRatio = new BigNumber(0.03);
+  const swapFeeRatio = new BigNumber(1).minus(feeRatio); // TO DO get params
 
   const poolAmountA = new BigNumber(
     getDisplayAmount(tokenAPoolAmount, coinDecimalsA)
@@ -254,26 +255,37 @@ export function calculatePairAmount(inputAmount: string | number, state) {
   const amount = new BigNumber(inputAmount);
   const amount2 = amount.multipliedBy(2);
 
-  if (!isReverse) {
-    swapPrice = poolAmountA.plus(amount2).dividedBy(poolAmountB);
-    counterPairAmount = amount
-      .dividedBy(swapPrice.multipliedBy(swapFeeRatio))
-      .dp(coinDecimalsB, BigNumber.ROUND_FLOOR);
+  const isPoolPair = [tokenA, tokenB].sort()[0] === tokenA;
+
+  let poolCoins: BigNumber[] = [];
+
+  if (isPoolPair) {
+    poolCoins = [poolAmountA, poolAmountB];
   } else {
-    swapPrice = poolAmountB.plus(amount2).dividedBy(poolAmountA);
-    counterPairAmount = amount
-      .multipliedBy(new BigNumber(1).dividedBy(swapFeeRatio))
-      .dividedBy(swapPrice)
-      .dp(coinDecimalsA, BigNumber.ROUND_FLOOR);
+    poolCoins = [poolAmountB, poolAmountA];
   }
 
-  if ([tokenA, tokenB].sort()[0] !== tokenA || isReverse) {
+  if ((isPoolPair && !isReverse) || (!isPoolPair && isReverse)) {
+    swapPrice = poolCoins[1].dividedBy(poolCoins[0].plus(amount2));
     price = new BigNumber(1)
       .dividedBy(swapPrice)
       .dividedBy(powA)
       .dividedBy(powB);
-  } else {
+  }
+
+  if ((isPoolPair && isReverse) || (!isPoolPair && !isReverse)) {
+    swapPrice = poolCoins[0].dividedBy(poolCoins[1].plus(amount2));
     price = new BigNumber(swapPrice).dividedBy(powA).dividedBy(powB);
+  }
+
+  if (isReverse) {
+    counterPairAmount = amount
+      .multipliedBy(swapPrice.multipliedBy(new BigNumber(1).plus(feeRatio)))
+      .dp(coinDecimalsA, BigNumber.ROUND_FLOOR);
+  } else {
+    counterPairAmount = amount
+      .multipliedBy(swapPrice.multipliedBy(swapFeeRatio))
+      .dp(coinDecimalsB, BigNumber.ROUND_FLOOR);
   }
 
   return { counterPairAmount, price };

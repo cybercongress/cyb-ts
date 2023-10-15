@@ -5,12 +5,12 @@ import { AmountDenom } from 'src/containers/txs/Activites';
 import { FormatNumberTokens } from 'src/containers/nebula/components';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { getDisplayAmountReverce } from 'src/utils/utils';
+import Display from 'src/components/containerGradient/Display/Display';
+import { Colors } from 'src/components/containerGradient/types';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './styles.module.scss';
 import Timestamp from './Timestamp';
-import Display from 'src/components/containerGradient/Display/Display';
-import { Colors } from 'src/components/containerGradient/types';
 
 function getDataOrder(value, coinDecimalsA: number) {
   const orderPrice = value.order_price;
@@ -75,7 +75,8 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
               <AmountDenom
                 denom={tokenA}
                 amountValue={
-                  dataResultSwap
+                  dataResultSwap &&
+                  parseFloat(dataResultSwap.offerCoin.amount) > 0
                     ? dataResultSwap.offerCoin.amount
                     : tokenAAmount
                 }

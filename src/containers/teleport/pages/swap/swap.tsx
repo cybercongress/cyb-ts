@@ -178,6 +178,9 @@ function Swap() {
   const useGetSlippage = useMemo(() => {
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
+
+      console.log('poolPrice', poolPrice)
+      console.log('price', swapPrice);
       const slippage = new BigNumber(poolPrice)
         .dividedBy(swapPrice)
         .minus(1)
