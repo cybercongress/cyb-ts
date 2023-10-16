@@ -11,11 +11,8 @@ import {
   FetchParticleDetailsDirect,
   IPFSContentMaybe,
   IpfsContentSource,
-  IpfsContentType,
 } from 'src/services/ipfs/ipfs';
 import { useBackend } from 'src/contexts/backend';
-import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 type UseIpfsContentReturn = {
   isReady: boolean;
@@ -69,26 +66,6 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
       queueManager.enqueueAndWait(cid, options),
     []
   );
-
-  // const fetchParticleDetailsDirect = useCallback(
-  //   async (cid: string, parseAs?: IpfsContentType) => {
-  //     const response = await getIPFSContent(cid, ipfsNode!);
-
-  //     const details = response?.result
-  //       ? await parseArrayLikeToDetails(
-  //           response.result,
-  //           response.meta.mime,
-  //           cid
-  //         )
-  //       : undefined;
-  //     return !parseAs
-  //       ? details
-  //       : details?.type === parseAs
-  //       ? details
-  //       : undefined;
-  //   },
-  //   [ipfsNode]
-  // );
 
   useEffect(() => {
     queueManager.setBackendApi(backendApi!);

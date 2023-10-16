@@ -1,6 +1,11 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import { IPFSContentDetails, IpfsContentType, Uint8ArrayLike } from '../ipfs';
+import {
+  IPFSContentDetails,
+  IPFSContentMaybe,
+  IpfsContentType,
+  Uint8ArrayLike,
+} from '../ipfs';
 import { getResponseResult, onProgressCallback } from './stream';
 
 // TODO: fix to get working inside web worker, REFACTOR
@@ -24,8 +29,12 @@ export const detectContentType = (
   mime: string | undefined
 ): IpfsContentType => {
   if (mime) {
-    if (mime.indexOf('video') !== -1) {
+    if (mime.includes('video')) {
       return 'video';
+    }
+
+    if (mime.includes('audio')) {
+      return 'audio';
     }
   }
   return 'other';
@@ -46,27 +55,27 @@ export const chunksToBlob = (
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
-  rawDataResponse: Uint8ArrayLike,
-  mime: string | undefined,
+  content: IPFSContentMaybe,
+  // rawDataResponse: Uint8ArrayLike | undefined,
+  // mime: string | undefined,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
+    // console.log('------parseArrayLikeToDetails', cid, content);
+    const mime = content?.meta?.mime;
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
       cid,
     };
-
-    if (detectContentType(mime) === 'video') {
-      // This type of content uses AsyncIterator<Uint8Array>
-      response.type = 'video';
-      // response.content = await getResponseResult(rawDataResponse);
-      return response;
+    const initialType = detectContentType(mime);
+    if (['video', 'audio'].indexOf(initialType) > -1) {
+      return { ...response, type: initialType };
     }
 
-    const rawData = rawDataResponse
-      ? await getResponseResult(rawDataResponse, onProgress)
+    const rawData = content?.result
+      ? await getResponseResult(content.result, onProgress)
       : undefined;
 
     // console.log(rawData);

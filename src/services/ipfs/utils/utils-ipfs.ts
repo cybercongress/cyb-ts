@@ -54,7 +54,6 @@ const loadIPFSContentFromDb = async (
   cid: string
 ): Promise<IPFSContentMaybe> => {
   // TODO: enable, disabled for tests
-  return undefined;
 
   // TODO: use cursor
   const data = await ipfsCacheDb.get(cid);

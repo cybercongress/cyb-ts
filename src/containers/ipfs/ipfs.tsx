@@ -1,7 +1,5 @@
 import { useParams } from 'react-router-dom';
-import ContentIpfs, {
-  getContentDetails,
-} from 'src/components/contentIpfs/contentIpfs';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -16,6 +14,7 @@ import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import { PREFIXES } from './components/metaInfo';
 import SearchResults from '../Search/SearchResults';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 function Ipfs() {
   const { query = '' } = useParams();
@@ -44,7 +43,7 @@ function Ipfs() {
   }, [cid, fetchParticle]);
 
   const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(undefined);
+    useState<IPFSContentDetails>(null);
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
@@ -54,8 +53,11 @@ function Ipfs() {
       return;
     }
     (async () => {
-      const details = await getContentDetails(cid, content);
-
+      const details = await parseArrayLikeToDetails(
+        content,
+        cid
+        // (progress: number) => console.log(`${cid} progress: ${progress}`)
+      );
       setIpfsDatDetails(details);
 
       const response = await queryClient?.rank(cid);
@@ -115,8 +117,8 @@ function Ipfs() {
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
 
-        {status === 'completed' ? (
-          <ContentIpfs status={status} content={content} cid={cid} />
+        {status === 'completed' && ipfsDataDetails !== null ? (
+          <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
         ) : (
           <ContentIpfsCid loading={status === 'executing'} status={status} />
         )}

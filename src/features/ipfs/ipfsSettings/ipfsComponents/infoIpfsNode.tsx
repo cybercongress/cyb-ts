@@ -32,7 +32,7 @@ export function useGetIpfsInfo() {
   useEffect(() => {
     const getIpfsStat = async () => {
       setLoading(true);
-      if (ipfs !== null) {
+      if (!!ipfs) {
         const { id, agentVersion, repoSize } = await ipfs.info();
         setIdIpfs({ id, agentVersion });
         const repoSizeString =

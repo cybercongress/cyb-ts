@@ -86,6 +86,7 @@ export type IpfsContentType =
   | 'link'
   | 'text'
   | 'video'
+  | 'audio'
   | 'html'
   | 'other';
 
