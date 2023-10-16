@@ -7,27 +7,23 @@ import {
   MainContainer,
 } from 'src/components';
 import { routes } from 'src/routes';
-import TitleText from '../TitleText/TitleText';
-import styles from './Learn.module.scss';
-import KeywordButton from '../KeywordButton/KeywordButton';
 import { useEffect, useState } from 'react';
-import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
+import { CYBER, PATTERN_IPFS_HASH } from 'src/utils/config';
 import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import { useIpfs } from 'src/contexts/ipfs';
 import { useAdviser } from 'src/features/adviser/context';
-import Loading from '../../../components/ui/Loading';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { useSelector } from 'react-redux';
 import { useSigningClient } from 'src/contexts/signerClient';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { Networks } from 'src/types/networks';
-import { routes } from '../../../routes';
 import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import KeywordButton from '../KeywordButton/KeywordButton';
+import styles from './Learn.module.scss';
+import TitleText from '../TitleText/TitleText';
 
 function Learn() {
   const [ask, setAsk] = useState('');
@@ -39,7 +35,7 @@ function Learn() {
   const { node } = useIpfs();
   const queryClient = useQueryClient();
 
-  const address = useSelector(selectCurrentAddress);
+  const address = useAppSelector(selectCurrentAddress);
 
   const { signer, signingClient } = useSigningClient();
   const navigate = useNavigate();
@@ -84,14 +80,14 @@ function Learn() {
     } else if (noEnergy) {
       content = (
         <>
-          to cyberlink and learn you need energy. Energy, amperes A and volts V
-          can be produced by freezing hydrogen H in{' '}
+          To cyberlink and learn you need energy. <br /> Energy, amperes A and
+          volts V can be produced by freezing hydrogen H in{' '}
           <Link to={routes.hfr.path}>HFR</Link>
         </>
       );
       adviserColor = 'red';
     } else {
-      content = 'create cyberlink';
+      content = 'Create cyberlink';
     }
 
     setAdviser(content, adviserColor);
@@ -102,11 +98,16 @@ function Learn() {
   }, [ask, answer]);
 
   async function cyberlink() {
-    if (!node || !queryClient || !address || !signingClient) {
+    if (!node || !queryClient || !address || !signer || !signingClient) {
       return;
     }
 
-    // TODO: check address === wallet
+    const [{ address: signerAddress }] = await signer.getAccounts();
+
+    if (signerAddress !== address) {
+      setError('Signer address is not equal to current account');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -160,7 +161,7 @@ function Learn() {
           <p>
             learning can be squeezed into one simple act: creating a link when
             you link two{' '}
-            <Link to={routes.search.getLink('pieces of information')}>
+            <Link to={routes.search.getLink('particle')}>
               pieces of information
             </Link>{' '}
             then{' '}
@@ -168,7 +169,7 @@ function Learn() {
               search is trivial
             </Link>{' '}
             the more links you learned, the{' '}
-            <Link to={routes.search.getLink('smarter you are')}>
+            <Link to={routes.search.getLink('negentropy')}>
               smarter you are
             </Link>
           </p>
@@ -224,18 +225,18 @@ function Learn() {
 
           <div className={styles.inputs}>
             <Input
-              color="pink"
-              placeholder="Ask"
               value={ask}
               disabled={loading}
+              placeholder="Ask"
+              color="pink"
               onChange={(e) => setAsk(e.target.value)}
             />
             <span className={styles.tilde}>~</span>
             <Input
-              color="pink"
-              disabled={loading}
               value={answer}
+              disabled={loading}
               placeholder="Answer"
+              color="pink"
               onChange={(e) => setAnswer(e.target.value)}
             />
           </div>
@@ -255,7 +256,7 @@ function Learn() {
             disabled={!ask || !answer || !node || !queryClient}
             onClick={cyberlink}
           >
-            cyberlink
+            {node ? 'cyberlink' : 'node is loading...'}
           </Button>
         </ActionBar>
       </div>
