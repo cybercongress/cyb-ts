@@ -107,7 +107,7 @@ function PasportCitizenship({
             height: 32,
           }}
         >
-          <div style={{ color: '#00C4FF' }}>
+          <div style={{ color: '#1fcbff' }}>
             {citizenship !== null && citizenship.extension.nickname}
           </div>
 

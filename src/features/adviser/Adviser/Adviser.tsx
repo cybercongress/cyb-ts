@@ -10,9 +10,9 @@ export enum AdviserColors {
   yellow = 'yellow',
 }
 
-type Props = {
-  children: React.ReactNode;
-  color?: AdviserColors;
+export type Props = {
+  children: React.ReactNode | string;
+  color?: AdviserColors | keyof typeof AdviserColors;
   disabled?: boolean;
   className?: string;
 

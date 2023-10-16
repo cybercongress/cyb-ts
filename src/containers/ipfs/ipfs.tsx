@@ -82,7 +82,7 @@ function Ipfs() {
         <div className={styles.left}>
           {ipfsDataDetails?.type}
 
-          {rankInfo && (
+          {!!rankInfo && (
             <div className={styles.rank}>
               with rank
               <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>

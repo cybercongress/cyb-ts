@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
 import { ActionBar, Button, MainContainer } from 'src/components';
 import { routes } from 'src/routes';
 import styles from './Search.module.scss';
 import { id } from 'src/containers/application/Header/Commander/Commander';
 import { useEffect } from 'react';
-import useCanvas from 'src/containers/temple/components/canvasOne/useCanvas';
+// import useCanvas from 'src/containers/temple/components/canvasOne/useCanvas';
+import TitleText from './TitleText/TitleText';
+import KeywordButton from './KeywordButton/KeywordButton';
 
 function Search() {
   // const { canvasRef } = useCanvas();
@@ -19,15 +20,7 @@ function Search() {
     <MainContainer width="100%">
       <header className={styles.header}>
         {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
-          return (
-            <Link
-              className={styles.keywordBtn}
-              key={keyword}
-              to={routes.search.getLink(keyword)}
-            >
-              {keyword}
-            </Link>
-          );
+          return <KeywordButton key={keyword} keyword={keyword} />;
         })}
       </header>
 
@@ -89,10 +82,7 @@ function Search() {
           ].map(({ title, text }) => {
             return (
               <li key={title}>
-                <Link to={routes.search.getLink(title)}>
-                  <h6>{title}</h6>
-                </Link>
-                <p>{text}</p>
+                <TitleText title={title} text={text} />
               </li>
             );
           })}
@@ -101,9 +91,7 @@ function Search() {
 
       <ActionBar>
         <Button link={'/particles'}>get high</Button>
-        <Button link={routes.search.getLink('how to learn')}>
-          how to learn
-        </Button>
+        <Button link={routes.oracle.learn.path}>how to learn</Button>
       </ActionBar>
     </MainContainer>
   );
