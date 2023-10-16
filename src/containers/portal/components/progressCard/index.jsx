@@ -65,7 +65,7 @@ function ProgressCard({
 
   const closedTitle = (
     <div className={styles.containerBeforeActivationTitle}>
-      <div style={{ color: '#00C4FF' }}>{headerText}</div>
+      <div style={{ color: '#1fcbff' }}>{headerText}</div>
       <div>{titleValue}</div>
     </div>
   );

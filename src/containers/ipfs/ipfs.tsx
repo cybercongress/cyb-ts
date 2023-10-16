@@ -27,8 +27,11 @@ function Ipfs() {
   const { creator } = useGetCreator(cid);
 
   const [rankInfo, setRankInfo] = useState<number>();
+  const [ipfsDataDetails, setIpfsDatDetails] =
+    useState<IPFSContentDetails>(null);
 
   const queryClient = useQueryClient();
+  const { setAdviser } = useAdviser();
 
   useEffect(() => {
     (async () => {
@@ -41,9 +44,6 @@ function Ipfs() {
       cid && fetchParticle && fetchParticle(cid);
     })();
   }, [cid, fetchParticle]);
-
-  const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(null);
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
@@ -65,8 +65,6 @@ function Ipfs() {
     })();
   }, [content, status, cid, queryClient]);
 
-  const { setAdviser } = useAdviser();
-
   useEffect(() => {
     if (!ipfsDataDetails) {
       return;
@@ -77,7 +75,7 @@ function Ipfs() {
         <div className={styles.left}>
           {ipfsDataDetails?.type}
 
-          {rankInfo && (
+          {!!rankInfo && (
             <div className={styles.rank}>
               with rank
               <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>

@@ -25,6 +25,7 @@
     &::placeholder {
       color: #272343;
       opacity: 0.5;
+      text-transform: lowercase;
     }
 
     &:disabled {

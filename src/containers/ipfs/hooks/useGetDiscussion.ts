@@ -11,18 +11,19 @@ export enum LinkType {
 const reduceLinks = (data, cid, time, type: LinkType) => {
   return data.reduce((acc, item) => {
     if (item[type] === cid) {
-      return [
-        ...acc,
-        { cid: item[type === LinkType.from ? 'to' : 'from'], timestamp: time },
-      ];
+      return acc.concat({
+        cid: item[type === LinkType.from ? 'to' : 'from'],
+        timestamp: time,
+      });
     }
-    return [...acc];
+    return acc;
   }, []);
 };
 
 const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
   return data.reduce((acc, item) => {
     const { timestamp } = item;
+
     if (
       item.tx.body.messages[0]['@type'] === '/cyber.graph.v1beta1.MsgCyberlink'
     ) {
@@ -39,16 +40,16 @@ const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
     ) {
       const links = item.tx.body.messages[0].msg?.cyberlink?.links;
 
-      // if (!links) {
-      //   debugger;
-      // }
+      if (!links) {
+        debugger;
+      }
 
       if (links) {
         const linksReduce = reduceLinks(links, cid, timestamp, type);
         return [...acc, ...linksReduce];
       }
     }
-    return [...acc];
+    return acc;
   }, []);
 };
 
@@ -71,7 +72,7 @@ const request = async (
   }
 };
 
-const limit = 10;
+const limit = 15;
 
 function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
   const [total, setTotal] = useState(0);
@@ -101,22 +102,32 @@ function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
     {
       enabled: !skip && Boolean(hash),
       getNextPageParam: (lastPage) => {
-        if (
-          lastPage.data &&
-          total &&
-          (lastPage.page + 1) * Number(limit) < total
-        ) {
-          return lastPage.page + 1;
+        const { page } = lastPage;
+
+        if (!total || (page + 1) * limit >= total) {
+          return undefined;
         }
 
-        return undefined;
+        return page + 1;
       },
     }
   );
 
   return {
     status,
-    data: data?.pages?.reduce((acc, page) => acc.concat(page.data), []) || [],
+    data:
+      data?.pages?.reduce(
+        (acc, page) =>
+          acc.concat(
+            page.data.map((item) => {
+              return {
+                ...item,
+                type,
+              };
+            })
+          ),
+        []
+      ) || [],
     error,
     isFetching,
     fetchNextPage,

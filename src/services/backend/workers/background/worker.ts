@@ -1,5 +1,8 @@
+import { proxy } from 'comlink';
+
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
-import { CybIpfsNode, IPFSContent, IpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IPFSContent } from 'src/services/ipfs/ipfs';
+
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
@@ -26,7 +29,6 @@ import {
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
 import { exposeWorker } from '../workerUtils';
-import { proxy } from 'comlink';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;

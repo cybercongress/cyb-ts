@@ -27,5 +27,6 @@ module.exports = merge(commonConfig, {
       ).definitions,
       'process.env.IS_DEV': JSON.stringify(true),
     }),
+    new ReactRefreshWebpackPlugin(),
   ],
 });

@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { AdviserColors } from './Adviser/Adviser';
+import { Props as AdviserProps } from './Adviser/Adviser';
 
 type ContextType = {
   setAdviser: (
-    content: React.ReactNode | string,
-    color?: AdviserColors
+    content: AdviserProps['children'],
+    color?: AdviserProps['color']
   ) => void;
-  content: React.ReactNode;
+  content: AdviserProps['children'];
+  color?: AdviserProps['color'];
   isOpen: boolean;
-  color?: AdviserColors;
   setIsOpen: (isOpen: boolean) => void;
 };
 
@@ -30,7 +30,7 @@ export function useAdviser() {
 function AdviserProvider({ children }: { children: React.ReactNode }) {
   const [adviserProps, setAdviserProps] = useState<{
     content: ContextType['content'];
-    color?: AdviserColors;
+    color?: ContextType['color'];
   }>({
     content: '',
   });

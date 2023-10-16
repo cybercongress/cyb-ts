@@ -2,6 +2,11 @@
   &.center {
     display: flex;
     justify-content: center;
+
+    // should be removed
+    // https://github.com/cybercongress/cyb/issues/954
+    flex-direction: column;
+
     align-items: center;
     font-size: 30px;
     min-height: 200px;
@@ -80,6 +85,7 @@
 }
 
 .markdownContainer ul {
+  list-style-type: initial;
   margin-bottom: 10px;
   margin-left: 20px;
   padding-left: 20px;

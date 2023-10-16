@@ -9,10 +9,14 @@ import Header from 'src/containers/application/Header/Header';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { RootState } from 'src/redux/store';
 import styles from './Main.module.scss';
+import { useDevice } from 'src/contexts/device';
+import Discord from 'src/components/actionBar/Discord/Discord';
+import Twitter from 'src/components/actionBar/Twitter/Twitter';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { pocket } = useSelector((state: RootState) => state);
   const { defaultAccount } = pocket;
+  const { isMobile } = useDevice();
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [openMenu, setOpenMenu] = useState(false);
@@ -26,10 +30,13 @@ function MainLayout({ children }: { children: JSX.Element }) {
 
   useEffect(() => {
     // for animation
-    if (localStorage.getItem(localStorageKeys.MENU_SHOW) !== 'false') {
+    if (
+      localStorage.getItem(localStorageKeys.MENU_SHOW) !== 'false' &&
+      !isMobile
+    ) {
       toggleMenu(true);
     }
-  }, []);
+  }, [isMobile]);
 
   function closeMenu() {
     toggleMenu(false);
@@ -52,6 +59,8 @@ function MainLayout({ children }: { children: JSX.Element }) {
 
       <footer>
         <Telegram />
+        <Discord />
+        <Twitter />
         <GitHub />
       </footer>
     </div>
