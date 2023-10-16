@@ -23,7 +23,7 @@ $color-text: #777777;
 
 .containerPrice {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
   img {
     @include img-size;
