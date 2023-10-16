@@ -6,11 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IpfsNodeType } from 'src/services/ipfs/ipfs';
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
+import { useBackend } from './backend';
 
 export type IpfsOptsType = {
-  ipfsNodeType: 'external' | 'embedded' | 'helia';
+  ipfsNodeType: IpfsNodeType;
   urlOpts: string;
   userGateway: string;
 };
@@ -56,7 +57,12 @@ export function useIpfs() {
 function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
-  const ipfsNode = useRef<CybIpfsNode | null>(null);
+  // const ipfsNode = useRef<CybIpfsNode | null>(null);
+  const { ipfsNode, loadIpfs, ipfsError } = useBackend();
+
+  useEffect(() => {
+    setIpfsInitError(ipfsError);
+  }, [ipfsError]);
 
   const startConnectionIpfs = useCallback(async () => {
     setIsIpfsPending(true);
@@ -65,7 +71,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     const ipfsOpts = getIpfsOpts();
 
     try {
-      ipfsNode.current = await initIpfsNode(ipfsOpts);
+      await loadIpfs(ipfsOpts);
     } catch (err) {
       setIpfsInitError(err instanceof Error ? err.message : (err as string));
     }
@@ -75,14 +81,14 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     startConnectionIpfs();
 
-    return () => {
-      (async () => {
-        if (ipfsNode.current) {
-          ipfsNode.current.stop();
-          ipfsNode.current = null;
-        }
-      })();
-    };
+    // return () => {
+    //   (async () => {
+    //     if (ipfsNode.current) {
+    //       ipfsNode.current.stop();
+    //       ipfsNode.current = null;
+    //     }
+    //   })();
+    // };
   }, [startConnectionIpfs]);
 
   useEffect(() => {
@@ -100,12 +106,12 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
       value={useMemo(
         () =>
           ({
-            node: ipfsNode.current,
-            isReady: ipfsNode.current !== null,
+            node: ipfsNode,
+            isReady: ipfsNode !== null,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),
-        [ipfsInitError, isIpfsPending]
+        [ipfsInitError, isIpfsPending, ipfsNode]
       )}
     >
       {children}

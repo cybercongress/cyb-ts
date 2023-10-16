@@ -1,5 +1,5 @@
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
-import { IPFSContent, IpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IPFSContent, IpfsNode } from 'src/services/ipfs/ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
@@ -26,9 +26,10 @@ import {
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
 import { exposeWorker } from '../workerUtils';
+import { proxy } from 'comlink';
 
 const backendApiFactory = () => {
-  let ipfsNode: IpfsNode | undefined;
+  let ipfsNode: CybIpfsNode | undefined;
   let dbApi: DbWorkerApi | undefined;
   console.log('----backendApi worker constructor!');
   const channel = new BcChannel();
@@ -39,14 +40,26 @@ const backendApiFactory = () => {
   const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
-  const init = async (ipfsOpts: IpfsOptsType, dbApiProxy: DbWorkerApi) => {
+  const init = async (dbApiProxy: DbWorkerApi) => {
     console.log('----backendApi worker init! ');
 
     // proxy to worker with db
     dbApi = dbApiProxy;
 
-    ipfsNode = await initIpfsNode(ipfsOpts);
     postWorkerStatus('idle');
+  };
+
+  const startIpfs = async (ipfsOpts: IpfsOptsType) => {
+    try {
+      if (ipfsNode) {
+        await ipfsNode.stop();
+      }
+      ipfsNode = await initIpfsNode(ipfsOpts);
+      return proxy(ipfsNode);
+    } catch (err) {
+      console.log('----ipfs node init error ', err);
+      throw Error(err instanceof Error ? err.message : (err as string));
+    }
   };
 
   // TODO: refact, params need to be synced with main thread
@@ -143,6 +156,7 @@ const backendApiFactory = () => {
     importParicleContent,
     importCyberlinks,
     importParticle,
+    startIpfs,
   };
 };
 

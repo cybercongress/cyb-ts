@@ -39,28 +39,6 @@ export interface IpfsNodePrperties {
   gatewayUrl?: string;
 }
 
-export interface IpfsNode {
-  readonly nodeType: IpfsNodeType;
-  readonly config: IpfsNodePrperties;
-  readonly isStarted: boolean;
-  init: (options?: InitOptions) => Promise<void>;
-  stop: () => Promise<void>;
-  start: () => Promise<void>;
-  cat: (cid: string, options?: CatOptions) => AsyncIterable<Uint8Array>;
-  stat: (cid: string, options?: AbortOptions) => Promise<IpfsFileStats>;
-  add: (content: File | string, options?: AbortOptions) => Promise<string>;
-  pin: (cid: string, options?: AbortOptions) => Promise<string | undefined>;
-  ls: () => AsyncIterable<LsResult>;
-  getPeers: () => Promise<string[]>;
-  connectPeer: (address: string) => Promise<boolean>;
-  info: () => Promise<IpfsNodeInfo>;
-}
-
-export interface CybIpfsNode extends IpfsNode {
-  isConnectedToSwarm(): Promise<boolean>;
-  reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
-}
-
 // export interface ExtendedIpfsNode<T extends IpfsNode> {
 //   node: T;
 //   isConnectedToSwarm: () => Promise<boolean>;
@@ -138,3 +116,26 @@ export type FetchParticleDetailsDirect = (
   cid: string,
   type: IpfsContentType
 ) => Promise<IPFSContentDetails>;
+
+export interface IpfsNode {
+  readonly nodeType: IpfsNodeType;
+  readonly config: IpfsNodePrperties;
+  readonly isStarted: boolean;
+  init: (options?: InitOptions) => Promise<void>;
+  stop: () => Promise<void>;
+  start: () => Promise<void>;
+  cat: (cid: string, options?: CatOptions) => AsyncIterable<Uint8Array>;
+  stat: (cid: string, options?: AbortOptions) => Promise<IpfsFileStats>;
+  add: (content: File | string, options?: AbortOptions) => Promise<string>;
+  pin: (cid: string, options?: AbortOptions) => Promise<string | undefined>;
+  ls: () => AsyncIterable<LsResult>;
+  getPeers: () => Promise<string[]>;
+  connectPeer: (address: string) => Promise<boolean>;
+  info: () => Promise<IpfsNodeInfo>;
+}
+
+export interface CybIpfsNode extends IpfsNode {
+  isConnectedToSwarm(): Promise<boolean>;
+  reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
+  fetchParticleDetailsDirect: FetchParticleDetailsDirect;
+}

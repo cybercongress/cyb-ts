@@ -3,12 +3,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import {
-  IPFSContentDetails,
-  IPFSContentMaybe,
-  IpfsContentType,
-} from 'src/utils/ipfs/ipfs';
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
+import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -36,7 +31,7 @@ function ContentItem({
   const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
 
   useEffect(
-    () => fetchParticle(cid, item?.rank),
+    () => fetchParticle && fetchParticle(cid, item?.rank),
     [cid, item?.rank, fetchParticle]
   );
 

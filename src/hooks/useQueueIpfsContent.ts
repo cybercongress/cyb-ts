@@ -4,7 +4,7 @@ import {
   QueueItemOptions,
   QueueItemStatus,
 } from 'src/services/QueueManager/QueueManager.d';
-import { useIpfs } from 'src/contexts/ipfs';
+// import { useIpfs } from 'src/contexts/ipfs';
 import { queueManager } from 'src/services/QueueManager/QueueManager';
 
 import {
@@ -37,8 +37,8 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
   const [prevNodeType, setPrevNodeType] = useState<string | undefined>();
-  const { node } = useIpfs();
-  const { backendApi } = useBackend();
+  // const { node } = useIpfs();
+  const { backendApi, ipfsNode } = useBackend();
 
   const fetchParticle = useCallback(
     (cid: string, rank?: number) => {
@@ -70,41 +70,44 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
     []
   );
 
-  const fetchParticleDetailsDirect = useCallback(
-    async (cid: string, parseAs?: IpfsContentType) => {
-      const response = await getIPFSContent(cid, node!);
+  // const fetchParticleDetailsDirect = useCallback(
+  //   async (cid: string, parseAs?: IpfsContentType) => {
+  //     const response = await getIPFSContent(cid, ipfsNode!);
 
-      const details = response?.result
-        ? await parseArrayLikeToDetails(
-            response.result,
-            response.meta.mime,
-            cid
-          )
-        : undefined;
-      return !parseAs
-        ? details
-        : details?.type === parseAs
-        ? details
-        : undefined;
-    },
-    [node]
-  );
+  //     const details = response?.result
+  //       ? await parseArrayLikeToDetails(
+  //           response.result,
+  //           response.meta.mime,
+  //           cid
+  //         )
+  //       : undefined;
+  //     return !parseAs
+  //       ? details
+  //       : details?.type === parseAs
+  //       ? details
+  //       : undefined;
+  //   },
+  //   [ipfsNode]
+  // );
 
   useEffect(() => {
     queueManager.setBackendApi(backendApi!);
   }, [backendApi]);
 
   useEffect(() => {
-    if (node && prevNodeType !== node.nodeType) {
-      queueManager.setNode(node);
-      setPrevNodeType(node.nodeType);
-    }
-  }, [node, prevNodeType]);
+    (async () => {
+      const currentNodeType = await ipfsNode?.nodeType;
+      if (ipfsNode && prevNodeType !== currentNodeType) {
+        await queueManager.setNode(ipfsNode);
+        setPrevNodeType(currentNodeType);
+      }
+    })();
+  }, [ipfsNode, prevNodeType]);
 
   useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
       console.log(
-        '----q node prevParentIdRef',
+        '----q ipfsNode prevParentIdRef',
         parentId,
         prevParentIdRef.current
       );
@@ -117,15 +120,17 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   }, [parentId]);
 
   return {
-    isReady: !!node,
+    isReady: !!ipfsNode,
     status,
     source,
     content,
     cancel: (cid: string) => queueManager.cancel(cid),
     clear: queueManager.clear.bind(queueManager),
-    fetchParticle: node ? fetchParticle : undefined,
-    fetchParticleAsync: node ? fetchParticleAsync : undefined,
-    fetchParticleDetailsDirect: node ? fetchParticleDetailsDirect : undefined,
+    fetchParticle: ipfsNode ? fetchParticle : undefined,
+    fetchParticleAsync: ipfsNode ? fetchParticleAsync : undefined,
+    fetchParticleDetailsDirect: ipfsNode
+      ? ipfsNode.fetchParticleDetailsDirect
+      : undefined,
   };
 }
 

@@ -51,6 +51,15 @@ function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
+const embeddedStrategy = new QueueStrategy(
+  {
+    db: { timeout: 5000, maxConcurrentExecutions: 999 },
+    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+    node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+  },
+  ['db', 'gateway', 'node']
+);
+
 const strategies = {
   external: new QueueStrategy(
     {
@@ -60,14 +69,8 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: new QueueStrategy(
-    {
-      db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-    },
-    ['db', 'gateway', 'node']
-  ),
+  embedded: embeddedStrategy,
+  helia: embeddedStrategy,
 };
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
@@ -75,7 +78,7 @@ type QueueMap<T> = Map<string, QueueItem<T>>;
 class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
-  private node: CybIpfsNode | undefined = undefined;
+  private node: Remote<CybIpfsNode> | undefined = undefined;
 
   private backendApi: Remote<BackendWorkerApi> | undefined = undefined;
 
@@ -99,11 +102,14 @@ class QueueManager<T> {
     this.backendApi = api;
   }
 
-  public setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
+  public async setNode(
+    node: Remote<CybIpfsNode>,
+    customStrategy?: QueueStrategy
+  ) {
     // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
     this.node = node;
-    this.switchStrategy(customStrategy || strategies[node.nodeType]);
+    this.switchStrategy(customStrategy || strategies[await node.nodeType]);
   }
 
   private getItemBySourceAndPriority(queue: QueueMap<T>) {
@@ -138,7 +144,8 @@ class QueueManager<T> {
     const { cid, source, controller, callbacks } = item;
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
-
+    cid === 'Qmb4Ge8UWw8czQXqjsWE23NQgH3AXDqq1uCLeeH1fQHssE' &&
+      console.log('----fetchData queue', item);
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {

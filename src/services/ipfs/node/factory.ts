@@ -1,6 +1,6 @@
 // import { getNodeAutoDialInterval } from './utils-ipfs';
 import { IpfsOptsType } from 'src/contexts/ipfs';
-import { IpfsNodeType, IpfsNode } from '../ipfs';
+import { IpfsNodeType, IpfsNode, CybIpfsNode } from '../ipfs';
 import KuboNode from './impl/kubo';
 import HeliaNode from './impl/helia';
 import JsIpfsNode from './impl/js-ipfs';
@@ -19,7 +19,9 @@ const nodeClassMap: Record<IpfsNodeType, new () => IpfsNode> = {
 };
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
-export async function initIpfsNode(options: IpfsOptsType) {
+export async function initIpfsNode(
+  options: IpfsOptsType
+): Promise<CybIpfsNode> {
   const { ipfsNodeType, ...restOptions } = options;
 
   const swarmPeerId = CYBER_NODE_SWARM_PEER_ID;

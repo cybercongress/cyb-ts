@@ -32,22 +32,16 @@ function Ipfs() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (query.match(PATTERN_IPFS_HASH)) {
-      if (query !== cid) {
-        setKeywordHash(query);
-      }
-
-      return;
-    }
-
     (async () => {
-      // TODO: handle error and types
-      const keywordHashTemp = await getIpfsHash(encodeSlash(query));
-
-      setKeywordHash(keywordHashTemp);
-      fetchParticle(keywordHashTemp);
+      !cid && setKeywordHash((await getIpfsHash(encodeSlash(query))) as string);
     })();
   }, [cid, query]);
+
+  useEffect(() => {
+    (async () => {
+      cid && fetchParticle && fetchParticle(cid);
+    })();
+  }, [cid, fetchParticle]);
 
   const [ipfsDataDetails, setIpfsDatDetails] =
     useState<IPFSContentDetails>(undefined);

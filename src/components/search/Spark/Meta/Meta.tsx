@@ -19,7 +19,7 @@ function Meta({ cid }: Props) {
   const dataAnswer = useGetAnswers(cid);
   const { content, fetchParticle } = useQueueIpfsContent(cid);
 
-  useEffect(() => fetchParticle(cid), [cid, fetchParticle]);
+  useEffect(() => fetchParticle && fetchParticle(cid), [cid, fetchParticle]);
 
   const navigate = useNavigate();
 

@@ -1,4 +1,11 @@
-import { IpfsNode, CybIpfsNode, IPFSContentMeta } from '../../ipfs';
+import {
+  IpfsNode,
+  CybIpfsNode,
+  IPFSContentMeta,
+  IpfsContentType,
+} from '../../ipfs';
+import { parseArrayLikeToDetails } from '../../utils/content';
+import { getIPFSContent } from '../../utils/utils-ipfs';
 
 type WithCybFeaturesOptions = {
   swarmPeerId: string;
@@ -9,7 +16,25 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   Base: TBase,
   options: WithCybFeaturesOptions
 ) {
-  return class SwarmReconnect extends Base implements CybIpfsNode {
+  return class CybIpfsNodeMixin extends Base implements CybIpfsNode {
+    async fetchParticleDetailsDirect(cid: string, parseAs?: IpfsContentType) {
+      const response = await getIPFSContent(cid, this);
+
+      const details = response?.result
+        ? await parseArrayLikeToDetails(
+            response.result,
+            response.meta.mime,
+            cid
+          )
+        : undefined;
+
+      return !parseAs
+        ? details
+        : details?.type === parseAs
+        ? details
+        : undefined;
+    }
+
     async isConnectedToSwarm() {
       return !!(await super.getPeers()).find(
         (peerId) => peerId === options.swarmPeerId

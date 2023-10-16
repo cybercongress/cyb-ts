@@ -161,9 +161,9 @@ class HeliaNode implements IpfsNode {
       const pinResult = (
         await this.node?.pins.add(cid_, options)
       )?.cid.toString();
-      console.log('------pin', pinResult);
+      // console.log('------pin', pinResult);
     }
-    console.log('------pinned', cid, isPinned);
+    // console.log('------pinned', cid, isPinned);
     return undefined;
   }
 
