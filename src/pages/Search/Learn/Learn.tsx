@@ -80,8 +80,8 @@ function Learn() {
     } else if (noEnergy) {
       content = (
         <>
-          To cyberlink and learn you need energy. <br /> Energy, amperes A and
-          volts V can be produced by freezing hydrogen H in{' '}
+          to cyberlink and learn you need energy <br />
+          amperes, 💡 and volts, ⚡️ can be produced by freezing hydrogen H in{' '}
           <Link to={routes.hfr.path}>HFR</Link>
         </>
       );
@@ -159,15 +159,16 @@ function Learn() {
             linking is fundamental to learning
           </h3>
           <p>
-            learning can be squeezed into one simple act: creating a link when
-            you link two{' '}
+            learning can be squeezed into one simple act: creating a link <br />
+            when you link two{' '}
             <Link to={routes.search.getLink('particle')}>
               pieces of information
             </Link>{' '}
             then{' '}
             <Link to={routes.search.getLink('search is trivial')}>
               search is trivial
-            </Link>{' '}
+            </Link>
+            <br />
             the more links you learned, the{' '}
             <Link to={routes.search.getLink('negentropy')}>
               smarter you are
@@ -187,7 +188,11 @@ function Learn() {
             },
             {
               title: 'upload',
-              text: <>your brain into eternity, and more</>,
+              text: (
+                <>
+                  your brain into eternity, <br /> and more
+                </>
+              ),
             },
           ].map(({ title, text }) => {
             return (
@@ -199,7 +204,7 @@ function Learn() {
         </ul>
 
         <div className={styles.linksExample}>
-          <h3 className={styles.titleText}>here is some cool links</h3>
+          <h3 className={styles.titleText}>here are some cool links</h3>
 
           <ul>
             {[
@@ -221,7 +226,7 @@ function Learn() {
         </div>
 
         <section className={styles.learn}>
-          <h3 className={styles.titleText}>now learn something new</h3>
+          <h3 className={styles.titleText}>now let's learn something new</h3>
 
           <div className={styles.inputs}>
             <Input

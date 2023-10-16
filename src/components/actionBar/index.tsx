@@ -91,7 +91,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   // TODO: not show while loading passport
 
   // refactor
-  if (commanderFocused) {
+  if (commanderFocused && location.pathname !== '/') {
     return (
       <ActionBarContainer>
         <Button

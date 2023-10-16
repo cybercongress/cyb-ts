@@ -92,12 +92,12 @@
        y2="92.527428"
        gradientUnits="userSpaceOnUse">
       <stop
-         stop-color="#00C4FF"
+         stop-color="#1fcbff"
          stop-opacity="0.68"
          id="stop21" />
       <stop
          offset="0.9994"
-         stop-color="#00C4FF"
+         stop-color="#1fcbff"
          stop-opacity="0.3"
          id="stop23" />
       <stop
@@ -112,7 +112,7 @@
          id="stop27" />
       <stop
          offset="0.9997"
-         stop-color="#00C4FF"
+         stop-color="#1fcbff"
          stop-opacity="0"
          id="stop29" />
     </linearGradient>
