@@ -60,6 +60,7 @@ import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Search from './pages/Search/Search';
 import Learn from './pages/Search/Learn/Learn';
+import LinksGraphContainer from './containers/forceGraph/LinksGraphContainer';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -154,8 +155,10 @@ function AppRouter() {
           <Route path="/sphere/:status" element={<Validators />} />
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
-          <Route path="/graph" element={<ForceGraph />} />
+
+          <Route path="/graph" element={<LinksGraphContainer />} />
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
+
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
           <Route path="/ipfs/:query" element={<RedirectToOracleAsk />} />
           <Route path={routes.oracle.ask.path} element={<Ipfs />} />

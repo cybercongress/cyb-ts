@@ -13,6 +13,7 @@ import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 import ZeroUser from './ZeroUser/ZeroUser';
 import RobotContextProvider, { useRobotContext } from './robot.context';
+import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
 
 function RobotRoutes() {
   const { isOwner, isLoading, address } = useRobotContext();
@@ -38,7 +39,10 @@ function RobotRoutes() {
         <Route path="log" element={<FeedsTab />} />
         <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />
-        <Route path="brain" element={<ForceGraph />} />
+        <Route
+          path="brain"
+          element={<LinksGraphContainer address={address} toPortal />}
+        />
         <Route path="karma" element={<UnderConstruction />} />
         <Route path="soul" element={<UnderConstruction />} />
 
