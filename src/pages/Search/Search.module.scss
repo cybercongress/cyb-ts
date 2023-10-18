@@ -117,8 +117,20 @@
     overflow: hidden;
     box-shadow: 0px 0px 5px 1px rgba(31, 203, 255, 0.3),
       0px 0px 50px 0px rgba(31, 203, 255, 0.42);
+
     // box-shadow: 0px 0px 15px -2px var(--blue-light);
-    // box-shadow: inset 0 0 50px black;
+
+    &::after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      box-shadow: inset 0 0 50px 20px black;
+    }
     border-radius: 50%;
   }
 
