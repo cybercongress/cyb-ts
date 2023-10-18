@@ -8,6 +8,9 @@ import styles from './Search.module.scss';
 import ForceGraph from 'src/containers/forceGraph/forceGraph';
 import LinearGradientContainer from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
+import { Stars } from 'src/containers/portal/components';
+import { useGetGraphStats } from 'src/containers/temple/hooks';
+import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 
 enum TitleType {
   search,
@@ -65,8 +68,7 @@ const listConfig = {
       title: 'collaborative',
       text: (
         <>
-          build superintelligence together <br />
-          cooperate and interact with AI
+          cooperate and interact <br /> with ai together
         </>
       ),
     },
@@ -95,6 +97,10 @@ export const learningListConfig = listConfig[TitleType.learning];
 function Search() {
   const [titleType, setTitleType] = useState(TitleType.learning);
 
+  const dataGetGraphStats = useGetGraphStats();
+
+  console.log(dataGetGraphStats);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTitleType((prev) => {
@@ -113,7 +119,7 @@ function Search() {
             return TitleType.search;
         }
       });
-    }, 4000);
+    }, 6 * 1000);
 
     return () => {
       clearInterval(interval);
@@ -128,19 +134,23 @@ function Search() {
   }, []);
 
   return (
-    <MainContainer width="100%">
+    <div className={styles.wrapper}>
+      <div className={styles.starsWrapper}>
+        <Stars />
+      </div>
+
       <header className={styles.header}>
         {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
           return <KeywordButton key={keyword} keyword={keyword} />;
         })}
       </header>
 
-      <div className={styles.content}>
-        <div className={styles.info}>
-          <h2 className={styles.title}>
-            decentralized{' '}
-            <span>
-              {(() => {
+      <div className={styles.info}>
+        <h2 className={styles.title}>
+          decentralized{' '}
+          <span>
+            <TypingText
+              content={(() => {
                 switch (titleType) {
                   case TitleType.search:
                     return 'search';
@@ -155,37 +165,45 @@ function Search() {
                     return '';
                 }
               })()}
-            </span>{' '}
-            <br />
-            is here
-          </h2>
+              delay={40}
+            />
+          </span>
+          <br />
+          is here
+        </h2>
 
-          <div className={styles.graphWrapper}>
-            <LinksGraphContainer size={330} />
-          </div>
-
-          <div className={styles.particles}>
-            <h4>111 000 particles</h4>
-            <span>+ 5%</span> <span>in 3 hours</span>
-          </div>
+        <div className={styles.graphWrapper}>
+          <LinksGraphContainer size={330} />
         </div>
 
-        <ul className={styles.advantages}>
-          {listConfig[titleType].map(({ title, text }) => {
-            return (
-              <li key={title}>
-                <TitleText title={title} text={text} />
-              </li>
-            );
-          })}
-        </ul>
+        {dataGetGraphStats.data?.cyberlinks && (
+          <div className={styles.particles}>
+            <h4>
+              {Number(dataGetGraphStats.data.cyberlinks)
+                .toLocaleString()
+                .replaceAll(',', ' ')}{' '}
+              particles
+            </h4>
+            <span>+ 0%</span> <span>in 3 hours</span>
+          </div>
+        )}
       </div>
+
+      <ul className={styles.advantages}>
+        {listConfig[titleType].map(({ title, text }) => {
+          return (
+            <li key={title}>
+              <TitleText title={title} text={text} />
+            </li>
+          );
+        })}
+      </ul>
 
       <ActionBar>
         <Button link="/particles">get high</Button>
         <Button link={routes.oracle.learn.path}>how to learn</Button>
       </ActionBar>
-    </MainContainer>
+    </div>
   );
 }
 
