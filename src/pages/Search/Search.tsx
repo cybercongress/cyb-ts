@@ -84,8 +84,7 @@ const listConfig = {
       title: 'freedom',
       text: (
         <>
-          let your models live <br />
-          and operate in the cyberverse
+          let your ai <br /> live in cyberverse
         </>
       ),
     },
@@ -95,7 +94,7 @@ const listConfig = {
 export const learningListConfig = listConfig[TitleType.learning];
 
 function Search() {
-  const [titleType, setTitleType] = useState(TitleType.learning);
+  const [titleType, setTitleType] = useState(TitleType.search);
 
   const dataGetGraphStats = useGetGraphStats();
 
@@ -119,7 +118,7 @@ function Search() {
             return TitleType.search;
         }
       });
-    }, 6 * 1000);
+    }, 10 * 1000);
 
     return () => {
       clearInterval(interval);
@@ -176,21 +175,26 @@ function Search() {
           <LinksGraphContainer size={330} />
         </div>
 
-        {dataGetGraphStats.data?.cyberlinks && (
-          <div className={styles.particles}>
-            <h4>
-              {Number(dataGetGraphStats.data.cyberlinks)
-                .toLocaleString()
-                .replaceAll(',', ' ')}{' '}
-              particles
-            </h4>
-            <span>+ 0%</span> <span>in 3 hours</span>
-          </div>
-        )}
+        <div className={styles.particles}>
+          {/* need keep block space */}
+          {dataGetGraphStats.data?.cyberlinks && (
+            <>
+              <h4>
+                {Number(dataGetGraphStats.data.cyberlinks)
+                  .toLocaleString()
+                  .replaceAll(',', ' ')}{' '}
+                particles
+              </h4>
+              <span>+ 0%</span> <span>in 3 hours</span>
+            </>
+          )}
+        </div>
       </div>
 
       <ul className={styles.advantages}>
         {listConfig[titleType].map(({ title, text }) => {
+          console.log(text);
+
           return (
             <li key={title}>
               <TitleText title={title} text={text} />

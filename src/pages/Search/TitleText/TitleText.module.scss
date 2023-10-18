@@ -12,13 +12,12 @@
     text-shadow: 0 0 5px var(--primary-color);
     font-size: 20px;
     position: relative;
-    z-index: 1;
-    margin: 16px 0;
+    margin: 16px 0 12px;
 
     // TODO: move to mixin
     &::before {
       content: '';
-      z-index: -1;
+      pointer-events: none;
       position: absolute;
       left: -20%;
       right: -20%;
