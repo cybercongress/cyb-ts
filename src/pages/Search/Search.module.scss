@@ -110,6 +110,7 @@ $mobile-breakpoint: 480px;
     }
 
     .lastTextBlock {
+      width: 100%;
       display: inline-block;
     }
 
@@ -136,8 +137,8 @@ $mobile-breakpoint: 480px;
   .graphWrapper {
     position: relative;
 
-    min-width: var(--graph-size);
-    min-height: var(--graph-size);
+    width: var(--graph-size);
+    height: var(--graph-size);
     background-color: black;
 
     overflow: hidden;

@@ -17,6 +17,8 @@ type Props = {
 function ForceGraph({ data, size }: Props) {
   const fgRef = useRef(null);
 
+  const [hasLoaded, setHasLoaded] = useState(true);
+
   // useEffect(() => {
   //   let t = 0;
 
@@ -78,7 +80,7 @@ function ForceGraph({ data, size }: Props) {
 
   const handleEngineStop = useCallback(() => {
     console.error('ForceGraph3D engine stopped!');
-    // setHasLoaded(false);
+    setHasLoaded(false);
   }, []);
 
   const distance = 1000;
@@ -105,62 +107,70 @@ function ForceGraph({ data, size }: Props) {
     };
   }, [fgRef]);
 
-  return (
-    <ForceGraph3D
-      // width={window.innerWidth * 0.62}
-      // height={600}
-      height={size}
-      width={size}
-      ref={fgRef}
-      graphData={data}
-      showNavInfo={false}
-      backgroundColor="#000000"
-      warmupTicks={420}
-      cooldownTicks={0}
-      enableNodeDrag={false}
-      enablePointerInteraction
-      enableNavigationControls
-      nodeLabel="id"
-      // cameraDistance={500}
-      nodeColor={() => 'rgba(0,100,235,1)'}
-      nodeOpacity={1.0}
-      nodeRelSize={8}
-      linkColor={
-        // not working
-        (link) =>
-          // link.subject && link.subject === currentAddress
-          //   ? 'red'
-          'rgba(9,255,13,1)'
-      }
-      linkWidth={4}
-      linkCurvature={0.2}
-      linkOpacity={0.7}
-      linkDirectionalParticles={1}
-      linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
-      linkDirectionalParticleWidth={4}
-      linkDirectionalParticleSpeed={0.015}
-      // onZoomEnd={() => {
-      //   debugger;
-      // }}
-      // onZoom={() => {
-      //   debugger;
-      // }}
-      // onNodeDrag={() => {
-      //   debugger;
-      // }}
-      // onBackgroundClick={() => {
-      //   debugger;
-      // }}
-      // linkDirectionalArrowRelPos={1}
-      // linkDirectionalArrowLength={10}
-      // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
+  // if (hasLoaded) {
+  //   return 'loading...';
+  // }
 
-      onNodeClick={handleNodeRightClick}
-      onNodeRightClick={handleNodeClick}
-      onLinkClick={handleLinkRightClick}
-      onLinkRightClick={handleLinkClick}
-      onEngineStop={handleEngineStop}
-    />
+  return (
+    <div>
+      <ForceGraph3D
+        // width={window.innerWidth * 0.62}
+        // height={600}
+        height={size}
+        width={size}
+        ref={fgRef}
+        graphData={data}
+        showNavInfo={false}
+        backgroundColor="#000000"
+        warmupTicks={420}
+        cooldownTicks={0}
+        enableNodeDrag={false}
+        enablePointerInteraction
+        enableNavigationControls
+        nodeLabel="id"
+        // cameraDistance={500}
+        nodeColor={() => 'rgba(0,100,235,1)'}
+        nodeOpacity={1.0}
+        nodeRelSize={8}
+        linkColor={
+          // not working
+          (link) =>
+            // link.subject && link.subject === currentAddress
+            //   ? 'red'
+            'rgba(9,255,13,1)'
+        }
+        linkWidth={4}
+        linkCurvature={0.2}
+        linkOpacity={0.7}
+        linkDirectionalParticles={1}
+        linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
+        linkDirectionalParticleWidth={4}
+        linkDirectionalParticleSpeed={0.015}
+        // onZoomEnd={() => {
+        //   debugger;
+        // }}
+        // onZoom={() => {
+        //   debugger;
+        // }}
+        // onNodeDrag={() => {
+        //   debugger;
+        // }}
+        // onBackgroundClick={() => {
+        //   debugger;
+        // }}
+        // linkDirectionalArrowRelPos={1}
+        // linkDirectionalArrowLength={10}
+        // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
+
+        onNodeClick={handleNodeRightClick}
+        onNodeRightClick={handleNodeClick}
+        onLinkClick={handleLinkRightClick}
+        onLinkRightClick={handleLinkClick}
+        onEngineStop={handleEngineStop}
+      />
+
+      {/* {hasLoaded && 'rendering...'} */}
+    </div>
   );
 }
 

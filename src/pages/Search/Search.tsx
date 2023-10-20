@@ -101,7 +101,7 @@ function Search() {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  let graphSize = viewportWidth / 3;
+  let graphSize = Math.min(viewportWidth / 3, 330);
 
   if (viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''))) {
     graphSize = 330;
