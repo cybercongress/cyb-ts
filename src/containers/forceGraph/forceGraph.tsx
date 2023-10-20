@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { ForceGraph3D } from 'react-force-graph';
+
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
+import { useEffect, useState, useRef, useCallback, RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { PORTAL_ID } from '../application/App';
 import { useRobotContext } from 'src/pages/robot/robot.context';
+import { ForceGraph3D } from 'react-force-graph';
 
 type Props = {
   data: any;
@@ -14,7 +15,7 @@ type Props = {
 };
 
 function ForceGraph({ data, size }: Props) {
-  const fgRef = useRef<typeof ForceGraph3D>();
+  const fgRef = useRef(null);
 
   // useEffect(() => {
   //   let t = 0;
@@ -24,6 +25,8 @@ function ForceGraph({ data, size }: Props) {
   //     fgRef.current.cameraPosition([{ y: t }], undefined, 500);
   //   }, 1000);
   // }, [fgRef]);
+
+  // const [touched, setTouched] = useState(false);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -78,6 +81,30 @@ function ForceGraph({ data, size }: Props) {
     // setHasLoaded(false);
   }, []);
 
+  const distance = 1000;
+
+  useEffect(() => {
+    if (!fgRef.current) {
+      return;
+    }
+
+    fgRef.current.cameraPosition({ z: distance });
+
+    // camera orbit
+    let angle = 0;
+    const interval = setInterval(() => {
+      fgRef.current.cameraPosition({
+        x: distance * Math.sin(angle),
+        z: distance * Math.cos(angle),
+      });
+      angle += Math.PI / 2000;
+    }, 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [fgRef]);
+
   return (
     <ForceGraph3D
       // width={window.innerWidth * 0.62}
@@ -92,7 +119,9 @@ function ForceGraph({ data, size }: Props) {
       cooldownTicks={0}
       enableNodeDrag={false}
       enablePointerInteraction
+      enableNavigationControls
       nodeLabel="id"
+      // cameraDistance={500}
       nodeColor={() => 'rgba(0,100,235,1)'}
       nodeOpacity={1.0}
       nodeRelSize={8}
@@ -110,6 +139,18 @@ function ForceGraph({ data, size }: Props) {
       linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
       linkDirectionalParticleWidth={4}
       linkDirectionalParticleSpeed={0.015}
+      // onZoomEnd={() => {
+      //   debugger;
+      // }}
+      // onZoom={() => {
+      //   debugger;
+      // }}
+      // onNodeDrag={() => {
+      //   debugger;
+      // }}
+      // onBackgroundClick={() => {
+      //   debugger;
+      // }}
       // linkDirectionalArrowRelPos={1}
       // linkDirectionalArrowLength={10}
       // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}

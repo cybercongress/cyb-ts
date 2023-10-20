@@ -10,6 +10,7 @@ import { useDevice } from 'src/contexts/device';
 import styles from './Search.module.scss';
 import KeywordButton from './KeywordButton/KeywordButton';
 import TitleText from './TitleText/TitleText';
+import useGraphQLQuery from 'src/hooks/useGraphQL';
 
 enum TitleType {
   search,
@@ -196,7 +197,7 @@ function Search() {
                 {Number(dataGetGraphStats.data.cyberlinks)
                   .toLocaleString()
                   .replaceAll(',', ' ')}{' '}
-                particles
+                cyberlinks
               </h4>
               <span>+ 0%</span> <span>in 3 hours</span>
             </>
