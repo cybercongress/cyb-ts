@@ -1,6 +1,22 @@
+$mobile-breakpoint: 480px;
+
+:export {
+  mobileBreakpoint: $mobile-breakpoint;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
+
+  @media (width <= $mobile-breakpoint) {
+    padding: 0 50px;
+
+    .actionBarBtn {
+      min-width: 107px;
+    }
+  }
+
+  --graph-size: 33vw;
 }
 
 .starsWrapper {
@@ -18,14 +34,9 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  @media (max-width: 480px) {
+  @media (width <= $mobile-breakpoint) {
     display: grid;
-
-    padding: 0 50px;
     gap: 15px;
-
-    z-index: 1;
-
     grid-template-columns: repeat(2, 1fr);
 
     > :nth-child(2) {
@@ -58,7 +69,7 @@
       rgba(0, 0, 0, 0) 100%
     );
 
-    @keyframes identifier {
+    @keyframes slide {
       from {
         left: 0;
         right: 0;
@@ -70,32 +81,48 @@
       }
     }
 
-    animation: identifier 6s infinite alternate;
+    animation: slide 6s infinite alternate;
   }
 
-  gap: 0 56px;
+  gap: 0 3vw;
   display: flex;
   align-items: center;
   position: relative;
 
   .title,
-  h4,
-  span {
+  .title .keyword,
+  .particles > * {
     font-weight: 400;
-    font-size: 36px;
+    font-size: clamp(20px, 3vw, 36px);
     text-shadow: 0px 0px 15px var(--blue-light);
   }
 
   .title,
   .particles {
-    min-width: 360px;
+    flex: 1;
   }
 
   .title {
     text-align: right;
 
-    span {
+    .keyword {
       color: var(--blue-light);
+    }
+
+    .lastTextBlock {
+      display: inline-block;
+    }
+
+    @media ($mobile-breakpoint <= width <= 680px) {
+      .keyword {
+        display: inline-block;
+        // to wrap to new line
+        width: 50%;
+      }
+
+      .lastTextBlock {
+        display: inline;
+      }
     }
   }
 
@@ -109,16 +136,13 @@
   .graphWrapper {
     position: relative;
 
-    $size: 330px;
-    min-width: $size;
-    min-height: $size;
+    min-width: var(--graph-size);
+    min-height: var(--graph-size);
     background-color: black;
 
     overflow: hidden;
     box-shadow: 0px 0px 5px 1px rgba(31, 203, 255, 0.3),
-      0px 0px 50px 0px rgba(31, 203, 255, 0.42);
-
-    // box-shadow: 0px 0px 15px -2px var(--blue-light);
+      0px 0px 42px 0px rgba(31, 203, 255, 0.42);
 
     &,
     &::after {
@@ -137,68 +161,39 @@
     }
   }
 
-  @media (max-width: 580px) {
-    .info {
-      display: unset;
-      margin-top: -20px;
-      h2 {
-        position: relative;
-        text-shadow: 0px 0px 15px #ffd900;
+  @media (width <= $mobile-breakpoint) {
+    display: unset;
 
-        // &::before {
-        //   content: '';
-        //   position: absolute;
-        //   left: -30%;
-        //   right: -30%;
-
-        //   margin-top: auto;
-        //   height: 100%;
-        //   z-index: -1;
-        //   filter: blur(20px);
-        //   background: linear-gradient(
-        //     90deg,
-        //     rgba(0, 0, 0, 0) 3.92%,
-        //     rgba(118, 255, 3, 0.2) 43.95%,
-        //     rgba(118, 255, 3, 0.2) 55.96%,
-        //     rgba(0, 0, 0, 0) 100%
-        //   );
-        // }
-        // left: -20px;
-      }
-      &::before {
-        content: unset;
+    .title {
+      &,
+      > * {
+        font-size: 26px !important;
       }
 
-      .imgWrapper {
-        position: absolute;
-        right: -105%;
-
-        img {
-          // box-shadow: 0px 0px 30px -1px #76ff03;
-
-          box-shadow: 0px 0px 25px -10px #76ff03, 0px 0px 200px -20px #76ff03;
-        }
-        top: 45px;
+      .lastTextBlock {
+        width: 100%;
+        display: inline-block;
       }
 
-      .particles {
-        display: none;
-      }
+      min-width: unset;
     }
 
-    .advantages {
-      margin-top: 20px;
-      position: relative;
-      left: -25px;
-      display: flex;
-      flex-direction: column;
+    .graphWrapper {
+      position: absolute;
+
+      left: calc(-50px + 100vw - (330px * 0.44));
+      top: 60px;
+    }
+
+    .particles {
+      display: none;
     }
   }
 }
 
 .advantages {
   display: grid;
-  margin: -20px auto 0;
+  margin: -40px auto 0;
   gap: 0px 70px;
 
   grid-template-columns: repeat(3, minmax(0, 33%));
@@ -209,6 +204,18 @@
   li {
     width: 188px;
     min-height: 70px;
+
+    animation: appear 3s;
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
   }
 
   li:nth-child(1) {
@@ -217,7 +224,7 @@
   }
 
   li:nth-child(2) {
-    margin-top: -40px;
+    margin-top: -30px;
     grid-column: 2 /3;
     grid-row: 2;
   }
@@ -225,5 +232,17 @@
   li:nth-child(3) {
     grid-column: 3 / 4;
     grid-row: 1;
+  }
+
+  @media (width <= $mobile-breakpoint) {
+    margin: 20px 0 0 !important;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px 0;
+
+    li:nth-child(2) {
+      margin-top: unset;
+    }
   }
 }

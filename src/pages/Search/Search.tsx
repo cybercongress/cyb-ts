@@ -1,16 +1,15 @@
-import { ActionBar, Button, MainContainer } from 'src/components';
+import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
 import { id } from 'src/containers/application/Header/Commander/Commander';
-import { useEffect, useState } from 'react';
-import TitleText from './TitleText/TitleText';
-import KeywordButton from './KeywordButton/KeywordButton';
-import styles from './Search.module.scss';
-import ForceGraph from 'src/containers/forceGraph/forceGraph';
-import LinearGradientContainer from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { useEffect, useRef, useState } from 'react';
 import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 import { useGetGraphStats } from 'src/containers/temple/hooks';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
+import { useDevice } from 'src/contexts/device';
+import styles from './Search.module.scss';
+import KeywordButton from './KeywordButton/KeywordButton';
+import TitleText from './TitleText/TitleText';
 
 enum TitleType {
   search,
@@ -97,8 +96,23 @@ function Search() {
   const [titleType, setTitleType] = useState(TitleType.search);
 
   const dataGetGraphStats = useGetGraphStats();
+  const { viewportWidth } = useDevice();
 
-  console.log(dataGetGraphStats);
+  const ref = useRef<HTMLDivElement>(null);
+
+  let graphSize = viewportWidth / 3;
+
+  if (viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''))) {
+    graphSize = 330;
+  }
+
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    ref.current.style.setProperty('--graph-size', `${graphSize}px`);
+  }, [ref, graphSize]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -133,7 +147,7 @@ function Search() {
   }, []);
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={ref}>
       <div className={styles.starsWrapper}>
         <Stars />
       </div>
@@ -147,7 +161,7 @@ function Search() {
       <div className={styles.info}>
         <h2 className={styles.title}>
           decentralized{' '}
-          <span>
+          <strong className={styles.keyword}>
             <TypingText
               content={(() => {
                 switch (titleType) {
@@ -166,13 +180,12 @@ function Search() {
               })()}
               delay={40}
             />
-          </span>
-          <br />
-          is here
+          </strong>{' '}
+          <span className={styles.lastTextBlock}>is here</span>
         </h2>
 
         <div className={styles.graphWrapper}>
-          <LinksGraphContainer size={330} />
+          <LinksGraphContainer size={graphSize} />
         </div>
 
         <div className={styles.particles}>
@@ -193,8 +206,6 @@ function Search() {
 
       <ul className={styles.advantages}>
         {listConfig[titleType].map(({ title, text }) => {
-          console.log(text);
-
           return (
             <li key={title}>
               <TitleText title={title} text={text} />
@@ -204,8 +215,12 @@ function Search() {
       </ul>
 
       <ActionBar>
-        <Button link="/particles">get high</Button>
-        <Button link={routes.oracle.learn.path}>how to learn</Button>
+        <Button link="/particles" className={styles.actionBarBtn}>
+          get high
+        </Button>
+        <Button link={routes.oracle.learn.path} className={styles.actionBarBtn}>
+          how to learn
+        </Button>
       </ActionBar>
     </div>
   );

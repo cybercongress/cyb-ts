@@ -4,7 +4,7 @@ import styles from './TitleText.module.scss';
 
 type Props = {
   title: string;
-  text: string | Element;
+  text: string | JSX.Element;
 };
 
 function TitleText({ title, text }: Props) {

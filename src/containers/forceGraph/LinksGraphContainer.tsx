@@ -18,13 +18,34 @@ function LinksGraphContainer({ address, toPortal, size }: Props) {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const content = (
-    <div>
+    <div
+      style={
+        {
+          // height: '100%',
+        }
+      }
+    >
       {loading ? (
-        <div>
-          <Loading />
-          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+        <div
+          style={{
+            display: 'flex',
+
+            alignContent: 'center',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}
+        >
+          {/* <Loading />
+          <div
+            style={{
+              color: '#fff',
+              marginTop: 20,
+              fontSize: 20,
+              textAlign: 'center',
+            }}
+          >
             {loading ? 'receiving data' : 'rendering brain'}
-          </div>
+          </div> */}
         </div>
       ) : (
         <LinksGraph data={data} size={size} currentAddress={currentAddress} />
