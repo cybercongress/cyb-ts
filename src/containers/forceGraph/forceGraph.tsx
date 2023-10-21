@@ -141,18 +141,6 @@ function ForceGraph({ data, size, currentAddress }: Props) {
         linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
         linkDirectionalParticleWidth={4}
         linkDirectionalParticleSpeed={0.015}
-        // onZoomEnd={() => {
-        //   debugger;
-        // }}
-        // onZoom={() => {
-        //   debugger;
-        // }}
-        // onNodeDrag={() => {
-        //   debugger;
-        // }}
-        // onBackgroundClick={() => {
-        //   debugger;
-        // }}
         // linkDirectionalArrowRelPos={1}
         // linkDirectionalArrowLength={10}
         // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
