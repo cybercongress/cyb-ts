@@ -8,7 +8,11 @@ $mobile-breakpoint: 480px;
   display: flex;
   flex-direction: column;
 
+  padding: 0 10px;
+
   @media (width <= $mobile-breakpoint) {
+    // for graph out screen position
+    overflow-x: hidden;
     padding: 0 50px;
 
     .actionBarBtn {
@@ -65,7 +69,7 @@ $mobile-breakpoint: 480px;
       90deg,
       rgba(0, 0, 0, 0) 3.92%,
       rgba(31, 203, 255, 0.2) 40.95%,
-      rgba(31, 203, 255, 0.2) 58.97%,
+      rgba(31, 203, 255, 0.2) 68.97%,
       rgba(0, 0, 0, 0) 100%
     );
 
@@ -195,7 +199,7 @@ $mobile-breakpoint: 480px;
 .advantages {
   display: grid;
   margin: -40px auto 0;
-  gap: 0px 70px;
+  gap: 0px 5vw;
 
   grid-template-columns: repeat(3, minmax(0, 33%));
   grid-template-rows: repeat(2, 1fr);
