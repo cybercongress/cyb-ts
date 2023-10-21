@@ -1,12 +1,6 @@
-import { useParams } from 'react-router-dom';
-
-import { getGraphQLQuery } from '../../utils/search/utils';
-import { Loading } from '../../components';
-import { useEffect, useState, useRef, useCallback, RefObject } from 'react';
-import { createPortal } from 'react-dom';
-import { PORTAL_ID } from '../application/App';
-import { useRobotContext } from 'src/pages/robot/robot.context';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
+import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
   data: any;
@@ -14,21 +8,44 @@ type Props = {
   size?: number;
 };
 
-function ForceGraph({ data, size }: Props) {
-  const fgRef = useRef(null);
+function ForceGraph({ data, size, currentAddress }: Props) {
+  const [isRendering, setRendering] = useState(true);
+  const [touched, setTouched] = useState(false);
 
-  const [hasLoaded, setHasLoaded] = useState(true);
+  const fgRef = useRef();
 
-  // useEffect(() => {
-  //   let t = 0;
+  useEffect(() => {
+    if (!fgRef.current || touched) {
+      return;
+    }
 
-  //   setInterval(() => {
-  //     t = t + 10;
-  //     fgRef.current.cameraPosition([{ y: t }], undefined, 500);
-  //   }, 1000);
-  // }, [fgRef]);
+    function onTouch() {
+      setTouched(true);
+    }
 
-  // const [touched, setTouched] = useState(false);
+    fgRef.current.controls().addEventListener('start', onTouch);
+
+    const distance = 1000;
+    fgRef.current.cameraPosition({ z: distance });
+
+    // camera orbit
+    let angle = 0;
+    const interval = setInterval(() => {
+      fgRef.current.cameraPosition({
+        x: distance * Math.sin(angle),
+        z: distance * Math.cos(angle),
+      });
+      angle += Math.PI / 2000;
+    }, 10);
+
+    return () => {
+      if (fgRef.current) {
+        fgRef.current.controls().removeEventListener('start', onTouch);
+      }
+
+      clearInterval(interval);
+    };
+  }, [fgRef, touched]);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -79,43 +96,21 @@ function ForceGraph({ data, size }: Props) {
   }, []);
 
   const handleEngineStop = useCallback(() => {
-    console.error('ForceGraph3D engine stopped!');
-    setHasLoaded(false);
+    console.log('ForceGraph3D engine stopped!');
+    setRendering(false);
   }, []);
 
-  const distance = 1000;
-
-  useEffect(() => {
-    if (!fgRef.current) {
-      return;
-    }
-
-    fgRef.current.cameraPosition({ z: distance });
-
-    // camera orbit
-    let angle = 0;
-    const interval = setInterval(() => {
-      fgRef.current.cameraPosition({
-        x: distance * Math.sin(angle),
-        z: distance * Math.cos(angle),
-      });
-      angle += Math.PI / 2000;
-    }, 10);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [fgRef]);
-
-  // if (hasLoaded) {
-  //   return 'loading...';
-  // }
-
   return (
-    <div>
+    <div
+      style={{
+        minHeight: size,
+      }}
+    >
+      {isRendering && (
+        <div className={styles.loaderWrapper}>rendering data...</div>
+      )}
+
       <ForceGraph3D
-        // width={window.innerWidth * 0.62}
-        // height={600}
         height={size}
         width={size}
         ref={fgRef}
@@ -168,8 +163,6 @@ function ForceGraph({ data, size }: Props) {
         onLinkRightClick={handleLinkClick}
         onEngineStop={handleEngineStop}
       />
-
-      {/* {hasLoaded && 'rendering...'} */}
     </div>
   );
 }
