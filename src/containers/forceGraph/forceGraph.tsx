@@ -25,7 +25,7 @@ function ForceGraph({ data, size, currentAddress }: Props) {
 
     fgRef.current.controls().addEventListener('start', onTouch);
 
-    const distance = 1000;
+    const distance = 1300;
     fgRef.current.cameraPosition({ z: distance });
 
     // camera orbit
@@ -35,7 +35,7 @@ function ForceGraph({ data, size, currentAddress }: Props) {
         x: distance * Math.sin(angle),
         z: distance * Math.cos(angle),
       });
-      angle += Math.PI / 2000;
+      angle += Math.PI / 3000;
     }, 10);
 
     return () => {
