@@ -6,11 +6,11 @@ import {
   CybIpfsNode,
   IPFSContent,
   IPFSContentMaybe,
+  IpfsContentType,
+  IpfsOptsType,
 } from 'src/services/ipfs/ipfs';
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
-
-import { IpfsOptsType } from 'src/contexts/ipfs';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
@@ -35,7 +35,7 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
-import { exposeWorker } from '../factoryMethods';
+import { exposeWorkerApi } from '../factoryMethods';
 import {
   QueueItemCallback,
   QueueItemOptions,
@@ -55,9 +55,7 @@ const backendApiFactory = () => {
   const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
-  const init = async (dbApiProxy: DbWorkerApi) => {
-    console.log('----backendApi worker init! ');
-
+  const loadDbApi = async (dbApiProxy: DbWorkerApi) => {
     // proxy to worker with db
     dbApi = dbApiProxy;
 
@@ -191,8 +189,13 @@ const backendApiFactory = () => {
   const ipfsQueueCancelByParent = async (parent: string) =>
     ipfsQueue.cancelByParent(parent);
 
+  const ipfsInfo = async () => ipfsNode?.info();
+
+  const ipfsFetchWithDetails = async (cid: string, parseAs?: IpfsContentType) =>
+    ipfsNode?.fetchWithDetails(cid, parseAs);
+
   return {
-    init,
+    loadDbApi,
     syncDrive,
     importParicleContent,
     importCyberlinks,
@@ -203,6 +206,8 @@ const backendApiFactory = () => {
     ipfsQueueCancelByParent,
     ipfsQueueClear,
     ipfsQueueCancel,
+    ipfsInfo,
+    ipfsFetchWithDetails,
   };
 };
 
@@ -211,4 +216,4 @@ const backendApi = backendApiFactory();
 export type BackendWorkerApi = typeof backendApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorker(self, backendApi);
+exposeWorkerApi(self, backendApi);

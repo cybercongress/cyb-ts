@@ -3,11 +3,11 @@ import { waitUntil } from 'src/utils/async/utils';
 import { WorkerUrl } from 'worker-url';
 
 import { DbWorkerApi } from './worker';
-import { createWorker } from '../factoryMethods';
+import { createWorkerApi } from '../factoryMethods';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
-const { apiProxy: dbApiProxy } = createWorker<DbWorkerApi>(
+const { apiProxy: dbApiProxy } = createWorkerApi<DbWorkerApi>(
   workerUrl,
   'cyb~cozodb'
 );

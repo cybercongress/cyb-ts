@@ -1,11 +1,9 @@
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { exposeWorker } from '../factoryMethods';
+import { exposeWorkerApi } from '../factoryMethods';
 
 const dbApiFactory = () => {
-  console.log('----dbApi worker constructor!');
   const init = async () => {
-    console.log('----dbApi worker init!');
     const channel = new BcChannel();
 
     // callback to sync writes count worker -> main thread
@@ -70,4 +68,4 @@ const dbApi = dbApiFactory();
 export type DbWorkerApi = typeof dbApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorker(self, dbApi);
+exposeWorkerApi(self, dbApi);

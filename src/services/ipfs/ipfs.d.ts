@@ -110,9 +110,9 @@ export type IPFSContent = {
 
 export type IPFSContentMaybe = IPFSContent | undefined;
 
-export type FetchParticleDetailsDirect = (
+export type FetchWithDetailsFunc = (
   cid: string,
-  type: IpfsContentType
+  type?: IpfsContentType
 ) => Promise<IPFSContentDetails>;
 
 export interface IpfsNode {
@@ -135,5 +135,11 @@ export interface IpfsNode {
 export interface CybIpfsNode extends IpfsNode {
   isConnectedToSwarm(): Promise<boolean>;
   reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
-  fetchParticleDetailsDirect: FetchParticleDetailsDirect;
+  fetchWithDetails: FetchWithDetailsFunc;
 }
+
+export type IpfsOptsType = {
+  ipfsNodeType: IpfsNodeType;
+  urlOpts: string;
+  userGateway: string;
+};

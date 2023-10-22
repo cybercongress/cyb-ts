@@ -9,7 +9,7 @@ function installTransferHandlers() {
 }
 
 // Create Shared Worker with fallback to usual Worker(in case of DEV too)
-export function createWorker<T>(
+export function createWorkerApi<T>(
   workerUrl: URL,
   workerName: string
 ): { worker: WorkerType; apiProxy: Remote<T> } {
@@ -26,7 +26,7 @@ export function createWorker<T>(
   return { worker, apiProxy: wrap<T>(worker) };
 }
 
-export function exposeWorker<T>(worker: WorkerType, api: T) {
+export function exposeWorkerApi<T>(worker: WorkerType, api: T) {
   installTransferHandlers();
 
   if (typeof worker.onconnect !== 'undefined') {

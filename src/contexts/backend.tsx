@@ -14,16 +14,18 @@ import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import dbApiService from 'src/services/backend/workers/db/service';
 import { CYBER } from 'src/utils/config';
 
-import { IpfsOptsType, getIpfsOpts } from './ipfs';
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IpfsOptsType } from 'src/services/ipfs/ipfs';
+import { getIpfsOpts } from 'src/services/ipfs/config';
 
 type BackendProviderContextType = {
   startSyncTask?: () => void;
   dbApi?: typeof dbApiService;
   backendApi?: typeof backendApi;
   ipfsNode?: Remote<CybIpfsNode> | null;
+  isIpfsInitialized: boolean;
   loadIpfs: (ipfsOpts: IpfsOptsType) => Promise<void>;
   ipfsError: string | null;
+  isDbInitialized: boolean;
 };
 
 const valueContext = {
@@ -41,8 +43,9 @@ export function useBackend() {
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const { defaultAccount } = useAppSelector((state) => state.pocket);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isBackgroundInitialized, setBackgroundIsInitialized] = useState(false);
   const [isIpfsInitialized, setIsIpfsInitialized] = useState(false);
+  const [isDbInitialized, setIsDbItialized] = useState(false);
   const [ipfsError, setIpfsError] = useState(null);
   const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
 
@@ -57,30 +60,31 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
-
-      await dbApiService
-        .init()
-        .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
-
-      console.log('Loading backend worker...');
+      const loadDbApi = async () => {
+        setIsDbItialized(false);
+        dbApiService
+          .init()
+          .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
+        setIsDbItialized(true);
+      };
+      await Promise.all([loadIpfs(), loadDbApi()]);
 
       await backendApi
-        .init(proxy(dbApiService))
+        .loadDbApi(proxy(dbApiService))
         .then(() => console.log('🔋 Background worker started.'));
 
-      const ipfsOpts = getIpfsOpts();
-
-      await loadIpfs(ipfsOpts);
-
-      setIsInitialized(true);
+      setBackgroundIsInitialized(true);
     })();
 
     // Channel to sync worker's state with redux store
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, [dispatch]);
 
-  const loadIpfs = async (ipfsOpts: IpfsOptsType) => {
+  const loadIpfs = async () => {
     setIsIpfsInitialized(false);
+
+    const ipfsOpts = getIpfsOpts();
+
     await backendApi
       .startIpfs(ipfsOpts)
       .then((ipfsNodeRemote) => {
@@ -96,19 +100,25 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
-  console.log('--------ipfs backend', ipfsNode, ipfsError, isIpfsInitialized);
-
   const valueMemo = useMemo(
     () => ({
       startSyncTask: async () =>
         backendApi.syncDrive(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
-      backendApi: isInitialized ? backendApi : undefined,
-      dbApi: isInitialized ? dbApiService : undefined,
-      ipfsNode: isIpfsInitialized ? ipfsNode.current : undefined,
+      backendApi: isBackgroundInitialized ? backendApi : undefined,
+      dbApi: isBackgroundInitialized ? dbApiService : undefined,
+      isIpfsInitialized,
+      isDbInitialized,
+      ipfsNode: isIpfsInitialized ? ipfsNode.current : null,
       loadIpfs,
       ipfsError,
     }),
-    [useGetAddress, isInitialized, isIpfsInitialized, ipfsError]
+    [
+      useGetAddress,
+      isBackgroundInitialized,
+      isIpfsInitialized,
+      isDbInitialized,
+      ipfsError,
+    ]
   );
 
   return (

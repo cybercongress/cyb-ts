@@ -7,39 +7,14 @@ import React, {
   useState,
 } from 'react';
 import { CybIpfsNode, IpfsNodeType } from 'src/services/ipfs/ipfs';
-import { initIpfsNode } from 'src/services/ipfs/node/factory';
 import { useBackend } from './backend';
-
-export type IpfsOptsType = {
-  ipfsNodeType: IpfsNodeType;
-  urlOpts: string;
-  userGateway: string;
-};
+import { getIpfsOpts } from 'src/services/ipfs/config';
 
 type IpfsContextType = {
   node: null | CybIpfsNode;
   isReady: boolean;
   error: null | string;
   isLoading: boolean;
-};
-
-export const getIpfsOpts = () => {
-  let ipfsOpts = {
-    ipfsNodeType: 'embedded',
-    urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
-    userGateway: 'http://127.0.0.1:8080',
-  };
-
-  // get type ipfs
-  const lsTypeIpfs = localStorage.getItem('ipfsState');
-  if (lsTypeIpfs !== null) {
-    const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
-    ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
-  }
-
-  localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
-
-  return ipfsOpts;
 };
 
 // eslint-disable-next-line import/no-unused-modules
@@ -58,7 +33,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
   const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
   // const ipfsNode = useRef<CybIpfsNode | null>(null);
-  const { ipfsNode, loadIpfs, ipfsError } = useBackend();
+  const { isIpfsInitialized, loadIpfs, ipfsError, ipfsNode } = useBackend();
 
   useEffect(() => {
     setIpfsInitError(ipfsError);
@@ -107,7 +82,7 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
         () =>
           ({
             node: ipfsNode,
-            isReady: ipfsNode !== null,
+            isReady: isIpfsInitialized,
             error: ipfsInitError,
             isLoading: isIpfsPending,
           } as IpfsContextType),

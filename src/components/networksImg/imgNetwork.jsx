@@ -53,7 +53,7 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(network);
 
-  const { fetchParticleDetailsDirect } = useQueueIpfsContent();
+  const { fetchWithDetails } = useQueueIpfsContent();
 
   useEffect(() => {
     if (network && !isNativeChainId(network)) {
@@ -77,13 +77,13 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {
       if (cidAvatar) {
-        return fetchParticleDetailsDirect(cidAvatar, 'image').then(
+        return fetchWithDetails(cidAvatar, 'image').then(
           (details) => details?.content && setImgDenom(details?.content)
         );
       }
       return null;
     },
-    [fetchParticleDetailsDirect]
+    [fetchWithDetails]
   );
 
   if (tooltipStatus) {

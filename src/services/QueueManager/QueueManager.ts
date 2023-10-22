@@ -280,7 +280,7 @@ class QueueManager<T extends IPFSContentMaybe> {
           // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
-            this.node!.reconnectToSwarm(this.lastNodeCallTime);
+            this.node?.reconnectToSwarm(this.lastNodeCallTime);
 
             return merge(...workItems.map((item) => this.fetchData$(item)));
           }

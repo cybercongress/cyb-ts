@@ -57,18 +57,18 @@ function ImgDenom({
 }: ImgDenomProps) {
   const [imgDenom, setImgDenom] = useState<string>();
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
-  const { fetchParticleDetailsDirect } = useQueueIpfsContent();
+  const { fetchWithDetails } = useQueueIpfsContent();
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar: string) => {
-      if (cidAvatar && fetchParticleDetailsDirect) {
-        return fetchParticleDetailsDirect(cidAvatar, 'image').then(
+      if (cidAvatar && fetchWithDetails) {
+        return fetchWithDetails(cidAvatar, 'image').then(
           (details) => details?.content && setImgDenom(details?.content)
         );
       }
       return null;
     },
-    [fetchParticleDetailsDirect]
+    [fetchWithDetails]
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ function ImgDenom({
       Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')
     ) {
       const { coinImageCid, path, native } = infoDenom;
-      if (coinImageCid && fetchParticleDetailsDirect) {
+      if (coinImageCid && fetchWithDetails) {
         getImgFromIpfsByCid(coinImageCid);
       } else if (native) {
         if (coinDenom.includes('pool')) {
@@ -101,7 +101,7 @@ function ImgDenom({
     } else {
       setImgDenom(defaultImg);
     }
-  }, [coinDenom, infoDenom, fetchParticleDetailsDirect]);
+  }, [coinDenom, infoDenom, fetchWithDetails]);
 
   const img = (
     <img

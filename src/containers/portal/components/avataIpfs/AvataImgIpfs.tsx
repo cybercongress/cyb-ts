@@ -8,20 +8,20 @@ const getRoboHashImage = (addressCyber: string) =>
 
 function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   // const { node } = useIpfs();
-  const { fetchParticleDetailsDirect } = useQueueIpfsContent();
+  const { fetchWithDetails } = useQueueIpfsContent();
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
     async () =>
-      fetchParticleDetailsDirect
-        ? fetchParticleDetailsDirect(cidAvatar, 'image').then(
+      fetchWithDetails
+        ? fetchWithDetails(cidAvatar, 'image').then(
             (details) => details?.content
           )
         : null,
 
     {
-      enabled: Boolean(fetchParticleDetailsDirect && cidAvatar),
+      enabled: Boolean(fetchWithDetails && cidAvatar),
       staleTime: 10 * (60 * 1000), // 10 mins
       cacheTime: 15 * (60 * 1000), // 15 mins
       retry: 0,

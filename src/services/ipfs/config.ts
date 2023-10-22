@@ -1,3 +1,5 @@
+import { IpfsOptsType } from './ipfs';
+
 export const CYBER_NODE_SWARM_PEER_ID =
   'QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
 
@@ -9,3 +11,22 @@ export const IPFS_CLUSTER_URL = 'https://io.cybernode.ai';
 export const CYBER_GATEWAY_URL = 'https://gateway.ipfs.cybernode.ai';
 
 export const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
+
+export const getIpfsOpts = () => {
+  let ipfsOpts = {
+    ipfsNodeType: 'embedded',
+    urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
+    userGateway: 'http://127.0.0.1:8080',
+  };
+
+  // get type ipfs
+  const lsTypeIpfs = localStorage.getItem('ipfsState');
+  if (lsTypeIpfs !== null) {
+    const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
+    ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
+  }
+
+  localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
+
+  return ipfsOpts as IpfsOptsType;
+};

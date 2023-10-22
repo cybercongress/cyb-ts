@@ -17,7 +17,7 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   options: WithCybFeaturesOptions
 ) {
   return class CybIpfsNodeMixin extends Base implements CybIpfsNode {
-    async fetchParticleDetailsDirect(cid: string, parseAs?: IpfsContentType) {
+    async fetchWithDetails(cid: string, parseAs?: IpfsContentType) {
       const response = await getIPFSContent(cid, this);
       const details = response?.result
         ? await parseArrayLikeToDetails(response, cid)

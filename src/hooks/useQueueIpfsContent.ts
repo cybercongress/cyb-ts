@@ -6,7 +6,7 @@ import {
 } from 'src/services/QueueManager/QueueManager.d';
 
 import {
-  FetchParticleDetailsDirect,
+  FetchWithDetailsFunc,
   IPFSContentMaybe,
   IpfsContentSource,
 } from 'src/services/ipfs/ipfs';
@@ -24,7 +24,7 @@ type UseIpfsContentReturn = {
   fetchParticleAsync?: (
     cid: string
   ) => Promise<QueueItemAsyncResult<IPFSContentMaybe> | undefined>;
-  fetchParticleDetailsDirect?: FetchParticleDetailsDirect;
+  fetchWithDetails?: FetchWithDetailsFunc;
 };
 
 function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
@@ -96,9 +96,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
     clear: backendApi ? async () => backendApi!.ipfsQueueClear() : undefined,
     fetchParticle: backendApi ? fetchParticle : undefined,
     fetchParticleAsync: backendApi ? fetchParticleAsync : undefined,
-    fetchParticleDetailsDirect: ipfsNode
-      ? ipfsNode.fetchParticleDetailsDirect
-      : undefined,
+    fetchWithDetails: ipfsNode ? ipfsNode.fetchWithDetails : undefined,
   };
 }
 
