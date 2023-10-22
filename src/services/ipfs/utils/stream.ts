@@ -32,30 +32,34 @@ export const getMimeFromUint8Array = async (
 };
 
 export async function toAsyncIterableWithMime(
-  input: AsyncIterable<Uint8Array>,
+  stream: ReadableStream<Uint8Array>,
   flush?: StreamDoneCallback
 ): Promise<ResultWithMime> {
+  const [firstChunkStream, fullStream] = stream.tee();
   const chunks: Array<Uint8Array> = []; // accumulate all the data to pim/save
 
-  const reader = input[Symbol.asyncIterator]();
-  const firstChunk = await reader.next();
-  const { value: firstValue, done: firstDone } = firstChunk;
-  const mime = firstValue ? await getMimeFromUint8Array(firstValue) : undefined;
+  // Read the first chunk from the stream
+  const firstReader = firstChunkStream.getReader();
+  const { value } = await firstReader.read();
+  const mime = value ? await getMimeFromUint8Array(value) : undefined;
 
-  async function* process() {
-    flush && chunks.push(firstValue);
-    yield firstValue;
+  const restReader = fullStream.getReader();
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const chunk of input) {
-      flush && chunks.push(chunk);
-      yield chunk;
-    }
+  const asyncIterable: AsyncIterable<Uint8Array> = {
+    async *[Symbol.asyncIterator]() {
+      while (true) {
+        const { done, value } = await restReader.read();
+        if (done) {
+          flush && flush(chunks, mime);
+          return; // Exit the loop when done
+        }
+        flush && chunks.push(value);
+        yield value; // Yield the value to the consumer
+      }
+    },
+  };
 
-    flush && flush(chunks, mime);
-  }
-
-  return { mime, result: process() };
+  return { mime, result: asyncIterable, firstChunk: value };
 }
 
 export async function toReadableStreamWithMime(
@@ -91,6 +95,7 @@ export async function toReadableStreamWithMime(
 
   return { mime, result: modifiedStream, firstChunk: value };
 }
+
 export type onProgressCallback = (progress: number) => void;
 
 export const getResponseResult = async (

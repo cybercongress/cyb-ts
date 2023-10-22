@@ -1,7 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { multiaddr } from '@multiformats/multiaddr';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 import { Option } from 'src/types';
 import {
@@ -13,7 +11,7 @@ import {
   IpfsNode,
 } from '../ipfs';
 
-import { toReadableStreamWithMime, getMimeFromUint8Array } from './stream';
+import { getMimeFromUint8Array, toAsyncIterableWithMime } from './stream';
 
 import ipfsCacheDb from './ipfsCacheDb';
 import cyberCluster from './cluster';
@@ -216,7 +214,7 @@ const fetchIPFSContentFromGateway = async (
         ? ipfsCacheDb.add(cid, uint8ArrayConcat(chunks))
         : Promise.resolve();
 
-    const { mime, result, firstChunk } = await toReadableStreamWithMime(
+    const { mime, result, firstChunk } = await toAsyncIterableWithMime(
       response.body,
       flushResults
     );

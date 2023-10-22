@@ -74,10 +74,7 @@ export type Uint8ArrayWithMime = {
   rawData: Uint8Array;
 };
 
-export type Uint8ArrayLike =
-  | ReadableStream<Uint8Array>
-  | Uint8Array
-  | AsyncIterator<Uint8Array>;
+export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | ReadableStream<Uint8Array>
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
 export type IpfsContentType =
