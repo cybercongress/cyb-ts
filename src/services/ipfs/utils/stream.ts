@@ -123,27 +123,15 @@ export const getResponseResult = async (
       };
 
       const readArray: Uint8Array = await reader.read().then(readStream);
-      // const readArray = await reader
-      //   .read()
-      //   .then(function readStream({
-      //     done,
-      //     value,
-      //   }: {
-      //     done: boolean;
-      //     value: Uint8Array;
-      //   }) {
-      //     if (done) {
-      //       return uint8ArrayConcat(chunks);
-      //     }
 
-      //     chunks.push(value);
-      //     bytesDownloaded += value.byteLength;
-      //     onProgress && onProgress(bytesDownloaded);
-      //     return reader.read().then(readStream);
-      //   });
       return readArray;
     }
+
     const reader = response[Symbol.asyncIterator]();
+
+    // if (cid === 'QmRqms6Utkk6L4mtyLQXY2spcQ8Pk7fBBTNjvxa9jTNrXp') {
+    //   debugger;
+    // }
     // eslint-disable-next-line no-restricted-syntax
     for await (const chunk of reader) {
       if (chunk instanceof Uint8Array) {
@@ -152,8 +140,8 @@ export const getResponseResult = async (
         onProgress && onProgress(bytesDownloaded);
       }
     }
-
-    return uint8ArrayConcat(chunks);
+    const result = uint8ArrayConcat(chunks);
+    return result;
   } catch (error) {
     console.error(
       `Error reading stream/iterable.\r\n Probably Hot reload error!`,

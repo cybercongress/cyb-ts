@@ -1,6 +1,6 @@
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { exposeWorker } from '../workerUtils';
+import { exposeWorker } from '../factoryMethods';
 
 const dbApiFactory = () => {
   console.log('----dbApi worker constructor!');

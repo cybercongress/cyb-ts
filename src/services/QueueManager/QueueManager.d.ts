@@ -1,4 +1,5 @@
 import type { IpfsContentSource } from 'src/utils/ipfs/ipfs';
+import { IPFSContentMaybe } from '../ipfs/ipfs';
 
 /* eslint-disable import/no-unused-modules */
 type QueueItemStatus =
@@ -62,3 +63,7 @@ export type QueueItemResult<T> = {
 };
 
 export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;
+
+export type QueueItemPostProcessor = (
+  content: IPFSContentMaybe
+) => Promise<IPFSContentMaybe>;

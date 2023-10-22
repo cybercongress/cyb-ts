@@ -112,7 +112,7 @@ function Spark({
           </button>
         </div>
       )}
-
+      {/* TODO: refact. meta should be moved inside contentItem and exclude fetchParticle from that  */}
       {!isMobile && hovering && (
         <div className={styles.right}>
           <Meta cid={cid} />

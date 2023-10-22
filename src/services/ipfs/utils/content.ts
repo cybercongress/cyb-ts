@@ -132,7 +132,7 @@ export const parseArrayLikeToDetails = async (
 
     return response;
   } catch (e) {
-    console.log('----parseRawIpfsData', e, cid, mime);
+    console.log('----parseRawIpfsData', e, cid);
     return undefined;
   }
 };

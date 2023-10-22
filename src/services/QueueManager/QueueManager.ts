@@ -36,6 +36,7 @@ import type {
   QueueStats,
   QueueSource,
   QueueItemAsyncResult,
+  QueueItemPostProcessor,
 } from './QueueManager.d';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -75,12 +76,12 @@ const strategies = {
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
 
-class QueueManager<T> {
+class QueueManager<T extends IPFSContentMaybe> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
 
-  private node: Remote<CybIpfsNode> | undefined = undefined;
+  private node: CybIpfsNode | undefined = undefined;
 
-  private backendApi: Remote<BackendWorkerApi> | undefined = undefined;
+  private postProcessItem: QueueItemPostProcessor | undefined = undefined;
 
   private strategy: QueueStrategy;
 
@@ -98,18 +99,15 @@ class QueueManager<T> {
     this.strategy = strategy;
   }
 
-  public setBackendApi(api: Remote<BackendWorkerApi>) {
-    this.backendApi = api;
+  public setPostProcessor(func: QueueItemPostProcessor) {
+    this.postProcessItem = func;
   }
 
-  public async setNode(
-    node: Remote<CybIpfsNode>,
-    customStrategy?: QueueStrategy
-  ) {
+  public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
     // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
 
     this.node = node;
-    this.switchStrategy(customStrategy || strategies[await node.nodeType]);
+    this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
 
   private getItemBySourceAndPriority(queue: QueueMap<T>) {
@@ -144,8 +142,7 @@ class QueueManager<T> {
     const { cid, source, controller, callbacks } = item;
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
-    cid === 'Qmb4Ge8UWw8czQXqjsWE23NQgH3AXDqq1uCLeeH1fQHssE' &&
-      console.log('----fetchData queue', item);
+
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {
@@ -157,27 +154,14 @@ class QueueManager<T> {
 
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(async () => {
-      // fetch by item source
-      const content = await fetchIpfsContent<T>(cid, source, {
+    return promiseToObservable(async () =>
+      fetchIpfsContent<T>(cid, source, {
         controller,
         node: this.node,
       }).then((content: T) => {
-        // We need to remove unserializable fields(ReadableStream) from content
-        // before sending it to worker
-        const threadSafeContent = { ...content, result: undefined };
-        // non awaitable call
-        content && this.backendApi?.importParicleContent(threadSafeContent);
-
-        // if (!item.postProcessing) {
-        //   return content;
-        // }
-
-        return content;
-      });
-
-      return content; // pass
-    }).pipe(
+        return this.postProcessItem ? this?.postProcessItem(content) : content;
+      })
+    ).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -452,9 +436,11 @@ class QueueManager<T> {
 }
 
 // TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
-const queueManager = new QueueManager<IPFSContentMaybe>();
+// const queueManager = new QueueManager<IPFSContentMaybe>();
 
-window.qm = queueManager;
+// if (typeof window !== 'undefined') {
+//   window.qm = queueManager;
+// }
 
-export { queueManager };
+// export { queueManager };
 export default QueueManager;

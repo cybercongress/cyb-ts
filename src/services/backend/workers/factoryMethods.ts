@@ -1,13 +1,20 @@
-import { wrap, Remote, expose } from 'comlink';
+import { wrap, Remote, expose, transferHandlers } from 'comlink';
+import { IPFSContentTransferHandler } from './serializers';
 
 type WorkerType = SharedWorker | Worker;
 
+// apply serializers
+function installTransferHandlers() {
+  transferHandlers.set('IPFSContent', IPFSContentTransferHandler);
+}
+
 // Create Shared Worker with fallback to usual Worker(in case of DEV too)
-// eslint-disable-next-line import/prefer-default-export
 export function createWorker<T>(
   workerUrl: URL,
   workerName: string
 ): { worker: WorkerType; apiProxy: Remote<T> } {
+  installTransferHandlers();
+
   const isSharedWorkersSupported = typeof SharedWorker !== 'undefined';
 
   if (isSharedWorkersSupported && !process.env.IS_DEV) {
@@ -20,6 +27,8 @@ export function createWorker<T>(
 }
 
 export function exposeWorker<T>(worker: WorkerType, api: T) {
+  installTransferHandlers();
+
   if (typeof worker.onconnect !== 'undefined') {
     worker.onconnect = (e) => expose(api, e.ports[0]);
   } else {

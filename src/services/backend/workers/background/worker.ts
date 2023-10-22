@@ -1,7 +1,14 @@
 import { proxy } from 'comlink';
 
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
-import { CybIpfsNode, IPFSContent } from 'src/services/ipfs/ipfs';
+
+import {
+  CybIpfsNode,
+  IPFSContent,
+  IPFSContentMaybe,
+} from 'src/services/ipfs/ipfs';
+
+import QueueManager from 'src/services/QueueManager/QueueManager';
 
 import { IpfsOptsType } from 'src/contexts/ipfs';
 
@@ -28,13 +35,19 @@ import {
   PlainCyberLink,
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
-import { exposeWorker } from '../workerUtils';
+import { exposeWorker } from '../factoryMethods';
+import {
+  QueueItemCallback,
+  QueueItemOptions,
+} from 'src/services/QueueManager/QueueManager.d';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
   let dbApi: DbWorkerApi | undefined;
-  console.log('----backendApi worker constructor!');
+  const ipfsQueue = new QueueManager<IPFSContentMaybe>();
   const channel = new BcChannel();
+
+  console.log('----backendApi worker constructor!');
 
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>
     channel.post({ type: 'worker_status', value: { status, lastError } });
@@ -48,6 +61,12 @@ const backendApiFactory = () => {
     // proxy to worker with db
     dbApi = dbApiProxy;
 
+    // add post processor to queue manager
+    ipfsQueue.setPostProcessor(async (content) => {
+      content && importParicleContent({ ...content, result: undefined });
+      return content;
+    });
+
     postWorkerStatus('idle');
   };
 
@@ -57,6 +76,7 @@ const backendApiFactory = () => {
         await ipfsNode.stop();
       }
       ipfsNode = await initIpfsNode(ipfsOpts);
+      ipfsQueue.setNode(ipfsNode);
       return proxy(ipfsNode);
     } catch (err) {
       console.log('----ipfs node init error ', err);
@@ -152,6 +172,25 @@ const backendApiFactory = () => {
   const importParticle = async (cid: string) =>
     importParticle_(cid, ipfsNode!, dbApi!);
 
+  const ipfsQueueFetch = async (
+    cid: string,
+    callback: QueueItemCallback<IPFSContentMaybe>,
+    options: QueueItemOptions
+  ) => ipfsQueue!.enqueue(cid, callback, options);
+
+  // cancel: ipfsQueue ? (cid: string) => ipfsQueue.cancel(cid) : undefined,
+  // clear: ipfsQueue ? async () => ipfsQueue.clear() : undefined,
+
+  const ipfsQueueFetchAsync = async (cid: string, options?: QueueItemOptions) =>
+    ipfsQueue!.enqueueAndWait(cid, options);
+
+  const ipfsQueueClear = async () => ipfsQueue.clear();
+
+  const ipfsQueueCancel = async (cid: string) => ipfsQueue.cancel(cid);
+
+  const ipfsQueueCancelByParent = async (parent: string) =>
+    ipfsQueue.cancelByParent(parent);
+
   return {
     init,
     syncDrive,
@@ -159,6 +198,11 @@ const backendApiFactory = () => {
     importCyberlinks,
     importParticle,
     startIpfs,
+    ipfsQueueFetch,
+    ipfsQueueFetchAsync,
+    ipfsQueueCancelByParent,
+    ipfsQueueClear,
+    ipfsQueueCancel,
   };
 };
 

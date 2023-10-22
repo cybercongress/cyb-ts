@@ -4,8 +4,6 @@ import {
   QueueItemOptions,
   QueueItemStatus,
 } from 'src/services/QueueManager/QueueManager.d';
-// import { useIpfs } from 'src/contexts/ipfs';
-import { queueManager } from 'src/services/QueueManager/QueueManager';
 
 import {
   FetchParticleDetailsDirect,
@@ -13,15 +11,16 @@ import {
   IpfsContentSource,
 } from 'src/services/ipfs/ipfs';
 import { useBackend } from 'src/contexts/backend';
+import { proxy } from 'comlink';
 
 type UseIpfsContentReturn = {
   isReady: boolean;
   status?: QueueItemStatus;
   source?: IpfsContentSource;
   content: IPFSContentMaybe;
-  clear: () => void;
-  cancel: (cid: string) => void;
-  fetchParticle?: (cid: string, rank?: number) => void;
+  clear?: () => Promise<void>;
+  cancel?: (cid: string) => Promise<void>;
+  fetchParticle?: (cid: string, rank?: number) => Promise<void>;
   fetchParticleAsync?: (
     cid: string
   ) => Promise<QueueItemAsyncResult<IPFSContentMaybe> | undefined>;
@@ -35,76 +34,68 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const prevParentIdRef = useRef<string | undefined>();
   const [prevNodeType, setPrevNodeType] = useState<string | undefined>();
   // const { node } = useIpfs();
+  // const [ipfsQueue, setIpfsQueue] = useState<
+  //   Remote<QueueManager<IPFSContentMaybe>> | undefined
+  // >();
   const { backendApi, ipfsNode } = useBackend();
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const q = await backendApi?.ipfsQueue;
+  //     setIpfsQueue(q);
+  //   })();
+  // }, [backendApi]);
+
   const fetchParticle = useCallback(
-    (cid: string, rank?: number) => {
+    async (cid: string, rank?: number) => {
       const callback = (
         cid: string,
         status: QueueItemStatus,
         source: IpfsContentSource,
         result: IPFSContentMaybe
-      ): void => {
+      ) => {
         setStatus(status);
         setSource(source);
         if (status === 'completed') {
-          setContent(result);
+          (async () => Promise.resolve(result).then(setContent))();
         }
       };
 
-      queueManager.enqueue(cid, callback, {
+      await backendApi!.ipfsQueueFetch(cid, proxy(callback), {
         parent: parentId,
         priority: rank || 0,
         viewPortPriority: 0,
       });
     },
-    [parentId]
+    [parentId, backendApi]
   );
 
   const fetchParticleAsync = useCallback(
-    (cid: string, options?: QueueItemOptions) =>
-      queueManager.enqueueAndWait(cid, options),
-    []
+    async (cid: string, options?: QueueItemOptions) =>
+      backendApi!.ipfsQueueFetchAsync(cid, options),
+    [backendApi]
   );
 
   useEffect(() => {
-    queueManager.setBackendApi(backendApi!);
-  }, [backendApi]);
-
-  useEffect(() => {
-    (async () => {
-      const currentNodeType = await ipfsNode?.nodeType;
-      if (ipfsNode && prevNodeType !== currentNodeType) {
-        await queueManager.setNode(ipfsNode);
-        setPrevNodeType(currentNodeType);
-      }
-    })();
-  }, [ipfsNode, prevNodeType]);
-
-  useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
-      console.log(
-        '----q ipfsNode prevParentIdRef',
-        parentId,
-        prevParentIdRef.current
-      );
-
       if (prevParentIdRef.current) {
-        queueManager.cancelByParent(prevParentIdRef.current);
+        backendApi!.ipfsQueueCancelByParent(prevParentIdRef.current);
       }
       prevParentIdRef.current = parentId;
     }
-  }, [parentId]);
+  }, [parentId, backendApi]);
 
   return {
-    isReady: !!ipfsNode,
+    isReady: !!backendApi,
     status,
     source,
     content,
-    cancel: (cid: string) => queueManager.cancel(cid),
-    clear: queueManager.clear.bind(queueManager),
-    fetchParticle: ipfsNode ? fetchParticle : undefined,
-    fetchParticleAsync: ipfsNode ? fetchParticleAsync : undefined,
+    cancel: backendApi
+      ? (cid: string) => backendApi!.ipfsQueueCancel(cid)
+      : undefined,
+    clear: backendApi ? async () => backendApi!.ipfsQueueClear() : undefined,
+    fetchParticle: backendApi ? fetchParticle : undefined,
+    fetchParticleAsync: backendApi ? fetchParticleAsync : undefined,
     fetchParticleDetailsDirect: ipfsNode
       ? ipfsNode.fetchParticleDetailsDirect
       : undefined,

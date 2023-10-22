@@ -41,7 +41,7 @@ function Ipfs() {
 
   useEffect(() => {
     (async () => {
-      cid && fetchParticle && fetchParticle(cid);
+      cid && fetchParticle && (await fetchParticle(cid));
     })();
   }, [cid, fetchParticle]);
 

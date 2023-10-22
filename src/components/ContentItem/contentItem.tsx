@@ -33,7 +33,7 @@ function ContentItem({
   const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
   const [details, setDetails] = useState<IPFSContentDetails>(undefined);
   useEffect(() => {
-    fetchParticle && fetchParticle(cid, item?.rank);
+    fetchParticle && (async () => fetchParticle(cid, item?.rank))();
   }, [cid, item?.rank, fetchParticle]);
 
   useEffect(() => {
