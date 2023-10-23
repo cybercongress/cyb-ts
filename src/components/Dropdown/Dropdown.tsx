@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styles from './Dropdown.module.scss';
-import { CSSTransition } from 'react-transition-group';
 import cx from 'classnames';
 
 type Props = {
@@ -25,9 +24,6 @@ function Dropdown({ options = [], value, onChange }: Props) {
       </button>
 
       {isOpen && (
-        // <CSSTransition>
-
-        // </CSSTransition>
         <ul>
           {options.map(({ label, value: val }) => {
             return (

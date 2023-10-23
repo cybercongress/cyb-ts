@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getGraphQLQuery } from 'src/utils/search/utils';
 
 const useGraphQLQuery = (query: string, { skip = false } = {}) => {
-  const [data, setData] = useState();
+  const [data, setData] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

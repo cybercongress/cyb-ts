@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { authAccounts } from '../../utils/search/utils';
@@ -66,13 +66,14 @@ const balanceFetcher = (address, client) => {
 
   return client.getAllBalances(address);
 };
-function useGetSlots(addressActive, updateAddress) {
+function useGetSlots(addressActive) {
   const queryClient = useQueryClient();
   const [slotsData, setSlotsData] = useState([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
   const [balacesResource, setBalacesResource] = useState(initBalacesResource);
   const [vested, setVested] = useState(initStateVested);
+
   const { data: dataAuthAccounts, refetch: refetchAuthAccounts } = useQuery(
     ['authAccounts', addressActive],
     () => authAccountsFetcher(addressActive),
@@ -145,7 +146,7 @@ function useGetSlots(addressActive, updateAddress) {
     getAuth();
   }, [dataAuthAccounts]);
 
-  async function getBalacesResource() {
+  const getBalacesResource = useCallback(() => {
     setBalacesResource(initBalacesResource);
     if (dataGetAllBalances && dataGetAllBalances !== null) {
       const balacesAmount = {
@@ -164,12 +165,11 @@ function useGetSlots(addressActive, updateAddress) {
     } else {
       setBalacesResource(initBalacesResource);
     }
-  }
+  }, [dataGetAllBalances]);
 
   useEffect(() => {
     getBalacesResource();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addressActive]);
+  }, [addressActive, getBalacesResource]);
 
   const getCalculationBalance = (data) => {
     const balances = {};
