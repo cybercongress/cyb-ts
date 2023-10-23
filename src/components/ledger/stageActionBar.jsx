@@ -8,7 +8,6 @@ import {
   Battery,
   IconButton,
 } from '@cybercongress/gravity';
-import { useIpfs } from 'src/contexts/ipfs';
 
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
@@ -25,6 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import { useBackend } from 'src/contexts/backend';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -228,13 +228,13 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
-  const { isReady } = useIpfs();
+  const { isIpfsInitialized } = useBackend();
   return (
     <ActionBarContainer
       button={{
-        disabled: !isReady || !contentHash.length,
+        disabled: !isIpfsInitialized || !contentHash.length,
         onClick: onClickBtn,
-        text: !isReady ? (
+        text: !isIpfsInitialized ? (
           <>
             Node is loading&nbsp;
             <Dots />

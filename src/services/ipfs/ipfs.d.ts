@@ -136,6 +136,7 @@ export interface CybIpfsNode extends IpfsNode {
   isConnectedToSwarm(): Promise<boolean>;
   reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
   fetchWithDetails: FetchWithDetailsFunc;
+  addContent(content: File | string): Promise<string | undefined>;
 }
 
 export type IpfsOptsType = {

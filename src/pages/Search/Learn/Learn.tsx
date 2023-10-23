@@ -9,8 +9,6 @@ import {
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
 import { CYBER, PATTERN_IPFS_HASH } from 'src/utils/config';
-import { addContenToIpfs } from 'src/services/ipfs/utils/utils-ipfs';
-import { useIpfs } from 'src/contexts/ipfs';
 import { useAdviser } from 'src/features/adviser/context';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -24,6 +22,7 @@ import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import KeywordButton from '../KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
 import TitleText from '../TitleText/TitleText';
+import { useBackend } from 'src/contexts/backend';
 
 function Learn() {
   const [ask, setAsk] = useState('');
@@ -32,7 +31,8 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const { node } = useIpfs();
+  const { isIpfsInitialized, ipfsNode } = useBackend();
+
   const queryClient = useQueryClient();
 
   const address = useAppSelector(selectCurrentAddress);
@@ -98,7 +98,13 @@ function Learn() {
   }, [ask, answer]);
 
   async function cyberlink() {
-    if (!node || !queryClient || !address || !signer || !signingClient) {
+    if (
+      !isIpfsInitialized ||
+      !queryClient ||
+      !address ||
+      !signer ||
+      !signingClient
+    ) {
       return;
     }
 
@@ -113,12 +119,12 @@ function Learn() {
       setLoading(true);
       let fromCid = ask;
       if (!ask.match(PATTERN_IPFS_HASH)) {
-        fromCid = await addContenToIpfs(node, ask);
+        fromCid = await ipfsNode?.addContent(ask);
       }
 
       let toCid = answer;
       if (!answer.match(PATTERN_IPFS_HASH)) {
-        toCid = await addContenToIpfs(node, answer);
+        toCid = await ipfsNode?.addContent(answer);
       }
 
       const result = await signingClient.cyberlink(
@@ -258,10 +264,10 @@ function Learn() {
 
         <ActionBar>
           <Button
-            disabled={!ask || !answer || !node || !queryClient}
+            disabled={!ask || !answer || !isIpfsInitialized || !queryClient}
             onClick={cyberlink}
           >
-            {node ? 'cyberlink' : 'node is loading...'}
+            {isIpfsInitialized ? 'cyberlink' : 'node is loading...'}
           </Button>
         </ActionBar>
       </div>

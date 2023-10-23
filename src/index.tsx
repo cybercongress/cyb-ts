@@ -25,7 +25,6 @@ import './image/favicon.ico';
 // for bootloading
 import './image/robot.svg';
 
-import IpfsProvider from './contexts/ipfs';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 import SdkQueryClientProvider from './contexts/queryClient';
@@ -105,13 +104,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   <DataProvider>
                     <ApolloProvider client={client}>
                       <BackendProvider>
-                        <IpfsProvider>
-                          <DeviceProvider>
-                            <AdviserProvider>
-                              <ErrorBoundary>{children}</ErrorBoundary>
-                            </AdviserProvider>
-                          </DeviceProvider>
-                        </IpfsProvider>
+                        <DeviceProvider>
+                          <AdviserProvider>
+                            <ErrorBoundary>{children}</ErrorBoundary>
+                          </AdviserProvider>
+                        </DeviceProvider>
                       </BackendProvider>
                     </ApolloProvider>
                   </DataProvider>

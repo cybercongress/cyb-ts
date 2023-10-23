@@ -23,12 +23,15 @@ import {
   SyncProgress,
   WorkerStatus,
 } from 'src/services/backend/types';
-
+import {
+  QueueItemCallback,
+  QueueItemOptions,
+} from 'src/services/QueueManager/QueueManager.d';
 import {
   importParticles,
   importPins,
-  importParicleContent as importParicleContent_,
-  importParticle as importParticle_,
+  importParicleContent,
+  importParticle,
 } from './importers/ipfs';
 import { importTransactions } from './importers/transactions';
 import {
@@ -36,10 +39,6 @@ import {
   importCyberlinks as importCyberlinks_,
 } from './importers/links';
 import { exposeWorkerApi } from '../factoryMethods';
-import {
-  QueueItemCallback,
-  QueueItemOptions,
-} from 'src/services/QueueManager/QueueManager.d';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
@@ -55,31 +54,18 @@ const backendApiFactory = () => {
   const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
-  const loadDbApi = async (dbApiProxy: DbWorkerApi) => {
+  const installDbApi = async (dbApiProxy: DbWorkerApi) => {
     // proxy to worker with db
     dbApi = dbApiProxy;
 
     // add post processor to queue manager
     ipfsQueue.setPostProcessor(async (content) => {
-      content && importParicleContent({ ...content, result: undefined });
+      content &&
+        importApi.importParicleContent({ ...content, result: undefined });
       return content;
     });
 
     postWorkerStatus('idle');
-  };
-
-  const startIpfs = async (ipfsOpts: IpfsOptsType) => {
-    try {
-      if (ipfsNode) {
-        await ipfsNode.stop();
-      }
-      ipfsNode = await initIpfsNode(ipfsOpts);
-      ipfsQueue.setNode(ipfsNode);
-      return proxy(ipfsNode);
-    } catch (err) {
-      console.log('----ipfs node init error ', err);
-      throw Error(err instanceof Error ? err.message : (err as string));
-    }
   };
 
   // TODO: refact, params need to be synced with main thread
@@ -161,53 +147,52 @@ const backendApiFactory = () => {
     }
   };
 
-  const importParicleContent = async (particle: IPFSContent) =>
-    importParicleContent_(particle, dbApi!);
+  const importApi = {
+    importParicleContent: async (particle: IPFSContent) =>
+      importParicleContent(particle, dbApi!),
+    importCyberlinks: async (links: PlainCyberLink[]) =>
+      importCyberlinks_(links, dbApi!),
+    importParticle: async (cid: string) =>
+      importParticle(cid, ipfsNode!, dbApi!),
+  };
 
-  const importCyberlinks = async (links: PlainCyberLink[]) =>
-    importCyberlinks_(links, dbApi!);
+  const startIpfs = async (ipfsOpts: IpfsOptsType) => {
+    try {
+      if (ipfsNode) {
+        await ipfsNode.stop();
+      }
+      ipfsNode = await initIpfsNode(ipfsOpts);
+      ipfsQueue.setNode(ipfsNode);
+      return proxy(ipfsNode);
+    } catch (err) {
+      console.log('----ipfs node init error ', err);
+      throw Error(err instanceof Error ? err.message : (err as string));
+    }
+  };
 
-  const importParticle = async (cid: string) =>
-    importParticle_(cid, ipfsNode!, dbApi!);
-
-  const ipfsQueueFetch = async (
-    cid: string,
-    callback: QueueItemCallback<IPFSContentMaybe>,
-    options: QueueItemOptions
-  ) => ipfsQueue!.enqueue(cid, callback, options);
-
-  // cancel: ipfsQueue ? (cid: string) => ipfsQueue.cancel(cid) : undefined,
-  // clear: ipfsQueue ? async () => ipfsQueue.clear() : undefined,
-
-  const ipfsQueueFetchAsync = async (cid: string, options?: QueueItemOptions) =>
-    ipfsQueue!.enqueueAndWait(cid, options);
-
-  const ipfsQueueClear = async () => ipfsQueue.clear();
-
-  const ipfsQueueCancel = async (cid: string) => ipfsQueue.cancel(cid);
-
-  const ipfsQueueCancelByParent = async (parent: string) =>
-    ipfsQueue.cancelByParent(parent);
-
-  const ipfsInfo = async () => ipfsNode?.info();
-
-  const ipfsFetchWithDetails = async (cid: string, parseAs?: IpfsContentType) =>
-    ipfsNode?.fetchWithDetails(cid, parseAs);
+  const ipfsApi = {
+    start: startIpfs,
+    config: async () => ipfsNode?.config,
+    info: async () => ipfsNode?.info(),
+    fetchWithDetails: async (cid: string, parseAs?: IpfsContentType) =>
+      ipfsNode?.fetchWithDetails(cid, parseAs),
+    enqueue: async (
+      cid: string,
+      callback: QueueItemCallback<IPFSContentMaybe>,
+      options: QueueItemOptions
+    ) => ipfsQueue!.enqueue(cid, callback, options),
+    enqueueAndWait: async (cid: string, options?: QueueItemOptions) =>
+      ipfsQueue!.enqueueAndWait(cid, options),
+    dequeue: async (cid: string) => ipfsQueue.cancel(cid),
+    dequeueByParent: async (parent: string) => ipfsQueue.cancelByParent(parent),
+    clearQueue: async () => ipfsQueue.clear(),
+  };
 
   return {
-    loadDbApi,
+    installDbApi,
     syncDrive,
-    importParicleContent,
-    importCyberlinks,
-    importParticle,
-    startIpfs,
-    ipfsQueueFetch,
-    ipfsQueueFetchAsync,
-    ipfsQueueCancelByParent,
-    ipfsQueueClear,
-    ipfsQueueCancel,
-    ipfsInfo,
-    ipfsFetchWithDetails,
+    ipfsApi: proxy(ipfsApi),
+    importApi: proxy(importApi),
   };
 };
 

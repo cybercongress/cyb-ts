@@ -881,8 +881,8 @@ export const searchByHash = async (
     }
     if (options.storeToCozo) {
       console.log('-----searc', hash);
-      backendApi.importParticle(hash);
-      backendApi.importCyberlinks(
+      backendApi.importApi.importParticle(hash);
+      backendApi.importApi.importCyberlinks(
         responseSearchResults.result.map((item) => ({
           from: hash,
           to: item.particle,

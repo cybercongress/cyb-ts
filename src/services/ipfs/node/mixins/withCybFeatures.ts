@@ -1,11 +1,6 @@
-import {
-  IpfsNode,
-  CybIpfsNode,
-  IPFSContentMeta,
-  IpfsContentType,
-} from '../../ipfs';
+import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../ipfs';
 import { parseArrayLikeToDetails } from '../../utils/content';
-import { getIPFSContent } from '../../utils/utils-ipfs';
+import { addContenToIpfs, getIPFSContent } from '../../utils/utils-ipfs';
 
 type WithCybFeaturesOptions = {
   swarmPeerId: string;
@@ -28,6 +23,10 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
         : details?.type === parseAs
         ? details
         : undefined;
+    }
+
+    async addContent(content: File | string) {
+      return addContenToIpfs(this, content);
     }
 
     async isConnectedToSwarm() {

@@ -42,7 +42,6 @@ type ContentTabProps = {
 
 function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
   const contentType = details?.type;
-
   return (
     <div>
       {/* <DebugContentInfo

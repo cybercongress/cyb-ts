@@ -3,12 +3,10 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import { useIpfs } from 'src/contexts/ipfs';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
-import { addContenToIpfs } from 'src/services/ipfs/utils/utils-ipfs';
 import { Nullable } from 'src/types';
 import txs from '../../../utils/txs';
 
@@ -36,6 +34,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { useAdviser } from 'src/features/adviser/context';
+import { useBackend } from 'src/contexts/backend';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -137,7 +136,8 @@ const calculatePriceNicname = (valueNickname) => {
 
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
-  const { node } = useIpfs();
+  const { isIpfsInitialized, ipfsNode } = useBackend();
+
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -195,8 +195,8 @@ function GetCitizenship({ defaultAccount }) {
   useEffect(() => {
     const getPinAvatar = async () => {
       try {
-        if (node !== null && avatarImg !== null) {
-          addContenToIpfs(node, avatarImg).then((cid) => {
+        if (isIpfsInitialized && avatarImg) {
+          ipfsNode?.addContent(avatarImg).then((cid) => {
             console.log('pin cid avatar', cid);
             setAvatarIpfs(cid);
           });
@@ -206,7 +206,7 @@ function GetCitizenship({ defaultAccount }) {
       }
     };
     getPinAvatar();
-  }, [node, avatarImg]);
+  }, [isIpfsInitialized, ipfsNode, avatarImg]);
 
   useEffect(() => {
     const getKeplrSetup = async () => {
@@ -415,20 +415,6 @@ function GetCitizenship({ defaultAccount }) {
     }
   }, [avatarIpfs]);
 
-  const pinPassportData = async (nodeIpfs, data) => {
-    try {
-      const { address, nickname } = data;
-      addContenToIpfs(nodeIpfs, nickname).then((cid) => {
-        console.log('pin cid nickname', cid);
-      });
-      addContenToIpfs(nodeIpfs, address).then((cid) => {
-        console.log('pin cid address', cid);
-      });
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-
   const onClickRegister = useCallback(async () => {
     if (signer && signingClient) {
       try {
@@ -472,14 +458,27 @@ function GetCitizenship({ defaultAccount }) {
           });
         }
 
-        if (node !== null) {
-          pinPassportData(node, { nickname: valueNickname, address });
+        if (isIpfsInitialized) {
+          ipfsNode?.addContent(valueNickname).then((cid) => {
+            console.log('pin cid nickname', cid);
+          });
+          ipfsNode?.addContent(address).then((cid) => {
+            console.log('pin cid address', cid);
+          });
         }
       } catch (error) {
         console.log('error', error);
       }
     }
-  }, [valueNickname, avatarIpfs, signer, signingClient, signedMessage, node]);
+  }, [
+    valueNickname,
+    avatarIpfs,
+    signer,
+    signingClient,
+    signedMessage,
+    ipfsNode,
+    isIpfsInitialized,
+  ]);
 
   const onChangeNickname = useCallback((e) => {
     const { value } = e.target;

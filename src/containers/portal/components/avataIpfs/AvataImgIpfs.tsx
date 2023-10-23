@@ -7,7 +7,6 @@ const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
 function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
-  // const { node } = useIpfs();
   const { fetchWithDetails } = useQueueIpfsContent();
 
   const [avatar, setAvatar] = useState<string | null>(null);

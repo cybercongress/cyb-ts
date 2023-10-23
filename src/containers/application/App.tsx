@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
-import { useIpfs } from 'src/contexts/ipfs';
 import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
@@ -16,6 +15,7 @@ import AdviserContainer from '../../features/adviser/AdviserContainer';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useBackend } from 'src/contexts/backend';
 
 export const PORTAL_ID = 'portal';
 
@@ -30,7 +30,7 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
 
-  const { error: ipfsError } = useIpfs();
+  const { ipfsError } = useBackend();
   useEffect(() => {
     dispatch(initPocket());
   }, []);

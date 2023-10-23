@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backendApi } from 'src/services/backend/workers/background/service';
@@ -22,10 +15,11 @@ type BackendProviderContextType = {
   dbApi?: typeof dbApiService;
   backendApi?: typeof backendApi;
   ipfsNode?: Remote<CybIpfsNode> | null;
-  isIpfsInitialized: boolean;
-  loadIpfs: (ipfsOpts: IpfsOptsType) => Promise<void>;
   ipfsError: string | null;
+  loadIpfs: () => Promise<void>;
+  isIpfsInitialized: boolean;
   isDbInitialized: boolean;
+  isReady: boolean;
 };
 
 const valueContext = {
@@ -60,17 +54,17 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
-      const loadDbApi = async () => {
+      const installDbApi = async () => {
         setIsDbItialized(false);
         dbApiService
           .init()
           .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
         setIsDbItialized(true);
       };
-      await Promise.all([loadIpfs(), loadDbApi()]);
+      await Promise.all([loadIpfs(), installDbApi()]);
 
       await backendApi
-        .loadDbApi(proxy(dbApiService))
+        .installDbApi(proxy(dbApiService))
         .then(() => console.log('🔋 Background worker started.'));
 
       setBackgroundIsInitialized(true);
@@ -85,8 +79,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
     const ipfsOpts = getIpfsOpts();
 
-    await backendApi
-      .startIpfs(ipfsOpts)
+    await backendApi.ipfsApi
+      .start(ipfsOpts)
       .then((ipfsNodeRemote) => {
         ipfsNode.current = ipfsNodeRemote;
         setIsIpfsInitialized(true);
@@ -104,21 +98,16 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     () => ({
       startSyncTask: async () =>
         backendApi.syncDrive(useGetAddress, CYBER.CYBER_INDEX_HTTPS),
-      backendApi: isBackgroundInitialized ? backendApi : undefined,
-      dbApi: isBackgroundInitialized ? dbApiService : undefined,
+      backendApi,
+      dbApi: isDbInitialized ? dbApiService : undefined,
       isIpfsInitialized,
       isDbInitialized,
       ipfsNode: isIpfsInitialized ? ipfsNode.current : null,
       loadIpfs,
       ipfsError,
+      isReady: isDbInitialized && isIpfsInitialized,
     }),
-    [
-      useGetAddress,
-      isBackgroundInitialized,
-      isIpfsInitialized,
-      isDbInitialized,
-      ipfsError,
-    ]
+    [useGetAddress, isIpfsInitialized, isDbInitialized, ipfsError]
   );
 
   return (

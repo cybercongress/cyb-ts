@@ -26,7 +26,6 @@ const useGetTweets = (address) => {
   const [loadingTweets, setLoadingTweets] = useState(false);
   const [addressFollowData, setAddressFollowData] = useState({});
   const { cyber } = useWebsockets();
-  // const { node } = useIpfs();
   const { fetchParticleAsync } = useQueueIpfsContent();
 
   const addressActive = useMemo(() => {
