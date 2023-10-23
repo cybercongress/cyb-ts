@@ -4,15 +4,20 @@ import { id } from 'src/containers/application/Header/Commander/Commander';
 import { useEffect, useRef, useState } from 'react';
 import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
-import { useGetGraphStats } from 'src/containers/temple/hooks';
+import {
+  useGetGraphStats,
+  useGetNegentropy,
+} from 'src/containers/temple/hooks';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import { useDevice } from 'src/contexts/device';
 import styles from './Search.module.scss';
 import KeywordButton from './KeywordButton/KeywordButton';
 import TitleText from './TitleText/TitleText';
 import useGraphQLQuery from 'src/hooks/useGraphQL';
+import Stats from './Stats/Stats';
+import cx from 'classnames';
 
-enum TitleType {
+export enum TitleType {
   search,
   learning,
   ai,
@@ -96,14 +101,16 @@ export const learningListConfig = listConfig[TitleType.learning];
 function Search() {
   const [titleType, setTitleType] = useState(TitleType.search);
 
-  const dataGetGraphStats = useGetGraphStats();
   const { viewportWidth } = useDevice();
 
   const ref = useRef<HTMLDivElement>(null);
 
   let graphSize = Math.min(viewportWidth / 3, 330);
 
-  if (viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''))) {
+  const isMobile =
+    viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
+
+  if (isMobile) {
     graphSize = 330;
   }
 
@@ -160,7 +167,7 @@ function Search() {
       </header>
 
       <div className={styles.info}>
-        <h2 className={styles.title}>
+        <h2 className={cx(styles.infoText, styles.title)}>
           decentralized{' '}
           <strong className={styles.keyword}>
             <TypingText
@@ -189,20 +196,8 @@ function Search() {
           <LinksGraphContainer size={graphSize} />
         </div>
 
-        <div className={styles.particles}>
-          {/* need keep block space */}
-          {dataGetGraphStats.data?.cyberlinks && (
-            <>
-              <h4>
-                {Number(dataGetGraphStats.data.cyberlinks)
-                  .toLocaleString()
-                  .replaceAll(',', ' ')}{' '}
-                cyberlinks
-              </h4>
-              <span>+ 0%</span> <span>in 3 hours</span>
-            </>
-          )}
-        </div>
+        {/* not render to prevent requests */}
+        {!isMobile && <Stats type={titleType} />}
       </div>
 
       <ul className={styles.advantages}>

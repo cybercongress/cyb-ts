@@ -50,6 +50,16 @@ $mobile-breakpoint: 480px;
   }
 }
 
+.infoText {
+  font-weight: 400;
+  font-size: clamp(20px, 3vw, 36px);
+  text-shadow: 0px 0px 15px var(--blue-light);
+
+  * {
+    font-weight: inherit;
+  }
+}
+
 .info {
   margin-top: 40px;
   display: flex;
@@ -88,23 +98,12 @@ $mobile-breakpoint: 480px;
     animation: slide 6s infinite alternate;
   }
 
-  gap: 0 3vw;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  gap: 0 3vw;
+
   position: relative;
-
-  .title,
-  .title .keyword,
-  .particles > * {
-    font-weight: 400;
-    font-size: clamp(20px, 3vw, 36px);
-    text-shadow: 0px 0px 15px var(--blue-light);
-  }
-
-  .title,
-  .particles {
-    flex: 1;
-  }
 
   .title {
     text-align: right;
@@ -128,13 +127,6 @@ $mobile-breakpoint: 480px;
       .lastTextBlock {
         display: inline;
       }
-    }
-  }
-
-  .particles {
-    white-space: nowrap;
-    span:first-of-type {
-      color: var(--green-light);
     }
   }
 
@@ -188,10 +180,6 @@ $mobile-breakpoint: 480px;
 
       left: calc(-50px + 100vw - (330px * 0.44));
       top: 60px;
-    }
-
-    .particles {
-      display: none;
     }
   }
 }
