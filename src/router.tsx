@@ -156,7 +156,7 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          <Route path="/graph" element={<LinksGraphContainer />} />
+          <Route path="/graph" element={<LinksGraphContainer toPortal />} />
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
 
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />

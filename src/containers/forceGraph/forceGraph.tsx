@@ -8,14 +8,43 @@ type Props = {
   size?: number;
 };
 
+// before zoom in
+const INITIAL_CAMERA_DISTANCE = 2500;
+const DEFAULT_CAMERA_DISTANCE = 1300;
+const CAMERA_ZOOM_IN_EFFECT_DURATION = 5000;
+const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
+
 function ForceGraph({ data, size, currentAddress }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
 
   const fgRef = useRef();
 
+  // initial camera position, didn't find via props
   useEffect(() => {
-    if (!fgRef.current || touched) {
+    if (!fgRef.current) {
+      return;
+    }
+    fgRef.current.cameraPosition({ z: INITIAL_CAMERA_DISTANCE });
+  }, [fgRef]);
+
+  // initial loading camera zoom effect
+  useEffect(() => {
+    if (!fgRef.current || isRendering) {
+      return;
+    }
+
+    setTimeout(() => {
+      fgRef.current.cameraPosition(
+        { z: DEFAULT_CAMERA_DISTANCE },
+        null,
+        CAMERA_ZOOM_IN_EFFECT_DURATION
+      );
+    }, CAMERA_ZOOM_IN_EFFECT_DELAY);
+  }, [fgRef, isRendering]);
+
+  useEffect(() => {
+    if (!fgRef.current) {
       return;
     }
 
@@ -25,27 +54,35 @@ function ForceGraph({ data, size, currentAddress }: Props) {
 
     fgRef.current.controls().addEventListener('start', onTouch);
 
-    const distance = 1300;
-    fgRef.current.cameraPosition({ z: distance });
+    return () => {
+      fgRef.current.controls().removeEventListener('start', onTouch);
+    };
+  }, [fgRef]);
 
-    // camera orbit
+  // orbit camera
+  useEffect(() => {
+    if (!fgRef.current || touched || isRendering) {
+      return;
+    }
+
     let angle = 0;
-    const interval = setInterval(() => {
-      fgRef.current.cameraPosition({
-        x: distance * Math.sin(angle),
-        z: distance * Math.cos(angle),
-      });
-      angle += Math.PI / 3000;
-    }, 10);
+
+    let interval = null;
+
+    setTimeout(() => {
+      interval = setInterval(() => {
+        fgRef.current.cameraPosition({
+          x: DEFAULT_CAMERA_DISTANCE * Math.sin(angle),
+          z: DEFAULT_CAMERA_DISTANCE * Math.cos(angle),
+        });
+        angle += Math.PI / 3000;
+      }, 10);
+    }, CAMERA_ZOOM_IN_EFFECT_DURATION + CAMERA_ZOOM_IN_EFFECT_DELAY);
 
     return () => {
-      if (fgRef.current) {
-        fgRef.current.controls().removeEventListener('start', onTouch);
-      }
-
       clearInterval(interval);
     };
-  }, [fgRef, touched]);
+  }, [fgRef, touched, isRendering]);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -123,7 +160,6 @@ function ForceGraph({ data, size, currentAddress }: Props) {
         enablePointerInteraction
         enableNavigationControls
         nodeLabel="id"
-        // cameraDistance={500}
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={8}
