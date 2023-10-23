@@ -75,8 +75,4 @@ const IPFSContentTransferHandler: TransferHandler<
   },
 };
 
-export {
-  asyncIterableTransferHandler,
-  iterableTransferHandler,
-  IPFSContentTransferHandler,
-};
+export { IPFSContentTransferHandler };
