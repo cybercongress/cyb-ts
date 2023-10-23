@@ -3,17 +3,16 @@ import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
 import FeedsTab from 'src/pages/robot/_refactor/account/tabs/feeds';
 import FollowsTab from 'src/pages/robot/_refactor/account/tabs/follows';
 import Heroes from 'src/pages/robot/_refactor/account/tabs/heroes';
-import ForceGraph from 'src/containers/forceGraph/forceGraph';
 import TableDiscipline from 'src/containers/gol/table';
 import IpfsSettings from 'src/features/ipfs/ipfsSettings';
 import Sigma from 'src/containers/sigma';
 import Taverna from 'src/containers/taverna';
+import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import Layout from './Layout/Layout';
 import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 import ZeroUser from './ZeroUser/ZeroUser';
 import RobotContextProvider, { useRobotContext } from './robot.context';
-import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
 
 function RobotRoutes() {
   const { isOwner, isLoading, address } = useRobotContext();
@@ -41,7 +40,7 @@ function RobotRoutes() {
         <Route path="swarm" element={<FollowsTab />} />
         <Route
           path="brain"
-          element={<LinksGraphContainer address={address} toPortal />}
+          element={<CyberlinksGraphContainer address={address} toPortal />}
         />
         <Route path="karma" element={<UnderConstruction />} />
         <Route path="soul" element={<UnderConstruction />} />

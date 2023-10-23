@@ -21,10 +21,10 @@ import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { Networks } from 'src/types/networks';
 import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import KeywordButton from '../KeywordButton/KeywordButton';
+import KeywordButton from '../Search/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
-import TitleText from '../TitleText/TitleText';
-import { learningListConfig } from '../Search';
+import TitleText from '../Search/components/TitleText/TitleText';
+import { learningListConfig } from '../Search/Search';
 
 function Learn() {
   const [ask, setAsk] = useState('');

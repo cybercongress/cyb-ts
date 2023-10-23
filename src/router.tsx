@@ -8,7 +8,6 @@ import {
   useParams,
 } from 'react-router-dom';
 import App from './containers/application/App';
-import SearchResults from './containers/Search/SearchResults';
 import Home from './containers/home/home';
 import Governance from './containers/governance/governance';
 import ProposalsDetail from './containers/governance/proposalsDetail';
@@ -22,7 +21,6 @@ import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
 import TrollBoxx from './containers/trollBox';
-import ForceGraph from './containers/forceGraph/forceGraph';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
 import TestKeplr from './containers/testKeplre';
 import Mint from './containers/mint';
@@ -59,8 +57,8 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Search from './pages/Search/Search';
-import Learn from './pages/Search/Learn/Learn';
-import LinksGraphContainer from './containers/forceGraph/LinksGraphContainer';
+import Learn from './pages/Learn/Learn';
+import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -108,11 +106,6 @@ function RedirectToRobot() {
   return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
-// function RedirectToRobot() {
-//   const params = useParams();
-//   return <Navigate to={`/search/${params.address}`} replace />;
-// }
-
 function RedirectToRobotBrain() {
   const params = useParams();
   return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
@@ -156,7 +149,10 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          <Route path="/graph" element={<LinksGraphContainer toPortal />} />
+          <Route
+            path="/graph"
+            element={<CyberlinksGraphContainer toPortal />}
+          />
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
 
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />

@@ -3,8 +3,8 @@ import { Loading } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useCyberlinks from './useCyberlinks';
-import { PORTAL_ID } from '../application/App';
-import LinksGraph from './forceGraph';
+import { PORTAL_ID } from '../../../containers/application/App';
+import LinksGraph from './CyberlinksGraph';
 
 type Props = {
   address?: string;

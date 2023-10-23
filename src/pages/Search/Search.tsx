@@ -2,18 +2,13 @@ import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
 import { id } from 'src/containers/application/Header/Commander/Commander';
 import { useEffect, useRef, useState } from 'react';
-import LinksGraphContainer from 'src/containers/forceGraph/LinksGraphContainer';
+import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
-import {
-  useGetGraphStats,
-  useGetNegentropy,
-} from 'src/containers/temple/hooks';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import { useDevice } from 'src/contexts/device';
 import styles from './Search.module.scss';
-import KeywordButton from './KeywordButton/KeywordButton';
-import TitleText from './TitleText/TitleText';
-import useGraphQLQuery from 'src/hooks/useGraphQL';
+import KeywordButton from './components/KeywordButton/KeywordButton';
+import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
 import cx from 'classnames';
 
@@ -193,7 +188,7 @@ function Search() {
         </h2>
 
         <div className={styles.graphWrapper}>
-          <LinksGraphContainer size={graphSize} />
+          <CyberlinksGraphContainer size={graphSize} />
         </div>
 
         {/* not render to prevent requests */}

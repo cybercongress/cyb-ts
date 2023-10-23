@@ -14,7 +14,7 @@ const DEFAULT_CAMERA_DISTANCE = 1300;
 const CAMERA_ZOOM_IN_EFFECT_DURATION = 5000;
 const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
 
-function ForceGraph({ data, size, currentAddress }: Props) {
+function CyberlinksGraph({ data, size, currentAddress }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
 
@@ -194,4 +194,4 @@ function ForceGraph({ data, size, currentAddress }: Props) {
   );
 }
 
-export default ForceGraph;
+export default CyberlinksGraph;

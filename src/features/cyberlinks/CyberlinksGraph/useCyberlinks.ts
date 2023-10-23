@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getGraphQLQuery } from 'src/utils/search/utils';
 
-// TODO: refactor and maybe delete
+// TODO: moved, refactor and maybe delete
 function useCyberlinks(address?: string) {
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
