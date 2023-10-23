@@ -55,7 +55,9 @@ function ForceGraph({ data, size, currentAddress }: Props) {
     fgRef.current.controls().addEventListener('start', onTouch);
 
     return () => {
-      fgRef.current.controls().removeEventListener('start', onTouch);
+      if (fgRef.current) {
+        fgRef.current.controls().removeEventListener('start', onTouch);
+      }
     };
   }, [fgRef]);
 
@@ -69,7 +71,7 @@ function ForceGraph({ data, size, currentAddress }: Props) {
 
     let interval = null;
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       interval = setInterval(() => {
         fgRef.current.cameraPosition({
           x: DEFAULT_CAMERA_DISTANCE * Math.sin(angle),
@@ -80,6 +82,7 @@ function ForceGraph({ data, size, currentAddress }: Props) {
     }, CAMERA_ZOOM_IN_EFFECT_DURATION + CAMERA_ZOOM_IN_EFFECT_DELAY);
 
     return () => {
+      clearTimeout(timeout);
       clearInterval(interval);
     };
   }, [fgRef, touched, isRendering]);
