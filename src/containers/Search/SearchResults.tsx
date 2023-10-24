@@ -53,7 +53,7 @@ function SearchResults() {
   const {
     data: items,
     total,
-    loading,
+    isFetching,
     error,
     hasMore,
     isInitialLoading,
@@ -76,12 +76,14 @@ function SearchResults() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    if (!error) {
-      return;
+    if (isInitialLoading || isFetching) {
+      setAdviser('Searching...', 'yellow');
+    } else if (error) {
+      setAdviser(JSON.stringify(error), 'red');
+    } else {
+      setAdviser('');
     }
-
-    setAdviser(JSON.stringify(error), 'red');
-  }, [error, setAdviser]);
+  }, [setAdviser, error, isFetching, isInitialLoading]);
 
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
@@ -107,26 +109,6 @@ function SearchResults() {
       setRankLink(key);
     }
   };
-
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-          Searching
-        </div>
-      </div>
-    );
-  }
 
   const renderItems = items
     .filter((item) => {
@@ -178,30 +160,32 @@ function SearchResults() {
           contentType={contentType}
         />
 
-        <InfiniteScroll
-          dataLength={items.length}
-          next={next}
-          hasMore={hasMore}
-          loader={
-            <h4
-              style={{
-                marginTop: 15,
-                textAlign: 'center',
-              }}
-            >
-              Loading
-              <Dots />
-            </h4>
-          }
-        >
-          <FirstItems query={query} />
+        <FirstItems query={query} />
 
-          {Object.keys(renderItems).length > 0 && !isInitialLoading ? (
-            renderItems
-          ) : (
-            <NoItems text={`No information about ${query}`} />
-          )}
-        </InfiniteScroll>
+        {/* loading is being showed by Adviser */}
+        {isInitialLoading || isFetching ? null : Object.keys(renderItems)
+            .length > 0 ? (
+          <InfiniteScroll
+            dataLength={items.length}
+            next={next}
+            hasMore={hasMore}
+            loader={
+              <h4
+                style={{
+                  marginTop: 15,
+                  textAlign: 'center',
+                }}
+              >
+                Loading
+                <Dots />
+              </h4>
+            }
+          >
+            {renderItems}
+          </InfiniteScroll>
+        ) : (
+          <NoItems text={`No information about ${query}`} />
+        )}
       </MainContainer>
 
       {!mobile && (
