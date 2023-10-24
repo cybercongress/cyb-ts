@@ -78,7 +78,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     setIsIpfsInitialized(false);
 
     const ipfsOpts = getIpfsOpts();
-
+    await backendApi.ipfsApi.stop();
     await backendApi.ipfsApi
       .start(ipfsOpts)
       .then((ipfsNodeRemote) => {
