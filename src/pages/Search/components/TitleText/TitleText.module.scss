@@ -12,13 +12,12 @@
     text-shadow: 0 0 5px var(--primary-color);
     font-size: 20px;
     position: relative;
-    z-index: 1;
-    margin: 10px 0;
+    margin: 16px 0 12px;
 
     // TODO: move to mixin
     &::before {
       content: '';
-      z-index: -1;
+      pointer-events: none;
       position: absolute;
       left: -20%;
       right: -20%;
@@ -27,8 +26,8 @@
       background: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 3.92%,
-        rgba(54, 214, 174, 0.15) 46.46%,
-        rgba(54, 214, 174, 0.15) 56.46%,
+        rgba(54, 214, 174, 0.18) 46.46%,
+        rgba(54, 214, 174, 0.18) 56.46%,
         rgba(0, 0, 0, 0) 100%
       );
     }
