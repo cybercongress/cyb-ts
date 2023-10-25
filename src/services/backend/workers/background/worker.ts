@@ -156,9 +156,16 @@ const backendApiFactory = () => {
       importParticle(cid, ipfsNode!, dbApi!),
   };
 
+  const stopIpfs = async () => {
+    if (ipfsNode) {
+      await ipfsNode.stop();
+    }
+  };
+
   const startIpfs = async (ipfsOpts: IpfsOptsType) => {
     try {
       if (ipfsNode) {
+        console.log('Ipfs node already started!');
         await ipfsNode.stop();
       }
       ipfsNode = await initIpfsNode(ipfsOpts);
@@ -172,6 +179,7 @@ const backendApiFactory = () => {
 
   const ipfsApi = {
     start: startIpfs,
+    stop: stopIpfs,
     config: async () => ipfsNode?.config,
     info: async () => ipfsNode?.info(),
     fetchWithDetails: async (cid: string, parseAs?: IpfsContentType) =>

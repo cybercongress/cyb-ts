@@ -27,6 +27,19 @@ const valueContext = {
   backendApi: undefined,
 };
 
+const setupStoragePersistence = async () => {
+  let isPersistedStorage = await navigator.storage.persisted();
+  if (!isPersistedStorage) {
+    await navigator.permissions.query({ name: 'persistent-storage' });
+    isPersistedStorage = await navigator.storage.persisted();
+  }
+  const message = isPersistedStorage
+    ? `🔰 Storage is persistent.`
+    : `⚠️ Storage is non-persitent.`;
+  console.log(message);
+  return isPersistedStorage;
+};
+
 const BackendContext =
   React.createContext<BackendProviderContextType>(valueContext);
 
@@ -54,6 +67,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
+
+      await setupStoragePersistence();
+
       const installDbApi = async () => {
         setIsDbItialized(false);
         dbApiService
@@ -78,7 +94,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     setIsIpfsInitialized(false);
 
     const ipfsOpts = getIpfsOpts();
-
+    await backendApi.ipfsApi.stop();
     await backendApi.ipfsApi
       .start(ipfsOpts)
       .then((ipfsNodeRemote) => {

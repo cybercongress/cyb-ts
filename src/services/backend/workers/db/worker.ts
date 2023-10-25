@@ -3,14 +3,23 @@ import cozoDb from 'src/services/CozoDb/cozoDb';
 import { exposeWorkerApi } from '../factoryMethods';
 
 const dbApiFactory = () => {
-  const init = async () => {
-    const channel = new BcChannel();
+  let isInitialized = false;
 
+  console.log('---dbApi worker constructor!');
+
+  const init = async () => {
+    if (isInitialized) {
+      console.log('Db: already initialized!');
+      return;
+    }
+
+    const channel = new BcChannel();
     // callback to sync writes count worker -> main thread
     const onWriteCallback = (writesCount: number) =>
       channel.post({ type: 'indexeddb_write', value: writesCount });
 
     await cozoDb.init(onWriteCallback);
+    isInitialized = true;
   };
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
