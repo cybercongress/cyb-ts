@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Input.module.scss';
 import LinearGradientContainer, {
   Color,
@@ -38,7 +38,25 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
     },
     ref
   ) => {
-    const [focused, setFocused] = useState(false);
+    const [focused, setFocused] = useState(focusedProps || false);
+
+    useEffect(() => {
+      if (!ref?.current) {
+        return;
+      }
+
+      if (focused) {
+        ref.current.focus();
+      } else {
+        ref.current.blur();
+      }
+    }, [focused, ref]);
+
+    useEffect(() => {
+      if (typeof focusedProps === 'boolean') {
+        setFocused(focusedProps);
+      }
+    }, [focusedProps]);
 
     const Tag = isTextarea ? TextareaAutosize : 'input';
 

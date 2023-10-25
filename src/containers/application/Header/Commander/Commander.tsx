@@ -1,37 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { encodeSlash, replaceSlash } from '../../../../utils/utils';
-import { Input } from '../../../../components';
-import styles from './Commander.module.scss';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { routes } from 'src/routes';
 import { getIpfsHash } from 'src/utils/search/utils';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { setFocus, setValue } from './commander.redux';
+import styles from './Commander.module.scss';
+import { Input } from '../../../../components';
+import { encodeSlash, replaceSlash } from '../../../../utils/utils';
 
 const fixedValue = '~';
-
-// replace with more declarative way
-export const id = 'commander';
 
 function Commander() {
   const navigate = useNavigate();
   const { query: q, cid } = useParams();
   const query = q || cid;
-  const [search, setSearch] = useState(fixedValue + (query || ''));
 
-  const ref = React.useRef<HTMLInputElement>(null);
+  const commanderRef = React.useRef<HTMLInputElement>(null);
+
+  const commander = useAppSelector((store) => store.commander);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     function handleKeyPress(event: KeyboardEvent) {
       if (
         event.key === '/' &&
-        ref.current &&
-        ref.current !== document.activeElement &&
+        commanderRef.current &&
+        commanderRef.current !== document.activeElement &&
         event.target &&
         !['INPUT', 'TEXTAREA'].includes(event.target.tagName)
       ) {
         event.preventDefault();
-        ref.current.focus();
+        commanderRef.current.focus();
       }
     }
 
@@ -42,6 +43,37 @@ function Commander() {
     };
   }, []);
 
+  // focus hook
+  useEffect(() => {
+    if (!commanderRef.current) {
+      return;
+    }
+
+    function onFocus() {
+      dispatch(setFocus(true));
+    }
+
+    function onBlur(e) {
+      if (e.relatedTarget?.tagName.toLowerCase() === 'a') {
+        e.relatedTarget.click();
+      }
+
+      dispatch(setFocus(false));
+    }
+
+    commanderRef.current.addEventListener('focus', onFocus);
+    commanderRef.current.addEventListener('blur', onBlur);
+
+    return () => {
+      if (!commanderRef.current) {
+        return;
+      }
+
+      commanderRef.current.removeEventListener('focus', onFocus);
+      commanderRef.current.removeEventListener('blur', onBlur);
+    };
+  }, [commanderRef, dispatch]);
+
   useEffect(() => {
     (async () => {
       let search = query || '';
@@ -50,44 +82,38 @@ function Commander() {
         search = await getIpfsHash(encodeSlash(query));
       }
 
-      setSearch(fixedValue + (search || ''));
+      setValue(fixedValue + (search || ''));
     })();
   }, [query]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
-    let newValue = value;
 
-    if (value.length < fixedValue.length) {
-      newValue = fixedValue;
-    } else if (!value.startsWith(fixedValue)) {
-      newValue = fixedValue + value;
-    }
-
-    setSearch(newValue);
+    dispatch(setValue(value.replace(fixedValue, '')));
   }
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!search || search === fixedValue) {
+    const { value } = commander;
+
+    if (!value) {
       return;
     }
 
-    navigate(
-      routes.search.getLink(replaceSlash(search.replace(fixedValue, '')))
-    );
+    navigate(routes.search.getLink(replaceSlash(value)));
   }
 
   return (
     <form className={styles.wrapper} onSubmit={submit}>
       <Input
-        ref={ref}
+        ref={commanderRef}
         color={Color.Pink}
-        value={search}
-        id={id}
+        value={fixedValue + commander.value}
+        focusedProps={commander.isFocused}
+        // placeholder="Ask me anything"
         onChange={onChange}
-        autoFocus={window.self === window.top}
+        // autoFocus={window.self === window.top}
         className={styles.input}
         autoComplete="off"
       />
