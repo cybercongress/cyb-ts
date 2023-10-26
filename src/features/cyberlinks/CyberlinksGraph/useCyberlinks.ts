@@ -29,6 +29,8 @@ function useCyberlinks(address?: string) {
           }
           `;
       const { cyberlinks } = await getGraphQLQuery(GET_CYBERLINKS);
+
+      // TODO: a lot of loops, try to refactor
       const from = cyberlinks.map((a) => a.particle_from);
       const to = cyberlinks.map((a) => a.particle_to);
       const set = new Set(from.concat(to));

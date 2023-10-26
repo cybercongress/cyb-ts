@@ -16,6 +16,7 @@ import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
 import { useAdviser } from 'src/features/adviser/context';
+import Loader2 from 'src/components/ui/Loader2';
 
 export const initialContentTypeFilterState = {
   text: false,
@@ -76,12 +77,10 @@ function SearchResults() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    if (isInitialLoading || isFetching) {
-      setAdviser('Searching...', 'yellow');
-    } else if (error) {
+    if (error) {
       setAdviser(JSON.stringify(error), 'red');
     } else {
-      setAdviser('');
+      // setAdviser('');
     }
   }, [setAdviser, error, isFetching, isInitialLoading]);
 
@@ -162,24 +161,14 @@ function SearchResults() {
 
         <FirstItems query={query} />
 
-        {/* loading is being showed by Adviser */}
-        {isInitialLoading || isFetching ? null : Object.keys(renderItems)
-            .length > 0 ? (
+        {isInitialLoading || isFetching ? (
+          <Loader2 />
+        ) : Object.keys(renderItems).length > 0 ? (
           <InfiniteScroll
             dataLength={items.length}
             next={next}
             hasMore={hasMore}
-            loader={
-              <h4
-                style={{
-                  marginTop: 15,
-                  textAlign: 'center',
-                }}
-              >
-                Loading
-                <Dots />
-              </h4>
-            }
+            loader={<Loader2 />}
           >
             {renderItems}
           </InfiniteScroll>
