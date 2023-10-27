@@ -48,8 +48,6 @@ function Ipfs() {
     })();
   }, [cid, fetchParticle]);
 
-  console.log(status, content);
-
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     // && !content?.availableDownload

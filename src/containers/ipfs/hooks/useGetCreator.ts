@@ -4,7 +4,7 @@ import { Option } from 'src/types';
 import { CreatorCyberLink } from 'src/types/cyberLink';
 import { getCreator } from '../../../utils/search/utils';
 
-function useGetCreator(cid) {
+function useGetCreator(cid: string) {
   const { data } = useQuery(
     ['useGetCreator', cid],
     async () => {

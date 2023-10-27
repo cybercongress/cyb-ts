@@ -67,13 +67,9 @@ export const useNewsToday = (account) => {
     const response = await getGraphQLQuery(
       QueryCyberlink(followsProps, yesterday, time)
     );
-    if (
-      response.cyberlinks_aggregate &&
-      response.cyberlinks_aggregate.aggregate
-    ) {
-      setCount(response.cyberlinks_aggregate.aggregate.count);
-      setLoading(false);
-    }
+
+    setCount(response.data?.cyberlinks_aggregate?.aggregate?.count || 0);
+    setLoading(false);
   };
 
   return {

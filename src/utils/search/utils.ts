@@ -333,29 +333,32 @@ export const getTotalRewards = async (delegatorAddr) => {
   }
 };
 
+/**
+ * @deprecated use Apollo
+ */
 export const getGraphQLQuery = async (
   query,
   urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
 ) => {
-  try {
-    const body = JSON.stringify({
-      query,
-    });
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+  const body = JSON.stringify({
+    query,
+  });
+  const headers = {
+    'Content-Type': 'application/json',
+  };
 
-    const response = await axios({
-      method: 'post',
-      url: urlGraphql,
-      headers,
-      data: body,
-    });
-    return response.data.data;
-  } catch (e) {
-    console.log(e);
-    return null;
+  const response = await axios({
+    method: 'post',
+    url: urlGraphql,
+    headers,
+    data: body,
+  });
+
+  if (response.data.errors) {
+    throw response.data;
   }
+
+  return response.data;
 };
 
 const getParamSlashing = async () => {
@@ -617,25 +620,12 @@ export const getInlfation = async () => {
   }
 };
 
-export const getImportLink = async (address) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `https://io.cybernode.ai/api/v0/dag/get?arg=bafyreibnn7bfilbmkrxm2rwk5fe6qzzdvm2xen34cjdktdoex4uylb76z4/${address}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 enum Order {
   ASC = 'ORDER_BY_ASC',
   DESC = 'ORDER_BY_DESC',
 }
 
-export const getLinks = async (
+const getLink = async (
   cid: string,
   type: LinkType = LinkType.from,
   { offset, limit, order = Order.DESC }
@@ -773,11 +763,21 @@ export const getFollowers = async (addressHash) => {
 
 export const getCreator = async (cid) => {
   try {
+    // TODO: refactor
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
-    return response.data;
+
+    const response2 = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
+    });
+
+    const h1 = Number(response.data.tx_responses?.[0]?.height || 0);
+    const h2 = Number(response2.data.tx_responses?.[0]?.height || 0);
+
+    return h1 < h2 ? response.data : response2.data;
   } catch (error) {
     console.log(error);
     return null;

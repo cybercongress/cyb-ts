@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import Spark from 'src/components/search/Spark/Spark';
+import { useAdviser } from 'src/features/adviser/context';
+import Loader2 from 'src/components/ui/Loader2';
 import { getIpfsHash } from '../../utils/search/utils';
 import { encodeSlash } from '../../utils/utils';
-import { Loading, NoItems, Dots } from '../../components';
+import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { PATTERN_IPFS_HASH } from '../../utils/config';
 import { MainContainer } from '../portal/components';
-import Spark from 'src/components/search/Spark/Spark';
 import FirstItems from './_FirstItems.refactor';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
-import { useAdviser } from 'src/features/adviser/context';
-import Loader2 from 'src/components/ui/Loader2';
 
 export const initialContentTypeFilterState = {
   text: false,
@@ -32,11 +32,12 @@ const sortByLSKey = 'search-sort';
 function SearchResults() {
   const { query: q, cid } = useParams();
 
-  let query = q || cid || '';
+  const query = q || cid || '';
 
   // const location = useLocation();
   // const navigate = useNavigate();
   const [keywordHash, setKeywordHash] = useState('');
+  console.debug(query, keywordHash);
   const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
@@ -115,12 +116,11 @@ function SearchResults() {
 
       if (!Object.values(contentTypeFilter).some((value) => value)) {
         return true;
-      } else {
-        if (!contentType[cid]) {
-          return false;
-        }
-        return contentTypeFilter[contentType[cid]];
       }
+      if (!contentType[cid]) {
+        return false;
+      }
+      return contentTypeFilter[contentType[cid]];
     })
     .map((key, i) => {
       return (
@@ -161,7 +161,7 @@ function SearchResults() {
 
         <FirstItems query={query} />
 
-        {isInitialLoading || isFetching ? (
+        {isInitialLoading ? (
           <Loader2 />
         ) : Object.keys(renderItems).length > 0 ? (
           <InfiniteScroll
