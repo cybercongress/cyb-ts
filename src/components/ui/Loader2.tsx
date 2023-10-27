@@ -11,7 +11,7 @@ function Loader2() {
           margin: '15px 100%',
         }}
       >
-        Loading <Dots />
+        loading <Dots />
       </span>
     </div>
   );

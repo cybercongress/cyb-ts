@@ -1,6 +1,5 @@
 import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
-import { id } from 'src/containers/application/Header/Commander/Commander';
 import { useEffect, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
@@ -11,6 +10,8 @@ import KeywordButton from './components/KeywordButton/KeywordButton';
 import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
 import cx from 'classnames';
+import { useAppDispatch } from 'src/redux/hooks';
+import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 
 export enum TitleType {
   search,
@@ -100,6 +101,8 @@ function Search() {
 
   const ref = useRef<HTMLDivElement>(null);
 
+  const dispatch = useAppDispatch();
+
   let graphSize = Math.min(viewportWidth / 3, 330);
 
   const isMobile =
@@ -108,6 +111,10 @@ function Search() {
   if (isMobile) {
     graphSize = 330;
   }
+
+  useEffect(() => {
+    dispatch(setFocus(true));
+  }, []);
 
   useEffect(() => {
     if (!ref.current) {
@@ -141,13 +148,6 @@ function Search() {
       clearInterval(interval);
     };
   }, [titleType]);
-
-  useEffect(() => {
-    const commander = document.getElementById(id);
-    if (commander) {
-      commander.focus();
-    }
-  }, []);
 
   return (
     <div className={styles.wrapper} ref={ref}>

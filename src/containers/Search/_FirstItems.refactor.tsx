@@ -100,7 +100,7 @@ function FirstItems({ query }) {
         alignItems="center"
         marginBottom="-2px"
       >
-        <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
+        <Link className="SearchItem" to={`/network/bostrom/blocks/${query}`}>
           <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
             {textPreviewSparkApp(
               'Explore details of block ',

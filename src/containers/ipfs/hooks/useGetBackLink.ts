@@ -32,36 +32,43 @@ const LIMIT = 20;
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, refetch, error, isInitialLoading } =
-    useInfiniteQuery(
-      ['useGetBackLink', cid],
-      async ({ pageParam = 0 }: { pageParam?: number }) => {
-        const response = (await queryClient?.backlinks(
-          cid,
-          pageParam,
-          LIMIT
-        )) as Res;
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    error,
+    isInitialLoading,
+    isFetching,
+  } = useInfiniteQuery(
+    ['useGetBackLink', cid],
+    async ({ pageParam = 0 }: { pageParam?: number }) => {
+      const response = (await queryClient?.backlinks(
+        cid,
+        pageParam,
+        LIMIT
+      )) as Res;
 
-        return { data: response, page: pageParam };
+      return { data: response, page: pageParam };
+    },
+    {
+      enabled: Boolean(queryClient && cid) && !skip,
+      getNextPageParam: (lastPage) => {
+        const {
+          page,
+          data: {
+            pagination: { total },
+          },
+        } = lastPage;
+
+        if (!total || (page + 1) * LIMIT > total) {
+          return undefined;
+        }
+
+        return page + 1;
       },
-      {
-        enabled: Boolean(queryClient && cid) && !skip,
-        getNextPageParam: (lastPage) => {
-          const {
-            page,
-            data: {
-              pagination: { total },
-            },
-          } = lastPage;
-
-          if (!total || (page + 1) * LIMIT > total) {
-            return undefined;
-          }
-
-          return page + 1;
-        },
-      }
-    );
+    }
+  );
 
   // TODO: combine 2 reduce
   const d =
@@ -77,6 +84,7 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     hasNextPage,
     refetch,
     error,
+    isFetching,
     isInitialLoading,
     fetchNextPage,
   };
