@@ -8,7 +8,7 @@ import { encodeSlash, formatCurrency, timeSince } from 'src/utils/utils';
 import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
-import { Account, Rank } from '../../components';
+import { Account, Dots, Rank } from '../../components';
 import useGetCreator from './hooks/useGetCreator';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
@@ -70,9 +70,15 @@ function Ipfs() {
 
   useEffect(() => {
     if (['error', 'timeout', 'not_found'].includes(status)) {
-      setAdviser(`Ipfs loading error, status: ${status}`);
+      setAdviser(`IPFS loading error, status: ${status}`, 'red');
     } else if (['pending', 'executing'].includes(status)) {
-      setAdviser('Loading...', 'yellow');
+      setAdviser(
+        <>
+          loading
+          <Dots />
+        </>,
+        'yellow'
+      );
     } else if (ipfsDataDetails) {
       setAdviser(
         <div className={styles.meta}>
@@ -106,6 +112,8 @@ function Ipfs() {
       );
     }
   }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content, status]);
+
+  console.debug(status, cid, content, ipfsDataDetails);
 
   return (
     <>

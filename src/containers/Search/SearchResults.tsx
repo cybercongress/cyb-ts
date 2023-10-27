@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-// import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import Spark from 'src/components/search/Spark/Spark';
-import { useAdviser } from 'src/features/adviser/context';
 import Loader2 from 'src/components/ui/Loader2';
 import { getIpfsHash } from '../../utils/search/utils';
 import { encodeSlash } from '../../utils/utils';
@@ -34,8 +32,6 @@ function SearchResults() {
 
   const query = q || cid || '';
 
-  // const location = useLocation();
-  // const navigate = useNavigate();
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
   const [rankLink, setRankLink] = useState(null);
@@ -55,7 +51,6 @@ function SearchResults() {
   const {
     data: items,
     total,
-    isFetching,
     error,
     hasMore,
     isInitialLoading,
@@ -74,16 +69,6 @@ function SearchResults() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [query]);
-
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    if (error) {
-      setAdviser(JSON.stringify(error), 'red');
-    } else {
-      // setAdviser('');
-    }
-  }, [setAdviser, error, isFetching, isInitialLoading]);
 
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
@@ -172,6 +157,14 @@ function SearchResults() {
           >
             {renderItems}
           </InfiniteScroll>
+        ) : error ? (
+          <p
+            style={{
+              color: 'red',
+            }}
+          >
+            {error.message}
+          </p>
         ) : (
           <NoItems text={`No information about ${query}`} />
         )}
