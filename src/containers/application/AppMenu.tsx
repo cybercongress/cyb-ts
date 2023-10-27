@@ -24,6 +24,19 @@ const itemsMenu = () => {
       subItems: [],
       // subItems: myRobotLinks,
     },
+    {
+      name: 'Oracle',
+      to: '/',
+      icon: oracle,
+      subItems: [
+        { name: 'Particles', to: '/particles' },
+        { name: 'Stats', to: '/oracle/stats' },
+        { name: 'Blocks', to: '/network/bostrom/blocks' },
+        { name: 'Txs', to: '/network/bostrom/tx' },
+        { name: 'Contracts', to: '/contracts' },
+        { name: 'Libs', to: '/libs' },
+      ],
+    },
     { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
@@ -50,19 +63,6 @@ const itemsMenu = () => {
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
-    {
-      name: 'Oracle',
-      to: '/',
-      icon: oracle,
-      subItems: [
-        { name: 'Particles', to: '/particles' },
-        { name: 'Stats', to: '/oracle/stats' },
-        { name: 'Blocks', to: '/network/bostrom/blocks' },
-        { name: 'Txs', to: '/network/bostrom/tx' },
-        { name: 'Contracts', to: '/contracts' },
-        { name: 'Libs', to: '/libs' },
-      ],
-    },
     {
       name: 'Hub',
       to: '/search/hub',
