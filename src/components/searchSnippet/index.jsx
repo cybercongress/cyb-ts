@@ -41,6 +41,7 @@ function SearchSnippet({ cid, data, onClickRank }) {
   useEffect(() => {
     const getRank = async () => {
       if ((data.rank === undefined || data.rank === null) && queryClient) {
+        // use useRank hook
         const response = await queryClient.rank(cid);
 
         const rank = coinDecimals(parseFloat(response.rank));

@@ -4,18 +4,16 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
-import { encodeSlash, formatCurrency, timeSince } from 'src/utils/utils';
-import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
+import { encodeSlash } from 'src/utils/utils';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
-import { Account, Dots, MainContainer, Rank } from '../../components';
-import useGetCreator from './hooks/useGetCreator';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
+import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
-import { PREFIXES } from './components/metaInfo';
 import SearchResults from '../Search/SearchResults';
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import cx from 'classnames';
+import AdviserMeta from './components/AdviserMeta/AdviserMeta';
 
 function Ipfs() {
   const { query = '' } = useParams();
@@ -25,11 +23,8 @@ function Ipfs() {
   );
 
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
-  const { creator } = useGetCreator(cid);
 
-  const [rankInfo, setRankInfo] = useState<number>();
-  const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(null);
+  const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
   const queryClient = useQueryClient();
   const { setAdviser } = useAdviser();
@@ -65,13 +60,14 @@ function Ipfs() {
         // (progress: number) => console.log(`${cid} progress: ${progress}`)
       );
       setIpfsDatDetails(details);
-
-      const response = await queryClient?.rank(cid);
-      setRankInfo(Number(response.rank));
     })();
   }, [content, status, cid, queryClient]);
 
   useEffect(() => {
+    if (!status) {
+      return;
+    }
+
     if (['error', 'timeout', 'not_found'].includes(status)) {
       setAdviser(`IPFS loading error, status: ${status}`, 'red');
     } else if (['pending', 'executing'].includes(status)) {
@@ -81,42 +77,17 @@ function Ipfs() {
         </>,
         'yellow'
       );
-    } else if (ipfsDataDetails) {
+    } else if (status === 'completed') {
       setAdviser(
-        <div className={styles.meta}>
-          <div className={styles.left}>
-            {ipfsDataDetails?.type}
-
-            {!!rankInfo && (
-              <div className={styles.rank}>
-                with rank
-                <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>
-                <Rank hash={cid} rank={rankInfo} />
-              </div>
-            )}
-          </div>
-          {creator && (
-            <div className={styles.center}>
-              <span className={styles.date}>
-                {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
-              </span>
-              <Account sizeAvatar="20px" address={creator.address} avatar />
-            </div>
-          )}
-          <div className={styles.right}>
-            <span>
-              🟥{' '}
-              {content?.meta?.size !== -1
-                ? formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)
-                : 'unknown'}
-            </span>
-            <button disabled>🌓</button>
-          </div>
-        </div>,
+        <AdviserMeta
+          cid={cid}
+          type={ipfsDataDetails?.type}
+          size={content?.meta?.size}
+        />,
         'purple'
       );
     }
-  }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content, status]);
+  }, [ipfsDataDetails, setAdviser, cid, content, status]);
 
   console.debug(status, cid, content, ipfsDataDetails);
 
@@ -140,19 +111,3 @@ function Ipfs() {
 }
 
 export default Ipfs;
-
-// const update = useCallback(() => {
-//   dataDiscussion.refetch();
-//   dataAnswer.refetch();
-// }, [dataAnswer, dataDiscussion]);
-
-// {!mobile && (tab === 'discussion' || tab === 'answers') && (
-//   <ActionBarContainer
-//     placeholder={
-//       tab === 'answers' ? 'add keywords, hash or file' : 'add message'
-//     }
-//     textBtn={tab === 'answers' ? 'add answer' : 'Comment'}
-//     keywordHash={cid}
-//     update={update}
-//   />
-// )}

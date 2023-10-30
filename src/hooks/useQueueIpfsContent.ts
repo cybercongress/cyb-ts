@@ -28,7 +28,7 @@ type UseIpfsContentReturn = {
 };
 
 function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
-  const [status, setStatus] = useState<QueueItemStatus | undefined>();
+  const [status, setStatus] = useState<QueueItemStatus>();
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
