@@ -76,12 +76,9 @@ function Commander() {
 
   useEffect(() => {
     (async () => {
-      if (!query) {
-        return;
-      }
+      let newValue = query || '';
 
-      let newValue = query;
-      if (!query.match(PATTERN_IPFS_HASH)) {
+      if (query && !query.match(PATTERN_IPFS_HASH)) {
         newValue = (await getIpfsHash(encodeSlash(query))) as string;
       }
 
