@@ -763,7 +763,7 @@ export const getFollowers = async (addressHash) => {
 
 export const getCreator = async (cid) => {
   try {
-    // TODO: refactor
+    // TODO: refactor this
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
@@ -776,6 +776,12 @@ export const getCreator = async (cid) => {
 
     const h1 = Number(response.data.tx_responses?.[0]?.height || 0);
     const h2 = Number(response2.data.tx_responses?.[0]?.height || 0);
+
+    if (h1 === 0) {
+      return response2.data;
+    } else if (h2 === 0) {
+      return response.data;
+    }
 
     return h1 < h2 ? response.data : response2.data;
   } catch (error) {

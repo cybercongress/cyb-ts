@@ -103,7 +103,10 @@ function Ipfs() {
           )}
           <div className={styles.right}>
             <span>
-              🟥 {formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)}
+              🟥{' '}
+              {content?.meta?.size !== -1
+                ? formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)
+                : 'unknown'}
             </span>
             <button disabled>🌓</button>
           </div>
