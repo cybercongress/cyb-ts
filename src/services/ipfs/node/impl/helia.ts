@@ -4,13 +4,15 @@ import { IDBDatastore } from 'datastore-idb';
 import { Libp2p, createLibp2p } from 'libp2p';
 import { noise } from '@chainsafe/libp2p-noise';
 import { yamux } from '@chainsafe/libp2p-yamux';
+// import { mplex } from '@libp2p/mplex';
+
+import { circuitRelayTransport } from 'libp2p/circuit-relay';
 import { UnixFS, unixfs, AddOptions } from '@helia/unixfs';
 import { bootstrap } from '@libp2p/bootstrap';
-import { webRTC } from '@libp2p/webrtc';
+import { webRTC, webRTCDirect } from '@libp2p/webrtc';
 import { webSockets } from '@libp2p/websockets';
 import { identifyService } from 'libp2p/identify';
-import { multiaddr } from '@multiformats/multiaddr';
-import type { CID, Version as CIDVersion } from 'multiformats/cid';
+import { multiaddr, protocols } from '@multiformats/multiaddr';
 
 import {
   AbortOptions,
@@ -25,6 +27,8 @@ import { stringToCid } from '../../utils/cid';
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { CYBER_GATEWAY_URL } from '../../config';
 
+const WEBRTC_CODE = protocols('webrtc').code;
+
 const libp2pFactory = async (
   datastore: IDBDatastore,
   bootstrapList: string[] = []
@@ -37,9 +41,44 @@ const libp2pFactory = async (
     //     '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
     //   ],
     // },
-    transports: [webSockets()], // [webSockets({ filter: all })], //, webRTC()
+    transports: [
+      webSockets(),
+      webRTC({
+        rtcConfiguration: {
+          iceServers: [
+            {
+              urls: [
+                'stun:stun.l.google.com:19302',
+                'stun:global.stun.twilio.com:3478',
+                'STUN:freestun.net:3479',
+                'STUN:stun.bernardoprovenzano.net:3478',
+                'STUN:stun.aa.net.uk:3478',
+              ],
+            },
+            {
+              credential: 'free',
+              username: 'free',
+              urls: ['TURN:freestun.net:3479', 'TURNS:freestun.net:5350'],
+            },
+          ],
+        },
+      }),
+      webRTCDirect(),
+      circuitRelayTransport({
+        discoverRelays: 1,
+      }),
+    ],
     connectionEncryption: [noise()],
     streamMuxers: [yamux()],
+    connectionGater: {
+      denyDialMultiaddr: () => {
+        return false;
+        // by default we refuse to dial local addresses from the browser since they
+        // are usually sent by remote peers broadcasting undialable multiaddrs but
+        // here we are explicitly connecting to a local node so do not deny dialing
+        // any discovered address
+      },
+    },
     peerDiscovery: [
       bootstrap({
         list: bootstrapList,
@@ -103,11 +142,42 @@ class HeliaNode implements IpfsNode {
 
     // DEBUG
     libp2p.addEventListener('peer:connect', (evt) => {
-      console.log(`Connected to ${evt.detail.toString()}`);
+      const peerId = evt.detail.toString();
+      console.log(`Connected to ${peerId}`);
+      // const conn = libp2p.getConnections(peerId)[0] || undefined;
+      // console.log(
+      //   '---------ppppp',
+      //   peerId,
+      //   conn,
+      //   conn?.remoteAddr.protoCodes().map((v) => protocols(v)?.name)
+      // ); //.includes(WEBRTC_CODE)
+      // if (conn && conn.stat) {
+      //   const transport = conn.stat.transport; // This might vary based on libp2p version
+      //   console.log(`Connected to ${peerId} using transport ${transport}`);
+      // } else {
+      //   console.log(`Connected to ${peerId}`);
+      // }
     });
     libp2p.addEventListener('peer:disconnect', (evt) => {
       console.log(`Disconnected from ${evt.detail.toString()}`);
     });
+
+    // this.node.start();
+    // console.log(
+    //   '----protocols',
+    //   libp2p.getProtocols(),
+    //   libp2p.getMultiaddrs(),
+    //   libp2p.getPeers(),
+    //   libp2p.isStarted(),
+    //   libp2p.peerId
+    // );
+
+    // const webrtcConn = await libp2p.dial(
+    //   multiaddr(
+    //     '/ip4/127.0.0.1/udp/1234/webrtc/12D3KooWEYGfgK4dEY3spfuDKVq6Jpiyj4KxP1r6HS5RFp5WHebz'
+    //   )
+    // );
+    // console.log('----webrtcConn', webrtcConn);
 
     this._isStarted = true;
   }

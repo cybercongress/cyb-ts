@@ -37,7 +37,10 @@ function Ipfs() {
   useEffect(() => {
     (async () => {
       if (!cid || cid !== query) {
-        setKeywordHash((await getIpfsHash(encodeSlash(query))) as string);
+        const newCid = query.match(PATTERN_IPFS_HASH)
+          ? query
+          : ((await getIpfsHash(encodeSlash(query))) as string);
+        setKeywordHash(newCid);
       }
     })();
   }, [cid, query]);
