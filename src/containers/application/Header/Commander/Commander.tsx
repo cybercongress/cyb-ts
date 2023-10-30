@@ -17,10 +17,10 @@ function Commander() {
   const { query: q, cid } = useParams();
   const query = q || cid;
 
-  const commanderRef = React.useRef<HTMLInputElement>(null);
-
   const commander = useAppSelector((store) => store.commander);
   const dispatch = useAppDispatch();
+
+  const commanderRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleKeyPress(event: KeyboardEvent) {
@@ -76,15 +76,16 @@ function Commander() {
 
   useEffect(() => {
     (async () => {
-      let search = query || '';
-
-      if (!search.match(PATTERN_IPFS_HASH) && search) {
-        search = await getIpfsHash(encodeSlash(query));
+      if (!query) {
+        return;
       }
 
-      setValue(fixedValue + (search || ''));
+      if (!query.match(PATTERN_IPFS_HASH)) {
+        const search = await getIpfsHash(encodeSlash(query));
+        dispatch(setValue(search));
+      }
     })();
-  }, [query]);
+  }, [query, dispatch]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
