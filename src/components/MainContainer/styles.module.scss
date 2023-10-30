@@ -1,8 +1,10 @@
 .containerContent {
   width: 62%;
   margin: 0px auto;
-  display: grid;
-  gap: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px 0;
 
   @media (max-width: 650px) {
     width: 82%;
