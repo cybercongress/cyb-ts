@@ -6,10 +6,10 @@
     // should be removed
     // https://github.com/cybercongress/cyb/issues/954
     flex-direction: column;
+    min-height: 200px;
 
     align-items: center;
     font-size: 30px;
-    min-height: 200px;
   }
 
   &.title {

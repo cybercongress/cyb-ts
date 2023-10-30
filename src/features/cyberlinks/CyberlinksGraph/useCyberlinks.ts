@@ -1,44 +1,55 @@
-import { useEffect, useState } from 'react';
-import { getGraphQLQuery } from 'src/utils/search/utils';
+import gql from 'graphql-tag';
+import { useQuery } from 'react-apollo';
+
+const limit = 700;
 
 // TODO: moved, refactor and maybe delete
 function useCyberlinks(address?: string) {
-  const [data, setItems] = useState({ nodes: [], links: [] });
-  const [loading, setLoading] = useState(true);
+  let where;
+  if (address) {
+    where = `{neuron: {_eq: "${address}"}}`;
+  } else {
+    where = '{}';
+  }
 
-  useEffect(() => {
-    const limit = 1024;
-    let where;
-
-    const fetchData = async () => {
-      if (address) {
-        where = `{neuron: {_eq: "${address}"}}`;
-      } else {
-        where = '{}';
+  const query = useQuery(gql`
+    query Cyberlinks {
+      cyberlinks(limit: ${String(
+        limit
+      )}, order_by: {height: desc}, where: ${where}) {
+        particle_from
+        particle_to
+        neuron
+        transaction_hash
       }
-      const GET_CYBERLINKS = `
-          query Cyberlinks {
-            cyberlinks(limit: ${String(
-              limit
-            )}, order_by: {height: desc}, where: ${where}) {
-              particle_from
-              particle_to
-              neuron
-              transaction_hash
-            }
-          }
-          `;
-      const { cyberlinks } = await getGraphQLQuery(GET_CYBERLINKS);
+    }
+  `);
+
+  const cyberlinks = query.data?.cyberlinks;
+
+  return {
+    data: (() => {
+      if (!cyberlinks) {
+        return {
+          nodes: [],
+          links: [],
+        };
+      }
+
+      // TODO: a lot of loops, try to refactor
       const from = cyberlinks.map((a) => a.particle_from);
       const to = cyberlinks.map((a) => a.particle_to);
+
       const set = new Set(from.concat(to));
       const object = [];
       set.forEach((value) => {
         object.push({ id: value });
       });
 
+      const links = [];
+
       for (let i = 0; i < cyberlinks.length; i++) {
-        cyberlinks[i] = {
+        links[i] = {
           source: cyberlinks[i].particle_from,
           target: cyberlinks[i].particle_to,
           name: cyberlinks[i].transaction_hash,
@@ -47,18 +58,12 @@ function useCyberlinks(address?: string) {
         };
       }
 
-      setItems({
+      return {
         nodes: object,
-        links: cyberlinks,
-      });
-      setLoading(false);
-    };
-    fetchData();
-  }, [address]);
-
-  return {
-    data,
-    loading,
+        links: links,
+      };
+    })(),
+    loading: query.loading,
   };
 }
 

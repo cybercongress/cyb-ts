@@ -66,8 +66,7 @@ function Block() {
 
   useEffect(() => {
     const feachData = async () => {
-      const data = await getGraphQLQuery(GET_CHARACTERS);
-      console.log(`data`, data);
+      const data = (await getGraphQLQuery(GET_CHARACTERS)).data;
       setItems(data.block);
       setlastBlockQuery(data.block[data.block.length - 1].height);
       setAllPage(Math.ceil(parseInt(data.block[0].height, 10) / 20));
@@ -75,16 +74,11 @@ function Block() {
     feachData();
   }, []);
 
-  // console.log(dataTxs);
   // setItems(items.concat(dataTxs.block));
   // setAllPage(Math.ceil(parseInt(dataTxs.block[0].height, 10) / 50));
   // setItems(dataTxs.block);
   const fetchMoreData = async () => {
-    // a fake async api call like which sends
-    // 20 more records in 1.5 secs
-    console.log('lastBlockQuery', lastBlockQuery);
-    const data = await getGraphQLQuery(QueryAddress(lastBlockQuery));
-    console.log('data', data);
+    const data = (await getGraphQLQuery(QueryAddress(lastBlockQuery))).data;
 
     setTimeout(() => {
       setlastBlockQuery(data.block[data.block.length - 1].height);

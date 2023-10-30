@@ -32,7 +32,7 @@ function ContentIpfsCid({ loading, statusFetching, status }: Props) {
     );
   }
 
-  if (!loading && 'error, timeout'.includes(status)) {
+  if (!loading && ['error', 'timeout'].includes(status)) {
     return (
       <div
         style={{

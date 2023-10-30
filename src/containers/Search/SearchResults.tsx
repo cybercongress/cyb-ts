@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-// import InfiniteScroll from 'react-infinite-scroll-component';
+import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import Spark from 'src/components/search/Spark/Spark';
+import Loader2 from 'src/components/ui/Loader2';
 import { getIpfsHash } from '../../utils/search/utils';
 import { encodeSlash } from '../../utils/utils';
-import { Loading, NoItems, Dots } from '../../components';
+import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { PATTERN_IPFS_HASH } from '../../utils/config';
 import { MainContainer } from '../portal/components';
-import Spark from 'src/components/search/Spark/Spark';
 import FirstItems from './_FirstItems.refactor';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
-import { useAdviser } from 'src/features/adviser/context';
 
 export const initialContentTypeFilterState = {
   text: false,
@@ -31,11 +30,10 @@ const sortByLSKey = 'search-sort';
 function SearchResults() {
   const { query: q, cid } = useParams();
 
-  let query = q || cid || '';
+  const query = q || cid || '';
 
-  // const location = useLocation();
-  // const navigate = useNavigate();
   const [keywordHash, setKeywordHash] = useState('');
+  console.debug(query, keywordHash);
   const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
@@ -53,7 +51,6 @@ function SearchResults() {
   const {
     data: items,
     total,
-    loading,
     error,
     hasMore,
     isInitialLoading,
@@ -72,16 +69,6 @@ function SearchResults() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [query]);
-
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    if (!error) {
-      return;
-    }
-
-    setAdviser(JSON.stringify(error), 'red');
-  }, [error, setAdviser]);
 
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
@@ -108,38 +95,17 @@ function SearchResults() {
     }
   };
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-          Searching
-        </div>
-      </div>
-    );
-  }
-
   const renderItems = items
     .filter((item) => {
       const { cid } = item;
 
       if (!Object.values(contentTypeFilter).some((value) => value)) {
         return true;
-      } else {
-        if (!contentType[cid]) {
-          return false;
-        }
-        return contentTypeFilter[contentType[cid]];
       }
+      if (!contentType[cid]) {
+        return false;
+      }
+      return contentTypeFilter[contentType[cid]];
     })
     .map((key, i) => {
       return (
@@ -178,30 +144,30 @@ function SearchResults() {
           contentType={contentType}
         />
 
-        <InfiniteScroll
-          dataLength={items.length}
-          next={next}
-          hasMore={hasMore}
-          loader={
-            <h4
-              style={{
-                marginTop: 15,
-                textAlign: 'center',
-              }}
-            >
-              Loading
-              <Dots />
-            </h4>
-          }
-        >
-          <FirstItems query={query} />
+        <FirstItems query={query} />
 
-          {Object.keys(renderItems).length > 0 && !isInitialLoading ? (
-            renderItems
-          ) : (
-            <NoItems text={`No information about ${query}`} />
-          )}
-        </InfiniteScroll>
+        {isInitialLoading ? (
+          <Loader2 />
+        ) : Object.keys(renderItems).length > 0 ? (
+          <InfiniteScroll
+            dataLength={items.length}
+            next={next}
+            hasMore={hasMore}
+            loader={<Loader2 />}
+          >
+            {renderItems}
+          </InfiniteScroll>
+        ) : error ? (
+          <p
+            style={{
+              color: 'red',
+            }}
+          >
+            {error.message}
+          </p>
+        ) : (
+          <NoItems text={`No information about ${query}`} />
+        )}
       </MainContainer>
 
       {!mobile && (

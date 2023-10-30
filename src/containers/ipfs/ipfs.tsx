@@ -8,13 +8,14 @@ import { encodeSlash, formatCurrency, timeSince } from 'src/utils/utils';
 import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
-import { Account, Rank } from '../../components';
+import { Account, Dots, Rank } from '../../components';
 import useGetCreator from './hooks/useGetCreator';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import { PREFIXES } from './components/metaInfo';
 import SearchResults from '../Search/SearchResults';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
+import cx from 'classnames';
 
 function Ipfs() {
   const { query = '' } = useParams();
@@ -71,46 +72,59 @@ function Ipfs() {
   }, [content, status, cid, queryClient]);
 
   useEffect(() => {
-    if (!ipfsDataDetails) {
-      return;
-    }
+    if (['error', 'timeout', 'not_found'].includes(status)) {
+      setAdviser(`IPFS loading error, status: ${status}`, 'red');
+    } else if (['pending', 'executing'].includes(status)) {
+      setAdviser(
+        <>
+          loading
+          <Dots />
+        </>,
+        'yellow'
+      );
+    } else if (ipfsDataDetails) {
+      setAdviser(
+        <div className={styles.meta}>
+          <div className={styles.left}>
+            {ipfsDataDetails?.type}
 
-    setAdviser(
-      <div className={styles.meta}>
-        <div className={styles.left}>
-          {ipfsDataDetails?.type}
-
-          {!!rankInfo && (
-            <div className={styles.rank}>
-              with rank
-              <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>
-              <Rank hash={cid} rank={rankInfo} />
+            {!!rankInfo && (
+              <div className={styles.rank}>
+                with rank
+                <span>{rankInfo.toLocaleString().replaceAll(',', ' ')}</span>
+                <Rank hash={cid} rank={rankInfo} />
+              </div>
+            )}
+          </div>
+          {creator && (
+            <div className={styles.center}>
+              <span className={styles.date}>
+                {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
+              </span>
+              <Account sizeAvatar="20px" address={creator.address} avatar />
             </div>
           )}
-        </div>
-        {creator && (
-          <div className={styles.center}>
-            <span className={styles.date}>
-              {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
+          <div className={styles.right}>
+            <span>
+              🟥{' '}
+              {content?.meta?.size !== -1
+                ? formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)
+                : 'unknown'}
             </span>
-            <Account sizeAvatar="20px" address={creator.address} avatar />
+            <button disabled>🌓</button>
           </div>
-        )}
-        <div className={styles.right}>
-          <span>
-            🟥 {formatCurrency(content?.meta?.size, 'B', 0, PREFIXES)}
-          </span>
-          <button disabled>🌓</button>
-        </div>
-      </div>,
-      'purple'
-    );
-  }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content]);
+        </div>,
+        'purple'
+      );
+    }
+  }, [ipfsDataDetails, creator, setAdviser, rankInfo, cid, content, status]);
+
+  console.debug(status, cid, content, ipfsDataDetails);
 
   return (
     <>
       <main
-        className="block-body"
+        className={cx('block-body', styles.wrapper)}
         style={{
           paddingBottom: 30,
           width: '62%',
