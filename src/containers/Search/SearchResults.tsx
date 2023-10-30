@@ -15,6 +15,8 @@ import FirstItems from './_FirstItems.refactor';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
+import Display from 'src/components/containerGradient/Display/Display';
+import styles from './SearchResults.module.scss';
 
 export const initialContentTypeFilterState = {
   text: false,
@@ -144,30 +146,28 @@ function SearchResults() {
           contentType={contentType}
         />
 
-        <FirstItems query={query} />
+        <div className={styles.search}>
+          <FirstItems query={query} />
 
-        {isInitialLoading ? (
-          <Loader2 />
-        ) : Object.keys(renderItems).length > 0 ? (
-          <InfiniteScroll
-            dataLength={items.length}
-            next={next}
-            hasMore={hasMore}
-            loader={<Loader2 />}
-          >
-            {renderItems}
-          </InfiniteScroll>
-        ) : error ? (
-          <p
-            style={{
-              color: 'red',
-            }}
-          >
-            {error.message}
-          </p>
-        ) : (
-          <NoItems text={`No information about ${query}`} />
-        )}
+          {isInitialLoading ? (
+            <Loader2 />
+          ) : Object.keys(renderItems).length > 0 ? (
+            <InfiniteScroll
+              dataLength={items.length}
+              next={next}
+              hasMore={hasMore}
+              loader={<Loader2 />}
+            >
+              {renderItems}
+            </InfiniteScroll>
+          ) : error ? (
+            <Display color="red">
+              <p>{error.message}</p>
+            </Display>
+          ) : (
+            <NoItems text={`No information about ${query}`} />
+          )}
+        </div>
       </MainContainer>
 
       {!mobile && (

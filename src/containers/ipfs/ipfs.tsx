@@ -119,27 +119,19 @@ function Ipfs() {
   console.debug(status, cid, content, ipfsDataDetails);
 
   return (
-    <>
-      <main
-        className={cx('block-body', styles.wrapper)}
-        style={{
-          paddingBottom: 30,
-          width: '62%',
-        }}
-      >
-        {/* <div
+    <main className={cx('block-body', styles.wrapper)}>
+      {/* <div
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
 
-        {status === 'completed' && ipfsDataDetails !== null ? (
-          <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
-        ) : (
-          <ContentIpfsCid loading={status === 'executing'} status={status} />
-        )}
-      </main>
+      {status === 'completed' && ipfsDataDetails !== null ? (
+        <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
+      ) : (
+        <ContentIpfsCid loading={status === 'executing'} status={status} />
+      )}
 
       <SearchResults />
-    </>
+    </main>
   );
 }
 

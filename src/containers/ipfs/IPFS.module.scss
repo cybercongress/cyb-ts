@@ -1,22 +1,8 @@
 .wrapper {
   min-height: 200px;
-}
-
-.tabs {
   width: 62%;
-  margin: 40px auto;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-
-  .tabLink {
-    padding-right: 20px;
-    background-image: url('../../components/buttons/AddFile/images/attach.svg');
-    background-position: right 3px;
-    background-repeat: no-repeat;
-    background-size: 14px auto;
-  }
+  padding: 0;
+  padding-bottom: 30px;
 }
 
 .meta {
@@ -57,7 +43,6 @@
 
       color: rgba(221, 255, 255, 0.38);
 
-      // text-emphasis: none;
       font-size: 14px;
 
       > span {

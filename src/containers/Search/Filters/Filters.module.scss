@@ -2,16 +2,14 @@
 
 .header {
   width: 100%;
-  max-width: 62vw;
   box-sizing: border-box;
   display: flex;
   margin: 10px auto -5px;
-  padding-left: 12px;
+  padding: 17px 12px 20px;
   justify-content: space-between;
   align-content: center;
+
   @include saber('blue', top);
-  padding-top: 17px;
-  padding-bottom: 20px;
 
   .total {
     color: rgba(221, 255, 255, 0.38);

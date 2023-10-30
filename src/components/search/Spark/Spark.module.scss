@@ -15,33 +15,19 @@
 }
 
 .left {
-  right: 85%;
+  right: 100%;
   display: flex;
   align-items: center;
   gap: 7px 10px;
   font-size: 14px;
-
-  span:nth-of-type(1) {
-    white-space: nowrap;
-    color: rgba(255, 255, 255, 0.5);
-  }
 }
 
 .right {
   padding-top: 15px;
-  left: 85%;
+  left: 100%;
 }
 
-.rank {
-  svg {
-    width: 21px;
-    height: 21px;
-  }
-
-  &.rankSelected,
-  &:hover {
-    svg {
-      fill: #f62bfd;
-    }
-  }
+.searchItem {
+  display: block;
+  width: 100%;
 }

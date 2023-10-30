@@ -324,11 +324,6 @@
   width: 100%;
 }
 
-.SearchItem {
-  width: 70%;
-  margin: 0 auto;
-}
-
 .markdown {
   width: 60%;
   margin: 0 auto;
@@ -463,11 +458,6 @@
   .contentItem-discussion {
     width: 80%;
     margin: 0;
-  }
-
-  .SearchItem {
-    width: 100%;
-    margin: 0 auto;
   }
 }
 
