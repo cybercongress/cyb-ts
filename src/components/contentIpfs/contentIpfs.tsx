@@ -42,6 +42,7 @@ type ContentTabProps = {
 
 function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
   const contentType = details?.type;
+
   return (
     <div>
       {/* <DebugContentInfo
@@ -52,7 +53,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
       /> */}
       {/* Default */}
 
-      {!details && <div>{cid.toString()}</div>}
+      {!details?.type && <div>{cid.toString()}</div>}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />

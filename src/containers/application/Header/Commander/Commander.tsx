@@ -80,10 +80,12 @@ function Commander() {
         return;
       }
 
+      let newValue = query;
       if (!query.match(PATTERN_IPFS_HASH)) {
-        const search = await getIpfsHash(encodeSlash(query));
-        dispatch(setValue(search));
+        newValue = (await getIpfsHash(encodeSlash(query))) as string;
       }
+
+      dispatch(setValue(newValue));
     })();
   }, [query, dispatch]);
 

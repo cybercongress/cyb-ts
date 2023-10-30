@@ -133,42 +133,40 @@ function SearchResults() {
 
   return (
     <>
-      <MainContainer width="90%">
-        <Filters
-          filters={contentTypeFilter}
-          setFilters={setContentTypeFilter}
-          filter2={sortBy}
-          setFilter2={setSortBy}
-          linksFilter={linksTypeFilter}
-          setLinksFilter={setLinksTypeFilter}
-          total={total}
-          total2={items.length}
-          contentType={contentType}
-        />
+      <Filters
+        filters={contentTypeFilter}
+        setFilters={setContentTypeFilter}
+        filter2={sortBy}
+        setFilter2={setSortBy}
+        linksFilter={linksTypeFilter}
+        setLinksFilter={setLinksTypeFilter}
+        total={total}
+        total2={items.length}
+        contentType={contentType}
+      />
 
-        <div className={styles.search}>
-          <FirstItems query={query} />
+      <div className={styles.search}>
+        <FirstItems query={query} />
 
-          {isInitialLoading ? (
-            <Loader2 />
-          ) : Object.keys(renderItems).length > 0 ? (
-            <InfiniteScroll
-              dataLength={items.length}
-              next={next}
-              hasMore={hasMore}
-              loader={<Loader2 />}
-            >
-              {renderItems}
-            </InfiniteScroll>
-          ) : error ? (
-            <Display color="red">
-              <p>{error.message}</p>
-            </Display>
-          ) : (
-            <NoItems text={`No information about ${query}`} />
-          )}
-        </div>
-      </MainContainer>
+        {isInitialLoading ? (
+          <Loader2 />
+        ) : Object.keys(renderItems).length > 0 ? (
+          <InfiniteScroll
+            dataLength={items.length}
+            next={next}
+            hasMore={hasMore}
+            loader={<Loader2 />}
+          >
+            {renderItems}
+          </InfiniteScroll>
+        ) : error ? (
+          <Display color="red">
+            <p>{error.message}</p>
+          </Display>
+        ) : (
+          <NoItems text={`No information about ${query}`} />
+        )}
+      </div>
 
       {!mobile && (
         <ActionBarContainer

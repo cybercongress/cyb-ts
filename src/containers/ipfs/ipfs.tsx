@@ -8,7 +8,7 @@ import { encodeSlash, formatCurrency, timeSince } from 'src/utils/utils';
 import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
-import { Account, Dots, Rank } from '../../components';
+import { Account, Dots, MainContainer, Rank } from '../../components';
 import useGetCreator from './hooks/useGetCreator';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
@@ -77,8 +77,7 @@ function Ipfs() {
     } else if (['pending', 'executing'].includes(status)) {
       setAdviser(
         <>
-          loading
-          <Dots />
+          loading <Dots />
         </>,
         'yellow'
       );
@@ -122,19 +121,21 @@ function Ipfs() {
   console.debug(status, cid, content, ipfsDataDetails);
 
   return (
-    <main className={cx('block-body', styles.wrapper)}>
+    <MainContainer>
       {/* <div
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
 
-      {status === 'completed' && ipfsDataDetails !== null ? (
-        <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
-      ) : (
-        <ContentIpfsCid loading={status === 'executing'} status={status} />
-      )}
+      <div className={styles.wrapper}>
+        {status === 'completed' && ipfsDataDetails !== null ? (
+          <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
+        ) : (
+          <ContentIpfsCid loading={status === 'executing'} status={status} />
+        )}
+      </div>
 
       <SearchResults />
-    </main>
+    </MainContainer>
   );
 }
 
