@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { useMemo } from 'react';
 import { useQuery } from 'react-apollo';
 
 const limit = 740;
@@ -27,42 +28,44 @@ function useCyberlinks(address?: string) {
 
   const cyberlinks = query.data?.cyberlinks;
 
-  return {
-    data: (() => {
-      if (!cyberlinks) {
-        return {
-          nodes: [],
-          links: [],
-        };
-      }
-
-      // TODO: a lot of loops, try to refactor
-      const from = cyberlinks.map((a) => a.particle_from);
-      const to = cyberlinks.map((a) => a.particle_to);
-
-      const set = new Set(from.concat(to));
-      const object = [];
-      set.forEach((value) => {
-        object.push({ id: value });
-      });
-
-      const links = [];
-
-      for (let i = 0; i < cyberlinks.length; i++) {
-        links[i] = {
-          source: cyberlinks[i].particle_from,
-          target: cyberlinks[i].particle_to,
-          name: cyberlinks[i].transaction_hash,
-          subject: cyberlinks[i].subject,
-          // curvative: getRandomInt(20, 500) / 1000,
-        };
-      }
-
+  const data = useMemo(() => {
+    if (!cyberlinks) {
       return {
-        nodes: object,
-        links: links,
+        nodes: [],
+        links: [],
       };
-    })(),
+    }
+
+    // TODO: a lot of loops, try to refactor
+    const from = cyberlinks.map((a) => a.particle_from);
+    const to = cyberlinks.map((a) => a.particle_to);
+
+    const set = new Set(from.concat(to));
+    const object = [];
+    set.forEach((value) => {
+      object.push({ id: value });
+    });
+
+    const links = [];
+
+    for (let i = 0; i < cyberlinks.length; i++) {
+      links[i] = {
+        source: cyberlinks[i].particle_from,
+        target: cyberlinks[i].particle_to,
+        name: cyberlinks[i].transaction_hash,
+        subject: cyberlinks[i].subject,
+        // curvative: getRandomInt(20, 500) / 1000,
+      };
+    }
+
+    return {
+      nodes: object,
+      links: links,
+    };
+  }, [cyberlinks]);
+
+  return {
+    data,
     loading: query.loading,
   };
 }
