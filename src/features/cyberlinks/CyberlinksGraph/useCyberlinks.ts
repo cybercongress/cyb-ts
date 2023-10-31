@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
 
-const limit = 700;
+const limit = 740;
 
 // TODO: moved, refactor and maybe delete
 function useCyberlinks(address?: string) {

@@ -96,6 +96,7 @@ export const learningListConfig = listConfig[TitleType.learning];
 
 function Search() {
   const [titleType, setTitleType] = useState(TitleType.search);
+  const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
 
@@ -114,7 +115,15 @@ function Search() {
 
   useEffect(() => {
     dispatch(setFocus(true));
-  }, []);
+
+    const timeout = setTimeout(() => {
+      setIsRenderGraph(true);
+    }, 1000 * 1.5);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -188,7 +197,7 @@ function Search() {
         </h2>
 
         <div className={styles.graphWrapper}>
-          <CyberlinksGraphContainer size={graphSize} />
+          {isRenderGraph && <CyberlinksGraphContainer size={graphSize} />}
         </div>
 
         {/* not render to prevent requests */}
