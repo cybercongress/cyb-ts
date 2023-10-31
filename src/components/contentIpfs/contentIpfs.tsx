@@ -6,7 +6,6 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-// import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 import Audio from './component/Audio/Audio';
 
 function OtherItem({
@@ -53,7 +52,9 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
       /> */}
       {/* Default */}
 
-      {!details?.type && <div>{cid.toString()}</div>}
+      {!details?.type && search && (
+        <TextMarkdown preview>{cid.toString()}</TextMarkdown>
+      )}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
