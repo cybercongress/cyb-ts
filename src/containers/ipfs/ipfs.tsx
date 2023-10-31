@@ -92,7 +92,7 @@ function Ipfs() {
   console.debug(status, cid, content, ipfsDataDetails);
 
   return (
-    <MainContainer>
+    <MainContainer width="62vw">
       {/* <div
           style={{ fontSize: '8px', color: '#00edeb' }}
         >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
