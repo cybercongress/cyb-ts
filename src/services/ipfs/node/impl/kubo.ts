@@ -48,7 +48,10 @@ class KuboNode implements IpfsNode {
       window.node = this.node;
       window.toCid = stringToCid;
     }
-
+    console.log(
+      'IPFS - Kubo addrs',
+      (await this.node.swarm.localAddrs()).map((a) => a.toString())
+    );
     this._isStarted = true;
   }
 
