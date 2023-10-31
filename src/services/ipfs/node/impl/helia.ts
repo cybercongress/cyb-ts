@@ -11,6 +11,7 @@ import { UnixFS, unixfs, AddOptions } from '@helia/unixfs';
 import { bootstrap } from '@libp2p/bootstrap';
 import { webRTC, webRTCDirect } from '@libp2p/webrtc';
 import { webSockets } from '@libp2p/websockets';
+import { webTransport } from '@libp2p/webtransport';
 import { identifyService } from 'libp2p/identify';
 import { multiaddr, protocols } from '@multiformats/multiaddr';
 
@@ -27,8 +28,6 @@ import { stringToCid } from '../../utils/cid';
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { CYBER_GATEWAY_URL } from '../../config';
 
-const WEBRTC_CODE = protocols('webrtc').code;
-
 const libp2pFactory = async (
   datastore: IDBDatastore,
   bootstrapList: string[] = []
@@ -43,6 +42,7 @@ const libp2pFactory = async (
     // },
     transports: [
       webSockets(),
+      webTransport(),
       webRTC({
         rtcConfiguration: {
           iceServers: [
@@ -143,8 +143,15 @@ class HeliaNode implements IpfsNode {
     // DEBUG
     libp2p.addEventListener('peer:connect', (evt) => {
       const peerId = evt.detail.toString();
-      console.log(`Connected to ${peerId}`);
-      // const conn = libp2p.getConnections(peerId)[0] || undefined;
+      const conn = libp2p.getConnections(peerId) || [];
+      const transportsByAddr = Object.fromEntries(
+        conn.map((c) => [
+          c.remoteAddr.toString(),
+          c.remoteAddr.protoCodes().map((v) => protocols(v)?.name),
+        ])
+      );
+      console.debug(`Connected to ${peerId}`, transportsByAddr);
+
       // console.log(
       //   '---------ppppp',
       //   peerId,
@@ -159,22 +166,15 @@ class HeliaNode implements IpfsNode {
       // }
     });
     libp2p.addEventListener('peer:disconnect', (evt) => {
-      console.log(`Disconnected from ${evt.detail.toString()}`);
+      console.debug(`Disconnected from ${evt.detail.toString()}`);
     });
-
-    // this.node.start();
-    // console.log(
-    //   '----protocols',
-    //   libp2p.getProtocols(),
-    //   libp2p.getMultiaddrs(),
-    //   libp2p.getPeers(),
-    //   libp2p.isStarted(),
-    //   libp2p.peerId
-    // );
-
+    console.log(
+      'IPFS - Helia addrs',
+      libp2p.getMultiaddrs().map((a) => a.toString())
+    );
     // const webrtcConn = await libp2p.dial(
     //   multiaddr(
-    //     '/ip4/127.0.0.1/udp/1234/webrtc/12D3KooWEYGfgK4dEY3spfuDKVq6Jpiyj4KxP1r6HS5RFp5WHebz'
+    //     '/ip4/127.0.0.1/udp/4001/quic-v1/webtransport/certhash/uEiDHumbyZRFV1Av7qH9-2l5HGgU2a2UqM6eloqO0vYz5pQ/certhash/uEiDD_TuVgih5_ua31Z4MVbNq7WSw095UAQmZqdUFMDTVRA/p2p/12D3KooWEYGfgK4dEY3spfuDKVq6Jpiyj4KxP1r6HS5RFp5WHebz'
     //   )
     // );
     // console.log('----webrtcConn', webrtcConn);

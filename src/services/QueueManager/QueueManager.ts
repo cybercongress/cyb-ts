@@ -52,13 +52,19 @@ function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
+const debugCid = (cid: string, prefix: string, ...args) => {
+  // if (cid === 'QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao') {
+  console.log(`>>> ${prefix}: ${cid}`, ...args);
+  // }
+};
+
 const embeddedStrategy = new QueueStrategy(
   {
     db: { timeout: 5000, maxConcurrentExecutions: 999 },
-    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
   },
-  ['db', 'gateway', 'node']
+  ['db', 'node', 'gateway']
 );
 
 const strategies = {
@@ -151,7 +157,7 @@ class QueueManager<T extends IPFSContentMaybe> {
       executionTime: Date.now(),
       controller: new AbortController(),
     } as QueueItem<T>);
-
+    // debugCid(cid, 'fetchData', cid, source);
     callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(async () =>
@@ -159,6 +165,7 @@ class QueueManager<T extends IPFSContentMaybe> {
         controller,
         node: this.node,
       }).then((content: T) => {
+        // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
         return this.postProcessItem ? this?.postProcessItem(content) : content;
       })
     ).pipe(
@@ -179,7 +186,7 @@ class QueueManager<T extends IPFSContentMaybe> {
         })
       ),
       catchError((error): Observable<QueueItemResult<T>> => {
-        // console.log('-errror queue', error);
+        // debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
         if (error instanceof QueueItemTimeoutError) {
           return of({
             item,
@@ -289,9 +296,9 @@ class QueueManager<T extends IPFSContentMaybe> {
       )
       .subscribe(({ item, status, source, result }) => {
         const { cid } = item;
-
         const callbacks = this.queue$.value.get(cid)?.callbacks || [];
         // fix to process dublicated items
+        // debugCid(cid, 'subscribe', cid, source, status, result, callbacks);
 
         callbacks.map((callback) => callback(cid, status, source, result));
 
@@ -304,10 +311,10 @@ class QueueManager<T extends IPFSContentMaybe> {
 
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
-          // console.log('------done', item, status, source, result);
+          // debugCid(cid, '------done', item, status, source, result);
           this.removeAndNext(cid);
         } else {
-          // console.log('------error', item, status, source, result);
+          // debugCid(cid, '------error', item, status, source, result);
           // Retry -> (next sources) or -> next
           const nextSource = this.strategy.getNextSource(source);
 
