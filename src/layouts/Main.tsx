@@ -31,10 +31,12 @@ function MainLayout({ children }: { children: JSX.Element }) {
 
   // for initial animation
   useEffect(() => {
-    const menuLSState = localStorage.getItem(localStorageKeys.MENU_SHOW);
+    const isMenuOpenPreference = localStorage.getItem(
+      localStorageKeys.MENU_SHOW
+    );
 
     const timeout = setTimeout(() => {
-      toggleMenu(menuLSState === 'true');
+      toggleMenu(isMenuOpenPreference === 'true');
     }, 500);
 
     return () => {
