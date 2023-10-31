@@ -2,6 +2,10 @@
   width: 62%;
   margin: 10px auto;
 
+  .infiniteScroll {
+    margin-top: 12px;
+  }
+
   @media (width < 768px) {
     width: 90%;
   }

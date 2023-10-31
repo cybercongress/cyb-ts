@@ -154,6 +154,7 @@ function SearchResults() {
           <InfiniteScroll
             dataLength={items.length}
             next={next}
+            className={styles.infiniteScroll}
             hasMore={hasMore}
             loader={<Loader2 />}
           >
@@ -164,7 +165,10 @@ function SearchResults() {
             <p>{error.message}</p>
           </Display>
         ) : (
-          <NoItems text={`No information about ${query}`} />
+          <Display color="white">
+            there are no answers or questions to this particle <br /> be the
+            first and create one
+          </Display>
         )}
       </div>
 
