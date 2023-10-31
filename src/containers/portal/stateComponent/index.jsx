@@ -1,4 +1,4 @@
-import Rules from './Rules';
+import Rules from './Rules/Rules';
 import InputNickname from './InputNickname';
 import Avatar from './Avatar';
 import SetupKeplr from './SetupKeplr';

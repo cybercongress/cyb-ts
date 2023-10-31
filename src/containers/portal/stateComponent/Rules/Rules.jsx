@@ -1,8 +1,9 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import MoonCode from './MoonCode';
-import { LinkWindow, ContainerGradient } from '../../../components';
+import MoonCode from '../MoonCode';
+import { LinkWindow, ContainerGradient } from '../../../../components';
+import styles from './Rules.module.scss';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmZKL7toTbohUtrd57LaUgcFB8Z47PfAEU1MdLFNP66tXP';
@@ -30,7 +31,7 @@ function Rules() {
         </video>
       </div>
       <div
-        className="markdown"
+        className={styles.markdown}
         style={{ paddingRight: '15px', height: '100%', width: '100%' }}
       >
         <ReactMarkdown
