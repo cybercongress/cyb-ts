@@ -1,15 +1,16 @@
-.wrapper {
+.markdownContainer {
+  --width-ratio: 0.62;
+  width: calc(var(--width-ratio) * 100%);
+  margin: 0 auto;
+
+  min-height: 200px;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
   &.center {
-    display: flex;
-    justify-content: center;
-
-    // should be removed
-    // https://github.com/cybercongress/cyb/issues/954
-    flex-direction: column;
-    min-height: 200px;
-
     word-break: break-word;
-
     align-items: center;
     font-size: 30px;
   }
@@ -17,11 +18,6 @@
   &.title {
     font-size: 42px;
   }
-}
-.markdownContainer {
-  --width-ratio: 0.62;
-  width: calc(var(--width-ratio) * 100%);
-  margin: 0 auto;
 
   @media (max-width: 680px) {
     width: unset;
