@@ -91,7 +91,7 @@ const importParicleContent = async (
     const result = (await dbApi!.executePutCommand('particle', [entity])).ok;
     return result;
   } catch (e) {
-    console.error('importParicleContent', e);
+    console.error('importParicleContent', e.toString(), !!dbApi);
     return false;
   }
 };
