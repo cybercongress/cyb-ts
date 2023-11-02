@@ -68,15 +68,13 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
   );
 }
 
-function BandwidthBar(
-  {
-    // bwRemained = 0,
-    // bwMaxValue = 0,
-    // countLink = 0,
-    // amounPower,
-    // ...props
-  }
-) {
+function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
+// bwMaxValue = 0,
+// countLink = 0,
+// amounPower,
+// ...props
+
+{
   const [linkPrice] = useState(4);
 
   const queryClient = useQueryClient();
@@ -176,7 +174,7 @@ function BandwidthBar(
 
   return (
     <Tooltip
-      placement="bottom"
+      placement={tooltipPlacement || 'bottom'}
       // trigger="click"
       tooltip={
         <ContentTooltip

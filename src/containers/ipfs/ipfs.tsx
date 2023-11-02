@@ -69,6 +69,10 @@ function Ipfs() {
     }
 
     if (['error', 'timeout', 'not_found'].includes(status)) {
+      if (status === 'not_found') {
+        setAdviser('no information about particle', 'red');
+        return;
+      }
       setAdviser(`IPFS loading error, status: ${status}`, 'red');
     } else if (['pending', 'executing'].includes(status)) {
       setAdviser(
@@ -92,16 +96,16 @@ function Ipfs() {
   console.debug(status, cid, content, ipfsDataDetails);
 
   return (
-    <MainContainer width="62vw">
-      {/* <div
-          style={{ fontSize: '8px', color: '#00edeb' }}
-        >{`source: ${source} mime: ${content?.meta?.mime} size: ${content?.meta?.size} local: ${content?.meta?.local} status: ${status} cid: ${cid}`}</div> */}
-
+    <MainContainer width="70%">
       <div className={styles.wrapper}>
         {status === 'completed' && ipfsDataDetails !== null ? (
           <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
         ) : (
-          <ContentIpfsCid loading={status === 'executing'} status={status} />
+          <ContentIpfsCid
+            loading={status === 'executing'}
+            status={status}
+            cid={cid}
+          />
         )}
       </div>
 

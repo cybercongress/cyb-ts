@@ -69,7 +69,7 @@ function Learn() {
       content = error;
       adviserColor = 'red';
     } else if (loading) {
-      content = 'Transaction pending...';
+      content = 'transaction pending...';
       adviserColor = 'yellow';
     } else if (noPassport) {
       content = (
@@ -88,7 +88,7 @@ function Learn() {
       );
       adviserColor = 'red';
     } else {
-      content = 'Create cyberlink';
+      content = 'create cyberlink';
     }
 
     setAdviser(content, adviserColor);
@@ -238,7 +238,7 @@ function Learn() {
         </section>
 
         <div className={styles.energy}>
-          <BandwidthBar />
+          <BandwidthBar tooltipPlacement="top" />
 
           <div>
             <span>{balacesResource.millivolt} ⚡️</span>
