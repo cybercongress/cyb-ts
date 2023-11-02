@@ -3,5 +3,5 @@ export type ObjKeyValue = {
 };
 
 type ObjectKey<T> = {
-  [key: string]: T;
+  [key: string | number]: T;
 };

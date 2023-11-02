@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { Coin } from '@cosmjs/launchpad';
 import tokenList from '../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../utils/utils';
 import { FormatNumberTokens } from '../../nebula/components';
@@ -16,9 +17,15 @@ type PoolCardProps = {
   pool: PoolsWithAssetsCapType;
   totalSupplyData: Option<ObjKeyValue>;
   accountBalances: Option<ObjKeyValue>;
+  vol24: Option<Coin>;
 };
 
-function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
+function PoolCard({
+  pool,
+  totalSupplyData,
+  accountBalances,
+  vol24,
+}: PoolCardProps) {
   const { traseDenom } = useIbcDenom();
 
   const [sharesToken, setSharesToken] = useState(null);
@@ -89,6 +96,15 @@ function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
           );
         })}
       </div>
+
+      {vol24 && (
+        <div className={styles.PoolCardContainerMyShares}>
+          <div className={styles.PoolCardContainerMySharesTitle}>Vol 24</div>
+          <div>
+            <FormatNumberTokens value={vol24.amount} text={vol24.denom} />
+          </div>
+        </div>
+      )}
 
       {sharesToken !== null && (
         <div className={styles.PoolCardContainerMyShares}>

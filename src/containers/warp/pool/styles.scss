@@ -63,9 +63,9 @@
 
 .PoolsInfoContainer {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 25px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
 
   &Value {
     display: flex;

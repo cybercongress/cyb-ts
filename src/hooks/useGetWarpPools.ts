@@ -2,10 +2,11 @@ import { Coin } from '@cosmjs/launchpad';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppData } from 'src/contexts/appData';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { Nullable } from 'src/types';
+import { ObjectKey } from 'src/types/data';
 import { CYBER } from 'src/utils/config';
 import { getDisplayAmount } from 'src/utils/utils';
 
@@ -37,7 +38,8 @@ const getWarpDexTickers = async (): Promise<
 
 export default function useWarpDexTickers() {
   const { marketData } = useAppData();
-  const [vol24, setVol24] = useState<Coin | undefined>(undefined);
+  const [vol24Total, setVol24Total] = useState<Coin | undefined>(undefined);
+  const [vol24ByPool, setVol24ByPool] = useState<ObjectKey<Coin>>({}); // key is pool_id
   const { traseDenom } = useIbcDenom();
 
   const { data } = useQuery({
@@ -53,37 +55,58 @@ export default function useWarpDexTickers() {
     },
   });
 
+  const getAmountVol = useCallback(
+    (denom: string, amount: number): BigNumber => {
+      if (
+        traseDenom &&
+        Object.keys(marketData).length &&
+        Object.prototype.hasOwnProperty.call(marketData, denom)
+      ) {
+        const pollPrice = new BigNumber(marketData[denom]);
+        const [{ coinDecimals }] = traseDenom(denom);
+        const reduceAmount = getDisplayAmount(amount, coinDecimals);
+        const amountVol = pollPrice.multipliedBy(reduceAmount);
+
+        return amountVol;
+      }
+      return new BigNumber(0);
+    },
+    [traseDenom, marketData]
+  );
+
   useEffect(() => {
     let vol24Temp = new BigNumber(0);
+    const listVol24ByPools: ObjectKey<Coin> = {};
 
     if (Object.keys(marketData).length && data && traseDenom) {
       data.forEach((item: responseWarpDexTickersItem) => {
+        let vol24Item = new BigNumber(0);
+
         if (marketData[item.base_currency]) {
-          const pollPrice = new BigNumber(marketData[item.base_currency]);
-          const [{ coinDecimals }] = traseDenom(item.base_currency);
-          const reduceAmount = getDisplayAmount(item.base_volume, coinDecimals);
-          const amount = pollPrice.multipliedBy(reduceAmount);
-          vol24Temp = vol24Temp.plus(amount);
+          const amount = getAmountVol(item.base_currency, item.base_volume);
+          vol24Item = vol24Item.plus(amount);
         }
 
         if (marketData[item.target_currency]) {
-          const pollPrice = new BigNumber(marketData[item.target_currency]);
-          const [{ coinDecimals }] = traseDenom(item.target_currency);
-          const reduceAmount = getDisplayAmount(
-            item.target_volume,
-            coinDecimals
-          );
-          const amount = pollPrice.multipliedBy(reduceAmount);
-          vol24Temp = vol24Temp.plus(amount);
+          const amount = getAmountVol(item.target_currency, item.target_volume);
+          vol24Item = vol24Item.plus(amount);
         }
+
+        vol24Temp = vol24Temp.plus(vol24Item);
+
+        listVol24ByPools[item.pool_id] = {
+          denom: CYBER.DENOM_LIQUID_TOKEN,
+          amount: vol24Item.dp(0, BigNumber.ROUND_FLOOR).toString(10),
+        };
       });
 
-      setVol24({
+      setVol24ByPool(listVol24ByPools);
+      setVol24Total({
         denom: CYBER.DENOM_LIQUID_TOKEN,
         amount: vol24Temp.dp(0, BigNumber.ROUND_FLOOR).toString(10),
       });
     }
   }, [marketData, data, traseDenom]);
 
-  return { data, vol24 };
+  return { data, vol24Total, vol24ByPool };
 }
