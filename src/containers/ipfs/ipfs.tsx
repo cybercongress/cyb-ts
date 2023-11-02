@@ -96,7 +96,7 @@ function Ipfs() {
   console.debug(status, cid, content, ipfsDataDetails);
 
   return (
-    <MainContainer width="70%">
+    <MainContainer width="85%">
       <div className={styles.wrapper}>
         {status === 'completed' && ipfsDataDetails !== null ? (
           <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
