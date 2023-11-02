@@ -52,9 +52,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
       /> */}
       {/* Default */}
 
-      {!details?.type && search && (
-        <TextMarkdown preview>{cid.toString()}</TextMarkdown>
-      )}
+      {!details?.type && <TextMarkdown preview>{cid.toString()}</TextMarkdown>}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
