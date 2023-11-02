@@ -15,8 +15,6 @@ import {
   filter,
 } from 'rxjs';
 
-import { Remote } from 'comlink';
-
 import * as R from 'ramda';
 
 import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
@@ -58,15 +56,6 @@ const debugCid = (cid: string, prefix: string, ...args) => {
   // }
 };
 
-const embeddedStrategy = new QueueStrategy(
-  {
-    db: { timeout: 5000, maxConcurrentExecutions: 999 },
-    node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
-    gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-  },
-  ['db', 'node', 'gateway']
-);
-
 const strategies = {
   external: new QueueStrategy(
     {
@@ -76,8 +65,22 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: embeddedStrategy,
-  helia: embeddedStrategy,
+  embedded: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 999 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+    },
+    ['db', 'gateway', 'node']
+  ),
+  helia: new QueueStrategy(
+    {
+      db: { timeout: 5000, maxConcurrentExecutions: 999 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+    },
+    ['db', 'node', 'gateway']
+  ),
 };
 
 type QueueMap<T> = Map<string, QueueItem<T>>;
