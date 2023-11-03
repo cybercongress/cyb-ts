@@ -2,10 +2,17 @@ import gql from 'graphql-tag';
 import { useMemo } from 'react';
 import { useQuery } from 'react-apollo';
 
-const limit = 740;
-
 // TODO: moved, refactor and maybe delete
-function useCyberlinks(address?: string) {
+function useCyberlinks(
+  { address }: { address?: string },
+  {
+    limit = 1024,
+    skip,
+  }: {
+    limit?: number;
+    skip?: boolean;
+  }
+) {
   let where;
   if (address) {
     where = `{neuron: {_eq: "${address}"}}`;
@@ -13,7 +20,10 @@ function useCyberlinks(address?: string) {
     where = '{}';
   }
 
-  const query = useQuery(gql`
+  console.time('prepareCyberlinks');
+
+  const query = useQuery(
+    gql`
     query Cyberlinks {
       cyberlinks(limit: ${String(
         limit
@@ -24,7 +34,11 @@ function useCyberlinks(address?: string) {
         transaction_hash
       }
     }
-  `);
+  `,
+    {
+      skip,
+    }
+  );
 
   const cyberlinks = query.data?.cyberlinks;
 
@@ -57,6 +71,8 @@ function useCyberlinks(address?: string) {
         // curvative: getRandomInt(20, 500) / 1000,
       };
     }
+
+    console.timeEnd('prepareCyberlinks');
 
     return {
       nodes: object,

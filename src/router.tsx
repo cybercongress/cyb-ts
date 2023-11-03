@@ -161,10 +161,14 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          <Route
-            path="/graph"
-            element={<CyberlinksGraphContainer toPortal />}
-          />
+          {['/graph', '/brain'].map((path) => (
+            <Route
+              key={path}
+              path={path}
+              element={<CyberlinksGraphContainer toPortal />}
+            />
+          ))}
+
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
 
           <Route path="network/bostrom">

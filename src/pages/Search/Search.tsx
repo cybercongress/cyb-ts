@@ -5,13 +5,14 @@ import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/Cy
 import { Stars } from 'src/containers/portal/components';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import { useDevice } from 'src/contexts/device';
+import cx from 'classnames';
+import { useAppDispatch } from 'src/redux/hooks';
+import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import styles from './Search.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
-import cx from 'classnames';
-import { useAppDispatch } from 'src/redux/hooks';
-import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
+import graphDataPrepared from './graphDataPrepared.json';
 
 export enum TitleType {
   search,
@@ -197,7 +198,12 @@ function Search() {
         </h2>
 
         <div className={styles.graphWrapper}>
-          {isRenderGraph && <CyberlinksGraphContainer size={graphSize} />}
+          {isRenderGraph && (
+            <CyberlinksGraphContainer
+              size={graphSize}
+              data={graphDataPrepared}
+            />
+          )}
         </div>
 
         {/* not render to prevent requests */}
