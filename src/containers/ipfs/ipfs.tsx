@@ -86,7 +86,7 @@ function Ipfs() {
         <AdviserMeta
           cid={cid}
           type={ipfsDataDetails?.type}
-          size={content?.meta?.size}
+          size={content?.meta?.size || ipfsDataDetails?.content?.length}
         />,
         'purple'
       );
