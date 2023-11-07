@@ -1,66 +1,69 @@
-import { useEffect, useState } from 'react';
-import { NoItems, SearchSnippet } from '../../../../../components';
-import { getTweet } from 'src/utils/search/utils';
+import { useEffect, useMemo } from 'react';
 import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import Loader2 from 'src/components/ui/Loader2';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Dots, NoItems, SearchSnippet } from '../../../../../components';
+import useGetLog from '../hooks/useGetLog';
 
 function FeedsTab() {
-  const [dataTweet, setDataTweet] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const { address, addRefetch } = useRobotContext();
+  const {
+    data,
+    fetchNextPage,
+    status,
+    hasNextPage,
+    refetch,
+    error,
+    isFetched,
+  } = useGetLog(address);
 
-  const data = dataTweet;
+  const onClickRank = () => {};
+
+  const logRows = useMemo(() => {
+    return data.map((item, i) => {
+      const cid = item.tx.body.messages[0].links[0].to;
+      return (
+        <SearchSnippet
+          key={i}
+          cid={cid}
+          data={item}
+          onClickRank={onClickRank}
+        />
+      );
+    });
+  }, [data]);
 
   useEffect(() => {
-    async function getFeeds() {
-      let responseTweet = null;
-      let dataTweets = [];
-      setDataTweet([]);
-      setLoading(true);
-
-      responseTweet = await getTweet(address);
-      if (responseTweet && responseTweet.txs && responseTweet.total_count > 0) {
-        dataTweets = [...dataTweets, ...responseTweet.txs];
-      }
-      setDataTweet(dataTweets);
-      setLoading(false);
-    }
-    getFeeds();
-
-    addRefetch(getFeeds);
+    addRefetch(refetch);
   }, [address]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onClickRank = () => {};
+
+  let content;
+
+  if (!isFetched) {
+    content = <Loader2 />;
+  } else if (data && data.length) {
+    content = (
+      <InfiniteScroll
+        dataLength={Object.keys(logRows).length}
+        hasMore={Boolean(hasNextPage)}
+        next={fetchNextPage}
+        loader={<Dots />}
+      >
+        {logRows}
+      </InfiniteScroll>
+    );
+  } else {
+    content = <NoItems text="No feeds" />;
+  }
 
   return (
     <ContainerGradientText>
+      {status === 'error' && <span>Error: {error.message}</span>}
       <div className="container-contentItem" style={{ width: '100%' }}>
-        {loading ? (
-          <Loader2 />
-        ) : data.length > 0 ? (
-          data
-            .sort((a, b) => {
-              const x = Date.parse(a.timestamp);
-              const y = Date.parse(b.timestamp);
-              return y - x;
-            })
-            .map((item, i) => {
-              const cid = item.tx.value.msg[0].value.links[0].to;
-              return (
-                <SearchSnippet
-                  key={i}
-                  cid={cid}
-                  data={item}
-                  onClickRank={onClickRank}
-                />
-              );
-            })
-        ) : (
-          <NoItems text="No feeds" />
-        )}
+        {content}
       </div>
     </ContainerGradientText>
   );
