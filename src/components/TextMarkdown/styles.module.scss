@@ -1,3 +1,9 @@
+.wrapper {
+  * {
+    text-transform: initial;
+  }
+}
+
 .markdownContainer {
   --width-ratio: 0.62;
   width: calc(var(--width-ratio) * 100%);
