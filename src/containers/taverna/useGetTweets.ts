@@ -3,7 +3,7 @@ import dateFormat from 'dateformat';
 import { useWebsockets } from 'src/websockets/context';
 import db from '../../db';
 import { getFollows, getTweet } from '../../utils/search/utils';
-import { CYBER, PATTERN_CYBER } from '../../utils/config';
+import { CID_TWEET, CYBER, PATTERN_CYBER } from '../../utils/config';
 import { fromBech32 } from '../../utils/utils';
 import { useIpfs } from 'src/contexts/ipfs';
 import { AppIPFS } from 'src/utils/ipfs/ipfs';
@@ -60,7 +60,7 @@ const useGetTweets = (address) => {
 
     const param = {
       query:
-        "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
+        `tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='${CID_TWEET}'`,
     };
 
     if (cyber.subscriptions.includes(JSON.stringify(param))) {

@@ -12,8 +12,7 @@ import {
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-
-const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
+import { CID_TWEET } from 'src/utils/config';
 
 const LOAD_COUNT = 10;
 
@@ -156,7 +155,7 @@ function Taverna() {
         {isOwner && (
           <ActionBarCont
             addressActive={addressActive}
-            keywordHash={keywordHash}
+            keywordHash={CID_TWEET}
             updateFunc={() => setUpdate(update + 1)}
             rankLink={rankLink}
             textBtn="Tweet"

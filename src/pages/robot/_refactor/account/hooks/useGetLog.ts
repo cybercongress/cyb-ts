@@ -37,7 +37,7 @@ function useGetLog(address: string | null) {
     refetch,
     error,
     isInitialLoading,
-    isFetched,
+    isFetching,
   } = useInfiniteQuery(
     ['useGetLog', address],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
@@ -81,7 +81,7 @@ function useGetLog(address: string | null) {
     refetch,
     error,
     isInitialLoading,
-    isFetched,
+    isFetching,
   };
 }
 

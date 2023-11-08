@@ -8,7 +8,7 @@ import useGetLog from '../hooks/useGetLog';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
-  const { data, fetchNextPage, hasNextPage, refetch, error, isFetched } =
+  const { data, fetchNextPage, hasNextPage, refetch, error, isFetching } =
     useGetLog(address);
 
   const onClickRank = () => {};
@@ -34,7 +34,7 @@ function FeedsTab() {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let content;
 
-  if (!isFetched) {
+  if (isFetching) {
     content = <Loader2 />;
   } else if (error) {
     content = <span>Error: {error.message}</span>;

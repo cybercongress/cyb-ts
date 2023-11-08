@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
-import { PATTERN_CYBER } from '../../../utils/config';
+import { CID_TWEET, PATTERN_CYBER } from '../../../utils/config';
 import { useIpfs } from 'src/contexts/ipfs';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
@@ -13,7 +13,7 @@ const STAGE_READY = 3;
 
 const QueryCyberlink = (address, yesterday, time) =>
   `query MyQuery {
-    cyberlinks_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {neuron: {_in: [${address}]}}]}) {
+    cyberlinks_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "${CID_TWEET}"}}, {neuron: {_in: [${address}]}}]}) {
       aggregate {
         count
       }
