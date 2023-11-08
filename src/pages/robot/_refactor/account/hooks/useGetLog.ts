@@ -5,6 +5,7 @@ import { CYBER } from 'src/utils/config';
 
 const LIMIT = 20;
 
+// TO DO refactor: need to use soft3js
 const request = async (address: string, offset: number, limit: number) => {
   try {
     const response = await axios({
