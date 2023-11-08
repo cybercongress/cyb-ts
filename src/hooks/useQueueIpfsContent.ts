@@ -37,6 +37,10 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
 
   const fetchParticle = useCallback(
     async (cid: string, rank?: number) => {
+      setContent(undefined);
+      setStatus('pending');
+      setSource(undefined);
+
       const callback = (
         cid: string,
         status: QueueItemStatus,

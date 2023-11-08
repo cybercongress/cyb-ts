@@ -14,16 +14,15 @@ import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import SearchResults from '../Search/SearchResults';
 import AdviserMeta from './components/AdviserMeta/AdviserMeta';
+import { useBackend } from 'src/contexts/backend';
 
 function Ipfs() {
   const { query = '' } = useParams();
 
-  const [cid, setKeywordHash] = useState<string>(
-    query.match(PATTERN_IPFS_HASH) ? query : ''
-  );
+  const [cid, setKeywordHash] = useState<string>('');
 
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
-
+  const { ipfsNode } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
   const queryClient = useQueryClient();
@@ -31,14 +30,21 @@ function Ipfs() {
 
   useEffect(() => {
     (async () => {
-      if (!cid || cid !== query) {
-        const newCid = query.match(PATTERN_IPFS_HASH)
-          ? query
-          : ((await getIpfsHash(encodeSlash(query))) as string);
-        setKeywordHash(newCid);
+      if (cid !== query) {
+        if (query.match(PATTERN_IPFS_HASH)) {
+          setKeywordHash(query);
+        } else {
+          const cidFromQuery = (await getIpfsHash(
+            encodeSlash(query)
+          )) as string;
+          if (cidFromQuery !== cid) {
+            await ipfsNode?.addContent(query);
+            setKeywordHash(cidFromQuery);
+          }
+        }
       }
     })();
-  }, [cid, query]);
+  }, [cid, query, ipfsNode]);
 
   useEffect(() => {
     (async () => {
