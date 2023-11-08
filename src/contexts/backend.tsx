@@ -70,14 +70,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
       await setupStoragePersistence();
 
-      const installDbApi = async () => {
-        setIsDbItialized(false);
-        dbApiService
-          .init()
-          .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
-        setIsDbItialized(true);
-      };
-      await Promise.all([loadIpfs(), installDbApi()]);
+      // await loadIpfs();
+      // await initDbApi();
+      await Promise.all([loadIpfs(), initDbApi()]);
 
       await backendApi
         .installDbApi(proxy(dbApiService))
@@ -90,18 +85,32 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, [dispatch]);
 
+  const initDbApi = async () => {
+    setIsDbItialized(false);
+    console.time('🔋 CozoDb worker started.');
+    dbApiService
+      .init()
+      .then(() => console.timeEnd('🔋 CozoDb worker started.'));
+    setIsDbItialized(true);
+  };
+
+  useEffect(() => {
+    console.log('-effect- db : ipfs', isDbInitialized, isIpfsInitialized);
+  }, [isDbInitialized, isIpfsInitialized]);
+
   const loadIpfs = async () => {
     setIsIpfsInitialized(false);
 
     const ipfsOpts = getIpfsOpts();
     await backendApi.ipfsApi.stop();
+    console.time('🔋 Ipfs started.');
     await backendApi.ipfsApi
       .start(ipfsOpts)
       .then((ipfsNodeRemote) => {
         ipfsNode.current = ipfsNodeRemote;
         setIsIpfsInitialized(true);
         setIpfsError(null);
-        console.log('🔋 Ipfs started.');
+        console.timeEnd('🔋 Ipfs started.');
       })
       .catch((err) => {
         ipfsNode.current = null;
