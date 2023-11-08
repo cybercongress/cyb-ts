@@ -70,13 +70,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
       await setupStoragePersistence();
 
-      // await loadIpfs();
-      // await initDbApi();
-      await Promise.all([loadIpfs(), initDbApi()]);
-
-      await backendApi
-        .installDbApi(proxy(dbApiService))
-        .then(() => console.log('🔋 Background worker started.'));
+      await loadIpfs();
+      await initDbApi().then(async () => {
+        await backendApi
+          .installDbApi(proxy(dbApiService))
+          .then(() => console.log('🔋 Background worker started.'));
+      });
+      // await Promise.all([loadIpfs(), initDbApi()]);
 
       setBackgroundIsInitialized(true);
     })();
@@ -88,9 +88,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const initDbApi = async () => {
     setIsDbItialized(false);
     console.time('🔋 CozoDb worker started.');
-    dbApiService
+    await dbApiService
       .init()
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
+
     setIsDbItialized(true);
   };
 
