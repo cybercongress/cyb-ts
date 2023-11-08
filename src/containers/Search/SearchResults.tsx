@@ -173,14 +173,16 @@ function SearchResults() {
       </div>
 
       {!mobile && (
-        <ActionBarContainer
-          keywordHash={keywordHash}
-          update={() => {
-            refetch();
-            setRankLink(null);
-          }}
-          rankLink={rankLink}
-        />
+        <div className={styles.actionBar}>
+          <ActionBarContainer
+            keywordHash={keywordHash}
+            update={() => {
+              refetch();
+              setRankLink(null);
+            }}
+            rankLink={rankLink}
+          />
+        </div>
       )}
     </>
   );
