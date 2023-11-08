@@ -1,16 +1,19 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
-import { CYBER } from 'src/utils/config';
+import { getTransactions } from 'src/utils/search/utils';
 
 const LIMIT = 20;
-
 // TO DO refactor: need to use soft3js
 const request = async (address: string, offset: number, limit: number) => {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=cyberlink.particleFrom%3D%27QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx%27&events=cyberlink.neuron%3D%27${address}%27`,
+    const events = [
+      "cyberlink.particleFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
+      `cyberlink.neuron='${address}'`,
+    ];
+    const response = await getTransactions({
+      events,
+      pagination: { limit, offset },
+      orderBy: 'ORDER_BY_DESC',
     });
     return response.data;
   } catch (error) {
@@ -61,7 +64,7 @@ function useGetLog(address: string | null) {
 
   const d =
     data?.pages?.reduce((acc, page) => {
-      return acc.concat(page.data['tx_responses']);
+      return acc.concat(page.data.tx_responses);
     }, []) || [];
 
   return {

@@ -8,14 +8,8 @@ import useGetLog from '../hooks/useGetLog';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-    error,
-    isFetched,
-  } = useGetLog(address);
+  const { data, fetchNextPage, hasNextPage, refetch, error, isFetched } =
+    useGetLog(address);
 
   const onClickRank = () => {};
 
@@ -44,7 +38,7 @@ function FeedsTab() {
     content = <Loader2 />;
   } else if (error) {
     content = <span>Error: {error.message}</span>;
-  } else if (data) {
+  } else if (data.length) {
     content = (
       <InfiniteScroll
         dataLength={Object.keys(logRows).length}
