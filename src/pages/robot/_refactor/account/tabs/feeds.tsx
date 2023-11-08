@@ -11,7 +11,6 @@ function FeedsTab() {
   const {
     data,
     fetchNextPage,
-    status,
     hasNextPage,
     refetch,
     error,
@@ -39,12 +38,13 @@ function FeedsTab() {
   }, [address]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-
   let content;
 
   if (!isFetched) {
     content = <Loader2 />;
-  } else if (data && data.length) {
+  } else if (error) {
+    content = <span>Error: {error.message}</span>;
+  } else if (data) {
     content = (
       <InfiniteScroll
         dataLength={Object.keys(logRows).length}
@@ -61,7 +61,6 @@ function FeedsTab() {
 
   return (
     <ContainerGradientText>
-      {status === 'error' && <span>Error: {error.message}</span>}
       <div className="container-contentItem" style={{ width: '100%' }}>
         {content}
       </div>

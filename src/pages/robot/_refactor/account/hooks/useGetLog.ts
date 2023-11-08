@@ -11,7 +11,7 @@ const request = async (address: string, offset: number, limit: number) => {
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=cyberlink.particleFrom%3D%27QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx%27&events=cyberlink.neuron%3D%27${address}%27`,
     });
-    return response.data || [];
+    return response.data;
   } catch (error) {
     console.log(error);
     return [];
@@ -24,7 +24,6 @@ function useGetLog(address: string | null) {
     fetchNextPage,
     hasNextPage,
     refetch,
-    status,
     error,
     isInitialLoading,
     isFetched,
@@ -70,7 +69,6 @@ function useGetLog(address: string | null) {
     hasNextPage,
     refetch,
     error,
-    status,
     isInitialLoading,
     isFetched,
   };
