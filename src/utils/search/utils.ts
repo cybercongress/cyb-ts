@@ -711,8 +711,8 @@ export const chekFollow = async (address, addressFollowHash) => {
 };
 
 type PropsTx = {
-  events: string[];
-  pagination: {
+  events: ReadonlyArray<{ key: string; value: string }>;
+  pagination?: {
     limit: number;
     offset: number;
   };
@@ -722,7 +722,7 @@ type PropsTx = {
 // // TODO: add types
 export async function getTransactions({
   events,
-  pagination,
+  pagination = { limit: 20, offset: 0 },
   orderBy = 'ORDER_BY_UNSPECIFIED',
 }: PropsTx) {
   const { offset, limit } = pagination;
@@ -731,7 +731,7 @@ export async function getTransactions({
       'pagination.offset': offset,
       'pagination.limit': limit,
       orderBy,
-      events,
+      events: events.map((evn) => `${evn.key}='${evn.value}'`),
     },
     paramsSerializer: {
       indexes: null,

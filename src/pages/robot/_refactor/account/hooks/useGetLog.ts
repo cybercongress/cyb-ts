@@ -7,8 +7,14 @@ const LIMIT = 20;
 const request = async (address: string, offset: number, limit: number) => {
   try {
     const events = [
-      "cyberlink.particleFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
-      `cyberlink.neuron='${address}'`,
+      {
+        key: 'cyberlink.particleFrom',
+        value: 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx',
+      },
+      {
+        key: 'cyberlink.neuron',
+        value: address,
+      },
     ];
     const response = await getTransactions({
       events,
