@@ -74,9 +74,9 @@ const loadIPFSContentFromDb = async (
 
 const emptyMeta: IPFSContentMeta = {
   type: 'file',
-  size: -1,
+  size: undefined,
   local: undefined,
-  sizeLocal: -1,
+  sizeLocal: undefined,
 };
 
 const fetchIPFSContentMeta = async (

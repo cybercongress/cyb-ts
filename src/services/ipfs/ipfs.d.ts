@@ -7,8 +7,8 @@ type IpfsNodeType = 'embedded' | 'external' | 'helia';
 
 export type IpfsFileStats = {
   type: 'file' | 'directory' | 'raw';
-  size: number | bigint;
-  sizeLocal: number | bigint;
+  size?: number | bigint;
+  sizeLocal?: number | bigint;
   blocks?: number;
   // mtime?: number;
 };

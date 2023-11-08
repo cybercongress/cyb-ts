@@ -8,7 +8,7 @@ import useRank from 'src/features/cyberlinks/rank/useRank';
 type Props = {
   cid: string;
   type: string | undefined;
-  size: number | undefined;
+  size: number | bigint | undefined;
 };
 
 function AdviserMeta({ cid, type, size }: Props) {
@@ -38,7 +38,7 @@ function AdviserMeta({ cid, type, size }: Props) {
       )}
       <div className={styles.right}>
         <span>
-          🟥 {size !== -1 ? formatCurrency(size, 'B', 0, PREFIXES) : 'unknown'}
+          🟥 {size ? formatCurrency(size, 'B', 0, PREFIXES) : 'unknown'}
         </span>
         <button disabled>🌓</button>
       </div>
