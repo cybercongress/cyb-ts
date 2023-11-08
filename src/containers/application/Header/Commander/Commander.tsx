@@ -102,6 +102,7 @@ function Commander() {
     }
 
     navigate(routes.search.getLink(replaceSlash(value)));
+    dispatch(setFocus(false));
   }
 
   return (
