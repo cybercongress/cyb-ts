@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { CID_TWEET } from 'src/utils/config';
 import { getTransactions } from 'src/utils/search/utils';
 
 const LIMIT = 20;
@@ -9,7 +10,7 @@ const request = async (address: string, offset: number, limit: number) => {
     const events = [
       {
         key: 'cyberlink.particleFrom',
-        value: 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx',
+        value: CID_TWEET,
       },
       {
         key: 'cyberlink.neuron',
