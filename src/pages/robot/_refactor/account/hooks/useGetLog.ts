@@ -24,50 +24,43 @@ const request = async (address: string, offset: number, limit: number) => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
-    return [];
+    console.log('error getLog', error);
+    return undefined;
   }
 };
 
 function useGetLog(address: string | null) {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-    error,
-    isInitialLoading,
-    isFetching,
-  } = useInfiniteQuery(
-    ['useGetLog', address],
-    async ({ pageParam = 0 }: { pageParam?: number }) => {
-      const offset = LIMIT * pageParam;
-      const response = (await request(
-        address,
-        offset,
-        LIMIT
-      )) as GetTxsEventResponse;
+  const { data, fetchNextPage, hasNextPage, refetch, error, isInitialLoading } =
+    useInfiniteQuery(
+      ['useGetLog', address],
+      async ({ pageParam = 0 }: { pageParam?: number }) => {
+        const offset = LIMIT * pageParam;
+        const response = (await request(
+          address,
+          offset,
+          LIMIT
+        )) as GetTxsEventResponse;
 
-      return { data: response, page: pageParam };
-    },
-    {
-      enabled: Boolean(address),
-      getNextPageParam: (lastPage) => {
-        const {
-          page,
-          data: {
-            pagination: { total },
-          },
-        } = lastPage;
-
-        if (!total || (page + 1) * LIMIT > total) {
-          return undefined;
-        }
-
-        return page + 1;
+        return { data: response, page: pageParam };
       },
-    }
-  );
+      {
+        enabled: Boolean(address),
+        getNextPageParam: (lastPage) => {
+          const {
+            page,
+            data: {
+              pagination: { total },
+            },
+          } = lastPage;
+
+          if (!total || (page + 1) * LIMIT > total) {
+            return undefined;
+          }
+
+          return page + 1;
+        },
+      }
+    );
 
   const d =
     data?.pages?.reduce((acc, page) => {
@@ -81,7 +74,6 @@ function useGetLog(address: string | null) {
     refetch,
     error,
     isInitialLoading,
-    isFetching,
   };
 }
 

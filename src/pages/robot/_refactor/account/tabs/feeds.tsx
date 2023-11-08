@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
 import { useRobotContext } from 'src/pages/robot/robot.context';
+import { useAdviser } from 'src/features/adviser/context';
 import Loader2 from 'src/components/ui/Loader2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Dots, NoItems, SearchSnippet } from '../../../../../components';
@@ -8,8 +9,19 @@ import useGetLog from '../hooks/useGetLog';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
-  const { data, fetchNextPage, hasNextPage, refetch, error, isFetching } =
+  const { setAdviser } = useAdviser();
+  const { data, fetchNextPage, hasNextPage, refetch, error, isInitialLoading } =
     useGetLog(address);
+
+  useEffect(() => {
+    if (error) {
+      setAdviser(<>Error: {error.message}</>, 'red');
+    }
+
+    return () => {
+      setAdviser(null);
+    };
+  }, [setAdviser, error]);
 
   const onClickRank = () => {};
 
@@ -34,10 +46,10 @@ function FeedsTab() {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let content;
 
-  if (isFetching) {
+  if (isInitialLoading) {
     content = <Loader2 />;
   } else if (error) {
-    content = <span>Error: {error.message}</span>;
+    content = null;
   } else if (data.length) {
     content = (
       <InfiniteScroll
