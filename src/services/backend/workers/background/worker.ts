@@ -19,6 +19,7 @@ import { PinTypeMap } from 'src/services/CozoDb/types';
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 
 import {
+  ServiceStatus,
   SyncEntry,
   SyncProgress,
   WorkerStatus,
@@ -45,6 +46,12 @@ const backendApiFactory = () => {
   let dbApi: DbWorkerApi | undefined;
   const ipfsQueue = new QueueManager<IPFSContentMaybe>();
   const channel = new BcChannel();
+
+  const postServiceStatus = (status: ServiceStatus, error?: string) =>
+    channel.post({
+      type: 'service_status',
+      value: { name: 'ipfs', status, error },
+    });
 
   console.log('----backendApi worker constructor!');
 
@@ -160,6 +167,7 @@ const backendApiFactory = () => {
     if (ipfsNode) {
       await ipfsNode.stop();
     }
+    postServiceStatus('inactive');
   };
 
   const startIpfs = async (ipfsOpts: IpfsOptsType) => {
@@ -168,12 +176,16 @@ const backendApiFactory = () => {
         console.log('Ipfs node already started!');
         await ipfsNode.stop();
       }
+      postServiceStatus('starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
       ipfsQueue.setNode(ipfsNode);
+      postServiceStatus('started');
       return proxy(ipfsNode);
     } catch (err) {
       console.log('----ipfs node init error ', err);
-      throw Error(err instanceof Error ? err.message : (err as string));
+      const msg = err instanceof Error ? err.message : (err as string);
+      postServiceStatus('error', msg);
+      throw Error(msg);
     }
   };
 
