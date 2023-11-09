@@ -675,7 +675,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${config.CID_TWEET}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -697,21 +697,34 @@ export const chekFollow = async (address, addressFollowHash) => {
   }
 };
 
+type PropsTx = {
+  events: ReadonlyArray<{ key: string; value: string }>;
+  pagination?: {
+    limit: number;
+    offset: number;
+  };
+  orderBy?: 'ORDER_BY_UNSPECIFIED' | 'ORDER_BY_ASC' | 'ORDER_BY_DESC';
+};
+
 // // TODO: add types
-// async function getTransactions({ events, ...params }) {
-//   try {
-//     axios.get(`${CYBER_NODE_URL_LCD}/txs`, {
-//       params: {
-//         limit: 1000,
-//         events
-//         ...params,
-//       },
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     throw Error(error);
-//   }
-// }
+export async function getTransactions({
+  events,
+  pagination = { limit: 20, offset: 0 },
+  orderBy = 'ORDER_BY_UNSPECIFIED',
+}: PropsTx) {
+  const { offset, limit } = pagination;
+  return axios.get(`${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`, {
+    params: {
+      'pagination.offset': offset,
+      'pagination.limit': limit,
+      orderBy,
+      events: events.map((evn) => `${evn.key}='${evn.value}'`),
+    },
+    paramsSerializer: {
+      indexes: null,
+    },
+  });
+}
 
 // export async function getCyberlinks(address) {
 //   getTransactions({

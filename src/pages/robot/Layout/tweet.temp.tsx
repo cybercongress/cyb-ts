@@ -2,18 +2,13 @@ import { useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
-import { PATTERN_CYBER } from '../../../utils/config';
+import { CID_TWEET, PATTERN_CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
 
-const STAGE_ADD_AVATAR = 0;
-const STAGE_ADD_FIRST_FOLLOWER = 1;
-const STAGE_ADD_FIRST_TWEET = 2;
-const STAGE_READY = 3;
-
 const QueryCyberlink = (address, yesterday, time) =>
   `query MyQuery {
-    cyberlinks_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {neuron: {_in: [${address}]}}]}) {
+    cyberlinks_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "${CID_TWEET}"}}, {neuron: {_in: [${address}]}}]}) {
       aggregate {
         count
       }
