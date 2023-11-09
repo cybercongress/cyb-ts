@@ -6,27 +6,22 @@ import { getTransactions } from 'src/utils/search/utils';
 const LIMIT = 20;
 // TO DO refactor: need to use soft3js
 const request = async (address: string, offset: number, limit: number) => {
-  try {
-    const events = [
-      {
-        key: 'cyberlink.particleFrom',
-        value: CID_TWEET,
-      },
-      {
-        key: 'cyberlink.neuron',
-        value: address,
-      },
-    ];
-    const response = await getTransactions({
-      events,
-      pagination: { limit, offset },
-      orderBy: 'ORDER_BY_DESC',
-    });
-    return response.data;
-  } catch (error) {
-    console.log('error getLog', error);
-    return undefined;
-  }
+  const events = [
+    {
+      key: 'cyberlink.particleFrom',
+      value: CID_TWEET,
+    },
+    {
+      key: 'cyberlink.neuron',
+      value: address,
+    },
+  ];
+  const response = await getTransactions({
+    events,
+    pagination: { limit, offset },
+    orderBy: 'ORDER_BY_DESC',
+  });
+  return response.data;
 };
 
 function useGetLog(address: string | null) {

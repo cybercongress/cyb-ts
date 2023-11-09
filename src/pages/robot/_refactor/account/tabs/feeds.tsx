@@ -15,7 +15,7 @@ function FeedsTab() {
 
   useEffect(() => {
     if (error) {
-      setAdviser(<>Error: {error.message}</>, 'red');
+      setAdviser(error.message, 'red');
     }
 
     return () => {
