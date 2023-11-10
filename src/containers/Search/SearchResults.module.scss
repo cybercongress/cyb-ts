@@ -4,6 +4,8 @@
 
   .infiniteScroll {
     margin-top: 12px;
+    display: grid;
+    justify-content: center;
   }
 
   @media (width < 768px) {
