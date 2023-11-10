@@ -139,7 +139,7 @@ function DbService() {
     }
     const resultStr = await db.run(command, '', immutable);
     const result = JSON.parse(resultStr);
-    // console.log('----> runCommand ', command, result);
+    console.debug('----> runCommand ', command, result);
 
     return result;
   };

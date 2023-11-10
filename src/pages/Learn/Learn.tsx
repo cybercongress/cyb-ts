@@ -9,6 +9,8 @@ import {
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
 import { CYBER, PATTERN_IPFS_HASH } from 'src/utils/config';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
+import { useIpfs } from 'src/contexts/ipfs';
 import { useAdviser } from 'src/features/adviser/context';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -21,7 +23,6 @@ import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import KeywordButton from '../Search/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
-import { useBackend } from 'src/contexts/backend';
 import TitleText from '../Search/components/TitleText/TitleText';
 import { learningListConfig } from '../Search/Search';
 
@@ -32,8 +33,7 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const { isIpfsInitialized, ipfsNode } = useBackend();
-
+  const { node } = useIpfs();
   const queryClient = useQueryClient();
 
   const address = useAppSelector(selectCurrentAddress);
@@ -69,7 +69,7 @@ function Learn() {
       content = error;
       adviserColor = 'red';
     } else if (loading) {
-      content = 'transaction pending...';
+      content = 'Transaction pending...';
       adviserColor = 'yellow';
     } else if (noPassport) {
       content = (
@@ -88,7 +88,7 @@ function Learn() {
       );
       adviserColor = 'red';
     } else {
-      content = 'create cyberlink';
+      content = 'Create cyberlink';
     }
 
     setAdviser(content, adviserColor);
@@ -99,13 +99,7 @@ function Learn() {
   }, [ask, answer]);
 
   async function cyberlink() {
-    if (
-      !isIpfsInitialized ||
-      !queryClient ||
-      !address ||
-      !signer ||
-      !signingClient
-    ) {
+    if (!node || !queryClient || !address || !signer || !signingClient) {
       return;
     }
 
@@ -120,12 +114,12 @@ function Learn() {
       setLoading(true);
       let fromCid = ask;
       if (!ask.match(PATTERN_IPFS_HASH)) {
-        fromCid = await ipfsNode?.addContent(ask);
+        fromCid = await addContenToIpfs(node, ask);
       }
 
       let toCid = answer;
       if (!answer.match(PATTERN_IPFS_HASH)) {
-        toCid = await ipfsNode?.addContent(answer);
+        toCid = await addContenToIpfs(node, answer);
       }
 
       const result = await signingClient.cyberlink(
@@ -238,7 +232,7 @@ function Learn() {
         </section>
 
         <div className={styles.energy}>
-          <BandwidthBar tooltipPlacement="top" />
+          <BandwidthBar />
 
           <div>
             <span>{balacesResource.millivolt} ⚡️</span>
@@ -248,10 +242,10 @@ function Learn() {
 
         <ActionBar>
           <Button
-            disabled={!ask || !answer || !isIpfsInitialized || !queryClient}
+            disabled={!ask || !answer || !node || !queryClient}
             onClick={cyberlink}
           >
-            {isIpfsInitialized ? 'cyberlink' : 'node is loading...'}
+            {node ? 'cyberlink' : 'node is loading...'}
           </Button>
         </ActionBar>
       </div>

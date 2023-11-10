@@ -1,13 +1,13 @@
-import { proxy, transferHandlers } from 'comlink';
+import { proxy } from 'comlink';
 import { waitUntil } from 'src/utils/async/utils';
 import { WorkerUrl } from 'worker-url';
 
 import { DbWorkerApi } from './worker';
-import { createWorkerApi } from '../factoryMethods';
+import { createWorker } from '../workerUtils';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
-const { apiProxy: dbApiProxy } = createWorkerApi<DbWorkerApi>(
+const { apiProxy: dbApiProxy } = createWorker<DbWorkerApi>(
   workerUrl,
   'cyb~cozodb'
 );

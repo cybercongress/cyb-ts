@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
+import { useIpfs } from 'src/contexts/ipfs';
 import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
@@ -15,7 +16,6 @@ import AdviserContainer from '../../features/adviser/AdviserContainer';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import { useBackend } from 'src/contexts/backend';
 
 export const PORTAL_ID = 'portal';
 
@@ -30,7 +30,7 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
 
-  const { ipfsError } = useBackend();
+  const ipfs = useIpfs();
   useEffect(() => {
     dispatch(initPocket());
   }, []);
@@ -58,7 +58,7 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (ipfsError && !location.pathname.includes('/drive')) {
+    if (ipfs.error && !location.pathname.includes('/drive')) {
       adviserContext.setAdviser(
         <p>
           Could not connect to the IPFS API <br />
@@ -69,7 +69,7 @@ function App() {
 
       adviserContext.setIsOpen(true);
     }
-  }, [ipfsError, location.pathname]);
+  }, [ipfs.error, location.pathname]);
 
   // chekEvangelism = () => {
   //   const { location } = this.props;

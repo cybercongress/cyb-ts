@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
 import { CID_TWEET, PATTERN_CYBER } from '../../../utils/config';
+import { useIpfs } from 'src/contexts/ipfs';
+import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
 const dateFormat = require('dateformat');
+
+const STAGE_ADD_AVATAR = 0;
+const STAGE_ADD_FIRST_FOLLOWER = 1;
+const STAGE_ADD_FIRST_TWEET = 2;
+const STAGE_READY = 3;
 
 const QueryCyberlink = (address, yesterday, time) =>
   `query MyQuery {
@@ -19,7 +24,7 @@ export const useNewsToday = (account) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [follows, setFollows] = useState([]);
-  const { fetchParticleAsync } = useQueueIpfsContent();
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (account?.match(PATTERN_CYBER)) {
@@ -28,9 +33,8 @@ export const useNewsToday = (account) => {
         if (responseFollows !== null && responseFollows.total_count > 0) {
           responseFollows.txs.forEach(async (item) => {
             const cid = item.tx.value.msg[0].value.links[0].to;
-            const addressResolve = fetchParticleAsync
-              ? (await fetchParticleAsync(cid))?.result?.textPreview
-              : undefined;
+            const addressResolve = (await getIPFSContent(node, cid))
+              ?.textPreview;
             if (addressResolve) {
               if (addressResolve.match(PATTERN_CYBER)) {
                 setFollows((itemState) => [
@@ -62,9 +66,13 @@ export const useNewsToday = (account) => {
     const response = await getGraphQLQuery(
       QueryCyberlink(followsProps, yesterday, time)
     );
-
-    setCount(response.data?.cyberlinks_aggregate?.aggregate?.count || 0);
-    setLoading(false);
+    if (
+      response.cyberlinks_aggregate &&
+      response.cyberlinks_aggregate.aggregate
+    ) {
+      setCount(response.cyberlinks_aggregate.aggregate.count);
+      setLoading(false);
+    }
   };
 
   return {

@@ -1,25 +1,29 @@
 @import '../../../components/containerGradient/saber/index.module.scss';
 
 .header {
-  margin: 10px 0 -5px;
-  padding: 17px 12px 20px;
-
+  width: 100%;
+  max-width: 62vw;
+  box-sizing: border-box;
   display: flex;
+  margin: 10px auto -5px;
+  padding-left: 12px;
   justify-content: space-between;
   align-content: center;
-
   @include saber('blue', top);
+  padding-top: 17px;
+  padding-bottom: 20px;
+
+  .total {
+    color: rgba(221, 255, 255, 0.38);
+
+    span {
+      color: rgba(255, 255, 255, 0.78);
+    }
+  }
 
   @media (max-width: 680px) {
+    max-width: unset;
     gap: 40px 0;
     flex-wrap: wrap;
-  }
-}
-
-.total {
-  color: rgba(221, 255, 255, 0.38);
-
-  span {
-    color: rgba(255, 255, 255, 0.78);
   }
 }

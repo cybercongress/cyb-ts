@@ -42,7 +42,7 @@ function RowItem({ text, value }) {
 function MetaInfo({ data, cid }) {
   try {
     if (!data) {
-      return <div>loading....</div>;
+      return <div>Loading....</div>;
     }
     return (
       <>

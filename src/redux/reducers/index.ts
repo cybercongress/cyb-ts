@@ -1,6 +1,5 @@
 // import { combineReducers } from 'redux';
 
-import commanderReducer from 'src/containers/application/Header/Commander/commander.redux';
 import golReducer from './gol';
 import bandwidthReducer from './bandwidth';
 import pocketReducer from '../features/pocket';
@@ -15,7 +14,6 @@ const rootReducer = {
   passports: passportsReducer,
   currentAccount: currentAccountReducer,
   backend: backendReducer,
-  commander: commanderReducer,
 };
 
 export default rootReducer;

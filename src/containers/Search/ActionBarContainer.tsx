@@ -22,6 +22,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import { DefaultAccount } from 'src/types/defaultAccount';
 
@@ -55,7 +56,6 @@ interface Props {
   keywordHash: string;
 }
 
-// TODO: REFACT
 class ActionBarContainer extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
@@ -131,7 +131,7 @@ class ActionBarContainer extends Component<Props, any> {
     if (file === null && content.match(PATTERN_IPFS_HASH)) {
       toCid = content;
     } else {
-      toCid = await node.addContent(content);
+      toCid = await addContenToIpfs(node, content);
     }
 
     this.setState({
@@ -145,7 +145,7 @@ class ActionBarContainer extends Component<Props, any> {
     let fromCid = keywordHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await node.addContent(fromCid);
+      fromCid = await addContenToIpfs(node, fromCid);
     }
 
     this.setState({

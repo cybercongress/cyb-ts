@@ -1,25 +1,22 @@
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { formatCurrency } from 'src/utils/utils';
 import { PREFIXES } from 'src/containers/ipfs/components/metaInfo';
+import useGetBackLink from '../../../../containers/ipfs/hooks/useGetBackLink';
+import useGetAnswers from '../../../../containers/ipfs/hooks/useGetAnswers';
+// import useGetDiscussion from '../../../../containers/ipfs/hooks/useGetDiscussion';
+import styles from './Meta.module.scss';
+import Links from './Links/Links';
 import { useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
-import { useEffect } from 'react';
-import useCyberlinksCount from 'src/features/cyberlinks/hooks/useCyberlinksCount';
-import Links from './Links/Links';
-import styles from './Meta.module.scss';
 
 type Props = {
   cid: string;
 };
 
 function Meta({ cid }: Props) {
-  const { content, fetchParticle } = useQueueIpfsContent(cid);
-
-  const { data: count } = useCyberlinksCount(cid);
-
-  useEffect(() => {
-    fetchParticle && (async () => fetchParticle(cid))();
-  }, [cid, fetchParticle]);
+  const { total } = useGetBackLink(cid);
+  const dataAnswer = useGetAnswers(cid);
+  const { content } = useQueueIpfsContent(cid, 1, cid);
 
   const navigate = useNavigate();
 
@@ -28,8 +25,8 @@ function Meta({ cid }: Props) {
   return (
     <div className={styles.meta}>
       <Links
-        to={count.to}
-        from={count.from}
+        to={total}
+        from={dataAnswer?.total}
         onChange={() => {
           navigate(routes.ipfs.getLink(cid));
         }}

@@ -14,7 +14,7 @@ import {
 } from './ipfsComponents/utilsComponents';
 
 const ipfsDaemon = `$ ipfs daemon
-Initializing daemon...
+Initializing daemon... 
 API server listening on /ip4/127.0.0.1/tcp/5001
 `;
 
@@ -55,6 +55,7 @@ function ErrorIpfsSettings({ stateErrorIpfsSettings }) {
           textSelectValue={valueSelect !== '' ? valueSelect : ''}
           onChangeSelect={(item) => onChangeSelect(item)}
           custom
+          disabled={pending}
         >
           {renderOptions(dataOpts, valueSelect)}
         </Select>

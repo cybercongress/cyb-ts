@@ -1,34 +1,18 @@
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { exposeWorkerApi } from '../factoryMethods';
-import { ServiceStatus } from '../../types';
+import { exposeWorker } from '../workerUtils';
 
 const dbApiFactory = () => {
-  let isInitialized = false;
-  const channel = new BcChannel();
-
-  const postServiceStatus = (status: ServiceStatus) =>
-    channel.post({
-      type: 'service_status',
-      value: { name: 'db', status },
-    });
-
-  console.log('---dbApi worker constructor!');
-
+  console.log('----dbApi worker constructor!');
   const init = async () => {
-    if (isInitialized) {
-      console.log('Db: already initialized!');
-      return;
-    }
-    postServiceStatus('starting');
+    console.log('----dbApi worker init!');
+    const channel = new BcChannel();
 
     // callback to sync writes count worker -> main thread
     const onWriteCallback = (writesCount: number) =>
       channel.post({ type: 'indexeddb_write', value: writesCount });
 
     await cozoDb.init(onWriteCallback);
-    isInitialized = true;
-    postServiceStatus('started');
   };
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
@@ -86,4 +70,4 @@ const dbApi = dbApiFactory();
 export type DbWorkerApi = typeof dbApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, dbApi);
+exposeWorker(self, dbApi);

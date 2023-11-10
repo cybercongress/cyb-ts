@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { CreatorCyberLink } from 'src/types/cyberLink';
 import { Option } from 'src/types';
+import { CreatorCyberLink } from 'src/types/cyberLink';
 import { getCreator } from '../../../utils/search/utils';
 
-function useGetCreator(cid: string) {
+function useGetCreator(cid) {
   const { data } = useQuery(
     ['useGetCreator', cid],
     async () => {
@@ -13,25 +14,34 @@ function useGetCreator(cid: string) {
       enabled: Boolean(cid),
     }
   );
+  const [creator, setCreator] = useState<Option<CreatorCyberLink>>(undefined);
 
-  let creator: Option<CreatorCyberLink>;
-  if (data?.tx_responses?.length > 0) {
-    const { tx_responses: txResponses } = data;
+  useEffect(() => {
+    const getCreatorFunc = async () => {
+      if (data && data.tx_responses && data.tx_responses.length > 0) {
+        const { tx_responses: txResponses } = data;
+        let addressCreator = '';
 
-    const { neuron, sender } = txResponses[0].tx.body.messages[0];
-    const addressCreator = sender || neuron;
+        if (txResponses[0].tx.body.messages[0].neuron) {
+          addressCreator = txResponses[0].tx.body.messages[0].neuron;
+        }
 
-    const [{ timestamp }] = txResponses;
+        if (txResponses[0].tx.body.messages[0].sender) {
+          addressCreator = txResponses[0].tx.body.messages[0].sender;
+        }
 
-    creator = {
-      address: addressCreator,
-      timestamp,
+        const [{ timestamp }] = txResponses;
+
+        setCreator({
+          address: addressCreator,
+          timestamp,
+        });
+      }
     };
-  }
+    getCreatorFunc();
+  }, [data]);
 
-  return {
-    creator,
-  };
+  return { creator };
 }
 
 export default useGetCreator;

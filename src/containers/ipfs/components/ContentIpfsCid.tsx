@@ -1,6 +1,5 @@
 import { QueueItemStatus } from 'src/services/QueueManager/QueueManager';
 import ComponentLoader from '../../../features/ipfs/ipfsSettings/ipfsComponents/ipfsLoader';
-import TextMarkdown from 'src/components/TextMarkdown';
 
 type Props = {
   loading?: boolean;
@@ -8,14 +7,14 @@ type Props = {
   status?: QueueItemStatus;
 };
 
-// TODO: refactor this component
-function ContentIpfsCid({ loading, statusFetching, status, cid }: Props) {
+function ContentIpfsCid({ loading, statusFetching, status }: Props) {
   // const loading = dataGetIpfsContent.loading;
 
   if (loading) {
     return (
       <div
         style={{
+          // TODO: Avoid inline styles
           width: '100%',
           // height: '50vh',
           display: 'flex',
@@ -33,7 +32,7 @@ function ContentIpfsCid({ loading, statusFetching, status, cid }: Props) {
     );
   }
 
-  if (!loading && ['error', 'timeout', 'not_found'].includes(status)) {
+  if (!loading && 'error, timeout'.includes(status)) {
     return (
       <div
         style={{
@@ -46,8 +45,7 @@ function ContentIpfsCid({ loading, statusFetching, status, cid }: Props) {
           marginBottom: '50px',
         }}
       >
-        <TextMarkdown>{cid}</TextMarkdown>
-        {/* <div style={{ fontSize: '20px' }}>IPFS content is not available</div> */}
+        <div style={{ fontSize: '20px' }}>IPFS content is not available</div>
       </div>
     );
   }

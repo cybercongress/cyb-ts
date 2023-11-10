@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
-
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/redux/store';
 import { routes } from 'src/routes';
 import { CYBER } from 'src/utils/config';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { useAppSelector } from 'src/redux/hooks';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.scss';
 import Button from '../btnGrd';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import { id } from 'src/containers/application/Header/Commander/Commander';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -44,26 +44,68 @@ type Props = {
 
 function ActionBar({ children, text, onClickBack, button }: Props) {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const { defaultAccount, commander } = useAppSelector((store) => {
+  const [commanderFocused, setCommanderFocused] = useState(false);
+
+  const { defaultAccount } = useSelector((store: RootState) => {
     return {
       defaultAccount: store.pocket.defaultAccount,
-      commander: store.commander,
     };
   });
 
-  const address = useAppSelector(selectCurrentAddress);
-  const { passport } = usePassportByAddress(address);
+  const { passport } = usePassportByAddress(
+    defaultAccount?.account?.cyber?.bech32 || null
+  );
 
   const noAccount = !defaultAccount.account;
   const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
 
+  useEffect(() => {
+    const commander = document.getElementById(id);
+
+    function onFocus() {
+      setCommanderFocused(true);
+    }
+
+    function onBlur(e) {
+      if (e.relatedTarget?.tagName.toLowerCase() === 'button') {
+        e.relatedTarget.click();
+      }
+      setCommanderFocused(false);
+    }
+
+    if (commander) {
+      commander.addEventListener('focus', onFocus);
+      commander.addEventListener('blur', onBlur);
+    }
+
+    return () => {
+      if (commander) {
+        commander.removeEventListener('focus', onFocus);
+        commander.removeEventListener('blur', onBlur);
+      }
+    };
+  }, [id]);
+
   // TODO: not show while loading passport
 
-  if (commander.isFocused && commander.value.length > 0) {
+  // refactor
+  if (commanderFocused && location.pathname !== '/') {
     return (
       <ActionBarContainer>
-        <Button link={routes.search.getLink(commander.value)}>Ask</Button>
+        <Button
+          onClick={() => {
+            navigate(
+              routes.search.getLink(
+                document.getElementById(id)?.value?.replace('~', '')
+              )
+            );
+          }}
+          // link={routes.search.getLink(val)}
+        >
+          Ask
+        </Button>
       </ActionBarContainer>
     );
   }

@@ -66,7 +66,6 @@ export const routes = {
     getLink: (address: string) => `/neuron/${address}`,
   },
   oracle: {
-    path: '/',
     learn: {
       path: '/oracle/learn',
     },
