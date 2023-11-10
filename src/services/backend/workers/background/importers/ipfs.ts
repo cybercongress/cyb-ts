@@ -1,5 +1,5 @@
-import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
-import { AppIPFS, IPFSContent } from 'src/utils/ipfs/ipfs';
+import { getIPFSContent } from 'src/services/ipfs/utils/utils-ipfs';
+import { IpfsNode, IPFSContent } from 'src/services/ipfs/ipfs';
 import {
   asyncIterableBatchProcessor,
   arrayToAsyncIterable,
@@ -15,15 +15,17 @@ import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { onProgressCallback, onCompleteCallback } from './types';
 
 const importPins = async (
-  node: AppIPFS,
+  node: IpfsNode,
   dbApi: DbWorkerApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
   let conter = 0;
   await asyncIterableBatchProcessor(
-    node.pin.ls({ type: 'recursive' }),
+    node.ls(),
     async (pinsBatch) => {
+      // console.log('----importPins ', pinsBatch);
+
       const pinsEntities = pinsBatch.map(mapPinToEntity);
       conter += pinsBatch.length;
       await dbApi.executeBatchPutCommand(
@@ -40,7 +42,7 @@ const importPins = async (
 };
 
 const importParticles = async (
-  node: AppIPFS,
+  node: IpfsNode,
   cids: string[],
   dbApi: DbWorkerApi,
   onProgress?: onProgressCallback,
@@ -51,7 +53,7 @@ const importParticles = async (
     arrayToAsyncIterable(cids),
     async (cidsBatch) => {
       const contents = await Promise.all(
-        cidsBatch.map((cid) => getIPFSContent(node, cid))
+        cidsBatch.map((cid) => getIPFSContent(cid, node))
       );
       const pinsEntities = contents
         .filter((c) => !!c)
@@ -72,15 +74,12 @@ const importParticles = async (
 
 const importParticle = async (
   cid: string,
-  node: AppIPFS,
+  node: IpfsNode,
   dbApi: DbWorkerApi
 ) => {
-  return getIPFSContent(node, cid).then((content) => {
-    if (content) {
-      return importParicleContent(content, dbApi);
-    }
-    return false;
-  });
+  return getIPFSContent(cid, node).then((content) =>
+    content ? importParicleContent(content, dbApi) : false
+  );
 };
 
 const importParicleContent = async (
@@ -92,7 +91,7 @@ const importParicleContent = async (
     const result = (await dbApi!.executePutCommand('particle', [entity])).ok;
     return result;
   } catch (e) {
-    console.error('importParicleContent', e);
+    console.error('importParicleContent', e.toString(), !!dbApi);
     return false;
   }
 };

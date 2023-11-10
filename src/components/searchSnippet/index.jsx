@@ -16,7 +16,7 @@ function TimeAgo({ timeAgoInMS }) {
     <Pane
       className="time-discussion rank-contentItem"
       position="absolute"
-      right="0"
+      right="-10px"
       fontSize={12}
       whiteSpace="nowrap"
       top="50%"
@@ -41,6 +41,7 @@ function SearchSnippet({ cid, data, onClickRank }) {
   useEffect(() => {
     const getRank = async () => {
       if ((data.rank === undefined || data.rank === null) && queryClient) {
+        // use useRank hook
         const response = await queryClient.rank(cid);
 
         const rank = coinDecimals(parseFloat(response.rank));
@@ -77,7 +78,7 @@ function SearchSnippet({ cid, data, onClickRank }) {
       className="hover-rank"
       display="flex"
       alignItems="center"
-      marginBottom="-2px"
+      marginBottom="10px"
     >
       {!mobile && (
         <Pane className="time-discussion rank-contentItem" position="absolute">

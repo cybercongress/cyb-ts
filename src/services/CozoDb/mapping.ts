@@ -20,6 +20,7 @@ export const mapParticleToEntity = (particle: IPFSContent): any => {
   };
 };
 
+//TODO: REFACTOR
 export const mapPinToEntity = (pin: LsResult) => ({
   cid: pin.cid.toString(),
   type: PinTypeMap[pin.type],

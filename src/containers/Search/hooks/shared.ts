@@ -1,3 +1,6 @@
+import { SearchItem } from '../types';
+
+// eslint-disable-next-line import/prefer-default-export
 export function merge(fromArr: SearchItem[], toArr: SearchItem[]) {
   // maybe not good algorithm
   const fromCids = fromArr.map((item) => item.cid);

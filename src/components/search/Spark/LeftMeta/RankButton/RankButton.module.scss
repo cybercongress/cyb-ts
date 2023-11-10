@@ -1,0 +1,13 @@
+.rank {
+  svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  &.rankSelected,
+  &:hover {
+    svg {
+      fill: #f62bfd;
+    }
+  }
+}

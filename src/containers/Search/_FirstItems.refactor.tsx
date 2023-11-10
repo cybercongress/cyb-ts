@@ -7,7 +7,6 @@ import {
   PATTERN_BLOCK,
 } from 'src/utils/config';
 import { trimString, formatNumber } from 'src/utils/utils';
-import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 
 const textPreviewSparkApp = (text, value) => (
@@ -17,21 +16,18 @@ const textPreviewSparkApp = (text, value) => (
   </div>
 );
 
-function FirstItems({ query }) {
+function Wrapper({ children }) {
+  const key = uuidv4();
+  return <div key={key}>{children}</div>;
+}
+
+function FirstItems({ query }: { query: string }) {
   const searchItems = [];
 
   if (query.match(PATTERN_CYBER)) {
-    const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
-        <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
+      <Wrapper>
+        <Link to={`/network/bostrom/contract/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER`} status="sparkApp">
             {textPreviewSparkApp(
               'Explore details of contract',
@@ -39,22 +35,14 @@ function FirstItems({ query }) {
             )}
           </SearchItem>
         </Link>
-      </Pane>
+      </Wrapper>
     );
   }
 
   if (query.match(PATTERN_CYBER_VALOPER)) {
-    const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
-        <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
+      <Wrapper>
+        <Link to={`/network/bostrom/hero/${query}`}>
           <SearchItem hash={`${query}_PATTERN_CYBER_VALOPER`} status="sparkApp">
             {textPreviewSparkApp(
               'Explore details of hero',
@@ -62,22 +50,14 @@ function FirstItems({ query }) {
             )}
           </SearchItem>
         </Link>
-      </Pane>
+      </Wrapper>
     );
   }
 
   if (query.match(PATTERN_TX)) {
-    const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
-        <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
+      <Wrapper>
+        <Link to={`/network/bostrom/tx/${query}`}>
           <SearchItem hash={`${query}_PATTERN_TX`} status="sparkApp">
             {textPreviewSparkApp(
               'Explore details of tx',
@@ -85,22 +65,14 @@ function FirstItems({ query }) {
             )}
           </SearchItem>
         </Link>
-      </Pane>
+      </Wrapper>
     );
   }
 
   if (query.match(PATTERN_BLOCK)) {
-    const key = uuidv4();
     searchItems.push(
-      <Pane
-        key={key}
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="-2px"
-      >
-        <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
+      <Wrapper>
+        <Link to={`/network/bostrom/blocks/${query}`}>
           <SearchItem hash={`${query}_PATTERN_BLOCK`} status="sparkApp">
             {textPreviewSparkApp(
               'Explore details of block ',
@@ -108,7 +80,7 @@ function FirstItems({ query }) {
             )}
           </SearchItem>
         </Link>
-      </Pane>
+      </Wrapper>
     );
   }
 

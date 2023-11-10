@@ -15,7 +15,7 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     data,
     fetchNextPage,
     error,
-    isLoading,
+    isFetching,
     refetch,
     hasNextPage,
     isInitialLoading,
@@ -63,7 +63,7 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     refetch,
     hasNextPage,
     isInitialLoading,
-    loading: isLoading,
+    isFetching,
   };
 };
 
@@ -127,6 +127,17 @@ function useRankLinks(
         case LinksTypeFilter.from:
         default:
           return searchRank.isInitialLoading;
+      }
+    })(),
+    isFetching: (() => {
+      switch (linkType) {
+        case LinksTypeFilter.to:
+          return backlinksRank.isFetching;
+        case LinksTypeFilter.all:
+          return backlinksRank.isFetching || searchRank.isFetching;
+        case LinksTypeFilter.from:
+        default:
+          return searchRank.isFetching;
       }
     })(),
     error: (() => {

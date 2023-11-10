@@ -173,6 +173,7 @@ function TableTxs({ data, type, accountUser, amount }) {
           backgroundColor: '#000',
           overflowY: 'hidden',
           padding: 7,
+          paddingTop: 25,
         }}
       >
         <InfiniteScroll

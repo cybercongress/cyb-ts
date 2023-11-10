@@ -34,7 +34,7 @@ import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 import Temple from './containers/temple';
-import IpfsSettings from './features/ipfs/ipfsSettings';
+// import IpfsSettings from './features/ipfs/ipfsSettings';
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -59,6 +59,7 @@ import Keys from './pages/Keys/Keys';
 import Search from './pages/Search/Search';
 import Learn from './pages/Learn/Learn';
 import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import ToOracleAsk from './pages/redirects/ToOracleAsk';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -111,11 +112,6 @@ function RedirectToRobotBrain() {
   return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
 }
 
-function RedirectToOracleAsk() {
-  const { query } = useParams();
-  return <Navigate to={routes.oracle.ask.getLink(query)} replace />;
-}
-
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -124,14 +120,30 @@ function AppRouter() {
           <Route index element={<Search />} />
 
           <Route path="/robot/*" element={<Robot />} />
+          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
 
           <Route path={routes.temple.path} element={<Temple />} />
           <Route path={routes.neuron.path} element={<Robot />} />
+
           <Route path={routes.oracle.learn.path} element={<Learn />} />
+
           <Route path="/oracle/stats" element={<Home />} />
           <Route path="/oracle-old" element={<Oracle />} />
 
-          <Route path="/oracle" element={<Search />} />
+          <Route path="/ipfs/:query" element={<ToOracleAsk />} />
+          <Route path={routes.oracle.ask.path} element={<Ipfs />} />
+
+          <Route
+            path="/oracle"
+            element={<Navigate to={routes.oracle.path} />}
+          />
+
+          <Route
+            path="/search"
+            element={<Navigate to={routes.oracle.path} />}
+          />
+          <Route path="/search/:query" element={<ToOracleAsk />} />
+
           <Route path="/senate" element={<Governance />} />
           <Route
             path={routes.senateProposal.path}
@@ -149,15 +161,15 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          <Route
-            path="/graph"
-            element={<CyberlinksGraphContainer toPortal />}
-          />
-          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
+          {['/graph', '/brain'].map((path) => (
+            <Route
+              key={path}
+              path={path}
+              element={<CyberlinksGraphContainer toPortal />}
+            />
+          ))}
 
-          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
-          <Route path="/ipfs/:query" element={<RedirectToOracleAsk />} />
-          <Route path={routes.oracle.ask.path} element={<Ipfs />} />
+          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
 
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
