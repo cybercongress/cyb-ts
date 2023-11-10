@@ -3,6 +3,7 @@ import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
+import { useIpfs } from 'src/contexts/ipfs';
 
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
@@ -16,7 +17,6 @@ import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend';
 
 // should be refactored
 function AccountItem({
@@ -84,7 +84,7 @@ function AccountItem({
 }
 
 function SwitchAccount() {
-  const { isIpfsInitialized } = useBackend();
+  const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -142,7 +142,7 @@ function SwitchAccount() {
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accounts, defaultAccount, isIpfsInitialized]);
+  }, [accounts, defaultAccount, node]);
 
   // const multipleAccounts = renderItem && Object.keys(renderItem).length > 0;
 
@@ -181,8 +181,8 @@ function SwitchAccount() {
         >
           <div
             className={cx(styles.containerAvatarConnect, {
-              [styles.containerAvatarConnectFalse]: !isIpfsInitialized,
-              [styles.containerAvatarConnectTrueGreen]: isIpfsInitialized,
+              [styles.containerAvatarConnectFalse]: !ipfsStatus,
+              [styles.containerAvatarConnectTrueGreen]: ipfsStatus,
             })}
           >
             <AvataImgIpfs

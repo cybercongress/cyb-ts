@@ -19,14 +19,14 @@ module.exports = merge(commonConfig, {
     historyApiFallback: true,
   },
   plugins: [
-    new ReactRefreshWebpackPlugin({
-      overlay: false,
-    }),
+    // Only update what has changed on hot reload
+    new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       ...commonConfig.plugins.find(
         (plugin) => plugin.constructor.name === 'DefinePlugin'
       ).definitions,
       'process.env.IS_DEV': JSON.stringify(true),
     }),
+    new ReactRefreshWebpackPlugin(),
   ],
 });

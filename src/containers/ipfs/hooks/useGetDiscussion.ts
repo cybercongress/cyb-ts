@@ -1,26 +1,81 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { getGraphQLQuery } from 'src/utils/search/utils';
-import useCyberlinksCount from 'src/features/cyberlinks/hooks/useCyberlinksCount';
+import { useState } from 'react';
+import { getLinks } from 'src/utils/search/utils';
+import BigNumber from 'bignumber.js';
 
 export enum LinkType {
   to = 'to',
   from = 'from',
 }
 
-const limit = 15;
-
-type Props = {
-  hash: string;
-  type: LinkType;
+const reduceLinks = (data, cid, time, type: LinkType) => {
+  return data.reduce((acc, item) => {
+    if (item[type] === cid) {
+      return acc.concat({
+        cid: item[type === LinkType.from ? 'to' : 'from'],
+        timestamp: time,
+      });
+    }
+    return acc;
+  }, []);
 };
 
-function useGetLinks(
-  { hash, type = LinkType.from }: Props,
-  { skip = false } = {}
-) {
-  const cyberlinksCountQuery = useCyberlinksCount(hash);
-  const total = cyberlinksCountQuery.data[type];
+const reduceParticleArr = (data: any, cid: string, type: LinkType) => {
+  return data.reduce((acc, item) => {
+    const { timestamp } = item;
 
+    if (
+      item.tx.body.messages[0]['@type'] === '/cyber.graph.v1beta1.MsgCyberlink'
+    ) {
+      const cid =
+        item.tx.body.messages[0].links[0][
+          type === LinkType.from ? 'to' : 'from'
+        ];
+      return [...acc, { cid, timestamp, type }];
+    }
+
+    if (
+      item.tx.body.messages[0]['@type'] ===
+      '/cosmwasm.wasm.v1.MsgExecuteContract'
+    ) {
+      const links = item.tx.body.messages[0].msg?.cyberlink?.links;
+
+      if (!links) {
+        debugger;
+      }
+
+      if (links) {
+        const linksReduce = reduceLinks(links, cid, timestamp, type);
+        return [...acc, ...linksReduce];
+      }
+    }
+    return acc;
+  }, []);
+};
+
+const request = async (
+  hash: string,
+  offset: string,
+  callBack: (total: number) => void,
+  type: LinkType
+) => {
+  try {
+    const response = await getLinks(hash, type, { offset, limit });
+
+    if (callBack && offset === '0' && response) {
+      callBack(Number(response.pagination.total));
+    }
+
+    return response.tx_responses || [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const limit = 15;
+
+function useGetLinks({ hash, type = LinkType.from }, { skip = false } = {}) {
+  const [total, setTotal] = useState(0);
   const {
     status,
     data,
@@ -33,19 +88,16 @@ function useGetLinks(
   } = useInfiniteQuery(
     ['useGetDiscussion', hash + type],
     async ({ pageParam = 0 }) => {
-      const res = await getGraphQLQuery(`
-      query Query {
-        cyberlinks(limit: ${limit}, offset: ${
-        limit * pageParam
-      }, order_by: {timestamp: desc}, where: {particle_${type}: {_eq: "${hash}"}}) {
-          timestamp
-          particle_${type === LinkType.from ? 'to' : 'from'}
-        }
-      }
-      `);
-      const data = res.data.cyberlinks;
+      const response = await request(
+        hash,
+        new BigNumber(limit).multipliedBy(pageParam).toString(),
+        setTotal,
+        type
+      );
 
-      return { data, page: pageParam };
+      const reduceArr = reduceParticleArr(response, hash, type);
+
+      return { data: reduceArr, page: pageParam };
     },
     {
       enabled: !skip && Boolean(hash),
@@ -70,7 +122,7 @@ function useGetLinks(
             page.data.map((item) => {
               return {
                 ...item,
-                cid: item[`particle_${type === LinkType.from ? 'to' : 'from'}`],
+                type,
               };
             })
           ),

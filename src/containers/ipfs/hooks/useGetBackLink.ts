@@ -32,18 +32,10 @@ const LIMIT = 20;
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-    error,
-    isInitialLoading,
-    isFetching,
-  } = useInfiniteQuery(
-    ['useGetBackLink', cid],
-    async ({ pageParam = 0 }: { pageParam?: number }) => {
-      try {
+  const { data, fetchNextPage, hasNextPage, refetch, error, isInitialLoading } =
+    useInfiniteQuery(
+      ['useGetBackLink', cid],
+      async ({ pageParam = 0 }: { pageParam?: number }) => {
         const response = (await queryClient?.backlinks(
           cid,
           pageParam,
@@ -51,39 +43,25 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
         )) as Res;
 
         return { data: response, page: pageParam };
-      } catch (error) {
-        // not sure about handling this error
-        if (
-          error instanceof Error &&
-          error.message.includes('particle not found')
-        ) {
-          return {
-            data: { result: [], pagination: { total: 0 } },
-            page: pageParam,
-          };
-        }
-
-        throw error;
-      }
-    },
-    {
-      enabled: Boolean(queryClient && cid) && !skip,
-      getNextPageParam: (lastPage) => {
-        const {
-          page,
-          data: {
-            pagination: { total },
-          },
-        } = lastPage;
-
-        if (!total || (page + 1) * LIMIT > total) {
-          return undefined;
-        }
-
-        return page + 1;
       },
-    }
-  );
+      {
+        enabled: Boolean(queryClient && cid) && !skip,
+        getNextPageParam: (lastPage) => {
+          const {
+            page,
+            data: {
+              pagination: { total },
+            },
+          } = lastPage;
+
+          if (!total || (page + 1) * LIMIT > total) {
+            return undefined;
+          }
+
+          return page + 1;
+        },
+      }
+    );
 
   // TODO: combine 2 reduce
   const d =
@@ -99,7 +77,6 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     hasNextPage,
     refetch,
     error,
-    isFetching,
     isInitialLoading,
     fetchNextPage,
   };

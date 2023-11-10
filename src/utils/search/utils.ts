@@ -5,6 +5,9 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
+import { getIPFSContent, getIpfsGatewayUrl } from '../ipfs/utils-ipfs';
+import { getResponseResult } from '../ipfs/stream-utils';
+import { parseRawIpfsData } from '../ipfs/content-utils';
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
@@ -21,7 +24,7 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
-export const getIpfsHash = (string: string) =>
+export const getIpfsHash = (string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
 
@@ -333,32 +336,29 @@ export const getTotalRewards = async (delegatorAddr) => {
   }
 };
 
-/**
- * @deprecated use Apollo
- */
 export const getGraphQLQuery = async (
   query,
   urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
 ) => {
-  const body = JSON.stringify({
-    query,
-  });
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  try {
+    const body = JSON.stringify({
+      query,
+    });
+    const headers = {
+      'Content-Type': 'application/json',
+    };
 
-  const response = await axios({
-    method: 'post',
-    url: urlGraphql,
-    headers,
-    data: body,
-  });
-
-  if (response.data.errors) {
-    throw response.data;
+    const response = await axios({
+      method: 'post',
+      url: urlGraphql,
+      headers,
+      data: body,
+    });
+    return response.data.data;
+  } catch (e) {
+    console.log(e);
+    return null;
   }
-
-  return response.data;
 };
 
 const getParamSlashing = async () => {
@@ -620,12 +620,25 @@ export const getInlfation = async () => {
   }
 };
 
+export const getImportLink = async (address) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://io.cybernode.ai/api/v0/dag/get?arg=bafyreibnn7bfilbmkrxm2rwk5fe6qzzdvm2xen34cjdktdoex4uylb76z4/${address}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 enum Order {
   ASC = 'ORDER_BY_ASC',
   DESC = 'ORDER_BY_DESC',
 }
 
-const getLink = async (
+export const getLinks = async (
   cid: string,
   type: LinkType = LinkType.from,
   { offset, limit, order = Order.DESC }
@@ -776,27 +789,11 @@ export const getFollowers = async (addressHash) => {
 
 export const getCreator = async (cid) => {
   try {
-    // TODO: refactor this
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
-
-    const response2 = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
-    });
-
-    const h1 = Number(response.data.tx_responses?.[0]?.height || 0);
-    const h2 = Number(response2.data.tx_responses?.[0]?.height || 0);
-
-    if (h1 === 0) {
-      return response2.data;
-    } else if (h2 === 0) {
-      return response.data;
-    }
-
-    return h1 < h2 ? response.data : response2.data;
+    return response.data;
   } catch (error) {
     console.log(error);
     return null;
@@ -816,30 +813,25 @@ export const authAccounts = async (address) => {
   }
 };
 
-// export const getAvatarIpfs = async (cid, ipfs) => {
-//   try {
-//     // TODO: ipfs refactor
-//     const response = await getIPFSContent(cid, ipfs);
-//     console.log('--------getAvatarIpfs', cid, response);
-//     if (response?.result) {
-//       // const rawData = await getResponseResult(response.result);
-//       const details = await parseArrayLikeToDetails(
-//         response.result,
-//         response.meta.mime,
-//         cid
-//       );
-//       if (details.type === 'image') {
-//         return details.content;
-//       }
+export const getAvatarIpfs = async (cid, ipfs) => {
+  try {
+    const response = await getIPFSContent(ipfs, cid);
 
-//       return undefined;
-//     }
+    if (response?.result) {
+      const rawData = await getResponseResult(response.result);
+      const details = await parseRawIpfsData(rawData, response.meta.mime, cid);
+      if (details.type === 'image') {
+        return details.content;
+      }
 
-//     return undefined;
-//   } catch (error) {
-//     return undefined;
-//   }
-// };
+      return undefined;
+    }
+
+    return undefined;
+  } catch (error) {
+    return undefined;
+  }
+};
 
 // Access-Control-Allow-Origin
 export const getCredit = async (address) => {
@@ -899,9 +891,8 @@ export const searchByHash = async (
       options.callback(responseSearchResults.pagination.total);
     }
     if (options.storeToCozo) {
-      console.log('-----searc', hash);
-      backendApi.importApi.importParticle(hash);
-      backendApi.importApi.importCyberlinks(
+      backendApi.importParticle(hash);
+      backendApi.importCyberlinks(
         responseSearchResults.result.map((item) => ({
           from: hash,
           to: item.particle,

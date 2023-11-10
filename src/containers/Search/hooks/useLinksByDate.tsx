@@ -85,17 +85,6 @@ function useLinksByDate(
           return data.isInitialLoading;
       }
     })(),
-    isFetching: (() => {
-      switch (type) {
-        case LinksTypeFilter.to:
-          return dataBacklinks.isFetching;
-        case LinksTypeFilter.all:
-          return dataBacklinks.isFetching || data.isFetching;
-        case LinksTypeFilter.from:
-        default:
-          return data.isFetching;
-      }
-    })(),
     error: (() => {
       switch (type) {
         case LinksTypeFilter.to:

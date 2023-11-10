@@ -24,7 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
-import { useBackend } from 'src/contexts/backend';
+import { useIpfs } from 'src/contexts/ipfs';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -228,13 +228,13 @@ export function StartStageSearchActionBar({
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
 }) {
-  const { isIpfsInitialized } = useBackend();
+  const ipfs = useIpfs();
   return (
     <ActionBarContainer
       button={{
-        disabled: !isIpfsInitialized || !contentHash.length,
+        disabled: !ipfs.isReady || !contentHash.length,
         onClick: onClickBtn,
-        text: !isIpfsInitialized ? (
+        text: !ipfs.isReady ? (
           <>
             Node is loading&nbsp;
             <Dots />

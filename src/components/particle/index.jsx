@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useGetCreator } from './hooks';
 import { Titile } from './components';
-import useGetCreator from 'src/containers/ipfs/hooks/useGetCreator';
 
 function Particle({ cid }) {
   const { creator } = useGetCreator(cid);
+
   // const [content, setContent] = useState('');
   // const [textPreview, setTextPreview] = useState(cid);
   // const [typeContent, setTypeContent] = useState('');

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useIpfs } from 'src/contexts/ipfs';
 
 import eth from 'images/Ethereum_logo_2014.svg';
 import pool from 'images/gravitydexPool.png';
@@ -12,7 +13,7 @@ import pussy from 'images/large-purple-circle.png';
 import defaultImg from 'images/large-orange-circle.png';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { getAvatarIpfs } from '../../utils/search/utils';
 
 const nativeImageMap = {
   millivolt: voltImg,
@@ -57,18 +58,18 @@ function ImgDenom({
 }: ImgDenomProps) {
   const [imgDenom, setImgDenom] = useState<string>();
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
-  const { fetchWithDetails } = useQueueIpfsContent();
+  const { node } = useIpfs();
 
   const getImgFromIpfsByCid = useCallback(
-    async (cidAvatar: string) => {
-      if (cidAvatar && fetchWithDetails) {
-        return fetchWithDetails(cidAvatar, 'image').then(
-          (details) => details?.content && setImgDenom(details?.content)
-        );
+    async (cidAvatar) => {
+      if (cidAvatar) {
+        const responseImg = await getAvatarIpfs(cidAvatar, node);
+        if (responseImg) {
+          setImgDenom(responseImg);
+        }
       }
-      return null;
     },
-    [fetchWithDetails]
+    [node]
   );
 
   useEffect(() => {
@@ -77,7 +78,7 @@ function ImgDenom({
       Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')
     ) {
       const { coinImageCid, path, native } = infoDenom;
-      if (coinImageCid && fetchWithDetails) {
+      if (coinImageCid && coinImageCid.length > 0) {
         getImgFromIpfsByCid(coinImageCid);
       } else if (native) {
         if (coinDenom.includes('pool')) {
@@ -101,7 +102,7 @@ function ImgDenom({
     } else {
       setImgDenom(defaultImg);
     }
-  }, [coinDenom, infoDenom, fetchWithDetails]);
+  }, [node, coinDenom, infoDenom, getImgFromIpfsByCid]);
 
   const img = (
     <img

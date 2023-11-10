@@ -20,15 +20,6 @@ function CyberlinksGraph({ data, size, currentAddress }: Props) {
 
   const fgRef = useRef();
 
-  // debug, remove later
-  useEffect(() => {
-    if (isRendering) {
-      console.time('rendering');
-    } else {
-      console.timeEnd('rendering');
-    }
-  }, [isRendering]);
-
   // initial camera position, didn't find via props
   useEffect(() => {
     if (!fgRef.current) {

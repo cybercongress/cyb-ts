@@ -23,6 +23,7 @@ import {
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
+import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import Button from 'src/components/btnGrd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
 
@@ -67,11 +68,14 @@ class ActionBarContainer extends Component {
     const { node } = this.props;
 
     let toCid = contentHash;
+    if (file !== null) {
+      toCid = file;
+    }
 
     if (file !== null) {
-      toCid = await node.addContent(file);
-    } else if (!contentHash.match(PATTERN_IPFS_HASH)) {
-      toCid = await node.addContent(contentHash);
+      toCid = await addContenToIpfs(node, toCid);
+    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
+      toCid = await addContenToIpfs(node, toCid);
     }
 
     return toCid;
@@ -117,13 +121,11 @@ class ActionBarContainer extends Component {
           }
         }
       } else if (type === 'log' && follow) {
-        // TODO: REFACT need to just get cid of 'follow' instead of pin
-        const fromCid = await node.addContent('follow');
-        const toCid = await node.addContent(addressSend);
+        const fromCid = await addContenToIpfs(node, 'follow');
+        const toCid = await addContenToIpfs(node, addressSend);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'log' && tweets) {
-        // TODO: REFACT need to just get cid of 'tweet' instead of pin
-        const fromCid = await node.addContent('tweet');
+        const fromCid = await addContenToIpfs(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else {

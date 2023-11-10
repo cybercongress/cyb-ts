@@ -10,24 +10,10 @@ type Props = {
   address?: string;
   toPortal?: boolean;
   size?: number;
-  limit?: number;
-  data?: any;
 };
 
-function CyberlinksGraphContainer({
-  address,
-  toPortal,
-  size,
-  limit,
-  data,
-}: Props) {
-  const { data: fetchData, loading } = useCyberlinks(
-    { address },
-    {
-      limit,
-      skip: !!data,
-    }
-  );
+function LinksGraphContainer({ address, toPortal, size }: Props) {
+  const { data, loading } = useCyberlinks(address);
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
@@ -53,11 +39,7 @@ function CyberlinksGraphContainer({
       </p>
     </div>
   ) : (
-    <LinksGraph
-      data={data || fetchData}
-      size={size}
-      currentAddress={currentAddress}
-    />
+    <LinksGraph data={data} size={size} currentAddress={currentAddress} />
   );
 
   const portalEl = document.getElementById(PORTAL_ID);
@@ -65,7 +47,7 @@ function CyberlinksGraphContainer({
   return toPortal ? portalEl && createPortal(content, portalEl) : content;
 }
 
-export default CyberlinksGraphContainer;
+export default LinksGraphContainer;
 
 // old code
 

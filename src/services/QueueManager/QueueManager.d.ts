@@ -1,15 +1,13 @@
 import type { IpfsContentSource } from 'src/utils/ipfs/ipfs';
-import { IPFSContentMaybe } from '../ipfs/ipfs';
 
 /* eslint-disable import/no-unused-modules */
-type QueueItemStatus =
+export type QueueItemStatus =
   | 'pending'
   | 'executing'
   | 'timeout'
   | 'completed'
   | 'cancelled'
-  | 'error'
-  | 'not_found';
+  | 'error';
 
 export type QueueSourceSettings = {
   timeout: number;
@@ -36,7 +34,6 @@ export type QueueItemOptions = {
   priority?: number;
   viewPortPriority?: number;
   initialSource?: QueueSource;
-  postProcessing?: boolean;
 };
 
 export type QueueItemCallback<T> = (
@@ -61,9 +58,3 @@ export type QueueItemResult<T> = {
   source: QueueSource;
   result?: T;
 };
-
-export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;
-
-export type QueueItemPostProcessor = (
-  content: IPFSContentMaybe
-) => Promise<IPFSContentMaybe>;

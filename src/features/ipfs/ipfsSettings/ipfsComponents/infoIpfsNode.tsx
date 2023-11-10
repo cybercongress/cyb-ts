@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Dots } from 'src/components';
-import { formatCurrency, trimString } from 'src/utils/utils';
-import { useBackend } from 'src/contexts/backend';
+import { Dots } from '../../../../components';
+import { formatCurrency, trimString } from '../../../../utils/utils';
 import { ContainerKeyValue } from './utilsComponents';
+import { useIpfs } from 'src/contexts/ipfs';
 
 const PREFIXES = [
   {
@@ -24,26 +24,36 @@ const PREFIXES = [
 ];
 
 export function useGetIpfsInfo() {
-  const { isIpfsInitialized, backendApi } = useBackend();
+  const { node: ipfs } = useIpfs();
   const [repoSizeValue, setRepoSizeValue] = useState<number | string>(0);
   const [idIpfs, setIdIpfs] = useState({ id: '', agentVersion: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const getIpfsStat = async () => {
       setLoading(true);
-      if (isIpfsInitialized) {
-        const { id, agentVersion, repoSize } = await backendApi!.ipfsApi.info();
-        setIdIpfs({ id, agentVersion });
-        const repoSizeString =
-          repoSize > -1
-            ? formatCurrency(Number(repoSize), 'B', 2, PREFIXES)
-            : 'n/a';
-        setRepoSizeValue(repoSizeString);
+      if (ipfs !== null) {
+        const response = await ipfs.stats.repo();
+        const repoSize = formatCurrency(
+          Number(response.repoSize),
+          'B',
+          2,
+          PREFIXES
+        );
+        setRepoSizeValue(repoSize);
+
+        const responseId = await ipfs.id();
+        const { agentVersion, id } = responseId;
+        const idString = id.toString();
+        setIdIpfs({
+          id: idString,
+          agentVersion: agentVersion.replace(/\//g, ' '),
+        });
       }
       setLoading(false);
-    })();
-  }, [isIpfsInitialized, backendApi]);
+    };
+    getIpfsStat();
+  }, [ipfs]);
 
   return { idIpfs, repoSizeValue, loading };
 }

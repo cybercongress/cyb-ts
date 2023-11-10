@@ -34,10 +34,10 @@ export default function GetLink() {
   `;
   const { loading, error, data: dataLink } = useQuery(GET_CHARACTERS);
   if (loading) {
-    return 'loading...';
+    return 'Loading...';
   }
   if (error) {
-    return `error! ${error.message}`;
+    return `Error! ${error.message}`;
   }
 
   return <TableLink data={dataLink.cyberlinks_aggregate.nodes} />;

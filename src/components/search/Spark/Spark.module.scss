@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 15px;
-  max-width: 540px;
 }
 
 .left,
@@ -16,19 +15,33 @@
 }
 
 .left {
-  right: 100%;
+  right: 85%;
   display: flex;
   align-items: center;
   gap: 7px 10px;
   font-size: 14px;
+
+  span:nth-of-type(1) {
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.5);
+  }
 }
 
 .right {
   padding-top: 15px;
-  left: 100%;
+  left: 85%;
 }
 
-.searchItem {
-  display: block;
-  width: 100%;
+.rank {
+  svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  &.rankSelected,
+  &:hover {
+    svg {
+      fill: #f62bfd;
+    }
+  }
 }

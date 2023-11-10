@@ -3,12 +3,11 @@ import {
   useGetNegentropy,
 } from 'src/containers/temple/hooks';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
-import cx from 'classnames';
-import { useQuery } from 'react-apollo';
-import gql from 'graphql-tag';
-import landingStyles from '../Search.module.scss';
-import styles from './Stats.module.scss';
 import { TitleType } from '../Search';
+import styles from './Stats.module.scss';
+import landingStyles from '../Search.module.scss';
+import cx from 'classnames';
+import useGraphQLQuery from 'src/hooks/useGraphQL';
 
 type Props = {
   type: TitleType;
@@ -18,24 +17,29 @@ const twentyFourHoursAgo = new Date(
   new Date().getTime() - 24 * 60 * 60 * 1000
 ).toISOString();
 
-function generateQuery(type: string) {
-  return gql`
+function Stats({ type }: Props) {
+  const dataGetGraphStats = useGetGraphStats();
+  const negentropy = useGetNegentropy();
+
+  const cyberlinksQuery = useGraphQLQuery(`
     query Query {
-      ${type}(where: {timestamp: {_gte: "${twentyFourHoursAgo}"}}) {
+      cyberlinks_aggregate(where: {timestamp: {_gte: "${twentyFourHoursAgo}"}}) {
         aggregate {
           count
         }
       }
     }
-  `;
-}
+  `);
 
-function Stats({ type }: Props) {
-  const dataGetGraphStats = useGetGraphStats();
-  const negentropy = useGetNegentropy();
-
-  const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
-  const particlesQuery = useQuery(generateQuery('particles_aggregate'));
+  const particlesQuery = useGraphQLQuery(`
+    query Query {
+      particles_aggregate(where: {timestamp: {_gte: "${twentyFourHoursAgo}"}}) {
+        aggregate {
+          count
+        }
+      }
+    }
+  `);
 
   let value: number | undefined;
   let text: string;

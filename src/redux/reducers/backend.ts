@@ -1,15 +1,10 @@
 import { BroadcastChannelMessage } from 'src/services/backend/channels/BroadcastChannel';
-import {
-  ServiceName,
-  WorkerState,
-  ServiceStatus,
-} from 'src/services/backend/types';
+import { WorkerState } from 'src/services/backend/types';
 import { assocPath } from 'ramda';
 
 type BackendState = {
   dbPendingWrites: number;
   syncState: WorkerState;
-  services: { [key in ServiceName]: { status: ServiceStatus; error?: string } };
 };
 
 const initialState: BackendState = {
@@ -17,10 +12,6 @@ const initialState: BackendState = {
   syncState: {
     status: 'inactive',
     entryStatus: {},
-  },
-  services: {
-    db: { status: 'inactive' },
-    ipfs: { status: 'inactive' },
   },
 };
 
@@ -49,11 +40,6 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
         updatedEntry,
         state
       );
-    }
-
-    case 'service_status': {
-      const { name, status, error } = action.value;
-      return assocPath(['services', name], { status, error }, state);
     }
     default:
       return state;

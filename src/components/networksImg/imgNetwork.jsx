@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useIpfs } from 'src/contexts/ipfs';
 import {
   isNativeChainId,
   useTraseNetworks,
 } from '../../hooks/useTraseNetworks';
+import { getAvatarIpfs } from '../../utils/search/utils';
 import Tooltip from '../tooltip/tooltip';
 
 import boot from '../../image/large-green.png';
@@ -12,7 +14,6 @@ import osmo from 'images/osmosis.svg';
 import cosmos from 'images/cosmos-2.svg';
 import terra from 'images/terra.svg';
 import defaultImg from '../../image/large-orange-circle.png';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 const getNativeImg = (text) => {
   let img = null;
@@ -53,7 +54,7 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(network);
 
-  const { fetchWithDetails } = useQueueIpfsContent();
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (network && !isNativeChainId(network)) {
@@ -72,18 +73,18 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
       setImgDenom(nativeImg);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainInfo, network]);
+  }, [chainInfo, node, network]);
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {
       if (cidAvatar) {
-        return fetchWithDetails(cidAvatar, 'image').then(
-          (details) => details?.content && setImgDenom(details?.content)
-        );
+        const responseImg = await getAvatarIpfs(cidAvatar, node);
+        if (responseImg) {
+          setImgDenom(responseImg);
+        }
       }
-      return null;
     },
-    [fetchWithDetails]
+    [node]
   );
 
   if (tooltipStatus) {

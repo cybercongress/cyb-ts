@@ -1,18 +1,16 @@
 import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
+import { id } from 'src/containers/application/Header/Commander/Commander';
 import { useEffect, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import { useDevice } from 'src/contexts/device';
-import cx from 'classnames';
-import { useAppDispatch } from 'src/redux/hooks';
-import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import styles from './Search.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
-import graphDataPrepared from './graphDataPrepared.json';
+import cx from 'classnames';
 
 export enum TitleType {
   search,
@@ -97,13 +95,10 @@ export const learningListConfig = listConfig[TitleType.learning];
 
 function Search() {
   const [titleType, setTitleType] = useState(TitleType.search);
-  const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
 
   const ref = useRef<HTMLDivElement>(null);
-
-  const dispatch = useAppDispatch();
 
   let graphSize = Math.min(viewportWidth / 3, 330);
 
@@ -113,18 +108,6 @@ function Search() {
   if (isMobile) {
     graphSize = 330;
   }
-
-  useEffect(() => {
-    dispatch(setFocus(true));
-
-    const timeout = setTimeout(() => {
-      setIsRenderGraph(true);
-    }, 1000 * 1.5);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [dispatch]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -158,6 +141,13 @@ function Search() {
       clearInterval(interval);
     };
   }, [titleType]);
+
+  useEffect(() => {
+    const commander = document.getElementById(id);
+    if (commander) {
+      commander.focus();
+    }
+  }, []);
 
   return (
     <div className={styles.wrapper} ref={ref}>
@@ -198,12 +188,7 @@ function Search() {
         </h2>
 
         <div className={styles.graphWrapper}>
-          {isRenderGraph && (
-            <CyberlinksGraphContainer
-              size={graphSize}
-              data={graphDataPrepared}
-            />
-          )}
+          <CyberlinksGraphContainer size={graphSize} />
         </div>
 
         {/* not render to prevent requests */}

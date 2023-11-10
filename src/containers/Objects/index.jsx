@@ -8,46 +8,35 @@ import { MainContainer } from '../portal/components';
 
 function Relevance({ items, fetchMoreData }) {
   return (
-    <div
-      style={{
-        margin: '0 auto',
-      }}
+    <InfiniteScroll
+      dataLength={Object.keys(items).length}
+      next={fetchMoreData}
+      hasMore
+      loader={
+        <h4
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          Loading
+          <Dots />
+        </h4>
+      }
+      pullDownToRefresh
+      pullDownToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+      }
+      releaseToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+      }
+      refreshFunction={fetchMoreData}
     >
-      <InfiniteScroll
-        dataLength={Object.keys(items).length}
-        next={fetchMoreData}
-        hasMore
-        loader={
-          <h4
-            style={{
-              textAlign: 'center',
-            }}
-          >
-            Loading
-            <Dots />
-          </h4>
-        }
-        pullDownToRefresh
-        pullDownToRefreshContent={
-          <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
-        }
-        releaseToRefreshContent={
-          <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
-        }
-        refreshFunction={fetchMoreData}
-      >
-        {Object.keys(items).map((key) => {
-          return (
-            <Spark
-              cid={key}
-              key={key}
-              itemData={items[key]}
-              query="particles"
-            />
-          );
-        })}
-      </InfiniteScroll>
-    </div>
+      {Object.keys(items).map((key) => {
+        return (
+          <Spark cid={key} key={key} itemData={items[key]} query="particles" />
+        );
+      })}
+    </InfiniteScroll>
   );
 }
 
