@@ -21,6 +21,6 @@ export interface HistoriesItem {
   amount: Coin;
   timeoutHeight?: string;
   timeoutTimestamp?: string;
-  createdAt: number;
+  createdAt: number | string;
   status: StatusTx;
 }

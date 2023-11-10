@@ -6,7 +6,7 @@ import {
   ContainerGradient,
 } from '../../../components';
 import BtnPasport from '../../../containers/portal/pasport/btnPasport';
-import Select from '../../../containers/teleport/components/select';
+import Select from '../../../containers/warp/components/Select';
 import CodeSnipet from './ipfsComponents/codeSnipet';
 import {
   ContainerKeyValue,

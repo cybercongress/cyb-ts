@@ -35,7 +35,6 @@ const itemsMenu = () => {
         { name: 'Swap', to: '/teleport/swap' },
         { name: 'Bridge', to: '/teleport/bridge' },
         { name: 'Send', to: '/teleport/send' },
-        { name: 'Relayer', to: '/teleport/relayer' },
       ],
     },
     {

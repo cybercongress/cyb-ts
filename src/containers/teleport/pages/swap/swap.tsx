@@ -17,7 +17,7 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Nullable } from 'src/types';
-import TokenSetterSwap, { TokenSetterId } from '../../comp/TokenSetterSwap';
+import TokenSetterSwap, { TokenSetterId } from '../../components/TokenSetterSwap';
 import { getBalances, useGetParams, useGetSwapPrice } from '../../hooks';
 import {
   sortReserveCoinDenoms,
@@ -26,9 +26,9 @@ import {
 } from '../../utils';
 import Slider from '../../components/slider';
 import ActionBar from './actionBar.swap';
-import { TeleportContainer } from '../../comp/grid';
+import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
-import DataSwapTxs from '../../comp/dataSwapTxs/DataSwapTxs';
+import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;

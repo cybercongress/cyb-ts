@@ -1,9 +1,8 @@
 import { ActionBar, Dots } from 'src/components';
-import { useTeleportContext } from '../Teleport.context';
+import { useRelayer } from '../../contexts/relayer';
 
 function ActionBarRelayer({ network }: { network: string }) {
-  const { isRelaying, selectChain, setSelectChain, stop } =
-    useTeleportContext();
+  const { isRelaying, selectChain, setSelectChain, stop } = useRelayer();
 
   if (isRelaying) {
     return (

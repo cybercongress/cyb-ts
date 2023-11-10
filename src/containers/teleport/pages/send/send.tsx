@@ -23,16 +23,16 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
-import { Col, GridContainer, TeleportContainer } from '../../comp/grid';
+import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import Slider from '../../components/slider';
 import { getBalances } from '../../hooks';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';
-import DataSendTxs from '../../comp/dataSendTxs/DataSendTxs';
-import AccountInput from '../../comp/Inputs/AccountInput';
+import DataSendTxs from '../../components/dataSendTxs/DataSendTxs';
+import AccountInput from '../../components/Inputs/AccountInput';
 import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd';
-import InputMemo from '../../comp/Inputs/InputMemo';
-import InputNumberDecimalScale from '../../comp/Inputs/InputNumberDecimalScale';
+import InputMemo from '../../components/Inputs/InputMemo';
+import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 

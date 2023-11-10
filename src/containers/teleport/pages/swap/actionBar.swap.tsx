@@ -30,7 +30,7 @@ import networks from '../../../../utils/networkListIbc';
 
 import { TxsType } from '../../type';
 import { RootState } from 'src/redux/store';
-import ActionBarPingTxs from '../../comp/actionBarPingTxs';
+import ActionBarPingTxs from '../../components/actionBarPingTxs';
 import { useNavigate } from 'react-router-dom';
 import { sortReserveCoinDenoms } from '../../utils';
 

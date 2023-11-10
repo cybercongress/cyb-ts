@@ -25,7 +25,7 @@ import {
 import networks from '../../../../utils/networkListIbc';
 
 import { TxsType } from '../../type';
-import ActionBarPingTxs from '../../comp/actionBarPingTxs';
+import ActionBarPingTxs from '../../components/actionBarPingTxs';
 import { useIbcHistory } from '../../ibc-history/historyContext';
 
 const {

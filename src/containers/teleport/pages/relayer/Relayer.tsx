@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react';
 import { DenomArr, MainContainer, OptionSelect, Select } from 'src/components';
 import { LogRelayer } from 'src/containers/ibc/components/relayer';
 import { SelectOption } from 'src/components/Select';
-import { useTeleportContext } from '../Teleport.context';
-import { TeleportContainer } from '../../comp/grid';
+import { TeleportContainer } from '../../components/grid';
 import ActionBarRelayer from './ActionBar';
+import { useRelayer } from '../../contexts/relayer';
 
 function Relayer() {
   const { channels, isRelaying, relayerLog, selectChain } =
-    useTeleportContext();
+    useRelayer();
   const [network, setNetwork] = useState('');
 
   const reduceOptions = useMemo(() => {
@@ -22,7 +22,7 @@ function Relayer() {
           text: (
             <DenomArr
               type="network"
-              denomValue={item.destinationChainId}
+              denomValue={item.destination_chain_id}
               onlyText
               tooltipStatusText={false}
             />
@@ -30,7 +30,7 @@ function Relayer() {
           img: (
             <DenomArr
               type="network"
-              denomValue={item.destinationChainId}
+              denomValue={item.destination_channel_id}
               onlyImg
               tooltipStatusImg={false}
             />

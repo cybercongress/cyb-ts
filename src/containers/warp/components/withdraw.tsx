@@ -4,8 +4,8 @@ import { ObjKeyValue } from 'src/types/data';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 import { useMemo } from 'react';
 import { DenomArr, InputNumber, OptionSelect } from '../../../components';
-import BalanceToken from '../../teleport/components/balanceToken';
-import Select from '../../teleport/components/select';
+import BalanceToken from './balanceToken';
+import Select from './Select';
 import { MyPoolsT } from '../../teleport/type';
 
 type TypeMyPoolListObj = { [key: string]: MyPoolsT };

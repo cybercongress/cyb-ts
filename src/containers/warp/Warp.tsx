@@ -18,7 +18,7 @@ import { RootState } from 'src/redux/store';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
-import { TabList } from '../teleport/components';
+import TabList from './components/tabList';
 import { getBalances, useGetSwapPrice } from '../teleport/hooks';
 import {
   calculateCounterPairAmount,
