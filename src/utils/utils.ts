@@ -86,7 +86,7 @@ export function formatCurrency(
     prefixCustom.find((obj) => value >= obj.power) || {};
 
   return `${roundNumber(
-    value / power,
+    Number(value) / power,
     decimalDigits
   )} ${prefix}${currency.toLocaleUpperCase()}`;
 }

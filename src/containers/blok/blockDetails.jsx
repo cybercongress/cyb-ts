@@ -50,7 +50,7 @@ function BlockDetails({ router }) {
   }, [data, idBlock]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>loading...</div>;
   }
 
   if (error) {

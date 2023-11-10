@@ -53,7 +53,6 @@ $activeLineWidth: 2px;
         grid-area: text;
         display: none;
         color: #36d6ae;
-        text-transform: lowercase;
         justify-self: flex-end;
       }
 
@@ -94,6 +93,7 @@ $activeLineWidth: 2px;
         // min-width: 20px;
         color: white;
         font-size: 20px;
+        text-transform: initial;
       }
 
       &::after,
