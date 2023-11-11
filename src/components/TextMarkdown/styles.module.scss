@@ -5,11 +5,9 @@
 }
 
 .markdownContainer {
-  --width-ratio: 0.62;
-  // width: calc(var(--width-ratio) * 100%);
   margin: 0 auto;
-  max-width: 580px;
 
+  width: clamp(320px, 62vw, 580px);
   min-height: 200px;
 
   display: flex;
@@ -33,12 +31,7 @@
 
 .markdownContainer img {
   position: relative;
-
   width: 100%;
-
-  // --offset: calc(((100% / var(--width-ratio) - 100%) / 2));
-  // left: calc(var(--offset) * -1);
-  // width: calc(100% + (var(--offset) * 2));
 }
 
 .markdownContainer pre {
