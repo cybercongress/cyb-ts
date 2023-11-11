@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 15px;
-  width: clamp(500px, 100%, 680px);
+  max-width: 680px;
 }
 
 .left,
