@@ -1,10 +1,9 @@
-import { ContainerGradientText } from 'src/components';
 import BannerHelp from 'src/containers/help/BannerHelp';
 import { useAdviser } from 'src/features/adviser/context';
 import { useEffect } from 'react';
-import layoutStyles from '../Layout/Layout.module.scss';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
+import Display from 'src/components/containerGradient/Display/Display';
 
 function ZeroUser() {
   const { setAdviser } = useAdviser();
@@ -25,9 +24,9 @@ function ZeroUser() {
   }, [setAdviser]);
 
   return (
-    <ContainerGradientText status="green" className={layoutStyles.container}>
+    <Display>
       <BannerHelp />
-    </ContainerGradientText>
+    </Display>
   );
 }
 
