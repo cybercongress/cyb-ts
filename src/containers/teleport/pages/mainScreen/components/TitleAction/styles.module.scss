@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  color: #FFF;
+  text-shadow: 0px 0px 5px #36D6AE;
+  font-size: 20px;
+
+}
+
+.subTitle {
+  font-size: 14px;
+  color: #ffffff80;
+  line-height: 19px;
+}

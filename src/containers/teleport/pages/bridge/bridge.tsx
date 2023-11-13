@@ -2,10 +2,6 @@ import { AvailableAmount, DenomArr, MainContainer } from 'src/components';
 import Select, { OptionSelect, SelectOption } from 'src/components/Select';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
@@ -13,7 +9,7 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
 import { Networks } from 'src/types/networks';
 import { getMyTokenBalanceNumber } from '../../utils';
-import { getBalances, useSetupIbcClient } from '../../hooks';
+import { useSetupIbcClient } from '../../hooks';
 import Slider from '../../components/slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import { TypeTxsT } from '../../type';
@@ -33,7 +29,7 @@ type Query = {
 function Bridge() {
   const { traseDenom } = useIbcDenom();
   const { channels } = useChannels();
-  const {accountBalances, refreshBalances} = useTeleport()
+  const { accountBalances, refreshBalances } = useTeleport();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [tokenSelect, setTokenSelect] = useState<string>(
@@ -110,40 +106,37 @@ function Bridge() {
     }
   }, [networkB, networkA, channels]);
 
-  const reduceOptionsNetwork = useCallback(
-    (selected: string) => {
-      const tempList: SelectOption[] = [];
-      let reduceData: string[] = [];
+  const reduceOptionsNetwork = useCallback(() => {
+    const tempList: SelectOption[] = [];
+    let reduceData: string[] = [];
 
-      if (channels) {
-        reduceData = [CYBER.CHAIN_ID, ...Object.keys(channels)];
-      }
+    if (channels) {
+      reduceData = [CYBER.CHAIN_ID, ...Object.keys(channels)];
+    }
 
-      reduceData.forEach((key) => {
-        tempList.push({
-          value: key,
-          text: (
-            <DenomArr
-              type="network"
-              denomValue={key}
-              onlyText
-              tooltipStatusText={false}
-            />
-          ),
-          img: (
-            <DenomArr
-              type="network"
-              denomValue={key}
-              onlyImg
-              tooltipStatusImg={false}
-            />
-          ),
-        });
+    reduceData.forEach((key) => {
+      tempList.push({
+        value: key,
+        text: (
+          <DenomArr
+            type="network"
+            denomValue={key}
+            onlyText
+            tooltipStatusText={false}
+          />
+        ),
+        img: (
+          <DenomArr
+            type="network"
+            denomValue={key}
+            onlyImg
+            tooltipStatusImg={false}
+          />
+        ),
       });
-      return tempList;
-    },
-    [channels]
-  );
+    });
+    return tempList;
+  }, [channels]);
 
   const reduceOptions = useMemo(() => {
     const tempList: SelectOption[] = [];

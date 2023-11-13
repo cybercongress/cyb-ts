@@ -6,8 +6,6 @@ import BridgeAction from './BridgeAction';
 function TeleportMainScreen() {
   return (
     <MainContainer>
-      TeleportMainScreen
-      <br />
       <SendAction />
       <BridgeAction />
       <SwapAction />

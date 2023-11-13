@@ -117,12 +117,12 @@ function Slider({
   getPrice,
 }: {
   tokenA: string;
-  tokenB: string;
+  tokenB?: string;
   tokenAAmount: string;
   accountBalances: any;
   setPercentageBalanceHook?: (value: number) => void;
   coinReverseAction?: () => void;
-  getPrice: any;
+  getPrice?: any;
 }) {
   const { traseDenom } = useIbcDenom();
   const [valueSilder, setValueSilder] = useState(0);

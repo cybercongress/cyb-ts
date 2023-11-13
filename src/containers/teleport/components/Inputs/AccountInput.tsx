@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Account, Input } from 'src/components';
+import { Account, Input, Tooltip } from 'src/components';
 import LinearGradientContainer, {
   Color,
 } from 'src/components/LinearGradientContainer/LinearGradientContainer';
@@ -213,7 +213,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
                   label: configRecipient[recipType].label,
                   name: recipType,
                   checked: selectedTypeRecipient === recipType,
-                  // tooltip: recipType,
+                  tooltip: recipType,
                 };
               })}
               onChange={(val: TypeRecipient) => setSelectedTypeRecipient(val)}

@@ -10,6 +10,7 @@ import useWarpDexTickers, {
 import BigNumber from 'bignumber.js';
 import Display from 'src/components/containerGradient/Display/Display';
 import { AmountDenom } from 'src/containers/txs/Activites';
+import TitleAction from './components/TitleAction/TitleAction';
 
 type DefaultPairPoolIdItem = {
   reverse: boolean;
@@ -61,10 +62,81 @@ function SwapAction() {
     return selectedPools;
   }, [dataPoolsWarpDex]);
 
+  const renderItems = dataRender.map((item) => {
+    const searchParam = item.reverse
+      ? `from=${item.target_currency}&to=${item.base_currency}`
+      : `from=${item.base_currency}&to=${item.target_currency}`;
+    return (
+      <Link
+        to={`swap?${searchParam}`}
+        key={item.ticker_id}
+        style={{
+          height: '100%',
+          display: 'grid',
+        }}
+      >
+        <div style={{ display: 'grid', gap: '20px' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: item.reverse ? 'row-reverse' : 'row',
+              }}
+            >
+              <DenomArr
+                denomValue={item.base_currency}
+                onlyImg
+                tooltipStatusImg={false}
+                size={30}
+              />
+              <img style={{ width: '25px' }} src={rectangle} alt="img" />
+              <DenomArr
+                denomValue={item.target_currency}
+                onlyImg
+                tooltipStatusImg={false}
+                size={30}
+              />
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: item.reverse ? 'row-reverse' : 'row',
+              }}
+            >
+              <DenomArr
+                denomValue={item.base_currency}
+                onlyText
+                tooltipStatusText={false}
+              />
+              -
+              <DenomArr
+                denomValue={item.target_currency}
+                onlyText
+                tooltipStatusText={false}
+              />
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  });
+
   return (
-    <div>
-      Swap
-      <br />
+    <Display
+      title={
+        <TitleAction
+          title="swap"
+          subTitle="truly free exchange with warp dex"
+        />
+      }
+    >
       <div
         style={{
           gap: '25px',
@@ -72,108 +144,9 @@ function SwapAction() {
           gridTemplateColumns: '1fr 1fr',
         }}
       >
-        {dataRender.map((item) => {
-          const searchParam = item.reverse
-            ? `from=${item.target_currency}&to=${item.base_currency}`
-            : `from=${item.base_currency}&to=${item.target_currency}`;
-          return (
-            <Link
-              to={`swap?${searchParam}`}
-              key={item.ticker_id}
-              style={{
-                height: '100%',
-                display: 'grid',
-              }}
-            >
-              <Display>
-                <div style={{ display: 'grid', gap: '20px' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: item.reverse ? 'row-reverse' : 'row',
-                      }}
-                    >
-                      <DenomArr
-                        denomValue={item.base_currency}
-                        onlyText
-                        tooltipStatusText={false}
-                      />
-                      -
-                      <DenomArr
-                        denomValue={item.target_currency}
-                        onlyText
-                        tooltipStatusText={false}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: item.reverse ? 'row-reverse' : 'row',
-                      }}
-                    >
-                      {/* #{item.pool_id} {item.ticker_id} */}
-                      <DenomArr
-                        denomValue={item.base_currency}
-                        onlyImg
-                        tooltipStatusImg={false}
-                        size={30}
-                      />
-                      <img
-                        style={{ width: '25px' }}
-                        src={rectangle}
-                        alt="img"
-                      />
-                      <DenomArr
-                        denomValue={item.target_currency}
-                        onlyImg
-                        tooltipStatusImg={false}
-                        size={30}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '15px',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div>24h vol.</div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '10px',
-                        flexDirection: item.reverse
-                          ? 'column-reverse'
-                          : 'column',
-                      }}
-                    >
-                      <AmountDenom
-                        amountValue={item.base_volume}
-                        denom={item.base_currency}
-                      />
-                      <AmountDenom
-                        amountValue={item.target_volume}
-                        denom={item.target_currency}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Display>
-              {/* <div>1 x {lastPrice}</div> */}
-            </Link>
-          );
-        })}
+        {renderItems}
       </div>
-    </div>
+    </Display>
   );
 }
 

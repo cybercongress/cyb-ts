@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { DenomArr } from 'src/components';
-import fromToIbc from 'images/fromToIbc.svg';
+import Display from 'src/components/containerGradient/Display/Display';
+import TitleAction from './components/TitleAction/TitleAction';
+import BridgeItem from './components/BridgeItem/BridgeItem';
 
 const defaultData = [
   {
@@ -19,40 +19,17 @@ const defaultData = [
 
 function BridgeAction() {
   const renderItem = defaultData.map((item, index) => {
-    const searchParam = `networkFrom=${item.networkFrom}&networkTo=${item.networkTo}&token=${item.token}`;
-    return (
-      <Link
-        to={`bridge?${searchParam}`}
-        key={index}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <DenomArr denomValue={item.token} size={30} />
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <DenomArr type="network" denomValue={item.networkFrom} />
-          <img
-            src={fromToIbc}
-            alt="fromToIbc"
-            // className={styles.fromToIbcImg}
-            style={{
-              width: '40px',
-              height: '30px',
-              marginLeft: '-5px',
-            }}
-          />
-
-          <DenomArr type="network" denomValue={item.networkTo} />
-        </div>
-      </Link>
-    );
+    return <BridgeItem key={index} item={item} />;
   });
   return (
-    <div>
-      Bridge
-      <br />
+    <Display
+      title={
+        <TitleAction
+          title="bridge"
+          subTitle="reliable transfer of tokens from net to net"
+        />
+      }
+    >
       <div
         style={{
           display: 'flex',
@@ -62,7 +39,7 @@ function BridgeAction() {
       >
         {renderItem}
       </div>
-    </div>
+    </Display>
   );
 }
 
