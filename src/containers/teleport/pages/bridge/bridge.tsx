@@ -35,7 +35,6 @@ function Bridge() {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const { totalSupplyAll: totalSupply } = useGetTotalSupply();
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
@@ -154,8 +153,8 @@ function Bridge() {
   const reduceOptions = useMemo(() => {
     const tempList: SelectOption[] = [];
 
-    if (totalSupply) {
-      Object.keys(totalSupply).forEach((key) => {
+    if (accountBalances) {
+      Object.keys(accountBalances).forEach((key) => {
         tempList.push({
           value: key,
           text: (
@@ -170,7 +169,7 @@ function Bridge() {
       });
     }
     return tempList;
-  }, [totalSupply, tokenSelect]);
+  }, [accountBalances, tokenSelect]);
 
   const getAccountBalancesToken = useCallback(
     (selectNetwork: string) => {
