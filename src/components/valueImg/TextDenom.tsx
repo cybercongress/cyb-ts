@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
+import styles from './TextDenom.module.scss';
 
 export type CoinDenomProps = {
   coinDenom: string;
@@ -46,17 +47,17 @@ function CoinDenom({ coinDenom, tooltipStatus, infoDenom }: CoinDenomProps) {
 
   const validTootipStatusByDenom = validInfo || coinDenom.includes('pool');
 
+  const denom = <span className={styles.denom}>{textDenom || '...'}</span>;
+
   if (tooltipStatus && validTootipStatusByDenom) {
     return (
-      <div>
-        <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
-          <span>{textDenom !== null ? textDenom : '...'}</span>
-        </Tooltip>
-      </div>
+      <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
+        {denom}
+      </Tooltip>
     );
   }
 
-  return <span>{textDenom !== null ? textDenom : '...'}</span>;
+  return denom;
 }
 
 export default CoinDenom;
