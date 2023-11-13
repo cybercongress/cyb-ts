@@ -9,7 +9,7 @@ import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddre
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import ButtonIcon from '../buttons/ButtonIcon';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import Button from '../btnGrd';
 
 const back = require('../../image/arrow-left-img.svg');
