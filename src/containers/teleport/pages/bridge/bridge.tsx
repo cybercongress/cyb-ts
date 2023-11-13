@@ -276,13 +276,13 @@ function Bridge() {
     refreshBalances();
   };
 
-  function tokenChange() {
+  const tokenChange = useCallback(() => {
     const A = networkB;
     const B = networkA;
 
     setNetworkA(A);
     setNetworkB(B);
-  }
+  }, [networkB, networkA]);
 
   const stateActionBar = {
     tokenAmount,
@@ -352,7 +352,7 @@ function Bridge() {
             tokenA={getDenomToken(networkA)}
             tokenAAmount={tokenAmount}
             setPercentageBalanceHook={setPercentageBalanceHook}
-            coinReverseAction={() => tokenChange()}
+            coinReverseAction={tokenChange}
             accountBalances={getAccountBalancesToken(networkA)}
           />
 

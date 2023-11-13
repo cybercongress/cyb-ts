@@ -1,14 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import s from './styles1.scss';
-import { ValueImg } from '../../../../components';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 
-const cx = require('classnames');
-const imgSwap = require('../../../../image/exchange-arrows.svg');
+import cx from 'classnames';
+import SliderComponent, { SliderProps } from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import { ValueImg } from '../../../../components';
+import imgSwap from '../../../../image/exchange-arrows.svg';
 
-export function ButtonIcon({ img, disabled, ...props }) {
+import s from './styles.module.scss';
+
+// REFACT: Move outside or reuse
+export function ButtonIcon({
+  img,
+  disabled,
+  ...props
+}: {
+  img: string;
+  disabled?: boolean;
+  props: any;
+}) {
   return (
     <button
       type="button"
@@ -21,7 +33,7 @@ export function ButtonIcon({ img, disabled, ...props }) {
   );
 }
 
-function SpetionLabel({ value }) {
+function SpetionLabel({ value }: { value: number }) {
   let position = '';
 
   if (value <= 5) {
@@ -32,7 +44,8 @@ function SpetionLabel({ value }) {
     position = 'right';
   }
   return (
-    <label>
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control
+    <label className={s.trackLabel}>
       <div className={s.trackMarkBgBlur} />
       <div
         className={cx(s.trackMarkGradient, s[`trackMarkGradient${position}`])}
@@ -71,7 +84,28 @@ function SphereValue({
   );
 }
 
+const SphereValueMemo = React.memo(SphereValue);
+
 const angleDeg = 135;
+const minlVal = Math.log(1);
+const maxlVal = Math.log(100);
+
+const scale = (maxlVal - minlVal) / 100;
+
+const scalePercents = [0, 2, 5, 10, 20, 50, 100];
+
+const positionToPercents = (position: number) =>
+  position === 0 ? 0 : Math.round(Math.exp(minlVal + scale * position));
+
+const percentsToPosition = (percents: number) =>
+  (Math.log(percents) - minlVal) / scale;
+
+const scaleMarks = Object.fromEntries(
+  scalePercents.map((percents) => [
+    percentsToPosition(percents),
+    <SpetionLabel key={`slider_mark_${percents}`} value={percents} />,
+  ])
+);
 
 function Slider({
   tokenA,
@@ -81,21 +115,23 @@ function Slider({
   setPercentageBalanceHook,
   coinReverseAction,
   getPrice,
+}: {
+  tokenA: string;
+  tokenB: string;
+  tokenAAmount: string;
+  accountBalances: any;
+  setPercentageBalanceHook?: (value: number) => void;
+  coinReverseAction?: () => void;
+  getPrice: any;
 }) {
   const { traseDenom } = useIbcDenom();
   const [valueSilder, setValueSilder] = useState(0);
-  const [currentProcent, setCurrentProcent] = useState(0);
-  const minpos = 0;
-  const maxpos = 100;
-  const minval = Math.log(1);
-  const maxval = Math.log(100);
-  const scale = (maxval - minval) / (maxpos - minpos);
+  const [currentPercents, setCurrentPercent] = useState(0);
 
-  const onClickReverseButton = () => {
-    if (typeof coinReverseAction === 'function') {
-      coinReverseAction();
-    }
-  };
+  const onClickReverseButton = useCallback(
+    () => coinReverseAction && coinReverseAction(),
+    [coinReverseAction]
+  );
 
   useEffect(() => {
     if (
@@ -108,125 +144,96 @@ function Slider({
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const amountTokenA = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
 
-      const procent = new BigNumber(amountTokenA)
+      const percents = new BigNumber(amountTokenA)
         .dividedBy(accountBalances[tokenA])
         .multipliedBy(100)
         .toNumber();
 
-      if (procent > 100) {
-        setCurrentProcent(Math.round(100));
+      if (percents > 100) {
+        setCurrentPercent(100);
         setValueSilder(100);
         return;
       }
-      setCurrentProcent(Math.round(procent));
 
-      const position = minpos + (Math.log(procent) - minval) / scale;
-      if (position < 0) {
-        setValueSilder(1);
-        return;
-      }
-      setValueSilder(position);
+      setCurrentPercent(Math.round(percents));
+
+      const position = percentsToPosition(percents);
+
+      setValueSilder(position < 0 ? 1 : position);
     } else {
       setValueSilder(0);
-      setCurrentProcent(0);
+      setCurrentPercent(0);
     }
-  }, [tokenAAmount, accountBalances, tokenA]);
+  }, [tokenAAmount, accountBalances, tokenA, traseDenom]);
 
-  // useEffect(() => {
-  //   const cof = valueSilder * 0.011;
-  //   console.log('df', valueSilder, 'd', 100 / valueSilder, cof);
-  //   const angleDeg = cof * 155;
-  //   if (angleDeg > 0) {
-  //     setAngle(angleDeg);
-  //   } else {
-  //     setAngle(26);
-  //   }
-  // }, [valueSilder]);
+  const onSliderChange = (position: number) => {
+    requestAnimationFrame(() => {
+      const value = positionToPercents(position);
 
-  const onInputValueEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const position = parseFloat(e.target.value);
-    let value = 0;
-    if (position === 0) {
-      value = 0;
-    } else {
-      value = Math.round(Math.exp(minval + scale * (position - minpos)));
-    }
+      setCurrentPercent(value);
 
-    setCurrentProcent(value);
+      if (setPercentageBalanceHook) {
+        setPercentageBalanceHook(value);
+      } else {
+        setValueSilder(value);
+      }
+    });
+  };
 
-    if (typeof setPercentageBalanceHook === 'function') {
-      setPercentageBalanceHook(value);
-    } else {
-      setValueSilder(value);
-    }
+  const renderCustomHandle: SliderProps['handle'] = ({ value }) => {
+    return (
+      <div
+        className={s.debtAmountPos}
+        style={{
+          left: `${value}%`,
+        }}
+      >
+        <SphereValueMemo angle={90}>
+          <div>{currentPercents}%</div>
+        </SphereValueMemo>
+        {tokenA && tokenB && (
+          <>
+            <SphereValueMemo angle={angleDeg}>
+              {/* refact: fix */}
+              <ValueImg text={tokenA} onlyImg />
+              {getPrice.to !== undefined && (
+                <div className={s.imgValue}>{getPrice.to}</div>
+              )}
+            </SphereValueMemo>
+
+            <SphereValueMemo angle={-angleDeg}>
+              {/* refact: fix */}
+              <ValueImg text={tokenB} onlyImg />
+              {getPrice.from !== undefined && (
+                <div className={s.imgValue}>{getPrice.from}</div>
+              )}
+            </SphereValueMemo>
+          </>
+        )}
+        <ButtonIcon onClick={() => onClickReverseButton()} img={imgSwap} />
+      </div>
+    );
   };
 
   return (
     <div className={s.formWrapper}>
       <div className={s.debtAmountSlider}>
-        <div style={{ width: '100%' }}>
-          <SpetionLabel value={0} />
-
-          <SpetionLabel value={2} />
-
-          <SpetionLabel value={5} />
-
-          <SpetionLabel value={10} />
-
-          <SpetionLabel value={20} />
-
-          <SpetionLabel value={50} />
-
-          <SpetionLabel value={100} />
-        </div>
-
-        <div style={{ width: '100%' }}>
-          <input
-            style={{ width: '100%', padding: '0 25px' }}
-            type="range"
-            min="0"
-            max="100"
+        <div style={{ width: '100%', padding: '0 25px' }}>
+          <SliderComponent
             value={valueSilder}
-            onInput={(e) => onInputValueEvent(e)}
-            // onChange={(e) => onChangeValueEvent(e.target.value)}
-          />
-        </div>
-        <div
-          style={{
-            width: '100%',
-            padding: '0 30px',
-            display: 'flex',
-            position: 'relative',
-            height: '1px',
-          }}
-        >
-          <div
-            className={s.debtAmountPos}
-            style={{
-              left: `${valueSilder}%`,
+            min={0}
+            max={100}
+            step={1}
+            handle={renderCustomHandle}
+            onChange={(pos) => onSliderChange(pos)}
+            marks={scaleMarks}
+            trackStyle={{ backgroundColor: '#C5C5C5', height: '2px' }}
+            railStyle={{ backgroundColor: '#C5C5C5', height: '2px' }}
+            dotStyle={{
+              background: 'none',
+              border: 'none',
             }}
-          >
-            <SphereValue angle={90}>
-              <div>{currentProcent}%</div>
-            </SphereValue>
-            {tokenA && tokenB && (
-              <SphereValue angle={angleDeg}>
-                <ValueImg text={tokenA} onlyImg />
-                {getPrice.to !== undefined && (
-                  <div className={s.imgValue}>{getPrice.to}</div>
-                )}
-              </SphereValue>
-            )}
-            {tokenB && tokenA && (
-              <SphereValue angle={-angleDeg}>
-                <ValueImg text={tokenB} onlyImg />
-                {getPrice.from !== undefined && (
-                  <div className={s.imgValue}>{getPrice.from}</div>
-                )}
-              </SphereValue>
-            )}
-            <ButtonIcon onClick={() => onClickReverseButton()} img={imgSwap} />
-          </div>
+          />
         </div>
       </div>
     </div>
