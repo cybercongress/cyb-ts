@@ -21,6 +21,7 @@ import ActionBar from './actionBar.bridge';
 import HistoryContextProvider from '../../ibc-history/historyContext';
 import DataIbcHistory from '../../components/dataIbcHistory/DataIbcHistory';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
+import { useTeleport } from '../Teleport.context';
 
 type Query = {
   networkFrom: string;
@@ -32,13 +33,7 @@ type Query = {
 function Bridge() {
   const { traseDenom } = useIbcDenom();
   const { channels } = useChannels();
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [update, setUpdate] = useState(0);
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    update
-  );
+  const {accountBalances, refreshBalances} = useTeleport()
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [tokenSelect, setTokenSelect] = useState<string>(
@@ -278,7 +273,7 @@ function Bridge() {
   );
 
   const updateFunc = () => {
-    setUpdate((item) => item + 1);
+    refreshBalances();
   };
 
   function tokenChange() {

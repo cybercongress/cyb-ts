@@ -33,6 +33,7 @@ import AccountInput from '../../components/Inputs/AccountInput';
 import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd';
 import InputMemo from '../../components/Inputs/InputMemo';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
+import { useTeleport } from '../Teleport.context';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -42,6 +43,7 @@ function Send() {
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const {accountBalances, refreshBalances} = useTeleport()
   const [update, setUpdate] = useState(0);
   const [recipient, setRecipient] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,10 +52,6 @@ function Send() {
   //   'cosmos.bank.v1beta1.MsgSend'
   // );
   const dataSendTxs = useGetSendTxsByAddressByLcd(addressActive, recipient);
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    update
-  );
   const [tokenSelect, setTokenSelect] = useState<string>(tokenDefaultValue);
   const [tokenAmount, setTokenAmount] = useState<string>('');
 
@@ -187,7 +185,8 @@ function Send() {
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
     dataSendTxs.refetch();
-  }, [dataSendTxs]);
+    refreshBalances();
+  }, [dataSendTxs, refreshBalances]);
 
   const reverceTokenAmount = useMemo(() => {
     return new BigNumber(tokenAmount).multipliedBy(-1).toString();

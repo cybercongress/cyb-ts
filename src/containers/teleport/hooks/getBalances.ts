@@ -40,15 +40,20 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function useGetBalances(addressActive, updateAddress) {
+function useGetBalances(addressActive) {
   const queryClient = useQueryClient();
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
   const [liquidBalances, setLiquidBalances] = useState(null);
+  const [update, setUpdate] = useState(0);
+
+  const refresh = () => {
+    setUpdate((item) => item + 1)
+  }
 
   useEffect(() => {
     const getAllBalances = async () => {
-      if (queryClient && addressActive !== null) {
+      if (queryClient && addressActive) {
         const getAllBalancesPromise = await queryClient.getAllBalances(
           addressActive.bech32
         );
@@ -57,11 +62,11 @@ function useGetBalances(addressActive, updateAddress) {
       }
     };
     getAllBalances();
-  }, [addressActive, queryClient, updateAddress]);
+  }, [addressActive, queryClient, update]);
 
   useEffect(() => {
     const getAuth = async () => {
-      if (addressActive !== null) {
+      if (addressActive) {
         const vested = {
           [CYBER.DENOM_LIQUID_TOKEN]: 0,
           millivolt: 0,
@@ -107,7 +112,7 @@ function useGetBalances(addressActive, updateAddress) {
       }
     };
     getAuth();
-  }, [updateAddress, addressActive]);
+  }, [update, addressActive]);
 
   useEffect(() => {
     if (allBalances !== null && vestedAmount !== null) {
@@ -129,7 +134,7 @@ function useGetBalances(addressActive, updateAddress) {
     }
   }, [allBalances, vestedAmount]);
 
-  return { liquidBalances };
+  return { liquidBalances, refresh };
 }
 
 export default useGetBalances;

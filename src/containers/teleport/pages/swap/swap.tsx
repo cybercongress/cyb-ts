@@ -29,12 +29,14 @@ import ActionBar from './actionBar.swap';
 import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
+import { useTeleport } from '../Teleport.context';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 function Swap() {
   const { traseDenom } = useIbcDenom();
+  const { accountBalances, refreshBalances } = useTeleport()
   const queryClient = useQueryClient();
   const [update, setUpdate] = useState(0);
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
@@ -45,10 +47,6 @@ function Swap() {
   );
   const poolsData = usePoolListInterval({ refetchInterval: 5 * 60 * 1000 });
   const params = useGetParams();
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    update
-  );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
@@ -249,7 +247,8 @@ function Swap() {
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
     dataSwapTxs.refetch();
-  }, [dataSwapTxs]);
+    refreshBalances();
+  }, [dataSwapTxs, refreshBalances]);
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {

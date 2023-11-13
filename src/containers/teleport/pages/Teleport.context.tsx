@@ -8,30 +8,26 @@ import { Nullable } from 'src/types';
 
 const TeleportContext = React.createContext<{
   accountBalances: Nullable<ObjKeyValue>;
+  refreshBalances: () => void;
 }>({
   accountBalances: null,
+  refreshBalances: () => {},
 });
 
-export const useTeleportContext = () => React.useContext(TeleportContext);
+export const useTeleport = () => React.useContext(TeleportContext);
 
 function TeleportContextProvider({ children }: { children: React.ReactNode }) {
   useCommunityPassports();
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const addressActive = defaultAccount.account?.cyber;
 
-  const [updateState, setUpdateState] = useState(0);
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    updateState
-  );
-
-  const update = () => {
-    setUpdateState((item) => item + 1);
-  };
+  const { liquidBalances: accountBalances, refresh: refreshBalances } =
+    getBalances(addressActive);
 
   const contextValue = useMemo(
     () => ({
       accountBalances,
+      refreshBalances,
     }),
     [accountBalances]
   );
