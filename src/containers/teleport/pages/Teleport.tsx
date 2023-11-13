@@ -3,10 +3,13 @@ import Swap from './swap/swap';
 import Send from './send/send';
 import Bridge from './bridge/bridge';
 import TeleportMainScreen from './mainScreen/mainScreen';
-import TeleportContextProvider from './Teleport.context';
 import Relayer from './relayer/Relayer';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+import RelayerContextProvider from '../contexts/relayer';
 
 function TeleportRouter() {
+  useCommunityPassports();//  temp, need to move to TeleportContext
+
   return (
     <Routes>
       <Route index element={<TeleportMainScreen />} />
@@ -20,9 +23,9 @@ function TeleportRouter() {
 
 function Teleport() {
   return (
-    <TeleportContextProvider>
+    <RelayerContextProvider>
       <TeleportRouter />
-    </TeleportContextProvider>
+    </RelayerContextProvider>
   );
 }
 

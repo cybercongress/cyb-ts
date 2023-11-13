@@ -1,16 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIpfs } from 'src/contexts/ipfs';
-import {
-  ContainerGradientText,
-  Input,
-  ActionBar,
-  Button,
-} from 'src/components';
+import { ContainerGradientText, Input, Button } from 'src/components';
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
+import Select from 'src/containers/warp/components/Select';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
-import Select from '../../../containers/teleport/components/select';
 import {
   updateIpfsStateUrl,
   updateIpfsStateType,
@@ -22,6 +17,7 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
+
 const dataOpts = ['external', 'embedded'];
 
 function IpfsSettings() {

@@ -11,6 +11,7 @@ import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './styles.module.scss';
 import Timestamp from './Timestamp';
+import CreatedAt from '../CreatedAt/CreatedAt';
 
 function getDataOrder(value, coinDecimalsA: number) {
   const orderPrice = value.order_price;
@@ -69,7 +70,10 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
             </div>
           </div>
           <div className={styles.containerContent}>
-            <Timestamp timestamp={item.transaction.block.timestamp} />
+            <div className={styles.containerTime}>
+              <CreatedAt timeAt={item.transaction.block.timestamp} />
+            </div>
+
             <div>{dataResultSwap?.success && dataResultSwap.success}</div>
             <div className={styles.containerAmountCoins}>
               <AmountDenom

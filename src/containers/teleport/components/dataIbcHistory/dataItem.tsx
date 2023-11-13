@@ -1,6 +1,7 @@
 import { HistoriesItem } from '../../ibc-history/HistoriesItem';
 import useGetStatus from '../../ibc-history/useGetStatus';
-import { AmountSend, CreatedAt, RouteAddress, Status, TypeTsx } from './compDataHstory';
+import CreatedAt from '../CreatedAt/CreatedAt';
+import { AmountSend, RouteAddress, Status, TypeTsx } from './compDataHstory';
 import styles from './styles.module.scss'
 import Display from 'src/components/containerGradient/Display/Display';
 

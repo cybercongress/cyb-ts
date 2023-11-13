@@ -15,12 +15,12 @@ import { Networks } from 'src/types/networks';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { getBalances, useSetupIbcClient } from '../../hooks';
 import Slider from '../../components/slider';
-import { Col, GridContainer, TeleportContainer } from '../../comp/grid';
+import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
 import HistoryContextProvider from '../../ibc-history/historyContext';
-import DataIbcHistory from '../../comp/dataIbcHistory/DataIbcHistory';
-import InputNumberDecimalScale from '../../comp/Inputs/InputNumberDecimalScale';
+import DataIbcHistory from '../../components/dataIbcHistory/DataIbcHistory';
+import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
 
 type Query = {
   networkFrom: string;

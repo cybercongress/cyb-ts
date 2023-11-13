@@ -91,23 +91,6 @@ function AddressType({ address }: { address: string }) {
   return <div style={{ color: '#fff' }}>{trimString(address, 8, 2)}</div>;
 }
 
-export function CreatedAt({ timeAt }: { timeAt: number }) {
-  let timeAgoInMS = null;
-
-  const time = getNowUtcTime() - new Date(timeAt).getTime();
-  if (time && time > 0) {
-    timeAgoInMS = time;
-  }
-
-  const timeSinceValue = timeSince(timeAgoInMS);
-
-  return (
-    <div>
-      {timeSinceValue === 'now' ? timeSinceValue : timeSinceValue + ' ago'}
-    </div>
-  );
-}
-
 export function RouteAddress({ item }: { item: HistoriesItem }) {
   const { recipient, sender, sourceChainId, destChainId } = item;
 

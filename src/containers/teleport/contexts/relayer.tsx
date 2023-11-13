@@ -10,7 +10,7 @@ import { Channel } from 'src/types/hub';
 import { getKeplr } from 'src/utils/keplrUtils';
 import networkList from 'src/utils/networkListIbc';
 
-const TeleportContext = React.createContext<{
+const RelayerContext = React.createContext<{
   channels: undefined | ObjectKey<Channel>;
   relayerLog: any[];
   isRelaying: boolean;
@@ -30,10 +30,9 @@ function findNetwork(chainId: string) {
   return networkList[chainId];
 }
 
-export const useTeleportContext = () => React.useContext(TeleportContext);
+export const useRelayer = () => React.useContext(RelayerContext);
 
-function TeleportContextProvider({ children }: { children: React.ReactNode }) {
-  useCommunityPassports();
+function RelayerContextProvider({ children }: { children: React.ReactNode }) {
   const { channels } = useChannels();
 
   const stopFn = useRef<() => void>();
@@ -140,7 +139,7 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.log('cxns', cxns)
+        console.log('cxns', cxns);
 
         const [{ cxnA, cxnB }] = cxns;
 
@@ -196,10 +195,10 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <TeleportContext.Provider value={contextValue}>
+    <RelayerContext.Provider value={contextValue}>
       {children}
-    </TeleportContext.Provider>
+    </RelayerContext.Provider>
   );
 }
 
-export default TeleportContextProvider;
+export default RelayerContextProvider;

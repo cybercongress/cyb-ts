@@ -1,0 +1,35 @@
+
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+
+
+const TeleportContext = React.createContext<{
+ 
+}>({
+ 
+});
+
+function findNetwork(chainId: string) {
+  return networkList[chainId];
+}
+
+export const useTeleportContext = () => React.useContext(TeleportContext);
+
+function TeleportContextProvider({ children }: { children: React.ReactNode }) {
+  useCommunityPassports();
+  
+
+  const contextValue = useMemo(
+    () => ({
+     
+    }),
+    []
+  );
+
+  return (
+    <TeleportContext.Provider value={contextValue}>
+      {children}
+    </TeleportContext.Provider>
+  );
+}
+
+export default TeleportContextProvider;
