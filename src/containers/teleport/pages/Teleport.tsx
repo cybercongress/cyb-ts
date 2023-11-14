@@ -4,13 +4,10 @@ import Send from './send/send';
 import Bridge from './bridge/bridge';
 import TeleportMainScreen from './mainScreen/mainScreen';
 import Relayer from './relayer/Relayer';
-import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import RelayerContextProvider from '../contexts/relayer';
 import TeleportContextProvider from './Teleport.context';
 
 function TeleportRouter() {
-  useCommunityPassports(); //  temp, need to move to TeleportContext
-
   return (
     <Routes>
       <Route index element={<TeleportMainScreen />} />

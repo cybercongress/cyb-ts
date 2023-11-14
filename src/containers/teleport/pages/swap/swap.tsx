@@ -177,8 +177,8 @@ function Swap() {
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
 
-      console.log('poolPrice', poolPrice)
-      console.log('price', swapPrice);
+      // console.log('poolPrice', poolPrice)
+      // console.log('price', swapPrice);
       const slippage = new BigNumber(poolPrice)
         .dividedBy(swapPrice)
         .minus(1)
@@ -193,7 +193,7 @@ function Swap() {
     return 0;
   }, [poolPrice, swapPrice]);
 
-  console.log('useGetSlippage', useGetSlippage);
+  // console.log('useGetSlippage', useGetSlippage);
 
   useEffect(() => {
     // validation swap
