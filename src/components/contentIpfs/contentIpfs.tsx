@@ -76,7 +76,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <Pdf content={details.content} />
           )}
           {contentType === 'link' && (
-            <LinkHttp content={details.content} preview />
+            <LinkHttp url={details.content!} preview={search} />
           )}
           {contentType === 'other' && (
             <OtherItem search={search} cid={cid} content={details.content} />
