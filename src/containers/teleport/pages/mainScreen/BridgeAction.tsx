@@ -1,6 +1,10 @@
 import Display from 'src/components/containerGradient/Display/Display';
+import { useChannels } from 'src/hooks/useHub';
+import { useMemo } from 'react';
 import TitleAction from './components/TitleAction/TitleAction';
 import BridgeItem from './components/BridgeItem/BridgeItem';
+import styles from './styles.module.scss';
+import TotalCount from './components/TotalCount/TotalCount';
 
 const defaultData = [
   {
@@ -18,9 +22,19 @@ const defaultData = [
 ];
 
 function BridgeAction() {
+  const { channels } = useChannels();
+
+  const totalCount = useMemo(() => {
+    if (channels) {
+      return Object.keys(channels).length - defaultData.length;
+    }
+    return 0;
+  }, [channels]);
+
   const renderItem = defaultData.map((item, index) => {
     return <BridgeItem key={index} item={item} />;
   });
+
   return (
     <Display
       title={
@@ -30,14 +44,9 @@ function BridgeAction() {
         />
       }
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}
-      >
+      <div className={styles.BridgeActionContentContainer}>
         {renderItem}
+        {totalCount > 0 && <TotalCount text="networks" value={totalCount} />}
       </div>
     </Display>
   );

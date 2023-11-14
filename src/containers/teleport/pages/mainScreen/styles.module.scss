@@ -1,0 +1,42 @@
+.SwapActionContentContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 20px;
+  overflow: hidden;
+}
+
+.SendActionContentContainer {
+  display: flex;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.BridgeActionContentContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  overflow: hidden;
+}
+
+.TeleportDescrpContainerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin-top: 70px;
+  // align-self: center;
+}
+
+.MainScreenContainerContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  margin-top: 70px;
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+
+    >:nth-child(1) {
+      display: none;
+    }
+  }
+}

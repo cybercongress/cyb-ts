@@ -1,0 +1,15 @@
+.containerRoweDenom {
+  display: flex;
+  flex-direction: row;
+
+  &Reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+.containerSwapItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}

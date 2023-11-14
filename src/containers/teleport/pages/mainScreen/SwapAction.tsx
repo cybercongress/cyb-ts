@@ -1,24 +1,11 @@
 import { useMemo } from 'react';
-import { isNative } from 'src/utils/utils';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
-import rectangle from 'images/rectangle.svg';
-import { DenomArr } from 'src/components';
-import { Link } from 'react-router-dom';
-import useWarpDexTickers, {
-  responseWarpDexTickersItem,
-} from 'src/hooks/useGetWarpPools';
-import BigNumber from 'bignumber.js';
+import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import Display from 'src/components/containerGradient/Display/Display';
-import { AmountDenom } from 'src/containers/txs/Activites';
 import TitleAction from './components/TitleAction/TitleAction';
-
-type DefaultPairPoolIdItem = {
-  reverse: boolean;
-};
-
-type DefaultPairPoolIdObj = {
-  [key: number]: DefaultPairPoolIdItem;
-};
+import { DefaultPairPoolIdObj, SelectedPool } from './type';
+import SwapItem from './components/SwapItem/SwapItem';
+import styles from './styles.module.scss';
+import TotalCount from './components/TotalCount/TotalCount';
 
 const defaultPairPoolId: DefaultPairPoolIdObj = {
   12: {
@@ -45,10 +32,15 @@ const defaultPairPoolId: DefaultPairPoolIdObj = {
 function SwapAction() {
   const { data: dataPoolsWarpDex } = useWarpDexTickers();
 
+  const totalCount = useMemo(() => {
+    if (dataPoolsWarpDex) {
+      return dataPoolsWarpDex.length - Object.keys(defaultPairPoolId).length;
+    }
+    return 0;
+  }, [dataPoolsWarpDex]);
+
   const dataRender = useMemo(() => {
-    const selectedPools: Array<
-      DefaultPairPoolIdItem & responseWarpDexTickersItem
-    > = [];
+    const selectedPools: Array<SelectedPool> = [];
     if (dataPoolsWarpDex) {
       dataPoolsWarpDex.forEach((item) => {
         if (
@@ -63,69 +55,7 @@ function SwapAction() {
   }, [dataPoolsWarpDex]);
 
   const renderItems = dataRender.map((item) => {
-    const searchParam = item.reverse
-      ? `from=${item.target_currency}&to=${item.base_currency}`
-      : `from=${item.base_currency}&to=${item.target_currency}`;
-    return (
-      <Link
-        to={`swap?${searchParam}`}
-        key={item.ticker_id}
-        style={{
-          height: '100%',
-          display: 'grid',
-        }}
-      >
-        <div style={{ display: 'grid', gap: '20px' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-              gap: '10px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: item.reverse ? 'row-reverse' : 'row',
-              }}
-            >
-              <DenomArr
-                denomValue={item.base_currency}
-                onlyImg
-                tooltipStatusImg={false}
-                size={30}
-              />
-              <img style={{ width: '25px' }} src={rectangle} alt="img" />
-              <DenomArr
-                denomValue={item.target_currency}
-                onlyImg
-                tooltipStatusImg={false}
-                size={30}
-              />
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: item.reverse ? 'row-reverse' : 'row',
-              }}
-            >
-              <DenomArr
-                denomValue={item.base_currency}
-                onlyText
-                tooltipStatusText={false}
-              />
-              -
-              <DenomArr
-                denomValue={item.target_currency}
-                onlyText
-                tooltipStatusText={false}
-              />
-            </div>
-          </div>
-        </div>
-      </Link>
-    );
+    return <SwapItem item={item} key={item.pool_id} />;
   });
 
   return (
@@ -137,14 +67,11 @@ function SwapAction() {
         />
       }
     >
-      <div
-        style={{
-          gap: '25px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-        }}
-      >
+      <div className={styles.SwapActionContentContainer}>
         {renderItems}
+        {totalCount > 0 && (
+          <TotalCount value={totalCount} onlyValue text="pools" />
+        )}
       </div>
     </Display>
   );

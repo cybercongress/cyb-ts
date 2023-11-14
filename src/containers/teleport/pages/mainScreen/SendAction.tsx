@@ -2,47 +2,47 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Account } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import {
   SliceState,
   selectCommunityPassports,
 } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
-import { trimString } from 'src/utils/utils';
 import TitleAction from './components/TitleAction/TitleAction';
+import styles from './styles.module.scss';
+import TotalCount from './components/TotalCount/TotalCount';
+
+const TOP_AMOUNT = 5;
 
 function SendAction() {
   const { friends } = useAppSelector(selectCommunityPassports);
 
+  const totalCount = useMemo(() => {
+    if (friends && Object.keys(friends).length) {
+      return Object.keys(friends).length - TOP_AMOUNT;
+    }
+    return 0;
+  }, [friends]);
+
   const renderItems = useMemo(() => {
     const sliceData: SliceState = Object.keys(friends)
-      .slice(0, 5)
+      .slice(0, TOP_AMOUNT)
       .reduce((obj, key) => {
         return { ...obj, [key]: friends[key] };
       }, {});
 
-    return (
-      <>
-        {Object.keys(sliceData).map((key) => {
-          return (
-            <Link key={key} to={`send?recipient=${key}&token=boot`}>
-              <Account
-                address={key}
-                avatar
-                onlyAvatar
-                sizeAvatar="50px"
-                styleUser={{ flexDirection: 'column' }}
-              />
-            </Link>
-          );
-        })}
-        <span>
-          {Object.keys(friends).length > Object.keys(sliceData).length &&
-            Object.keys(friends).length}
-        </span>
-      </>
-    );
+    return Object.keys(sliceData).map((key) => {
+      return (
+        <Link key={key} to={`send?recipient=${key}&token=boot`}>
+          <Account
+            address={key}
+            avatar
+            onlyAvatar
+            sizeAvatar="50px"
+            styleUser={{ flexDirection: 'column' }}
+          />
+        </Link>
+      );
+    });
   }, [friends]);
 
   return (
@@ -54,7 +54,10 @@ function SendAction() {
         />
       }
     >
-      <div style={{ display: 'flex', gap: '20px' }}>{renderItems}</div>
+      <div className={styles.SendActionContentContainer}>
+        {renderItems}
+        {totalCount > 0 && <TotalCount value={totalCount} onlyValue />}
+      </div>
     </Display>
   );
 }
