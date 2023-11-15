@@ -1,21 +1,15 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 import cx from 'classnames';
 import SliderComponent, { SliderProps } from 'rc-slider';
-import 'rc-slider/assets/index.css';
 import { ValueImg } from '../../../../components';
 import imgSwap from '../../../../image/exchange-arrows.svg';
-
+import 'rc-slider/assets/index.css';
 import s from './styles.module.scss';
+import './styles.override.css';
 
 // REFACT: Move outside or reuse
 export function ButtonIcon({
@@ -138,6 +132,7 @@ function Slider({
   const [currentPercents, setCurrentPercent] = useState(0);
   const beforePercents = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const resetDragging = useCallback(() => setIsDragging(false), []);
 
@@ -154,6 +149,14 @@ function Slider({
   }, [currentPercents]);
 
   useEffect(() => {
+    setIsDisabled(
+      !(
+        accountBalances &&
+        accountBalances[tokenA] &&
+        accountBalances[tokenA] > 0
+      )
+    );
+
     if (
       tokenA &&
       accountBalances &&
@@ -243,6 +246,7 @@ function Slider({
       <div className={s.debtAmountSlider}>
         <div style={{ width: '100%', padding: '0 25px' }}>
           <SliderComponent
+            disabled={isDisabled}
             value={valueSilder}
             min={0}
             max={100}
