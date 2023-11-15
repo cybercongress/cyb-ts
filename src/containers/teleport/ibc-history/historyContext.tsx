@@ -20,7 +20,7 @@ import networkList from 'src/utils/networkListIbc';
 import PollingStatusSubscription from './polling-status-subscription';
 
 const findRpc = (chainId: string): Option<string> => {
-  if (Object.prototype.hasOwnProperty.call(networkList, chainId)) {
+  if (networkList[chainId]) {
     return networkList[chainId].rpc;
   }
 

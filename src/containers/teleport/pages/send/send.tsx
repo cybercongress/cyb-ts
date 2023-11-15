@@ -43,7 +43,7 @@ function Send() {
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const {accountBalances, refreshBalances} = useTeleport()
+  const { accountBalances, refreshBalances } = useTeleport();
   const [update, setUpdate] = useState(0);
   const [recipient, setRecipient] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -164,11 +164,7 @@ function Send() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      if (
-        accountBalances &&
-        Object.prototype.hasOwnProperty.call(accountBalances, tokenSelect) &&
-        traseDenom
-      ) {
+      if (accountBalances && accountBalances[tokenSelect] && traseDenom) {
         const [{ coinDecimals }] = traseDenom(tokenSelect);
         const amount = new BigNumber(accountBalances[tokenSelect])
           .multipliedBy(value)

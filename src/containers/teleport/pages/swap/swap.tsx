@@ -260,11 +260,7 @@ function Swap() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      if (
-        accountBalances &&
-        Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-        traseDenom
-      ) {
+      if ((accountBalances && accountBalances[tokenA] && traseDenom)) {
         const [{ coinDecimals }] = traseDenom(tokenA);
         const amount = new BigNumber(accountBalances[tokenA])
           .multipliedBy(value)

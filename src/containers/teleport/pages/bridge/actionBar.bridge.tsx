@@ -185,7 +185,7 @@ function ActionBar({ stateActionBar }) {
     if (signer && signingClient && traseDenom) {
       let prefix;
       setStage(STAGE_SUBMITTED);
-      if (Object.prototype.hasOwnProperty.call(networks, networkB)) {
+      if (networks[networkB]) {
         prefix = networks[networkB].prefix;
       }
       const [{ address }] = await signer.getAccounts();
