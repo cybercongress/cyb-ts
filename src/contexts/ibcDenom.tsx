@@ -86,8 +86,6 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         coinImageCid: '',
         native: true,
       };
-      let findDenom = '';
-      // console.log('poolsData', poolsData)
 
       if (denomTrase.includes('pool') && poolsData) {
         const findPool = findPoolDenomInArr(denomTrase, poolsData);
@@ -104,11 +102,9 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         ) {
           const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
             ibcDenoms[denomTrase];
-          findDenom = baseDenom;
-
           infoDenomTemp.native = false;
 
-          const denomInfoFromList = findDenomInTokenList(findDenom);
+          const denomInfoFromList = findDenomInTokenList(baseDenom);
           if (denomInfoFromList !== null) {
             const { denom, coinDecimals, coinImageCid, counterpartyChainId } =
               denomInfoFromList;
@@ -122,7 +118,6 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } else {
-        findDenom = denomTrase;
         const denomInfoFromList = findDenomInTokenList(denomTrase);
         if (denomInfoFromList !== null) {
           const { denom, coinDecimals } = denomInfoFromList;

@@ -6,10 +6,8 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import { useIpfs } from 'src/contexts/ipfs';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
-import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
 import txs from '../../../utils/txs';
 import {
   Dots,
@@ -24,7 +22,6 @@ import {
   CONTRACT_ADDRESS_PASSPORT,
   CONTRACT_ADDRESS_GIFT,
   BOOT_ICON,
-  GIFT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import STEP_INFO from './utils';
@@ -43,6 +40,7 @@ import {
 } from '../../../features/passport/passports.redux';
 import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
+import { useBackend } from 'src/contexts/backend';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -105,7 +103,8 @@ function ActionBarPortalGift({
   setLoadingGift,
   loadingGift,
 }: Props) {
-  const { node } = useIpfs();
+  const { isIpfsInitialized, ipfsNode } = useBackend();
+
   const navigate = useNavigate();
   const { signer, signingClient, initSigner } = useSigningClient();
   const [selectMethod, setSelectMethod] = useState('');
@@ -250,14 +249,6 @@ function ActionBarPortalGift({
     return null;
   }, [citizenship]);
 
-  const pinPassportData = async (nodeIpfs, address) => {
-    try {
-      addContenToIpfs(nodeIpfs, address);
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-
   const sendSignedMessage = useCallback(async () => {
     if (
       signer &&
@@ -319,8 +310,8 @@ function ActionBarPortalGift({
             rawLog: executeResponseResult?.rawLog.toString(),
           });
         }
-        if (node !== null) {
-          pinPassportData(node, signedMessageKeplr.address);
+        if (isIpfsInitialized) {
+          ipfsNode?.addContent(signedMessageKeplr.address);
         }
       } catch (error) {
         console.log('error', error);
@@ -333,7 +324,8 @@ function ActionBarPortalGift({
     citizenship,
     signedMessageKeplr,
     setLoading,
-    node,
+    isIpfsInitialized,
+    ipfsNode,
   ]);
 
   const claim = useCallback(async () => {

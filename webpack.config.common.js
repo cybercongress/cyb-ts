@@ -142,6 +142,14 @@ const config = {
               },
             },
           },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [['postcss-media-minmax']],
+              },
+            },
+          },
           'sass-loader',
         ],
       },

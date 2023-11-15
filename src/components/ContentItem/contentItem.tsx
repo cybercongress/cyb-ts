@@ -1,14 +1,11 @@
 // TODO: refactor needed
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import {
-  IPFSContentDetails,
-  IPFSContentMaybe,
-  IpfsContentType,
-} from 'src/utils/ipfs/ipfs';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
+import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -33,7 +30,24 @@ function ContentItem({
   setType,
   className,
 }: ContentItemProps): JSX.Element {
-  const { status, content } = useQueueIpfsContent(cid, item?.rank, parentId);
+  const [details, setDetails] = useState<IPFSContentDetails>(undefined);
+  const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
+
+  useEffect(() => {
+    fetchParticle && (async () => fetchParticle(cid, item?.rank))();
+  }, [cid, item?.rank, fetchParticle]);
+
+  useEffect(() => {
+    (async () => {
+      const details = await parseArrayLikeToDetails(
+        content,
+        cid
+        // (progress: number) => console.log(`${cid} progress: ${progress}`)
+      );
+      setDetails(details);
+      details?.type && setType && setType(details?.type);
+    })();
+  }, [content, cid]); //TODO: REFACT - setType rise infinite loop
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
@@ -47,13 +61,7 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        <ContentIpfs
-          status={status}
-          content={content}
-          cid={cid}
-          search
-          setType={setType}
-        />
+        <ContentIpfs details={details} content={content} cid={cid} search />
       </SearchItem>
     </Link>
   );

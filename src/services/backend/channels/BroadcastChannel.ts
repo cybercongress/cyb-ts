@@ -1,12 +1,17 @@
 import { IndexedDbWriteMessage } from '../../CozoDb/types';
-import { SyncEntryMessage, WorkerStatusMessage } from '../types';
+import {
+  SyncEntryMessage,
+  WorkerStatusMessage,
+  ServiceStatusMessage,
+} from '../types';
 
 const CYB_BROADCAST_CHANNEL = 'cyb-broadcast-channel';
 
 export type BroadcastChannelMessage =
   | WorkerStatusMessage
   | SyncEntryMessage
-  | IndexedDbWriteMessage;
+  | IndexedDbWriteMessage
+  | ServiceStatusMessage;
 
 class BcChannel {
   private channel: BroadcastChannel;

@@ -254,6 +254,7 @@ const BOND_STATUS = {
 };
 
 const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
+const CID_TWEET = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
 const PATTERN = new RegExp(
   `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
@@ -316,6 +317,7 @@ export {
   VOTE_OPTION,
   BOND_STATUS,
   CID_AVATAR,
+  CID_TWEET,
   PATTERN_HTML,
   HUB_CONTRACTS,
 };

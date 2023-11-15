@@ -43,9 +43,7 @@ function SwapAction() {
     const selectedPools: Array<SelectedPool> = [];
     if (dataPoolsWarpDex) {
       dataPoolsWarpDex.forEach((item) => {
-        if (
-          Object.prototype.hasOwnProperty.call(defaultPairPoolId, item.pool_id)
-        ) {
+        if (defaultPairPoolId[item.pool_id]) {
           const { reverse } = defaultPairPoolId[item.pool_id];
           selectedPools.push({ ...item, reverse });
         }

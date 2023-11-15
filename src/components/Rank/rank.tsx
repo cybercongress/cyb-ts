@@ -5,6 +5,8 @@ import { LinkWindow } from '../link/link';
 import { trimString, exponentialToDecimal } from '../../utils/utils';
 import { getRankGrade } from 'src/utils/search/utils';
 import styles from './Rank.module.scss';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 function GradeTooltipContent({ grade, hash, color, rank }) {
   return (
@@ -40,9 +42,15 @@ function GradeTooltipContent({ grade, hash, color, rank }) {
     <Pane>
       <Text color="#ffff">
         More about{' '}
-        <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+        {/* <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+        </LinkWindow> */}
+        <Link
+          to={routes.oracle.ask.getLink(
+            'QmWQyWPCHE2hfEaJy8sTVQtKgW4EAaCLGMc33sMkodmRZ3'
+          )}
+        >
           cyber~Rank
-        </LinkWindow>
+        </Link>
       </Text>
     </Pane>
     // </Pane>

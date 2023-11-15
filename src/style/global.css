@@ -9,6 +9,10 @@ html {
   font-family: 'Play';
 }
 
+*:not(input):not(textarea) {
+  text-transform: lowercase;
+}
+
 body {
   padding: 0;
   overflow-y: scroll; /* prevent content jumping when scroll appears */
@@ -220,30 +224,15 @@ a:hover {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+
   /* background: url("https://ipfs.io/ipfs/QmV2i3zrWF2ZzmKtzMFMFqyrAjadShFn5qwmU3ANv66BUY"); */
-  background-position: top left !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
+  /* background-position: top left !important; */
+  /* background-size: cover !important; */
+  /* background-repeat: no-repeat !important; */
+
   padding: 0 1em 135px 1em;
   position: relative;
   background-color: #000000;
-}
-
-.block-body-home {
-  width: calc(100% - 2em);
-  min-height: calc(100vh - 90px);
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  /* background: url("https://ipfs.io/ipfs/QmV2i3zrWF2ZzmKtzMFMFqyrAjadShFn5qwmU3ANv66BUY"); */
-  background-position: top left !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-  padding: 10px 1em 1em;
-  position: relative;
-  background-color: #000000;
-  height: 1px;
 }
 
 .container-timer {
@@ -329,8 +318,8 @@ a:hover {
   }
 }
 
-.no-margin {
-  margin: 0;
+ul {
+  list-style-type: none;
 }
 
 textarea {

@@ -14,18 +14,6 @@ export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
 }
 
-export const checkInactiveFunc = (
-  token: string,
-  ibcDataDenom: Option<IbcDenomsArr>
-): boolean => {
-  if (token.includes('ibc') && ibcDataDenom) {
-    if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
-      return false;
-    }
-  }
-  return true;
-};
-
 function getMyTokenBalance(token, indexer) {
   if (indexer === null) {
     return 0;
@@ -49,10 +37,10 @@ function pow(a) {
   return result;
 }
 
-export const getCoinDecimals = (amount, token) => {
+const getCoinDecimals = (amount, token: string) => {
   let amountReduce = amount;
 
-  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+  if (coinDecimalsConfig[token]) {
     const { coinDecimals } = coinDecimalsConfig[token];
     if (coinDecimals) {
       amountReduce = parseFloat(amount) / pow(coinDecimals);
@@ -63,7 +51,7 @@ export const getCoinDecimals = (amount, token) => {
 
 const getDecimals = (denom) => {
   let decimals = 0;
-  if (Object.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+  if (coinDecimalsConfig[denom]) {
     decimals = coinDecimalsConfig[denom].coinDecimals;
   }
   return decimals;
@@ -129,42 +117,6 @@ export function calculateCounterPairAmount(values, e, state) {
   };
 }
 
-const decFnc = (number, dec, reverse) => {
-  let amount = number;
-
-  if (reverse) {
-    if (dec > 0) {
-      amount = parseFloat(number) * pow(dec);
-    }
-  } else if (dec > 0) {
-    amount = parseFloat(number) / pow(dec);
-  }
-  return amount;
-};
-
-export const reduceAmounToken = (amount, token, reverse) => {
-  let amountReduce = amount;
-
-  // if (token === 'millivolt' || token === 'milliampere') {
-  //   if (reverse) {
-  //     amountReduce = amount * 10 ** 3;
-  //   } else {
-  //     amountReduce = amount * 10 ** -3;
-  //   }
-  // }
-
-  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
-    const { coinDecimals } = coinDecimalsConfig[token];
-    if (reverse) {
-      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-    } else {
-      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-    }
-  }
-
-  return amountReduce;
-};
-
 const reduceTextCoin = (text) => {
   switch (text) {
     case 'millivolt':
@@ -191,9 +143,7 @@ export function getPoolToken(
   const myPools: MyPoolsT[] = [];
 
   pool.forEach((item) => {
-    if (
-      Object.prototype.hasOwnProperty.call(myPoolTokens, item.poolCoinDenom)
-    ) {
+    if (myPoolTokens[item.poolCoinDenom]) {
       const myTokenAmount = myPoolTokens[item.poolCoinDenom];
       myPools.push({
         ...item,
@@ -206,19 +156,6 @@ export function getPoolToken(
   });
 
   return myPools;
-}
-
-export function calculateSlippage(swapAmount: number, poolReserve: number) {
-  let slippage = new BigNumber(2)
-    .multipliedBy(swapAmount)
-    .dividedBy(poolReserve)
-    .toNumber();
-
-  if (slippage > 0.997) {
-    slippage = 0.997;
-  }
-
-  return slippage;
 }
 
 export function calculatePairAmount(inputAmount: string | number, state) {

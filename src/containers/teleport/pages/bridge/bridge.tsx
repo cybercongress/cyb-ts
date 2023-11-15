@@ -249,7 +249,7 @@ function Bridge() {
       if (
         accountBalancesA &&
         tokenA &&
-        Object.prototype.hasOwnProperty.call(accountBalancesA, tokenA) &&
+        accountBalancesA[tokenA] &&
         traseDenom
       ) {
         const [{ coinDecimals }] = traseDenom(tokenA);

@@ -19,6 +19,10 @@ async function asyncIterableBatchProcessor<T, K>(
       batch = [];
     }
   }
+  // process the rest
+  if (batch.length > 0) {
+    await batchProcess(batch);
+  }
 }
 
 export { arrayToAsyncIterable, asyncIterableBatchProcessor };

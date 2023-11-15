@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useIpfs } from 'src/contexts/ipfs';
-import { ContainerGradientText, Input, Button } from 'src/components';
+import {
+  ContainerGradientText,
+  Input,
+  ActionBar,
+  Button,
+} from 'src/components';
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
@@ -17,14 +21,15 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
+import { useBackend } from 'src/contexts/backend';
 
-const dataOpts = ['external', 'embedded'];
+const dataOpts = ['external', 'embedded', 'helia'];
 
 function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState('external');
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
-  const { isLoading: pending, error: failed } = useIpfs();
+  const { isIpfsInitialized, ipfsError: failed, loadIpfs } = useBackend();
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
@@ -43,10 +48,10 @@ function IpfsSettings() {
 
   useEffect(() => {
     adviserContext.setAdviser(
-      pending ? 'trying to connect to ipfs...' : null,
+      !isIpfsInitialized ? 'trying to connect to ipfs...' : null,
       'yellow'
     );
-  }, [adviserContext, pending]);
+  }, [adviserContext, isIpfsInitialized]);
 
   const onChangeSelect = (item) => {
     setValueSelect(item);
@@ -62,8 +67,7 @@ function IpfsSettings() {
   }, [valueInputGateway]);
 
   const onClickReConnect = () => {
-    const event = new Event('reconnectIpfsClient');
-    document.dispatchEvent(event);
+    loadIpfs();
   };
 
   const stateProps = {
@@ -73,11 +77,11 @@ function IpfsSettings() {
     dataOpts,
     onClickReConnect,
     onChangeSelect,
-    pending,
+    pending: !isIpfsInitialized,
     setNewUrl,
   };
 
-  if (!pending && failed) {
+  if (failed) {
     return <ErrorIpfsSettings stateErrorIpfsSettings={stateProps} />;
   }
 
@@ -96,7 +100,7 @@ function IpfsSettings() {
                 textSelectValue={valueSelect !== '' ? valueSelect : ''}
                 onChangeSelect={(item) => onChangeSelect(item)}
                 custom
-                // disabled={pending}
+                disabled={!isIpfsInitialized}
               >
                 {renderOptions(dataOpts)}
               </Select>
@@ -160,7 +164,7 @@ function IpfsSettings() {
           </div>
         </div>
 
-        {pending && (
+        {!isIpfsInitialized && (
           <ComponentLoader
             style={{ margin: '20px auto 10px', width: '100px' }}
           />

@@ -4,7 +4,7 @@ import { CardStatisics } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import AccountCount from '../brain/accountCount';
 import useGetStatisticsCyber from './useGetStatisticsCyber';
-import ForceGraph from '../forceGraph/forceGraph';
+import ForceGraph from '../../features/cyberlinks/CyberlinksGraph/CyberlinksGraph';
 import { routes } from 'src/routes';
 
 function Oracle() {

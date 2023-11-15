@@ -37,7 +37,7 @@ const PREFIXES = [
   },
 ];
 
-function TypingText({ content, delay = 30 }) {
+export function TypingText({ content, delay = 30 }) {
   const [displayed, updateDisplay] = useState('');
   let animID;
 

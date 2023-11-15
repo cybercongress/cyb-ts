@@ -128,7 +128,7 @@ function CurrentGift({
             alignItems: 'center',
           }}
         >
-          <div style={{ color: '#00C4FF' }}>
+          <div style={{ color: '#1fcbff' }}>
             {title} gift {GIFT_ICON}
             {/* {useSelectCyber ? 'all gift ' : 'gift'} */}
           </div>
@@ -141,7 +141,7 @@ function CurrentGift({
         </div>
       );
     }
-    return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
+    return <div style={{ color: '#1fcbff' }}>no gift {GIFT_ICON}</div>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGift, useSelectCyber, title]);
 
