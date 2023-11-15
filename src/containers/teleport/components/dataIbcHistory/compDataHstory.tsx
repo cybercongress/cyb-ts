@@ -2,21 +2,15 @@ import { Coin } from '@cosmjs/launchpad';
 import { useMemo } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER, PATTERN_CYBER } from 'src/utils/config';
-import {
-  getDisplayAmount,
-  getNowUtcTime,
-  timeSince,
-  trimString,
-} from 'src/utils/utils';
-import { FormatNumberTokens } from 'src/containers/nebula/components';
+import { getDisplayAmount, trimString } from 'src/utils/utils';
 import fromToIbc from 'images/fromToIbc.svg';
-import { Account, DenomArr } from 'src/components';
+import { Account, DenomArr, FormatNumberTokens } from 'src/components';
 import upArrow from 'images/up-arrow.png';
 import downArrow from 'images/down-arrow.png';
-import complete from 'images/statusTx/complete.png'
-import pending from 'images/statusTx/pending.png'
-import timeout from 'images/statusTx/timeout.png'
-import refunded from 'images/statusTx/refunded.png'
+import complete from 'images/statusTx/complete.png';
+import pending from 'images/statusTx/pending.png';
+import timeout from 'images/statusTx/timeout.png';
+import refunded from 'images/statusTx/refunded.png';
 import { TxsType } from '../../type';
 import { HistoriesItem, StatusTx } from '../../ibc-history/HistoriesItem';
 import styles from './styles.module.scss';
@@ -26,7 +20,7 @@ const mapStatusTxImg = {
   [StatusTx.PENDING]: pending,
   [StatusTx.TIMEOUT]: timeout,
   [StatusTx.REFUNDED]: refunded,
-}
+};
 
 export function TypeTsx({ sourceChainId }: { sourceChainId: string }) {
   if (sourceChainId === CYBER.CHAIN_ID) {

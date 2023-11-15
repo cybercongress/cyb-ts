@@ -3,11 +3,10 @@ import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { Account, MsgType, DenomArr, FormatNumberTokens } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
-import { Account, MsgType, DenomArr } from '../../components';
 import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
-import { FormatNumberTokens } from '../nebula/components';
 
 const S_TO_MS = 1 * 10 ** 3;
 
@@ -78,6 +77,7 @@ function Row({ value, title }) {
 }
 
 // eslint-disable-next-line import/no-unused-modules
+// TO DO refactor
 export function AmountDenom({ amountValue, denom, styleValue }) {
   const { traseDenom } = useIbcDenom();
 

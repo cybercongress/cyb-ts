@@ -1,7 +1,6 @@
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import { DenomArr } from '../../../components';
+import { DenomArr, FormatNumberTokens } from 'src/components';
 import { CYBER } from '../../../utils/config';
-import { FormatNumberTokens } from '../../nebula/components';
 import styles from './styles.scss';
 
 type TitlePoolPool = {

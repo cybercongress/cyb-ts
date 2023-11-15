@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
-import { DenomArr } from '../../../components';
-import { formatNumber } from '../../../utils/utils';
+import { CSSProperties } from 'react';
+import { formatNumber } from '../../utils/utils';
 import styles from './FormatNumberTokens.module.scss';
+import DenomArr from '../denom/denomArr';
 
 const getDecimal = (number, float) => {
   const nstring = new BigNumber(number).toString();

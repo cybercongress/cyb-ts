@@ -2,15 +2,14 @@ import { Link } from 'react-router-dom';
 import rectangle from 'images/rectangle.svg';
 import swapImg from 'images/sync-outline.svg';
 import { AmountDenom } from 'src/containers/txs/Activites';
-import { FormatNumberTokens } from 'src/containers/nebula/components';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
+import { FormatNumberTokens } from 'src/components';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './styles.module.scss';
-import Timestamp from './Timestamp';
 import CreatedAt from '../CreatedAt/CreatedAt';
 
 function getDataOrder(value, coinDecimalsA: number) {

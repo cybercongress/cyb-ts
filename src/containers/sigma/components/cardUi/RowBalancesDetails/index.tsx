@@ -2,13 +2,12 @@ import { useState, useMemo } from 'react';
 import { Transition } from 'react-transition-group';
 import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { FormatNumberTokens, DenomArr } from 'src/components';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
 import styles from './styles.module.scss';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
-import { FormatNumberTokens } from '../../../../nebula/components';
-import { DenomArr } from '../../../../../components';
 
 const cx = require('classnames');
 

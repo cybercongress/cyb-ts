@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
+import { FormatNumberTokens } from 'src/components';
 import { CYBER } from '../../../../utils/config';
-import { FormatNumberTokens } from '../../../nebula/components';
 import DonutChart from '../../../../components/DonutChart';
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
-import { BOOT_ICON, GIFT_ICON } from '../../utils';
+import { GIFT_ICON } from '../../utils';
 import { ProgressBar } from '../progressCard';
 import styles from './ReleaseStatus.module.scss';
 

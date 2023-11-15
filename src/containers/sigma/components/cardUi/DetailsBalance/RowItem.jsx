@@ -1,4 +1,4 @@
-import { FormatNumberTokens } from '../../../../nebula/components';
+import { FormatNumberTokens } from 'src/components';
 import styles from './styles.module.scss';
 
 const iconObj = {

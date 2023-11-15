@@ -6,9 +6,7 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 import cx from 'classnames';
 import SliderComponent, { SliderProps } from 'rc-slider';
-import { FormatNumberTokens } from 'src/containers/nebula/components';
-
-import { DenomArr } from '../../../../components';
+import { FormatNumberTokens, DenomArr } from 'src/components';
 import imgSwap from '../../../../image/exchange-arrows.svg';
 import 'rc-slider/assets/index.css';
 import s from './styles.module.scss';

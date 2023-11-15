@@ -1,7 +1,6 @@
 import { Coin } from '@cosmjs/launchpad';
-import { ContainerGradientText } from '../../../components';
+import { ContainerGradientText, FormatNumberTokens } from 'src/components';
 import { CYBER } from '../../../utils/config';
-import { FormatNumberTokens } from '../../nebula/components';
 import styles from './styles.scss';
 
 type Props = {
