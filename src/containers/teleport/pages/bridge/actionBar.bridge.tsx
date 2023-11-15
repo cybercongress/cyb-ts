@@ -10,6 +10,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { SigningStargateClient } from '@cosmjs/stargate';
 import {
   ActionBarContentText,
   LinkWindow,
@@ -24,17 +25,11 @@ import {
 } from '../../../../utils/utils';
 import networks from '../../../../utils/networkListIbc';
 
-import { TxsType } from '../../type';
+import { TxsType, TypeTxsT } from '../../type';
 import ActionBarPingTxs from '../../components/actionBarPingTxs';
 import { useIbcHistory } from '../../ibc-history/historyContext';
 
-const {
-  STAGE_INIT,
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
+const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
 const STAGE_CONFIRMED_IBC = 7.1;
 
@@ -47,23 +42,19 @@ const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
-const testItem = {
-  address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
-  txHash: 'string',
-  sourceChainId: 'string',
-  sourceChannelId: 'string',
-  destChainId: 'string',
-  destChannelId: 'string',
-  sequence: 'number',
-  sender: 'string',
-  recipient: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
-  amount: 'Coin',
-  timeoutHeight: 'number',
-  createdAt: 'number',
-  status: 'pending',
+type Props = {
+  tokenAmount: string;
+  tokenSelect: string;
+  networkB: string;
+  updateFunc: () => void;
+  isExceeded: boolean;
+  typeTxs: TypeTxsT;
+  ibcClient: null | SigningStargateClient;
+  denomIbc: null | string;
+  sourceChannel: string | null;
 };
 
-function ActionBar({ stateActionBar }) {
+function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { pingTxsIbc } = useIbcHistory();
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();
@@ -95,7 +86,7 @@ function ActionBar({ stateActionBar }) {
   };
 
   const depositOnClick = useCallback(async () => {
-    if (signer && traseDenom) {
+    if (ibcClient && denomIbc && signer && traseDenom) {
       const [{ address }] = await ibcClient.signer.getAccounts();
       const [{ address: counterpartyAccount }] = await signer.getAccounts();
 

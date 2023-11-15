@@ -1,61 +1,43 @@
-import { useEffect, useState, useCallback } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Pane,
-  Button,
-} from '@cybercongress/gravity';
-import Long from 'long';
+import { useState, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import {
-  ActionBarContentText,
-  Account,
-  LinkWindow,
-  ActionBar as ActionBarCenter,
-} from '../../../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../../utils/config';
-import {
-  fromBech32,
-  trimString,
-  convertAmountReverce,
-  convertAmount,
-} from '../../../../utils/utils';
-import networks from '../../../../utils/networkListIbc';
-
-import { TxsType } from '../../type';
 import { RootState } from 'src/redux/store';
-import ActionBarPingTxs from '../../components/actionBarPingTxs';
 import { useNavigate } from 'react-router-dom';
+import { Account, ActionBar as ActionBarCenter } from '../../../../components';
+import { LEDGER } from '../../../../utils/config';
+import { convertAmountReverce, convertAmount } from '../../../../utils/utils';
+
+import ActionBarPingTxs from '../../components/actionBarPingTxs';
 import { sortReserveCoinDenoms } from '../../utils';
+import { Params } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 
 const POOL_TYPE_INDEX = 1;
 
-const {
-  STAGE_INIT,
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
-
-const STAGE_CONFIRMED_IBC = 7.1;
-
-const fee = {
-  amount: [],
-  gas: DEFAULT_GAS_LIMITS.toString(),
-};
+const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
 const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
-function ActionBar({ stateActionBar }) {
+type Props = {
+  tokenAAmount: string;
+  tokenA: string;
+  tokenB: string;
+  params: undefined | Params;
+  selectedPool: Pool | undefined;
+  updateFunc: () => void;
+  isExceeded: boolean;
+  swapPrice: number;
+  poolPrice: number;
+};
+
+function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const navigate = useNavigate();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -79,26 +61,22 @@ function ActionBar({ stateActionBar }) {
   } = stateActionBar;
 
   const swapWithinBatch = async () => {
-    if (signer && signingClient && traseDenom) {
+    if (signer && selectedPool && params && signingClient && traseDenom) {
       const [{ address }] = await signer.getAccounts();
-
-      let amountTokenA = tokenAAmount;
 
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
 
-      amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
+      const amountTokenA = convertAmountReverce(tokenAAmount, coinDecimalsA);
 
       setStage(STAGE_SUBMITTED);
       const offerCoinFee = coinFunc(
         Math.ceil(
-          parseFloat(amountTokenA) *
-            convertAmount(parseFloat(params.swapFeeRate), 18) *
-            0.5
+          amountTokenA * convertAmount(parseFloat(params.swapFeeRate), 18) * 0.5
         ),
         tokenA
       );
 
-      const offerCoin = coinFunc(parseFloat(amountTokenA), tokenA);
+      const offerCoin = coinFunc(amountTokenA, tokenA);
       const demandCoinDenom = tokenB;
 
       const exp = new BigNumber(10).pow(18).toString();
@@ -110,13 +88,13 @@ function ActionBar({ stateActionBar }) {
         try {
           const response = await signingClient.swapWithinBatch(
             address,
-            parseFloat(selectedPool.id),
+            selectedPool.id,
             POOL_TYPE_INDEX,
             offerCoin,
             demandCoinDenom,
             offerCoinFee,
             convertSwapPrice,
-            fee
+            'auto'
           );
 
           if (response.code === 0) {
