@@ -29,7 +29,6 @@ const renderOptions = (data, selected) => {
       </>
     );
   }
-
   return items;
 };
 

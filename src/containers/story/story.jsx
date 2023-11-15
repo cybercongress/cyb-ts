@@ -2,6 +2,8 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import { Pane } from '@cybercongress/gravity';
 import { i18n } from '../../i18n/en';
+import styles from './story.module.scss';
+import cx from 'classnames';
 
 const mp3 = require('./starwars.mp3');
 const cyberImg = require('../../image/cyber.png');
@@ -102,7 +104,7 @@ class Story extends React.Component {
   swapStory = () => {
     const { history } = this.props;
     localStorage.setItem('story', JSON.stringify(true));
-    navigate('/superintelligence');
+    // navigate('/superintelligence');
   };
 
   render() {
@@ -110,7 +112,7 @@ class Story extends React.Component {
 
     return (
       <div>
-        <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
+        <div className={styles.story} style={{ opacity: `${end ? 0 : 1}` }}>
           {!story && (
             <div
               style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -141,6 +143,7 @@ class Story extends React.Component {
             </div>
           )}
           <section
+            className={cx(styles.section, styles.title)}
             id="title"
             style={{
               opacity: `${animated ? 0 : 1}`,
@@ -150,7 +153,7 @@ class Story extends React.Component {
             <p>A long time ago somewhere in Cosmos ...</p>
           </section>
 
-          <section className="content">
+          <section className={cx(styles.content, styles.section)}>
             <div id="text" className={`${animated ? 'animated' : ''}`}>
               <p style={{ textAlign: 'center' }}>{T.story.episode}</p>
               <p style={{ textAlign: 'center' }}>{T.story.header}</p>

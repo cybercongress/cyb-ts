@@ -1,10 +1,4 @@
-import {
-  IPFSContentDetails,
-  IPFSContentMaybe,
-  IpfsContentType,
-} from 'src/utils/ipfs/ipfs';
-import { useEffect, useState } from 'react';
-import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 import { CYBER } from 'src/utils/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
@@ -12,26 +6,7 @@ import TextMarkdown from '../TextMarkdown';
 import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
-// import DebugContentInfo from '../DebugContentInfo/DebugContentInfo';
 import Audio from './component/Audio/Audio';
-
-export const getContentDetails = async (
-  cid: string,
-  content: IPFSContentMaybe
-): Promise<IPFSContentDetails> => {
-  // if (content?.result) {
-
-  const details = await parseRawIpfsData(
-    content?.result,
-    content?.meta?.mime,
-    cid
-    // (progress: number) => console.log(`${cid} progress: ${progress}`)
-  );
-
-  return details;
-  // }
-  // return undefined;
-};
 
 function OtherItem({
   content,
@@ -58,40 +33,14 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 }
 
 type ContentTabProps = {
+  details: IPFSContentDetails;
   content: IPFSContentMaybe;
-  status: string | undefined;
   cid: string;
   search?: boolean;
-  setType?: (type: IpfsContentType) => void;
 };
 
-function ContentIpfs({
-  status,
-  content,
-  cid,
-  search,
-  setType,
-}: ContentTabProps) {
-  const [ipfsDataDetails, setIpfsDatDetails] =
-    useState<IPFSContentDetails>(undefined);
-
-  useEffect(() => {
-    // TODO: cover case with content === 'availableDownload'
-    // && !content?.availableDownload
-
-    if (status === 'completed') {
-      (async () => {
-        const details = await getContentDetails(cid, content);
-        setIpfsDatDetails(details);
-
-        if (setType && details?.type) {
-          setType(details.type);
-        }
-      })();
-    }
-  }, [content, status, cid]);
-
-  const contentType = ipfsDataDetails?.type;
+function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
+  const contentType = details?.type;
 
   return (
     <div>
@@ -103,38 +52,34 @@ function ContentIpfs({
       /> */}
       {/* Default */}
 
-      {!content && <div>{cid.toString()}</div>}
+      {!details?.type && <TextMarkdown preview>{cid.toString()}</TextMarkdown>}
 
       {content?.availableDownload && (
         <DownloadableItem search={search} cid={cid} />
       )}
 
-      {content?.meta.mime?.includes('audio') && <Audio content={content} />}
+      {contentType === 'audio' && <Audio content={content} />}
 
       {contentType === 'video' && content && (
         <VideoPlayerGatewayOnly content={content} />
       )}
 
-      {ipfsDataDetails && (
+      {details && (
         <>
           {contentType === 'text' && (
             <TextMarkdown preview={search}>
-              {search ? ipfsDataDetails.text : ipfsDataDetails.content}
+              {search ? details.text : details.content}
             </TextMarkdown>
           )}
-          {contentType === 'image' && <Img content={ipfsDataDetails.content} />}
-          {contentType === 'pdf' && ipfsDataDetails.content && (
-            <Pdf content={ipfsDataDetails.content} />
+          {contentType === 'image' && <Img content={details.content} />}
+          {contentType === 'pdf' && details.content && (
+            <Pdf content={details.content} />
           )}
           {contentType === 'link' && (
-            <LinkHttp content={ipfsDataDetails.content} preview />
+            <LinkHttp url={details.content!} preview={search} />
           )}
           {contentType === 'other' && (
-            <OtherItem
-              search={search}
-              cid={cid}
-              content={ipfsDataDetails.content}
-            />
+            <OtherItem search={search} cid={cid} content={details.content} />
           )}
         </>
       )}

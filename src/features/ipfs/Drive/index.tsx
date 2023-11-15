@@ -5,7 +5,6 @@ import Table from 'src/components/Table/Table';
 import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
 
-import { useIpfs } from 'src/contexts/ipfs';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Button as CybButton, Dots, Loading, Select } from 'src/components';
 import FileInputButton from './FileInputButton';
@@ -88,14 +87,13 @@ function SyncInfo({ syncState }: { syncState: WorkerState }) {
 }
 
 function Drive() {
-  const { node } = useIpfs();
   const [queryText, setQueryText] = useState('');
   const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { startSyncTask, dbApi } = useBackend();
+  const { startSyncTask, dbApi, isReady } = useBackend();
   const { syncState, dbPendingWrites } = useAppSelector(
     (store) => store.backend
   );
@@ -159,8 +157,6 @@ function Drive() {
                     updatedRow[key] = value;
                   }
                 }
-                console.log('===row', row, updatedRow);
-
                 return updatedRow;
               });
 
@@ -259,7 +255,7 @@ function Drive() {
             <SyncInfo syncState={syncState} />
           )}
           {(syncState?.status === 'idle' || syncState?.status === 'error') && (
-            <CybButton disabled={!isLoaded || !node} onClick={importIpfs}>
+            <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
               sync drive
             </CybButton>
           )}
@@ -299,7 +295,7 @@ function Drive() {
             </div>
             <div className={styles.subPanel}>
               <CybButton
-                disabled={!isLoaded || !node}
+                disabled={!isLoaded || !isReady}
                 onClick={exportReations}
                 small
               >

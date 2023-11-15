@@ -4,7 +4,6 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import cx from 'classnames';
-import React from 'react';
 import { LinkWindow } from '../link/link';
 import styles from './styles.module.scss';
 
@@ -19,12 +18,11 @@ function TextMarkdown({
 
   return (
     <div
-      // className="container-text-SearchItem"
       className={cx(styles.wrapper, {
-        [styles.center]: !preview && length <= 64,
-        [styles.title]: !preview && length <= 16,
         [styles.markdownContainerPreview]: preview,
         [styles.markdownContainer]: !preview,
+        [styles.center]: !preview && length <= 64,
+        [styles.title]: !preview && length <= 16,
       })}
     >
       <ReactMarkdown

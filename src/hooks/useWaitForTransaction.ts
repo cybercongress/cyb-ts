@@ -1,3 +1,4 @@
+import { IndexedTx } from '@cosmjs/stargate';
 import { useCallback, useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 
@@ -5,8 +6,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 // https://wagmi.sh/react/hooks/useWaitForTransaction
 
 type Props = {
-  hash: string | null;
-  onSuccess?: () => void;
+  hash: string | null | undefined;
+  onSuccess?: (response: IndexedTx) => void;
 };
 
 function useWaitForTransaction({ hash, onSuccess }: Props) {
@@ -31,7 +32,7 @@ function useWaitForTransaction({ hash, onSuccess }: Props) {
           setError(response.rawLog);
         } else {
           setData(response);
-          onSuccess && onSuccess();
+          onSuccess && onSuccess(response);
         }
       } else {
         setTimeout(getTx, 1500);

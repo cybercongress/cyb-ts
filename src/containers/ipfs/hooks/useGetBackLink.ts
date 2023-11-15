@@ -27,32 +27,63 @@ export const reduceParticleArr = (data: BackLink[]) => {
   );
 };
 
+const LIMIT = 20;
+
 function useGetBackLink(cid: string, { skip = false } = {}) {
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, isInitialLoading } =
-    useInfiniteQuery(
-      ['useGetBackLink', cid],
-      async ({ pageParam = 0 }: { pageParam?: number }) => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    error,
+    isInitialLoading,
+    isFetching,
+  } = useInfiniteQuery(
+    ['useGetBackLink', cid],
+    async ({ pageParam = 0 }: { pageParam?: number }) => {
+      try {
         const response = (await queryClient?.backlinks(
           cid,
           pageParam,
-          20
+          LIMIT
         )) as Res;
 
         return { data: response, page: pageParam };
-      },
-      {
-        enabled: Boolean(queryClient && cid) && !skip,
-        getNextPageParam: (lastPage) => {
-          if (!lastPage.data.pagination.total) {
-            return undefined;
-          }
+      } catch (error) {
+        // not sure about handling this error
+        if (
+          error instanceof Error &&
+          error.message.includes('particle not found')
+        ) {
+          return {
+            data: { result: [], pagination: { total: 0 } },
+            page: pageParam,
+          };
+        }
 
-          return lastPage.page + 1;
-        },
+        throw error;
       }
-    );
+    },
+    {
+      enabled: Boolean(queryClient && cid) && !skip,
+      getNextPageParam: (lastPage) => {
+        const {
+          page,
+          data: {
+            pagination: { total },
+          },
+        } = lastPage;
+
+        if (!total || (page + 1) * LIMIT > total) {
+          return undefined;
+        }
+
+        return page + 1;
+      },
+    }
+  );
 
   // TODO: combine 2 reduce
   const d =
@@ -66,6 +97,9 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     backlinks,
     total: data?.pages[0].data.pagination.total || 0,
     hasNextPage,
+    refetch,
+    error,
+    isFetching,
     isInitialLoading,
     fetchNextPage,
   };

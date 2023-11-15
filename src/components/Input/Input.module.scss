@@ -21,10 +21,12 @@
     color: var(--primary-color);
     text-align: end;
     filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
+    text-transform: initial;
 
     &::placeholder {
       color: #272343;
       opacity: 0.5;
+      text-transform: lowercase;
     }
 
     &:disabled {
