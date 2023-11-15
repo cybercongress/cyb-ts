@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
@@ -15,17 +21,20 @@ import s from './styles.module.scss';
 export function ButtonIcon({
   img,
   disabled,
+  onClick,
   ...props
 }: {
   img: string;
   disabled?: boolean;
   props: any;
+  onClick: () => void;
 }) {
   return (
     <button
       type="button"
       className={s.buttonIcon}
       disabled={disabled}
+      onMouseUp={onClick}
       {...props}
     >
       <img src={img} alt="img" />
@@ -127,11 +136,22 @@ function Slider({
   const { traseDenom } = useIbcDenom();
   const [valueSilder, setValueSilder] = useState(0);
   const [currentPercents, setCurrentPercent] = useState(0);
+  const beforePercents = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const resetDragging = useCallback(() => setIsDragging(false), []);
 
   const onClickReverseButton = useCallback(
-    () => coinReverseAction && coinReverseAction(),
-    [coinReverseAction]
+    () => !isDragging && coinReverseAction && coinReverseAction(),
+    [coinReverseAction, isDragging]
   );
+
+  useEffect(() => {
+    if (beforePercents.current !== currentPercents) {
+      setIsDragging(true);
+    }
+    beforePercents.current = currentPercents;
+  }, [currentPercents]);
 
   useEffect(() => {
     if (
@@ -182,11 +202,14 @@ function Slider({
 
   const renderCustomHandle: SliderProps['handle'] = ({ value }) => {
     return (
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <div
         className={s.debtAmountPos}
         style={{
           left: `${value}%`,
         }}
+        onMouseUp={() => resetDragging()}
+        onTouchEnd={() => resetDragging()}
       >
         <SphereValueMemo angle={90}>
           <div>{currentPercents}%</div>
