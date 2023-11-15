@@ -1,32 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+
 import BigNumber from 'bignumber.js';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 
 import cx from 'classnames';
 import SliderComponent, { SliderProps } from 'rc-slider';
-import 'rc-slider/assets/index.css';
 import { FormatNumberTokens } from 'src/containers/nebula/components';
+
 import { DenomArr } from '../../../../components';
 import imgSwap from '../../../../image/exchange-arrows.svg';
-
+import 'rc-slider/assets/index.css';
 import s from './styles.module.scss';
+import './styles.override.css';
 
 // REFACT: Move outside or reuse
 export function ButtonIcon({
   img,
   disabled,
+  onClick,
   ...props
 }: {
   img: string;
   disabled?: boolean;
   props: any;
+  onClick: () => void;
 }) {
   return (
     <button
       type="button"
       className={s.buttonIcon}
       disabled={disabled}
+      onMouseUp={onClick}
       {...props}
     >
       <img src={img} alt="img" />
@@ -128,13 +133,33 @@ function Slider({
   const { traseDenom } = useIbcDenom();
   const [valueSilder, setValueSilder] = useState(0);
   const [currentPercents, setCurrentPercent] = useState(0);
+  const beforePercents = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const resetDragging = useCallback(() => setIsDragging(false), []);
 
   const onClickReverseButton = useCallback(
-    () => coinReverseAction && coinReverseAction(),
-    [coinReverseAction]
+    () => !isDragging && coinReverseAction && coinReverseAction(),
+    [coinReverseAction, isDragging]
   );
 
   useEffect(() => {
+    if (beforePercents.current !== currentPercents) {
+      setIsDragging(true);
+    }
+    beforePercents.current = currentPercents;
+  }, [currentPercents]);
+
+  useEffect(() => {
+    setIsDisabled(
+      !(
+        accountBalances &&
+        accountBalances[tokenA] &&
+        accountBalances[tokenA] > 0
+      )
+    );
+
     if (
       tokenA &&
       accountBalances &&
@@ -183,11 +208,14 @@ function Slider({
 
   const renderCustomHandle: SliderProps['handle'] = ({ value }) => {
     return (
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <div
         className={s.debtAmountPos}
         style={{
           left: `${value}%`,
         }}
+        onMouseUp={() => resetDragging()}
+        onTouchEnd={() => resetDragging()}
       >
         <SphereValueMemo angle={90}>
           <div>{currentPercents}%</div>
@@ -223,6 +251,7 @@ function Slider({
       <div className={s.debtAmountSlider}>
         <div style={{ width: '100%', padding: '0 25px' }}>
           <SliderComponent
+            disabled={isDisabled}
             value={valueSilder}
             min={0}
             max={100}
