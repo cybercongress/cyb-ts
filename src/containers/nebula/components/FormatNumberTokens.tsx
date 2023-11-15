@@ -16,7 +16,7 @@ const getDecimal = (number, float) => {
 };
 
 type Props = {
-  text: string;
+  text?: string;
   value: number;
   tooltipStatusImg?: boolean;
   styleValue?: object;

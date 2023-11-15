@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
@@ -6,7 +6,8 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import cx from 'classnames';
 import SliderComponent, { SliderProps } from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { ValueImg } from '../../../../components';
+import { FormatNumberTokens } from 'src/containers/nebula/components';
+import { DenomArr } from '../../../../components';
 import imgSwap from '../../../../image/exchange-arrows.svg';
 
 import s from './styles.module.scss';
@@ -114,7 +115,7 @@ function Slider({
   accountBalances,
   setPercentageBalanceHook,
   coinReverseAction,
-  getPrice,
+  pairPrice,
 }: {
   tokenA: string;
   tokenB?: string;
@@ -122,7 +123,7 @@ function Slider({
   accountBalances: any;
   setPercentageBalanceHook?: (value: number) => void;
   coinReverseAction?: () => void;
-  getPrice?: any;
+  pairPrice?: { to: number; from: number };
 }) {
   const { traseDenom } = useIbcDenom();
   const [valueSilder, setValueSilder] = useState(0);
@@ -194,18 +195,20 @@ function Slider({
         {tokenA && tokenB && (
           <>
             <SphereValueMemo angle={angleDeg}>
-              {/* refact: fix */}
-              <ValueImg text={tokenA} onlyImg />
-              {getPrice.to !== undefined && (
-                <div className={s.imgValue}>{getPrice.to}</div>
+              <DenomArr denomValue={tokenA} onlyImg />
+              {pairPrice !== undefined && (
+                <div className={s.imgValue}>
+                  <FormatNumberTokens value={pairPrice.to} />
+                </div>
               )}
             </SphereValueMemo>
 
             <SphereValueMemo angle={-angleDeg}>
-              {/* refact: fix */}
-              <ValueImg text={tokenB} onlyImg />
-              {getPrice.from !== undefined && (
-                <div className={s.imgValue}>{getPrice.from}</div>
+              <DenomArr denomValue={tokenB} onlyImg />
+              {pairPrice !== undefined && (
+                <div className={s.imgValue}>
+                  <FormatNumberTokens value={pairPrice.from} />
+                </div>
               )}
             </SphereValueMemo>
           </>

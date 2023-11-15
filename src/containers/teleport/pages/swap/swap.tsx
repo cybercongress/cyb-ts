@@ -17,8 +17,10 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Nullable } from 'src/types';
-import TokenSetterSwap, { TokenSetterId } from '../../components/TokenSetterSwap';
-import { getBalances, useGetParams, useGetSwapPrice } from '../../hooks';
+import TokenSetterSwap, {
+  TokenSetterId,
+} from '../../components/TokenSetterSwap';
+import { useGetParams, useGetSwapPrice } from '../../hooks';
 import {
   sortReserveCoinDenoms,
   calculatePairAmount,
@@ -36,7 +38,7 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 function Swap() {
   const { traseDenom } = useIbcDenom();
-  const { accountBalances, refreshBalances } = useTeleport()
+  const { accountBalances, refreshBalances } = useTeleport();
   const queryClient = useQueryClient();
   const [update, setUpdate] = useState(0);
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
@@ -210,25 +212,31 @@ function Swap() {
     setIsExceeded(exceeded);
   }, [poolPrice, tokenAAmount, validInputAmountTokenA, useGetSlippage]);
 
-  const getPrice = useMemo(() => {
+  const pairPrice = useMemo(() => {
     if (poolPrice && tokenA && tokenB && traseDenom) {
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
-      if ([tokenA, tokenB].sort()[0] === tokenA) {
-        const revPrice = new BigNumber(1)
-          .dividedBy(poolPrice)
-          .dp(coinDecimalsB, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        return { to: 1, from: revPrice };
-      }
-      const amountTokenA = getDisplayAmountReverce(1, coinDecimalsA);
-      const revPrice = new BigNumber(amountTokenA)
-        .multipliedBy(poolPrice)
-        .dp(3, BigNumber.ROUND_FLOOR)
-        .toNumber();
+      let revPrice = new BigNumber(0);
+      let position = 0;
 
-      return { to: 1, from: revPrice };
+      if ([tokenA, tokenB].sort()[0] === tokenA) {
+        revPrice = new BigNumber(1).dividedBy(poolPrice);
+        position = coinDecimalsB;
+      } else {
+        const amountTokenA = getDisplayAmountReverce(1, coinDecimalsA);
+        revPrice = new BigNumber(amountTokenA).multipliedBy(poolPrice);
+        position = coinDecimalsA;
+      }
+
+      if (!position || revPrice) {
+        revPrice.dp(position, BigNumber.ROUND_FLOOR);
+      }
+
+      return {
+        to: 1,
+        from: revPrice.toNumber(),
+      };
     }
 
     return { to: 0, from: 0 };
@@ -344,7 +352,7 @@ function Swap() {
             setPercentageBalanceHook={setPercentageBalanceHook}
             coinReverseAction={() => tokenChange()}
             accountBalances={accountBalances}
-            getPrice={getPrice}
+            pairPrice={pairPrice}
           />
 
           <TokenSetterSwap
