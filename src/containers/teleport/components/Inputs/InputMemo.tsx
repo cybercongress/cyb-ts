@@ -2,9 +2,8 @@ import { Input } from 'src/components';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import { useCallback, useRef } from 'react';
-import { addContenToIpfs } from 'src/utils/ipfs/utils-ipfs';
-import { useIpfs } from 'src/contexts/ipfs';
 import styles from './styles.module.scss';
+import { useBackend } from 'src/contexts/backend';
 
 type Props = {
   onChangeValue: React.Dispatch<React.SetStateAction<string>>;
@@ -12,21 +11,21 @@ type Props = {
 };
 
 function InputMemo({ onChangeValue, value }: Props) {
-  const { node } = useIpfs();
+  const { ipfsNode } = useBackend();
   const inputOpenFileRef = useRef<HTMLInputElement>(null);
 
   const calculationIpfsTo = useCallback(
     async (file) => {
-      if (!node) {
+      if (!ipfsNode) {
         return;
       }
-      const toCid = await addContenToIpfs(node, file);
+      const toCid = await ipfsNode.addContent(file);
 
       if (toCid) {
         onChangeValue(toCid);
       }
     },
-    [node, onChangeValue]
+    [ipfsNode, onChangeValue]
   );
 
   const onClickClear = () => {

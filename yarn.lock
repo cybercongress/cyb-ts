@@ -20052,18 +20052,6 @@ libp2p@^0.46.12, libp2p@^0.46.6:
     wherearewe "^2.0.1"
     xsalsa20 "^1.1.0"
 
-libsodium-sumo@^0.7.13:
-  version "0.7.13"
-  resolved "https://registry.yarnpkg.com/libsodium-sumo/-/libsodium-sumo-0.7.13.tgz#533b97d2be44b1277e59c1f9f60805978ac5542d"
-  integrity sha512-zTGdLu4b9zSNLfovImpBCbdAA4xkpkZbMnSQjP8HShyOutnGjRHmSOKlsylh1okao6QhLiz7nG98EGn+04cZjQ==
-
-libsodium-wrappers-sumo@^0.7.11:
-  version "0.7.13"
-  resolved "https://registry.yarnpkg.com/libsodium-wrappers-sumo/-/libsodium-wrappers-sumo-0.7.13.tgz#a33aea845a0bb56db067548f04feba28c730ab8e"
-  integrity sha512-lz4YdplzDRh6AhnLGF2Dj2IUj94xRN6Bh8T0HLNwzYGwPehQJX6c7iYVrFUPZ3QqxE0bqC+K0IIqqZJYWumwSQ==
-  dependencies:
-    libsodium-sumo "^0.7.13"
-
 libsodium-wrappers@^0.7.6:
   version "0.7.11"
   resolved "https://registry.yarnpkg.com/libsodium-wrappers/-/libsodium-wrappers-0.7.11.tgz#53bd20606dffcc54ea2122133c7da38218f575f7"
