@@ -4,7 +4,7 @@ import { formatNumber } from '../../utils/utils';
 import styles from './FormatNumberTokens.module.scss';
 import DenomArr from '../denom/denomArr';
 
-const getDecimal = (number, float) => {
+const getDecimal = (number: number) => {
   const nstring = new BigNumber(number).toString();
   const narray = nstring.split('.');
   let position = 3;
@@ -20,8 +20,7 @@ type Props = {
   text?: string;
   value: number;
   tooltipStatusImg?: boolean;
-  styleValue?: object;
-  float?: boolean;
+  styleValue?: CSSProperties;
   customText?: string;
   marginContainer?: string;
   styleContainer?: CSSProperties;
@@ -32,12 +31,11 @@ function FormatNumberTokens({
   value,
   tooltipStatusImg,
   styleValue,
-  float,
   customText,
   marginContainer,
   styleContainer,
 }: Props) {
-  const decimal = getDecimal(value, float);
+  const decimal = getDecimal(value);
   return (
     <div
       style={{

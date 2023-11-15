@@ -2,11 +2,10 @@ import { UseInfiniteQueryResult } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getNowUtcTime, timeSince } from 'src/utils/utils';
-import { ContainerGradientText, Dots } from 'src/components';
+import { ContainerGradientText, Dots, AmountDenom } from 'src/components';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable } from 'src/types';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { AmountDenom } from 'src/containers/txs/Activites';
 import { Link } from 'react-router-dom';
 import { TxResponse } from '@cosmjs/tendermint-rpc';
 

@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
-import { Account, Cid, DenomArr, FormatNumberTokens } from 'src/components';
+import {
+  Account,
+  Cid,
+  DenomArr,
+  FormatNumberTokens,
+  AmountDenom,
+} from 'src/components';
 import { CYBER } from '../../../../../utils/config';
 import {
   formatNumber,
   timeSince,
   trimString,
 } from '../../../../../utils/utils';
-import { AmountDenom } from '../../../../../containers/txs/Activites';
 
 const S_TO_MS = 1 * 10 ** 3;
 

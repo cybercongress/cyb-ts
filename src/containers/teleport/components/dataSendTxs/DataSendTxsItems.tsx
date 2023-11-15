@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/launchpad';
-import { AmountDenom } from 'src/containers/txs/Activites';
+import { AmountDenom } from 'src/components';
 import styles from './styles.module.scss';
 
 // TO DO Check CID if memo is CID > use Ipfs for render

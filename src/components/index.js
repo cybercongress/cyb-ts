@@ -49,7 +49,8 @@ import ButtonIcon from './buttons/ButtonIcon';
 import Loading from './ui/Loading';
 import DonutChart from './DonutChart';
 import AvailableAmount from './AvailableAmount/AvailableAmount';
-import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens'
+import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens';
+import AmountDenom from './AmountDenom/AmountDenom';
 
 const BtnGrd = Button;
 
@@ -106,6 +107,7 @@ export {
   DonutChart,
   AvailableAmount,
   FormatNumberTokens,
+  AmountDenom,
 };
 
 export { Dots } from './ui/Dots';
