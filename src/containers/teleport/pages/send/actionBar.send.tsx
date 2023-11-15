@@ -1,59 +1,34 @@
-import { useEffect, useState, useCallback } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Pane,
-  Button,
-} from '@cybercongress/gravity';
-import Long from 'long';
+import { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import {
-  ActionBarContentText,
-  Account,
-  LinkWindow,
-  ActionBar as ActionBarCenter,
-} from '../../../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../../utils/config';
-import {
-  fromBech32,
-  trimString,
-  convertAmountReverce,
-  convertAmount,
-} from '../../../../utils/utils';
-import networks from '../../../../utils/networkListIbc';
-
-import { TxsType } from '../../type';
 import { RootState } from 'src/redux/store';
+import { Account, ActionBar as ActionBarCenter } from '../../../../components';
+import { LEDGER } from '../../../../utils/config';
+import { convertAmountReverce } from '../../../../utils/utils';
+
 import ActionBarPingTxs from '../../components/actionBarPingTxs';
 
-const POOL_TYPE_INDEX = 1;
-
-const {
-  STAGE_INIT,
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
-
-const STAGE_CONFIRMED_IBC = 7.1;
-
-const fee = {
-  amount: [],
-  gas: DEFAULT_GAS_LIMITS.toString(),
-};
+const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
 const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
-function ActionBar({ stateActionBar }) {
+type Props = {
+  tokenAmount: string;
+  tokenSelect: string;
+  recipient: string | undefined;
+  updateFunc: () => void;
+  isExceeded: boolean;
+  memoValue: string;
+};
+
+function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { signingClient, signer } = useSigningClient();
@@ -73,25 +48,22 @@ function ActionBar({ stateActionBar }) {
   } = stateActionBar;
 
   const sendOnClick = async () => {
-    if (signer && signingClient && traseDenom) {
+    if (signer && signingClient && traseDenom && recipient) {
       const [{ address }] = await signer.getAccounts();
-
-      let amountTokenA = tokenAmount;
 
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
 
-      amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
+      const amountTokenA = convertAmountReverce(tokenAmount, coinDecimalsA);
 
       setStage(STAGE_SUBMITTED);
 
-      const offerCoin = [coinFunc(parseFloat(amountTokenA), tokenSelect)];
-      const recipientAddress = recipient;
+      const offerCoin = [coinFunc(amountTokenA, tokenSelect)];
 
       if (addressActive !== null && addressActive.bech32 === address) {
         try {
           const response = await signingClient.sendTokens(
             address,
-            recipientAddress,
+            recipient,
             offerCoin,
             'auto',
             memoValue
