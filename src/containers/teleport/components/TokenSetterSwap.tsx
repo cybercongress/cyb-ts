@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { DenomArr, InputNumber, AvailableAmount } from 'src/components';
+import { DenomArr, AvailableAmount } from 'src/components';
 import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
-import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
+import { Nullable } from 'src/types';
 import { Col, GridContainer } from './grid';
 import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale';
 
@@ -13,9 +13,9 @@ export const enum TokenSetterId {
 
 type Props = {
   id: TokenSetterId;
-  listTokens: undefined | ObjKeyValue;
+  listTokens: Nullable<ObjKeyValue>;
   valueSelect: string;
-  accountBalances: ObjKeyValue | null;
+  accountBalances: Nullable<ObjKeyValue>;
   selected: string;
   tokenAmountValue: string;
   validInputAmount?: boolean;

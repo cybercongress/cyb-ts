@@ -205,8 +205,8 @@ function Send() {
     <>
       <MainContainer width="62%">
         <TeleportContainer>
-          <AccountInput recipient={recipient} setRecipient={setRecipient} />
           <InputMemo value={memoValue} onChangeValue={setMemoValue} />
+          <AccountInput recipient={recipient} setRecipient={setRecipient} />
           <GridContainer>
             <Col>
               <InputNumberDecimalScale

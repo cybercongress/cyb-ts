@@ -11,32 +11,32 @@
   height: 39px;
   filter: blur(25px);
   position: absolute;
-  top: 50%;
 }
 
 .teleportLogo {
-  transform: rotate(-45deg);
-  width: 130px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   display: block;
   position: relative;
   background-position: center center;
   background-repeat: no-repeat;
-  background-image: url(images/temple/teleport.png);
+  background-image: url(images/teleport-logo-angled.png);
 
   &::before {
     content: "";
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 3.92%, rgba(0, 0, 0, 0) 3.93%, rgba(255, 217, 0, 0.15) 86.49%, rgba(255, 217, 0, 0.15) 99.97%);
     right: 100%;
-    transform: translate(10px, -50%);
+    transform: translate(50%, 0%) rotate(-45deg);
     @include ion-light;
+    top: 100%;
   }
 
   &::after {
     content: "";
     background: linear-gradient(-90deg, rgba(0, 0, 0, 0) 3.92%, rgba(0, 0, 0, 0) 3.93%, rgba(255, 217, 0, 0.15) 86.49%, rgba(255, 217, 0, 0.15) 99.97%);
     left: 100%;
-    transform: translate(-10px, -50%);
+    transform: translate(-50%, -50%) rotate(-45deg);
+    top: 0%;
     @include ion-light;
   }
 }

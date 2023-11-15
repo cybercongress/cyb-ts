@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InputNumber } from 'src/components';
 import LinearGradientContainer, {
   Color,
@@ -8,12 +8,14 @@ import { $TsFixMeFunc } from 'src/types/tsfix';
 import styles from './styles.module.scss';
 
 type Props = {
+  id?: string;
   title: string;
   value: string;
   tokenSelect?: string;
   validAmount?: boolean;
   validAmountMessage?: boolean;
   validAmountMessageText?: string;
+  autoFocus?: boolean;
   onValueChange: $TsFixMeFunc;
 };
 
