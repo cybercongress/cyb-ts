@@ -1,17 +1,20 @@
+import { Link } from 'react-router-dom';
 import styles from './styles.module.scss';
 
 type Props = {
   value: number | string;
   text?: string;
-  onlyValue?: boolean;
+  to: string;
 };
 
-function TotalCount({ onlyValue, value, text }: Props) {
+function TotalCount({ value, text, to }: Props) {
   return (
-    <div className={styles.containerTotalCount}>
-      <div className={styles.countValue}>+{value}</div>
-      {!onlyValue && <span className={styles.countText}>{text}</span>}
-    </div>
+    <Link to={to}>
+      <div className={styles.containerTotalCount}>
+        <div className={styles.countValue}>+{value}</div>
+        {text && <span className={styles.countText}>{text}</span>}
+      </div>
+    </Link>
   );
 }
 

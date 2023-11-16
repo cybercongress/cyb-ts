@@ -12,10 +12,10 @@
 }
 
 .BridgeActionContentContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   overflow: hidden;
+  padding: 5px;
 }
 
 .TeleportDescrpContainerContent {
@@ -30,7 +30,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 50px;
-  margin-top: 70px;
 
   @media (max-width: 580px) {
     grid-template-columns: 1fr;

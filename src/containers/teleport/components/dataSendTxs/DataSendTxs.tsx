@@ -79,7 +79,7 @@ function DataSendTxs({
       hasMore={hasNextPage}
       loader={false}
     >
-      {itemRows.length > 0 ? itemRows : null}
+      {itemRows.length > 0 && itemRows}
     </InfiniteScroll>
   );
 }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, createSearchParams } from 'react-router-dom';
 import { DenomArr } from 'src/components';
 import fromToIbc from 'images/fromToIbc.svg';
 import styles from './styles.module.scss';
@@ -12,11 +12,26 @@ type PropsBridgeItem = {
 };
 
 function BridgeItem({ item }: PropsBridgeItem) {
-  const searchParam = `networkFrom=${item.networkFrom}&networkTo=${item.networkTo}&token=${item.token}`;
+  const { networkFrom, networkTo, token } = item;
 
   return (
-    <Link to={`bridge?${searchParam}`} className={styles.containerBridgeItem}>
-      <DenomArr denomValue={item.token} onlyImg size={45} />
+    <Link
+      to={{
+        pathname: 'bridge',
+        search: createSearchParams({
+          networkFrom,
+          networkTo,
+          token,
+        }).toString(),
+      }}
+      className={styles.containerBridgeItem}
+    >
+      <DenomArr
+        denomValue={item.token}
+        onlyImg
+        size={45}
+        // tooltipStatusImg={false}
+      />
       <div className={styles.networks}>
         <DenomArr type="network" onlyImg denomValue={item.networkFrom} />
         <img src={fromToIbc} alt="fromToIbc" className={styles.networksArrow} />

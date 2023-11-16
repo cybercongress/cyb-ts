@@ -16,11 +16,11 @@ function useSubscribersBlokIbc(client) {
 
   useEffect(() => {
     const url = client?.tmClient?.client?.url;
-    console.log('url', url);
+    console.debug('url', url);
     let traceTx: Option<TxTracer>;
 
     if (url) {
-      traceTx = new TxTracer(url, '/websocket');
+      traceTx = new TxTracer(url, wsEndpoint);
 
       traceTx.subscribeBlock((result) => {
         if (result?.block?.header) {

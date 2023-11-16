@@ -120,7 +120,10 @@ function ImgDenom({
   if (tooltipStatus) {
     return (
       <div>
-        <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
+        <Tooltip
+          placement="top"
+          tooltip={<div style={{ wordBreak: 'break-word' }}>{tooltipText}</div>}
+        >
           {img}
         </Tooltip>
       </div>

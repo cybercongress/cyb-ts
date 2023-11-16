@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react';
 import { DenomArr, MainContainer, OptionSelect, Select } from 'src/components';
-import { LogRelayer } from 'src/containers/ibc/components/relayer';
 import { SelectOption } from 'src/components/Select';
 import { TeleportContainer } from '../../components/grid';
 import ActionBarRelayer from './ActionBar';
 import { useRelayer } from '../../contexts/relayer';
+import LogRelayer from '../../components/Relayer';
 
 function Relayer() {
-  const { channels, isRelaying, relayerLog, selectChain } =
-    useRelayer();
+  const { channels, isRelaying, relayerLog, selectChain } = useRelayer();
   const [network, setNetwork] = useState('');
 
   const reduceOptions = useMemo(() => {

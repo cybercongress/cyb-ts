@@ -161,7 +161,6 @@ function Swap() {
   const validInputAmountTokenA = useMemo(() => {
     if (traseDenom) {
       const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-
       if (Number(tokenAAmount) > 0) {
         const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
 
