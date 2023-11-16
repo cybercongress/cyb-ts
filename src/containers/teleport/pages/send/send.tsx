@@ -24,7 +24,7 @@ import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
-import Slider from '../../components/slider';
+import Slider from 'src/components/Slider';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';
 import DataSendTxs from '../../components/dataSendTxs/DataSendTxs';
@@ -187,6 +187,21 @@ function Send() {
     return new BigNumber(tokenAmount).multipliedBy(-1).toString();
   }, [tokenAmount]);
 
+  const getPercentsOfToken = useCallback(() => {
+    const balanceToken = accountBalances
+      ? accountBalances[tokenSelect] || 0
+      : 0;
+    const [{ coinDecimals }] = traseDenom!(tokenSelect);
+    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals); // ?????
+
+    return balanceToken > 0
+      ? new BigNumber(amountTokenA)
+          .dividedBy(balanceToken)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
+  }, [tokenAmount, accountBalances, tokenSelect, traseDenom]);
+
   const stateActionBar = {
     tokenAmount,
     tokenSelect,
@@ -248,10 +263,8 @@ function Send() {
           </GridContainer>
 
           <Slider
-            tokenA={tokenSelect}
-            tokenAAmount={tokenAmount}
-            setPercentageBalanceHook={setPercentageBalanceHook}
-            accountBalances={accountBalances}
+            valuePercents={getPercentsOfToken()}
+            onChange={setPercentageBalanceHook}
           />
         </TeleportContainer>
         <TeleportContainer>

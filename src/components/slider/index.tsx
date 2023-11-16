@@ -217,7 +217,7 @@ function Slider({
           <button
             type="button"
             className={styles.buttonIcon}
-            disabled={disabled || !onSwapClick}
+            disabled={disabled}
             onMouseUp={() => onClickSwapDirection()}
             onTouchEnd={() => onClickSwapDirection()}
           >
