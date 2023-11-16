@@ -6,9 +6,10 @@ import { getDisplayAmountReverce } from 'src/utils/utils';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
 import { FormatNumberTokens, AmountDenom } from 'src/components';
+import { CssVariables } from 'src/style/variables';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
-import styles from './styles.module.scss';
+import styles from './DataSwapTxs.module.scss';
 import CreatedAt from '../CreatedAt/CreatedAt';
 
 function getDataOrder(value, coinDecimalsA: number) {
@@ -49,7 +50,7 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
   return (
     <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
       <Display color={item.transaction.success ? Colors.BLUE : Colors.RED}>
-        <div style={{ display: 'grid', gap: '10px' }}>
+        <div className={styles.containerDataSwapTxsItem}>
           <div className={styles.containerTitle}>
             <div className={styles.containerSwapImg}>
               <img src={swapImg} alt="swapImg" /> <span>swap</span>
@@ -82,13 +83,13 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
                     ? dataResultSwap.offerCoin.amount
                     : tokenAAmount
                 }
-                styleValue={{ color: '#FF5C00' }}
+                styleValue={{ color: CssVariables.RED_COLOR }}
               />
               {dataResultSwap?.demandCoin && (
                 <AmountDenom
                   denom={dataResultSwap.demandCoin.denom}
                   amountValue={dataResultSwap.demandCoin.amount}
-                  styleValue={{ color: '#76FF03' }}
+                  styleValue={{ color: CssVariables.GREEN_LIGHT_COLOR }}
                 />
               )}
             </div>

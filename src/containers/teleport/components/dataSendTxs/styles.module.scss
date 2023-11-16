@@ -1,5 +1,10 @@
 .containerMemo {
   color: #fff;
+  text-align: end;
+
+  &Start {
+    text-align: start;
+  }
 }
 
 .containerAmountTime {
@@ -8,8 +13,10 @@
   justify-content: space-between;
 }
 
-.containerDataItem {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
+.AmountDenomContainer {
+  color: var(--green-light);
+
+  &Red {
+    color: var(--red);
+  }
 }

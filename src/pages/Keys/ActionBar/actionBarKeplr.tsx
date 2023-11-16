@@ -55,7 +55,7 @@ function ActionBarKeplr({ updateAddress, updateBalance, onClickBack }) {
     }
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_SEND);
     setRecipient('');
     setAmountSend('');
@@ -142,7 +142,7 @@ function ActionBarKeplr({ updateAddress, updateBalance, onClickBack }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -151,7 +151,7 @@ function ActionBarKeplr({ updateAddress, updateBalance, onClickBack }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

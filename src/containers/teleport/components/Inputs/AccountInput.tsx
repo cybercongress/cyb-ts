@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Account, Input, Tooltip } from 'src/components';
+import { Account, Input } from 'src/components';
 import LinearGradientContainer, {
   Color,
 } from 'src/components/LinearGradientContainer/LinearGradientContainer';
@@ -20,14 +20,13 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getPassportByNickname } from 'src/containers/portal/utils';
 import { useSearchParams } from 'react-router-dom';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
-import useDebounce from '../../hooks/useDebounce';
+import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
+import useDebounce from 'src/hooks/useDebounce';
 import styles from './styles.module.scss';
 import { contains } from './utils';
 import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';
 import { TypeRecipient } from './type';
-import ButtonText from './ButtonText';
-import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 
 type Props = {
   recipient: string | undefined;

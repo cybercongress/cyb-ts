@@ -143,7 +143,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     }
   }, [addressAddRouteInput]);
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(null);
     setTxHeight(null);
@@ -382,7 +382,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -391,7 +391,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

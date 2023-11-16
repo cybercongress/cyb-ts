@@ -11,6 +11,7 @@ import complete from 'images/statusTx/complete.png';
 import pending from 'images/statusTx/pending.png';
 import timeout from 'images/statusTx/timeout.png';
 import refunded from 'images/statusTx/refunded.png';
+import { CssVariables } from 'src/style/variables';
 import { TxsType } from '../../type';
 import { HistoriesItem, StatusTx } from '../../ibc-history/HistoriesItem';
 import styles from './DataHstory.module.scss';
@@ -58,7 +59,10 @@ export function AmountSend({
       text={coin.denom}
       value={amountDenom}
       styleValue={{
-        color: typeTxs === TxsType.Deposit ? '#76FF03' : '#FF5C00',
+        color:
+          typeTxs === TxsType.Deposit
+            ? CssVariables.GREEN_LIGHT_COLOR
+            : CssVariables.RED_COLOR,
         fontSize: '18px',
       }}
     />
