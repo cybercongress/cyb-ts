@@ -27,7 +27,6 @@ import Mint from './containers/mint';
 import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
-import TeleportTs from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
@@ -35,7 +34,6 @@ import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 import Temple from './containers/temple';
 // import IpfsSettings from './features/ipfs/ipfsSettings';
-import Ibc from './containers/ibc';
 import {
   Codes,
   CodePage,
@@ -56,7 +54,6 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
-import Relayer from './containers/ibc/Relayer';
 import Teleport from './containers/teleport/pages/Teleport';
 import Search from './pages/Search/Search';
 import Learn from './pages/Learn/Learn';
@@ -211,7 +208,6 @@ function AppRouter() {
           <Route path="/gift" element={<PortalGift />} />
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
-          <Route path="/ibc" element={<Relayer />} />
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />
