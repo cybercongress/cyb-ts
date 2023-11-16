@@ -26,7 +26,9 @@ import {
   calculatePairAmount,
   getMyTokenBalanceNumber,
 } from '../../utils';
-import Slider from '../../components/slider';
+// import Slider from '../../components/slider';
+import Slider from 'src/components/Slider';
+
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
@@ -311,6 +313,19 @@ function Swap() {
     amountChangeHandler,
   ]);
 
+  const getPercentsOfToken = useCallback(() => {
+    // const [{ coinDecimals }] = traseDenom(tokenA);
+
+    const balanceToken = accountBalances ? accountBalances[tokenA] || 0 : 0;
+
+    return balanceToken > 0
+      ? new BigNumber(tokenAAmount)
+          .dividedBy(balanceToken)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
+  }, [tokenAAmount, accountBalances, tokenA]);
+
   const stateActionBar = {
     tokenAAmount,
     tokenA,
@@ -341,13 +356,15 @@ function Swap() {
           />
 
           <Slider
-            tokenA={tokenA}
-            tokenB={tokenB}
-            tokenAAmount={tokenAAmount}
-            setPercentageBalanceHook={setPercentageBalanceHook}
-            coinReverseAction={() => tokenChange()}
-            accountBalances={accountBalances}
-            pairPrice={pairPrice}
+            valuePercents={getPercentsOfToken()}
+            onChange={setPercentageBalanceHook}
+            onSwapClick={() => tokenChange()}
+            tokenPair={{
+              tokenA,
+              tokenB,
+              priceA: pairPrice.from,
+              priceB: pairPrice.to,
+            }}
           />
 
           <TokenSetterSwap
