@@ -1,9 +1,22 @@
 .containerMemo {
   color: #fff;
+  text-align: end;
+
+  &Start {
+    text-align: start;
+  }
 }
 
 .containerAmountTime {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+}
+
+.AmountDenomContainer {
+  color: var(--green-light);
+
+  &Red {
+    color: var(--red);
+  }
 }

@@ -40,7 +40,7 @@ const TXTYPE_UNDELEGATE = 1;
 const TXTYPE_REDELEGATE = 2;
 const LEDGER_GENERATION = 23;
 
-function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
+function StatusTx({ stage, clearState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
     return (
       <ActionBar>
@@ -69,14 +69,14 @@ function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={cleatState}
+        onClickBtnClose={clearState}
       />
     );
   }
 
   if (stage === STAGE_ERROR && errorMessage !== null) {
     return (
-      <TransactionError errorMessage={errorMessage} onClickBtn={cleatState} />
+      <TransactionError errorMessage={errorMessage} onClickBtn={clearState} />
     );
   }
 
@@ -528,7 +528,7 @@ function ActionBarContainer({
     return (
       <StatusTx
         stage={stage}
-        cleatState={clearFunc}
+        clearState={clearFunc}
         errorMessage={errorMessage}
         txHash={txHash}
         txHeight={txHeight}

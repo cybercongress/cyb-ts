@@ -9,6 +9,8 @@
 
   --yellow: #fcf000;
 
+  --red: #FF5C00;
+
   --text-opacity-2: 0.7;
   --text-opacity-3: 0.7;
   --text-opacity-4: 0.38;
@@ -16,4 +18,6 @@
 
 :export {
   primaryColor: var(--primary-color);
+  greenLightColor: var(--green-light);
+  redColor: var(--red);
 }

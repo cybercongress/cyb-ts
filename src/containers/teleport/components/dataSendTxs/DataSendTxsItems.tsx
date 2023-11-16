@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
+import cx from 'classnames';
 import styles from './styles.module.scss';
 
 function MemoIpfsContent({ cid }: { cid: string }) {
@@ -40,10 +41,9 @@ export function Memo({ memo, receive }: { memo: string; receive: boolean }) {
 
   return (
     <div
-      className={styles.containerMemo}
-      style={{
-        textAlign: receive ? 'start' : 'end',
-      }}
+      className={cx(styles.containerMemo, {
+        [styles.containerMemoStart]: receive,
+      })}
     >
       {content}
     </div>
@@ -59,9 +59,9 @@ export function AmountDenomColor({
 }) {
   return (
     <div
-      style={{
-        color: receive ? '#76FF03' : '#FF5C00',
-      }}
+      className={cx(styles.AmountDenomContainer, {
+        [styles.AmountDenomContainerRed]: receive,
+      })}
     >
       {coins.map((item, i) => {
         return (

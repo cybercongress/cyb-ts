@@ -55,7 +55,7 @@ function ActionBarConnect({
 
   useEffect(() => {
     if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
-      cleatState();
+      clearState();
     }
   }, [stage, addAddress]);
 
@@ -112,7 +112,7 @@ function ActionBarConnect({
     }
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setValueInputAddres('');
     setHDpath(HDPATH);
@@ -192,7 +192,7 @@ function ActionBarConnect({
 
       if (Object.keys(pocketAccount).length > 0) {
         localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-        cleatState();
+        clearState();
         if (updateAddress) {
           updateAddress();
         }
@@ -223,7 +223,7 @@ function ActionBarConnect({
           );
         }
       }
-      cleatState();
+      clearState();
       if (updateAddress) {
         updateAddress();
       }
@@ -311,7 +311,7 @@ function ActionBarConnect({
           }
         }
       }
-      cleatState();
+      clearState();
       if (updateAddress) {
         updateAddress();
       }
@@ -424,7 +424,7 @@ function ActionBarConnect({
         dispatch(setDefaultAccount({ name: key }));
       }, 100);
 
-      cleatState();
+      clearState();
       if (updateAddress) {
         updateAddress();
       }
@@ -562,7 +562,7 @@ function ActionBarConnect({
   if (stage === STAGE_ERROR) {
     return (
       <TransactionError
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
         errorMessage="you have this address in your pocket"
       />
     );

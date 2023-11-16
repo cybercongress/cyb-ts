@@ -77,7 +77,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     networkB,
   } = stateActionBar;
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(undefined);
     setErrorMessage(undefined);
@@ -260,7 +260,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           <Pane display="inline">Transaction Successful: </Pane>{' '}
           <LinkWindow to={linkIbcTxs}>{trimString(txHashIbc, 6, 6)}</LinkWindow>
         </ActionBarContentText>
-        <Button marginX={10} onClick={cleatState}>
+        <Button marginX={10} onClick={clearState}>
           Fuck Google
         </Button>
       </ActionBarContainer>
@@ -271,7 +271,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     stage,
     setStage,
     updateFunc,
-    cleatState,
+    clearState,
     txHash,
     errorMessageProps: errorMessage,
   };

@@ -146,7 +146,7 @@ export function TransactionSubmitted() {
   );
 }
 
-export function Confirmed({ txHash, txHeight, cosmos, onClickBtnCloce }) {
+export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
   return (
     <ActionBar>
       <ActionBarContentText display="inline">
@@ -165,7 +165,7 @@ export function Confirmed({ txHash, txHeight, cosmos, onClickBtnCloce }) {
           {formatNumber(parseFloat(txHeight))}
         </Pane>
       </ActionBarContentText>
-      <Button style={{ margin: '0 10px' }} onClick={onClickBtnCloce}>
+      <Button style={{ margin: '0 10px' }} onClick={onClickBtnClose}>
         Fuck Google
       </Button>
     </ActionBar>
@@ -320,7 +320,7 @@ export function GovernanceChangeParam({
   onChangeInputParam,
   changeParam,
   onClickDeleteParam,
-  onClickBtnCloce,
+  onClickBtnClose,
   valueTitle,
   onChangeInputTitle,
   onChangeInputDescription,
@@ -383,7 +383,7 @@ export function GovernanceChangeParam({
       <ContainetLedger
         styles={{ height: 'unset' }}
         logo
-        onClickBtnCloce={onClickBtnCloce}
+        onClickBtnClose={onClickBtnClose}
       >
         <Pane display="flex" flexDirection="column" alignItems="center">
           <Text fontSize="25px" lineHeight="40px" color="#fff">
@@ -478,7 +478,7 @@ export function GovernanceChangeParam({
 
 export function GovernanceSoftwareUpgrade({
   onClickBtn,
-  onClickBtnCloce,
+  onClickBtnClose,
   onChangeInputTitle,
   onChangeInputDescription,
   onChangeInputDeposit,
@@ -492,7 +492,7 @@ export function GovernanceSoftwareUpgrade({
 }) {
   return (
     <ActionBar>
-      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+      <ContainetLedger logo onClickBtnClose={onClickBtnClose}>
         <Pane display="flex" flexDirection="column" alignItems="center">
           <Text fontSize="25px" lineHeight="40px" color="#fff">
             Software Upgrade Proposal
@@ -565,7 +565,7 @@ export function GovernanceSoftwareUpgrade({
 export function TextProposal({
   onClickBtn,
   // addrProposer,
-  onClickBtnCloce,
+  onClickBtnClose,
   onChangeInputTitle,
   onChangeInputDescription,
   onChangeInputDeposit,
@@ -575,7 +575,7 @@ export function TextProposal({
 }) {
   return (
     <ActionBar>
-      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+      <ContainetLedger logo onClickBtnClose={onClickBtnClose}>
         <Pane display="flex" flexDirection="column" alignItems="center">
           <Text fontSize="25px" lineHeight="40px" color="#fff">
             Text Proposal
@@ -645,7 +645,7 @@ export function TextProposal({
 export function CommunityPool({
   onClickBtn,
   // addrProposer,
-  onClickBtnCloce,
+  onClickBtnClose,
   onChangeInputTitle,
   onChangeInputDescription,
   onChangeInputDeposit,
@@ -659,7 +659,7 @@ export function CommunityPool({
 }) {
   return (
     <ActionBar>
-      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+      <ContainetLedger logo onClickBtnClose={onClickBtnClose}>
         <Pane display="flex" flexDirection="column" alignItems="center">
           <Text fontSize="25px" lineHeight="40px" color="#fff">
             Community Pool Spend
@@ -1019,7 +1019,7 @@ export function ActionBarSend({
 export function RewardsDelegators({
   data,
   onClickBtn,
-  onClickBtnCloce,
+  onClickBtnClose,
   disabledBtn,
 }) {
   console.log('data :>> ', data);
@@ -1042,7 +1042,7 @@ export function RewardsDelegators({
     return undefined;
   });
   return (
-    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <ContainetLedger onClickBtnClose={onClickBtnClose}>
       <Pane fontSize="20px" marginBottom={20}>
         Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
         {CYBER.DENOM_CYBER.toUpperCase()}

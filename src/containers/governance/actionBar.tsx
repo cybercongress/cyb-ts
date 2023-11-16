@@ -223,7 +223,7 @@ class ActionBar extends Component<ActionBarProps> {
     });
   };
 
-  cleatState = () => {
+  clearState = () => {
     this.setState({
       stage: STAGE_INIT,
       valueSelect: 'textProposal',
@@ -245,7 +245,7 @@ class ActionBar extends Component<ActionBarProps> {
   };
 
   onClickInitStage = () => {
-    this.cleatState();
+    this.clearState();
     this.setState({
       stage: STAGE_INIT,
     });
@@ -370,7 +370,7 @@ class ActionBar extends Component<ActionBarProps> {
           valueDescription={valueDescription}
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
         />
       );
     }
@@ -385,7 +385,7 @@ class ActionBar extends Component<ActionBarProps> {
           valueDescription={valueDescription}
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
           valueAddressRecipient={valueAddressRecipient}
           onChangeInputAddressRecipient={this.onChangeInputAddressRecipient}
           valueAmountRecipient={valueAmountRecipient}
@@ -410,7 +410,7 @@ class ActionBar extends Component<ActionBarProps> {
           valueDescription={valueDescription}
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
           onClickBtn={this.generateTxInit}
         />
       );
@@ -425,7 +425,7 @@ class ActionBar extends Component<ActionBarProps> {
           valueDescription={valueDescription}
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
           onClickBtn={this.generateTxInit}
           valueNameUpgrade={nameUpgrade}
           valueHeightUpgrade={heightUpgrade}
@@ -440,7 +440,7 @@ class ActionBar extends Component<ActionBarProps> {
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted onClickBtnClose={this.onClickInitStage} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
@@ -449,7 +449,7 @@ class ActionBar extends Component<ActionBarProps> {
           txHash={txHash}
           txHeight={txHeight}
           onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
         />
       );
     }
@@ -458,8 +458,8 @@ class ActionBar extends Component<ActionBarProps> {
       return (
         <TransactionError
           errorMessage={errorMessage}
-          onClickBtn={this.cleatState}
-          onClickBtnCloce={this.cleatState}
+          onClickBtn={this.clearState}
+          onClickBtnClose={this.clearState}
         />
       );
     }

@@ -275,7 +275,7 @@ function ActionBar({ stateActionBar }: Props) {
     }
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(undefined);
     setTxHeight(undefined);
@@ -334,7 +334,7 @@ function ActionBar({ stateActionBar }: Props) {
 
   const stageActionBarStaps = {
     stage,
-    cleatState,
+    clearState,
     txHash,
     txHeight,
     errorMessage,

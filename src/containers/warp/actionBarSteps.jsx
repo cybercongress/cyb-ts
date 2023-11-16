@@ -12,7 +12,7 @@ const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
   LEDGER;
 
 function ActionBarStaps({ stageActionBarStaps }) {
-  const { stage, cleatState, txHash, txHeight, errorMessage } =
+  const { stage, clearState, txHash, txHeight, errorMessage } =
     stageActionBarStaps;
 
   if (stage === STAGE_SUBMITTED) {
@@ -34,7 +34,7 @@ function ActionBarStaps({ stageActionBarStaps }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -43,7 +43,7 @@ function ActionBarStaps({ stageActionBarStaps }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

@@ -83,7 +83,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient, txHash]);
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(null);
     setTxHeight(null);
@@ -269,7 +269,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -278,7 +278,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

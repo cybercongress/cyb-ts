@@ -6,6 +6,7 @@ import { getDisplayAmountReverce } from 'src/utils/utils';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
 import { FormatNumberTokens, AmountDenom } from 'src/components';
+import { CssVariables } from 'src/style/variables';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './DataSwapTxs.module.scss';
@@ -82,13 +83,13 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
                     ? dataResultSwap.offerCoin.amount
                     : tokenAAmount
                 }
-                styleValue={{ color: '#FF5C00' }}
+                styleValue={{ color: CssVariables.RED_COLOR }}
               />
               {dataResultSwap?.demandCoin && (
                 <AmountDenom
                   denom={dataResultSwap.demandCoin.denom}
                   amountValue={dataResultSwap.demandCoin.amount}
-                  styleValue={{ color: '#76FF03' }}
+                  styleValue={{ color: CssVariables.GREEN_LIGHT_COLOR }}
                 />
               )}
             </div>

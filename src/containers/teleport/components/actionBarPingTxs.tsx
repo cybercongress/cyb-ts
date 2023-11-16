@@ -20,7 +20,7 @@ function ActionBarPingTxs({ stageActionBarStaps }) {
   const [errorMessage, setErrorMessage] =
     useState<Option<string | JSX.Element>>(undefined);
 
-  const { stage, setStage, cleatState, txHash, errorMessageProps, updateFunc } =
+  const { stage, setStage, clearState, txHash, errorMessageProps, updateFunc } =
     stageActionBarStaps;
 
   useEffect(() => {
@@ -70,7 +70,7 @@ function ActionBarPingTxs({ stageActionBarStaps }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -79,7 +79,7 @@ function ActionBarPingTxs({ stageActionBarStaps }) {
     return (
       <TransactionError
         errorMessage={errorMessage || errorMessageProps}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }
