@@ -8,7 +8,7 @@ import { Colors } from 'src/components/containerGradient/types';
 import { FormatNumberTokens, AmountDenom } from 'src/components';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
-import styles from './styles.module.scss';
+import styles from './DataSwapTxs.module.scss';
 import CreatedAt from '../CreatedAt/CreatedAt';
 
 function getDataOrder(value, coinDecimalsA: number) {
@@ -49,7 +49,7 @@ function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
   return (
     <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
       <Display color={item.transaction.success ? Colors.BLUE : Colors.RED}>
-        <div style={{ display: 'grid', gap: '10px' }}>
+        <div className={styles.containerDataSwapTxsItem}>
           <div className={styles.containerTitle}>
             <div className={styles.containerSwapImg}>
               <img src={swapImg} alt="swapImg" /> <span>swap</span>

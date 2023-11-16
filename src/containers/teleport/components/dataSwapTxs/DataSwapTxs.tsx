@@ -2,10 +2,10 @@ import { UseInfiniteQueryResult } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Dots } from 'src/components';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxsItem from './DataSwapTxsItem';
+import InfiniteScrollDataTsx from '../InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 
 type DataTxs = {
   data: ResponseTxsByType[];
@@ -18,8 +18,7 @@ function DataSwapTxs({
   dataTxs: UseInfiniteQueryResult<DataTxs>;
 }) {
   const { traseDenom } = useIbcDenom();
-  const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
-    dataTxs;
+  const { data, error, status, fetchNextPage, hasNextPage } = dataTxs;
 
   const itemRows = useMemo(() => {
     if (data && traseDenom) {
@@ -49,19 +48,10 @@ function DataSwapTxs({
   };
 
   return (
-    <InfiniteScroll
+    <InfiniteScrollDataTsx
       dataLength={Object.keys(itemRows).length}
       next={fetchNextPageFnc}
-      style={{ display: 'grid', gap: '15px', marginTop: '20px' }}
       hasMore={hasNextPage}
-      loader={
-        isFetching && (
-          <h4>
-            Loading
-            <Dots />
-          </h4>
-        )
-      }
     >
       {status === 'loading' ? (
         <Dots />
@@ -70,7 +60,7 @@ function DataSwapTxs({
       ) : itemRows.length > 0 ? (
         itemRows
       ) : null}
-    </InfiniteScroll>
+    </InfiniteScrollDataTsx>
   );
 }
 

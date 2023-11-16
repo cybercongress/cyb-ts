@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { Dots } from 'src/components';
 import DataIbcHistoryItem from './dataItem';
 import { useIbcHistory } from '../../ibc-history/historyContext';
+import InfiniteScrollDataTsx from '../InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 
 function DataIbcHistory() {
   const { ibcHistory } = useIbcHistory();
@@ -32,20 +31,13 @@ function DataIbcHistory() {
   }, [ibcHistory, itemsToShow]);
 
   return (
-    <InfiniteScroll
+    <InfiniteScrollDataTsx
       dataLength={ItemRows.length}
       next={setNextDisplayed}
       hasMore={hasMore}
-      style={{ display: 'grid', gap: '15px', marginTop: '20px' }}
-      loader={
-        <h4>
-          Loading
-          <Dots />
-        </h4>
-      }
     >
-      {ItemRows.length > 0 ? ItemRows : ''}
-    </InfiniteScroll>
+      {ItemRows.length > 0 && ItemRows}
+    </InfiniteScrollDataTsx>
   );
 }
 

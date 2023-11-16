@@ -1,16 +1,15 @@
-
 import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable } from 'src/types';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link } from 'react-router-dom';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
 import { DataSendTxs } from './type';
 import CreatedAt from '../CreatedAt/CreatedAt';
 import { AmountDenomColor, Memo } from './DataSendTxsItems';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
+import InfiniteScrollDataTsx from '../InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 
 function DataSendTxs({
   dataSendTxs,
@@ -72,15 +71,13 @@ function DataSendTxs({
   };
 
   return (
-    <InfiniteScroll
+    <InfiniteScrollDataTsx
       dataLength={Object.keys(itemRows).length}
       next={fetchNextPageFnc}
-      style={{ display: 'grid', gap: '15px', marginTop: '20px' }}
       hasMore={hasNextPage}
-      loader={false}
     >
       {itemRows.length > 0 && itemRows}
-    </InfiniteScroll>
+    </InfiniteScrollDataTsx>
   );
 }
 
