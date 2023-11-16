@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { getDisplayAmount, trimString } from 'src/utils/utils';
-import fromToIbc from 'images/fromToIbc.svg';
+import ImgArrow from 'images/fromToIbc.svg';
 import { Account, DenomArr, FormatNumberTokens } from 'src/components';
 import upArrow from 'images/up-arrow.png';
 import downArrow from 'images/down-arrow.png';
@@ -13,7 +13,7 @@ import timeout from 'images/statusTx/timeout.png';
 import refunded from 'images/statusTx/refunded.png';
 import { TxsType } from '../../type';
 import { HistoriesItem, StatusTx } from '../../ibc-history/HistoriesItem';
-import styles from './styles.module.scss';
+import styles from './DataHstory.module.scss';
 
 const mapStatusTxImg = {
   [StatusTx.COMPLETE]: complete,
@@ -23,19 +23,12 @@ const mapStatusTxImg = {
 };
 
 export function TypeTsx({ sourceChainId }: { sourceChainId: string }) {
-  if (sourceChainId === CYBER.CHAIN_ID) {
-    return (
-      <div className={styles.containerTypeTsx}>
-        <img src={upArrow} alt="upArrow" />
-        <div>{TxsType.Withdraw}</div>
-      </div>
-    );
-  }
+  const isCyberChain = sourceChainId === CYBER.CHAIN_ID;
 
   return (
     <div className={styles.containerTypeTsx}>
-      <img src={downArrow} alt="downArrow" />
-      <div>{TxsType.Deposit}</div>
+      <img src={isCyberChain ? upArrow : downArrow} alt="imgArrow" />
+      <div>{isCyberChain ? TxsType.Withdraw : TxsType.Deposit}</div>
     </div>
   );
 }
@@ -81,28 +74,32 @@ export function Status({ status }: { status: StatusTx }) {
   );
 }
 
-function AddressType({ address }: { address: string }) {
-  return <div style={{ color: '#fff' }}>{trimString(address, 8, 2)}</div>;
+function AddressIbc({ address }: { address: string }) {
+  return <div className={styles.AddressIbc}>{trimString(address, 8, 2)}</div>;
+}
+
+function addressType(address: string) {
+  if (address.match(PATTERN_CYBER)) {
+    return <Account address={address} />;
+  }
+  return <AddressIbc address={address} />;
 }
 
 export function RouteAddress({ item }: { item: HistoriesItem }) {
   const { recipient, sender, sourceChainId, destChainId } = item;
 
-  const TagSender = sender.match(PATTERN_CYBER) ? Account : AddressType;
-  const TagRecipient = recipient.match(PATTERN_CYBER) ? Account : AddressType;
-
   return (
     <div className={styles.containerRouteAddress}>
       <div className={styles.containerAddressChainId}>
-        <TagSender address={sender} />
+        {addressType(sender)}
         <DenomArr type="network" onlyImg denomValue={sourceChainId} />
       </div>
-      <img src={fromToIbc} alt="fromToIbc" className={styles.fromToIbcImg} />
+      <img src={ImgArrow} alt="ImgArrow" className={styles.fromToIbcImg} />
       <div
         className={styles.containerAddressChainId}
         style={{ marginLeft: '-5px' }}
       >
-        <TagRecipient address={recipient} />
+        {addressType(recipient)}
         <DenomArr type="network" onlyImg denomValue={destChainId} />
       </div>
     </div>

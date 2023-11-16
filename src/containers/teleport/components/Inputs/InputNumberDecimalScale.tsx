@@ -58,7 +58,7 @@ function InputNumberDecimalScale({
       value={value}
       onValueChange={onValueChange}
       title={title}
-      color={validAmount || !value.length ? Color.Red : undefined}
+      color={validAmount || value.length === 0 ? Color.Red : Color.Green}
       fixedDecimalScale={fixed}
       {...props}
     />

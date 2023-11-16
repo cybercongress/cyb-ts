@@ -16,7 +16,12 @@ function BridgeItem({ item }: PropsBridgeItem) {
 
   return (
     <Link to={`bridge?${searchParam}`} className={styles.containerBridgeItem}>
-      <DenomArr denomValue={item.token} onlyImg size={45} />
+      <DenomArr
+        denomValue={item.token}
+        onlyImg
+        size={45}
+        // tooltipStatusImg={false}
+      />
       <div className={styles.networks}>
         <DenomArr type="network" onlyImg denomValue={item.networkFrom} />
         <img src={fromToIbc} alt="fromToIbc" className={styles.networksArrow} />
