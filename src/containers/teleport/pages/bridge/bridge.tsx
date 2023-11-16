@@ -10,7 +10,8 @@ import { useChannels } from 'src/hooks/useHub';
 import { Networks } from 'src/types/networks';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { useSetupIbcClient } from '../../hooks';
-import Slider from '../../components/slider';
+// import Slider from '../../components/slider';
+import Slider from 'src/components/Slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
@@ -289,6 +290,21 @@ function Bridge() {
     networkB,
   };
 
+  const getPercentsOfToken = useCallback(() => {
+    const tokenA = getDenomToken(networkA);
+    const [{ coinDecimals }] = traseDenom(tokenA);
+    const balance = getAccountBalancesToken(networkA) || {};
+    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals);
+    const balanceToken = balance[tokenA] || 0;
+
+    return balanceToken > 0
+      ? new BigNumber(amountTokenA)
+          .dividedBy(balanceToken)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
+  }, [networkA, tokenAmount]);
+
   return (
     <HistoryContextProvider>
       <MainContainer width="62%">
@@ -341,12 +357,17 @@ function Bridge() {
             </Col>
           </GridContainer>
 
-          <Slider
+          {/* <Slider
             tokenA={getDenomToken(networkA)}
             tokenAAmount={tokenAmount}
             setPercentageBalanceHook={setPercentageBalanceHook}
             coinReverseAction={tokenChange}
             accountBalances={getAccountBalancesToken(networkA)}
+          /> */}
+          <Slider
+            valuePercents={getPercentsOfToken()}
+            onChange={setPercentageBalanceHook}
+            onSwapClick={tokenChange}
           />
 
           <GridContainer>
