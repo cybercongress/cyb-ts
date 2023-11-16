@@ -30,6 +30,8 @@ function findNetwork(chainId: string) {
   return networkList[chainId];
 }
 
+const logMap = ['log', 'info', 'error', 'warn', 'verbose', 'debug'];
+
 export const useRelayer = () => React.useContext(RelayerContext);
 
 function RelayerContextProvider({ children }: { children: React.ReactNode }) {
@@ -39,40 +41,18 @@ function RelayerContextProvider({ children }: { children: React.ReactNode }) {
 
   const [selectChain, setSelectChain] = useState('');
   const [isRelaying, setIsRelaying] = useState(false);
-  const [relayerLog, setRelayerLog] = useState([]);
+  const [relayerLog, setRelayerLog] = useState<string[]>([]);
 
   const logger = () => {
-    return {
-      log: (msg) => {
-        // console.log(`log`, msg);
-        setRelayerLog((item) => [...item, `LOG:  ${msg}`]);
-      },
-      info: (msg) => {
-        // console.log(`info`, msg);
-
-        setRelayerLog((item) => [...item, `INFO:  ${msg}`]);
-      },
-      error: (msg) => {
-        // console.log(`error`, msg);
-
-        setRelayerLog((item) => [...item, `ERROR:  ${msg}`]);
-      },
-      warn: (msg) => {
-        // console.log(`warn`, msg);
-
-        setRelayerLog((item) => [...item, `WARN:  ${msg}`]);
-      },
-      verbose: (msg) => {
-        // console.log(`verbose`, msg);
-
-        setRelayerLog((item) => [...item, `VERBOSE:  ${msg}`]);
-      },
-      debug: (msg) => {
-        // console.log(`debug`, msg);
-
-        setRelayerLog((item) => [...item, `DEBUG:  ${msg}`]);
-      },
-    };
+    return logMap.reduce(
+      (obj, item) => ({
+        ...obj,
+        [item]: (msg: string) => {
+          setRelayerLog((state) => [...state, `${item}:  ${msg}`]);
+        },
+      }),
+      {}
+    );
   };
 
   useEffect(() => {
@@ -139,7 +119,7 @@ function RelayerContextProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.log('cxns', cxns);
+        console.debug('cxns', cxns);
 
         const [{ cxnA, cxnB }] = cxns;
 

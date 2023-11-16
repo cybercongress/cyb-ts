@@ -221,7 +221,7 @@ function Slider({
         {tokenA && tokenB && (
           <>
             <SphereValueMemo angle={angleDeg}>
-              <DenomArr denomValue={tokenA} onlyImg />
+              <DenomArr denomValue={tokenA} onlyImg tooltipStatusImg={false} />
               {pairPrice !== undefined && (
                 <div className={s.imgValue}>
                   <FormatNumberTokens value={pairPrice.to} />
@@ -230,7 +230,7 @@ function Slider({
             </SphereValueMemo>
 
             <SphereValueMemo angle={-angleDeg}>
-              <DenomArr denomValue={tokenB} onlyImg />
+              <DenomArr denomValue={tokenB} onlyImg tooltipStatusImg={false} />
               {pairPrice !== undefined && (
                 <div className={s.imgValue}>
                   <FormatNumberTokens value={pairPrice.from} />

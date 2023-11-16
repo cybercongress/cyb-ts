@@ -106,8 +106,8 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             onChange={onChange}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={autoFocus}
-            onFocus={() => handlerOnFocused()}
-            onBlur={() => handlerOnBlur()}
+            onFocus={handlerOnFocused}
+            onBlur={handlerOnBlur}
             placeholder={placeholder}
             autoComplete="off"
             {...props}

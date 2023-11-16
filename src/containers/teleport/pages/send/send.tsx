@@ -25,7 +25,6 @@ import { useAppSelector } from 'src/redux/hooks';
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import Slider from '../../components/slider';
-import { getBalances } from '../../hooks';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';
 import DataSendTxs from '../../components/dataSendTxs/DataSendTxs';

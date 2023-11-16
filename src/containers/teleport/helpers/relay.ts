@@ -33,18 +33,18 @@ async function relay(
   logger?: Logger
 ) {
   // after each line, console.log what it just did. then console log applicable data
-  console.log('relay starting');
+  console.debug('relay starting');
   const tmA = await Tendermint34Client.connect(rpcA);
   const tmB = await Tendermint34Client.connect(rpcB);
 
   if (initHeightA === undefined) {
     const abciA = await tmA.abciInfo();
-    console.log('abciA', abciA)
+    console.debug('abciA', abciA)
     initHeightA = abciA.lastBlockHeight! - 50_000;
   }
   if (initHeightB === undefined) {
     const abciB = await tmB.abciInfo();
-    console.log('abciB', abciB)
+    console.debug('abciB', abciB)
     initHeightB = abciB.lastBlockHeight! - 50_000;
   }
   const link = await IbcLink.createWithExistingConnections(
@@ -71,7 +71,7 @@ async function relay(
   };
   let running = true;
   (async () => {
-    console.log('running', running);
+    console.debug('running', running);
     while (running) {
       try {
         // eslint-disable-next-line no-await-in-loop
@@ -87,7 +87,7 @@ async function relay(
           logger!
         );
         relayFrom = out.heights;
-        console.log(out.info);
+        console.debug(out.info);
         // eslint-disable-next-line no-await-in-loop
         await link.updateClientIfStale('A', options.maxAgeDest);
         // eslint-disable-next-line no-await-in-loop
@@ -95,7 +95,7 @@ async function relay(
       } catch (error) {
         console.error(`Caught error: `, error);
       }
-      console.log('sleeping for 6 seconds');
+      console.debug('sleeping for 6 seconds');
       // eslint-disable-next-line no-await-in-loop
       await sleep(options.poll);
     }
@@ -103,7 +103,7 @@ async function relay(
 
   return {
     stop() {
-      console.log('relay stop');
+      console.debug('relay stop');
       running = false;
     },
   };
