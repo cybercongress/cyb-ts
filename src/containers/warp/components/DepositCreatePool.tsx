@@ -1,31 +1,6 @@
 import imgSwap from 'images/exchange-arrows.svg';
-import { InputNumber } from 'src/components';
+import { ButtonSwap, InputNumber } from 'src/components';
 import TokenSetter from './tokenSetter.new';
-
-// REFACT: Move outside or reuse
-function ButtonIcon({
-  img,
-  disabled,
-  onClick,
-  ...props
-}: {
-  img: string;
-  disabled?: boolean;
-  props: any;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      // className={s.buttonIcon}
-      disabled={disabled}
-      onMouseUp={onClick}
-      {...props}
-    >
-      <img src={img} alt="img" />
-    </button>
-  );
-}
 
 function DepositCreatePool({ stateProps, amountChangeHandler }) {
   const {
@@ -58,9 +33,8 @@ function DepositCreatePool({ stateProps, amountChangeHandler }) {
       />
 
       <>
-        <ButtonIcon
+        <ButtonSwap
           onClick={() => tokenChange()}
-          img={imgSwap}
           style={{
             position: 'relative',
             top: 0,

@@ -1,5 +1,5 @@
 import { AvailableAmount, DenomArr, MainContainer } from 'src/components';
-import Select, { OptionSelect, SelectOption } from 'src/components/Select';
+import Select, { OptionSelect } from 'src/components/Select';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
@@ -8,9 +8,9 @@ import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
 import { Networks } from 'src/types/networks';
+import Slider from 'src/components/Slider';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { useSetupIbcClient } from '../../hooks';
-import Slider from 'src/components/Slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';

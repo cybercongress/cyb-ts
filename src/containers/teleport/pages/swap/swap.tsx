@@ -26,14 +26,13 @@ import {
   calculatePairAmount,
   getMyTokenBalanceNumber,
 } from '../../utils';
-// import Slider from '../../components/slider';
-import Slider from 'src/components/Slider';
 
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
+import Slider from 'src/components/Slider';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -235,12 +234,14 @@ function Swap() {
       }
 
       return {
-        to: 1,
-        from: revPrice.toNumber(),
+        tokenA,
+        tokenB,
+        priceA: 1,
+        priceB: revPrice.toNumber(),
       };
     }
 
-    return { to: 0, from: 0 };
+    return { priceA: 0, priceB: 0, tokenA, tokenB };
   }, [poolPrice, tokenA, tokenB, traseDenom]);
 
   function tokenChange() {
@@ -359,12 +360,7 @@ function Swap() {
             valuePercents={getPercentsOfToken()}
             onChange={setPercentageBalanceHook}
             onSwapClick={() => tokenChange()}
-            tokenPair={{
-              tokenA,
-              tokenB,
-              priceA: pairPrice.from,
-              priceB: pairPrice.to,
-            }}
+            tokenPair={pairPrice}
           />
 
           <TokenSetterSwap
