@@ -7,8 +7,7 @@ import ActionBarRelayer from './ActionBar';
 import { useRelayer } from '../../contexts/relayer';
 
 function Relayer() {
-  const { channels, isRelaying, relayerLog, selectChain } =
-    useRelayer();
+  const { channels, isRelaying, relayerLog, selectChain } = useRelayer();
   const [network, setNetwork] = useState('');
 
   const reduceOptions = useMemo(() => {

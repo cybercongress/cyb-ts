@@ -1,6 +1,6 @@
 import { DenomArr } from 'src/components';
 import rectangle from 'images/rectangle.svg';
-import { Link } from 'react-router-dom';
+import { Link, createSearchParams } from 'react-router-dom';
 import cx from 'classnames';
 import { SelectedPool } from '../../type';
 import styles from './styles.module.scss';
@@ -65,12 +65,21 @@ function DenomsImg({ item }: Props) {
 }
 
 function SwapItem({ item }: Props) {
-  const searchParam = item.reverse
-    ? `from=${item.target_currency}&to=${item.base_currency}`
-    : `from=${item.base_currency}&to=${item.target_currency}`;
+  const queryParams = [item.base_currency, item.target_currency];
+
+  if (item.reverse) {
+    queryParams.reverse();
+  }
+
   return (
     <Link
-      to={`swap?${searchParam}`}
+      to={{
+        pathname: 'swap',
+        search: createSearchParams({
+          from: queryParams[0],
+          to: queryParams[1],
+        }).toString(),
+      }}
       key={item.ticker_id}
       className={styles.containerSwapItem}
     >

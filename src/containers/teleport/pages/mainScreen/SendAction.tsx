@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, createSearchParams } from 'react-router-dom';
 import { Account } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import {
@@ -7,6 +7,7 @@ import {
   selectCommunityPassports,
 } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
+import { CYBER } from 'src/utils/config';
 import TitleAction from './components/TitleAction/TitleAction';
 import styles from './styles.module.scss';
 import TotalCount from './components/TotalCount/TotalCount';
@@ -32,7 +33,16 @@ function SendAction() {
 
     return Object.keys(sliceData).map((key) => {
       return (
-        <Link key={key} to={`send?recipient=${key}&token=boot`}>
+        <Link
+          key={key}
+          to={{
+            pathname: 'send',
+            search: createSearchParams({
+              recipient: key,
+              token: CYBER.DENOM_CYBER,
+            }).toString(),
+          }}
+        >
           <Account
             address={key}
             avatar
@@ -56,7 +66,7 @@ function SendAction() {
     >
       <div className={styles.SendActionContentContainer}>
         {renderItems}
-        {totalCount > 0 && <TotalCount value={totalCount} onlyValue />}
+        {totalCount > 0 && <TotalCount value={totalCount} to="send" />}
       </div>
     </Display>
   );

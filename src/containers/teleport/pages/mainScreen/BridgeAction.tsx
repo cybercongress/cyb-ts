@@ -46,7 +46,9 @@ function BridgeAction() {
     >
       <div className={styles.BridgeActionContentContainer}>
         {renderItem}
-        {totalCount > 0 && <TotalCount text="networks" value={totalCount} />}
+        {totalCount > 0 && (
+          <TotalCount text="networks" value={totalCount} to="bridge" />
+        )}
       </div>
     </Display>
   );

@@ -7,7 +7,7 @@ function TitleAction({ title, subTitle }: { title: string; subTitle: string }) {
       inDisplay
       title={
         <div className={styles.container}>
-          <span className={styles.title}>{title}</span>
+          <h3 className={styles.title}>{title}</h3>
           <span className={styles.subTitle}>{subTitle}</span>
         </div>
       }

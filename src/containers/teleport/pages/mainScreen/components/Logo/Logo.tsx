@@ -1,6 +1,6 @@
-import styles from './styles.module.scss';
+import styles from './Logo.module.scss';
 
-function TeleportLogo() {
+function Logo() {
   return (
     <div className={styles.container}>
       <div className={styles.teleportLogo} />
@@ -8,4 +8,4 @@ function TeleportLogo() {
   );
 }
 
-export default TeleportLogo;
+export default Logo;

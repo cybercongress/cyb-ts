@@ -7,26 +7,20 @@ import SwapItem from './components/SwapItem/SwapItem';
 import styles from './styles.module.scss';
 import TotalCount from './components/TotalCount/TotalCount';
 
+const reverse = (value: boolean) => ({
+  reverse: value,
+});
+
 const defaultPairPoolId: DefaultPairPoolIdObj = {
-  12: {
-    reverse: true,
-  },
+  12: reverse(true),
 
-  19: {
-    reverse: true,
-  },
+  19: reverse(true),
 
-  5: {
-    reverse: false,
-  },
+  5: reverse(false),
 
-  6: {
-    reverse: false,
-  },
+  6: reverse(false),
 
-  1: {
-    reverse: false,
-  },
+  1: reverse(false),
 };
 
 function SwapAction() {
@@ -67,9 +61,7 @@ function SwapAction() {
     >
       <div className={styles.SwapActionContentContainer}>
         {renderItems}
-        {totalCount > 0 && (
-          <TotalCount value={totalCount} onlyValue text="pools" />
-        )}
+        {totalCount > 0 && <TotalCount value={totalCount} to="swap" />}
       </div>
     </Display>
   );

@@ -1,14 +1,14 @@
-import TeleportLogo from './components/TeleportLogo/TeleportLogo';
+import Logo from './components/Logo/Logo';
 import TeleportText from './components/TeleportText/TeleportText';
 import styles from './styles.module.scss';
 
-function TeleportDescrp() {
+function AboutTeleport() {
   return (
     <div className={styles.TeleportDescrpContainerContent}>
-      <TeleportLogo />
+      <Logo />
       <TeleportText />
     </div>
   );
 }
 
-export default TeleportDescrp;
+export default AboutTeleport;
