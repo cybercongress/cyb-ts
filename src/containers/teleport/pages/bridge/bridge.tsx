@@ -1,5 +1,5 @@
 import { AvailableAmount, DenomArr, MainContainer } from 'src/components';
-import Select, { OptionSelect, SelectOption } from 'src/components/Select';
+import Select, { OptionSelect } from 'src/components/Select';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
@@ -11,7 +11,6 @@ import { Networks } from 'src/types/networks';
 import Slider from 'src/components/Slider';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { useSetupIbcClient } from '../../hooks';
-// import Slider from '../../components/slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
@@ -26,6 +25,8 @@ type Query = {
   token: string;
   amount?: string;
 };
+
+const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -78,28 +79,28 @@ function Bridge() {
         }
       }
     }
-  }, [networkA, networkB, tokenSelect, setSearchParams, searchParams]);
+  }, [
+    networkA,
+    networkB,
+    tokenSelect,
+    setSearchParams,
+    searchParams,
+    tokenAmount,
+  ]);
 
   useEffect(() => {
-    if (
-      channels &&
-      networkA &&
-      networkB &&
-      networkA !== CYBER.CHAIN_ID &&
-      networkB === CYBER.CHAIN_ID
-    ) {
+    const isInitialized = channels && networkA && networkB;
+    if (!isInitialized) {
+      return;
+    }
+
+    if (!isCyberChain(networkA) && isCyberChain(networkB)) {
       setTypeTxs('deposit');
       const { destination_channel_id: destChannelId } = channels[networkA];
       setSourceChannel(destChannelId);
     }
 
-    if (
-      channels &&
-      networkA &&
-      networkB &&
-      networkA === CYBER.CHAIN_ID &&
-      networkB !== CYBER.CHAIN_ID
-    ) {
+    if (isCyberChain(networkA) && !isCyberChain(networkB)) {
       setTypeTxs('withdraw');
 
       const { source_channel_id: sourceChannelId } = channels[networkB];
@@ -107,78 +108,60 @@ function Bridge() {
     }
   }, [networkB, networkA, channels]);
 
-  const reduceOptionsNetwork = useCallback(() => {
-    const tempList: SelectOption[] = [];
-    let reduceData: string[] = [];
+  const reduceOptionsNetwork = useCallback(
+    () =>
+      channels
+        ? [CYBER.CHAIN_ID, ...Object.keys(channels)].map((key) => ({
+            value: key,
+            text: (
+              <DenomArr
+                type="network"
+                denomValue={key}
+                onlyText
+                tooltipStatusText={false}
+              />
+            ),
+            img: (
+              <DenomArr
+                type="network"
+                denomValue={key}
+                onlyImg
+                tooltipStatusImg={false}
+              />
+            ),
+          }))
+        : [],
+    [channels]
+  );
 
-    if (channels) {
-      reduceData = [CYBER.CHAIN_ID, ...Object.keys(channels)];
-    }
+  const reduceOptions = useMemo(
+    () =>
+      accountBalances
+        ? Object.keys(accountBalances).map((key) => ({
+            value: key,
+            text: (
+              <DenomArr
+                denomValue={key}
+                onlyText
+                tooltipStatusText={tokenSelect !== key}
+              />
+            ),
+            img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
+          }))
+        : [],
 
-    reduceData.forEach((key) => {
-      tempList.push({
-        value: key,
-        text: (
-          <DenomArr
-            type="network"
-            denomValue={key}
-            onlyText
-            tooltipStatusText={false}
-          />
-        ),
-        img: (
-          <DenomArr
-            type="network"
-            denomValue={key}
-            onlyImg
-            tooltipStatusImg={false}
-          />
-        ),
-      });
-    });
-    return tempList;
-  }, [channels]);
-
-  const reduceOptions = useMemo(() => {
-    const tempList: SelectOption[] = [];
-
-    if (accountBalances) {
-      Object.keys(accountBalances).forEach((key) => {
-        tempList.push({
-          value: key,
-          text: (
-            <DenomArr
-              denomValue={key}
-              onlyText
-              tooltipStatusText={tokenSelect !== key}
-            />
-          ),
-          img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
-        });
-      });
-    }
-    return tempList;
-  }, [accountBalances, tokenSelect]);
+    [accountBalances, tokenSelect]
+  );
 
   const getAccountBalancesToken = useCallback(
-    (selectNetwork: string) => {
-      if (selectNetwork !== CYBER.CHAIN_ID) {
-        return balanceIbc;
-      }
-
-      return accountBalances;
-    },
+    (selectNetwork: string) =>
+      !isCyberChain(selectNetwork) ? balanceIbc : accountBalances,
     [accountBalances, balanceIbc]
   );
 
   const getDenomToken = useCallback(
-    (selectNetwork: string) => {
-      if (selectNetwork !== CYBER.CHAIN_ID && denomIbc) {
-        return denomIbc;
-      }
-
-      return tokenSelect;
-    },
+    (selectNetwork: string) =>
+      !isCyberChain(selectNetwork) && denomIbc ? denomIbc : tokenSelect,
     [tokenSelect, denomIbc]
   );
 
@@ -208,9 +191,6 @@ function Bridge() {
   ]);
 
   useEffect(() => {
-    // validation bridge
-    let exceeded = true;
-
     const validNetwork =
       networkA.length > 0 && networkB.length > 0 && networkA !== networkB;
 
@@ -219,11 +199,7 @@ function Bridge() {
 
     const validTokenAmount = !validInputAmountToken && Number(tokenAmount) > 0;
 
-    if (validNetwork && validIbcClient && validTokenAmount) {
-      exceeded = false;
-    }
-
-    setIsExceeded(exceeded);
+    setIsExceeded(!(validNetwork && validIbcClient && validTokenAmount));
   }, [
     networkA,
     networkB,
@@ -237,19 +213,17 @@ function Bridge() {
     (value: number) => {
       let tokenA;
       let accountBalancesA;
-
-      if (networkA !== CYBER.CHAIN_ID && denomIbc) {
+      if (!isCyberChain(networkA) && denomIbc) {
         tokenA = denomIbc;
         accountBalancesA = balanceIbc;
-      }
-      if (networkA === CYBER.CHAIN_ID) {
+      } else {
         tokenA = tokenSelect;
         accountBalancesA = accountBalances;
       }
 
       if (
-        accountBalancesA &&
         tokenA &&
+        accountBalancesA &&
         accountBalancesA[tokenA] &&
         traseDenom
       ) {
@@ -266,16 +240,11 @@ function Bridge() {
     [accountBalances, balanceIbc, denomIbc, tokenSelect, traseDenom, networkA]
   );
 
-  const updateFunc = () => {
-    refreshBalances();
-  };
+  const updateFunc = () => refreshBalances();
 
   const tokenChange = useCallback(() => {
-    const A = networkB;
-    const B = networkA;
-
-    setNetworkA(A);
-    setNetworkB(B);
+    setNetworkA(networkB);
+    setNetworkB(networkA);
   }, [networkB, networkA]);
 
   const stateActionBar = {
@@ -293,8 +262,8 @@ function Bridge() {
   const getPercentsOfToken = useCallback(() => {
     const tokenA = getDenomToken(networkA);
     const [{ coinDecimals }] = traseDenom(tokenA);
+    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals); // ?????
     const balance = getAccountBalancesToken(networkA) || {};
-    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals);
     const balanceToken = balance[tokenA] || 0;
 
     return balanceToken > 0
@@ -357,13 +326,6 @@ function Bridge() {
             </Col>
           </GridContainer>
 
-          {/* <Slider
-            tokenA={getDenomToken(networkA)}
-            tokenAAmount={tokenAmount}
-            setPercentageBalanceHook={setPercentageBalanceHook}
-            coinReverseAction={tokenChange}
-            accountBalances={getAccountBalancesToken(networkA)}
-          /> */}
           <Slider
             valuePercents={getPercentsOfToken()}
             onChange={setPercentageBalanceHook}
