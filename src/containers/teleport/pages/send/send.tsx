@@ -24,7 +24,6 @@ import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
-import Slider from '../../components/slider';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';
 import DataSendTxs from '../../components/dataSendTxs/DataSendTxs';
@@ -33,6 +32,7 @@ import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd
 import InputMemo from '../../components/Inputs/InputMemo';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
+import Slider from 'src/components/Slider';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -177,6 +177,20 @@ function Send() {
     [accountBalances, tokenSelect, traseDenom]
   );
 
+  const getPercentsOfToken = useCallback(() => {
+    const [{ coinDecimals }] = traseDenom(tokenSelect);
+    const balance = accountBalances || {};
+    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals);
+    const balanceToken = balance[tokenSelect] || 0;
+
+    return balanceToken > 0
+      ? new BigNumber(amountTokenA)
+          .dividedBy(balanceToken)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
+  }, [tokenSelect, tokenAmount, accountBalances, traseDenom]);
+
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
     dataSendTxs.refetch();
@@ -248,10 +262,8 @@ function Send() {
           </GridContainer>
 
           <Slider
-            tokenA={tokenSelect}
-            tokenAAmount={tokenAmount}
-            setPercentageBalanceHook={setPercentageBalanceHook}
-            accountBalances={accountBalances}
+            valuePercents={getPercentsOfToken()}
+            onChange={setPercentageBalanceHook}
           />
         </TeleportContainer>
         <TeleportContainer>

@@ -75,7 +75,7 @@ function SphereValueWithToken({
 }) {
   return (
     <SphereValueMemo angle={angle}>
-      <DenomArr denomValue={tokenName} onlyImg />
+      <DenomArr denomValue={tokenName} onlyImg tooltipStatusImg={false} />
       {price && (
         <div className={styles.imgValue}>
           <FormatNumberTokens value={price} />

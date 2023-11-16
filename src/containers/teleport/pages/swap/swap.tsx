@@ -26,12 +26,12 @@ import {
   calculatePairAmount,
   getMyTokenBalanceNumber,
 } from '../../utils';
-import Slider from '../../components/slider';
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
+import Slider from 'src/components/Slider';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -233,13 +233,29 @@ function Swap() {
       }
 
       return {
-        to: 1,
-        from: revPrice.toNumber(),
+        tokenA,
+        tokenB,
+        priceA: 1,
+        priceB: revPrice.toNumber(),
       };
     }
 
-    return { to: 0, from: 0 };
+    return { priceA: 0, priceB: 0, tokenA, tokenB };
   }, [poolPrice, tokenA, tokenB, traseDenom]);
+
+  const getPercentsOfToken = useCallback(() => {
+    const [{ coinDecimals }] = traseDenom(tokenA);
+    const balance = accountBalances || {};
+    const amountTokenA = getDisplayAmountReverce(tokenAAmount, coinDecimals);
+    const balanceToken = balance[tokenA] || 0;
+
+    return balanceToken > 0
+      ? new BigNumber(amountTokenA)
+          .dividedBy(balanceToken)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
+  }, [tokenA, tokenAAmount, accountBalances, traseDenom]);
 
   function tokenChange() {
     const A = tokenB;
@@ -341,13 +357,10 @@ function Swap() {
           />
 
           <Slider
-            tokenA={tokenA}
-            tokenB={tokenB}
-            tokenAAmount={tokenAAmount}
-            setPercentageBalanceHook={setPercentageBalanceHook}
-            coinReverseAction={() => tokenChange()}
-            accountBalances={accountBalances}
-            pairPrice={pairPrice}
+            valuePercents={getPercentsOfToken()}
+            onChange={setPercentageBalanceHook}
+            onSwapClick={() => tokenChange()}
+            tokenPair={pairPrice}
           />
 
           <TokenSetterSwap
