@@ -46,8 +46,8 @@
   z-index: 2;
   padding: 18px;
   gap: 18px;
-  background: rgba(0, 0, 0, 0.8);
-  // backdrop-filter: blur(15px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
   overflow-y: scroll;
   overflow-x: hidden;
 }
