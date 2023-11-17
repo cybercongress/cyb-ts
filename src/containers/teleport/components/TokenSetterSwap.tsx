@@ -3,6 +3,7 @@ import { DenomArr, AvailableAmount } from 'src/components';
 import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
 import { Nullable } from 'src/types';
+import { CYBER } from 'src/utils/config';
 import { Col, GridContainer } from './grid';
 import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale';
 
@@ -86,14 +87,39 @@ function TokenSetterSwap({
           token={valueSelect}
         />
       </Col>
-      <Select
-        valueSelect={valueSelect}
-        currentValue={valueSelect}
-        onChangeSelect={(item: string) => onChangeSelect(item)}
-        width="100%"
-        options={reduceOptions}
-        title={`choose token to ${textAction}`}
-      />
+      <Col>
+        <Select
+          valueSelect={valueSelect}
+          currentValue={valueSelect}
+          onChangeSelect={(item: string) => onChangeSelect(item)}
+          width="100%"
+          options={reduceOptions}
+          title={`choose token to ${textAction}`}
+        />
+        {id === TokenSetterId.tokenAAmount && (
+          <Select
+            valueSelect="warp"
+            currentValue="warp"
+            disabled
+            width="100%"
+            options={[
+              {
+                value: 'warp',
+                text: 'warp',
+                img: (
+                  <DenomArr
+                    denomValue={CYBER.CHAIN_ID}
+                    onlyImg
+                    type="network"
+                    tooltipStatusImg={false}
+                  />
+                ),
+              },
+            ]}
+            title="choose dex"
+          />
+        )}
+      </Col>
     </GridContainer>
   );
 }

@@ -55,7 +55,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
   const { debounce } = useDebounce();
   const firstEffectOccured = useRef(false);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedTypeRecipient, setSelectedTypeRecipient] = useState(
     TypeRecipient.friends
   );
@@ -198,7 +198,6 @@ function AccountInput({ recipient, setRecipient }: Props) {
         color={!recipient ? Color.Red : Color.Green}
         classNameTextbox={styles.contentValueInput}
         onFocusFnc={() => setIsOpen(true)}
-        autoFocus
         // onClick={}
       />
 
@@ -209,10 +208,9 @@ function AccountInput({ recipient, setRecipient }: Props) {
               type="radio"
               items={Object.values(TypeRecipient).map((recipType) => {
                 return {
-                  label: configRecipient[recipType].label,
+                  label: recipType,
                   name: recipType,
                   checked: selectedTypeRecipient === recipType,
-                  tooltip: recipType,
                 };
               })}
               onChange={(val: TypeRecipient) => setSelectedTypeRecipient(val)}

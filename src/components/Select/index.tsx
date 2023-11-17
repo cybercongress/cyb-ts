@@ -86,7 +86,7 @@ function Select({
       return;
     }
 
-    onChangeSelect(value);
+    onChangeSelect && onChangeSelect(value);
     setIsOpen(false);
   };
 

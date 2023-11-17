@@ -214,6 +214,28 @@ function Send() {
     <>
       <MainContainer width="62%">
         <TeleportContainer>
+          <Select
+            valueSelect={CYBER.CHAIN_ID}
+            currentValue={CYBER.CHAIN_ID}
+            disabled
+            options={[
+              {
+                value: CYBER.CHAIN_ID,
+                text: CYBER.CHAIN_ID,
+                img: (
+                  <DenomArr
+                    denomValue={CYBER.CHAIN_ID}
+                    onlyImg
+                    type="network"
+                    tooltipStatusImg={false}
+                  />
+                ),
+              },
+            ]}
+            width="100%"
+            // disabled
+            title="choose network"
+          />
           <InputMemo value={memoValue} onChangeValue={setMemoValue} />
           <AccountInput recipient={recipient} setRecipient={setRecipient} />
           <GridContainer>
