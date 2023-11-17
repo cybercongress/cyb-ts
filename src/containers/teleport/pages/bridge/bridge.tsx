@@ -64,7 +64,7 @@ function Bridge() {
         query.amount = tokenAmount;
       }
 
-      setSearchParams(createSearchParams(query));
+      setSearchParams(createSearchParams(query), { replace: true });
     } else {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());

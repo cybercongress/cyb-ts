@@ -23,6 +23,7 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
+import Slider from 'src/components/Slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';
@@ -32,7 +33,6 @@ import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd
 import InputMemo from '../../components/Inputs/InputMemo';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
-import Slider from 'src/components/Slider';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
 
@@ -78,7 +78,7 @@ function Send() {
         query.amount = tokenAmount;
       }
 
-      setSearchParams(createSearchParams(query));
+      setSearchParams(createSearchParams(query), { replace: true });
     } else {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());
