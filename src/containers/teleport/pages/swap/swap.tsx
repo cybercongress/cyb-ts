@@ -17,6 +17,7 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Nullable } from 'src/types';
+import Slider from 'src/components/Slider/Slider';
 import TokenSetterSwap, {
   TokenSetterId,
 } from '../../components/TokenSetterSwap';

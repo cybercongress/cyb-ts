@@ -52,7 +52,7 @@ import AvailableAmount from './AvailableAmount/AvailableAmount';
 import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens';
 import AmountDenom from './AmountDenom/AmountDenom';
 import ButtonSwap from './ButtonSwap';
-import Slider from './slider';
+import Slider from './Slider/Slider';
 
 const BtnGrd = Button;
 
