@@ -8,7 +8,7 @@ import { getDisplayAmount, getDisplayAmountReverce } from 'src/utils/utils';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useChannels } from 'src/hooks/useHub';
 import { Networks } from 'src/types/networks';
-import Slider from 'src/components/Slider';
+import Slider from 'src/components/Slider/Slider';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { useSetupIbcClient } from '../../hooks';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';

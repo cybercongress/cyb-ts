@@ -7,6 +7,7 @@ import imgSwap from 'src/image/exchange-arrows.svg';
 import 'rc-slider/assets/index.css';
 import styles from './styles.module.scss';
 import './styles.override.css';
+import { debounce } from 'src/utils/helpers';
 
 function SpetionLabel({ value }: { value: number }) {
   let position = '';
@@ -92,28 +93,27 @@ type TokenPair = {
   priceB: number;
 };
 
-// type SliderHandleProps = {
-//   disabled: boolean;
-//   onClickRelease: () => void;
-//   onSwapClick?: () => void;
-//   percents: number;
-//   tokenPair?: TokenPair;
-//   value: number;
-// } & RcSliderProps['handle'];
-
 const angleDeg = 135;
-const minlVal = Math.log(1);
-const maxlVal = Math.log(100);
+// const minlVal = Math.log(0.1);
+const scaleMin = 1;
+const scaleMax = 101;
+const minlVal = Math.log(scaleMin);
+const maxlVal = Math.log(scaleMax);
 
-const scale = (maxlVal - minlVal) / 100;
+const scale = (maxlVal - minlVal) / scaleMax;
 
-const scalePercents = [0, 2, 5, 10, 20, 50, 100];
+const scalePercents = [1, 2, 5, 10, 20, 50, 100];
 
+function roundToOneDecimalPlace(num: number) {
+  return Math.round(num * 10) / 10;
+}
 const positionToPercents = (position: number) =>
-  position === 0 ? 0 : Math.round(Math.exp(minlVal + scale * position));
+  position === 0
+    ? 0
+    : roundToOneDecimalPlace(Math.exp(minlVal + scale * position)) - 1;
 
 const percentsToPosition = (percents: number) =>
-  (Math.log(percents) - minlVal) / scale;
+  (Math.log(percents + 1) - minlVal) / scale;
 
 const scaleMarks = Object.fromEntries(
   scalePercents.map((percents) => [
@@ -139,32 +139,39 @@ function Slider({
 }: SliderProps) {
   const [valueSilder, setValueSilder] = useState(0);
   const [currentPercents, setCurrentPercent] = useState(0);
-  const beforePercents = useRef(0);
+  const [draggingMode, setDraggingMode] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [handleMouseDown, setHandleMouseDown] = useState(false);
 
-  const resetDragging = useCallback(() => setIsDragging(false), []);
+  const draggingDetectorTimer = useRef(undefined);
+
+  const resetDragging = useCallback(() => {
+    clearTimeout(draggingDetectorTimer.current);
+    setDraggingMode(false);
+  }, []);
+
+  const enableDraggingMode = () => {
+    draggingDetectorTimer.current = setTimeout(() => {
+      clearTimeout(draggingDetectorTimer.current);
+      setDraggingMode(true);
+    }, 100);
+  };
 
   const onClickSwapDirection = useCallback(
-    () => !isDragging && onSwapClick && onSwapClick(),
-    [onSwapClick, isDragging]
+    () => !draggingMode && onSwapClick && onSwapClick(),
+    [onSwapClick, draggingMode]
   );
 
   useEffect(() => {
-    if (beforePercents.current !== currentPercents) {
-      setIsDragging(true);
-    }
-    beforePercents.current = currentPercents;
-  }, [currentPercents]);
+    const percents = valuePercents;
 
-  useEffect(() => {
-    const percents = Math.round(valuePercents || 0);
     if (percents > 100) {
       setCurrentPercent(100);
-      setValueSilder(100);
+      setValueSilder(scaleMax);
       return;
     }
     if (percents <= 0) {
-      setValueSilder(0);
+      setValueSilder(scaleMin);
       setCurrentPercent(0);
       return;
     }
@@ -173,20 +180,30 @@ function Slider({
 
     const position = percentsToPosition(percents);
 
-    setValueSilder(position < 0 ? 1 : position);
+    setValueSilder(position < 0 ? 0 : position);
   }, [valuePercents]);
 
   const onSliderChange = (position: number) => {
-    requestAnimationFrame(() => {
-      const value = positionToPercents(position);
-      setValueSilder(position);
-      setCurrentPercent(value);
+    if (isDragging && !draggingMode) {
+      return;
+    }
 
+    requestAnimationFrame(() => {
+      setValueSilder(position);
+
+      // updateValue(position);
+      const value = positionToPercents(position);
+      setCurrentPercent(value);
       onChange && onChange(value);
     });
   };
   const renderCustomHandle: RcSliderProps['handle'] = useCallback(
-    ({ value }) => {
+    ({ value, dragging }) => {
+      setIsDragging(dragging);
+      const percents =
+        currentPercents < 2
+          ? currentPercents.toFixed(1)
+          : Math.round(currentPercents || 0);
       return (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
@@ -194,11 +211,13 @@ function Slider({
           style={{
             left: `${value}%`,
           }}
+          onMouseDown={() => enableDraggingMode()}
+          onTouchStart={() => enableDraggingMode()}
           onMouseUp={() => resetDragging()}
           onTouchEnd={() => resetDragging()}
         >
           <SphereValueMemo angle={90}>
-            <div>{currentPercents}%</div>
+            <div>{percents}%</div>
           </SphereValueMemo>
           {tokenPair && (
             <>
@@ -226,14 +245,7 @@ function Slider({
         </div>
       );
     },
-    [
-      tokenPair,
-      currentPercents,
-      disabled,
-      resetDragging,
-      onClickSwapDirection,
-      onSwapClick,
-    ]
+    [tokenPair, currentPercents, disabled, resetDragging, onClickSwapDirection]
   );
 
   return (
@@ -243,9 +255,9 @@ function Slider({
           <SliderComponent
             disabled={!!disabled}
             value={valueSilder}
-            min={0}
-            max={100}
-            step={0.5}
+            min={scaleMin}
+            max={scaleMax}
+            step={0.1}
             handle={renderCustomHandle}
             onChange={(pos) => onSliderChange(pos)}
             marks={scaleMarks}
