@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import cx from 'classnames';
 import SliderComponent, { SliderProps as RcSliderProps } from 'rc-slider';
-import { FormatNumberTokens, DenomArr } from 'src/components';
 import imgSwap from 'src/image/exchange-arrows.svg';
 import 'rc-slider/assets/index.css';
 import styles from './styles.module.scss';
 import './styles.override.css';
-import { debounce } from 'src/utils/helpers';
+import DenomArr from '../denom/denomArr';
+import FormatNumberTokens from '../FormatNumberTokens/FormatNumberTokens';
 
 function SpetionLabel({ value }: { value: number }) {
   let position = '';

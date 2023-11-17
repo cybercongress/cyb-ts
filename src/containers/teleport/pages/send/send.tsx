@@ -3,6 +3,7 @@ import {
   DenomArr,
   MainContainer,
   Select,
+  Slider,
 } from 'src/components';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -78,7 +79,7 @@ function Send() {
         query.amount = tokenAmount;
       }
 
-      setSearchParams(createSearchParams(query));
+      setSearchParams(createSearchParams(query), { replace: true });
     } else {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());

@@ -1,4 +1,4 @@
-import { MainContainer } from 'src/components';
+import { MainContainer, Slider } from 'src/components';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -262,18 +262,17 @@ function Swap() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      if (accountBalances && accountBalances[tokenA] && traseDenom) {
-        const [{ coinDecimals }] = traseDenom(tokenA);
-        const amount = new BigNumber(accountBalances[tokenA])
-          .multipliedBy(value)
-          .dividedBy(100)
-          .dp(coinDecimals, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        const amountDecimals = getDisplayAmount(amount, coinDecimals);
-        amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
-        setTokenAAmount(amountDecimals);
-        setPercent(new BigNumber(value).toString());
-      }
+      const balanceToken = accountBalances ? accountBalances[tokenA] || 0 : 0;
+      const [{ coinDecimals }] = traseDenom(tokenA);
+      const amount = new BigNumber(balanceToken)
+        .multipliedBy(value)
+        .dividedBy(100)
+        .dp(coinDecimals, BigNumber.ROUND_FLOOR)
+        .toNumber();
+      const amountDecimals = getDisplayAmount(amount, coinDecimals);
+      amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
+      setTokenAAmount(amountDecimals);
+      setPercent(new BigNumber(value).toString());
     },
     [accountBalances, tokenA, traseDenom, amountChangeHandler, searchParams]
   );
@@ -290,7 +289,7 @@ function Swap() {
         query.amount = tokenAAmount;
       }
 
-      setSearchParams(createSearchParams(query));
+      setSearchParams(createSearchParams(query), { replace: true });
     } else {
       firstEffectOccured.current = true;
       const param = Object.fromEntries(searchParams.entries());
@@ -310,7 +309,6 @@ function Swap() {
     tokenAAmount,
     setSearchParams,
     searchParams,
-    percent,
     amountChangeHandler,
   ]);
 
