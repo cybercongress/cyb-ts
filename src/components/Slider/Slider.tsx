@@ -141,25 +141,23 @@ function Slider({
   const [currentPercents, setCurrentPercent] = useState(0);
   const [draggingMode, setDraggingMode] = useState(false);
   const [isHadleFocused, setIsHandleFocused] = useState(false);
-
   const draggingDetectorTimer = useRef(undefined);
 
-  const resetDragging = useCallback(() => {
+  const finishDragging = useCallback(() => {
     clearTimeout(draggingDetectorTimer.current);
-    setDraggingMode(false);
-  }, []);
+    if (!draggingMode) {
+      onSwapClick && onSwapClick();
+    }
 
-  const enableDraggingMode = () => {
+    setDraggingMode(false);
+  }, [draggingMode, onSwapClick]);
+
+  const startDragging = () => {
     draggingDetectorTimer.current = setTimeout(() => {
       clearTimeout(draggingDetectorTimer.current);
       setDraggingMode(true);
-    }, 100);
+    }, 300);
   };
-
-  const onClickSwapDirection = useCallback(
-    () => !draggingMode && onSwapClick && onSwapClick(),
-    [onSwapClick, draggingMode]
-  );
 
   useEffect(() => {
     const percents = valuePercents;
@@ -210,10 +208,10 @@ function Slider({
           }}
           onMouseEnter={() => setIsHandleFocused(true)}
           onMouseLeave={() => setIsHandleFocused(false)}
-          onMouseDown={() => enableDraggingMode()}
-          onTouchStart={() => enableDraggingMode()}
-          onMouseUp={() => resetDragging()}
-          onTouchEnd={() => resetDragging()}
+          onMouseDown={() => startDragging()}
+          onTouchStart={() => startDragging()}
+          onMouseUp={() => finishDragging()}
+          onTouchEnd={() => finishDragging()}
         >
           <SphereValueMemo angle={90}>
             <div>{percents}%</div>
@@ -236,15 +234,13 @@ function Slider({
             type="button"
             className={styles.buttonIcon}
             disabled={disabled}
-            onMouseUp={() => onClickSwapDirection()}
-            onTouchEnd={() => onClickSwapDirection()}
           >
             <img src={imgSwap} alt="swap" />
           </button>
         </div>
       );
     },
-    [tokenPair, currentPercents, disabled, resetDragging, onClickSwapDirection]
+    [tokenPair, currentPercents, disabled, finishDragging]
   );
 
   return (
