@@ -52,6 +52,7 @@ import AvailableAmount from './AvailableAmount/AvailableAmount';
 import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens';
 import AmountDenom from './AmountDenom/AmountDenom';
 import ButtonSwap from './ButtonSwap';
+import Slider from './slider';
 
 const BtnGrd = Button;
 
@@ -110,6 +111,7 @@ export {
   FormatNumberTokens,
   AmountDenom,
   ButtonSwap,
+  Slider,
 };
 
 export { Dots } from './ui/Dots';

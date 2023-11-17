@@ -3,6 +3,7 @@ import {
   DenomArr,
   MainContainer,
   Select,
+  Slider,
 } from 'src/components';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -23,7 +24,6 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
-import Slider from 'src/components/Slider';
 import { Col, GridContainer, TeleportContainer } from '../../components/grid';
 import ActionBar from './actionBar.send';
 import { getMyTokenBalanceNumber } from '../../utils';

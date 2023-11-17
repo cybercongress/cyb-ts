@@ -1,4 +1,4 @@
-import { MainContainer } from 'src/components';
+import { MainContainer, Slider } from 'src/components';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -32,7 +32,6 @@ import { TeleportContainer } from '../../components/grid';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
-import Slider from 'src/components/Slider';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
