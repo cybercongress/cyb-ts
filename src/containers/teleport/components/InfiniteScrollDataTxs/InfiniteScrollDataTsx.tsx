@@ -16,7 +16,6 @@ function InfiniteScrollDataTsx({ dataLength, next, hasMore, children }: Props) {
       dataLength={dataLength}
       next={next}
       hasMore={hasMore}
-      style={{ display: 'grid', gap: '15px', marginTop: '20px' }}
       loader={
         <h4>
           Loading
