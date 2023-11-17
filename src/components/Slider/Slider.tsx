@@ -94,7 +94,7 @@ type TokenPair = {
 };
 
 const angleDeg = 135;
-// const minlVal = Math.log(0.1);
+
 const scaleMin = 1;
 const scaleMax = 101;
 const minlVal = Math.log(scaleMin);
@@ -140,27 +140,24 @@ function Slider({
   const [valueSilder, setValueSilder] = useState(0);
   const [currentPercents, setCurrentPercent] = useState(0);
   const [draggingMode, setDraggingMode] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [handleMouseDown, setHandleMouseDown] = useState(false);
-
+  const [isHadleFocused, setIsHandleFocused] = useState(false);
   const draggingDetectorTimer = useRef(undefined);
 
-  const resetDragging = useCallback(() => {
+  const finishDragging = useCallback(() => {
     clearTimeout(draggingDetectorTimer.current);
-    setDraggingMode(false);
-  }, []);
+    if (!draggingMode) {
+      onSwapClick && onSwapClick();
+    }
 
-  const enableDraggingMode = () => {
+    setDraggingMode(false);
+  }, [draggingMode, onSwapClick]);
+
+  const startDragging = () => {
     draggingDetectorTimer.current = setTimeout(() => {
       clearTimeout(draggingDetectorTimer.current);
       setDraggingMode(true);
-    }, 100);
+    }, 300);
   };
-
-  const onClickSwapDirection = useCallback(
-    () => !draggingMode && onSwapClick && onSwapClick(),
-    [onSwapClick, draggingMode]
-  );
 
   useEffect(() => {
     const percents = valuePercents;
@@ -184,22 +181,20 @@ function Slider({
   }, [valuePercents]);
 
   const onSliderChange = (position: number) => {
-    if (isDragging && !draggingMode) {
+    // Hack to avoid glitch when click on handle
+    if (isHadleFocused && !draggingMode) {
       return;
     }
-
+    setValueSilder(position);
     requestAnimationFrame(() => {
-      setValueSilder(position);
-
-      // updateValue(position);
       const value = positionToPercents(position);
       setCurrentPercent(value);
       onChange && onChange(value);
     });
   };
+
   const renderCustomHandle: RcSliderProps['handle'] = useCallback(
-    ({ value, dragging }) => {
-      setIsDragging(dragging);
+    ({ value }) => {
       const percents =
         currentPercents < 2
           ? currentPercents.toFixed(1)
@@ -209,12 +204,14 @@ function Slider({
         <div
           className={styles.debtAmountPos}
           style={{
-            left: `${value}%`,
+            left: `${value - scaleMin}%`,
           }}
-          onMouseDown={() => enableDraggingMode()}
-          onTouchStart={() => enableDraggingMode()}
-          onMouseUp={() => resetDragging()}
-          onTouchEnd={() => resetDragging()}
+          onMouseEnter={() => setIsHandleFocused(true)}
+          onMouseLeave={() => setIsHandleFocused(false)}
+          onMouseDown={() => startDragging()}
+          onTouchStart={() => startDragging()}
+          onMouseUp={() => finishDragging()}
+          onTouchEnd={() => finishDragging()}
         >
           <SphereValueMemo angle={90}>
             <div>{percents}%</div>
@@ -237,15 +234,13 @@ function Slider({
             type="button"
             className={styles.buttonIcon}
             disabled={disabled}
-            onMouseUp={() => onClickSwapDirection()}
-            onTouchEnd={() => onClickSwapDirection()}
           >
             <img src={imgSwap} alt="swap" />
           </button>
         </div>
       );
     },
-    [tokenPair, currentPercents, disabled, resetDragging, onClickSwapDirection]
+    [tokenPair, currentPercents, disabled, finishDragging]
   );
 
   return (
