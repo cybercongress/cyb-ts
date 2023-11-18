@@ -230,11 +230,7 @@ function Slider({
               />
             </>
           )}
-          <button
-            type="button"
-            className={styles.buttonIcon}
-            disabled={disabled}
-          >
+          <button type="button" className={styles.buttonIcon}>
             <img src={imgSwap} alt="swap" />
           </button>
         </div>
@@ -248,7 +244,7 @@ function Slider({
       <div className={styles.debtAmountSlider}>
         <div style={{ width: '100%', padding: '0 25px' }}>
           <SliderComponent
-            disabled={!!disabled}
+            disabled={disabled}
             value={valueSilder}
             min={scaleMin}
             max={scaleMax}

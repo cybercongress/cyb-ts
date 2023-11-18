@@ -48,6 +48,16 @@ function Bridge() {
   const [sourceChannel, setSourceChannel] = useState<string | null>(null);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
 
+  const [tokenA, setTokenA] = useState<string>('');
+
+  const [tokenABalance, setTokenABalance] = useState<number>(0);
+  const [tokenBBalance, setTokenBBalance] = useState<number>(0);
+
+  const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
+
+  const [networkABalance, setNetworkABalance] = useState({});
+  const [networkBBalance, setNetworkBBalance] = useState({});
+
   const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
     tokenSelect,
     typeTxs === 'deposit' ? networkA : networkB
@@ -112,7 +122,7 @@ function Bridge() {
     }
   }, [networkB, networkA, channels]);
 
-  const reduceOptionsNetwork = useCallback(
+  const networkOptions = useCallback(
     () =>
       channels
         ? [CYBER.CHAIN_ID, ...Object.keys(channels)].map((key) => ({
@@ -138,7 +148,7 @@ function Bridge() {
     [channels]
   );
 
-  const reduceOptions = useMemo(
+  const tokenOptions = useMemo(
     () =>
       accountBalances
         ? Object.keys(accountBalances).map((key) => ({
@@ -157,46 +167,23 @@ function Bridge() {
     [accountBalances, tokenSelect]
   );
 
-  const getAccountBalancesToken = useCallback(
-    (selectNetwork: string) =>
-      !isCyberChain(selectNetwork) ? balanceIbc : accountBalances,
-    [accountBalances, balanceIbc]
-  );
-
-  const getDenomToken = useCallback(
-    (selectNetwork: string) =>
-      !isCyberChain(selectNetwork) && denomIbc ? denomIbc : tokenSelect,
-    [tokenSelect, denomIbc]
-  );
-
   const validInputAmountToken = useMemo(() => {
-    if (traseDenom && networkA) {
-      const tokenA = getDenomToken(networkA);
-      const tokenABalance = getAccountBalancesToken(networkA);
+    if (tokenA) {
       const myATokenBalance = getMyTokenBalanceNumber(tokenA, tokenABalance);
 
       if (Number(tokenAmount) > 0) {
-        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-
         const amountToken = parseFloat(
-          getDisplayAmountReverce(tokenAmount, coinDecimalsA)
+          getDisplayAmountReverce(tokenAmount, tokenACoinDecimals)
         );
 
         return amountToken > myATokenBalance;
       }
     }
     return false;
-  }, [
-    tokenAmount,
-    networkA,
-    getDenomToken,
-    traseDenom,
-    getAccountBalancesToken,
-  ]);
+  }, [tokenAmount, tokenA, tokenACoinDecimals]);
 
   useEffect(() => {
-    const validNetwork =
-      networkA.length > 0 && networkB.length > 0 && networkA !== networkB;
+    const validNetwork = networkA && networkB && networkA !== networkB;
 
     // check set up ibc cliet for deposit
     const validIbcClient = typeTxs === 'deposit' ? ibcClient !== null : true;
@@ -215,46 +202,73 @@ function Bridge() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      let tokenA;
-      let accountBalancesA;
-      if (!isCyberChain(networkA) && denomIbc) {
-        tokenA = denomIbc;
-        accountBalancesA = balanceIbc;
-      } else {
-        tokenA = tokenSelect;
-        accountBalancesA = accountBalances;
-      }
-
-      if (
-        tokenA &&
-        accountBalancesA &&
-        accountBalancesA[tokenA] &&
-        traseDenom
-      ) {
-        const [{ coinDecimals }] = traseDenom(tokenA);
-        const amount = new BigNumber(accountBalancesA[tokenA])
-          .multipliedBy(value)
-          .dividedBy(100)
-          .dp(coinDecimals, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        const amount1 = getDisplayAmount(amount, coinDecimals);
-        setTokenAmount(amount1);
-      }
+      const amount = new BigNumber(tokenABalance)
+        .multipliedBy(value)
+        .dividedBy(100)
+        .dp(tokenACoinDecimals, BigNumber.ROUND_FLOOR)
+        .toNumber();
+      setTokenAmount(getDisplayAmount(amount, tokenACoinDecimals));
     },
-    [accountBalances, balanceIbc, denomIbc, tokenSelect, traseDenom, networkA]
+    [tokenABalance, tokenACoinDecimals]
   );
 
-  const updateFunc = () => refreshBalances();
+  const getPercentsOfToken = useCallback(() => {
+    if (tokenABalance > 0) {
+      const amountTokenA = getDisplayAmountReverce(
+        tokenAmount,
+        tokenACoinDecimals
+      );
+      return new BigNumber(amountTokenA)
+        .dividedBy(tokenABalance)
+        .multipliedBy(100)
+        .toNumber();
+    }
+    return 0;
+  }, [tokenAmount, tokenACoinDecimals, tokenABalance]);
 
   const tokenChange = useCallback(() => {
     setNetworkA(networkB);
     setNetworkB(networkA);
+    setTokenAmount(0);
   }, [networkB, networkA]);
+
+  useEffect(() => {
+    const tokenA = !isCyberChain(networkA) && denomIbc ? denomIbc : tokenSelect;
+    setTokenA(tokenA);
+    const [{ coinDecimals }] = traseDenom(tokenA);
+    setTokenACoinDecimals(coinDecimals);
+  }, [networkA, traseDenom, denomIbc, tokenSelect]);
+
+  useEffect(() => {
+    const balanceToken = Number(networkABalance[tokenA]) || 0;
+    setTokenABalance(balanceToken);
+  }, [networkABalance, tokenA]);
+
+  useEffect(() => {
+    const balanceToken = Number(networkBBalance[tokenA]) || 0;
+    setTokenBBalance(balanceToken);
+  }, [networkBBalance, tokenA]);
+
+  const getAccountBalancesToken = useCallback(
+    (selectNetwork: string) =>
+      !isCyberChain(selectNetwork) ? balanceIbc : accountBalances,
+    [accountBalances, balanceIbc]
+  );
+
+  useEffect(() => {
+    const balance = getAccountBalancesToken(networkB) || {};
+    setNetworkBBalance(balance);
+  }, [networkB, tokenA]);
+
+  useEffect(() => {
+    const balance = getAccountBalancesToken(networkA) || {};
+    setNetworkABalance(balance);
+  }, [networkA, tokenA]);
 
   const stateActionBar = {
     tokenAmount,
     tokenSelect,
-    updateFunc,
+    updateFunc: () => refreshBalances(),
     isExceeded,
     typeTxs,
     ibcClient,
@@ -262,21 +276,6 @@ function Bridge() {
     sourceChannel,
     networkB,
   };
-
-  const getPercentsOfToken = useCallback(() => {
-    const tokenA = getDenomToken(networkA);
-    const [{ coinDecimals }] = traseDenom(tokenA);
-    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals); // ?????
-    const balance = getAccountBalancesToken(networkA) || {};
-    const balanceToken = balance[tokenA] || 0;
-
-    return balanceToken > 0
-      ? new BigNumber(amountTokenA)
-          .dividedBy(balanceToken)
-          .multipliedBy(100)
-          .toNumber()
-      : 0;
-  }, [networkA, tokenAmount]);
 
   return (
     <HistoryContextProvider>
@@ -292,8 +291,8 @@ function Bridge() {
                 tokenSelect={tokenSelect}
               />
               <AvailableAmount
-                accountBalances={getAccountBalancesToken(networkA)}
-                token={getDenomToken(networkA)}
+                accountBalances={networkABalance}
+                token={tokenA}
               />
             </Col>
             <Col>
@@ -309,7 +308,7 @@ function Bridge() {
                 }
                 onChangeSelect={(item: string) => setTokenSelect(item)}
                 width="100%"
-                options={reduceOptions}
+                options={tokenOptions}
                 title="choose token to send"
               />
               <Select
@@ -325,7 +324,7 @@ function Bridge() {
                 onChangeSelect={(item: string) => setNetworkA(item)}
                 width="100%"
                 title="choose source network"
-                options={reduceOptionsNetwork(networkB)}
+                options={networkOptions()}
               />
             </Col>
           </GridContainer>
@@ -334,19 +333,16 @@ function Bridge() {
             valuePercents={getPercentsOfToken()}
             onChange={setPercentageBalanceHook}
             onSwapClick={tokenChange}
+            disabled={tokenABalance === 0}
           />
 
           <GridContainer>
-            <AvailableAmount
-              accountBalances={getAccountBalancesToken(networkB)}
-              token={getDenomToken(networkB)}
-            />
-
+            <AvailableAmount accountBalances={networkBBalance} token={tokenA} />
             <Select
               valueSelect={networkB}
               onChangeSelect={(item: string) => setNetworkB(item)}
               width="100%"
-              options={reduceOptionsNetwork(networkA)}
+              options={networkOptions()}
               title="destination network"
             />
           </GridContainer>

@@ -17,6 +17,7 @@ type Props = {
   changeAmount?: string;
 };
 
+// TODO: refactor pass here only pure balance
 function AvailableAmount({
   accountBalances,
   token,
