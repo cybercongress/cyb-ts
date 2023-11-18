@@ -60,6 +60,10 @@ function Send() {
   const [memoValue, setMemoValue] = useState<string>('');
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
   const firstEffectOccured = useRef(false);
+
+  const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
+  const [tokenABalance, setTokenABalance] = useState<number>(0);
+
   // const deferredRecipient = useDeferredValue(recipient );
 
   useEffect(() => {
@@ -97,38 +101,40 @@ function Send() {
     }
   }, [tokenSelect, recipient, setSearchParams, searchParams, tokenAmount]);
 
+  useEffect(() => {
+    const [{ coinDecimals }] = traseDenom(tokenSelect);
+    setTokenACoinDecimals(coinDecimals);
+  }, [tokenSelect, traseDenom]);
+
+  // setTokenABalance
+  useEffect(() => {
+    if (accountBalances) {
+      setTokenABalance(accountBalances[tokenSelect] || 0);
+    }
+  }, [tokenSelect, accountBalances]);
+
   const validInputAmountToken = useMemo(() => {
-    if (traseDenom) {
-      const myATokenBalance = getMyTokenBalanceNumber(
-        tokenSelect,
-        accountBalances
+    const myATokenBalance = getMyTokenBalanceNumber(
+      tokenSelect,
+      accountBalances
+    );
+
+    if (Number(tokenAmount) > 0) {
+      const amountToken = parseFloat(
+        getDisplayAmountReverce(tokenAmount, tokenACoinDecimals)
       );
 
-      if (Number(tokenAmount) > 0) {
-        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
-
-        const amountToken = parseFloat(
-          getDisplayAmountReverce(tokenAmount, coinDecimalsA)
-        );
-
-        return amountToken > myATokenBalance;
-      }
+      return amountToken > myATokenBalance;
     }
+
     return false;
-  }, [tokenAmount, tokenSelect, traseDenom, accountBalances]);
+  }, [tokenAmount, tokenSelect, accountBalances, tokenACoinDecimals]);
 
   useEffect(() => {
-    // valid send
-    let exceeded = true;
-
     const validTokenAmount = !validInputAmountToken && Number(tokenAmount) > 0;
     const validRecipient = recipient && recipient.match(PATTERN_CYBER);
 
-    if (validRecipient && validTokenAmount) {
-      exceeded = false;
-    }
-
-    setIsExceeded(exceeded);
+    setIsExceeded(!(validRecipient && validTokenAmount));
   }, [recipient, validInputAmountToken, tokenAmount]);
 
   useEffect(() => {
@@ -164,33 +170,32 @@ function Send() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      if (accountBalances && accountBalances[tokenSelect] && traseDenom) {
-        const [{ coinDecimals }] = traseDenom(tokenSelect);
-        const amount = new BigNumber(accountBalances[tokenSelect])
+      if (tokenABalance) {
+        const amount = new BigNumber(tokenABalance)
           .multipliedBy(value)
           .dividedBy(100)
-          .dp(coinDecimals, BigNumber.ROUND_FLOOR)
+          .dp(tokenACoinDecimals, BigNumber.ROUND_FLOOR)
           .toNumber();
-        const amount1 = getDisplayAmount(amount, coinDecimals);
-        setTokenAmount(amount1);
+
+        setTokenAmount(getDisplayAmount(amount, tokenACoinDecimals));
       }
     },
-    [accountBalances, tokenSelect, traseDenom]
+    [tokenABalance, tokenSelect, tokenACoinDecimals]
   );
 
   const getPercentsOfToken = useCallback(() => {
-    const [{ coinDecimals }] = traseDenom(tokenSelect);
-    const balance = accountBalances || {};
-    const amountTokenA = getDisplayAmountReverce(tokenAmount, coinDecimals);
-    const balanceToken = balance[tokenSelect] || 0;
+    const amountTokenA = getDisplayAmountReverce(
+      tokenAmount,
+      tokenACoinDecimals
+    );
 
-    return balanceToken > 0
+    return tokenABalance > 0
       ? new BigNumber(amountTokenA)
-          .dividedBy(balanceToken)
+          .dividedBy(tokenABalance)
           .multipliedBy(100)
           .toNumber()
       : 0;
-  }, [tokenSelect, tokenAmount, accountBalances, traseDenom]);
+  }, [tokenSelect, tokenAmount, tokenABalance, tokenACoinDecimals]);
 
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
