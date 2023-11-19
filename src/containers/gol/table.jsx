@@ -1,8 +1,8 @@
-import useGetGol from './getGolHooks';
-import { formatNumber } from '../../utils/utils';
-import { ContainerGradientText } from 'src/components';
 import Table from 'src/components/Table/Table';
 import { useRobotContext } from 'src/pages/robot/robot.context';
+import Display from 'src/components/containerGradient/Display/Display';
+import { formatNumber } from '../../utils/utils';
+import useGetGol from './getGolHooks';
 
 function TableDiscipline() {
   const { address } = useRobotContext();
@@ -10,12 +10,7 @@ function TableDiscipline() {
   const { resultGol } = useGetGol(address);
 
   return (
-    <ContainerGradientText
-      userStyleContent={{
-        padding: '15px 0',
-        minHeight: '70vh',
-      }}
-    >
+    <Display noPaddingX>
       <Table
         columns={[
           {
@@ -38,7 +33,7 @@ function TableDiscipline() {
           };
         })}
       />
-    </ContainerGradientText>
+    </Display>
   );
 }
 

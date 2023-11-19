@@ -44,7 +44,7 @@
     &::before {
       content: '';
       position: absolute;
-      z-index: -1;
+      pointer-events: none;
 
       left: 0px;
       right: 0px;

@@ -17,7 +17,7 @@ function Layout() {
   return (
     <div className={styles.wrapper}>
       <Helmet>
-        <title>Robot {nickname || address || ''}</title>
+        <title>robot {nickname || address || ''}</title>
       </Helmet>
 
       <RobotMenu counts={counts} />

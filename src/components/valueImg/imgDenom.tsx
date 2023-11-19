@@ -13,6 +13,7 @@ import defaultImg from 'images/large-orange-circle.png';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import styles from './TextDenom.module.scss';
 
 const nativeImageMap = {
   millivolt: voltImg,
@@ -120,7 +121,10 @@ function ImgDenom({
   if (tooltipStatus) {
     return (
       <div>
-        <Tooltip placement="top" tooltip={<div>{tooltipText}</div>}>
+        <Tooltip
+          placement="top"
+          tooltip={<div className={styles.denom}>{tooltipText}</div>}
+        >
           {img}
         </Tooltip>
       </div>
