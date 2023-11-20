@@ -16,17 +16,11 @@ import {
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
-import { Nullable } from 'src/types';
-import Slider from 'src/components/Slider/Slider';
 import TokenSetterSwap, {
   TokenSetterId,
 } from '../../components/TokenSetterSwap';
 import { useGetParams, useGetSwapPrice } from '../../hooks';
-import {
-  sortReserveCoinDenoms,
-  calculatePairAmount,
-  getMyTokenBalanceNumber,
-} from '../../utils';
+import { sortReserveCoinDenoms, calculatePairAmount } from '../../utils';
 
 import ActionBar from './actionBar.swap';
 import { TeleportContainer } from '../../components/grid';
@@ -68,7 +62,31 @@ function Swap() {
     tokenBPoolAmount
   );
   const firstEffectOccured = useRef(false);
-  const [percent, setPercent] = useState<Nullable<string>>(undefined);
+  const [tokenABalance, setTokenABalance] = useState(0);
+  const [tokenBBalance, setTokenBBalance] = useState(0);
+
+  const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
+  const [tokenBCoinDecimals, setTokenBCoinDecimals] = useState<number>(0);
+
+  useEffect(() => {
+    const [{ coinDecimals }] = traseDenom(tokenA);
+    setTokenACoinDecimals(coinDecimals);
+  }, [traseDenom, tokenA]);
+
+  useEffect(() => {
+    const [{ coinDecimals }] = traseDenom(tokenB);
+    setTokenBCoinDecimals(coinDecimals);
+  }, [traseDenom, tokenB]);
+
+  useEffect(() => {
+    const balance = accountBalances ? accountBalances[tokenA] || 0 : 0;
+    setTokenABalance(balance);
+  }, [accountBalances, tokenA]);
+
+  useEffect(() => {
+    const balance = accountBalances ? accountBalances[tokenB] || 0 : 0;
+    setTokenBBalance(balance);
+  }, [accountBalances, tokenB]);
 
   useEffect(() => {
     // find pool for current pair
@@ -90,22 +108,24 @@ function Swap() {
   }, [poolsData, tokenA, tokenB]);
 
   useEffect(() => {
-    const getBalancesPoolCurrentPair = async () => {
+    (async () => {
       setTokenAPoolAmount(0);
       setTokenBPoolAmount(0);
 
-      if (queryClient && selectedPool) {
-        const getAllBalancesPromise = await queryClient.getAllBalances(
-          selectedPool.reserveAccountAddress
-        );
-        const dataReduceBalances = reduceBalances(getAllBalancesPromise);
-        if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(dataReduceBalances[tokenA]);
-          setTokenBPoolAmount(dataReduceBalances[tokenB]);
-        }
+      const isInitialized = queryClient && selectedPool;
+
+      if (!isInitialized) {
+        return;
       }
-    };
-    getBalancesPoolCurrentPair();
+
+      const getAllBalancesPromise = await queryClient.getAllBalances(
+        selectedPool.reserveAccountAddress
+      );
+      const dataReduceBalances = reduceBalances(getAllBalancesPromise);
+
+      setTokenAPoolAmount(dataReduceBalances[tokenA] || 0);
+      setTokenBPoolAmount(dataReduceBalances[tokenB] || 0);
+    })();
   }, [queryClient, tokenA, tokenB, selectedPool, update]);
 
   const amountChangeHandler = useCallback(
@@ -115,22 +135,14 @@ function Swap() {
 
       const isReverse = id !== TokenSetterId.tokenAAmount;
 
-      if (
-        tokenAPoolAmount &&
-        tokenAPoolAmount &&
-        traseDenom &&
-        Number(inputAmount) > 0
-      ) {
-        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-        const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
-
+      if (tokenAPoolAmount && tokenAPoolAmount && Number(inputAmount) > 0) {
         const state = {
           tokenB,
           tokenA,
           tokenBPoolAmount,
           tokenAPoolAmount,
-          coinDecimalsA,
-          coinDecimalsB,
+          coinDecimalsA: tokenACoinDecimals,
+          coinDecimalsB: tokenBCoinDecimals,
           isReverse,
         };
 
@@ -149,7 +161,7 @@ function Swap() {
         setTokenBAmount(counterPairAmount.toString(10));
       }
     },
-    [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount, traseDenom]
+    [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount]
   );
 
   useEffect(() => {
@@ -160,20 +172,18 @@ function Swap() {
   }, [update, amountChangeHandler, tokenA, tokenB]);
 
   const validInputAmountTokenA = useMemo(() => {
-    if (traseDenom) {
-      const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-      if (Number(tokenAAmount) > 0) {
-        const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+    const isValid = Number(tokenAAmount) > 0 && !!tokenABalance;
 
-        const amountToken = parseFloat(
-          getDisplayAmountReverce(tokenAAmount, coinDecimalsA)
-        );
-
-        return amountToken > myATokenBalance;
-      }
+    if (!isValid) {
+      return false;
     }
-    return false;
-  }, [tokenAAmount, tokenA, traseDenom, accountBalances]);
+
+    const amountToken = parseFloat(
+      getDisplayAmountReverce(tokenAAmount, tokenACoinDecimals)
+    );
+
+    return amountToken > tokenABalance;
+  }, [tokenAAmount, tokenABalance, tokenACoinDecimals]);
 
   const useGetSlippage = useMemo(() => {
     if (poolPrice && swapPrice) {
@@ -213,36 +223,34 @@ function Swap() {
   }, [poolPrice, tokenAAmount, validInputAmountTokenA, useGetSlippage]);
 
   const pairPrice = useMemo(() => {
-    if (poolPrice && tokenA && tokenB && traseDenom) {
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+    const isValid = poolPrice && tokenA && tokenB;
+    const pair = { priceA: 0, priceB: 0, tokenA, tokenB };
 
-      let revPrice = new BigNumber(0);
-      let position = 0;
-
-      if ([tokenA, tokenB].sort()[0] === tokenA) {
-        revPrice = new BigNumber(1).dividedBy(poolPrice);
-        position = coinDecimalsB;
-      } else {
-        const amountTokenA = getDisplayAmountReverce(1, coinDecimalsA);
-        revPrice = new BigNumber(amountTokenA).multipliedBy(poolPrice);
-        position = coinDecimalsA;
-      }
-
-      if (!position || revPrice) {
-        revPrice.dp(position, BigNumber.ROUND_FLOOR);
-      }
-
-      return {
-        tokenA,
-        tokenB,
-        priceA: 1,
-        priceB: revPrice.toNumber(),
-      };
+    if (!isValid) {
+      return pair;
     }
 
-    return { priceA: 0, priceB: 0, tokenA, tokenB };
-  }, [poolPrice, tokenA, tokenB, traseDenom]);
+    let revPrice = new BigNumber(0);
+    let position = 0;
+
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      revPrice = new BigNumber(1).dividedBy(poolPrice);
+      position = tokenBCoinDecimals;
+    } else {
+      position = tokenACoinDecimals;
+      const amountTokenA = getDisplayAmountReverce(1, position);
+      revPrice = new BigNumber(amountTokenA).multipliedBy(poolPrice);
+    }
+
+    if (!position || revPrice) {
+      revPrice.dp(position, BigNumber.ROUND_FLOOR);
+    }
+
+    pair.priceA = 1;
+    pair.priceB = revPrice.toNumber();
+
+    return pair;
+  }, [poolPrice, tokenA, tokenACoinDecimals, tokenB, tokenBCoinDecimals]);
 
   function tokenChange() {
     const A = tokenB;
@@ -262,19 +270,16 @@ function Swap() {
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {
-      const balanceToken = accountBalances ? accountBalances[tokenA] || 0 : 0;
-      const [{ coinDecimals }] = traseDenom(tokenA);
-      const amount = new BigNumber(balanceToken)
+      const amount = new BigNumber(tokenABalance)
         .multipliedBy(value)
         .dividedBy(100)
-        .dp(coinDecimals, BigNumber.ROUND_FLOOR)
+        .dp(tokenACoinDecimals, BigNumber.ROUND_FLOOR)
         .toNumber();
-      const amountDecimals = getDisplayAmount(amount, coinDecimals);
+      const amountDecimals = getDisplayAmount(amount, tokenACoinDecimals);
       amountChangeHandler(amountDecimals, TokenSetterId.tokenAAmount);
       setTokenAAmount(amountDecimals);
-      setPercent(new BigNumber(value).toString());
     },
-    [accountBalances, tokenA, traseDenom, amountChangeHandler, searchParams]
+    [tokenABalance, tokenACoinDecimals, amountChangeHandler]
   );
 
   useEffect(() => {
@@ -313,17 +318,13 @@ function Swap() {
   ]);
 
   const getPercentsOfToken = useCallback(() => {
-    // const [{ coinDecimals }] = traseDenom(tokenA);
-
-    const balanceToken = accountBalances ? accountBalances[tokenA] || 0 : 0;
-
-    return balanceToken > 0
-      ? new BigNumber(tokenAAmount)
-          .dividedBy(balanceToken)
+    return tokenABalance > 0
+      ? new BigNumber(getDisplayAmountReverce(tokenAAmount, tokenACoinDecimals))
+          .dividedBy(tokenABalance)
           .multipliedBy(100)
           .toNumber()
       : 0;
-  }, [tokenAAmount, accountBalances, tokenA]);
+  }, [tokenAAmount, tokenACoinDecimals, tokenABalance]);
 
   const stateActionBar = {
     tokenAAmount,
@@ -344,7 +345,7 @@ function Swap() {
           <TokenSetterSwap
             id={TokenSetterId.tokenAAmount}
             listTokens={totalSupply}
-            accountBalances={accountBalances}
+            amountToken={getDisplayAmount(tokenABalance, tokenACoinDecimals)}
             tokenAmountValue={tokenAAmount}
             valueSelect={tokenA}
             selected={tokenB}
@@ -364,15 +365,13 @@ function Swap() {
           <TokenSetterSwap
             id={TokenSetterId.tokenBAmount}
             listTokens={totalSupply}
-            accountBalances={accountBalances}
+            amountToken={getDisplayAmount(tokenBBalance, tokenBCoinDecimals)}
             tokenAmountValue={tokenBAmount}
             valueSelect={tokenB}
             selected={tokenA}
             onChangeSelect={setTokenB}
             amountChangeHandler={amountChangeHandler}
-            validAmountMessage={
-              poolPrice === 0 && tokenA.length !== 0 && tokenB.length !== 0
-            }
+            validAmountMessage={!selectedPool}
             validAmountMessageText="no pool"
           />
         </TeleportContainer>

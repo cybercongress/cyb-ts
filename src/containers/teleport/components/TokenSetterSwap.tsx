@@ -16,7 +16,7 @@ type Props = {
   id: TokenSetterId;
   listTokens: Nullable<ObjKeyValue>;
   valueSelect: string;
-  accountBalances: Nullable<ObjKeyValue>;
+  amountToken: number;
   selected: string;
   tokenAmountValue: string;
   validInputAmount?: boolean;
@@ -35,7 +35,7 @@ function TokenSetterSwap({
   selected,
   id,
   listTokens,
-  accountBalances,
+  amountToken,
   validInputAmount,
   autoFocus,
   validAmountMessage,
@@ -82,10 +82,7 @@ function TokenSetterSwap({
           tokenSelect={valueSelect}
           autoFocus={autoFocus}
         />
-        <AvailableAmount
-          accountBalances={accountBalances}
-          token={valueSelect}
-        />
+        <AvailableAmount amountToken={amountToken} />
       </Col>
       <Col>
         <Select

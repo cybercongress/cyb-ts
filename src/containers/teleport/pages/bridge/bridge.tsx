@@ -55,9 +55,6 @@ function Bridge() {
 
   const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
 
-  const [networkABalance, setNetworkABalance] = useState({});
-  const [networkBBalance, setNetworkBBalance] = useState({});
-
   const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
     tokenSelect,
     typeTxs === 'deposit' ? networkA : networkB
@@ -213,17 +210,12 @@ function Bridge() {
   );
 
   const getPercentsOfToken = useCallback(() => {
-    if (tokenABalance > 0) {
-      const amountTokenA = getDisplayAmountReverce(
-        tokenAmount,
-        tokenACoinDecimals
-      );
-      return new BigNumber(amountTokenA)
-        .dividedBy(tokenABalance)
-        .multipliedBy(100)
-        .toNumber();
-    }
-    return 0;
+    return tokenABalance > 0
+      ? new BigNumber(getDisplayAmountReverce(tokenAmount, tokenACoinDecimals))
+          .dividedBy(tokenABalance)
+          .multipliedBy(100)
+          .toNumber()
+      : 0;
   }, [tokenAmount, tokenACoinDecimals, tokenABalance]);
 
   const tokenChange = useCallback(() => {
@@ -239,16 +231,6 @@ function Bridge() {
     setTokenACoinDecimals(coinDecimals);
   }, [networkA, traseDenom, denomIbc, tokenSelect]);
 
-  useEffect(() => {
-    const balanceToken = Number(networkABalance[tokenA]) || 0;
-    setTokenABalance(balanceToken);
-  }, [networkABalance, tokenA]);
-
-  useEffect(() => {
-    const balanceToken = Number(networkBBalance[tokenA]) || 0;
-    setTokenBBalance(balanceToken);
-  }, [networkBBalance, tokenA]);
-
   const getAccountBalancesToken = useCallback(
     (selectNetwork: string) =>
       !isCyberChain(selectNetwork) ? balanceIbc : accountBalances,
@@ -256,14 +238,16 @@ function Bridge() {
   );
 
   useEffect(() => {
-    const balance = getAccountBalancesToken(networkB) || {};
-    setNetworkBBalance(balance);
-  }, [networkB, tokenA]);
+    const balance = getAccountBalancesToken(networkA);
+    const balanceToken = balance ? balance[tokenA] || 0 : 0;
+    setTokenABalance(balanceToken);
+  }, [getAccountBalancesToken, networkA, tokenA]);
 
   useEffect(() => {
-    const balance = getAccountBalancesToken(networkA) || {};
-    setNetworkABalance(balance);
-  }, [networkA, tokenA]);
+    const balance = getAccountBalancesToken(networkB);
+    const balanceToken = balance ? balance[tokenA] || 0 : 0;
+    setTokenBBalance(balanceToken);
+  }, [getAccountBalancesToken, networkB, tokenA]);
 
   const stateActionBar = {
     tokenAmount,
@@ -291,8 +275,10 @@ function Bridge() {
                 tokenSelect={tokenSelect}
               />
               <AvailableAmount
-                accountBalances={networkABalance}
-                token={tokenA}
+                amountToken={getDisplayAmount(
+                  tokenABalance,
+                  tokenACoinDecimals
+                )}
               />
             </Col>
             <Col>
@@ -337,7 +323,9 @@ function Bridge() {
           />
 
           <GridContainer>
-            <AvailableAmount accountBalances={networkBBalance} token={tokenA} />
+            <AvailableAmount
+              amountToken={getDisplayAmount(tokenBBalance, tokenACoinDecimals)}
+            />
             <Select
               valueSelect={networkB}
               onChangeSelect={(item: string) => setNetworkB(item)}

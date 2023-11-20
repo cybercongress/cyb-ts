@@ -57,6 +57,8 @@ function Send() {
 
   const [recipientBalances, setRecipientBalances] =
     useState<Option<ObjKeyValue>>(undefined);
+
+  const [recipientTokenABalances, setRecipientTokenABalances] = useState(0);
   const [memoValue, setMemoValue] = useState<string>('');
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
   const firstEffectOccured = useRef(false);
@@ -114,17 +116,12 @@ function Send() {
   }, [tokenSelect, accountBalances]);
 
   const validInputAmountToken = useMemo(() => {
-    const myATokenBalance = getMyTokenBalanceNumber(
-      tokenSelect,
-      accountBalances
-    );
-
     if (Number(tokenAmount) > 0) {
       const amountToken = parseFloat(
         getDisplayAmountReverce(tokenAmount, tokenACoinDecimals)
       );
 
-      return amountToken > myATokenBalance;
+      return amountToken > tokenABalance;
     }
 
     return false;
@@ -138,18 +135,27 @@ function Send() {
   }, [recipient, validInputAmountToken, tokenAmount]);
 
   useEffect(() => {
-    const getBalancesRecipient = async () => {
+    (async () => {
       setRecipientBalances(undefined);
-      if (queryClient && recipient && recipient.match(PATTERN_CYBER)) {
-        const getAllBalancesPromise = await queryClient.getAllBalances(
-          recipient
-        );
-        const dataReduceBalances = reduceBalances(getAllBalancesPromise);
-        setRecipientBalances(dataReduceBalances);
+
+      const isInit = queryClient && recipient && recipient.match(PATTERN_CYBER);
+
+      if (!isInit) {
+        return;
       }
-    };
-    getBalancesRecipient();
+
+      const getAllBalancesPromise = await queryClient.getAllBalances(recipient);
+      const dataReduceBalances = reduceBalances(getAllBalancesPromise)
+
+      setRecipientBalances(dataReduceBalances);
+    })();
   }, [queryClient, recipient, update]);
+
+  useEffect(() => {
+    setRecipientTokenABalances(
+      recipientBalances ? recipientBalances[tokenSelect] || 0 : 0
+    );
+  }, [recipientBalances, tokenSelect]);
 
   const reduceOptions = useMemo(() => {
     const tempList: SelectOption[] = [];
@@ -195,7 +201,7 @@ function Send() {
           .multipliedBy(100)
           .toNumber()
       : 0;
-  }, [tokenSelect, tokenAmount, tokenABalance, tokenACoinDecimals]);
+  }, [tokenAmount, tokenABalance, tokenACoinDecimals]);
 
   const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
@@ -203,9 +209,26 @@ function Send() {
     refreshBalances();
   }, [dataSendTxs, refreshBalances]);
 
-  const reverceTokenAmount = useMemo(() => {
-    return new BigNumber(tokenAmount).multipliedBy(-1).toString();
-  }, [tokenAmount]);
+  const amountTokenChange = useCallback(
+    (tokenBalance: number, type: 'sender' | 'recipient') => {
+      let amount = new BigNumber(
+        getDisplayAmount(tokenBalance, tokenACoinDecimals)
+      );
+
+      let changeAmount = new BigNumber(tokenAmount);
+
+      if (type === 'sender') {
+        changeAmount = changeAmount.multipliedBy(-1);
+      }
+
+      if (changeAmount.comparedTo(0)) {
+        amount = new BigNumber(amount).plus(changeAmount);
+      }
+
+      return amount.comparedTo(0) >= 0 ? amount.toNumber() : 0;
+    },
+    [tokenAmount, tokenACoinDecimals]
+  );
 
   const stateActionBar = {
     tokenAmount,
@@ -254,10 +277,8 @@ function Send() {
                 tokenSelect={tokenSelect}
               />
               <AvailableAmount
-                accountBalances={accountBalances}
-                token={tokenSelect}
+                amountToken={amountTokenChange(tokenABalance, 'sender')}
                 title={tokenAmount.length === 0 ? 'you have' : 'you will have'}
-                changeAmount={reverceTokenAmount}
               />
             </Col>
             <Col>
@@ -282,9 +303,10 @@ function Send() {
                     ? 'recipient have'
                     : 'recipient will have'
                 }
-                accountBalances={recipientBalances}
-                token={tokenSelect}
-                changeAmount={tokenAmount}
+                amountToken={amountTokenChange(
+                  recipientTokenABalances,
+                  'recipient'
+                )}
               />
             </Col>
           </GridContainer>
