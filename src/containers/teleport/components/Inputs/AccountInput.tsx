@@ -22,7 +22,7 @@ import { useSearchParams } from 'react-router-dom';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import useDebounce from 'src/hooks/useDebounce';
-import styles from './styles.module.scss';
+import styles from './AccountInput.module.scss';
 import { contains } from './utils';
 import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles.module.scss';
+import styles from './Containers.module.scss';
 
 function GridContainer({ children }: { children: React.ReactNode }) {
   return <div className={styles.containerGridContainer}>{children}</div>;

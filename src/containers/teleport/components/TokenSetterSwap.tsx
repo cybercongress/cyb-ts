@@ -4,7 +4,7 @@ import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
 import { Nullable } from 'src/types';
 import { CYBER } from 'src/utils/config';
-import { Col, GridContainer } from './grid';
+import { Col, GridContainer } from './containers/Containers';
 import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale';
 
 export const enum TokenSetterId {

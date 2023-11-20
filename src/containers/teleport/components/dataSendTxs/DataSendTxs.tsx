@@ -8,7 +8,7 @@ import { Colors } from 'src/components/containerGradient/types';
 import { DataSendTxs } from './type';
 import CreatedAt from '../CreatedAt/CreatedAt';
 import { AmountDenomColor, Memo } from './DataSendTxsItems';
-import styles from './styles.module.scss';
+import styles from './DataSendTxs.module.scss';
 import InfiniteScrollDataTsx from '../InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 
 function DataSendTxs({

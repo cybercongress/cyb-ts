@@ -58,14 +58,14 @@ async function doCheckAndRelayPrivate(
   // @ts-ignore
   link.endB = privateEndB;
 
-  console.log('Relaying from', relayFrom);
+  console.debug('Relaying from', relayFrom);
   const { ibcAttrs: senderPacketsA } = await queryPacketAttrsBySender(
     tmA,
     link.endA.connectionID,
     senderA,
     relayFrom.packetHeightA || 0
   );
-  console.log('Sender packets A', senderPacketsA);
+  console.debug('Sender packets A', senderPacketsA);
   const { ibcAttrs: senderPacketsB } = await queryPacketAttrsBySender(
     tmB,
     link.endB.connectionID,
@@ -73,7 +73,7 @@ async function doCheckAndRelayPrivate(
     relayFrom.packetHeightB || 0
   );
 
-  console.log('Sender packets B', senderPacketsB);
+  console.debug('Sender packets B', senderPacketsB);
   // FIXME: is there a cleaner way to get the height we query at?
   const [packetHeightA, packetHeightB, packetsA, packetsB] = await Promise.all([
     link.endA.client.currentHeight(),
@@ -92,8 +92,8 @@ async function doCheckAndRelayPrivate(
       }),
   ]);
 
-  console.log('Packets A', packetsA);
-  console.log('Packets B', packetsB);
+  console.debug('Packets A', packetsA);
+  console.debug('Packets B', packetsB);
 
   const cutoffHeightA = await link.endB.client.timeoutHeight(
     timedoutThresholdBlocks
@@ -119,7 +119,7 @@ async function doCheckAndRelayPrivate(
     packetsB
   );
 
-  console.log('Submitting A & B', submitA, submitB);
+  console.debug('Submitting A & B', submitA, submitB);
   // FIXME: use the returned acks first? Then query for others?
   await Promise.all([
     link.relayPackets('A', submitA),
@@ -129,14 +129,14 @@ async function doCheckAndRelayPrivate(
     logger.error('Error relaying packets', e);
   });
 
-  console.log('Waiting for indexer');
+  console.debug('Waiting for indexer');
   // let's wait a bit to ensure our newly committed acks are indexed
   await Promise.all([
     link.endA.client.waitForIndexer(),
     link.endB.client.waitForIndexer(),
   ]);
 
-  console.log('Getting acks');
+  console.debug('Getting acks');
   const [ackHeightA, ackHeightB, acksARaw, acksBRaw] = await Promise.all([
     link.endA.client.currentHeight(),
     link.endB.client.currentHeight(),
@@ -165,7 +165,7 @@ async function doCheckAndRelayPrivate(
   //   });
   // });
 
-  console.log('Relaying acks A & B', acksA, acksB);
+  console.debug('Relaying acks A & B', acksA, acksB);
 
   await Promise.all([
     link.relayAcks('A', acksA),
@@ -174,7 +174,7 @@ async function doCheckAndRelayPrivate(
     logger.error(`Error relaying acks${JSON.stringify(e)}`);
   });
 
-  console.log('timing out packets A & B', timeoutA, timeoutB);
+  console.debug('timing out packets A & B', timeoutA, timeoutB);
   await Promise.all([
     link.timeoutPackets('A', timeoutA),
     link.timeoutPackets('B', timeoutB),

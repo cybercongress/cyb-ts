@@ -7,7 +7,7 @@ import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import cx from 'classnames';
-import styles from './styles.module.scss';
+import styles from './DataSendTxs.module.scss';
 
 function MemoIpfsContent({ cid }: { cid: string }) {
   const { status, content, fetchParticle } = useQueueIpfsContent(cid);

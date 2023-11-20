@@ -1,4 +1,4 @@
-import s from './RelayerItem.module.scss';
+import s from './LogRelayer.module.scss';
 
 function MessageItem({ text = '' }) {
   return (

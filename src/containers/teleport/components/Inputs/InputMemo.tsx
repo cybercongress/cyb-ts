@@ -2,8 +2,8 @@ import { Input } from 'src/components';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import { useCallback, useRef } from 'react';
-import styles from './styles.module.scss';
 import { useBackend } from 'src/contexts/backend';
+import styles from './ImputMemo.module.scss';
 
 type Props = {
   onChangeValue: React.Dispatch<React.SetStateAction<string>>;
@@ -58,7 +58,6 @@ function InputMemo({ onChangeValue, value }: Props) {
           ref={inputOpenFileRef}
           onChange={() => onChangeInputFileRef(inputOpenFileRef)}
           type="file"
-          style={{ display: 'none' }}
         />
         <AddFileButton
           isRemove={Boolean(value.length)}

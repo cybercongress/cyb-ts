@@ -1,4 +1,4 @@
-import styles from './styles.module.scss';
+import styles from './AccountInput.module.scss';
 
 export default function AccountInputListContainer({
   children,

@@ -16,7 +16,7 @@ async function loadMatchingConnections(
   const qcB = QueryClient.withExtensions(tmB, setupIbcExtension);
   const cxnsA = await qcA.ibc.connection.allConnections();
   const cxnsB = await qcB.ibc.connection.allConnections();
-  console.log('loaded connections');
+  console.debug('loaded connections');
   // const cxnsAByCounterpartyCxnId = new Map(
   //   cxnsA.connections
   //     .filter((cxn) => !!cxn.counterparty)

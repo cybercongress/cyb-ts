@@ -280,7 +280,7 @@ export const parseEvents = (rawLog: readonly Log[]) => {
     }
     return null;
   } catch (e) {
-    console.log('error parseLog', e);
+    console.debug('error parseLog', e);
     return null;
   }
 };

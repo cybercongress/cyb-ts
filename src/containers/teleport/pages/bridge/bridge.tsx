@@ -15,7 +15,7 @@ import { useChannels } from 'src/hooks/useHub';
 import { Networks } from 'src/types/networks';
 import { getMyTokenBalanceNumber } from '../../utils';
 import { useSetupIbcClient } from '../../hooks';
-import { Col, GridContainer, TeleportContainer } from '../../components/grid';
+import { Col, GridContainer, TeleportContainer } from '../../components/containers/Containers';
 import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
 import HistoryContextProvider from '../../ibc-history/historyContext';

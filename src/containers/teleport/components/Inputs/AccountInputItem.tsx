@@ -3,7 +3,7 @@ import { Citizenship } from 'src/types/citizenship';
 import { Nullable } from 'src/types';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { trimString } from 'src/utils/utils';
-import styles from './styles.module.scss';
+import styles from './AccountInput.module.scss';
 import { DataItem } from './type';
 
 type PropsOptionItem = {

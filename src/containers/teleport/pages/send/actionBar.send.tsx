@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
-import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
+import { useAppSelector } from 'src/redux/hooks';
 import { Account, ActionBar as ActionBarCenter } from '../../../../components';
 import { LEDGER } from '../../../../utils/config';
 import { convertAmountReverce } from '../../../../utils/utils';
@@ -29,7 +29,7 @@ type Props = {
 };
 
 function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { signingClient, signer } = useSigningClient();
   const { traseDenom } = useIbcDenom();

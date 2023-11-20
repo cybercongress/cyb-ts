@@ -72,7 +72,7 @@ class EndpointPrivate extends Endpoint {
       query = `${query} AND block.height<=${maxHeight}`;
     }
     const search = await this.client.tm.blockSearchAll({ query });
-    console.log('blocks', search.blocks);
+    console.debug('blocks', search.blocks);
     const resultsNested = await Promise.all(
       search.blocks.map(async ({ block }) => {
         const { height } = block.header;
@@ -115,7 +115,7 @@ class EndpointPrivate extends Endpoint {
       query = `${query} AND tx.height<=${maxHeight}`;
     }
     const search = await this.client.tm.txSearchAll({ query });
-    console.log('txs', search.txs);
+    console.debug('txs', search.txs);
     const resultsNested = search.txs.map(({ hash, height, result }) => {
       const parsedLogs = logs.parseRawLog(result.log);
       // we accept message.sender (cosmos-sdk) and message.signer (x/wasm)
@@ -137,7 +137,7 @@ class EndpointPrivate extends Endpoint {
         sender,
       }));
     });
-    console.log(resultsNested);
+    console.debug(resultsNested);
     return ([] as PacketWithMetadata[]).concat(...resultsNested);
   }
 
@@ -150,7 +150,7 @@ class EndpointPrivate extends Endpoint {
       minHeight: this.counterpartyPacketMinHeight,
     });
     let allAcks: AckWithMetadata[] = [];
-    console.log({ ackPackets: packets });
+    console.debug({ ackPackets: packets });
     await Promise.all(
       packets.map(async (p) => {
         // query private packets one at a time. This is a bit inefficient, but
@@ -164,7 +164,7 @@ class EndpointPrivate extends Endpoint {
         if (maxHeight) {
           query = `${query} AND tx.height<=${maxHeight}`;
         }
-        console.log({ query });
+        console.debug({ query });
         const search = await this.client.tm.txSearchAll({ query });
         const resultsNested = search.txs.map(({ height, result }) => {
           const parsedLogs = logs.parseRawLog(result.log);

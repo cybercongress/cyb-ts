@@ -1,5 +1,5 @@
 import { getNowUtcTime, timeSince } from 'src/utils/utils';
-import styles from './styles.module.scss';
+import styles from './CreatedAt.module.scss';
 
 function CreatedAt({ timeAt }: { timeAt: string | number }) {
   let timeAgoInMS = 0;

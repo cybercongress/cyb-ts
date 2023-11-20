@@ -2,7 +2,6 @@ import { MainContainer, Slider } from 'src/components';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
@@ -16,6 +15,7 @@ import {
 } from 'src/utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { useAppSelector } from 'src/redux/hooks';
 import TokenSetterSwap, {
   TokenSetterId,
 } from '../../components/TokenSetterSwap';
@@ -23,7 +23,7 @@ import { useGetParams, useGetSwapPrice } from '../../hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from '../../utils';
 
 import ActionBar from './actionBar.swap';
-import { TeleportContainer } from '../../components/grid';
+import { TeleportContainer } from '../../components/containers/Containers';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
@@ -36,7 +36,7 @@ function Swap() {
   const { accountBalances, refreshBalances } = useTeleport();
   const queryClient = useQueryClient();
   const [update, setUpdate] = useState(0);
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const dataSwapTxs = useGetSendTxsByAddressByType(
     addressActive,

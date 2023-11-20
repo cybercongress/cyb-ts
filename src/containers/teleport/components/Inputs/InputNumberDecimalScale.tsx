@@ -5,7 +5,7 @@ import LinearGradientContainer, {
 } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { $TsFixMeFunc } from 'src/types/tsfix';
-import styles from './styles.module.scss';
+import styles from './InputNumberDecimalScale.module.scss';
 
 type Props = {
   id?: string;

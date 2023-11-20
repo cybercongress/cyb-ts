@@ -25,7 +25,7 @@ async function getConnection(chain: string, channel: string) {
 
     return cxns.channel.connectionHops[0];
   } catch (e) {
-    console.log('e', e);
+    console.debug('e', e);
     return undefined;
   }
 }
@@ -49,7 +49,7 @@ async function loadConnections(
   const cxnsA = await getConnection(chainA, channelA);
   const cxnsB = await getConnection(chainB, channelB);
 
-  console.log('loaded connections');
+  console.debug('loaded connections');
 
   if (cxnsA && cxnsB) {
     matchingCxns.push({

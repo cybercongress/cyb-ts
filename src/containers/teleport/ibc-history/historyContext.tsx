@@ -2,7 +2,6 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { db as dbIbcHistory } from './db';
 import { HistoriesItem, StatusTx } from './HistoriesItem';
-import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { AccountValue } from 'src/types/defaultAccount';
@@ -18,6 +17,7 @@ import { TxsType } from '../type';
 import TracerTx from './tx/TracerTx';
 import networkList from 'src/utils/networkListIbc';
 import PollingStatusSubscription from './polling-status-subscription';
+import { useAppSelector } from 'src/redux/hooks';
 
 const findRpc = (chainId: string): Option<string> => {
   if (networkList[chainId]) {
@@ -83,7 +83,7 @@ const blockSubscriberMap: Map<string, PollingStatusSubscription> = new Map();
 function HistoryContextProvider({ children }: { children: React.ReactNode }) {
   const [ibcHistory, setIbcHistory] =
     useState<Option<HistoriesItem[]>>(undefined);
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const [update, setUpdate] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
 
