@@ -3,7 +3,7 @@ import rectangle from 'images/rectangle.svg';
 import { Link, createSearchParams } from 'react-router-dom';
 import cx from 'classnames';
 import { SelectedPool } from '../../type';
-import styles from './styles.module.scss';
+import styles from './SwapItem.module.scss';
 
 type Props = {
   item: SelectedPool;
@@ -53,7 +53,7 @@ function DenomsImg({ item }: Props) {
         tooltipStatusImg={false}
         size={30}
       />
-      <img style={{ width: '25px' }} src={rectangle} alt="img" />
+      <img className={styles.denomsImgImg} src={rectangle} alt="img" />
       <DenomArr
         denomValue={item.target_currency}
         onlyImg

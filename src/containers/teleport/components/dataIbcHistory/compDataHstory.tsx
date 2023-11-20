@@ -12,6 +12,7 @@ import pending from 'images/statusTx/pending.png';
 import timeout from 'images/statusTx/timeout.png';
 import refunded from 'images/statusTx/refunded.png';
 import { CssVariables } from 'src/style/variables';
+import cx from 'classnames';
 import { TxsType } from '../../type';
 import { HistoriesItem, StatusTx } from '../../ibc-history/HistoriesItem';
 import styles from './DataHstory.module.scss';
@@ -100,8 +101,10 @@ export function RouteAddress({ item }: { item: HistoriesItem }) {
       </div>
       <img src={ImgArrow} alt="ImgArrow" className={styles.fromToIbcImg} />
       <div
-        className={styles.containerAddressChainId}
-        style={{ marginLeft: '-5px' }}
+        className={cx(
+          styles.containerAddressChainId,
+          styles.containerAddressChainIdMarginLeft
+        )}
       >
         {addressType(recipient)}
         <DenomArr type="network" onlyImg denomValue={destChainId} />
