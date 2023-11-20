@@ -23,10 +23,10 @@ import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import useDebounce from 'src/hooks/useDebounce';
 import styles from './AccountInput.module.scss';
-import { contains } from './utils';
+import { contains } from '../utils';
 import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';
-import { TypeRecipient } from './type';
+import { TypeRecipient } from '../type';
 
 type Props = {
   recipient: string | undefined;

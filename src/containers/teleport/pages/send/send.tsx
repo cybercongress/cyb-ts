@@ -24,15 +24,19 @@ import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
 
 import useAccountsPassports from 'src/features/passport/hooks/useAccountsPassports';
-import Slider from 'src/components/Slider/Slider';
-import { Col, GridContainer, TeleportContainer } from '../../components/containers/Containers';
+import {
+  Col,
+  GridContainer,
+  TeleportContainer,
+} from '../../components/containers/Containers';
 import ActionBar from './actionBar.send';
-import { getMyTokenBalanceNumber } from '../../utils';
 import DataSendTxs from '../../components/dataSendTxs/DataSendTxs';
-import AccountInput from '../../components/Inputs/AccountInput';
+import {
+  AccountInput,
+  InputMemo,
+  InputNumberDecimalScale,
+} from '../../components/Inputs';
 import useGetSendTxsByAddressByLcd from '../../hooks/useGetSendTxsByAddressByLcd';
-import InputMemo from '../../components/Inputs/InputMemo';
-import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
 
 const tokenDefaultValue = CYBER.DENOM_CYBER;
@@ -145,7 +149,7 @@ function Send() {
       }
 
       const getAllBalancesPromise = await queryClient.getAllBalances(recipient);
-      const dataReduceBalances = reduceBalances(getAllBalancesPromise)
+      const dataReduceBalances = reduceBalances(getAllBalancesPromise);
 
       setRecipientBalances(dataReduceBalances);
     })();

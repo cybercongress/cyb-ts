@@ -3,7 +3,7 @@ import { Color } from 'src/components/LinearGradientContainer/LinearGradientCont
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import { useCallback, useRef } from 'react';
 import { useBackend } from 'src/contexts/backend';
-import styles from './ImputMemo.module.scss';
+import styles from './InputMemo.module.scss';
 
 type Props = {
   onChangeValue: React.Dispatch<React.SetStateAction<string>>;

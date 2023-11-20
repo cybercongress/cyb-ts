@@ -5,7 +5,7 @@ import Select, { SelectOption } from 'src/components/Select/index';
 import { Nullable } from 'src/types';
 import { CYBER } from 'src/utils/config';
 import { Col, GridContainer } from './containers/Containers';
-import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale';
+import InputNumberDecimalScale from './Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 
 export const enum TokenSetterId {
   tokenAAmount = 'tokenAAmount',

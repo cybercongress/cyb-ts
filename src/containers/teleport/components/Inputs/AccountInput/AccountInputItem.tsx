@@ -4,7 +4,7 @@ import { Nullable } from 'src/types';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import { trimString } from 'src/utils/utils';
 import styles from './AccountInput.module.scss';
-import { DataItem } from './type';
+import { DataItem } from '../type';
 
 type PropsOptionItem = {
   data: DataItem;

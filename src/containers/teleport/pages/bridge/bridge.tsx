@@ -20,7 +20,7 @@ import { TypeTxsT } from '../../type';
 import ActionBar from './actionBar.bridge';
 import HistoryContextProvider from '../../ibc-history/historyContext';
 import DataIbcHistory from '../../components/dataIbcHistory/DataIbcHistory';
-import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale';
+import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
 
 type Query = {
