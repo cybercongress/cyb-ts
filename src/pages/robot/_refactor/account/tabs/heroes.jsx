@@ -1,15 +1,12 @@
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
-import {
-  Account,
-  NumberCurrency,
-  ContainerGradientText,
-} from '../../../../../components';
-import { formatNumber, formatCurrency } from '../../../../../utils/utils';
-import { CYBER } from '../../../../../utils/config';
-import { useGetHeroes } from '../hooks';
 import Table from 'src/components/Table/Table';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import { useEffect } from 'react';
+import Display from 'src/components/containerGradient/Display/Display';
+import { Account, NumberCurrency } from '../../../../../components';
+import { formatNumber, formatCurrency } from '../../../../../utils/utils';
+import { CYBER } from '../../../../../utils/config';
+import { useGetHeroes } from '../hooks';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -117,12 +114,7 @@ function Heroes() {
   });
 
   return (
-    <ContainerGradientText
-      userStyleContent={{
-        padding: '15px 0',
-        minHeight: '70vh',
-      }}
-    >
+    <Display noPaddingX>
       <Table
         isLoading={loadingHeroesInfo}
         columns={[
@@ -149,7 +141,7 @@ function Heroes() {
         ]}
         data={delegationsItem}
       />
-    </ContainerGradientText>
+    </Display>
   );
 }
 

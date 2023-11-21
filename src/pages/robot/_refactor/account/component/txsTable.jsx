@@ -135,12 +135,7 @@ function TxsTable() {
   );
 
   return (
-    <Display
-      noPaddingX
-      userStyleContent={{
-        minHeight: '70vh',
-      }}
-    >
+    <Display noPaddingX>
       <InfiniteScroll
         dataLength={Object.keys(validatorRows).length}
         next={fetchNextPageFnc}

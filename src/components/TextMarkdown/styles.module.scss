@@ -2,13 +2,34 @@
   * {
     text-transform: initial;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  ul,
+  ol,
+  div {
+    margin-bottom: 10px;
+  }
+
+  ul,
+  ol {
+    list-style-type: initial;
+    padding-left: 20px;
+  }
+
+  img {
+    width: 100%;
+  }
 }
 
 .markdownContainer {
-  --width-ratio: 0.62;
-  width: calc(var(--width-ratio) * 100%);
   margin: 0 auto;
 
+  width: clamp(320px, 62vw, 580px);
   min-height: 200px;
 
   display: flex;
@@ -25,17 +46,14 @@
     font-size: 42px;
   }
 
+  ul,
+  li {
+    margin-left: 20px;
+  }
+
   @media (max-width: 680px) {
     width: unset;
   }
-}
-
-.markdownContainer img {
-  position: relative;
-
-  --offset: calc(((100% / var(--width-ratio) - 100%) / 2));
-  left: calc(var(--offset) * -1);
-  width: calc(100% + (var(--offset) * 2));
 }
 
 .markdownContainer pre {
@@ -53,7 +71,7 @@
 
 .markdownContainer p {
   margin-bottom: 20px;
-  text-align: justify;
+  line-height: 23px;
 
   &:last-child {
     margin-bottom: 0;
@@ -64,35 +82,8 @@
   margin-bottom: 10px;
 }
 
-.markdownContainer h1 {
-  margin-bottom: 10px;
-}
-
-.markdownContainer h2 {
-  margin-bottom: 10px;
-}
-
-.markdownContainer h3 {
-  margin-bottom: 10px;
-}
-
-.markdownContainer table {
-  margin-bottom: 10px;
-}
-
 .markdownContainer hr {
   margin-bottom: 10px;
-}
-
-.markdownContainer div {
-  margin-bottom: 10px;
-}
-
-.markdownContainer ul {
-  list-style-type: initial;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  padding-left: 20px;
 }
 
 .markdownContainer blockquote {
@@ -102,21 +93,16 @@
 }
 
 .markdownContainer table {
+  margin-bottom: 10px;
   border-collapse: separate;
   border-spacing: 0 5px;
   border: 0;
-}
 
-.markdownContainer th {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  border-collapse: separate;
-  border-spacing: 5px 5px;
-}
-
-.markdownContainer ol {
-  padding-left: 20px;
-  margin-bottom: 20px;
-  margin-left: 20px;
+  th {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-collapse: separate;
+    border-spacing: 5px 5px;
+  }
 }
 
 .markdownContainerPreview {
@@ -138,35 +124,14 @@
   }
 
   h1 {
-    margin-bottom: 10px;
     font-size: 23px;
   }
 
   h2 {
-    margin-bottom: 10px;
     font-size: 20px;
   }
 
   h3 {
-    margin-bottom: 10px;
     font-size: 18px;
-  }
-
-  div {
-    margin-bottom: 10px;
-  }
-
-  ul {
-    margin-bottom: 10px;
-    padding-left: 20px;
-  }
-
-  ol {
-    margin-bottom: 10px;
-    padding-left: 20px;
-  }
-
-  img {
-    width: 100%;
   }
 }
