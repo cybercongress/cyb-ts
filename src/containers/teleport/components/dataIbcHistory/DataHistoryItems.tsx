@@ -15,7 +15,7 @@ import { CssVariables } from 'src/style/variables';
 import cx from 'classnames';
 import { TxsType } from '../../type';
 import { HistoriesItem, StatusTx } from '../../ibc-history/HistoriesItem';
-import styles from './DataHstory.module.scss';
+import styles from './DataHistoryItems.module.scss';
 
 const mapStatusTxImg = {
   [StatusTx.COMPLETE]: complete,

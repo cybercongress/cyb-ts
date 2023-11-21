@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import DataIbcHistoryItem from './dataItem';
 import { useIbcHistory } from '../../ibc-history/historyContext';
 import InfiniteScrollDataTsx from '../InfiniteScrollDataTxs/InfiniteScrollDataTsx';
+import DataHistoryRow from './DataHistoryRow';
 
 function DataIbcHistory() {
   const { ibcHistory } = useIbcHistory();
@@ -22,7 +22,7 @@ function DataIbcHistory() {
 
   const ItemRows = useMemo(() => {
     return displayedPalettes.map((item) => {
-      return <DataIbcHistoryItem key={item.txHash} item={item} />;
+      return <DataHistoryRow key={item.txHash} item={item} />;
     });
   }, [displayedPalettes]);
 

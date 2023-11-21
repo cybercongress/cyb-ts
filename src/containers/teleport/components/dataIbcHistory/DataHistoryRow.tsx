@@ -2,10 +2,10 @@ import Display from 'src/components/containerGradient/Display/Display';
 import { HistoriesItem } from '../../ibc-history/HistoriesItem';
 import useGetStatus from '../../ibc-history/useGetStatus';
 import CreatedAt from '../CreatedAt/CreatedAt';
-import { AmountSend, RouteAddress, Status, TypeTsx } from './compDataHstory';
-import styles from './DataHstory.module.scss';
+import { AmountSend, RouteAddress, Status, TypeTsx } from './DataHistoryItems';
+import styles from './DataHistoryRow.module.scss';
 
-function DataIbcHistoryItem({ item }: { item: HistoriesItem }) {
+function DataHistoryRow({ item }: { item: HistoriesItem }) {
   const statusTrace = useGetStatus(item);
 
   return (
@@ -31,4 +31,4 @@ function DataIbcHistoryItem({ item }: { item: HistoriesItem }) {
   );
 }
 
-export default DataIbcHistoryItem;
+export default DataHistoryRow;
