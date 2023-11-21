@@ -1,17 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { useAppSelector } from 'src/redux/hooks';
 import { RootState } from 'src/redux/store';
-import { getBalances } from '../hooks';
 import { ObjKeyValue } from 'src/types/data';
 import { Nullable } from 'src/types';
+import useGetBalances from 'src/hooks/getBalances';
 
 const TeleportContext = React.createContext<{
   accountBalances: Nullable<ObjKeyValue>;
   refreshBalances: () => void;
 }>({
   accountBalances: null,
-  refreshBalances: () => {},
+  refreshBalances: () => undefined,
 });
 
 export const useTeleport = () => React.useContext(TeleportContext);
@@ -22,7 +22,7 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
   const addressActive = defaultAccount.account?.cyber;
 
   const { liquidBalances: accountBalances, refresh: refreshBalances } =
-    getBalances(addressActive);
+    useGetBalances(addressActive);
 
   const contextValue = useMemo(
     () => ({

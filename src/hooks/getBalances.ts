@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { reduceBalances } from '../../../utils/utils';
-import { authAccounts } from '../../../utils/search/utils';
-import { CYBER } from '../../../utils/config';
+import { reduceBalances } from '../utils/utils';
+import { authAccounts } from '../utils/search/utils';
+import { CYBER } from '../utils/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 

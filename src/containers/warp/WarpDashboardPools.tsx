@@ -9,8 +9,8 @@ import { NoItems, MainContainer } from 'src/components';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import { Coin } from '@cosmjs/launchpad';
+import useGetBalances from 'src/hooks/getBalances';
 import { PoolsInfo, PoolCard } from './pool';
-import { getBalances } from '../teleport/hooks';
 import styles from './pool/styles.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
@@ -21,7 +21,7 @@ function WarpDashboardPools() {
   const data = usePoolListInterval();
   const { poolsData, totalCap } = usePoolsAssetAmount(data);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { liquidBalances: accountBalances } = getBalances(addressActive);
+  const { liquidBalances: accountBalances } = useGetBalances(addressActive);
   const { myCap } = useGetMySharesInPools(accountBalances);
   const { totalSupplyAll } = useGetTotalSupply();
 
