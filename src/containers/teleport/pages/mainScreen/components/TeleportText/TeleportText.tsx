@@ -6,8 +6,6 @@ function TeleportText() {
       <header className={styles.title}>
         <h2>communicate</h2> <span>by exchanging value</span>
       </header>
-      <p className={styles.description}>
-      </p>
     </div>
   );
 }
