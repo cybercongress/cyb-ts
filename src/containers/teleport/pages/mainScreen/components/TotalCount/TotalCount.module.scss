@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  color: #36D6AE;
+  color: var(--primary-color);
 
 }
 
@@ -20,7 +20,7 @@
   box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.25);
 
   text-align: center;
-  text-shadow: 0px 0px 5px #36D6AE;
+  text-shadow: 0px 0px 5px var(--primary-color);
   font-size: 16px;
 }
 

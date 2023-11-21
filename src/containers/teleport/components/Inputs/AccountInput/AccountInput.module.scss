@@ -50,9 +50,15 @@
 
   &:hover {
     .containerNickName {
-      color: #1FCBFF;
+      color: var(--blue-light);
     }
   }
+}
+
+.containerButtonText {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .containerAvatarNickName {
