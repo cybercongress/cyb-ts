@@ -22,8 +22,8 @@ const RelayerContext = React.createContext<{
   relayerLog: [],
   isRelaying: false,
   selectChain: '',
-  setSelectChain: () => {},
-  stop: () => {},
+  setSelectChain: () => undefined,
+  stop: () => undefined,
 });
 
 function findNetwork(chainId: string) {
