@@ -1,0 +1,13 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+
+    >:nth-child(1) {
+      display: none;
+    }
+  }
+}

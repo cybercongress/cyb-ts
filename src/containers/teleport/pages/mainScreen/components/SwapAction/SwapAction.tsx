@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import Display from 'src/components/containerGradient/Display/Display';
-import TitleAction from './components/TitleAction/TitleAction';
-import { DefaultPairPoolIdObj, SelectedPool } from './type';
-import SwapItem from './components/SwapItem/SwapItem';
-import styles from './styles.module.scss';
-import TotalCount from './components/TotalCount/TotalCount';
+import TitleAction from '../TitleAction/TitleAction';
+import { DefaultPairPoolIdObj, SelectedPool } from '../../type';
+import SwapItem from './SwapItem';
+import styles from './SwapAction.module.scss';
+import TotalCount from '../TotalCount/TotalCount';
 
 const reverse = (value: boolean) => ({
   reverse: value,
@@ -59,7 +59,7 @@ function SwapAction() {
         />
       }
     >
-      <div className={styles.SwapActionContentContainer}>
+      <div className={styles.container}>
         {renderItems}
         {totalCount > 0 && <TotalCount value={totalCount} to="swap" />}
       </div>

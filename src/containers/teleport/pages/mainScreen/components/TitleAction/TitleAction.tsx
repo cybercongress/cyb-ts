@@ -1,5 +1,5 @@
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import styles from './styles.module.scss';
+import styles from './TitleAction.module.scss';
 
 function TitleAction({ title, subTitle }: { title: string; subTitle: string }) {
   return (

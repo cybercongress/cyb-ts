@@ -1,7 +1,7 @@
 import { Link, createSearchParams } from 'react-router-dom';
 import { DenomArr } from 'src/components';
 import fromToIbc from 'images/fromToIbc.svg';
-import styles from './styles.module.scss';
+import styles from './BridgeItem.module.scss';
 
 type PropsBridgeItem = {
   item: {

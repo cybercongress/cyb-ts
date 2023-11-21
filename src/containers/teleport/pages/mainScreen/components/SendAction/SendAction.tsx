@@ -8,9 +8,9 @@ import {
 } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
 import { CYBER } from 'src/utils/config';
-import TitleAction from './components/TitleAction/TitleAction';
-import styles from './styles.module.scss';
-import TotalCount from './components/TotalCount/TotalCount';
+import TitleAction from '../TitleAction/TitleAction';
+import styles from './SendAction.module.scss';
+import TotalCount from '../TotalCount/TotalCount';
 
 const TOP_AMOUNT = 5;
 
@@ -64,7 +64,7 @@ function SendAction() {
         />
       }
     >
-      <div className={styles.SendActionContentContainer}>
+      <div className={styles.container}>
         {renderItems}
         {totalCount > 0 && <TotalCount value={totalCount} to="send" />}
       </div>

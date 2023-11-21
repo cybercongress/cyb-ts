@@ -1,14 +1,16 @@
 import { MainContainer } from 'src/components';
-import SwapAction from './SwapAction';
-import SendAction from './SendAction';
-import BridgeAction from './BridgeAction';
-import AboutTeleport from './AboutTeleport';
-import styles from './styles.module.scss';
+import {
+  SwapAction,
+  SendAction,
+  BridgeAction,
+  AboutTeleport,
+} from './components';
+import styles from './MainScreen.module.scss';
 
 function TeleportMainScreen() {
   return (
     <MainContainer width="100%">
-      <div className={styles.MainScreenContainerContent}>
+      <div className={styles.container}>
         <AboutTeleport />
         <div>
           <SendAction />

@@ -1,10 +1,10 @@
 import Display from 'src/components/containerGradient/Display/Display';
 import { useChannels } from 'src/hooks/useHub';
 import { useMemo } from 'react';
-import TitleAction from './components/TitleAction/TitleAction';
-import BridgeItem from './components/BridgeItem/BridgeItem';
-import styles from './styles.module.scss';
-import TotalCount from './components/TotalCount/TotalCount';
+import TitleAction from '../TitleAction/TitleAction';
+import BridgeItem from './BridgeItem';
+import styles from './BridgeAction.module.scss';
+import TotalCount from '../TotalCount/TotalCount';
 
 const defaultData = [
   {
@@ -44,7 +44,7 @@ function BridgeAction() {
         />
       }
     >
-      <div className={styles.BridgeActionContentContainer}>
+      <div className={styles.container}>
         {renderItem}
         {totalCount > 0 && (
           <TotalCount text="networks" value={totalCount} to="bridge" />
