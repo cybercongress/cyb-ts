@@ -75,20 +75,6 @@ function AccountInput({ recipient, setRecipient }: Props) {
     }
   }, [recipient]);
 
-  useEffect(() => {
-    if (!firstEffectOccured.current) {
-      firstEffectOccured.current = true;
-      const param = Object.fromEntries(searchParams.entries());
-      if (Object.keys(param).length > 0) {
-        const { recipient: recipientParam } = param;
-        if (recipientParam) {
-          setValueRecipient(recipientParam);
-          handleSearch(recipientParam);
-        }
-      }
-    }
-  }, [searchParams]);
-
   const selectedDataRecipient = useMemo(() => {
     if (selectedTypeRecipient === TypeRecipient.my) {
       return accounts;
@@ -105,11 +91,13 @@ function AccountInput({ recipient, setRecipient }: Props) {
     async (value: string) => {
       if (!value) {
         setRecipient(undefined);
+        setListRecipient({});
         return;
       }
 
       if (value.match(PATTERN_CYBER)) {
         setRecipient(value);
+        setListRecipient({});
         return;
       }
 
@@ -136,7 +124,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
 
       setListRecipient(listRecipientTemp);
     },
-    [selectedDataRecipient, queryClient]
+    [selectedDataRecipient, queryClient, setRecipient]
   );
 
   const handleSearch = useCallback(
@@ -152,8 +140,22 @@ function AccountInput({ recipient, setRecipient }: Props) {
       setValueRecipient(inputVal);
       handleSearch(inputElem.current?.value);
     },
-    [selectedDataRecipient]
+    [handleSearch, selectedDataRecipient]
   );
+
+  useEffect(() => {
+    if (!firstEffectOccured.current) {
+      firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { recipient: recipientParam } = param;
+        if (recipientParam) {
+          setValueRecipient(recipientParam);
+          handleSearch(recipientParam);
+        }
+      }
+    }
+  }, [handleSearch, searchParams]);
 
   const useListRecipient = useMemo(() => {
     if (!valueRecipient.length || !Object.keys(listRecipient).length) {

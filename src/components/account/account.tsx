@@ -60,21 +60,11 @@ function Account({
   trimAddressParam = [9, 3],
   disabled,
 }: Props) {
-  const [moniker, setMoniker] = useState<string | null>(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
   const { passport: dataPassport } = usePassportByAddress(address);
-
-  useEffect(() => {
-    if (dataValidInfo !== undefined) {
-      const { description } = dataValidInfo.validator;
-      setMoniker(description.moniker);
-    }
-
-    if (dataPassport !== undefined && dataPassport !== null) {
-      const { extension } = dataPassport;
-      setMoniker(extension.nickname);
-    }
-  }, [dataValidInfo, dataPassport]);
+  const moniker =
+    dataValidInfo?.description?.validator?.moniker ||
+    dataPassport?.extension.nickname;
 
   const trimAddress = useMemo(() => {
     return trimString(address, trimAddressParam[0], trimAddressParam[1]);
@@ -131,7 +121,7 @@ function Account({
           }}
           to={linkAddress}
         >
-          {moniker === null ? trimAddress : moniker}
+          {!moniker ? trimAddress : moniker}
         </Link>
       )}
       {children}
