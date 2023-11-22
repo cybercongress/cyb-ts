@@ -9,7 +9,7 @@ import tokenList from '../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../utils/utils';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { PoolsWithAssetsCapType } from '../type';
 
 type PoolCardProps = {
