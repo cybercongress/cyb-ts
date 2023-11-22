@@ -71,6 +71,7 @@ function useGetLinks(
               return {
                 ...item,
                 cid: item[`particle_${type === LinkType.from ? 'to' : 'from'}`],
+                type,
               };
             })
           ),
