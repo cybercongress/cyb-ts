@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Swap from './swap/swap';
 import Send from './send/send';
 import Bridge from './bridge/bridge';
-import TeleportMainScreen from './mainScreen/MainScreen';
+import TeleportMainScreen from './mainScreen/TeleportMainScreen';
 import Relayer from './relayer/Relayer';
 import RelayerContextProvider from '../contexts/relayer';
 import TeleportContextProvider from './Teleport.context';

@@ -5,7 +5,7 @@ import {
   BridgeAction,
   AboutTeleport,
 } from './components';
-import styles from './MainScreen.module.scss';
+import styles from './TeleportMainScreen.module.scss';
 
 function TeleportMainScreen() {
   return (
