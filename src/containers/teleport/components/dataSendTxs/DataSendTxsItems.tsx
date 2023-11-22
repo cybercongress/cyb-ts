@@ -59,8 +59,8 @@ export function AmountDenomColor({
 }) {
   return (
     <div
-      className={cx(styles.AmountDenomContainer, {
-        [styles.AmountDenomContainerRed]: receive,
+      className={cx(styles.amountDenomContainer, {
+        [styles.amountDenomContainerRed]: receive,
       })}
     >
       {coins.map((item, i) => {

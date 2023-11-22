@@ -12,7 +12,7 @@ function CreatedAt({ timeAt }: { timeAt: string | number }) {
   const timeSinceValue = timeSince(timeAgoInMS);
 
   return (
-    <div className={styles.CreatedAt}>
+    <div className={styles.createdAt}>
       {timeSinceValue === 'now' ? timeSinceValue : `${timeSinceValue} ago`}
     </div>
   );

@@ -80,7 +80,7 @@ export function Status({ status }: { status: StatusTx }) {
 }
 
 function AddressIbc({ address }: { address: string }) {
-  return <div className={styles.AddressIbc}>{trimString(address, 8, 2)}</div>;
+  return <div className={styles.addressIbc}>{trimString(address, 8, 2)}</div>;
 }
 
 function addressType(address: string) {

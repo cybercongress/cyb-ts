@@ -5,12 +5,11 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { getDisplayAmountReverce } from 'src/utils/utils';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
-import { FormatNumberTokens, AmountDenom } from 'src/components';
+import { FormatNumberTokens, AmountDenom, CreatedAt } from 'src/components';
 import { CssVariables } from 'src/style/variables';
 import useGetResultSwap from '../../hooks/useGetResultSwap';
 import { ResponseTxsByType } from '../../hooks/useGetSendTxsByAddress';
 import styles from './DataSwapTxs.module.scss';
-import CreatedAt from '../CreatedAt/CreatedAt';
 
 function getDataOrder(value, coinDecimalsA: number) {
   const orderPrice = value.order_price;

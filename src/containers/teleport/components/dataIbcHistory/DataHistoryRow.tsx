@@ -1,7 +1,7 @@
 import Display from 'src/components/containerGradient/Display/Display';
+import { CreatedAt } from 'src/components';
 import { HistoriesItem } from '../../ibc-history/HistoriesItem';
 import useGetStatus from '../../ibc-history/useGetStatus';
-import CreatedAt from '../CreatedAt/CreatedAt';
 import { AmountSend, RouteAddress, Status, TypeTsx } from './DataHistoryItems';
 import styles from './DataHistoryRow.module.scss';
 
