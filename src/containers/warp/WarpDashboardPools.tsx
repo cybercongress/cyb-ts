@@ -11,7 +11,7 @@ import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import { Coin } from '@cosmjs/launchpad';
 import useGetBalances from 'src/hooks/getBalances';
 import { PoolsInfo, PoolCard } from './pool';
-import styles from './pool/styles.scss';
+import styles from './pool/styles.module.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
 
