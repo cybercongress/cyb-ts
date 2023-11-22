@@ -53,6 +53,7 @@ function Bridge() {
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
 
   const [tokenA, setTokenA] = useState<string>('');
+  const [tokenB, setTokenB] = useState<string>('');
 
   const [tokenABalance, setTokenABalance] = useState<number>(0);
   const [tokenBBalance, setTokenBBalance] = useState<number>(0);
@@ -169,19 +170,18 @@ function Bridge() {
   );
 
   const validInputAmountToken = useMemo(() => {
-    if (tokenA) {
-      const myATokenBalance = getMyTokenBalanceNumber(tokenA, tokenABalance);
+    const isValid = Number(tokenAmount) > 0 && !!tokenAmount;
 
-      if (Number(tokenAmount) > 0) {
-        const amountToken = parseFloat(
-          getDisplayAmountReverce(tokenAmount, tokenACoinDecimals)
-        );
-
-        return amountToken > myATokenBalance;
-      }
+    if (!isValid) {
+      return false;
     }
-    return false;
-  }, [tokenAmount, tokenA, tokenACoinDecimals]);
+
+    const amountToken = parseFloat(
+      getDisplayAmountReverce(tokenAmount, tokenACoinDecimals)
+    );
+
+    return amountToken > tokenABalance;
+  }, [tokenABalance, tokenAmount, tokenACoinDecimals]);
 
   useEffect(() => {
     const validNetwork = networkA && networkB && networkA !== networkB;
@@ -228,12 +228,23 @@ function Bridge() {
     setTokenAmount(0);
   }, [networkB, networkA]);
 
+  const getDenomToken = useCallback(
+    (selectNetwork: string) =>
+      !isCyberChain(selectNetwork) && denomIbc ? denomIbc : tokenSelect,
+    [tokenSelect, denomIbc]
+  );
+
   useEffect(() => {
-    const tokenA = !isCyberChain(networkA) && denomIbc ? denomIbc : tokenSelect;
-    setTokenA(tokenA);
-    const [{ coinDecimals }] = traseDenom(tokenA);
+    const token = getDenomToken(networkA);
+    setTokenA(token);
+    const [{ coinDecimals }] = traseDenom(token);
     setTokenACoinDecimals(coinDecimals);
-  }, [networkA, traseDenom, denomIbc, tokenSelect]);
+  }, [networkA, traseDenom, getDenomToken]);
+
+  useEffect(() => {
+    const token = getDenomToken(networkB);
+    setTokenB(token);
+  }, [networkB, getDenomToken]);
 
   const getAccountBalancesToken = useCallback(
     (selectNetwork: string) =>
@@ -249,9 +260,9 @@ function Bridge() {
 
   useEffect(() => {
     const balance = getAccountBalancesToken(networkB);
-    const balanceToken = balance ? balance[tokenA] || 0 : 0;
+    const balanceToken = balance ? balance[tokenB] || 0 : 0;
     setTokenBBalance(balanceToken);
-  }, [getAccountBalancesToken, networkB, tokenA]);
+  }, [getAccountBalancesToken, networkB, tokenB]);
 
   const stateActionBar = {
     tokenAmount,

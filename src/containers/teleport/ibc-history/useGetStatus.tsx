@@ -11,6 +11,7 @@ function useGetStatus(item: HistoriesItem) {
 
   const [status, setStatus] = useState(item.status);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function* tryUpdateHistoryStatus(item: HistoriesItem) {
     const status = yield* toGenerator(traceHistoryStatus(item));
 
@@ -38,7 +39,7 @@ function useGetStatus(item: HistoriesItem) {
       }
     };
     getValue();
-  }, [item, updateStatusByTxHash]);
+  }, [item, tryUpdateHistoryStatus, updateStatusByTxHash]);
 
   return status;
 }

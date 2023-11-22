@@ -4,7 +4,7 @@ import { getSendBySenderRecipient } from 'src/utils/search/utils';
 import { Nullable, Option } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useCallback, useEffect, useState } from 'react';
-import { SearchTxsResponse, TxsResponse } from '@cosmjs/launchpad';
+import { TxsResponse } from '@cosmjs/launchpad';
 import { PATTERN_CYBER } from '../../../utils/config';
 
 const limit = 5;

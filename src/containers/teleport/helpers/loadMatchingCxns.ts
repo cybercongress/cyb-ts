@@ -59,7 +59,6 @@ async function loadMatchingConnections(
       //   } channel pairs`
       // );
 
-      const totalPriority = 0;
       // for (const chanA of chansA.channels) {
       //   const acksA = await qcA.ibc.channel.packetAcknowledgements(
       //     chanA.portId,

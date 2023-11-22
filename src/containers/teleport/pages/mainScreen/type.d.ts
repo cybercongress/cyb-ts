@@ -1,6 +1,6 @@
-import { responseWarpDexTickersItem } from "src/hooks/useGetWarpPools";
+import { responseWarpDexTickersItem } from 'src/hooks/useGetWarpPools';
 
-export type DefaultPairPoolIdItem = {
+type DefaultPairPoolIdItem = {
   reverse: boolean;
 };
 

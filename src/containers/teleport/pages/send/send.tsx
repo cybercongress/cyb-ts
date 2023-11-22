@@ -70,8 +70,6 @@ function Send() {
   const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
   const [tokenABalance, setTokenABalance] = useState<number>(0);
 
-  // const deferredRecipient = useDeferredValue(recipient );
-
   useEffect(() => {
     if (firstEffectOccured.current) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,7 +127,7 @@ function Send() {
     }
 
     return false;
-  }, [tokenAmount, tokenSelect, accountBalances, tokenACoinDecimals]);
+  }, [tokenAmount, tokenACoinDecimals, tokenABalance]);
 
   useEffect(() => {
     const validTokenAmount = !validInputAmountToken && Number(tokenAmount) > 0;
@@ -190,7 +188,7 @@ function Send() {
         setTokenAmount(getDisplayAmount(amount, tokenACoinDecimals));
       }
     },
-    [tokenABalance, tokenSelect, tokenACoinDecimals]
+    [tokenABalance, tokenACoinDecimals]
   );
 
   const getPercentsOfToken = useCallback(() => {

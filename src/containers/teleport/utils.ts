@@ -1,8 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { ObjKeyValue } from 'src/types/data';
-import { Option } from 'src/types';
-import { IbcDenomsArr } from 'src/types/ibc';
 import { getDisplayAmount } from 'src/utils/utils';
 import { Log } from '@cosmjs/stargate/build/logs';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
@@ -283,18 +281,6 @@ export const parseEvents = (rawLog: readonly Log[]) => {
     console.debug('error parseLog', e);
     return null;
   }
-};
-
-export const networkList = {
-  bostrom: 'bostrom',
-  'osmosis-1': 'osmosis-1',
-  'cosmoshub-4': 'cosmoshub-4',
-  'space-pussy': 'space-pussy',
-  'juno-1': 'juno-1',
-  'gravity-bridge-3': 'gravity-bridge-3',
-  'desmos-mainnet': 'desmos-mainnet',
-  // evmos: 'evmos_9001-2',
-  // chihuahua: 'chihuahua-1',
 };
 
 export const parseEventsEndBlockEvents = (events: readonly Event[]) => {

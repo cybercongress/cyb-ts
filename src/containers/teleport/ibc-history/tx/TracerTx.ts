@@ -16,6 +16,7 @@ class TxTracer {
   protected newBlockSubscribes: {
     handler: (block: any) => void;
   }[] = [];
+
   // Key is "id" for jsonrpc
   protected txSubscribes: Map<
     number,
@@ -50,14 +51,14 @@ class TxTracer {
   }
 
   protected getWsEndpoint(): string {
-    let url = this.url;
+    let { url } = this;
     if (url.startsWith('http')) {
       url = url.replace('http', 'ws');
     }
     if (!url.endsWith(this.wsEndpoint)) {
       const wsEndpoint = this.wsEndpoint.startsWith('/')
         ? this.wsEndpoint
-        : '/' + this.wsEndpoint;
+        : `/${this.wsEndpoint}`;
 
       url = url.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
     }
@@ -250,7 +251,6 @@ class TxTracer {
 
           if (result?.total_count !== '0') {
             resolve(result);
-            return;
           }
         })
         .catch(() => {
@@ -282,40 +282,37 @@ class TxTracer {
 
         this.sendSubscribeTxRpc(id, params);
       });
-    } else {
-      const id = this.createRandomId();
-
-      const params = {
-        query:
-          `tm.event='Tx' and ` +
-          Object.keys(query)
-            .map((key) => {
-              return {
-                key,
-                value: query[key],
-              };
-            })
-            .map((obj) => {
-              return `${obj.key}=${
-                typeof obj.value === 'string' ? `'${obj.value}'` : obj.value
-              }`;
-            })
-            .join(' and '),
-        page: '1',
-        per_page: '1',
-        order_by: 'desc',
-      };
-
-      return new Promise<unknown>((resolve, reject) => {
-        this.txSubscribes.set(id, {
-          params,
-          resolver: resolve,
-          rejector: reject,
-        });
-
-        this.sendSubscribeTxRpc(id, params);
-      });
     }
+    const id = this.createRandomId();
+
+    const params = {
+      query: `tm.event='Tx' and ${Object.keys(query)
+        .map((key) => {
+          return {
+            key,
+            value: query[key],
+          };
+        })
+        .map((obj) => {
+          return `${obj.key}=${
+            typeof obj.value === 'string' ? `'${obj.value}'` : obj.value
+          }`;
+        })
+        .join(' and ')}`,
+      page: '1',
+      per_page: '1',
+      order_by: 'desc',
+    };
+
+    return new Promise<unknown>((resolve, reject) => {
+      this.txSubscribes.set(id, {
+        params,
+        resolver: resolve,
+        rejector: reject,
+      });
+
+      this.sendSubscribeTxRpc(id, params);
+    });
   }
 
   protected sendSubscribeTxRpc(
@@ -327,7 +324,7 @@ class TxTracer {
         JSON.stringify({
           jsonrpc: '2.0',
           method: 'subscribe',
-          params: params,
+          params,
           id,
         })
       );
@@ -342,28 +339,27 @@ class TxTracer {
         hash: Buffer.from(query).toString('base64'),
         prove: false,
       });
-    } else {
-      const params = {
-        query: Object.keys(query)
-          .map((key) => {
-            return {
-              key,
-              value: query[key],
-            };
-          })
-          .map((obj) => {
-            return `${obj.key}=${
-              typeof obj.value === 'string' ? `'${obj.value}'` : obj.value
-            }`;
-          })
-          .join(' and '),
-        page: '1',
-        per_page: '1',
-        order_by: 'desc',
-      };
-
-      return this.query('tx_search', params);
     }
+    const params = {
+      query: Object.keys(query)
+        .map((key) => {
+          return {
+            key,
+            value: query[key],
+          };
+        })
+        .map((obj) => {
+          return `${obj.key}=${
+            typeof obj.value === 'string' ? `'${obj.value}'` : obj.value
+          }`;
+        })
+        .join(' and '),
+      page: '1',
+      per_page: '1',
+      order_by: 'desc',
+    };
+
+    return this.query('tx_search', params);
   }
 
   protected query(

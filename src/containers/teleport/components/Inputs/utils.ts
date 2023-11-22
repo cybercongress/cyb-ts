@@ -15,4 +15,4 @@ function contains(query: string, list: SliceState) {
     }, {});
 }
 
-export { contains };
+export default contains;

@@ -23,12 +23,12 @@ import {
 
 type IbcDenomContextContextType = {
   ibcDenoms: Option<IbcDenomsArr>;
-  traseDenom: TraseDenomFuncType | undefined;
+  traseDenom: TraseDenomFuncType;
 };
 
 const valueContext = {
   ibcDenoms: undefined,
-  traseDenom: undefined,
+  traseDenom: () => [],
 };
 
 const IbcDenomContext =
@@ -78,7 +78,7 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   }, [queryClient]);
 
   const traseDenom = useCallback<TraseDenomFuncType>(
-    (denomTrase: string) => {
+    (denomTrase: string): TraseDenomFuncResponse[] => {
       const infoDenomTemp: TraseDenomFuncResponse = {
         denom: denomTrase,
         coinDecimals: 0,

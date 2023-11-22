@@ -161,7 +161,14 @@ function Swap() {
         setTokenBAmount(counterPairAmount.toString(10));
       }
     },
-    [tokenB, tokenA, tokenBPoolAmount, tokenAPoolAmount]
+    [
+      tokenAPoolAmount,
+      tokenB,
+      tokenA,
+      tokenBPoolAmount,
+      tokenACoinDecimals,
+      tokenBCoinDecimals,
+    ]
   );
 
   useEffect(() => {
@@ -169,7 +176,7 @@ function Swap() {
     if (update || new BigNumber(tokenAAmount).comparedTo(0)) {
       amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
     }
-  }, [update, amountChangeHandler, tokenA, tokenB]);
+  }, [update, amountChangeHandler, tokenA, tokenB, tokenAAmount]);
 
   const validInputAmountTokenA = useMemo(() => {
     const isValid = Number(tokenAAmount) > 0 && !!tokenABalance;

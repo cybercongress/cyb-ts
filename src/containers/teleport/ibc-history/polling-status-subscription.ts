@@ -4,7 +4,7 @@ import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 class PollingStatusSubscription {
   protected readonly rpcInstance: AxiosInstance;
 
-  protected _subscriptionCount: number = 0;
+  protected _subscriptionCount = 0;
 
   protected _handlers: ((data: any) => void)[] = [];
 
@@ -41,12 +41,14 @@ class PollingStatusSubscription {
 
   protected async startSubscription() {
     while (this._subscriptionCount > 0) {
+      // eslint-disable-next-line no-await-in-loop
       await new Promise((resolve) => {
         // 7.5 sec.
         setTimeout(resolve, 7500);
       });
 
       try {
+        // eslint-disable-next-line no-await-in-loop
         const response = await this.rpcInstance.get('/status');
         if (response.status === 200) {
           this._handlers.forEach((handler) => handler(response.data));

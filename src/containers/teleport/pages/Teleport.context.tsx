@@ -29,7 +29,7 @@ function TeleportContextProvider({ children }: { children: React.ReactNode }) {
       accountBalances,
       refreshBalances,
     }),
-    [accountBalances]
+    [accountBalances, refreshBalances]
   );
 
   return (

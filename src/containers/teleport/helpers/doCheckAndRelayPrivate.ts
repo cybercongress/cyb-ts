@@ -5,7 +5,6 @@ import {
   secondsFromDateNanos,
   splitPendingPackets,
 } from '@confio/relayer/build/lib/utils';
-import { QueryClient, setupIbcExtension } from '@cosmjs/stargate';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 import EndpointPrivate from './EndpointPrivate';
 import queryPacketAttrsBySender from './queryPacketAttrsBySender';
