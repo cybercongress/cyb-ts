@@ -29,8 +29,8 @@ function OptionItem({ data }: PropsOptionItem) {
         avatar
         disabled
         address={owner}
-        colorText="#fff"
-        styleUser={{ gap: '15px', fontSize: '1rem' }}
+        monikerClassName={styles.containerNickName}
+        containerClassName={styles.containerAccount}
       />
 
       <span className={styles.containerOwner}>{nickname && ownerTrim}</span>
