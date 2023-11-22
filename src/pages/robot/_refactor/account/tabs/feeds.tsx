@@ -56,7 +56,7 @@ function FeedsTab() {
         dataLength={Object.keys(logRows).length}
         hasMore={Boolean(hasNextPage)}
         next={fetchNextPage}
-        loader={<Dots />}
+        loader={<Loader2 />}
       >
         {logRows}
       </InfiniteScroll>
