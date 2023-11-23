@@ -7,6 +7,8 @@ $mobile-breakpoint: 480px;
 .wrapper {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 80vh;
 
   padding: 0 10px;
 
@@ -237,5 +239,45 @@ $mobile-breakpoint: 480px;
     li:nth-child(2) {
       margin-top: unset;
     }
+  }
+}
+
+.header {
+  margin: 10px auto;
+  width: 380px;
+}
+
+.footer {
+  display: flex;
+  gap: 0 clamp(10px, 2.6vw, 40px);
+  justify-content: center;
+}
+
+.info2 {
+  text-align: center;
+
+  * {
+    font-weight: 400;
+    margin: 0;
+  }
+
+  > :last-child {
+    margin-top: 70px;
+  }
+
+  strong {
+    color: #74ff00;
+  }
+  h2 {
+    font-size: clamp(26px, 3.3vw, 50px);
+    color: rgba(255, 255, 255, 0.78);
+  }
+  h3 {
+    font-size: clamp(40px, 4.7vw, 72px);
+  }
+
+  h4 {
+    font-size: clamp(20px, 2.1vw, 32px);
+    color: rgba(255, 255, 255, 0.5);
   }
 }

@@ -13,6 +13,7 @@ import KeywordButton from './components/KeywordButton/KeywordButton';
 import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
+import { Carousel } from 'src/containers/temple/components';
 
 export enum TitleType {
   search,
@@ -20,77 +21,53 @@ export enum TitleType {
   ai,
 }
 
+const mapTitleTypeToTitle = {
+  [TitleType.search]: 'search',
+  [TitleType.learning]: 'learn',
+  [TitleType.ai]: 'ask',
+};
+
 const listConfig = {
-  [TitleType.search]: [
-    {
-      title: 'censorfree',
-      text: (
-        <>
-          its a blockchain <br /> limitless participation
-        </>
-      ),
-    },
-    {
-      title: 'direct',
-      text: (
-        <>
-          pure content <br /> directly from peers
-        </>
-      ),
-    },
-    {
-      title: 'instant',
-      text: (
-        <>
-          your content is searchable <br /> in 5 seconds
-        </>
-      ),
-    },
-  ],
-  [TitleType.learning]: [
-    {
-      title: 'upgrade',
-      text: 'your intelligence to superintelligence',
-    },
-    {
-      title: 'spread',
-      text: 'your content cheaper',
-    },
-    {
-      title: 'upload',
-      text: (
-        <>
-          your brain into eternity, <br /> and more
-        </>
-      ),
-    },
-  ],
-  [TitleType.ai]: [
-    {
-      title: 'collaborative',
-      text: (
-        <>
-          cooperate and interact <br /> with ai together
-        </>
-      ),
-    },
-    {
-      title: 'self-sufficient',
-      text: (
-        <>
-          build autonomous AI <br /> without limitations
-        </>
-      ),
-    },
-    {
-      title: 'freedom',
-      text: (
-        <>
-          let your ai <br /> live in cyberverse
-        </>
-      ),
-    },
-  ],
+  [TitleType.search]: {
+    title: 'instantly and censorfree',
+    text: (
+      <>
+        <strong>find</strong> and <strong>deliver</strong> content
+      </>
+    ),
+    text2: (
+      <>
+        decentralized search is just one <strong>cyber</strong> <i>app</i> aip
+      </>
+    ),
+  },
+  [TitleType.learning]: {
+    title: 'empower everyone',
+    text: (
+      <>
+        <strong>learn</strong> yourself
+      </>
+    ),
+    text2: (
+      <>
+        decentralized learning as simple as creating a <strong>link</strong>
+      </>
+    ),
+  },
+  [TitleType.ai]: {
+    title: 'decentralized ai is alive',
+    text: (
+      <>
+        behold the new <strong>truth medium</strong>
+      </>
+    ),
+    text2: (
+      <>
+        <strong>cyber</strong> is the protocol for unified, provable, collective
+        learning
+      </>
+    ),
+  },
 };
 
 export const learningListConfig = listConfig[TitleType.learning];
@@ -159,6 +136,8 @@ function Search() {
     };
   }, [titleType]);
 
+  const { title, text2, text } = listConfig[titleType];
+
   return (
     <div className={styles.wrapper} ref={ref}>
       <div className={styles.starsWrapper}>
@@ -166,12 +145,34 @@ function Search() {
       </div>
 
       <header className={styles.header}>
-        {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
-          return <KeywordButton key={keyword} keyword={keyword} />;
-        })}
+        <Carousel
+          activeStep={titleType}
+          onChange={(index) => {
+            setTitleType(index);
+          }}
+          slides={[
+            {
+              title: 'ask',
+            },
+            {
+              title: 'learn',
+            },
+            {
+              title: 'search',
+            },
+          ]}
+        />
       </header>
 
-      <div className={styles.info}>
+      <div className={styles.info2}>
+        <h2>{title}</h2>
+        <h3>{text}</h3>
+        <h4>{text2}</h4>
+
+        <Stats type={titleType} />
+      </div>
+
+      {/* <div className={styles.info}>
         <h2 className={cx(styles.infoText, styles.title)}>
           decentralized{' '}
           <strong className={styles.keyword}>
@@ -195,30 +196,37 @@ function Search() {
             />
           </strong>{' '}
           <span className={styles.lastTextBlock}>is here</span>
-        </h2>
+        </h2> */}
 
-        <div className={styles.graphWrapper}>
-          {isRenderGraph && (
+      {/* <div className={styles.graphWrapper}> */}
+      {/* {isRenderGraph && (
             <CyberlinksGraphContainer
               size={graphSize}
               data={graphDataPrepared}
             />
-          )}
-        </div>
+          )} */}
+      {/* </div> */}
 
-        {/* not render to prevent requests */}
-        {!isMobile && <Stats type={titleType} />}
-      </div>
+      {/* not render to prevent requests */}
+      {/* {!isMobile && <Stats type={titleType} />} */}
+      {/* </div> */}
 
-      <ul className={styles.advantages}>
+      {/* <ul className={styles.advantages}>
         {listConfig[titleType].map(({ title, text }) => {
           return (
             <li key={title}>
               <TitleText title={title} text={text} />
             </li>
           );
+        })} */}
+
+      {/* </ul> */}
+
+      <div className={styles.footer}>
+        {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
+          return <KeywordButton key={keyword} keyword={keyword} />;
         })}
-      </ul>
+      </div>
 
       <ActionBar>
         <Button link="/particles" className={styles.actionBarBtn}>
