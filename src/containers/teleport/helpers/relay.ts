@@ -11,7 +11,11 @@ const sleep = (ms: number) => {
     setTimeout(resolve, ms);
   });
 };
-const options = { poll: 4000, maxAgeDest: 86400, maxAgeSrc: 86400 };
+const options = {
+  poll: 30 * 1000,
+  maxAgeDest: 86400 * 2,
+  maxAgeSrc: 86400 * 2,
+};
 
 async function relay(
   offlineSignerA: OfflineAminoSigner | OfflineDirectSigner,
@@ -40,12 +44,12 @@ async function relay(
   if (initHeightA === undefined) {
     const abciA = await tmA.abciInfo();
     console.debug('abciA', abciA);
-    initHeightA = abciA.lastBlockHeight! - 50_000;
+    initHeightA = abciA.lastBlockHeight! - 200;
   }
   if (initHeightB === undefined) {
     const abciB = await tmB.abciInfo();
     console.debug('abciB', abciB);
-    initHeightB = abciB.lastBlockHeight! - 50_000;
+    initHeightB = abciB.lastBlockHeight! - 200;
   }
   const link = await IbcLink.createWithExistingConnections(
     await IbcClient.connectWithSigner(rpcA, offlineSignerA, addrA, {
@@ -82,8 +86,8 @@ async function relay(
           senderB,
           tmA,
           tmB,
-          1000000000,
-          1000000000,
+          2,
+          6,
           logger!
         );
         relayFrom = out.heights;
