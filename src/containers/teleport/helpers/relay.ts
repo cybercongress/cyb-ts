@@ -12,7 +12,7 @@ const sleep = (ms: number) => {
   });
 };
 const options = {
-  poll: 30 * 1000,
+  poll: 60 * 1000,
   maxAgeDest: 86400 * 2,
   maxAgeSrc: 86400 * 2,
 };
