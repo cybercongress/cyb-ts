@@ -658,6 +658,24 @@ export const getToLink = async (cid, offset, limit) => {
   return getLink(cid, LinkType.to, { offset, limit });
 };
 
+export const getSendBySenderRecipient = async (
+  address,
+  offset = 0,
+  limit = 5
+) => {
+  try {
+    const { recipient, sender } = address;
+    const response = await axios({
+      method: 'get',
+      url: `https://lcd.bostrom.cybernode.ai/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=message.action%3D%27%2Fcosmos.bank.v1beta1.MsgSend%27&events=transfer.sender%3D%27${sender}%27&events=transfer.recipient%3D%27${recipient}%27`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return undefined;
+  }
+};
+
 export const getFollows = async (address) => {
   try {
     const response = await axios({

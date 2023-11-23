@@ -11,8 +11,9 @@ import { RootState } from 'src/redux/store';
 import { AppThunk } from 'src/redux/types';
 import { selectFollowings } from 'src/redux/features/currentAccount';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { Accounts } from 'src/types/defaultAccount';
 
-type SliceState = {
+export type SliceState = {
   // address
   [key in string]?: {
     data?: Citizenship | null;
@@ -27,6 +28,26 @@ export function getCommunityPassports(queryClient: CyberClient): AppThunk {
     const { currentAccount, passports } = getState();
     const { following, followers, friends } = currentAccount.community;
     [...friends, ...following, ...followers].forEach((address) => {
+      const passport = passports[address];
+      if (!passport?.data && !passport?.loading) {
+        dispatch(getPassport({ address, queryClient }));
+      }
+    });
+  };
+}
+
+export function getAccountsPassports(queryClient: CyberClient): AppThunk {
+  return (dispatch, getState) => {
+    const { pocket, passports } = getState();
+    const { accounts } = pocket;
+
+    if (accounts === null) {
+      return;
+    }
+
+    Object.keys(accounts).forEach((key) => {
+      const item = accounts[key];
+      const address = item.cyber.bech32;
       const passport = passports[address];
       if (!passport?.data && !passport?.loading) {
         dispatch(getPassport({ address, queryClient }));
@@ -148,6 +169,25 @@ export const selectCommunityPassports = createSelector(
       following: process(following),
       followers: process(followers),
       friends: process(friends),
+    };
+  }
+);
+
+export const selectAccountsPassports = createSelector(
+  (state: RootState) => state.pocket.accounts,
+  (state: RootState) => state.passports,
+  (accounts, passports) => {
+    function process(addresses: Accounts) {
+      return Object.keys(addresses).reduce<SliceState>((acc, key) => {
+        const item = addresses[key];
+        const address = item.cyber.bech32;
+        acc[address] = passports[address];
+        return acc;
+      }, {});
+    }
+
+    return {
+      accounts: accounts ? process(accounts) : {},
     };
   }
 );

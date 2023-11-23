@@ -14,11 +14,13 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { Option } from 'src/types';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { RootState } from 'src/redux/store';
+import useGetBalances from 'src/hooks/getBalances';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
-import { TabList } from '../teleport/components';
-import { getBalances, useGetSwapPrice } from '../teleport/hooks';
+import TabList from './components/tabList';
+import { useGetSwapPrice } from '../teleport/hooks';
 import {
   calculateCounterPairAmount,
   getMyTokenBalanceNumber,
@@ -30,7 +32,6 @@ import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
 import { TypeTab } from './type';
-import { RootState } from 'src/redux/store';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -43,10 +44,8 @@ function Warp() {
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    update
-  );
+  const { liquidBalances: accountBalances, refresh } =
+    useGetBalances(addressActive);
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 
@@ -269,9 +268,10 @@ function Warp() {
     setTokenBPoolAmount(BP);
   }
 
-  const updateFunc = () => {
+  const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-  };
+    refresh();
+  }, [refresh]);
 
   const stateProps = {
     accountBalances,

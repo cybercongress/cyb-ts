@@ -6,10 +6,11 @@ export const enum Color {
   Yellow = 'yellow',
   Red = 'red',
   Black = 'black',
+  Green = 'green',
 }
 
 export type Props = {
-  active: boolean;
+  active?: boolean;
   color?: Color;
   title?: string;
   children: React.ReactNode;
@@ -27,7 +28,7 @@ function LinearGradientContainer({ active, color, title, children }: Props) {
         <div className={cx(styles.textboxFace, styles.textboxBottomGradient)} />
         <div className={cx(styles.textboxFace, styles.textboxBottomLine)} />
       </div>
-      {title && !active && <p>{title}</p>}
+      {title && <p>{title}</p>}
     </div>
   );
 }

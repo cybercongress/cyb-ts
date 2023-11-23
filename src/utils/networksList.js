@@ -27,7 +27,7 @@ const networkList = [
     chainId: 'juno-1',
     chainName: 'juno',
     prefix: 'juno',
-    rpc: 'https://rpc-juno.itastakers.com',
+    rpc: 'https://rpc.uni.junonetwork.io',
     explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
     chainIdImageCid: 'QmW3ePrLoTFQd7SqbKSZyiV429VBrXpvAYS5Xa4Nt1kVYe',
   },
@@ -61,6 +61,14 @@ const networkList = [
     prefix: 'chihuahua',
     rpc: 'https://rpc.chihuahua.wtf',
     explorerUrlToTx: 'https://www.mintscan.io/chihuahua/txs/{txHash}',
+    chainIdImageCid: 'QmdmPzgP3sps9Qbc23VsoaBjBR9cVegonHapTBpN96tjmh',
+  },
+  {
+    chainId: 'axelar-dojo-1',
+    chainName: 'axelar',
+    prefix: 'axelar',
+    rpc: 'https://rpc-1.axelar.nodes.guru',
+    explorerUrlToTx: 'https://mintscan.io/axelar/txs/{txHash}',
     chainIdImageCid: 'QmdmPzgP3sps9Qbc23VsoaBjBR9cVegonHapTBpN96tjmh',
   },
 ];

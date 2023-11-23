@@ -261,7 +261,7 @@ class ActionBarContainer extends Component<Props, any> {
     });
   };
 
-  cleatState = () => {
+  clearState = () => {
     this.setState({
       stage: STAGE_INIT,
       contentHash: '',
@@ -276,7 +276,7 @@ class ActionBarContainer extends Component<Props, any> {
   };
 
   onClickInitStage = () => {
-    this.cleatState();
+    this.clearState();
     this.setState({
       stage: STAGE_INIT,
     });
@@ -416,7 +416,7 @@ class ActionBarContainer extends Component<Props, any> {
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted onClickBtnClose={this.onClickInitStage} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
@@ -425,7 +425,7 @@ class ActionBarContainer extends Component<Props, any> {
           txHash={txHash}
           txHeight={txHeight}
           onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
         />
       );
     }
@@ -435,7 +435,7 @@ class ActionBarContainer extends Component<Props, any> {
         <TransactionError
           errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnClose={this.onClickInitStage}
         />
       );
     }

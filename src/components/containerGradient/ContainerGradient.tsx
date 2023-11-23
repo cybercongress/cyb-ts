@@ -29,7 +29,7 @@ export function ContainerLamp({ style, children }) {
   );
 }
 
-function ContainerLampAfter({ style, children }) {
+export function ContainerLampAfter({ style, children }) {
   return (
     <div
       className={classNames(styles.wrapContainerLampAfter, {

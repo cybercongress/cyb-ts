@@ -116,7 +116,7 @@ function ActionBar({ updateFnc, addressActive }) {
     setWasm(file);
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setWasm(null);
     setStage(STAGE_INIT);
     setTxHash(null);
@@ -174,7 +174,7 @@ function ActionBar({ updateFnc, addressActive }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -183,7 +183,7 @@ function ActionBar({ updateFnc, addressActive }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

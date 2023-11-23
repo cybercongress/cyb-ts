@@ -63,17 +63,18 @@ function Denom({
         flexDirection={flexDirection}
         gap={gap}
       >
-        {!onlyImg && (
-          <TextNetwork
-            network={denomValue}
-            tooltipStatus={onlyText && tooltipStatusText}
-          />
-        )}
         {!onlyText && (
           <ImgNetwork
             network={denomValue}
             tooltipStatus={onlyImg && tooltipStatusImg}
             size={size}
+          />
+        )}
+
+        {!onlyImg && (
+          <TextNetwork
+            network={denomValue}
+            tooltipStatus={onlyText && tooltipStatusText}
           />
         )}
       </ContainerDenom>

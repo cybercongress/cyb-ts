@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { routes } from 'src/routes';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import cx from 'classnames';
 import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import { activePassport } from '../../containers/portal/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
-import { routes } from 'src/routes';
-import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import s from './account.module.scss';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -26,6 +26,7 @@ function useGetValidatorInfo(address: string) {
     {
       enabled: Boolean(
         queryClient &&
+          address &&
           address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
       ),
     }
@@ -44,6 +45,10 @@ type Props = {
   sizeAvatar?: string;
   styleUser?: object;
   trimAddressParam?: [number, number];
+  disabled?: boolean;
+  containerClassName?: string;
+  avatarClassName?: string;
+  monikerClassName?: string;
 };
 
 function Account({
@@ -56,22 +61,16 @@ function Account({
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
+  disabled,
+  containerClassName,
+  avatarClassName,
+  monikerClassName,
 }: Props) {
-  const [moniker, setMoniker] = useState<string | null>(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
   const { passport: dataPassport } = usePassportByAddress(address);
-
-  useEffect(() => {
-    if (dataValidInfo !== undefined) {
-      const { description } = dataValidInfo.validator;
-      setMoniker(description.moniker);
-    }
-
-    if (dataPassport !== undefined && dataPassport !== null) {
-      const { extension } = dataPassport;
-      setMoniker(extension.nickname);
-    }
-  }, [dataValidInfo, dataPassport]);
+  const moniker =
+    dataValidInfo?.description?.validator?.moniker ||
+    dataPassport?.extension.nickname;
 
   const trimAddress = useMemo(() => {
     return trimString(address, trimAddressParam[0], trimAddressParam[1]);
@@ -99,20 +98,17 @@ function Account({
 
   return (
     <div
+      className={cx(s.container, containerClassName)}
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'nowrap',
-        gap: '10px',
         ...styleUser,
       }}
     >
       {avatar && (
         <div
+          className={cx(s.avatar, avatarClassName)}
           style={{
-            width: sizeAvatar || '30px',
-            height: sizeAvatar || '30px',
-            borderRadius: '50%',
+            width: sizeAvatar,
+            height: sizeAvatar,
           }}
         >
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
@@ -120,14 +116,15 @@ function Account({
       )}
       {!onlyAvatar && (
         <Link
+          onClick={(e) => disabled && e.preventDefault()}
+          className={cx(s.moniker, monikerClassName)}
           style={{
-            color: colorText || '#36d6ae',
-            padding: margin || 0,
-            whiteSpace: 'nowrap',
+            color: colorText,
+            padding: margin,
           }}
           to={linkAddress}
         >
-          {moniker === null ? trimAddress : moniker}
+          {!moniker ? trimAddress : moniker}
         </Link>
       )}
       {children}

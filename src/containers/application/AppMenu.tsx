@@ -43,7 +43,12 @@ const itemsMenu = () => {
       name: 'Teleport',
       to: '/teleport',
       icon: teleport,
-      subItems: [],
+      active: false,
+      subItems: [
+        { name: 'Swap', to: '/teleport/swap' },
+        { name: 'Bridge', to: '/teleport/bridge' },
+        { name: 'Send', to: '/teleport/send' },
+      ],
     },
     {
       name: 'Warp',

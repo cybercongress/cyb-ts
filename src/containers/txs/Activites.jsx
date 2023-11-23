@@ -2,12 +2,10 @@ import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { Account, MsgType, DenomArr, AmountDenom } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
-import { Account, MsgType, DenomArr } from '../../components';
 import { CYBER } from '../../utils/config';
-import { convertAmount, timeSince } from '../../utils/utils';
-import { FormatNumberTokens } from '../nebula/components';
+import { timeSince } from '../../utils/utils';
 
 const S_TO_MS = 1 * 10 ** 3;
 
@@ -75,20 +73,6 @@ function Row({ value, title }) {
       </Text>
     </Pane>
   );
-}
-
-// eslint-disable-next-line import/no-unused-modules
-export function AmountDenom({ amountValue, denom }) {
-  const { traseDenom } = useIbcDenom();
-
-  let amount = 0;
-
-  if (amountValue && amountValue > 0) {
-    const [{ coinDecimals }] = traseDenom(denom);
-    amount = convertAmount(amountValue, coinDecimals);
-  }
-
-  return <FormatNumberTokens text={denom} value={amount} />;
 }
 
 function MultiSend({ msg }) {

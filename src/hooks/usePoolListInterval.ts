@@ -10,7 +10,7 @@ type OptionPoolListInterval = {
 };
 
 function usePoolListInterval(
-  option: OptionPoolListInterval = { refetchInterval: false }
+  option: OptionPoolListInterval = { refetchInterval: false },
 ) {
   const queryClient = useQueryClient();
   const [poolsData, setPoolsData] = useState<Pool[]>();

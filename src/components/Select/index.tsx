@@ -40,8 +40,8 @@ export function OptionSelect({ text, img, bgrImg, value }: OptionSelectProps) {
   );
 }
 
-type SelectOption = {
-  text: string;
+export type SelectOption = {
+  text: string | JSX.Element;
   value: string;
   img?: React.ReactNode;
 };
@@ -49,13 +49,13 @@ type SelectOption = {
 type SelectProps = {
   valueSelect: $TsFixMe;
   onChangeSelect: $TsFixMeFunc;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   width?: string;
   disabled?: boolean;
   options?: SelectOption[];
-  // placeholder?: string;
   currentValue: React.ReactNode;
   color?: Color;
+  title?: string;
   small?: boolean;
 };
 
@@ -68,8 +68,8 @@ function Select({
   options,
   currentValue,
   small,
-  // placeholder,
   color = Color.Yellow,
+  title,
 }: SelectProps) {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -82,11 +82,11 @@ function Select({
   const clickOutsideHandler = () => setIsOpen(false);
 
   const updateSelectedOption = (value: SelectOption['value']) => {
-    if (value === currentValue?.props.value) {
+    if (value === currentValue?.value) {
       return;
     }
 
-    onChangeSelect(value);
+    onChangeSelect && onChangeSelect(value);
     setIsOpen(false);
   };
 
@@ -128,7 +128,11 @@ function Select({
             onClick={toggling}
             className={styles.dropDownContainerHeader}
           >
-            <LinearGradientContainer active={isOpen} color={color}>
+            <LinearGradientContainer
+              active={isOpen}
+              color={color}
+              title={title}
+            >
               <span className={styles.dropDownHeader}>{renderTitle()}</span>
             </LinearGradientContainer>
           </button>

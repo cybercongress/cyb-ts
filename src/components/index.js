@@ -48,6 +48,12 @@ import MainContainer from './MainContainer';
 import ButtonIcon from './buttons/ButtonIcon';
 import Loading from './ui/Loading';
 import DonutChart from './DonutChart';
+import AvailableAmount from './AvailableAmount/AvailableAmount';
+import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens';
+import AmountDenom from './AmountDenom/AmountDenom';
+import ButtonSwap from './ButtonSwap';
+import Slider from './Slider/Slider';
+import CreatedAt from './CreatedAt/CreatedAt';
 
 const BtnGrd = Button;
 
@@ -102,6 +108,12 @@ export {
   ContainerGradientText,
   MainContainer,
   DonutChart,
+  AvailableAmount,
+  FormatNumberTokens,
+  AmountDenom,
+  ButtonSwap,
+  Slider,
+  CreatedAt,
 };
 
 export { Dots } from './ui/Dots';

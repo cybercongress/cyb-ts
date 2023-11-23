@@ -1,0 +1,23 @@
+.containerGridContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.containerCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.teleportContainer {
+  width: 450px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (max-width: 580px) {
+    width: 375px;
+  }
+}

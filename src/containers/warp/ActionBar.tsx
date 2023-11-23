@@ -13,7 +13,7 @@ import { Account, ActionBar as ActionBarCenter } from '../../components';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 
-import ActionBarStaps from '../teleport/actionBarSteps';
+import ActionBarStaps from './actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
 import { TypeTab, TypeTabEnum } from './type';
 
@@ -275,7 +275,7 @@ function ActionBar({ stateActionBar }: Props) {
     }
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(undefined);
     setTxHeight(undefined);
@@ -334,7 +334,7 @@ function ActionBar({ stateActionBar }: Props) {
 
   const stageActionBarStaps = {
     stage,
-    cleatState,
+    clearState,
     txHash,
     txHeight,
     errorMessage,

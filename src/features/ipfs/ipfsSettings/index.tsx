@@ -8,8 +8,8 @@ import {
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
+import Select from 'src/containers/warp/components/Select';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
-import Select from '../../../containers/teleport/components/select';
 import {
   updateIpfsStateUrl,
   updateIpfsStateType,

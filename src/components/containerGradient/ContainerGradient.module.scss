@@ -13,7 +13,7 @@
   position: absolute;
   height: 100%;
   width: 100px;
-  z-index: -1;
+  z-index: 1;
   top: 0;
   bottom: 0;
 }
@@ -102,16 +102,19 @@
     --color-g: 0;
     --color-b: 0;
   }
+
   &Green {
     --color-r: 54;
     --color-g: 214;
     --color-b: 174;
   }
+
   &Blue {
     --color-r: 31;
     --color-g: 203;
     --color-b: 255;
   }
+
   &Yellow {
     --color-r: 255;
     --color-g: 217;
@@ -244,6 +247,7 @@
       opacity: 11%;
     }
   }
+
   &Pending {
     position: relative;
 
