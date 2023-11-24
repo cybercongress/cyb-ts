@@ -67,17 +67,17 @@ function Stats({ type }: Props) {
     default:
   }
 
-  if (!value) {
-    return null;
-  }
-
   return (
     <div className={cx(styles.wrapper)}>
-      <TypingText
-        content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
-        delay={40}
-      />{' '}
-      <strong>{text}</strong> and <strong>growing</strong>
+      {value && (
+        <>
+          <TypingText
+            content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
+            delay={40}
+          />{' '}
+          <strong>{text}</strong> and <strong>growing</strong>
+        </>
+      )}
     </div>
   );
 }

@@ -166,8 +166,9 @@ function Carousel({
           {newItemList.map((slide, index) => {
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <div
+              <button
                 key={index}
+                type="button"
                 onClick={() => {
                   setActiveItem(index);
                   onChange?.(slides.indexOf(slide));
@@ -204,7 +205,7 @@ function Carousel({
                     )}
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

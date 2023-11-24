@@ -1,6 +1,9 @@
 .wrapper {
   font-size: 20px;
 
+  // render to prevent jumps
+  min-height: 25px;
+
   strong {
     color: var(--green-light);
   }

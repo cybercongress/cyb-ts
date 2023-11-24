@@ -6,7 +6,7 @@ import { Stars } from 'src/containers/portal/components';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import { useDevice } from 'src/contexts/device';
 import cx from 'classnames';
-import { useAppDispatch } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import styles from './Search.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
@@ -17,8 +17,8 @@ import Carousel from 'src/components/Carousel/Carousel';
 
 export enum TitleType {
   search,
-  learning,
   ai,
+  learning,
 }
 
 const mapTitleTypeToTitle = {
@@ -84,6 +84,10 @@ function Search() {
 
   let graphSize = Math.min(viewportWidth / 3, 330);
 
+  const isCommanderFocused = useAppSelector(
+    (state) => state.commander.isFocused
+  );
+
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
 
@@ -111,32 +115,34 @@ function Search() {
     ref.current.style.setProperty('--graph-size', `${graphSize}px`);
   }, [ref, graphSize]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTitleType((prev) => {
-        // refactor maybe, generated
-        switch (prev) {
-          case TitleType.search:
-            return TitleType.learning;
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTitleType((prev) => {
+  //       // refactor maybe, generated
+  //       switch (prev) {
+  //         case TitleType.search:
+  //           return TitleType.learning;
 
-          case TitleType.learning:
-            return TitleType.ai;
+  //         case TitleType.learning:
+  //           return TitleType.ai;
 
-          case TitleType.ai:
-            return TitleType.search;
+  //         case TitleType.ai:
+  //           return TitleType.search;
 
-          default:
-            return TitleType.search;
-        }
-      });
-    }, 10 * 1000);
+  //         default:
+  //           return TitleType.search;
+  //       }
+  //     });
+  //   }, 10 * 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [titleType]);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [titleType]);
 
   const { title, text2, text } = listConfig[titleType];
+
+  console.log(styles);
 
   return (
     <div className={styles.wrapper} ref={ref}>
@@ -152,22 +158,29 @@ function Search() {
           onChange={(index) => {
             setTitleType(index);
           }}
-          slides={[
-            {
-              title: 'ask',
-            },
-            {
-              title: 'learn',
-            },
-            {
-              title: 'search',
-            },
-          ]}
+          slides={[TitleType.search, TitleType.ai, TitleType.learning].map(
+            (type) => {
+              return {
+                title: mapTitleTypeToTitle[type],
+                // step: type,
+              };
+            }
+          )}
         />
       </header>
 
       <div className={styles.info2}>
-        <h2>{title}</h2>
+        <h2
+          ref={(ref) => {
+            return;
+            debugger;
+            console.log(styles);
+
+            ref?.animate(styles.anim);
+          }}
+        >
+          {title}
+        </h2>
         <h3>{text}</h3>
         <h4>{text2}</h4>
 
@@ -231,12 +244,39 @@ function Search() {
       </div>
 
       <ActionBar>
-        <Button link="/particles" className={styles.actionBarBtn}>
-          get high
-        </Button>
-        <Button link={routes.oracle.learn.path} className={styles.actionBarBtn}>
-          how to learn
-        </Button>
+        {(() => {
+          switch (titleType) {
+            case TitleType.search:
+              return (
+                <Button link="/particles" className={styles.actionBarBtn}>
+                  get high
+                </Button>
+              );
+
+            case TitleType.learning:
+              return (
+                <Button
+                  link={routes.oracle.learn.path}
+                  className={styles.actionBarBtn}
+                >
+                  how to learn
+                </Button>
+              );
+
+            case TitleType.ai:
+              return (
+                <Button
+                  onClick={() => dispatch(setFocus(true))}
+                  className={styles.actionBarBtn}
+                >
+                  ask something
+                </Button>
+              );
+
+            default:
+              return null;
+          }
+        })()}
       </ActionBar>
     </div>
   );
