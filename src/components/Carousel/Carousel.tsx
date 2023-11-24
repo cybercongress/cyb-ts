@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
+import useMediaQuery from '../../hooks/useMediaQuery';
 import styles from './Carousel.module.scss';
 
 const cx = require('classnames');
@@ -9,6 +9,8 @@ interface Slide {
   step?: number;
   title?: string | JSX.Element;
 }
+
+type Color = 'green' | 'blue';
 
 type CarouselProps = {
   slides: Slide[];
@@ -21,6 +23,7 @@ type CarouselProps = {
   // disableNext?: boolean;
   disableMode?: boolean;
   displaySlide?: number;
+  color?: Color;
 };
 
 function Carousel({
@@ -33,6 +36,7 @@ function Carousel({
   heightSlide,
   disableNext,
   onChange,
+  color = 'green',
   disableMode,
   displaySlide = 3,
 }: CarouselProps) {
@@ -131,7 +135,11 @@ function Carousel({
 
   return (
     <div
-      className={cx(styles.carousel, disableMode && styles.disableMode)}
+      className={cx(
+        styles.carousel,
+        disableMode && styles.disableMode,
+        styles[`color_${color}`]
+      )}
       id="containerCarousel"
       style={{
         height: heightSlide || '40px',
