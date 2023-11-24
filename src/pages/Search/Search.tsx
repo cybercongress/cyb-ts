@@ -13,7 +13,7 @@ import KeywordButton from './components/KeywordButton/KeywordButton';
 import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
-import { Carousel } from 'src/containers/temple/components';
+import Carousel from 'src/components/Carousel/Carousel';
 
 export enum TitleType {
   search,
@@ -146,6 +146,7 @@ function Search() {
 
       <header className={styles.header}>
         <Carousel
+          color="blue"
           activeStep={titleType}
           onChange={(index) => {
             setTitleType(index);

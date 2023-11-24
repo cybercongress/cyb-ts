@@ -34,8 +34,8 @@ function Stats({ type }: Props) {
   const dataGetGraphStats = useGetGraphStats();
   const negentropy = useGetNegentropy();
 
-  const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
-  const particlesQuery = useQuery(generateQuery('particles_aggregate'));
+  // const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
+  // const particlesQuery = useQuery(generateQuery('particles_aggregate'));
 
   let value: number | undefined;
   let text: string;
@@ -46,22 +46,22 @@ function Stats({ type }: Props) {
       value = dataGetGraphStats.data?.particles;
       text = 'particles';
 
-      if (!(particlesQuery.loading || particlesQuery.error)) {
-        change = particlesQuery.data?.particles_aggregate.aggregate.count;
-      }
+      // if (!(particlesQuery.loading || particlesQuery.error)) {
+      //   change = particlesQuery.data?.particles_aggregate.aggregate.count;
+      // }
       break;
 
     case TitleType.learning:
       value = dataGetGraphStats.data?.cyberlinks;
       text = 'cyberlinks';
-      if (!(cyberlinksQuery.loading || cyberlinksQuery.error)) {
-        change = cyberlinksQuery.data?.cyberlinks_aggregate.aggregate.count;
-      }
+      // if (!(cyberlinksQuery.loading || cyberlinksQuery.error)) {
+      //   change = cyberlinksQuery.data?.cyberlinks_aggregate.aggregate.count;
+      // }
       break;
 
     case TitleType.ai:
       value = negentropy.data?.negentropy;
-      text = 'bits negentropy';
+      text = 'syntropy bits';
       break;
 
     default:
@@ -72,20 +72,12 @@ function Stats({ type }: Props) {
   }
 
   return (
-    <div className={cx(landingStyles.infoText, styles.wrapper)}>
-      <h4>
-        <TypingText
-          content={`${Number(value)
-            .toLocaleString()
-            .replaceAll(',', ' ')} ${text}`}
-          delay={40}
-        />
-      </h4>
-      {change && (
-        <>
-          <span>+{change}</span> <span>in 24 hours</span>
-        </>
-      )}
+    <div className={cx(styles.wrapper)}>
+      <TypingText
+        content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
+        delay={40}
+      />{' '}
+      <strong>{text}</strong> and <strong>growing</strong>
     </div>
   );
 }

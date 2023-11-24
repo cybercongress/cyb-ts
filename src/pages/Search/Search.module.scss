@@ -15,7 +15,7 @@ $mobile-breakpoint: 480px;
   @media (width <= $mobile-breakpoint) {
     // for graph out screen position
     overflow-x: hidden;
-    padding: 0 50px;
+    // padding: 0 50px;
 
     .actionBarBtn {
       min-width: 107px;
@@ -244,7 +244,15 @@ $mobile-breakpoint: 480px;
 
 .header {
   margin: 10px auto;
-  width: 380px;
+  width: 420px;
+
+  @media (width <= $mobile-breakpoint) {
+    width: unset;
+
+    > div {
+      width: 100vw;
+    }
+  }
 }
 
 .footer {
@@ -255,6 +263,7 @@ $mobile-breakpoint: 480px;
 
 .info2 {
   text-align: center;
+  margin-top: -5%;
 
   * {
     font-weight: 400;
@@ -277,7 +286,12 @@ $mobile-breakpoint: 480px;
   }
 
   h4 {
+    margin-top: 17px;
     font-size: clamp(20px, 2.1vw, 32px);
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  i {
+    text-decoration: line-through;
   }
 }
