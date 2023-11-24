@@ -24,6 +24,7 @@ type CarouselProps = {
   disableMode?: boolean;
   displaySlide?: number;
   color?: Color;
+  noAnimation?: boolean;
 };
 
 function Carousel({
@@ -36,6 +37,7 @@ function Carousel({
   heightSlide,
   disableNext,
   onChange,
+  noAnimation,
   color = 'green',
   disableMode,
   displaySlide = 3,
@@ -44,7 +46,7 @@ function Carousel({
   const [itemWidth, setItemWidth] = useState(0);
   const [displaySlideState, setDisplaySlideState] = useState(displaySlide);
   const [visibleSlide, setVisibleSlide] = useState(1);
-  const [hasTransitionClass, setHasTransitionClass] = useState(true);
+  const [hasTransitionClass, setHasTransitionClass] = useState(!noAnimation);
   const changeDisplay = useRef(false);
 
   useEffect(() => {
@@ -92,7 +94,13 @@ function Carousel({
     return '0px';
   }, [visibleSlide, itemWidth, displaySlideState]);
 
+  console.log(visibleSlide, slides);
+
   useEffect(() => {
+    if (noAnimation) {
+      return;
+    }
+
     // make carousel infinite
     if (visibleSlide > slides.length * 2) {
       // keep index near the middle of the list when moving left
@@ -119,8 +127,7 @@ function Carousel({
         // setNavDisabled(false);
       }, 500 / 10);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleSlide]);
+  }, [visibleSlide, noAnimation, hasTransitionClass, slides.length]);
 
   const setActiveItem = useCallback(
     (index) => {

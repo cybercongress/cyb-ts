@@ -8,7 +8,8 @@ $mobile-breakpoint: 480px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 80vh;
+  // header, footer widths, TODO: use variables
+  min-height: calc(100vh - 120px - 60px - 60px);
 
   padding: 0 10px;
 

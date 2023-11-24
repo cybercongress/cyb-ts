@@ -146,6 +146,7 @@ function Search() {
 
       <header className={styles.header}>
         <Carousel
+          noAnimation
           color="blue"
           activeStep={titleType}
           onChange={(index) => {
