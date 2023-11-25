@@ -23,7 +23,26 @@ import KeywordButton from '../Search/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
 import { useBackend } from 'src/contexts/backend';
 import TitleText from '../Search/components/TitleText/TitleText';
-import { learningListConfig } from '../Search/Search';
+// import { learningListConfig } from '../Search/Search';
+
+const learningListConfig = [
+  {
+    title: 'upgrade',
+    text: 'your intelligence to superintelligence',
+  },
+  {
+    title: 'spread',
+    text: 'your content cheaper',
+  },
+  {
+    title: 'upload',
+    text: (
+      <>
+        your brain into eternity, <br /> and more
+      </>
+    ),
+  },
+];
 
 function Learn() {
   const [ask, setAsk] = useState('');
