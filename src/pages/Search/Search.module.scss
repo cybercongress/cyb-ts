@@ -13,6 +13,9 @@ $mobile-breakpoint: 480px;
 
   padding: 0 10px;
 
+  // not good, need fix wrapper
+  margin-bottom: 100px;
+
   @media (width <= $mobile-breakpoint) {
     // for graph out screen position
     overflow-x: hidden;
