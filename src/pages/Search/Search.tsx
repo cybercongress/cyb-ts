@@ -73,7 +73,7 @@ const listConfig = {
 export const learningListConfig = listConfig[TitleType.learning];
 
 function Search() {
-  const [titleType, setTitleType] = useState(TitleType.search);
+  const [titleType, setTitleType] = useState(TitleType.ai);
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
