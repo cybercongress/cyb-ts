@@ -7,13 +7,16 @@ $mobile-breakpoint: 480px;
 .wrapper {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  // header, footer widths, TODO: use variables
+  min-height: calc(100vh - 120px - 60px - 60px);
 
   padding: 0 10px;
 
   @media (width <= $mobile-breakpoint) {
     // for graph out screen position
     overflow-x: hidden;
-    padding: 0 50px;
+    // padding: 0 50px;
 
     .actionBarBtn {
       min-width: 107px;
@@ -238,4 +241,88 @@ $mobile-breakpoint: 480px;
       margin-top: unset;
     }
   }
+}
+
+.header {
+  margin: 10px auto;
+  width: 420px;
+
+  @media (width <= $mobile-breakpoint) {
+    width: unset;
+
+    > div {
+      width: 100vw;
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  gap: 0 clamp(10px, 2.6vw, 40px);
+  justify-content: center;
+}
+
+.info2 {
+  text-align: center;
+  margin-top: -5%;
+
+  * {
+    font-weight: 400;
+    margin: 0;
+  }
+
+  > :last-child {
+    margin-top: 70px;
+  }
+
+  strong {
+    color: #74ff00;
+  }
+
+  $animation-duration: 2s;
+
+  h2 {
+    font-size: clamp(26px, 3.3vw, 50px);
+    color: rgba(255, 255, 255, 0.78);
+    animation: anim $animation-duration 0.3s forwards;
+    opacity: 0;
+  }
+
+  h3 {
+    font-size: clamp(40px, 4.7vw, 72px);
+    animation: anim $animation-duration;
+  }
+
+  h4 {
+    margin-top: 17px;
+    font-size: clamp(20px, 2.1vw, 32px);
+    color: rgba(255, 255, 255, 0.5);
+    animation: anim $animation-duration 0.6s forwards;
+    opacity: 0;
+  }
+
+  i {
+    text-decoration: line-through;
+  }
+}
+
+@keyframes anim {
+  0% {
+    transform: scale(5);
+    opacity: 0;
+  }
+
+  20% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  // 100% {
+  //   transform: scale(0);
+  // }
 }

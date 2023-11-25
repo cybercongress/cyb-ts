@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
+import useMediaQuery from '../../hooks/useMediaQuery';
 import styles from './Carousel.module.scss';
 
 const cx = require('classnames');
@@ -9,6 +9,8 @@ interface Slide {
   step?: number;
   title?: string | JSX.Element;
 }
+
+type Color = 'green' | 'blue';
 
 type CarouselProps = {
   slides: Slide[];
@@ -21,6 +23,8 @@ type CarouselProps = {
   // disableNext?: boolean;
   disableMode?: boolean;
   displaySlide?: number;
+  color?: Color;
+  noAnimation?: boolean;
 };
 
 function Carousel({
@@ -33,6 +37,8 @@ function Carousel({
   heightSlide,
   disableNext,
   onChange,
+  noAnimation,
+  color = 'green',
   disableMode,
   displaySlide = 3,
 }: CarouselProps) {
@@ -40,7 +46,7 @@ function Carousel({
   const [itemWidth, setItemWidth] = useState(0);
   const [displaySlideState, setDisplaySlideState] = useState(displaySlide);
   const [visibleSlide, setVisibleSlide] = useState(1);
-  const [hasTransitionClass, setHasTransitionClass] = useState(true);
+  const [hasTransitionClass, setHasTransitionClass] = useState(!noAnimation);
   const changeDisplay = useRef(false);
 
   useEffect(() => {
@@ -88,7 +94,13 @@ function Carousel({
     return '0px';
   }, [visibleSlide, itemWidth, displaySlideState]);
 
+  console.log(visibleSlide, slides);
+
   useEffect(() => {
+    if (noAnimation) {
+      return;
+    }
+
     // make carousel infinite
     if (visibleSlide > slides.length * 2) {
       // keep index near the middle of the list when moving left
@@ -115,8 +127,7 @@ function Carousel({
         // setNavDisabled(false);
       }, 500 / 10);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleSlide]);
+  }, [visibleSlide, noAnimation, hasTransitionClass, slides.length]);
 
   const setActiveItem = useCallback(
     (index) => {
@@ -131,7 +142,11 @@ function Carousel({
 
   return (
     <div
-      className={cx(styles.carousel, disableMode && styles.disableMode)}
+      className={cx(
+        styles.carousel,
+        disableMode && styles.disableMode,
+        styles[`color_${color}`]
+      )}
       id="containerCarousel"
       style={{
         height: heightSlide || '40px',
@@ -151,8 +166,9 @@ function Carousel({
           {newItemList.map((slide, index) => {
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <div
+              <button
                 key={index}
+                type="button"
                 onClick={() => {
                   setActiveItem(index);
                   onChange?.(slides.indexOf(slide));
@@ -189,7 +205,7 @@ function Carousel({
                     )}
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

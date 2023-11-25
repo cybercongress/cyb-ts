@@ -1,6 +1,6 @@
 import { Meta, StoryObj, Story } from '@storybook/react';
 import { useState } from 'react';
-import Carousel, { Props } from './Carousel';
+import Carousel, { Props } from './CarouselOld';
 
 const meta: Meta<typeof Carousel> = {
   component: Carousel,

@@ -1,7 +1,10 @@
 .wrapper {
-  max-width: 320px;
+  font-size: 20px;
 
-  span:nth-of-type(1) {
+  // render to prevent jumps
+  min-height: 25px;
+
+  strong {
     color: var(--green-light);
   }
 }

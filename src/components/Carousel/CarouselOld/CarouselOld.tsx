@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useCallback } from 'react';
-import styles from './carousel.module.scss';
+import styles from './CarouselOld.module.scss';
 
 const cx = require('classnames');
 
@@ -21,6 +21,9 @@ export type Props = {
   heightSlide?: string;
 };
 
+/**
+ * @deprecated use Carousel
+ */
 function Carousel({
   slides = [],
   speed = 3000,

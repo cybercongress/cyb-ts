@@ -60,10 +60,15 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   // TODO: not show while loading passport
 
-  if (commander.isFocused && commander.value.length > 0) {
+  if (commander.isFocused) {
     return (
       <ActionBarContainer>
-        <Button link={routes.search.getLink(commander.value)}>Ask</Button>
+        <Button
+          link={routes.search.getLink(commander.value)}
+          disabled={!commander.value.length}
+        >
+          Ask
+        </Button>
       </ActionBarContainer>
     );
   }

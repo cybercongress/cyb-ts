@@ -91,7 +91,9 @@ function Button({
   };
 
   // if http: will need to add <a> tag
-  if (link && !link.includes('http:')) {
+  // TODO: http is supported by Link
+  // link can't be disabled, it is button
+  if (link && !link.includes('http:') && !disabled) {
     Component = Link;
     componentProps = {
       to: link,
