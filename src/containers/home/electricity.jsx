@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppData } from 'src/contexts/appData';
+import styles from './Electricity.module.scss';
 
 const M = Math;
 const DOC = document;
@@ -92,24 +93,14 @@ function Electricity() {
   }, [block]);
 
   return (
-    <div
-      style={{
-        zIndex: '-1',
-        width: '100%',
-        padding: ' 0 20px',
-        position: 'absolute',
-        opacity: 0.5,
-      }}
-      className="electricity"
-    >
-      <div className="line">
+    <div className={styles.electricity}>
+      <div className={styles.line}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
           <g id="lightningContainer">
             <rect
+              className={styles.electricityLineRect}
               width="2050"
               height="80"
-              fill="#000000"
-              id="electricityLineRect"
             />
             {stage && (
               <g
