@@ -60,6 +60,7 @@ import Learn from './pages/Learn/Learn';
 import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
+import Brain from './pages/Brain/Brain';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -162,11 +163,7 @@ function AppRouter() {
           <Route path="/quitter" element={<ForceQuitter />} />
 
           {['/graph', '/brain'].map((path) => (
-            <Route
-              key={path}
-              path={path}
-              element={<CyberlinksGraphContainer toPortal />}
-            />
+            <Route key={path} path={path} element={<Brain />} />
           ))}
 
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
