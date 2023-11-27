@@ -92,9 +92,9 @@ function Search() {
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
 
-  if (isMobile) {
-    graphSize = 330;
-  }
+  // if (isMobile) {
+  //   graphSize = 330;
+  // }
 
   useEffect(() => {
     dispatch(setFocus(true));
@@ -214,11 +214,16 @@ function Search() {
           <span className={styles.lastTextBlock}>is here</span>
         </h2> */}
 
-      <div className={styles.graphWrapper}>
-        {isRenderGraph && (
-          <CyberlinksGraphContainer size={graphSize} data={graphDataPrepared} />
-        )}
-      </div>
+      {!isMobile && (
+        <div className={styles.graphWrapper}>
+          {isRenderGraph && (
+            <CyberlinksGraphContainer
+              size={graphSize}
+              data={graphDataPrepared}
+            />
+          )}
+        </div>
+      )}
 
       {/* not render to prevent requests */}
       {/* {!isMobile && <Stats type={titleType} />} */}
