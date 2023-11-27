@@ -10,6 +10,8 @@ import Discord from 'src/components/actionBar/Discord/Discord';
 import Twitter from 'src/components/actionBar/Twitter/Twitter';
 import { useAppSelector } from 'src/redux/hooks';
 import styles from './Main.module.scss';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);
@@ -62,13 +64,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
       </AppSideBar>
 
       {children}
-
-      <footer>
-        <Telegram />
-        <Discord />
-        <Twitter />
-        <GitHub />
-      </footer>
     </div>
   );
 }

@@ -59,6 +59,7 @@ import Search from './pages/Search/Search';
 import Learn from './pages/Learn/Learn';
 import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
+import Social from './pages/Social/Social';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -227,6 +228,8 @@ function AppRouter() {
           <Route path="/nebula" element={<Nebula />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path={routes.social.path} element={<Social />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

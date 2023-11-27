@@ -51,7 +51,7 @@ export function GitHub() {
       <div
         id="github-bar"
         style={{
-          position: 'fixed',
+          // position: 'fixed',
           right: '0',
           bottom: 0,
           margin: '0px 20px 28px 0px',
@@ -73,7 +73,7 @@ export function GitHub() {
     <div
       id="github-bar"
       style={{
-        position: 'fixed',
+        // position: 'fixed',
         right: '0',
         bottom: 0,
         margin: '0px 20px 28px 0px',

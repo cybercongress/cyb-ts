@@ -78,6 +78,7 @@ const itemsMenu = () => {
       ],
     },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    { name: 'Socials', icon: null, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
     //   icon: zhdun,

@@ -75,4 +75,7 @@ export const routes = {
       getLink: (query: string) => `/oracle/ask/${query}`,
     },
   },
+  social: {
+    path: '/social',
+  },
 };

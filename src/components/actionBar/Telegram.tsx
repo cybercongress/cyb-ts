@@ -13,7 +13,7 @@ export function Telegram() {
       <div
         // id="github-bar"
         style={{
-          position: 'fixed',
+          // position: 'fixed',
           left: '0',
           bottom: 0,
           margin: '0px 0px 28px 20px',
@@ -40,7 +40,7 @@ export function Telegram() {
     <div
       // id="github-bar"
       style={{
-        position: 'fixed',
+        // position: 'fixed',
         left: '0',
         bottom: 0,
         margin: '0px 0px 28px 20px',
