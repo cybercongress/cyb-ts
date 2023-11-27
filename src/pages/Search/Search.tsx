@@ -82,7 +82,8 @@ function Search() {
 
   const dispatch = useAppDispatch();
 
-  let graphSize = Math.min(viewportWidth / 3, 330);
+  // let graphSize = Math.min(viewportWidth / 3, 330);
+  let graphSize = 220;
 
   const isCommanderFocused = useAppSelector(
     (state) => state.commander.isFocused
@@ -173,10 +174,10 @@ function Search() {
         <h2
           ref={(ref) => {
             return;
-            debugger;
-            console.log(styles);
+            // debugger;
+            // console.log(styles);
 
-            ref?.animate(styles.anim);
+            // ref?.animate(styles.anim);
           }}
         >
           {title}
@@ -213,14 +214,11 @@ function Search() {
           <span className={styles.lastTextBlock}>is here</span>
         </h2> */}
 
-      {/* <div className={styles.graphWrapper}> */}
-      {/* {isRenderGraph && (
-            <CyberlinksGraphContainer
-              size={graphSize}
-              data={graphDataPrepared}
-            />
-          )} */}
-      {/* </div> */}
+      <div className={styles.graphWrapper}>
+        {isRenderGraph && (
+          <CyberlinksGraphContainer size={graphSize} data={graphDataPrepared} />
+        )}
+      </div>
 
       {/* not render to prevent requests */}
       {/* {!isMobile && <Stats type={titleType} />} */}
