@@ -304,15 +304,15 @@ $mobile-breakpoint: 480px;
 
 .graphWrapper {
   position: fixed;
-  left: 0;
-  bottom: 0;
+  left: 10px;
+  bottom: 10px;
   z-index: 3;
 
   width: var(--graph-size);
   height: var(--graph-size);
   background-color: black;
 
-  // overflow: hidden;
+  overflow: hidden;
 
   border-radius: 10px;
   border: 1px solid rgba(118, 255, 3, 0.1);
