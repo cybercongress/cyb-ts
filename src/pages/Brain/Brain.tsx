@@ -9,7 +9,7 @@ function Brain() {
         className={styles.link}
         to="https://cosmograph.app/run/?data=https://gateway.ipfs.cybernode.ai/ipfs/QmQ3snofqRrDhpANRCwZrCPG7rAvABrkL9KHreMtmYDiCL"
       >
-        Full Graph
+        Full Graph 🔗
       </LinkWindow>
       <CyberlinksGraphContainer toPortal />
     </div>
