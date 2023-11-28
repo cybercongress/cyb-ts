@@ -30,9 +30,11 @@ function generateQuery(type: string) {
   `;
 }
 
+const REFETCH_INTERVAL = 1000 * 7;
+
 function Stats({ type }: Props) {
-  const dataGetGraphStats = useGetGraphStats();
-  const negentropy = useGetNegentropy();
+  const dataGetGraphStats = useGetGraphStats(REFETCH_INTERVAL);
+  const negentropy = useGetNegentropy(REFETCH_INTERVAL);
 
   // const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
   // const particlesQuery = useQuery(generateQuery('particles_aggregate'));
