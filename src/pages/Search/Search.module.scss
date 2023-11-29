@@ -317,6 +317,16 @@ $mobile-breakpoint: 480px;
   border-radius: 10px;
   border: 1px solid rgba(118, 255, 3, 0.1);
 
+  > a {
+    float: right;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
   &::after {
     content: '';
     position: absolute;

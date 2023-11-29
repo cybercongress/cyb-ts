@@ -14,6 +14,7 @@ import TitleText from './components/TitleText/TitleText';
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
 import Carousel from 'src/components/Carousel/Carousel';
+import { Link } from 'react-router-dom';
 
 export enum TitleType {
   search,
@@ -216,6 +217,9 @@ function Search() {
 
       {!isMobile && (
         <div className={styles.graphWrapper}>
+          <Link to="/brain">
+            <img src={require('images/enlarge.svg')} />
+          </Link>
           {isRenderGraph && (
             <CyberlinksGraphContainer
               size={graphSize}
