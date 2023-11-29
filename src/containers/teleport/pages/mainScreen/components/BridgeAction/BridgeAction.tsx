@@ -39,6 +39,7 @@ function BridgeAction() {
     <Display
       title={
         <TitleAction
+          to="bridge"
           title="bridge"
           subTitle="reliable transfer of tokens from net to net"
         />

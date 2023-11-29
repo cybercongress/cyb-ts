@@ -1,4 +1,3 @@
-import { MainContainer } from 'src/components';
 import {
   SwapAction,
   SendAction,
@@ -9,16 +8,14 @@ import styles from './TeleportMainScreen.module.scss';
 
 function TeleportMainScreen() {
   return (
-    <MainContainer width="100%">
-      <div className={styles.container}>
-        <AboutTeleport />
-        <div>
-          <SendAction />
-          <BridgeAction />
-          <SwapAction />
-        </div>
+    <div className={styles.container}>
+      <AboutTeleport />
+      <div className={styles.cardContainer}>
+        <SendAction />
+        <BridgeAction />
+        <SwapAction />
       </div>
-    </MainContainer>
+    </div>
   );
 }
 

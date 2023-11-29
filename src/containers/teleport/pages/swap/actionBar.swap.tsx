@@ -134,7 +134,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     navigate(`/warp/create-pool?from=${sortCoin[0]}&to=${sortCoin[1]}`);
   }, [tokenA, tokenB, navigate]);
 
-  if (!poolPrice && stage === STAGE_INIT) {
+  if (!selectedPool && stage === STAGE_INIT) {
     return (
       <ActionBarCenter
         button={{

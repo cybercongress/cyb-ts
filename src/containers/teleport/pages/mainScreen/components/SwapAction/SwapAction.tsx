@@ -54,6 +54,7 @@ function SwapAction() {
     <Display
       title={
         <TitleAction
+          to="swap"
           title="swap"
           subTitle="truly free exchange with warp dex"
         />
