@@ -270,7 +270,7 @@ function ActionBarContainer({
             validatorAddres,
             valueSelect,
             coin(amount, CYBER.DENOM_CYBER),
-            fee,
+            'auto',
             CYBER.MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
