@@ -11,6 +11,7 @@ import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { getDelegatorDelegations } from 'src/utils/search/utils';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -67,10 +68,11 @@ function Validators({ defaultAccount }) {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
         if (addressActive !== null && queryClient) {
-          const responseDelegatorDelegations =
-            await queryClient.delegatorDelegations(addressActive.bech32);
-          delegationsDataTemp =
-            responseDelegatorDelegations.delegationResponses;
+          const responseDelegatorDelegations = await getDelegatorDelegations(
+            queryClient,
+            addressActive.bech32
+          );
+          delegationsDataTemp = responseDelegatorDelegations;
         }
         setDelegationsData(delegationsDataTemp);
       };

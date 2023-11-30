@@ -3,6 +3,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
 import { CYBER } from '../../../../../utils/config';
 import useGetSlots from '../../../../../containers/mint/useGetSlots';
+import { getDelegatorDelegations } from 'src/utils/search/utils';
 
 const initValue = {
   available: 0,
@@ -62,16 +63,13 @@ function useGetBalance(address, updateAddress) {
             total: item.total + parseFloat(availablePromise.amount),
           }));
 
-          const delegationsPromise = await queryClient.delegatorDelegations(
+          const delegationResponses = await getDelegatorDelegations(
+            queryClient,
             addressActive
           );
           let delegationsAmount = 0;
 
-          const { delegationResponses } = delegationsPromise;
-          if (
-            delegationResponses &&
-            Object.keys(delegationResponses).length > 0
-          ) {
+          if (delegationResponses.length) {
             delegationResponses.forEach((itemDelegation) => {
               delegationsAmount += parseFloat(itemDelegation.balance.amount);
             });
