@@ -245,8 +245,21 @@ function Search() {
       {/* </ul> */}
 
       <div className={styles.footer}>
-        {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
-          return <KeywordButton key={keyword} keyword={keyword} />;
+        {[
+          {
+            query: 'cyber',
+            author: 'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t',
+          },
+          {
+            query: 'donut of knowledge',
+            author: 'bostrom1k7nssnnvxezpp4una7lvk6j53895vadpqe6jh6',
+          },
+          {
+            query: 'help',
+            author: 'bostrom1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq3lduwj',
+          },
+        ].map(({ query, author }) => {
+          return <KeywordButton key={query} keyword={query} author={author} />;
         })}
       </div>
 
