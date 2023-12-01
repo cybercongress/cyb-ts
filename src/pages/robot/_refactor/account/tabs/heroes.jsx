@@ -7,6 +7,7 @@ import { Account, NumberCurrency } from '../../../../../components';
 import { formatNumber, formatCurrency } from '../../../../../utils/utils';
 import { CYBER } from '../../../../../utils/config';
 import { useGetHeroes } from '../hooks';
+import hS from './heroes.module.scss';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -92,9 +93,8 @@ function Heroes() {
       validator: (
         <Account
           address={key}
-          styleUser={{
-            justifyContent: 'center',
-          }}
+          containerClassName={hS.containerAccount}
+          monikerClassName={hS.containerAccountMoniker}
         />
       ),
       unbondings: entries && (
