@@ -19,7 +19,7 @@ import {
 
 import { trimString } from '../../utils/utils';
 
-import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { LEDGER, CYBER } from '../../utils/config';
 
 const {
   STAGE_INIT,
@@ -31,10 +31,7 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-const fee = {
-  amount: [],
-  gas: (DEFAULT_GAS_LIMITS * 2).toString(),
-};
+const fee = 'auto';
 const TXTYPE_DELEGATE = 0;
 const TXTYPE_UNDELEGATE = 1;
 const TXTYPE_REDELEGATE = 2;
@@ -285,7 +282,7 @@ function ActionBarContainer({
     if (signer && signingClient && queryClient) {
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
-        const validatorAddress = [];
+        const validatorAddress: string[] = [];
         if (
           checkAddress(addressPocket, addressKeplr, {
             setErrorMessage,
@@ -305,17 +302,12 @@ function ActionBarContainer({
                 validatorAddress.push(rewards[key].validatorAddress);
               }
             });
-            const gasLimitsRewards =
-              150000 * Object.keys(validatorAddress).length;
-            const feeRewards = {
-              amount: [],
-              gas: gasLimitsRewards.toString(),
-            };
+
             setStage(STAGE_WAIT);
             const response = await signingClient.withdrawAllRewards(
               addressKeplr,
               validatorAddress,
-              feeRewards
+              fee
             );
             checkTxs(response, { setTxHash, setErrorMessage, setStage });
           }
