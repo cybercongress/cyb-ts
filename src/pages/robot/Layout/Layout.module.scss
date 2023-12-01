@@ -9,10 +9,15 @@ $actionBarSpace: 130px;
   > main {
     padding-bottom: $actionBarSpace;
 
-    // same with menu
-    min-height: 100%;
-
     // stretch children
     display: grid;
+
+    > header {
+      // because of grid
+      align-self: flex-start;
+    }
+
+    // same with menu
+    min-height: 100%;
   }
 }
