@@ -84,11 +84,19 @@ let CHAIN_PARAMS = {
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
   DENOM_CYBER_G: `GBOOT`,
-  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
-  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_NODE_URL_API:
+    process.env.CYBER_NODE_URL_API || 'https://rpc.bostrom.cybernode.ai',
+  CYBER_WEBSOCKET_URL:
+    process.env.CYBER_WEBSOCKET_URL ||
+    'wss://rpc.bostrom.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD:
+    process.env.CYBER_NODE_URL_LCD || 'https://lcd.bostrom.cybernode.ai',
+  CYBER_INDEX_HTTPS:
+    process.env.CYBER_INDEX_HTTPS ||
+    'https://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET:
+    process.env.CYBER_INDEX_WEBSOCKET ||
+    'wss://index.bostrom.cybernode.ai/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
@@ -131,7 +139,8 @@ const CYBER = {
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
 
-  CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
+  CYBER_GATEWAY:
+    process.env.CYBER_GATEWAY || 'https://gateway.ipfs.cybernode.ai',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
