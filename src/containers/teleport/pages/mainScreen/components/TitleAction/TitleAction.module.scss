@@ -1,23 +1,25 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 
   &:hover {
-    opacity: 0.7;
+    .title {
+      color: #00FFBF;
+      text-shadow: 0px 0px 5px var(--primary-color);
+    }
   }
 }
 
 .title {
-  color: #FFF;
-  text-shadow: 0px 0px 5px var(--primary-color);
+  color: var(--primary-color);
   font-size: 20px;
   font-weight: 400;
 
 }
 
 .subTitle {
-  font-size: 14px;
   color: #ffffff80;
+  font-size: 14px;
   line-height: 19px;
 }

@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
+  gap: 6px;
 
 }
 
@@ -19,17 +19,20 @@
   @include font-size(42px);
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
+
     left: -20%;
-    right: 10%;
-    height: 100%;
-    filter: blur(30px);
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 3.92%, rgba(255, 255, 255, 0.15) 48.96%, rgba(255, 255, 255, 0.15) 60.47%, rgba(0, 0, 0, 0.00) 100%);
+    right: -20%;
+    top: 50%;
+    height: 30%;
+  
+    filter: blur(20px);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 3.92%, rgba(255, 255, 255, 0.13) 32.95%, rgba(255, 255, 255, 1.13) 66.47%, rgba(0, 0, 0, 0) 100%);
   }
 }
 
 .description {
-  color: var(--text-text-dark);
-  @include font-size(30px);
+  color: #FFF;
+  @include font-size(20px);
 }

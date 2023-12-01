@@ -1,8 +1,9 @@
 .container {
-  display: grid;
   width: 62%;
   margin: 0 auto;
-  grid-template-columns: 1fr 1fr;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(2, 375px);
   gap: 50px;
 
   @media (max-width: 580px) {
@@ -17,5 +18,5 @@
 
 .cardContainer {
   display: grid;
-  gap: 20px
+  gap: 15px
 }

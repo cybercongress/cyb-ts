@@ -1,15 +1,16 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 25px;
   margin-top: 70px;
   // align-self: center;
 }
 
 .title {
-  color: #C7C7C7;
+  color: #FFCA4F;
   text-align: center;
   font-weight: 400;
-  font-size: 30px;
+  font-size: 20px;
   line-height: 36px;
+  letter-spacing: 4px;
 }

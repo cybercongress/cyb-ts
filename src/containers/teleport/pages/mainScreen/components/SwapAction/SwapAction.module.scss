@@ -1,25 +1,6 @@
-@import 'src/style/mixins';
-
 .container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   row-gap: 20px;
   overflow: hidden;
-
-  &:hover {
-    cursor: pointer;
-
-    &::before {
-        content: '';
-        position: absolute;
-        pointer-events: none;
-    
-        left: 0px;
-        right: 0px;
-        top: 1px;
-        bottom: 1px;
-    
-        @include tableHover;
-      }
-  }
 }
