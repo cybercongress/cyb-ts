@@ -16,8 +16,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-size: 16px;
 
   @media (max-width: 580px) {
-    width: 375px;
+    width: 100%;
+    font-size: 14px;
   }
 }

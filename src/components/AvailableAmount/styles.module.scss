@@ -4,8 +4,9 @@
 
 .containerValue {
   padding: 0 13px;
-  font-size: 1.25rem;
-  color: var(--text-text-dark);
+  font-size: 1.25em;
+  color: #fff;
+  opacity: var(--text-opacity-2);
   height: 42px;
   display: flex;
   align-items: center;
