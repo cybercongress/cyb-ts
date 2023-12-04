@@ -32,6 +32,7 @@ import { useIbcHistory } from '../../ibc-history/historyContext';
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
 const STAGE_CONFIRMED_IBC = 7.1;
+const TIMEOUT_TIMESTAMP = 10 * 60 * 1000; // 10 min
 
 const fee = {
   amount: [],
@@ -95,7 +96,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const sourcePort = 'transfer';
 
       const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + 60000}000000`
+        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000` // to nano sec
       );
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(denomIbc);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
@@ -109,6 +110,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           sender: address,
           receiver: counterpartyAccount,
           timeoutTimestamp,
+          timeoutHeight: '100',
           token: transferAmount,
         },
       };
@@ -183,7 +185,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const sourcePort = 'transfer';
       const counterpartyAccount = fromBech32(address, prefix);
       const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + 60000}000000`
+        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000` // to nano sec
       );
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
@@ -196,6 +198,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           sender: address,
           receiver: counterpartyAccount,
           timeoutTimestamp,
+          timeoutHeight: '100',
           token: transferAmount,
         },
       };

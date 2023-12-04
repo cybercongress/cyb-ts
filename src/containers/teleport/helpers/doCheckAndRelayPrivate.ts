@@ -58,21 +58,21 @@ async function doCheckAndRelayPrivate(
   link.endB = privateEndB;
 
   console.debug('Relaying from', relayFrom);
-  const { ibcAttrs: senderPacketsA } = await queryPacketAttrsBySender(
-    tmA,
-    link.endA.connectionID,
-    senderA,
-    relayFrom.packetHeightA || 0
-  );
-  console.debug('Sender packets A', senderPacketsA);
-  const { ibcAttrs: senderPacketsB } = await queryPacketAttrsBySender(
-    tmB,
-    link.endB.connectionID,
-    senderB,
-    relayFrom.packetHeightB || 0
-  );
+  // const { ibcAttrs: senderPacketsA } = await queryPacketAttrsBySender(
+  //   tmA,
+  //   link.endA.connectionID,
+  //   senderA,
+  //   relayFrom.packetHeightA || 0
+  // );
+  // console.debug('Sender packets A', senderPacketsA);
+  // const { ibcAttrs: senderPacketsB } = await queryPacketAttrsBySender(
+  //   tmB,
+  //   link.endB.connectionID,
+  //   senderB,
+  //   relayFrom.packetHeightB || 0
+  // );
 
-  console.debug('Sender packets B', senderPacketsB);
+  // console.debug('Sender packets B', senderPacketsB);
   // FIXME: is there a cleaner way to get the height we query at?
   const [packetHeightA, packetHeightB, packetsA, packetsB] = await Promise.all([
     link.endA.client.currentHeight(),
