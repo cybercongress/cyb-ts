@@ -1,0 +1,11 @@
+.container {
+  text-align: center;
+  color: var(--text-text-dark);
+  font-size: 14px;
+  line-height: 23px;
+
+  .value {
+    color: var(--primary-color);
+    padding: 0 3px;
+  }
+}

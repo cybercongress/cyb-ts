@@ -176,7 +176,8 @@ function Swap() {
     if (update || new BigNumber(tokenAAmount).comparedTo(0)) {
       amountChangeHandler(tokenAAmount, TokenSetterId.tokenAAmount);
     }
-  }, [update, amountChangeHandler, tokenA, tokenB, tokenAAmount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [update, amountChangeHandler, tokenA, tokenB]);
 
   const validInputAmountTokenA = useMemo(() => {
     const isValid = Number(tokenAAmount) > 0 && !!tokenABalance;
