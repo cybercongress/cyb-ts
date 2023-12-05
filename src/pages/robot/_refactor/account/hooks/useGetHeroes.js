@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { coinDecimals } from '../../../../../utils/utils';
 
 function useGetHeroes(address, updateAddress) {
@@ -14,12 +15,13 @@ function useGetHeroes(address, updateAddress) {
     setLoadingHeroesInfo(true);
     if (queryClient) {
       let delegations = [];
-      const delegatorDelegations = await queryClient.delegatorDelegations(
+      const delegatorDelegations = await getDelegatorDelegations(
+        queryClient,
         address
       );
-      const { delegationResponses } = delegatorDelegations;
-      if (delegationResponses.length > 0) {
-        delegations = delegationResponses.reduce(
+
+      if (delegatorDelegations.length) {
+        delegations = delegatorDelegations.reduce(
           (obj, item) => ({
             ...obj,
             [item.delegation.validatorAddress]: {

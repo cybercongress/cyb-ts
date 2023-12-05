@@ -68,6 +68,7 @@ function SendAction() {
       title={
         <TitleAction
           title="Send"
+          to="send"
           subTitle="messages with tokens to friends and aliens"
         />
       }

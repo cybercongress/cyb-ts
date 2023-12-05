@@ -1,36 +1,38 @@
+@mixin font-size($value) {
+  font-size: $value;
+  line-height: 36px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 45px;
+  gap: 6px;
 
 }
 
 .title {
   position: relative;
   color: #FFF;
-  font-size: 20px;
-  text-shadow: 0px 0px 10px #ffffff80;
-  line-height: 36px;
-
-  h2 {
-    font-size: 42px;
-  }
+  text-shadow: 0px 0px 10px var(--text-text-dark);
+  @include font-size(42px);
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
+
     left: -20%;
-    right: 10%;
-    height: 100%;
-    filter: blur(30px);
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 3.92%, rgba(255, 255, 255, 0.15) 48.96%, rgba(255, 255, 255, 0.15) 60.47%, rgba(0, 0, 0, 0.00) 100%);
+    right: -20%;
+    top: 50%;
+    height: 30%;
+  
+    filter: blur(20px);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 3.92%, rgba(255, 255, 255, 0.13) 32.95%, rgba(255, 255, 255, 1.13) 66.47%, rgba(0, 0, 0, 0) 100%);
   }
 }
 
 .description {
-  color: #ffffff80;
-  font-size: 16px;
-  line-height: 23px;
+  color: #FFF;
+  @include font-size(20px);
 }

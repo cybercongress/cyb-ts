@@ -2,6 +2,7 @@
 import { Decimal } from '@cosmjs/math';
 import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
+import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { CYBER } from '../../../utils/config';
 import { fromBech32 } from '../../../utils/utils';
 
@@ -25,10 +26,9 @@ const initValueResponseFunc = (denom = '', amount = 0) => {
 };
 
 const getDelegationsAmount = (data) => {
-  const { delegationResponses } = data;
   let delegationsAmount = new BigNumber(0);
-  if (delegationResponses && Object.keys(delegationResponses).length > 0) {
-    delegationResponses.forEach((itemDelegation) => {
+  if (data.length) {
+    data.forEach((itemDelegation) => {
       delegationsAmount = delegationsAmount.plus(itemDelegation.balance.amount);
     });
   }
@@ -84,9 +84,11 @@ export const useGetBalance = (client, addressBech32) => {
           DENOM_CYBER
         );
 
-        const responsedelegatorDelegations = await client.delegatorDelegations(
+        const responsedelegatorDelegations = await getDelegatorDelegations(
+          client,
           addressBech32
         );
+
         const delegationsAmount = getDelegationsAmount(
           responsedelegatorDelegations
         );

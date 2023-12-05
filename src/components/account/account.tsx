@@ -69,7 +69,7 @@ function Account({
   const { data: dataValidInfo } = useGetValidatorInfo(address);
   const { passport: dataPassport } = usePassportByAddress(address);
   const moniker =
-    dataValidInfo?.description?.validator?.moniker ||
+    dataValidInfo?.validator?.description?.moniker ||
     dataPassport?.extension.nickname;
 
   const trimAddress = useMemo(() => {

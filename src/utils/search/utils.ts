@@ -6,6 +6,9 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 import * as config from '../config';
 
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
+import { CyberClient } from '@cybercongress/cyber-js';
+import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
+import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -932,4 +935,33 @@ export const searchByHash = async (
     console.error(error);
     return [];
   }
+};
+
+export const getDelegatorDelegations = async (
+  client: CyberClient,
+  addressBech32: string
+): Promise<DelegationResponse[]> => {
+  let nextKey;
+  const delegationData: DelegationResponse[] = [];
+
+  let done = false;
+  while (!done) {
+    // eslint-disable-next-line no-await-in-loop
+    const responsedelegatorDelegations = (await client.delegatorDelegations(
+      addressBech32,
+      nextKey
+    )) as QueryDelegatorDelegationsResponse;
+
+    delegationData.push(...responsedelegatorDelegations.delegationResponses);
+
+    const key = responsedelegatorDelegations?.pagination?.nextKey;
+
+    if (key) {
+      nextKey = key;
+    } else {
+      done = true;
+    }
+  }
+
+  return delegationData;
 };
