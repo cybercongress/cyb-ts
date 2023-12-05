@@ -94,8 +94,6 @@ function Carousel({
     return '0px';
   }, [visibleSlide, itemWidth, displaySlideState]);
 
-  console.log(visibleSlide, slides);
-
   useEffect(() => {
     if (noAnimation) {
       return;
@@ -130,7 +128,7 @@ function Carousel({
   }, [visibleSlide, noAnimation, hasTransitionClass, slides.length]);
 
   const setActiveItem = useCallback(
-    (index) => {
+    (index: number) => {
       if (!disableMode) {
         setVisibleSlide(index);
       }

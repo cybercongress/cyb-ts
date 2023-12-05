@@ -6,15 +6,18 @@ import TeleportMainScreen from './mainScreen/TeleportMainScreen';
 import Relayer from './relayer/Relayer';
 import RelayerContextProvider from '../contexts/relayer';
 import TeleportContextProvider from './Teleport.context';
+import Layout from './Layout/Layout';
 
 function TeleportRouter() {
   return (
     <Routes>
-      <Route index element={<TeleportMainScreen />} />
-      <Route path="swap" element={<Swap />} />
-      <Route path="send" element={<Send />} />
-      <Route path="bridge" element={<Bridge />} />
-      <Route path="relayer" element={<Relayer />} />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<TeleportMainScreen />} />
+        <Route path="swap" element={<Swap />} />
+        <Route path="send" element={<Send />} />
+        <Route path="bridge" element={<Bridge />} />
+        <Route path="relayer" element={<Relayer />} />
+      </Route>
     </Routes>
   );
 }

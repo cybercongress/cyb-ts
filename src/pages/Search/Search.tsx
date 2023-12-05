@@ -1,6 +1,6 @@
 import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
@@ -142,7 +142,16 @@ function Search() {
 
   const { title, text2, text } = listConfig[titleType];
 
-  console.log(styles);
+  // console.log(styles);
+
+  const listSlides = useMemo(() => {
+    return [TitleType.search, TitleType.ai, TitleType.learning].map((type) => {
+      return {
+        title: mapTitleTypeToTitle[type],
+        // step: type,
+      };
+    });
+  }, []);
 
   return (
     <div className={styles.wrapper} ref={ref}>
@@ -152,20 +161,12 @@ function Search() {
 
       <header className={styles.header}>
         <Carousel
-          noAnimation
           color="blue"
-          activeStep={titleType}
+          activeStep={TitleType.ai}
           onChange={(index) => {
             setTitleType(index);
           }}
-          slides={[TitleType.search, TitleType.ai, TitleType.learning].map(
-            (type) => {
-              return {
-                title: mapTitleTypeToTitle[type],
-                // step: type,
-              };
-            }
-          )}
+          slides={listSlides}
         />
       </header>
 
