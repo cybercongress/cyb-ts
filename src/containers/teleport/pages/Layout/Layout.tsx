@@ -7,20 +7,17 @@ import { TypePages } from '../../type';
 function Layout() {
   const location = useLocation();
   const [active, setActive] = useState<TypePages | undefined>(TypePages.swap);
-  const locationSplit = location.pathname.replace(/^\/|\/$/g, '').split('/');
-  const isMainPage = locationSplit.length === 1;
 
   useEffect(() => {
-    if (locationSplit.length > 1) {
-      setActive(
-        Object.values(TypePages).find((item) => item === locationSplit[1])
-      );
-    }
-  }, [locationSplit]);
+    const locationSplit = location.pathname.replace(/^\/|\/$/g, '').split('/');
+    setActive(
+      Object.values(TypePages).find((item) => item === locationSplit[1])
+    );
+  }, [location]);
 
   return (
     <div>
-      {!isMainPage && active && (
+      {active && (
         <header className={s.header}>
           <TabList selected={active} />
         </header>
