@@ -14,7 +14,7 @@ function Social() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser('join community');
+    setAdviser('join our community');
   }, [setAdviser]);
 
   return (

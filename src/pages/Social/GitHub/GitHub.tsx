@@ -57,24 +57,21 @@ export function GitHub() {
           // position: 'fixed',
           right: '0',
           bottom: 0,
-          margin: '0px 20px 28px 0px',
+          // margin: '0px 20px 28px 0px',
           fontSize: '16px',
           // background: '#000c',
           zIndex: 4,
         }}
       >
         <LinkWindow to="https://github.com/cybercongress/cyb-ts">
-          <div>
-            <img alt="github" style={{ width: 30, height: 30 }} src={github} />
-          </div>
-          (app)
+          <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          <span>app</span>
         </LinkWindow>
 
         <LinkWindow to="https://github.com/cybercongress">
-          <div>
-            <img alt="github" style={{ width: 30, height: 30 }} src={github} />
-          </div>
-          (congress)
+          <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+
+          <span>congress</span>
         </LinkWindow>
       </div>
     );
