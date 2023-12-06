@@ -38,7 +38,9 @@ const listConfig = {
     ),
     text2: (
       <>
-        decentralized search is just one <strong>cyber</strong> <i>app</i> aip
+        decentralized search is just one{' '}
+        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> <i>app</i>{' '}
+        aip
       </>
     ),
   },
@@ -46,7 +48,7 @@ const listConfig = {
     title: 'empower everyone',
     text: (
       <>
-        <strong>learn</strong> yourself
+        <Link to={routes.oracle.learn.path}>learn</Link> yourself
       </>
     ),
     text2: (
@@ -59,13 +61,14 @@ const listConfig = {
     title: 'decentralized ai is alive',
     text: (
       <>
-        behold the new <strong>truth medium</strong>
+        behold the new{' '}
+        <Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>
       </>
     ),
     text2: (
       <>
-        <strong>cyber</strong> is the protocol for unified, provable, collective
-        learning
+        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> is the
+        protocol for unified, provable, collective learning
       </>
     ),
   },

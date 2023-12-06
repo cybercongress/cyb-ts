@@ -250,8 +250,15 @@ $mobile-breakpoint: 480px;
     margin-top: 70px;
   }
 
-  strong {
+  strong,
+  a {
     color: #74ff00;
+  }
+
+  a {
+    &:hover {
+      opacity: 0.8;
+    }
   }
 
   $animation-duration: 2s;

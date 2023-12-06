@@ -6,6 +6,8 @@ import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import cx from 'classnames';
 import styles from './Stats.module.scss';
 import { TitleType } from '../Search';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 type Props = {
   type: TitleType;
@@ -18,22 +20,26 @@ function Stats({ type }: Props) {
   const negentropy = useGetNegentropy(REFETCH_INTERVAL);
 
   let value: number | undefined;
-  let text: string;
+  let text: string | JSX.Element;
 
   switch (type) {
     case TitleType.search:
       value = dataGetGraphStats.data?.particles;
-      text = 'particles';
+      text = <Link to={routes.oracle.ask.getLink('particle')}>particles</Link>;
       break;
 
     case TitleType.learning:
       value = dataGetGraphStats.data?.cyberlinks;
-      text = 'cyberlinks';
+      text = (
+        <Link to={routes.oracle.ask.getLink('cyberlink')}>cyberlinks</Link>
+      );
       break;
 
     case TitleType.ai:
       value = negentropy.data?.negentropy;
-      text = 'syntropy bits';
+      text = (
+        <Link to={routes.oracle.ask.getLink('negentropy')}>syntropy bits</Link>
+      );
       break;
 
     default:
