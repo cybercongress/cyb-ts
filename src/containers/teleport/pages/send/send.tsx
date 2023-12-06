@@ -209,6 +209,7 @@ function Send() {
     setUpdate((item) => item + 1);
     dataSendTxs.refetch();
     refreshBalances();
+    setMemoValue('');
   }, [dataSendTxs, refreshBalances]);
 
   const amountTokenChange = useCallback(
