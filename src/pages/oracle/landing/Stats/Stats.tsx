@@ -5,7 +5,7 @@ import {
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import cx from 'classnames';
 import styles from './Stats.module.scss';
-import { TitleType } from '../Search';
+import { TitleType } from '../OracleLanding';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 

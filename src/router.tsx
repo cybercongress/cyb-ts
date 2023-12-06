@@ -55,9 +55,8 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Teleport from './containers/teleport/pages/Teleport';
-import Search from './pages/Search/Search';
-import Learn from './pages/Learn/Learn';
-import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import OracleLanding from './pages/oracle/landing/OracleLanding';
+import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
@@ -118,7 +117,7 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<Search />} />
+          <Route index element={<OracleLanding />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />

@@ -9,7 +9,7 @@ import { useDevice } from 'src/contexts/device';
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import Carousel from 'src/components/Carousel/Carousel';
-import styles from './Search.module.scss';
+import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 
 import Stats from './Stats/Stats';
@@ -74,9 +74,7 @@ const listConfig = {
   },
 };
 
-export const learningListConfig = listConfig[TitleType.learning];
-
-function Search() {
+function OracleLanding() {
   const [titleType, setTitleType] = useState(TitleType.ai);
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
@@ -215,4 +213,4 @@ function Search() {
   );
 }
 
-export default Search;
+export default OracleLanding;

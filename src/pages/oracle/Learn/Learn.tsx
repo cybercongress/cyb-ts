@@ -19,11 +19,10 @@ import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { Networks } from 'src/types/networks';
 import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import KeywordButton from '../Search/components/KeywordButton/KeywordButton';
+import KeywordButton from '../landing/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
 import { useBackend } from 'src/contexts/backend';
-import TitleText from '../Search/components/TitleText/TitleText';
-// import { learningListConfig } from '../Search/Search';
+import TitleText from '../landing/components/TitleText/TitleText';
 
 const learningListConfig = [
   {
