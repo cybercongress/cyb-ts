@@ -1,6 +1,7 @@
 .container {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
   overflow: hidden;
-  padding: 5px 0;
+  padding: 7px 7px 7px 0px;
 }

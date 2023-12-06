@@ -247,3 +247,15 @@ $col-width: math.div(100%, $number-of-options);
   font-size: 12px;
   transform: translate(5px, 0px);
 }
+
+.text {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  transform: translate(0, -50%);
+
+  &Left {
+    left: 25px;
+    right: unset;
+  }
+}

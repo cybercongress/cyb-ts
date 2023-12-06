@@ -1,0 +1,14 @@
+$mobile-breakpoint: 480px;
+
+.header {
+  margin: 10px auto 30px;
+  width: 420px;
+
+  @media (width <=$mobile-breakpoint) {
+    width: unset;
+
+    >div {
+      width: 100vw;
+    }
+  }
+}
