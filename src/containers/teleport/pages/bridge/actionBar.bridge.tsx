@@ -237,13 +237,13 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
 
   const buttonConfigs = {
     [TxsType.Deposit]: {
-      text: 'Deposit',
+      text: 'transfer',
       // onClick: () => addHistoriesItem(testItem),
       onClick: depositOnClick,
       disabled: isExceeded,
     },
     [TxsType.Withdraw]: {
-      text: 'withdraw',
+      text: 'transfer',
       onClick: withdrawOnClick,
       disabled: isExceeded,
     },
