@@ -34,7 +34,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 
 type ContentTabProps = {
   details: IPFSContentDetails;
-  content: IPFSContentMaybe;
+  content?: IPFSContentMaybe;
   cid: string;
   search?: boolean;
 };
