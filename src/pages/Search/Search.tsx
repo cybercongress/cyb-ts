@@ -3,22 +3,22 @@ import { routes } from 'src/routes';
 import { useEffect, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
-import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
+
 import { useDevice } from 'src/contexts/device';
-import cx from 'classnames';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+
+import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
+import Carousel from 'src/components/Carousel/Carousel';
 import styles from './Search.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
-import TitleText from './components/TitleText/TitleText';
+
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
-import Carousel from 'src/components/Carousel/Carousel';
 import { Link } from 'react-router-dom';
 
 export enum TitleType {
   search,
-  ai,
+  ai, // ask
   learning,
 }
 
@@ -36,7 +36,7 @@ const listConfig = {
         <strong>find</strong> and <strong>deliver</strong> content
       </>
     ),
-    text2: (
+    description: (
       <>
         decentralized search is just one{' '}
         <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> <i>app</i>{' '}
@@ -51,7 +51,7 @@ const listConfig = {
         <Link to={routes.oracle.learn.path}>learn</Link> yourself
       </>
     ),
-    text2: (
+    description: (
       <>
         decentralized learning as simple as creating a <strong>link</strong>
       </>
@@ -65,7 +65,7 @@ const listConfig = {
         <Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>
       </>
     ),
-    text2: (
+    description: (
       <>
         <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> is the
         protocol for unified, provable, collective learning
@@ -83,22 +83,11 @@ function Search() {
   const { viewportWidth } = useDevice();
 
   const ref = useRef<HTMLDivElement>(null);
-
   const dispatch = useAppDispatch();
 
-  // let graphSize = Math.min(viewportWidth / 3, 330);
-  let graphSize = 220;
-
-  const isCommanderFocused = useAppSelector(
-    (state) => state.commander.isFocused
-  );
-
+  const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
-
-  // if (isMobile) {
-  //   graphSize = 330;
-  // }
 
   useEffect(() => {
     dispatch(setFocus(true));
@@ -120,34 +109,7 @@ function Search() {
     ref.current.style.setProperty('--graph-size', `${graphSize}px`);
   }, [ref, graphSize]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTitleType((prev) => {
-  //       // refactor maybe, generated
-  //       switch (prev) {
-  //         case TitleType.search:
-  //           return TitleType.learning;
-
-  //         case TitleType.learning:
-  //           return TitleType.ai;
-
-  //         case TitleType.ai:
-  //           return TitleType.search;
-
-  //         default:
-  //           return TitleType.search;
-  //       }
-  //     });
-  //   }, 10 * 1000);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [titleType]);
-
-  const { title, text2, text } = listConfig[titleType];
-
-  console.log(styles);
+  const { title, description, text } = listConfig[titleType];
 
   return (
     <div className={styles.wrapper} ref={ref}>
@@ -167,60 +129,23 @@ function Search() {
             (type) => {
               return {
                 title: mapTitleTypeToTitle[type],
-                // step: type,
               };
             }
           )}
         />
       </header>
 
-      <div className={styles.info2}>
-        <h2
-          ref={(ref) => {
-            return;
-            // debugger;
-            // console.log(styles);
-
-            // ref?.animate(styles.anim);
-          }}
-        >
-          {title}
-        </h2>
+      <div className={styles.info}>
+        <h2>{title}</h2>
         <h3>{text}</h3>
-        <h4>{text2}</h4>
+        <h4>{description}</h4>
 
         <Stats type={titleType} />
       </div>
 
-      {/* <div className={styles.info}>
-        <h2 className={cx(styles.infoText, styles.title)}>
-          decentralized{' '}
-          <strong className={styles.keyword}>
-            <TypingText
-              content={(() => {
-                switch (titleType) {
-                  case TitleType.search:
-                    return 'search';
-
-                  case TitleType.learning:
-                    return 'learning';
-
-                  case TitleType.ai:
-                    return 'ai';
-
-                  default:
-                    return '';
-                }
-              })()}
-              delay={40}
-            />
-          </strong>{' '}
-          <span className={styles.lastTextBlock}>is here</span>
-        </h2> */}
-
       {!isMobile && (
         <div className={styles.graphWrapper}>
-          <Link to="/brain">
+          <Link to={routes.brain.path}>
             <img src={require('images/enlarge.svg')} />
           </Link>
           {isRenderGraph && (
@@ -231,21 +156,6 @@ function Search() {
           )}
         </div>
       )}
-
-      {/* not render to prevent requests */}
-      {/* {!isMobile && <Stats type={titleType} />} */}
-      {/* </div> */}
-
-      {/* <ul className={styles.advantages}>
-        {listConfig[titleType].map(({ title, text }) => {
-          return (
-            <li key={title}>
-              <TitleText title={title} text={text} />
-            </li>
-          );
-        })} */}
-
-      {/* </ul> */}
 
       <div className={styles.footer}>
         {[

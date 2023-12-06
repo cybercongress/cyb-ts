@@ -78,4 +78,7 @@ export const routes = {
   social: {
     path: '/social',
   },
+  brain: {
+    path: '/brain',
+  },
 };
