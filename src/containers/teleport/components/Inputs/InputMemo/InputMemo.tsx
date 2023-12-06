@@ -49,9 +49,14 @@ function InputMemo({ onChangeValue, value }: Props) {
         onChange={(e) => onChangeValue(e.target.value)}
         title="type public message"
         color={Color.Pink}
-        classNameTextbox={styles.contentValueInput}
         isTextarea
         autoFocus
+        style={{
+          paddingLeft: '10px',
+          paddingRight: '35px',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+        }}
       />
       <div className={styles.containerAddFileButton}>
         <input
