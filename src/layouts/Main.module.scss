@@ -1,0 +1,12 @@
+.wrapper {
+  footer {
+    a {
+      position: fixed;
+      z-index: 2;
+      right: 60px;
+      bottom: 25px;
+      display: flex;
+      align-items: center;
+    }
+  }
+}

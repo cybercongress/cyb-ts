@@ -1,13 +1,15 @@
-import Tooltip from '../tooltip/tooltip';
-import github from '../../image/github-mark-white.svg';
-import star from '../../image/star-reg.svg';
-import share from '../../image/share.svg';
-import { LinkWindow } from '../link/link';
-import useMediaQuery from '../../hooks/useMediaQuery';
+import github from '../../../image/github-mark-white.svg';
+import star from '../../../image/star-reg.svg';
+import share from '../../../image/share.svg';
+
+import useMediaQuery from '../../../hooks/useMediaQuery';
 import React from 'react';
 import axios from 'axios';
 import { formatNumber } from 'src/utils/utils';
 import { useQuery } from '@tanstack/react-query';
+import { LinkWindow, Tooltip } from 'src/components';
+import styles from './GitHub.module.scss';
+import { wrap } from 'comlink';
 
 const getStargazersGitHub = async () => {
   try {
@@ -46,24 +48,33 @@ export function StargazersCountGH() {
 export function GitHub() {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
-  if (!mediaQuery) {
+  if (true) {
     return (
       <div
         id="github-bar"
+        className={styles.wrapper}
         style={{
           // position: 'fixed',
           right: '0',
           bottom: 0,
           margin: '0px 20px 28px 0px',
-          fontSize: '14px',
-          background: '#000c',
+          fontSize: '16px',
+          // background: '#000c',
           zIndex: 4,
         }}
       >
+        <LinkWindow to="https://github.com/cybercongress/cyb-ts">
+          <div>
+            <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          </div>
+          (app)
+        </LinkWindow>
+
         <LinkWindow to="https://github.com/cybercongress">
           <div>
             <img alt="github" style={{ width: 30, height: 30 }} src={github} />
           </div>
+          (congress)
         </LinkWindow>
       </div>
     );
@@ -73,7 +84,7 @@ export function GitHub() {
     <div
       id="github-bar"
       style={{
-        // position: 'fixed',
+        position: 'fixed',
         right: '0',
         bottom: 0,
         margin: '0px 20px 28px 0px',

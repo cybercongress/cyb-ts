@@ -1,0 +1,11 @@
+.wrapper {
+  display: flex;
+  gap: 0 10px;
+  flex-wrap: wrap;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0 10px;
+  }
+}

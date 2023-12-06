@@ -1,18 +1,28 @@
 import { MainContainer } from 'src/components';
-import Discord from 'src/components/actionBar/Discord/Discord';
-import { GitHub } from 'src/components/actionBar/GitHub';
-import { Telegram } from 'src/components/actionBar/Telegram';
-import Twitter from 'src/components/actionBar/Twitter/Twitter';
+import Discord from 'src/pages/Social/Discord/Discord';
+import { GitHub } from 'src/pages/Social/GitHub/GitHub';
+import { Telegram } from 'src/pages/Social/Telegram/Telegram';
+import Twitter from './Twitter/Twitter';
+import Display from 'src/components/containerGradient/Display/Display';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import styles from './Social.module.scss';
 
+// TODO: folder is dirty, can be refactored
 function Social() {
   return (
     <MainContainer>
-      <div>Socials</div>
+      <Display title={<DisplayTitle title="Socials" />}>
+        <div className={styles.wrapper}>
+          <div className={styles.main}>
+            <Discord />
+            <Twitter />
+          </div>
 
-      <Telegram />
-      <Discord />
-      <Twitter />
-      <GitHub />
+          <Telegram />
+
+          <GitHub />
+        </div>
+      </Display>
     </MainContainer>
   );
 }

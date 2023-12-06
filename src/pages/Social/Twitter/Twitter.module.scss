@@ -1,8 +1,10 @@
 .wrapper {
   // position: fixed;
-  bottom: 25px;
-  left: 100px;
-  z-index: 2;
+  // bottom: 25px;
+  // left: 100px;
+  position: relative;
+  top: -2px;
+  // z-index: 2;
 }
 
 .icon {
