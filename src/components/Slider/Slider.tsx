@@ -128,6 +128,7 @@ export type SliderProps = {
   valuePercents: number;
   disabled?: boolean;
   tokenPair?: TokenPair;
+  text?: string;
 };
 
 function Slider({
@@ -136,6 +137,7 @@ function Slider({
   valuePercents,
   disabled,
   tokenPair,
+  text,
 }: SliderProps) {
   const [valueSilder, setValueSilder] = useState(0);
   const [currentPercents, setCurrentPercent] = useState(0);
@@ -259,6 +261,13 @@ function Slider({
               border: 'none',
             }}
           />
+          {text && (
+            <div
+              className={cx(styles.text, valueSilder > 80 && styles.textLeft)}
+            >
+              {text}
+            </div>
+          )}
         </div>
       </div>
     </div>

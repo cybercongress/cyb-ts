@@ -151,6 +151,8 @@ function Swap() {
 
         counterPairAmount = counterPairAmountValue;
         setSwapPrice(price.toNumber());
+      } else {
+        setSwapPrice(0);
       }
 
       if (isReverse) {
@@ -194,6 +196,8 @@ function Swap() {
   }, [tokenAAmount, tokenABalance, tokenACoinDecimals]);
 
   const useGetSlippage = useMemo(() => {
+    // console.log('swapPrice', swapPrice)
+    // console.log('poolPrice', poolPrice)
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
 
@@ -212,8 +216,6 @@ function Swap() {
     }
     return 0;
   }, [poolPrice, swapPrice]);
-
-  // console.log('useGetSlippage', useGetSlippage);
 
   useEffect(() => {
     // validation swap
@@ -368,6 +370,7 @@ function Swap() {
             onChange={setPercentageBalanceHook}
             onSwapClick={() => tokenChange()}
             tokenPair={pairPrice}
+            text={`slippage: ${useGetSlippage}%`}
           />
 
           <TokenSetterSwap
