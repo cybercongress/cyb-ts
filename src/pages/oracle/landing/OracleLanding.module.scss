@@ -150,10 +150,22 @@ $mobile-breakpoint: 480px;
   border-radius: 10px;
   border: 1px solid rgba(118, 255, 3, 0.1);
 
-  > a {
+  .enlargeBtn {
     float: right;
     position: relative;
+    top: 2px;
+    right: 2px;
+
     z-index: 1;
+
+    width: 22px;
+    height: 22px;
+
+    background-image: url('images/enlarge.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    font-size: 0;
 
     &:hover {
       opacity: 0.8;

@@ -158,9 +158,12 @@ function OracleLanding() {
 
       {!isMobile && (
         <div className={styles.graphWrapper}>
-          <Link to={routes.brain.path}>
-            <img src={require('images/enlarge.svg')} />
-          </Link>
+          <Link
+            to={routes.brain.path}
+            className={styles.enlargeBtn}
+            title="open full graph"
+          />
+
           {isRenderGraph && (
             <CyberlinksGraphContainer
               size={graphSize}
