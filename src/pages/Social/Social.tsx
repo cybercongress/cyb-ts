@@ -6,9 +6,17 @@ import Twitter from './Twitter/Twitter';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import styles from './Social.module.scss';
+import { useAdviser } from 'src/features/adviser/context';
+import { useEffect } from 'react';
 
 // TODO: folder is dirty, can be refactored
 function Social() {
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('join community');
+  }, [setAdviser]);
+
   return (
     <MainContainer>
       <Display title={<DisplayTitle title="Socials" />}>
