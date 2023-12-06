@@ -9,12 +9,12 @@ import { useDevice } from 'src/contexts/device';
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import Carousel from 'src/components/Carousel/Carousel';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
-import { Link } from 'react-router-dom';
 
 export enum TitleType {
   search,
@@ -74,11 +74,23 @@ const listConfig = {
   },
 };
 
+const QUERY_KEY = 'type';
+
 function OracleLanding() {
-  const [titleType, setTitleType] = useState(TitleType.ai);
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get(QUERY_KEY);
+
+  const [titleType, setTitleType] = useState<TitleType>(
+    Number(
+      Object.entries(mapTitleTypeToTitle).find(
+        ([, value]) => value === type
+      )?.[0]
+    ) || TitleType.search
+  );
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
+  const navigate = useNavigate();
 
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -120,8 +132,11 @@ function OracleLanding() {
           noAnimation
           color="blue"
           activeStep={titleType}
-          onChange={(index) => {
+          onChange={(index: TitleType) => {
             setTitleType(index);
+            navigate(`?${QUERY_KEY}=${mapTitleTypeToTitle[index]}`, {
+              replace: true,
+            });
           }}
           slides={[TitleType.search, TitleType.ai, TitleType.learning].map(
             (type) => {
