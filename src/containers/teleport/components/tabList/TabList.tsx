@@ -19,10 +19,10 @@ function TabList({ selected }: TabListProps) {
     <div className={s.wrapper}>
       <ButtonTeleport
         status="left"
-        isSelected={selected === TypePages.swap}
-        onClick={() => handleHistory(TypePages.swap)}
+        isSelected={selected === TypePages.send}
+        onClick={() => handleHistory(TypePages.send)}
       >
-        {TypePages.swap}
+        {TypePages.send}
       </ButtonTeleport>
       <ButtonTeleport
         status="center"
@@ -33,10 +33,10 @@ function TabList({ selected }: TabListProps) {
       </ButtonTeleport>
       <ButtonTeleport
         status="right"
-        isSelected={selected === TypePages.send}
-        onClick={() => handleHistory(TypePages.send)}
+        isSelected={selected === TypePages.swap}
+        onClick={() => handleHistory(TypePages.swap)}
       >
-        {TypePages.send}
+        {TypePages.swap}
       </ButtonTeleport>
     </div>
   );

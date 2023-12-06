@@ -252,6 +252,7 @@ $col-width: math.div(100%, $number-of-options);
   position: absolute;
   bottom: 100%;
   right: 0;
+  transform: translate(0, -50%);
 
   &Left {
     left: 25px;

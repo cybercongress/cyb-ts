@@ -128,7 +128,7 @@ export type SliderProps = {
   valuePercents: number;
   disabled?: boolean;
   tokenPair?: TokenPair;
-  text?: string;
+  text?: string | React.ReactNode;
 };
 
 function Slider({

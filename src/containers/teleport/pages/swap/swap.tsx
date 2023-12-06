@@ -27,6 +27,7 @@ import { TeleportContainer } from '../../components/containers/Containers';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
+import Slippage from '../../components/slippage/Slippage';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -370,7 +371,7 @@ function Swap() {
             onChange={setPercentageBalanceHook}
             onSwapClick={() => tokenChange()}
             tokenPair={pairPrice}
-            text={`slippage: ${useGetSlippage}%`}
+            text={<Slippage value={useGetSlippage} />}
           />
 
           <TokenSetterSwap
