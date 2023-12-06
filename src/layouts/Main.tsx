@@ -63,9 +63,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
       {children}
 
       <footer>
-        <Link to={routes.social.path}>
-          contacts <img src={require('images/share')} />
-        </Link>
+        <Link to={routes.social.path}>contacts</Link>
       </footer>
     </div>
   );
