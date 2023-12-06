@@ -34,6 +34,7 @@ export function Telegram() {
               src={telegram}
             />
           </div>
+          (eng)
         </LinkWindow>
 
         <LinkWindow to="https://t.me/cyber_russian_community">
