@@ -1,22 +1,14 @@
-.contentValueInput {
-
-  input,
-  textarea {
-    padding-right: 35px;
-    font-size: 1.25rem;
-    text-align: left;
-  }
-}
-
 .containerInputMemo {
-  position: relative;
   display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
 }
 
 .containerAddFileButton {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 30px;
 
   input {
     display: none;

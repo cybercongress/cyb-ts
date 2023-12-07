@@ -76,7 +76,7 @@ function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {
-      if (cidAvatar) {
+      if (cidAvatar && fetchWithDetails) {
         return fetchWithDetails(cidAvatar, 'image').then(
           (details) => details?.content && setImgDenom(details?.content)
         );

@@ -1,6 +1,6 @@
 import { ActionBar, Button } from 'src/components';
 import { routes } from 'src/routes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
@@ -121,6 +121,15 @@ function OracleLanding() {
 
   const { title, description, text } = listConfig[titleType];
 
+  const listSlides = useMemo(() => {
+    return [TitleType.search, TitleType.ai, TitleType.learning].map((type) => {
+      return {
+        title: mapTitleTypeToTitle[type],
+        // step: type,
+      };
+    });
+  }, []);
+
   return (
     <div className={styles.wrapper} ref={ref}>
       <div className={styles.starsWrapper}>
@@ -129,7 +138,6 @@ function OracleLanding() {
 
       <header className={styles.header}>
         <Carousel
-          noAnimation
           color="blue"
           activeStep={titleType}
           onChange={(index: TitleType) => {
@@ -138,13 +146,7 @@ function OracleLanding() {
               replace: true,
             });
           }}
-          slides={[TitleType.search, TitleType.ai, TitleType.learning].map(
-            (type) => {
-              return {
-                title: mapTitleTypeToTitle[type],
-              };
-            }
-          )}
+          slides={listSlides}
         />
       </header>
 

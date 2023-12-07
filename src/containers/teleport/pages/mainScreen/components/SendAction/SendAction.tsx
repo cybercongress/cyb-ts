@@ -55,7 +55,7 @@ function SendAction() {
             address={key}
             avatar
             onlyAvatar
-            sizeAvatar="50px"
+            sizeAvatar="45px"
             styleUser={{ flexDirection: 'column' }}
           />
         </Link>

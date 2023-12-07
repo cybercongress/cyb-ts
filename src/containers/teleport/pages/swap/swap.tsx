@@ -27,6 +27,7 @@ import { TeleportContainer } from '../../components/containers/Containers';
 import useGetSendTxsByAddressByType from '../../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from '../../components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
+import Slippage from '../../components/slippage/Slippage';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -151,6 +152,8 @@ function Swap() {
 
         counterPairAmount = counterPairAmountValue;
         setSwapPrice(price.toNumber());
+      } else {
+        setSwapPrice(0);
       }
 
       if (isReverse) {
@@ -194,6 +197,8 @@ function Swap() {
   }, [tokenAAmount, tokenABalance, tokenACoinDecimals]);
 
   const useGetSlippage = useMemo(() => {
+    // console.log('swapPrice', swapPrice)
+    // console.log('poolPrice', poolPrice)
     if (poolPrice && swapPrice) {
       // poolPrice / price - 1
 
@@ -212,8 +217,6 @@ function Swap() {
     }
     return 0;
   }, [poolPrice, swapPrice]);
-
-  // console.log('useGetSlippage', useGetSlippage);
 
   useEffect(() => {
     // validation swap
@@ -368,6 +371,7 @@ function Swap() {
             onChange={setPercentageBalanceHook}
             onSwapClick={() => tokenChange()}
             tokenPair={pairPrice}
+            text={<Slippage value={useGetSlippage} />}
           />
 
           <TokenSetterSwap
