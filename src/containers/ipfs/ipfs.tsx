@@ -1,23 +1,22 @@
 import { useParams } from 'react-router-dom';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
 import { encodeSlash } from 'src/utils/utils';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { useBackend } from 'src/contexts/backend';
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import SearchResults from '../Search/SearchResults';
 import AdviserMeta from './components/AdviserMeta/AdviserMeta';
-import { useBackend } from 'src/contexts/backend';
 
 function Ipfs() {
   const { query = '' } = useParams();
-  const [isText, setIsText] = useState(false);
   const [cid, setCid] = useState<string>('');
 
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
@@ -26,9 +25,9 @@ function Ipfs() {
 
   const { setAdviser } = useAdviser();
 
+  const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
+
   useEffect(() => {
-    const isText = !query.match(PATTERN_IPFS_HASH);
-    setIsText(isText);
     if (!isText) {
       setCid(query);
     } else {
@@ -38,7 +37,7 @@ function Ipfs() {
         setCid(cidFromQuery);
       })();
     }
-  }, [query, ipfsNode]);
+  }, [isText, query, ipfsNode]);
 
   useEffect(() => {
     (async () => {
