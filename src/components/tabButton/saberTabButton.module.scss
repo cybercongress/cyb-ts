@@ -52,11 +52,18 @@
     &::before {
       @include background-gradient(right);
     }
+    &::after {
+      content: unset;
+    }
   }
 
   @else if ($position ==right) {
     &::after {
       @include background-gradient(left);
+    }
+
+    &::before {
+      content: unset;
     }
   }
 

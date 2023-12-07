@@ -2,6 +2,8 @@
 @import './tabLamp.module.scss';
 
 @mixin active-gradient($position) {
+  color: #fff;
+  font-size: 1.125rem;
   @include gradient('white', $position);
 }
 
@@ -15,13 +17,6 @@
   width: 100%;
   font-size: 1rem;
 
-  &Active {
-    color: #fff;
-    font-size: 1.125rem;
-  }
-}
-
-.default {
   @include gradient('green', center);
 
   &Active {
@@ -46,12 +41,10 @@
 }
 
 .lamp_ {
-  &default {
-    @include lamp('green', center);
+  @include lamp('green', center);
 
-    &Active {
-      @include lamp('white', center);
-    }
+  &Active {
+    @include lamp('white', center);
   }
 
   &right {

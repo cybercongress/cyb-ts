@@ -16,7 +16,7 @@ const TabButtonConfig = [
   },
   {
     key: 'tb2',
-    text: Position.Default,
+    text: 'Default',
   },
   {
     type: Position.Right,
