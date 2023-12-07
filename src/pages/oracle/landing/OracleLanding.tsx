@@ -3,21 +3,22 @@ import { routes } from 'src/routes';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
-import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
+
 import { useDevice } from 'src/contexts/device';
-import cx from 'classnames';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+
+import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
-import styles from './Search.module.scss';
+import Carousel from 'src/components/Carousel/Carousel';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
-import TitleText from './components/TitleText/TitleText';
+
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
-import Carousel from 'src/components/Carousel/Carousel';
 
 export enum TitleType {
   search,
-  ai,
+  ai, // ask
   learning,
 }
 
@@ -35,9 +36,11 @@ const listConfig = {
         <strong>find</strong> and <strong>deliver</strong> content
       </>
     ),
-    text2: (
+    description: (
       <>
-        decentralized search is just one <strong>cyber</strong> <i>app</i> aip
+        decentralized search is just one{' '}
+        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> <i>app</i>{' '}
+        aip
       </>
     ),
   },
@@ -45,10 +48,10 @@ const listConfig = {
     title: 'empower everyone',
     text: (
       <>
-        <strong>learn</strong> yourself
+        <Link to={routes.oracle.learn.path}>learn</Link> yourself
       </>
     ),
-    text2: (
+    description: (
       <>
         decentralized learning as simple as creating a <strong>link</strong>
       </>
@@ -58,42 +61,43 @@ const listConfig = {
     title: 'decentralized ai is alive',
     text: (
       <>
-        behold the new <strong>truth medium</strong>
+        behold the new{' '}
+        <Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>
       </>
     ),
-    text2: (
+    description: (
       <>
-        <strong>cyber</strong> is the protocol for unified, provable, collective
-        learning
+        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> is the
+        protocol for unified, provable, collective learning
       </>
     ),
   },
 };
 
-export const learningListConfig = listConfig[TitleType.learning];
+const QUERY_KEY = 'type';
 
-function Search() {
-  const [titleType, setTitleType] = useState(TitleType.ai);
+function OracleLanding() {
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get(QUERY_KEY);
+
+  const [titleType, setTitleType] = useState<TitleType>(
+    Number(
+      Object.entries(mapTitleTypeToTitle).find(
+        ([, value]) => value === type
+      )?.[0]
+    ) || TitleType.search
+  );
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
+  const navigate = useNavigate();
 
   const ref = useRef<HTMLDivElement>(null);
-
   const dispatch = useAppDispatch();
 
-  let graphSize = Math.min(viewportWidth / 3, 330);
-
-  const isCommanderFocused = useAppSelector(
-    (state) => state.commander.isFocused
-  );
-
+  const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
-
-  if (isMobile) {
-    graphSize = 330;
-  }
 
   useEffect(() => {
     dispatch(setFocus(true));
@@ -115,34 +119,7 @@ function Search() {
     ref.current.style.setProperty('--graph-size', `${graphSize}px`);
   }, [ref, graphSize]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTitleType((prev) => {
-  //       // refactor maybe, generated
-  //       switch (prev) {
-  //         case TitleType.search:
-  //           return TitleType.learning;
-
-  //         case TitleType.learning:
-  //           return TitleType.ai;
-
-  //         case TitleType.ai:
-  //           return TitleType.search;
-
-  //         default:
-  //           return TitleType.search;
-  //       }
-  //     });
-  //   }, 10 * 1000);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [titleType]);
-
-  const { title, text2, text } = listConfig[titleType];
-
-  // console.log(styles);
+  const { title, description, text } = listConfig[titleType];
 
   const listSlides = useMemo(() => {
     return [TitleType.search, TitleType.ai, TitleType.learning].map((type) => {
@@ -162,85 +139,58 @@ function Search() {
       <header className={styles.header}>
         <Carousel
           color="blue"
-          activeStep={TitleType.ai}
-          onChange={(index) => {
+          activeStep={titleType}
+          onChange={(index: TitleType) => {
             setTitleType(index);
+            navigate(`?${QUERY_KEY}=${mapTitleTypeToTitle[index]}`, {
+              replace: true,
+            });
           }}
           slides={listSlides}
         />
       </header>
 
-      <div className={styles.info2}>
-        <h2
-          ref={(ref) => {
-            return;
-            debugger;
-            console.log(styles);
-
-            ref?.animate(styles.anim);
-          }}
-        >
-          {title}
-        </h2>
+      <div className={styles.info}>
+        <h2>{title}</h2>
         <h3>{text}</h3>
-        <h4>{text2}</h4>
+        <h4>{description}</h4>
 
         <Stats type={titleType} />
       </div>
 
-      {/* <div className={styles.info}>
-        <h2 className={cx(styles.infoText, styles.title)}>
-          decentralized{' '}
-          <strong className={styles.keyword}>
-            <TypingText
-              content={(() => {
-                switch (titleType) {
-                  case TitleType.search:
-                    return 'search';
+      {!isMobile && (
+        <div className={styles.graphWrapper}>
+          <Link
+            to={routes.brain.path}
+            className={styles.enlargeBtn}
+            title="open full graph"
+          />
 
-                  case TitleType.learning:
-                    return 'learning';
-
-                  case TitleType.ai:
-                    return 'ai';
-
-                  default:
-                    return '';
-                }
-              })()}
-              delay={40}
-            />
-          </strong>{' '}
-          <span className={styles.lastTextBlock}>is here</span>
-        </h2> */}
-
-      {/* <div className={styles.graphWrapper}> */}
-      {/* {isRenderGraph && (
+          {isRenderGraph && (
             <CyberlinksGraphContainer
               size={graphSize}
               data={graphDataPrepared}
             />
-          )} */}
-      {/* </div> */}
-
-      {/* not render to prevent requests */}
-      {/* {!isMobile && <Stats type={titleType} />} */}
-      {/* </div> */}
-
-      {/* <ul className={styles.advantages}>
-        {listConfig[titleType].map(({ title, text }) => {
-          return (
-            <li key={title}>
-              <TitleText title={title} text={text} />
-            </li>
-          );
-        })} */}
-
-      {/* </ul> */}
+          )}
+        </div>
+      )}
 
       <div className={styles.footer}>
-        {['cyber', 'donut of knowledge', 'help'].map((keyword) => {
-          return <KeywordButton key={keyword} keyword={keyword} />;
+        {[
+          {
+            query: 'cyber',
+            author: 'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t',
+          },
+          {
+            query: 'donut of knowledge',
+            author: 'bostrom1k7nssnnvxezpp4una7lvk6j53895vadpqe6jh6',
+          },
+          {
+            query: 'help',
+            author: 'bostrom1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq3lduwj',
+          },
+        ].map(({ query, author }) => {
+          return <KeywordButton key={query} keyword={query} author={author} />;
         })}
       </div>
 
@@ -283,4 +233,4 @@ function Search() {
   );
 }
 
-export default Search;
+export default OracleLanding;

@@ -129,7 +129,7 @@ root.render(
         <title>cyb: your immortal robot for the great web</title>
       </Helmet>
       <AppRouter />
-      <ReactQueryDevtools />
+      <ReactQueryDevtools position="bottom-right" />
     </>
   </Providers>
 );

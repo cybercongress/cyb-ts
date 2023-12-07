@@ -55,10 +55,11 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Teleport from './containers/teleport/pages/Teleport';
-import Search from './pages/Search/Search';
-import Learn from './pages/Learn/Learn';
-import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import OracleLanding from './pages/oracle/landing/OracleLanding';
+import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
+import Social from './pages/Social/Social';
+import Brain from './pages/Brain/Brain';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -116,7 +117,7 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<Search />} />
+          <Route index element={<OracleLanding />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
@@ -161,11 +162,7 @@ function AppRouter() {
           <Route path="/quitter" element={<ForceQuitter />} />
 
           {['/graph', '/brain'].map((path) => (
-            <Route
-              key={path}
-              path={path}
-              element={<CyberlinksGraphContainer toPortal />}
-            />
+            <Route key={path} path={path} element={<Brain />} />
           ))}
 
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
@@ -227,6 +224,8 @@ function AppRouter() {
           <Route path="/nebula" element={<Nebula />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path={routes.social.path} element={<Social />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

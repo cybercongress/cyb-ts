@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Telegram } from 'src/components/actionBar/Telegram';
-import { GitHub } from 'src/components/actionBar/GitHub';
+
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 import AppMenu from 'src/containers/application/AppMenu';
 import AppSideBar from 'src/containers/application/AppSideBar';
 import Header from 'src/containers/application/Header/Header';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import Discord from 'src/components/actionBar/Discord/Discord';
-import Twitter from 'src/components/actionBar/Twitter/Twitter';
 import { useAppSelector } from 'src/redux/hooks';
 import styles from './Main.module.scss';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);
@@ -64,10 +63,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
       {children}
 
       <footer>
-        <Telegram />
-        <Discord />
-        <Twitter />
-        <GitHub />
+        <Link to={routes.social.path}>contacts</Link>
       </footer>
     </div>
   );

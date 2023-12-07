@@ -25,6 +25,7 @@ type CarouselProps = {
   displaySlide?: number;
   color?: Color;
   noAnimation?: boolean;
+  onChange: (index: number) => void;
 };
 
 function Carousel({

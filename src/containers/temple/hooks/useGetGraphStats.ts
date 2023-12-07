@@ -4,7 +4,8 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 const keyQuery = 'graphStats';
-function useGetGraphStats() {
+
+function useGetGraphStats(refetchInterval: number | undefined = 1000 * 60 * 3) {
   const queryClient = useQueryClient();
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     particles: 0,
@@ -54,7 +55,7 @@ function useGetGraphStats() {
       return response;
     },
     enabled: Boolean(queryClient),
-    refetchInterval: 1000 * 60 * 3,
+    refetchInterval,
   });
 
   useEffect(() => {

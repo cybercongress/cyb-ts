@@ -13,6 +13,8 @@ import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
+import congress from './images/congress.png';
+
 import { routes } from '../../routes';
 
 const itemsMenu = () => {
@@ -78,6 +80,7 @@ const itemsMenu = () => {
       ],
     },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
     //   icon: zhdun,

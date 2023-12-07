@@ -1,7 +1,12 @@
 .wrapper {
-  @media (max-width: 480px) {
-    footer {
-      display: none;
+  footer {
+    a {
+      position: fixed;
+      z-index: 2;
+      right: 5vw;
+      bottom: 35px;
+      display: flex;
+      align-items: center;
     }
   }
 }

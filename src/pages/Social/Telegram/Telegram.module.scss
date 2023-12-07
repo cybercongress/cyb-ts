@@ -1,0 +1,21 @@
+@import '../../../style/mixins.scss';
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+
+  a {
+    text-align: center;
+
+    &:hover {
+      img {
+        opacity: 0.7;
+      }
+    }
+
+    span {
+      @include withShareIcon;
+    }
+  }
+}
