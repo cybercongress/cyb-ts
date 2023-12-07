@@ -1,0 +1,72 @@
+@import './saberTabButton.module.scss';
+@import './tabLamp.module.scss';
+
+@mixin active-gradient($position) {
+  @include gradient('white', $position);
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: var(--primary-color);
+  height: 42px;
+  width: 100%;
+  font-size: 1rem;
+
+  &Active {
+    color: #fff;
+    font-size: 1.125rem;
+  }
+}
+
+.default {
+  @include gradient('green', center);
+
+  &Active {
+    @include active-gradient(center);
+  }
+}
+
+.left {
+  @include gradient('green', left);
+
+  &Active {
+    @include active-gradient(left);
+  }
+}
+
+.right {
+  @include gradient('green', right);
+
+  &Active {
+    @include active-gradient(right);
+  }
+}
+
+.lamp_ {
+  &default {
+    @include lamp('green', center);
+
+    &Active {
+      @include lamp('white', center);
+    }
+  }
+
+  &right {
+    @include lamp('green', right);
+
+    &Active {
+      @include lamp('white', right);
+    }
+  }
+
+  &left {
+    @include lamp('green', left);
+
+    &Active {
+      @include lamp('white', left);
+    }
+  }
+}

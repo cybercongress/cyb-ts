@@ -1,0 +1,63 @@
+@mixin light-lamp($position) {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 1px 0px 0px 1px;
+
+  @if($position ==left) {
+    left: 0;
+    right: unset;
+    border-radius: 0px 1px 1px 0px;
+  }
+
+  border: 0.5px solid var(--color-border);
+  box-shadow: 0px 0px 5px 1px var(--color-shadow);
+  background: linear-gradient(to #{$position},
+    rgba(0, 237, 235, 0) 0%,
+    var(--color-bgr) 100%);
+}
+
+@mixin lamp($color, $position) {
+  @if($color =='green') {
+    --color-border: #00edeb;
+    --color-shadow: rgba(54, 214, 174, 0.5);
+    --color-bgr: rgba(0, 237, 235, 1);
+  }
+
+  @else if($color =='white') {
+    --color-border: #e2e2e2;
+    --color-shadow: rgba(255, 255, 255, 0.44);
+    --color-bgr: rgba(255, 255, 255, 1);
+  }
+
+  @else {
+    @error "Invalid color: #{$color}";
+  }
+
+  @if ($position ==left) {
+    &::after {
+      @include light-lamp(right)
+    }
+
+  }
+
+  @else if ($position ==right) {
+    &::before {
+      @include light-lamp(left)
+    }
+
+  }
+
+  @else {
+    &::before {
+      @include light-lamp(left)
+    }
+
+    &::after {
+      @include light-lamp(right)
+    }
+
+  }
+}
