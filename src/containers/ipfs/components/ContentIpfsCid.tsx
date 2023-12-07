@@ -6,6 +6,7 @@ type Props = {
   loading?: boolean;
   statusFetching?: string;
   status?: QueueItemStatus;
+  cid: string;
 };
 
 // TODO: refactor this component
