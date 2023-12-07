@@ -4,7 +4,7 @@ import cx from 'classnames';
 import SliderComponent, { SliderProps as RcSliderProps } from 'rc-slider';
 import imgSwap from 'src/image/exchange-arrows.svg';
 import 'rc-slider/assets/index.css';
-import styles from './styles.module.scss';
+import styles from './Slider.module.scss';
 import './styles.override.css';
 import DenomArr from '../denom/denomArr';
 import FormatNumberTokens from '../FormatNumberTokens/FormatNumberTokens';

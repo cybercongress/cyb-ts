@@ -54,6 +54,7 @@ import AmountDenom from './AmountDenom/AmountDenom';
 import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
+import TabList from './tabList/TabList';
 
 const BtnGrd = Button;
 
@@ -114,6 +115,7 @@ export {
   ButtonSwap,
   Slider,
   CreatedAt,
+  TabList,
 };
 
 export { Dots } from './ui/Dots';

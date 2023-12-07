@@ -6,9 +6,9 @@ type Props = {
 
 function Slippage({ value }: Props) {
   return (
-    <span className={s.container}>
+    <div className={s.container}>
       slippage: <span className={s.value}>{value}%</span>
-    </span>
+    </div>
   );
 }
 

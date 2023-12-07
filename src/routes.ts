@@ -54,6 +54,15 @@ export const routes = {
   },
   teleport: {
     path: '/teleport',
+    send: {
+      path: '/teleport/send',
+    },
+    bridge: {
+      path: '/teleport/bridge',
+    },
+    swap: {
+      path: '/teleport/swap',
+    },
   },
   keys: {
     path: '/keys',
