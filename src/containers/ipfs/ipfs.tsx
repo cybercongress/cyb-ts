@@ -94,28 +94,23 @@ function Ipfs() {
       <div className={styles.wrapper}>
         {status === 'completed' && ipfsDataDetails ? (
           <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
+        ) : isText ? (
+          <ContentIpfs
+            details={{
+              type: 'text',
+              text: query,
+              content: query,
+              cid,
+              gateway: false,
+            }}
+            cid={cid}
+          />
         ) : (
-          <>
-            {isText && (
-              <ContentIpfs
-                details={{
-                  type: 'text',
-                  text: query,
-                  content: query,
-                  cid,
-                  gateway: false,
-                }}
-                cid={cid}
-              />
-            )}
-            {!isText && (
-              <ContentIpfsCid
-                loading={status === 'executing'}
-                status={status}
-                cid={cid}
-              />
-            )}
-          </>
+          <ContentIpfsCid
+            loading={status === 'executing'}
+            status={status}
+            cid={cid}
+          />
         )}
       </div>
 
