@@ -25,6 +25,7 @@ import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
 import { useBackend } from 'src/contexts/backend';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -838,6 +839,7 @@ export function Cyberlink({
 
 function IntupAutoSize({
   value,
+  maxValue,
   onChangeInputAmount,
   placeholder,
   autoFocus = true,
@@ -870,6 +872,7 @@ function IntupAutoSize({
     <InputNumber
       value={value}
       id="myInput"
+      maxValue={maxValue}
       onkeypress={changefontsize()}
       autoFocus={autoFocus}
       onValueChange={onChangeInputAmount}
@@ -930,6 +933,10 @@ export function ReDelegate({
   onChangeReDelegate,
   onClickBack,
 }) {
+  const { data } = useDelegation(validators.operator_address);
+
+  const staked = data?.balance?.amount || 0;
+
   return (
     <ActionBarContainer
       onClickBack={onClickBack}
@@ -941,6 +948,7 @@ export function ReDelegate({
     >
       <IntupAutoSize
         value={toSend}
+        maxValue={staked}
         onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
