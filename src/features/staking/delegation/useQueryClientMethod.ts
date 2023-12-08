@@ -13,7 +13,7 @@ function useQueryClientMethod<DataT>(
   const queryClient = useQueryClient();
 
   // TODO: think how to memo params correctly
-  const memoParams = useMemo(() => params, []);
+  const memoParams = useMemo(() => params, [JSON.stringify(params)]);
 
   useEffect(() => {
     (async () => {
