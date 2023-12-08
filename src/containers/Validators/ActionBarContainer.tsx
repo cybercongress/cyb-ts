@@ -359,6 +359,7 @@ function ActionBarContainer({
   const onClickBackToChoseHandler = () => {
     setStage(STAGE_INIT);
     setTxType(null);
+    amountChangeHandler('');
   };
 
   // loadingBalanceInfo
