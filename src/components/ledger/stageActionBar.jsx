@@ -933,7 +933,9 @@ export function ReDelegate({
   onChangeReDelegate,
   onClickBack,
 }) {
-  const { data } = useDelegation(validators.operator_address);
+  const { data } = useDelegation(
+    validators.operator_address || validators.operatorAddress
+  );
 
   const staked = data?.balance?.amount || 0;
 
