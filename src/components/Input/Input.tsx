@@ -17,6 +17,7 @@ export type Props = {
   type?: 'text' | 'password';
   error?: string;
   value: string;
+  maxValue?: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlurFnc?: () => void;
   onFocusFnc?: () => void;
@@ -36,6 +37,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       className,
       classNameTextbox,
       focusedProps,
+      maxValue,
       isTextarea,
       onBlurFnc,
       onFocusFnc,
@@ -82,6 +84,16 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       }
     };
 
+    function handleMax() {
+      // need refactor other components
+      onChange({
+        target: {
+          value: String(maxValue),
+          focus() {},
+        },
+      });
+    }
+
     return (
       <div
         className={cx(
@@ -98,6 +110,14 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           color={color}
           title={title}
         >
+          {!!maxValue && (
+            <div className={styles.amount}>
+              <button onClick={handleMax} type="button">
+                max
+              </button>
+            </div>
+          )}
+
           <Tag
             type={type}
             ref={ref}

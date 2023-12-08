@@ -56,3 +56,17 @@
 .error {
   color: red;
 }
+
+.amount {
+  position: absolute;
+  right: 10px;
+  top: -20px;
+
+  button {
+    color: var(--blue-light);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
