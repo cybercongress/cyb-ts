@@ -21,6 +21,7 @@ function InputNumber({
   onValueChange,
   fixedDecimalScale,
   onChange,
+  maxValue,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -35,6 +36,11 @@ function InputNumber({
       valueIsNumericString
       allowLeadingZeros
       customInput={Input}
+      isAllowed={(values) => {
+        const { floatValue } = values;
+        return floatValue <= maxValue;
+      }}
+      maxValue={maxValue}
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
       decimalScale={3}
