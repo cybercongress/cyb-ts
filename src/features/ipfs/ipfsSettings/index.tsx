@@ -22,12 +22,7 @@ import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend';
-
-enum IPFSNodes {
-  EXTERNAL = 'external',
-  EMBEDDED = 'embedded',
-  HELIA = 'helia',
-}
+import { IPFSNodes } from 'src/services/ipfs/ipfs.d.ts';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
