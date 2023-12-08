@@ -21,6 +21,7 @@ import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
 import useDelegation from 'src/features/staking/delegation/useDelegation';
+import useGetHeroes from './getHeroesHook';
 
 const {
   STAGE_INIT,
@@ -158,7 +159,6 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
 function ActionBarContainer({
   addressPocket,
   validators,
-  validatorsAll,
   balance,
   loadingBalanceInfo,
   balanceToken,
@@ -166,6 +166,7 @@ function ActionBarContainer({
   updateFnc,
 }) {
   const { signer, signingClient } = useSigningClient();
+  const { validators: validatorsAll } = useGetHeroes();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
