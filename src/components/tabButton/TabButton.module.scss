@@ -24,7 +24,7 @@
   width: 100%;
   font-size: 1rem;
 
-  @include saber-horizontal('blue');
+  @include saber-horizontal('blue', 'color');
 
   &Active {
     @include active-saber(center);
@@ -32,7 +32,7 @@
 }
 
 .left {
-  @include saber-100('blue', right);
+  @include saber-100('blue', right, 'color');
   border-left: unset;
 
   &::before {
@@ -45,7 +45,7 @@
 }
 
 .right {
-  @include saber-100('blue', left);
+  @include saber-100('blue', left, 'color');
   border-right: unset;
 
   &::after {

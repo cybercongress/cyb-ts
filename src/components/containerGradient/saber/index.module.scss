@@ -30,10 +30,9 @@ $valid-colors: 'green', 'blue', 'purple', 'white', 'red', 'yellow', 'orange';
 $valid-positions: 'left', 'right', 'top', 'bottom';
 $saber-border-width: 2px;
 
-@mixin saber($color: 'green', $position) {
+@mixin saber($color: 'green', $position, $borderColor: 'white') {
   --width-gradient: 20%;
   position: relative;
-  border-#{$position}: $saber-border-width solid white;
 
   // box-shadow: 0 0 10px rgba(var(--color-r), var(--color-g), var(--color-b), 0.5);
 
@@ -69,6 +68,16 @@ $saber-border-width: 2px;
     @error "Invalid color: #{$color}";
   }
 
+  @if($borderColor == 'color') {
+    border-#{$position}: $saber-border-width solid rgb(var(--color-r),
+          var(--color-g),
+          var(--color-b));
+  }
+
+  @else {
+    border-#{$position}: $saber-border-width solid white;
+  }
+
   @if ($position == left or $position == top) {
     &::before {
       @include saber-background($position);
@@ -82,9 +91,9 @@ $saber-border-width: 2px;
   }
 }
 
-@mixin saber-horizontal($color) {
-  @include saber($color, left);
-  @include saber($color, right);
+@mixin saber-horizontal($color, $borderColor: 'white') {
+  @include saber($color, left, $borderColor);
+  @include saber($color, right, $borderColor);
 }
 
 @mixin saber-vertical($color) {
@@ -93,7 +102,7 @@ $saber-border-width: 2px;
   @include saber($color, bottom);
 }
 
-@mixin saber-100($color, $position) {
+@mixin saber-100($color, $position, $borderColor: 'white') {
   --width-gradient: 100% !important;
-  @include saber($color, $position);
+  @include saber($color, $position, $borderColor);
 }

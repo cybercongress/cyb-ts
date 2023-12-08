@@ -13,12 +13,20 @@ function Template(args: Props) {
     <div
       style={{
         display: 'flex',
+        flexDirection: 'column',
         width: '300px',
         margin: '0 auto',
+        gap: 10,
       }}
     >
       <TabButton
         {...args}
+        isSelected={isSelected}
+        onSelect={() => setIsSelected(!isSelected)}
+      >
+        left or right
+      </TabButton>
+      <TabButton
         isSelected={isSelected}
         onSelect={() => setIsSelected(!isSelected)}
       >
