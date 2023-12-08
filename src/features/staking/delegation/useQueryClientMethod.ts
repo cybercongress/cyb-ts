@@ -1,45 +1,31 @@
 import { CyberClient } from '@cybercongress/cyber-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 
-function useQueryClientMethod<DataT>(
+function useQueryClientMethod<TData>(
   methodName: keyof CyberClient,
   params: any
 ) {
-  const [data, setData] = useState<DataT>();
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
   const queryClient = useQueryClient();
 
   // TODO: think how to memo params correctly
   const memoParams = useMemo(() => params, [JSON.stringify(params)]);
 
-  useEffect(() => {
-    (async () => {
-      if (!queryClient) {
-        return;
-      }
-
-      try {
-        setLoading(true);
-
-        const res = await queryClient[methodName](...memoParams);
-
-        setData(res);
-      } catch (error) {
-        console.error(error);
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [queryClient, methodName, memoParams]);
+  const { isLoading, data, error } = useQuery<unknown, unknown, TData>(
+    ['queryClientMethod', methodName, memoParams],
+    () => {
+      return queryClient![methodName](...memoParams);
+    },
+    {
+      enabled: !!queryClient,
+    }
+  );
 
   return {
     error,
     data,
-    loading,
+    loading: isLoading,
   };
 }
 
