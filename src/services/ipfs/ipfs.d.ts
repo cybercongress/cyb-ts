@@ -3,6 +3,12 @@ import { LsResult } from 'ipfs-core-types/dist/src/pin';
 
 export type CallBackFuncStatus = (a: string) => void;
 
+export enum IPFSNodes {
+  EXTERNAL = 'external',
+  EMBEDDED = 'embedded',
+  HELIA = 'helia',
+}
+
 type IpfsNodeType = 'embedded' | 'external' | 'helia';
 
 export type IpfsFileStats = {

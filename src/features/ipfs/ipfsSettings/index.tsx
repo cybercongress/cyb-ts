@@ -22,11 +22,12 @@ import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend';
+import { IPFSNodes } from 'src/services/ipfs/ipfs.d.ts';
 
-const dataOpts = ['external', 'embedded', 'helia'];
+const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
 function IpfsSettings() {
-  const [valueSelect, setValueSelect] = useState('external');
+  const [valueSelect, setValueSelect] = useState(IPFSNodes.HELIA);
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
   const { isIpfsInitialized, ipfsError: failed, loadIpfs } = useBackend();
