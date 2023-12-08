@@ -33,6 +33,7 @@ function Validators({ defaultAccount }) {
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
+  // FIXME: use useGetHeroes hook instead
 
   useEffect(() => {
     setValidatorsData(validators);
@@ -230,7 +231,6 @@ function Validators({ defaultAccount }) {
       <ActionBarContainer
         updateFnc={updateFnc}
         validators={validatorSelect}
-        validatorsAll={validatorsData}
         addressPocket={addressActive}
         unStake={unStake}
         mobile={mobile}
@@ -240,7 +240,6 @@ function Validators({ defaultAccount }) {
       />
     </div>
   );
-  // }
 }
 
 const mapStateToProps = (store) => {
