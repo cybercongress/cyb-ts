@@ -60,7 +60,10 @@
 .amount {
   position: absolute;
   right: 10px;
-  top: -20px;
+  top: -15px;
+
+  display: flex;
+  gap: 0 10px;
 
   button {
     color: var(--blue-light);

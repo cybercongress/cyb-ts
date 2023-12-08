@@ -89,7 +89,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
     function handleMax(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
       const target = e.target as HTMLButtonElement;
       const percent = target.getAttribute(dataPercentAttribute);
-      const newValue = (maxValue! * Number(percent)) / 100;
+      const newValue = ((maxValue! * Number(percent)) / 100).toFixed(0);
 
       // FIXME: need refactor other components
       onChange({
