@@ -2,19 +2,25 @@ import { request } from 'graphql-request';
 import gql from 'graphql-tag';
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
+import { numberToDate } from 'src/utils/date';
 import { Transaction } from 'src/types/transaction';
-import { onCompleteCallback, onProgressCallback } from './types';
+import { onCompleteCallback, onProgressCallback } from '../types';
+import { NeuronAddress } from 'src/types/base';
 
 const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
-    order_by: {transaction: {block: {height: desc}}}) {
+  query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp) {
+  messages_by_address(
+    args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
+    order_by: {transaction: {block: {timestamp: desc}}},
+    where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
+    ) {
     transaction_hash
     value
     transaction {
       success
       block {
-        timestamp
+        timestamp,
+        height
       }
     }
     type
@@ -29,8 +35,9 @@ type TransactionsByAddressResponse = {
 };
 
 const fetchTransactions = async (
-  address: string,
+  address: NeuronAddress,
   cyberIndexUrl: string,
+  timestampFrom: number,
   offset = 0
 ) => {
   const res = await request<TransactionsByAddressResponse>(
@@ -39,6 +46,7 @@ const fetchTransactions = async (
     {
       address: `{${address}}`,
       limit: BATCH_LIMIT,
+      timestamp_from: numberToDate(timestampFrom),
       offset,
     }
   );
@@ -46,18 +54,27 @@ const fetchTransactions = async (
 };
 
 async function* fetchTransactionsAsyncIterable(
-  address: string,
-  cyberIndexUrl: string
+  address: NeuronAddress,
+  cyberIndexUrl: string,
+  timestamp: number
 ): AsyncIterable<ReturnType<typeof mapTransactionToEntity>[]> {
   let offset = 0;
   while (true) {
     // eslint-disable-next-line no-await-in-loop
-    const items = await fetchTransactions(address, cyberIndexUrl, offset);
+    const items = await fetchTransactions(
+      address,
+      cyberIndexUrl,
+      timestamp,
+      offset
+    );
+
     if (items.length === 0) {
       break;
     }
-    const txEntries = items.map((t) => mapTransactionToEntity(t));
+
+    const txEntries = items.map((t) => mapTransactionToEntity(address, t));
     yield txEntries;
+
     offset += txEntries.length;
   }
 }
@@ -65,7 +82,7 @@ async function* fetchTransactionsAsyncIterable(
 // eslint-disable-next-line import/prefer-default-export
 const importTransactions = async (
   dbApi: DbWorkerApi,
-  address: string,
+  address: NeuronAddress,
   cyberIndexUrl: string,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
@@ -85,4 +102,4 @@ const importTransactions = async (
   onComplete && onComplete(conter);
 };
 
-export { importTransactions };
+export { fetchTransactionsAsyncIterable, importTransactions };

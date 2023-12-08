@@ -25,4 +25,17 @@ async function asyncIterableBatchProcessor<T, K>(
   }
 }
 
-export { arrayToAsyncIterable, asyncIterableBatchProcessor };
+async function asyncIterableToArray<T>(asyncIterable: AsyncIterable<T>) {
+  const resultArray = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const item of asyncIterable) {
+    resultArray.push(item);
+  }
+  return resultArray;
+}
+
+export {
+  arrayToAsyncIterable,
+  asyncIterableBatchProcessor,
+  asyncIterableToArray,
+};

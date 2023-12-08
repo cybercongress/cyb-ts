@@ -17,19 +17,44 @@ const DB_STORE_NAME = 'cozodb';
 function CozoDbCommandFactory(dbSchema: DBSchema) {
   const schema = dbSchema;
 
-  const generatePutCommand = (tableName: string): string => {
+  const generateModifyCommand = (
+    tableName: string,
+    command: 'put' | 'update' = 'put',
+    fieldNames: string[] = []
+  ): string => {
     const { keys, values } = schema[tableName];
     const hasValues = values.length > 0;
 
+    const actualValues =
+      fieldNames.length > 0
+        ? fieldNames.filter((f) => values.includes(f))
+        : values;
+
     return !hasValues
-      ? `:put ${tableName} {${keys}}`
-      : `:put ${tableName} {${keys} => ${values}}`;
+      ? `:${command} ${tableName} {${keys}}`
+      : `:${command} ${tableName} {${keys} => ${actualValues}}`;
   };
 
-  const generateAtomCommand = (tableName: string, items: any[]): string => {
+  const generateAtomCommand = (
+    tableName: string,
+    items: any[],
+    fieldNames: string[] = []
+  ): string => {
     const tableSchema = dbSchema[tableName];
-    const colKeys = Object.keys(tableSchema.columns);
-    const colValues = Object.values(tableSchema.columns);
+
+    const selectedColumns =
+      fieldNames.length > 0
+        ? Object.keys(tableSchema.columns).reduce((acc, key) => {
+            if (fieldNames.includes(key)) {
+              acc[key] = tableSchema.columns[key];
+            }
+            return acc;
+          }, {} as Partial<Record<string, Column>>)
+        : tableSchema.columns;
+
+    const colKeys = Object.keys(selectedColumns);
+    const colValues = Object.values(selectedColumns) as Column[];
+
     return `?[${colKeys.join(', ')}] <- [${items
       .map((item) => mapObjectToArray(item, colValues))
       .join(', ')}]`;
@@ -37,25 +62,44 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
 
   const generatePut = (tableName: string, array: any[][]) => {
     const atomCommand = generateAtomCommand(tableName, array);
-    const putCommand = generatePutCommand(tableName);
+    const putCommand = generateModifyCommand(tableName, 'put');
     return `${atomCommand}\r\n${putCommand}`;
+  };
+
+  const generateUpdate = (
+    tableName: string,
+    array: any[][],
+    fileds: string[]
+  ) => {
+    const atomCommand = generateAtomCommand(tableName, array, fileds);
+    const updateCommand = generateModifyCommand(tableName, 'update', fileds);
+    return `${atomCommand}\r\n${updateCommand}`;
   };
 
   const generateGet = (
     tableName: string,
     conditionArr: string[] = [],
-    keys: string[] = []
+    selectFields: string[] = [],
+    useFields: string[] = []
   ) => {
     const conditionsStr =
       conditionArr.length > 0 ? `, ${conditionArr.join(', ')} ` : '';
     const tableSchema = dbSchema[tableName];
-    const queryKeys = keys.length > 0 ? keys : Object.keys(tableSchema.columns);
-    return `?[${queryKeys.join(', ')}] := *${tableName}{${queryKeys.join(
+    const queryFields =
+      selectFields.length > 0 ? selectFields : Object.keys(tableSchema.columns);
+    const useQueryFields = useFields.length > 0 ? useFields : queryFields;
+    return `?[${queryFields.join(', ')}] := *${tableName}{${useQueryFields.join(
       ', '
     )}} ${conditionsStr}`;
   };
 
-  return { generatePutCommand, generateAtomCommand, generatePut, generateGet };
+  return {
+    generateModifyCommand,
+    generateAtomCommand,
+    generatePut,
+    generateGet,
+    generateUpdate,
+  };
 }
 
 function DbService() {
@@ -139,7 +183,7 @@ function DbService() {
     }
     const resultStr = await db.run(command, '', immutable);
     const result = JSON.parse(resultStr);
-    // console.log('----> runCommand ', command, result);
+    console.log('----> runCommand ', command, result);
 
     return result;
   };
@@ -150,13 +194,26 @@ function DbService() {
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(commandFactory!.generatePut(tableName, array));
 
+  const update = async (
+    tableName: string,
+    array: any[][],
+    fieldNames: string[]
+  ): Promise<IDBResult | IDBResultError> =>
+    runCommand(commandFactory!.generateUpdate(tableName, array, fieldNames));
+
   const get = (
     tableName: string,
     conditionArr: string[] = [],
-    keys: string[] = []
+    selectFields: string[] = [],
+    useFields: string[] = []
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(
-      commandFactory!.generateGet(tableName, conditionArr, keys),
+      commandFactory!.generateGet(
+        tableName,
+        conditionArr,
+        selectFields,
+        useFields
+      ),
       true
     );
 
@@ -170,6 +227,7 @@ function DbService() {
     init,
     put,
     get,
+    update,
     runCommand,
     getCommandFactory: () => commandFactory,
     importRelations,

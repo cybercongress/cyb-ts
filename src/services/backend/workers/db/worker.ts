@@ -36,11 +36,18 @@ const dbApiFactory = () => {
   const executePutCommand = async (tableName: string, array: any[]) =>
     cozoDb.put(tableName, array);
 
+  const executeUpdateCommand = async (
+    tableName: string,
+    array: any[],
+    fieldNames: string[] = []
+  ) => cozoDb.update(tableName, array, fieldNames);
+
   const executeGetCommand = async (
     tableName: string,
     conditionArr?: string[],
-    keys?: string[]
-  ) => cozoDb.get(tableName, conditionArr, keys);
+    selectFields?: string[],
+    useFields?: string[]
+  ) => cozoDb.get(tableName, conditionArr, selectFields, useFields);
 
   const importRelations = async (content: string) =>
     cozoDb.importRelations(content);
@@ -51,24 +58,28 @@ const dbApiFactory = () => {
   const executeBatchPutCommand = async (
     tableName: string,
     array: any[],
-    batchSize: number,
+    batchSize: number = array.length,
     onProgress?: (count: number) => void
   ) => {
     const { getCommandFactory, runCommand } = cozoDb;
 
     const commandFactory = getCommandFactory();
-    const putCommand = commandFactory!.generatePutCommand(tableName);
-
+    const putCommand = commandFactory!.generateModifyCommand(tableName, 'put');
+    let isOk = true;
     for (let i = 0; i < array.length; i += batchSize) {
       const batch = array.slice(i, i + batchSize);
 
       const atomCommand = commandFactory!.generateAtomCommand(tableName, batch);
 
       // eslint-disable-next-line no-await-in-loop
-      await runCommand([atomCommand, putCommand].join('\r\n'));
+      const result = await runCommand([atomCommand, putCommand].join('\r\n'));
+      if (!result.ok) {
+        isOk = false;
+      }
 
       onProgress && onProgress(i + batch.length);
     }
+    return { ok: isOk };
   };
 
   return {
@@ -76,6 +87,7 @@ const dbApiFactory = () => {
     runCommand,
     executePutCommand,
     executeBatchPutCommand,
+    executeUpdateCommand,
     executeGetCommand,
     importRelations,
     exportRelations,

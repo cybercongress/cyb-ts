@@ -4,7 +4,8 @@ import { useWebsockets } from 'src/websockets/context';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import db from '../../db';
 import { getFollows, getTweet } from '../../utils/search/utils';
-import { CID_TWEET, CYBER, PATTERN_CYBER } from '../../utils/config';
+import { CYBER, PATTERN_CYBER } from '../../utils/config';
+import { CID_TWEET } from 'src/utils/consts';
 import { fromBech32 } from '../../utils/utils';
 
 interface Tweet {
@@ -40,8 +41,7 @@ const useGetTweets = (address) => {
     }
 
     const param = {
-      query:
-        `tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='${CID_TWEET}'`,
+      query: `tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='${CID_TWEET}'`,
     };
 
     if (cyber.subscriptions.includes(JSON.stringify(param))) {

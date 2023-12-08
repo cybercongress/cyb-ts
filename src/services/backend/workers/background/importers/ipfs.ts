@@ -12,7 +12,7 @@ import {
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-import { onProgressCallback, onCompleteCallback } from './types';
+import { onProgressCallback, onCompleteCallback } from '../types';
 
 const importPins = async (
   node: IpfsNode,
@@ -88,7 +88,7 @@ const importParicleContent = async (
 ) => {
   try {
     const entity = mapParticleToEntity(particle);
-    const result = (await dbApi!.executePutCommand('particle', [entity])).ok;
+    const result = await dbApi!.executePutCommand('particle', [entity]);
     return result;
   } catch (e) {
     console.error('importParicleContent', e.toString(), !!dbApi);

@@ -98,7 +98,7 @@ function Drive() {
     (store) => store.backend
   );
 
-  console.log('-----syncStatus', syncState, dbPendingWrites);
+  // console.log('-----syncStatus', syncState, dbPendingWrites);
 
   function runQuery(queryArg?: string) {
     const query = queryArg || queryText.trim();

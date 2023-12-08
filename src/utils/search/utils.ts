@@ -9,6 +9,7 @@ import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import { CID_TWEET } from '../consts';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -696,7 +697,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${config.CID_TWEET}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {

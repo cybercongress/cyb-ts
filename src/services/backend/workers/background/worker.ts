@@ -35,17 +35,20 @@ import {
   importParticle,
 } from './importers/ipfs';
 import { importTransactions } from './importers/transactions';
-import {
-  PlainCyberLink,
-  importCyberlinks as importCyberlinks_,
-} from './importers/links';
+import { importCyberlinks as importCyberlinks_ } from './importers/links';
 import { exposeWorkerApi } from '../factoryMethods';
+import { SyncService } from './services/sync';
+import { SyncServiceParams } from './types';
+import { CyberLinkNeuron } from 'src/types/base';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
   let dbApi: DbWorkerApi | undefined;
   const ipfsQueue = new QueueManager<IPFSContentMaybe>();
   const channel = new BcChannel();
+  // service to sync updates about cyberlinks, transactions, swarm etc.
+
+  const syncService = new SyncService();
 
   const postServiceStatus = (status: ServiceStatus, error?: string) =>
     channel.post({
@@ -71,6 +74,8 @@ const backendApiFactory = () => {
         importApi.importParicleContent({ ...content, result: undefined });
       return content;
     });
+
+    syncService.init(dbApi);
 
     postWorkerStatus('idle');
   };
@@ -157,7 +162,7 @@ const backendApiFactory = () => {
   const importApi = {
     importParicleContent: async (particle: IPFSContent) =>
       importParicleContent(particle, dbApi!),
-    importCyberlinks: async (links: PlainCyberLink[]) =>
+    importCyberlinks: async (links: CyberLinkNeuron[]) =>
       importCyberlinks_(links, dbApi!),
     importParticle: async (cid: string) =>
       importParticle(cid, ipfsNode!, dbApi!),
@@ -213,6 +218,8 @@ const backendApiFactory = () => {
     syncDrive,
     ipfsApi: proxy(ipfsApi),
     importApi: proxy(importApi),
+    setParams: (params: Partial<SyncServiceParams>) =>
+      syncService.setParams(params),
   };
 };
 

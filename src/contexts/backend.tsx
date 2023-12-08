@@ -9,6 +9,10 @@ import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode, IpfsOptsType } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
+import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+import { selectFollowings } from 'src/redux/features/currentAccount';
+import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 type BackendProviderContextType = {
   startSyncTask?: () => void;
@@ -56,10 +60,24 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
   const dbStatus = useAppSelector((state) => state.backend.services.db);
   const ipfsStatus = useAppSelector((state) => state.backend.services.ipfs);
-
+  const myAddress = useAppSelector(selectCurrentAddress);
+  const followings = useAppSelector(selectFollowings);
+  // const passport = useAppSelector(selectCurrentPassport);
+  // const passports = useCommunityPassports();
+  // console.log('-----passport', passport, followings, passports);
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   const channelRef = useRef<BcChannel>();
+
+  backendApi.setParams({ cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS });
+
+  useEffect(() => {
+    backendApi.setParams({ myAddress });
+  }, [myAddress]);
+
+  useEffect(() => {
+    backendApi.setParams({ followings });
+  }, [followings]);
 
   useEffect(() => {
     setIsDbItialized(dbStatus.status === 'started');
@@ -67,13 +85,17 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsIpfsInitialized(ipfsStatus.status === 'started');
-    // attach db api to backend api
-    (async () => {
-      await backendApi.installDbApi(proxy(dbApiService));
-    })();
   }, [ipfsStatus]);
 
   useEffect(() => {
+    if (isDbInitialized) {
+      // attach db api to backend api
+
+      (async () => {
+        await backendApi.installDbApi(proxy(dbApiService));
+      })();
+    }
+
     if (isDbInitialized && isIpfsInitialized) {
       console.log('🟢 Backend started.');
     }

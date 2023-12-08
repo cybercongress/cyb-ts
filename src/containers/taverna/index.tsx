@@ -12,7 +12,7 @@ import {
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { CID_TWEET } from 'src/utils/config';
+import { CID_TWEET } from 'src/utils/consts';
 
 const LOAD_COUNT = 10;
 

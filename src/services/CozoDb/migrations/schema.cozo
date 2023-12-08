@@ -24,8 +24,9 @@
 {
     :create link {
         from: String,
-        to: String =>
-        neuron_address: String
+        to: String,
+        neuron: String =>
+        timestamp: Int
     }
 }
 {
@@ -34,6 +35,18 @@
         type: String =>
         success: Bool,
         timestamp: Int,
-        value: Json
+        value: Json,
+        neuron: String
+    }
+}
+
+{
+    :create sync_status {
+        id: String =>
+        entry_type: Int,
+        unread_count: Int,
+        disabled: Bool,
+        timestamp: Int,
+        last_read_timestamp: Int
     }
 }
