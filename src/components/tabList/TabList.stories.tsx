@@ -28,18 +28,25 @@ const TabButtonConfig = [
 function Template() {
   const [isSelected, setIsSelected] = useState('tb2');
   return (
-    <TabList>
-      {TabButtonConfig.map((item) => (
-        <TabButton
-          key={item.key}
-          type={item.type}
-          isSelected={isSelected === item.key}
-          onSelect={() => setIsSelected(item.key)}
-        >
-          {item.text}
-        </TabButton>
-      ))}
-    </TabList>
+    <div
+      style={{
+        width: '375px',
+        margin: '0 auto',
+      }}
+    >
+      <TabList>
+        {TabButtonConfig.map((item) => (
+          <TabButton
+            key={item.key}
+            type={item.type}
+            isSelected={isSelected === item.key}
+            onSelect={() => setIsSelected(item.key)}
+          >
+            {item.text}
+          </TabButton>
+        ))}
+      </TabList>
+    </div>
   );
 }
 

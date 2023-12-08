@@ -1,10 +1,17 @@
-@import './saberTabButton.module.scss';
-@import './tabLamp.module.scss';
+@import '../containerGradient/saber/index.module.scss';
 
-@mixin active-gradient($position) {
+@mixin active-saber($position) {
+  $color-saber: 'white';
   color: #fff;
   font-size: 1.125rem;
-  @include gradient('white', $position);
+
+  @if ($position ==left or $position ==right) {
+    @include saber-100($color-saber, $position);
+  }
+
+  @else {
+    @include saber-horizontal($color-saber);
+  }
 }
 
 .tabButton {
@@ -17,49 +24,35 @@
   width: 100%;
   font-size: 1rem;
 
-  @include gradient('green', center);
+  @include saber-horizontal('blue');
 
   &Active {
-    @include active-gradient(center);
+    @include active-saber(center);
   }
 }
 
 .left {
-  @include gradient('green', left);
+  @include saber-100('blue', right);
+  border-left: unset;
+
+  &::before {
+    content: unset;
+  }
 
   &Active {
-    @include active-gradient(left);
+    @include active-saber(right);
   }
 }
 
 .right {
-  @include gradient('green', right);
+  @include saber-100('blue', left);
+  border-right: unset;
+
+  &::after {
+    content: unset;
+  }
 
   &Active {
-    @include active-gradient(right);
-  }
-}
-
-.lamp_ {
-  @include lamp('green', center);
-
-  &Active {
-    @include lamp('white', center);
-  }
-
-  &right {
-    @include lamp('green', right);
-
-    &Active {
-      @include lamp('white', right);
-    }
-  }
-
-  &left {
-    @include lamp('green', left);
-
-    &Active {
-      @include lamp('white', left);
-    }
+    @include active-saber(left);
   }
 }

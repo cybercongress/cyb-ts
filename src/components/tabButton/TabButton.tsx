@@ -24,14 +24,14 @@ function TabButton({ children, type, isSelected, onSelect }: Props) {
         isSelected && s[type ? `${type}Active` : 'tabButtonActive']
       )}
     >
-      <div
+      {/* <div
         className={cx(
           s[`lamp_${type || ''}`],
           isSelected && s[`lamp_${type || ''}Active`]
         )}
-      >
+      > */}
         {children}
-      </div>
+      {/* </div> */}
     </button>
   );
 }
