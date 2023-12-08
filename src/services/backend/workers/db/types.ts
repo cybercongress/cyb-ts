@@ -1,6 +1,7 @@
 export type DbStackItem = {
   isBatch: boolean;
   tableName: string;
+  action: 'put' | 'update';
   data: any[] | any[][];
   batchSize?: number;
   onProgress?: (count: number) => void;

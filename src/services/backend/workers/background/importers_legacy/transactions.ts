@@ -4,8 +4,8 @@ import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { numberToDate } from 'src/utils/date';
 import { Transaction } from 'src/types/transaction';
-import { onCompleteCallback, onProgressCallback } from '../types';
 import { NeuronAddress } from 'src/types/base';
+import { onCompleteCallback, onProgressCallback } from '../types';
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp) {

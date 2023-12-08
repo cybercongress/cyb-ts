@@ -1,28 +1,8 @@
-import { TransactionDbEntry } from 'src/services/CozoDb/types';
-import { CyberLinkType, NeuronAddress, ParticleCid } from './base';
+import { CyberLinkType, NeuronAddress } from 'src/types/base';
 
 interface GenericTransaction<T> {
   value: T;
   type: string;
-}
-
-export const CYBER_LINK_TRANSACTION_TYPE = 'cyber.graph.v1beta1.MsgCyberlink';
-export const DELEGATION_TRANSACTION_TYPE = 'cosmos.staking.v1beta1.MsgDelegate';
-export const TRANSFER_TRANSACTION_TYPE = 'cosmos/MsgTransfer';
-
-interface AnyTransaction extends GenericTransaction<Object> {}
-
-interface MsgDelegateValue {
-  amount: {
-    denom: string;
-    amount: string;
-  };
-  delegator_address: string;
-  validator_address: string;
-}
-
-export interface DelegateTransaction
-  extends GenericTransaction<MsgDelegateValue> {
   transaction_hash: string;
   transaction: {
     success: boolean;
@@ -30,7 +10,28 @@ export interface DelegateTransaction
       timestamp: string;
     };
   };
-  type: typeof DELEGATION_TRANSACTION_TYPE;
+}
+
+export const CYBER_LINK_TRANSACTION_TYPE = 'cyber.graph.v1beta1.MsgCyberlink';
+export const DELEGATION_TRANSACTION_TYPE = 'cosmos.staking.v1beta1.MsgDelegate';
+export const TRANSFER_TRANSACTION_TYPE = 'cosmos/MsgTransfer';
+
+interface MsgDelegateValue {
+  amount: {
+    denom: string;
+    amount: string;
+  };
+  delegator_address: NeuronAddress;
+  validator_address: NeuronAddress;
+}
+
+interface TransferValue {
+  from_address: NeuronAddress;
+  to_address: NeuronAddress;
+  amount: {
+    denom: string;
+    amount: string;
+  };
 }
 
 interface CyberLinkValue {
@@ -38,27 +39,24 @@ interface CyberLinkValue {
   links: CyberLinkType[];
 }
 
+export interface DelegateTransaction
+  extends GenericTransaction<MsgDelegateValue> {
+  type: typeof DELEGATION_TRANSACTION_TYPE;
+}
+
 export interface CyberLinkTransaction
   extends GenericTransaction<CyberLinkValue> {
   type: typeof CYBER_LINK_TRANSACTION_TYPE;
-  timestamp: number;
-}
-
-interface TransferValue {
-  from_address: string;
-  to_address: string;
-  amount: {
-    denom: string;
-    amount: string;
-  };
 }
 
 export interface TransferTransaction extends GenericTransaction<TransferValue> {
   type: typeof TRANSFER_TRANSACTION_TYPE;
 }
 
+// interface AnyTransaction extends GenericTransaction<{}> {}
+
 export type Transaction =
   | DelegateTransaction
   | CyberLinkTransaction
-  | TransferTransaction
-  | AnyTransaction;
+  | TransferTransaction;
+//   | AnyTransaction;

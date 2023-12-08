@@ -51,12 +51,17 @@ export type IndexedDbWriteMessage = {
   value: number;
 };
 
-export type EntryType = 'transactions' | 'particle';
+// export type EntryType = 'transactions' | 'particle';
 
-export const EntryTypeMap: Record<EntryType, number> = {
-  transactions: 1,
-  particle: 2,
-};
+// export const EntryTypeMap: Record<EntryType, number> = {
+//   transactions: 1,
+//   particle: 2,
+// };
+
+export enum EntryType {
+  transactions = 1,
+  particle = 2,
+}
 
 export type TransactionDbEntry = {
   hash: string;
@@ -68,10 +73,10 @@ export type TransactionDbEntry = {
 };
 
 export type SyncStatusDbEntry = {
-  entry_type: number;
+  entry_type: EntryType;
   id: NeuronAddress | ParticleCid;
-  timestamp: number;
-  last_read_timestamp: number;
+  timestamp_update: number;
+  timestamp_read: number;
   disabled: boolean;
   unread_count: number;
 };

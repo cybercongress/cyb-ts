@@ -1,6 +1,5 @@
 import initCozoDb, { CozoDb } from 'cyb-cozo-lib-wasm';
 
-import initializeScript from './migrations/schema.cozo';
 import {
   IDBResult,
   Column,
@@ -10,6 +9,8 @@ import {
 } from './types';
 
 import { toListOfObjects, mapObjectToArray } from './utils';
+
+import initializeScript from './migrations/schema.cozo';
 
 const DB_NAME = 'cozo-idb-demo';
 const DB_STORE_NAME = 'cozodb';
@@ -78,17 +79,21 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
 
   const generateGet = (
     tableName: string,
-    conditionArr: string[] = [],
     selectFields: string[] = [],
-    useFields: string[] = []
+    conditions: string[] = [],
+    conditionFields: string[] = []
   ) => {
-    const conditionsStr =
-      conditionArr.length > 0 ? `, ${conditionArr.join(', ')} ` : '';
     const tableSchema = dbSchema[tableName];
+
     const queryFields =
       selectFields.length > 0 ? selectFields : Object.keys(tableSchema.columns);
-    const useQueryFields = useFields.length > 0 ? useFields : queryFields;
-    return `?[${queryFields.join(', ')}] := *${tableName}{${useQueryFields.join(
+
+    const requiredFields = [...queryFields, ...conditionFields];
+
+    const conditionsStr =
+      conditions.length > 0 ? `, ${conditions.join(', ')} ` : '';
+
+    return `?[${queryFields.join(', ')}] := *${tableName}{${requiredFields.join(
       ', '
     )}} ${conditionsStr}`;
   };
@@ -203,16 +208,16 @@ function DbService() {
 
   const get = (
     tableName: string,
-    conditionArr: string[] = [],
     selectFields: string[] = [],
-    useFields: string[] = []
+    conditions: string[] = [],
+    conditionFields: string[] = []
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(
       commandFactory!.generateGet(
         tableName,
-        conditionArr,
+        conditions,
         selectFields,
-        useFields
+        conditionFields
       ),
       true
     );

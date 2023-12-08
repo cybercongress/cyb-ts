@@ -53,7 +53,7 @@ export const snakeToCamel = (str: string) =>
 export const camelToSnake = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
-export const convertDBResultToObjects = (
+export const dbResultToObjects = (
   dbResult: IDBResult,
   tableName: string,
   dbSchema: DBSchema

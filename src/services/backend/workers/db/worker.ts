@@ -44,10 +44,10 @@ const dbApiFactory = () => {
 
   const executeGetCommand = async (
     tableName: string,
-    conditionArr?: string[],
     selectFields?: string[],
-    useFields?: string[]
-  ) => cozoDb.get(tableName, conditionArr, selectFields, useFields);
+    conditions?: string[],
+    conditionFields?: string[]
+  ) => cozoDb.get(tableName, conditions, selectFields, conditionFields);
 
   const importRelations = async (content: string) =>
     cozoDb.importRelations(content);

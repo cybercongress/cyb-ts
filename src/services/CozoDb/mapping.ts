@@ -1,18 +1,15 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
-import {
-  CYBER_LINK_TRANSACTION_TYPE,
-  Transaction,
-} from 'src/types/transaction';
+
 import {
   PinTypeMap,
-  EntryTypeMap,
   EntryType,
   TransactionDbEntry,
   SyncStatusDbEntry,
 } from './types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { dateToNumber } from 'src/utils/date';
+import { Transaction } from '../backend/workers/background/services/blockchain/types';
 
 export const mapParticleToEntity = (particle: IPFSContent): any => {
   const { cid, result, meta, textPreview } = particle;
@@ -61,21 +58,18 @@ export const mapTransactionToEntity = (
 };
 
 export const mapSyncStatusToEntity = (
-  entryType: EntryType,
   id: NeuronAddress | ParticleCid,
-  timestamp: number,
+  entryType: EntryType,
   unreadCount: int,
-  lastReadTimestamp: number = timestamp
+  timestampUpdate: number,
+  timestampRead: number = timestampUpdate
 ): SyncStatusDbEntry => {
   return {
-    entry_type: EntryTypeMap[entryType],
+    entry_type: entryType,
     id,
-    timestamp,
-    last_read_timestamp: lastReadTimestamp,
+    timestamp_update: timestampUpdate,
+    timestamp_read: timestampRead,
     unread_count: unreadCount,
     disabled: false,
   };
 };
-
-export const isTransactionCyberLink = (t: TransactionDbEntry) =>
-  t.type === CYBER_LINK_TRANSACTION_TYPE;

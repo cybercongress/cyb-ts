@@ -5,7 +5,7 @@ import { WorkerUrl } from 'worker-url';
 
 import { DbWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
-import { DbStackItem } from './types';
+import { DbStackItem as DbQueueItem } from './types';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
@@ -15,43 +15,44 @@ const { apiProxy: dbApiProxy } = createWorkerApi<DbWorkerApi>(
 );
 
 function dbServiceApi() {
-  const putStack: DbStackItem[] = []; // accumulate values while db is not initialized
-  const isInitialized$ = new BehaviorSubject(false); // true when db is initialized
+  // accumulate here values while db is not initialized
+  const tmpQueue: DbQueueItem[] = [];
+
+  const isInitialized$ = new BehaviorSubject(false);
 
   // flush stack when db is initialized
   isInitialized$.subscribe((initialized) => {
     if (initialized) {
-      while (putStack.length > 0) {
-        const item = putStack.shift();
-        processPutStackItem(item!);
+      while (tmpQueue.length > 0) {
+        const item = tmpQueue.shift();
+        executeOrEnqueue(item!);
       }
     }
   });
 
-  // process put stack item or push it to stack if db is not initialized
-  const processPutStackItem = async (item: DbStackItem) => {
-    // console.log(
-    //   '-------processPutStackItem',
-    //   item,
-    //   isInitialized$.value,
-    //   putStack
-    // );
-
+  // execute Pu command or
+  // push into queue until DB not is ready
+  const executeOrEnqueue = async (item: DbQueueItem) => {
     if (isInitialized$.value) {
-      const { tableName, data, batchSize, onProgress, isBatch } = item;
+      const { tableName, data, batchSize, onProgress, isBatch, action } = item;
       // single/batch mode
-      const result = await (isBatch
-        ? dbApiProxy.executeBatchPutCommand(
-            tableName,
-            data,
-            batchSize!,
-            onProgress ? proxy(onProgress) : undefined
-          )
-        : dbApiProxy.executePutCommand(tableName, data));
-      return result.ok ? 'success' : 'error';
+      if (action === 'put') {
+        const result = await (isBatch
+          ? dbApiProxy.executeBatchPutCommand(
+              tableName,
+              data,
+              batchSize!,
+              onProgress ? proxy(onProgress) : undefined
+            )
+          : dbApiProxy.executePutCommand(tableName, data));
+
+        return result.ok ? 'success' : 'error';
+      }
+
+      dbApiProxy.executeUpdateCommand(tableName, data);
     }
 
-    putStack.push(item);
+    tmpQueue.push(item);
     return 'deffered';
   };
 
@@ -64,12 +65,32 @@ function dbServiceApi() {
 
   const executeGetCommand = async (
     tableName: string,
-    conditionArr?: string[],
-    keys?: string[]
-  ) => dbApiProxy.executeGetCommand(tableName, conditionArr, keys);
+    selectFields?: string[],
+    conditions?: string[],
+    conditionFields?: string[]
+  ) =>
+    dbApiProxy.executeGetCommand(
+      tableName,
+      selectFields,
+      conditions,
+      conditionFields
+    );
 
   const executePutCommand = async (tableName: string, array: any[]) =>
-    processPutStackItem({ tableName, data: array, isBatch: false });
+    executeOrEnqueue({
+      tableName,
+      data: array,
+      isBatch: false,
+      action: 'put',
+    });
+
+  const executeUpdateCommand = async (tableName: string, array: any[]) =>
+    executeOrEnqueue({
+      tableName,
+      data: array,
+      isBatch: false,
+      action: 'update',
+    });
 
   const executeBatchPutCommand = async (
     tableName: string,
@@ -77,11 +98,12 @@ function dbServiceApi() {
     batchSize: number,
     onProgress?: (count: number) => void
   ) =>
-    processPutStackItem({
+    executeOrEnqueue({
       tableName,
       data: array,
       batchSize,
       isBatch: true,
+      action: 'put',
       onProgress,
     });
 
@@ -94,6 +116,7 @@ function dbServiceApi() {
   return {
     init,
     executePutCommand,
+    executeUpdateCommand,
     executeBatchPutCommand,
     runCommand,
     executeGetCommand,

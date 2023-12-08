@@ -28,18 +28,19 @@ import {
   QueueItemCallback,
   QueueItemOptions,
 } from 'src/services/QueueManager/QueueManager.d';
+import { CyberLinkNeuron } from 'src/types/base';
+
 import {
   importParticles,
   importPins,
   importParicleContent,
   importParticle,
-} from './importers/ipfs';
-import { importTransactions } from './importers/transactions';
-import { importCyberlinks as importCyberlinks_ } from './importers/links';
+} from './importers_legacy/ipfs';
+import { importTransactions } from './importers_legacy/transactions';
+import { importCyberlinks as importCyberlinks_ } from './importers_legacy/links';
 import { exposeWorkerApi } from '../factoryMethods';
-import { SyncService } from './services/sync';
-import { SyncServiceParams } from './types';
-import { CyberLinkNeuron } from 'src/types/base';
+import { SyncService } from '../../services/sync/sync';
+import { SyncServiceParams } from '../../services/sync/type';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
@@ -120,8 +121,8 @@ const backendApiFactory = () => {
         );
         const pinsData = await dbApi!.executeGetCommand(
           'pin',
-          [`type = ${PinTypeMap.recursive}`],
-          ['cid']
+          ['cid'],
+          [`type = ${PinTypeMap.recursive}`]
         );
         if (pinsData.ok === false) {
           postWorkerStatus('error', pinsData.message);
