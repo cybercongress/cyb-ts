@@ -23,6 +23,8 @@ export type Props = {
   onFocusFnc?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
+const dataPercentAttribute = 'data-percent';
+
 const Input = React.forwardRef<HTMLInputElement, Props>(
   (
     {
@@ -84,11 +86,16 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       }
     };
 
-    function handleMax() {
-      // need refactor other components
+    function handleMax(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+      const target = e.target as HTMLButtonElement;
+      const percent = target.getAttribute(dataPercentAttribute);
+      const newValue = (maxValue! * Number(percent)) / 100;
+
+      // FIXME: need refactor other components
       onChange({
         target: {
-          value: String(maxValue),
+          value: String(newValue),
+          // issue with number input
           focus() {},
         },
       });
@@ -110,11 +117,21 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           color={color}
           title={title}
         >
-          {!!maxValue && (
+          {focused && !!maxValue && (
             <div className={styles.amount}>
-              <button onClick={handleMax} type="button">
-                max
-              </button>
+              {[25, 50, 75, 100].map((percent) => {
+                return (
+                  <button
+                    key={percent}
+                    type="button"
+                    // onMouseDown be called before onBlur
+                    onMouseDown={handleMax}
+                    {...{ [dataPercentAttribute]: percent }}
+                  >
+                    {percent === 100 ? 'max' : `${percent}%`}
+                  </button>
+                );
+              })}
             </div>
           )}
 

@@ -65,8 +65,12 @@
   button {
     color: var(--blue-light);
 
+    &:not(:last-of-type) {
+      opacity: 0.5;
+    }
+
     &:hover {
-      opacity: 0.8;
+      opacity: 1;
     }
   }
 }
