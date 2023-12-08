@@ -20,6 +20,7 @@ import {
 import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
 
 const {
   STAGE_INIT,
@@ -180,11 +181,21 @@ function ActionBarContainer({
     updateFnc
   );
 
+  const validatorSelected =
+    validators.operator_address || validators.operatorAddress;
+
+  const { data } = useDelegation(validatorSelected);
+  const staked = data?.balance?.amount || 0;
+
   const errorState = (error) => {
     setTxHash(null);
     setStage(STAGE_ERROR);
     setErrorMessage(error.toString());
   };
+
+  useEffect(() => {
+    setAmount('');
+  }, [validatorSelected]);
 
   const clearFunc = () => {
     setTxHash(null);
@@ -490,7 +501,7 @@ function ActionBarContainer({
         }
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
-        // disabledBtn={amount.length === 0}
+        available={txType === TXTYPE_DELEGATE ? balance.available : staked}
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
@@ -510,6 +521,7 @@ function ActionBarContainer({
         disabledBtn={!validRestakeBtn}
         validatorsAll={validatorsAll}
         validators={validators}
+        available={staked}
         onChangeReDelegate={(e) => setValueSelect(e.target.value)}
         valueSelect={valueSelect}
         onClickBack={onClickBackToChoseHandler}
