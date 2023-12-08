@@ -195,7 +195,7 @@ function ActionBarContainer({
   };
 
   useEffect(() => {
-    setAmount('');
+    clearFunc();
   }, [validatorSelected]);
 
   const clearFunc = () => {
