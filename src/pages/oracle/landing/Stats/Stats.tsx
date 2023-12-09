@@ -81,8 +81,16 @@ function Stats({ type }: Props) {
             content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
             delay={40}
           />{' '}
-          <strong>{text}</strong> {change && <strong>(+{change})</strong>}
-          {/* and <strong>growing</strong> */}
+          <strong>{text}</strong>{' '}
+          {change ? (
+            <p className={styles.change}>
+              | <strong>+{change}</strong> in 24 hours
+            </p>
+          ) : (
+            <>
+              and <strong>growing</strong>
+            </>
+          )}
         </>
       )}
     </div>
