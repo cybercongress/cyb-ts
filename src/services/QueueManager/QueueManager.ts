@@ -35,6 +35,7 @@ import type {
   QueueSource,
   QueueItemAsyncResult,
   QueueItemPostProcessor,
+  EnqueuedIpfsResult,
 } from './QueueManager.d';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -370,7 +371,7 @@ class QueueManager<T extends IPFSContentMaybe> {
   public enqueueAndWait(
     cid: string,
     options: QueueItemOptions = {}
-  ): Promise<QueueItemAsyncResult<T> | undefined> {
+  ): Promise<EnqueuedIpfsResult> {
     return new Promise((resolve) => {
       const callback = ((cid, status, source, result) => {
         if (status === 'completed' || status === 'not_found') {

@@ -22,7 +22,7 @@ export const mapParticleToEntity = (particle: IPFSContent): any => {
     mime: mime || 'unknown',
     type,
     text,
-    sizeLocal: sizeLocal || -1,
+    size_local: sizeLocal || -1,
     blocks: blocks || 0,
   };
 };

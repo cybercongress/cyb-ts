@@ -1,5 +1,7 @@
 import {
   EntryType,
+  ParticleDbEntry,
+  PinDbEntry,
   SyncStatusDbEntry,
   TransactionDbEntry,
 } from 'src/services/CozoDb/types';
@@ -15,7 +17,7 @@ type SyncStatus = {
   timestampRead: number;
 };
 
-function CyberDb() {
+function CybDb() {
   let db: DbWorkerApi | undefined;
 
   const init = (dbApi: DbWorkerApi) => {
@@ -92,6 +94,42 @@ function CyberDb() {
     return result;
   };
 
+  const putPins = async (pins: PinDbEntry[] | PinDbEntry) => {
+    const entitites = Array.isArray(pins) ? pins : [pins];
+    await db!.executePutCommand('pin', entitites);
+  };
+
+  const getPins = async (withType = false) => {
+    const fields = withType ? ['cid', 'type'] : ['cid'];
+    const result = await db!.executeGetCommand('pin', fields);
+
+    if (!result.ok) {
+      throw new Error(result.message);
+    }
+
+    return result;
+  };
+
+  const deletePins = async (entitites: ParticleCid[]) =>
+    db!.executeRmCommand('pin', entitites);
+
+  const putParticles = async (
+    particles: ParticleDbEntry[] | ParticleDbEntry
+  ) => {
+    const entitites = Array.isArray(particles) ? particles : [particles];
+    await db!.executePutCommand('particle', entitites);
+  };
+
+  const getParticles = async (fields: string[]) => {
+    const result = await db!.executeGetCommand('particle', fields);
+
+    if (!result.ok) {
+      throw new Error(result.message);
+    }
+
+    return result;
+  };
+
   return {
     init,
     getSyncStatus,
@@ -99,7 +137,12 @@ function CyberDb() {
     updateSyncStatus,
     putTransactions,
     findSyncStatus,
+    putPins,
+    deletePins,
+    getPins,
+    getParticles,
+    putParticles,
   };
 }
 
-export { CyberDb };
+export { CybDb };

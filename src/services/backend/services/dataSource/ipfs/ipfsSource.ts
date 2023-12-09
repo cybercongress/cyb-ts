@@ -5,43 +5,29 @@ import {
   arrayToAsyncIterable,
 } from 'src/utils/async/iterable';
 
-import {
-  mapParticleToEntity,
-  mapPinToEntity,
-} from 'src/services/CozoDb/mapping';
+import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
 
 import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-import {
-  onProgressCallback,
-  onCompleteCallback,
-} from '../../../services/dataSource/types';
+import { onProgressCallback, onCompleteCallback } from '../types';
+import { LsResult } from 'ipfs-core-types/src/pin';
 
-const importPins = async (
-  node: IpfsNode,
-  dbApi: DbWorkerApi,
-  onProgress?: onProgressCallback,
-  onComplete?: onCompleteCallback
-) => {
-  let conter = 0;
+const fetchPins = async (node: IpfsNode) => {
+  const pins: LsResult[] = [];
   await asyncIterableBatchProcessor(
     node.ls(),
     async (pinsBatch) => {
-      // console.log('----importPins ', pinsBatch);
-
-      const pinsEntities = pinsBatch.map(mapPinToEntity);
-      conter += pinsBatch.length;
-      await dbApi.executeBatchPutCommand(
-        'pin',
-        pinsEntities,
-        pinsBatch.length
-        //   (counter) => onProgress(`⏳ Imported ${counter}/${pins.length} pins.`)
+      // filter only root pins
+      pins.push(
+        ...pinsBatch.filter(
+          (p) => p.type === 'direct' || p.type === 'recursive'
+        )
       );
-      onProgress && onProgress(conter);
     },
     10
   );
-  onComplete && onComplete(conter);
+
+  return pins;
 };
 
 const importParticles = async (
@@ -99,4 +85,4 @@ const importParicleContent = async (
   }
 };
 
-export { importPins, importParticles, importParicleContent, importParticle };
+export { fetchPins, importParticles, importParicleContent, importParticle };

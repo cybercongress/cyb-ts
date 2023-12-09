@@ -28,7 +28,7 @@ import {
   QueueItemCallback,
   QueueItemOptions,
 } from 'src/services/QueueManager/QueueManager.d';
-import { CyberLinkNeuron } from 'src/types/base';
+import { CyberLinkNeuron, ParticleCid } from 'src/types/base';
 
 import {
   importParticles,
@@ -49,7 +49,10 @@ const backendApiFactory = () => {
   const channel = new BcChannel();
   // service to sync updates about cyberlinks, transactions, swarm etc.
 
-  const syncService = new SyncService();
+  const fetchIpfsContent = async (cid: ParticleCid) =>
+    ipfsQueue.enqueueAndWait(cid, { postProcessing: true });
+
+  const syncService = new SyncService(fetchIpfsContent);
 
   const postServiceStatus = (status: ServiceStatus, error?: string) =>
     channel.post({
@@ -57,26 +60,18 @@ const backendApiFactory = () => {
       value: { name: 'ipfs', status, error },
     });
 
-  console.log('----backendApi worker constructor!');
-
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>
     channel.post({ type: 'worker_status', value: { status, lastError } });
 
   const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
     channel.post({ type: 'sync_entry', value: { entry, state } });
 
+  // TODO: fix wrong type is used
   const installDbApi = async (dbApiProxy: DbWorkerApi) => {
     // proxy to worker with db
     dbApi = dbApiProxy;
 
-    // add post processor to queue manager
-    ipfsQueue.setPostProcessor(async (content) => {
-      content &&
-        importApi.importParicleContent({ ...content, result: undefined });
-      return content;
-    });
-
-    syncService.init(dbApi);
+    syncService.initDb(dbApi);
 
     postWorkerStatus('idle');
   };
@@ -184,7 +179,18 @@ const backendApiFactory = () => {
       }
       postServiceStatus('starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
+
       ipfsQueue.setNode(ipfsNode);
+
+      // add post processor to queue manager
+      ipfsQueue.setPostProcessor(async (content) => {
+        content &&
+          importApi.importParicleContent({ ...content, result: undefined });
+        return content;
+      });
+
+      syncService.initIpfs(ipfsNode);
+
       postServiceStatus('started');
       return proxy(ipfsNode);
     } catch (err) {

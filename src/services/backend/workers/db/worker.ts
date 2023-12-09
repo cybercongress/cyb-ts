@@ -36,6 +36,9 @@ const dbApiFactory = () => {
   const executePutCommand = async (tableName: string, array: any[]) =>
     cozoDb.put(tableName, array);
 
+  const executeRmCommand = async (tableName: string, array: any[]) =>
+    cozoDb.rm(tableName, array);
+
   const executeUpdateCommand = async (
     tableName: string,
     array: any[],
@@ -85,6 +88,7 @@ const dbApiFactory = () => {
   return {
     init,
     runCommand,
+    executeRmCommand,
     executePutCommand,
     executeBatchPutCommand,
     executeUpdateCommand,

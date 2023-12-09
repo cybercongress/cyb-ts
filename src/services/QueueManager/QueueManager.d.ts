@@ -67,3 +67,5 @@ export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;
 export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
 ) => Promise<IPFSContentMaybe>;
+
+export type EnqueuedIpfsResult = QueueItemAsyncResult<IPFSContentMaybe>;

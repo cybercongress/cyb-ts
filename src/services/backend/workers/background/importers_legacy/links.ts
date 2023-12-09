@@ -145,8 +145,9 @@ const fetchCyberlinks = async (
 };
 
 export async function* fetchCyberlinksAsyncIterable(
-  particleCid: ParticleCid,
   cyberIndexUrl: string,
+
+  particleCid: ParticleCid,
   timestamp: number
 ): AsyncIterable<Cyberlink[]> {
   let offset = 0;

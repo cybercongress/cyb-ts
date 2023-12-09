@@ -1,7 +1,6 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
-import { Transaction } from 'src/types/transaction';
-
+import { IpfsContentType } from '../ipfs/ipfs';
 type ColumnType = 'String' | 'Int' | 'Bool' | 'Float' | 'Json';
 
 export interface Column {
@@ -34,8 +33,10 @@ export interface IDBResultError {
   ok: false;
 }
 
+export type PinEntryType = Exclude<PinType, 'all'>;
+
 // example of db optimization for classifiers
-export const PinTypeMap: Record<Exclude<PinType, 'all'>, number> = {
+export const PinTypeMap: Record<PinEntryType, number> = {
   indirect: -1,
   direct: 0,
   recursive: 1,
@@ -51,13 +52,6 @@ export type IndexedDbWriteMessage = {
   value: number;
 };
 
-// export type EntryType = 'transactions' | 'particle';
-
-// export const EntryTypeMap: Record<EntryType, number> = {
-//   transactions: 1,
-//   particle: 2,
-// };
-
 export enum EntryType {
   transactions = 1,
   particle = 2,
@@ -67,7 +61,7 @@ export type TransactionDbEntry = {
   hash: string;
   type: string;
   timestamp: number;
-  value: Transaction;
+  value: Object; // Transaction;
   success: boolean;
   neuron_address: NeuronAddress;
 };
@@ -79,4 +73,14 @@ export type SyncStatusDbEntry = {
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
+};
+
+export type ParticleDbEntry = {
+  id: ParticleCid;
+  size: number;
+  size_local: number;
+  blocks: number;
+  mime: string;
+  type: IpfsContentType;
+  text: string;
 };

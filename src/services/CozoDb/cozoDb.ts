@@ -18,6 +18,10 @@ const DB_STORE_NAME = 'cozodb';
 function CozoDbCommandFactory(dbSchema: DBSchema) {
   const schema = dbSchema;
 
+  const generateRmCommand = (tableName: string, keys: string[]): string => {
+    return `:rm ${tableName} {${keys}}`;
+  };
+
   const generateModifyCommand = (
     tableName: string,
     command: 'put' | 'update' = 'put',
@@ -50,7 +54,7 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
               acc[key] = tableSchema.columns[key];
             }
             return acc;
-          }, {} as Partial<Record<string, Column>>)
+          }, {} as Record<string, Column>)
         : tableSchema.columns;
 
     const colKeys = Object.keys(selectedColumns);
@@ -65,6 +69,14 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
     const atomCommand = generateAtomCommand(tableName, array);
     const putCommand = generateModifyCommand(tableName, 'put');
     return `${atomCommand}\r\n${putCommand}`;
+  };
+
+  const generateRm = (tableName: string, array: any[][]) => {
+    const { keys } = schema[tableName];
+
+    const atomCommand = generateAtomCommand(tableName, array, keys);
+    const rmCommand = generateRmCommand(tableName, keys);
+    return `${atomCommand}\r\n${rmCommand}`;
   };
 
   const generateUpdate = (
@@ -104,6 +116,7 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
     generatePut,
     generateGet,
     generateUpdate,
+    generateRm,
   };
 }
 
@@ -199,6 +212,12 @@ function DbService() {
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(commandFactory!.generatePut(tableName, array));
 
+  const rm = async (
+    tableName: string,
+    array: any[][]
+  ): Promise<IDBResult | IDBResultError> =>
+    runCommand(commandFactory!.generateRm(tableName, array));
+
   const update = async (
     tableName: string,
     array: any[][],
@@ -232,6 +251,7 @@ function DbService() {
     init,
     put,
     get,
+    rm,
     update,
     runCommand,
     getCommandFactory: () => commandFactory,

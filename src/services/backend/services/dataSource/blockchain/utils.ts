@@ -5,13 +5,13 @@ export async function* fetchIterable<T>(
     timestamp: number,
     offset: number
   ) => Promise<T[]>,
-  id: string,
   cyberIndexUrl: string,
+  id: string,
   timestamp: number
 ): AsyncGenerator<T[], void, undefined> {
   let offset = 0;
   while (true) {
-    const items = await fetchFunction(id, cyberIndexUrl, timestamp, offset);
+    const items = await fetchFunction(cyberIndexUrl, id, timestamp, offset);
 
     if (items.length === 0) {
       break;

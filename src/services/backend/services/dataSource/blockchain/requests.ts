@@ -97,8 +97,8 @@ const fetchTransactions = async (
 };
 
 const fetchCyberlinks = async (
-  particleCid: ParticleCid,
   cyberIndexUrl: string,
+  particleCid: ParticleCid,
   timestampFrom: number,
   offset = 0
 ) => {

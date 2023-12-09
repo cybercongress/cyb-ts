@@ -49,7 +49,11 @@ function dbServiceApi() {
         return result.ok ? 'success' : 'error';
       }
 
-      dbApiProxy.executeUpdateCommand(tableName, data);
+      if (action === 'update') {
+        dbApiProxy.executeUpdateCommand(tableName, data);
+      }
+
+      dbApiProxy.executeRmCommand(tableName, data);
     }
 
     tmpQueue.push(item);
@@ -82,6 +86,14 @@ function dbServiceApi() {
       data: array,
       isBatch: false,
       action: 'put',
+    });
+
+  const executeRmCommand = async (tableName: string, array: any[]) =>
+    executeOrEnqueue({
+      tableName,
+      data: array,
+      isBatch: false,
+      action: 'rm',
     });
 
   const executeUpdateCommand = async (tableName: string, array: any[]) =>
@@ -118,6 +130,7 @@ function dbServiceApi() {
     executePutCommand,
     executeUpdateCommand,
     executeBatchPutCommand,
+    executeRmCommand,
     runCommand,
     executeGetCommand,
     importRelations,

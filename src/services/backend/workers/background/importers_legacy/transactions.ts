@@ -5,7 +5,10 @@ import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { numberToDate } from 'src/utils/date';
 import { Transaction } from 'src/types/transaction';
 import { NeuronAddress } from 'src/types/base';
-import { onCompleteCallback, onProgressCallback } from '../types';
+import {
+  onCompleteCallback,
+  onProgressCallback,
+} from '../../../services/dataSource/types';
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp) {
