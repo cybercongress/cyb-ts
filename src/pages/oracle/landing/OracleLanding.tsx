@@ -85,7 +85,7 @@ function OracleLanding() {
       Object.entries(mapTitleTypeToTitle).find(
         ([, value]) => value === type
       )?.[0]
-    ) || TitleType.ai
+    ) ?? TitleType.ai
   );
 
   const [isRenderGraph, setIsRenderGraph] = useState(false);
