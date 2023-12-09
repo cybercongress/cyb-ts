@@ -85,8 +85,9 @@ function OracleLanding() {
       Object.entries(mapTitleTypeToTitle).find(
         ([, value]) => value === type
       )?.[0]
-    ) || TitleType.search
+    ) ?? TitleType.ai
   );
+
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
@@ -139,6 +140,7 @@ function OracleLanding() {
       <header className={styles.header}>
         <Carousel
           color="blue"
+          noAnimation
           activeStep={titleType}
           onChange={(index: TitleType) => {
             setTitleType(index);
