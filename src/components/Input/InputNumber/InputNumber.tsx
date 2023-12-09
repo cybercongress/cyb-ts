@@ -38,7 +38,10 @@ function InputNumber({
       customInput={Input}
       isAllowed={(values) => {
         const { floatValue } = values;
-        return floatValue <= maxValue;
+        if (typeof floatValue === 'number' && maxValue) {
+          return floatValue <= maxValue;
+        }
+        return true;
       }}
       maxValue={maxValue}
       thousandsGroupStyle="thousand"
