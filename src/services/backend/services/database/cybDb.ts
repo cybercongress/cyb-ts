@@ -1,11 +1,11 @@
 import {
   EntryType,
-  ParticleDbEntry,
+  ParticleDbEntity,
   PinDbEntry,
-  SyncStatusDbEntry,
-  TransactionDbEntry,
+  SyncStatusDbEntity,
+  TransactionDbEntity,
 } from 'src/services/CozoDb/types';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 import { DbWorkerApi } from '../../workers/db/worker';
 
@@ -48,7 +48,7 @@ function CybDb() {
   };
 
   const putSyncStatus = async (
-    entity: SyncStatusDbEntry[] | SyncStatusDbEntry
+    entity: SyncStatusDbEntity[] | SyncStatusDbEntity
   ) => {
     const entitites = Array.isArray(entity) ? entity : [entity];
     await db!.executePutCommand('sync_status', entitites);
@@ -58,18 +58,21 @@ function CybDb() {
     id: NeuronAddress | ParticleCid,
     timestampUpdate: number,
     timestampRead: number,
-    unreadCount: number
+    unreadCount: number,
+    lastEntityId: TransactionHash | ParticleCid = ''
   ) => {
     const entity = {
       id,
       timestamp_update: timestampUpdate,
       timestamp_read: timestampRead,
       unread_count: unreadCount,
-    };
+      last_id: lastEntityId,
+    } as Partial<SyncStatusDbEntity>;
+
     db!.executeUpdateCommand('sync_status', [entity]);
   };
 
-  const putTransactions = async (transactions: TransactionDbEntry[]) =>
+  const putTransactions = async (transactions: TransactionDbEntity[]) =>
     db!.executePutCommand('transaction', transactions);
 
   const findSyncStatus = async (
@@ -110,11 +113,14 @@ function CybDb() {
     return result;
   };
 
-  const deletePins = async (entitites: ParticleCid[]) =>
-    db!.executeRmCommand('pin', entitites);
+  const deletePins = async (pins: ParticleCid[]) =>
+    db!.executeRmCommand(
+      'pin',
+      pins.map((cid) => ({ cid } as Partial<PinDbEntry>))
+    );
 
   const putParticles = async (
-    particles: ParticleDbEntry[] | ParticleDbEntry
+    particles: ParticleDbEntity[] | ParticleDbEntity
   ) => {
     const entitites = Array.isArray(particles) ? particles : [particles];
     await db!.executePutCommand('particle', entitites);

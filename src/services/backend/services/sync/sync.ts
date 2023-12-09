@@ -11,7 +11,7 @@ import {
 } from 'rxjs';
 import { concatMap, map, startWith, tap } from 'rxjs/operators';
 import { EntryType } from 'src/services/CozoDb/types';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import {
   mapPinToEntity,
   mapSyncStatusToEntity,
@@ -22,7 +22,7 @@ import { CID_TWEET } from 'src/utils/consts';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import { DbWorkerApi } from '../../workers/db/worker';
-import { CybDb } from '../database/cyberDb';
+import { CybDb } from '../database/cybDb';
 import {
   fetchCyberlinkSyncStats,
   fetchTransactionsIterable,
@@ -183,10 +183,13 @@ export class SyncService {
 
     let count = 0;
     let lastTimestamp: number | undefined;
+    let lastTransactionHash: TransactionHash = '';
     // eslint-disable-next-line no-restricted-syntax
     for await (const batch of transactionsAsyncIterable) {
       if (!lastTimestamp) {
-        lastTimestamp = dateToNumber(batch.at(0)!.transaction.block.timestamp);
+        const lastItem = batch.at(0)!;
+        lastTimestamp = dateToNumber(lastItem.transaction.block.timestamp);
+        lastTransactionHash = lastItem.transaction_hash;
       }
 
       count += batch.length;
@@ -219,6 +222,7 @@ export class SyncService {
         unread_count: unreadCount + count,
         timestamp_read: timestampRead,
         disabled: false,
+        last_id: lastTransactionHash,
       });
     }
 
@@ -235,7 +239,7 @@ export class SyncService {
       const [id, unreadCount, timestampUpdate, timestampRead] = row;
 
       // fetch new links with particle
-      const { firstTimestamp, lastTimestamp, count } =
+      const { firstTimestamp, lastTimestamp, count, lastParticle } =
         await fetchCyberlinkSyncStats(
           this.params.cyberIndexUrl!,
           id as string,
@@ -246,7 +250,8 @@ export class SyncService {
         id as string,
         lastTimestamp,
         (unreadCount as number) + count,
-        (unreadCount as number) ? (timestampRead as number) : firstTimestamp
+        (unreadCount as number) ? (timestampRead as number) : firstTimestamp,
+        lastParticle
       );
     });
   }

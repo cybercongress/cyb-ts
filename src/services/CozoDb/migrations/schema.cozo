@@ -42,6 +42,15 @@
         disabled: Bool,
         timestamp_update: Int,
         timestamp_read: Int,
-        unread_count: Int
+        unread_count: Int,
+        last_id: String
+    }
+}
+
+{
+    :create config {
+        key: String,
+        group_key: String =>
+        value: Json
     }
 }

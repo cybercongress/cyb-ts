@@ -22,6 +22,8 @@ type CyberlinksSyncStatsResponse = {
   }[];
   last: {
     timestamp: string;
+    to: ParticleCid;
+    from: ParticleCid;
   }[];
 };
 
@@ -72,7 +74,9 @@ const cyberlinksSyncStats = gql(`
       timestamp
     }
     last: cyberlinks(limit: 1, order_by: { timestamp: desc }, where: $where) {
-      timestamp
+      timestamp,
+      to: particle_to,
+      from: particle_from
     }
   }
 `);
@@ -176,13 +180,6 @@ const fetchCyberlinkSyncStats = async (
     }
   );
 
-  console.log(
-    '-----fetchCyberlinkAggregateInfo',
-    particleCid,
-    timestampFrom,
-    res
-  );
-
   const {
     first,
     last,
@@ -190,9 +187,17 @@ const fetchCyberlinkSyncStats = async (
       aggregate: { count },
     },
   } = res;
+  const lastCyberlink = last[0];
+  const lastParticle =
+    lastCyberlink &&
+    (lastCyberlink.from === particleCid
+      ? lastCyberlink.to
+      : lastCyberlink.from);
+
   return {
     firstTimestamp: first.length > 0 ? dateToNumber(first[0].timestamp) : 0,
-    lastTimestamp: last.length > 0 ? dateToNumber(last[0].timestamp) : 0,
+    lastTimestamp: lastCyberlink ? dateToNumber(lastCyberlink.timestamp) : 0,
+    lastParticle,
     count,
   };
 };

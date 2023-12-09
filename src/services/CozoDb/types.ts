@@ -1,6 +1,7 @@
 import { PinType } from 'ipfs-core-types/src/pin';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { IpfsContentType } from '../ipfs/ipfs';
+import { JsonObject } from '@cybercongress/cyber-js/build/cyberclient';
 type ColumnType = 'String' | 'Int' | 'Bool' | 'Float' | 'Json';
 
 export interface Column {
@@ -57,7 +58,7 @@ export enum EntryType {
   particle = 2,
 }
 
-export type TransactionDbEntry = {
+export type TransactionDbEntity = {
   hash: string;
   type: string;
   timestamp: number;
@@ -66,16 +67,17 @@ export type TransactionDbEntry = {
   neuron_address: NeuronAddress;
 };
 
-export type SyncStatusDbEntry = {
+export type SyncStatusDbEntity = {
   entry_type: EntryType;
   id: NeuronAddress | ParticleCid;
   timestamp_update: number;
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
+  last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
 };
 
-export type ParticleDbEntry = {
+export type ParticleDbEntity = {
   id: ParticleCid;
   size: number;
   size_local: number;
@@ -84,3 +86,15 @@ export type ParticleDbEntry = {
   type: IpfsContentType;
   text: string;
 };
+
+export type ConfigDbEntity = {
+  key: string;
+  group_key: string;
+  value: JsonObject;
+};
+
+export type DbEntity =
+  | TransactionDbEntity
+  | ParticleDbEntity
+  | SyncStatusDbEntity
+  | ConfigDbEntity;

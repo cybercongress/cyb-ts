@@ -4,8 +4,8 @@ import { IPFSContent } from 'src/utils/ipfs/ipfs';
 import {
   PinTypeMap,
   EntryType,
-  TransactionDbEntry,
-  SyncStatusDbEntry,
+  TransactionDbEntity,
+  SyncStatusDbEntity,
 } from './types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { dateToNumber } from 'src/utils/date';
@@ -36,7 +36,7 @@ export const mapPinToEntity = (pin: LsResult) => ({
 export const mapTransactionToEntity = (
   neuron: string,
   tx: Transaction
-): TransactionDbEntry => {
+): TransactionDbEntity => {
   const {
     transaction_hash,
     transaction: {
@@ -62,8 +62,9 @@ export const mapSyncStatusToEntity = (
   entryType: EntryType,
   unreadCount: int,
   timestampUpdate: number,
+  lastId: TransactionHash | ParticleCid = '',
   timestampRead: number = timestampUpdate
-): SyncStatusDbEntry => {
+): SyncStatusDbEntity => {
   return {
     entry_type: entryType,
     id,
@@ -71,5 +72,6 @@ export const mapSyncStatusToEntity = (
     timestamp_read: timestampRead,
     unread_count: unreadCount,
     disabled: false,
+    last_id: lastId,
   };
 };

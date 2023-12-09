@@ -1,8 +1,10 @@
+import { DbEntity } from 'src/services/CozoDb/types';
+
 export type DbStackItem = {
   isBatch: boolean;
   tableName: string;
   action: 'put' | 'update' | 'rm';
-  data: any[] | any[][];
+  data: DbEntity[];
   batchSize?: number;
   onProgress?: (count: number) => void;
 };

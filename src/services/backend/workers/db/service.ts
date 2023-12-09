@@ -2,6 +2,7 @@ import { proxy, transferHandlers } from 'comlink';
 import { BehaviorSubject } from 'rxjs';
 
 import { WorkerUrl } from 'worker-url';
+import { DbEntity } from 'src/services/CozoDb/types';
 
 import { DbWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
@@ -30,14 +31,15 @@ function dbServiceApi() {
     }
   });
 
-  // execute Pu command or
+  // execute [modify] command or
   // push into queue until DB not is ready
   const executeOrEnqueue = async (item: DbQueueItem) => {
     if (isInitialized$.value) {
       const { tableName, data, batchSize, onProgress, isBatch, action } = item;
       // single/batch mode
+      let result: { ok: boolean } | undefined;
       if (action === 'put') {
-        const result = await (isBatch
+        result = await (isBatch
           ? dbApiProxy.executeBatchPutCommand(
               tableName,
               data,
@@ -45,15 +47,20 @@ function dbServiceApi() {
               onProgress ? proxy(onProgress) : undefined
             )
           : dbApiProxy.executePutCommand(tableName, data));
-
-        return result.ok ? 'success' : 'error';
       }
 
       if (action === 'update') {
-        dbApiProxy.executeUpdateCommand(tableName, data);
+        result = await dbApiProxy.executeUpdateCommand(tableName, data);
+      }
+      if (action === 'rm') {
+        result = await dbApiProxy.executeRmCommand(tableName, data);
       }
 
-      dbApiProxy.executeRmCommand(tableName, data);
+      if (!result) {
+        throw new Error('Unknown action');
+      }
+
+      return result.ok ? 'success' : 'error';
     }
 
     tmpQueue.push(item);
@@ -80,7 +87,7 @@ function dbServiceApi() {
       conditionFields
     );
 
-  const executePutCommand = async (tableName: string, array: any[]) =>
+  const executePutCommand = async (tableName: string, array: DbEntity[]) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -88,7 +95,7 @@ function dbServiceApi() {
       action: 'put',
     });
 
-  const executeRmCommand = async (tableName: string, array: any[]) =>
+  const executeRmCommand = async (tableName: string, array: DbEntity[]) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -96,7 +103,7 @@ function dbServiceApi() {
       action: 'rm',
     });
 
-  const executeUpdateCommand = async (tableName: string, array: any[]) =>
+  const executeUpdateCommand = async (tableName: string, array: DbEntity[]) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -106,7 +113,7 @@ function dbServiceApi() {
 
   const executeBatchPutCommand = async (
     tableName: string,
-    array: any[][],
+    array: DbEntity[],
     batchSize: number,
     onProgress?: (count: number) => void
   ) =>

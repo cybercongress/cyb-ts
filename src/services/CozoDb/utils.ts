@@ -5,6 +5,7 @@ import {
   DBResultWithColIndex,
   DBValue,
   Column,
+  DbEntity,
 } from './types';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
@@ -30,18 +31,20 @@ export const toListOfObjects = <T extends Record<string, any>>({
   });
 };
 
-export const mapObjectToArray = (
-  obj: Record<string, DBValue>,
+export const entityToArray = (
+  obj: Partial<DbEntity>,
   columns: Column[]
 ): string => {
   return `[${columns
-    .map((col) =>
-      col.type === 'Json'
-        ? `'${JSON.stringify(obj[col.column])}'`
+    .map((col) => {
+      const key = col.column as keyof DbEntity;
+      const value = obj[key];
+      return col.type === 'Json'
+        ? `'${JSON.stringify(value)}'`
         : col.type === 'String'
-        ? `"${obj[col.column]}"`
-        : obj[col.column]
-    )
+        ? `"${value}"`
+        : value;
+    })
     .join(', ')}]`;
 };
 
@@ -74,3 +77,46 @@ export const dbResultToObjects = (
     return obj;
   });
 };
+
+export function resetIndexedDBStore(
+  dbName: string,
+  storeName: string
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const dbOpenReq = indexedDB.open(dbName, 1);
+
+    dbOpenReq.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName);
+      }
+    };
+
+    dbOpenReq.onsuccess = (event: Event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction(storeName, 'readwrite');
+      const objectStore = transaction.objectStore(storeName);
+      const clearReq = objectStore.clear();
+
+      clearReq.onsuccess = () => {
+        resolve(`${dbName}-${storeName} store cleared successfully`);
+      };
+
+      clearReq.onerror = () => {
+        reject(
+          new Error(
+            `Error clearing ${dbName}-${storeName} store: ${clearReq.error}`
+          )
+        );
+      };
+    };
+
+    dbOpenReq.onerror = (event: Event) => {
+      reject(
+        new Error(
+          `Error opening ${dbName}-${storeName} IndexedB: ${dbOpenReq.error}`
+        )
+      );
+    };
+  });
+}

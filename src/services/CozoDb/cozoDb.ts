@@ -6,14 +6,16 @@ import {
   DBSchema,
   IDBResultError,
   TableSchema,
+  DbEntity,
 } from './types';
 
-import { toListOfObjects, mapObjectToArray } from './utils';
+import { toListOfObjects, entityToArray, resetIndexedDBStore } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
 
-const DB_NAME = 'cozo-idb-demo';
+const DB_NAME = 'cyb-cozo-idb';
 const DB_STORE_NAME = 'cozodb';
+const DB_VERSION = '1.1';
 
 function CozoDbCommandFactory(dbSchema: DBSchema) {
   const schema = dbSchema;
@@ -42,7 +44,7 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
 
   const generateAtomCommand = (
     tableName: string,
-    items: any[],
+    items: Partial<DbEntity>[],
     fieldNames: string[] = []
   ): string => {
     const tableSchema = dbSchema[tableName];
@@ -61,31 +63,29 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
     const colValues = Object.values(selectedColumns) as Column[];
 
     return `?[${colKeys.join(', ')}] <- [${items
-      .map((item) => mapObjectToArray(item, colValues))
+      .map((item) => entityToArray(item, colValues))
       .join(', ')}]`;
   };
 
-  const generatePut = (tableName: string, array: any[][]) => {
+  const generatePut = (tableName: string, array: DbEntity[]) => {
     const atomCommand = generateAtomCommand(tableName, array);
     const putCommand = generateModifyCommand(tableName, 'put');
     return `${atomCommand}\r\n${putCommand}`;
   };
 
-  const generateRm = (tableName: string, array: any[][]) => {
+  const generateRm = (tableName: string, keyValues: Partial<DbEntity>[]) => {
     const { keys } = schema[tableName];
 
-    const atomCommand = generateAtomCommand(tableName, array, keys);
+    const atomCommand = generateAtomCommand(tableName, keyValues, keys);
     const rmCommand = generateRmCommand(tableName, keys);
     return `${atomCommand}\r\n${rmCommand}`;
   };
 
-  const generateUpdate = (
-    tableName: string,
-    array: any[][],
-    fileds: string[]
-  ) => {
-    const atomCommand = generateAtomCommand(tableName, array, fileds);
-    const updateCommand = generateModifyCommand(tableName, 'update', fileds);
+  const generateUpdate = (tableName: string, array: Partial<DbEntity>[]) => {
+    // align fields by first entity
+    const fields = Object.keys(array[0]);
+    const atomCommand = generateAtomCommand(tableName, array, fields);
+    const updateCommand = generateModifyCommand(tableName, 'update', fields);
     return `${atomCommand}\r\n${updateCommand}`;
   };
 
@@ -136,6 +136,7 @@ function DbService() {
     await initCozoDb();
 
     db = await CozoDb.new_from_indexed_db(DB_NAME, DB_STORE_NAME, onWrite);
+    console.log('----db', db);
     dbSchema = await initDbSchema();
     commandFactory = CozoDbCommandFactory(dbSchema);
 
@@ -153,14 +154,8 @@ function DbService() {
   };
 
   const initDbSchema = async (): Promise<DBSchema> => {
-    let relations = await getRelations();
-
-    if (relations.length === 0) {
-      console.log('CozoDb: apply DB schema', initializeScript);
-      runCommand(initializeScript);
-      relations = await getRelations();
-    }
-
+    const relations = await migrate();
+    console.log('-------initDbSchema', relations);
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
         const columnResult = await runCommand(`::columns ${table}`);
@@ -192,6 +187,43 @@ function DbService() {
     return Object.fromEntries(schemasMap);
   };
 
+  const getVersion = async () => {
+    const versionData = await get(
+      'config',
+      ['value'],
+      ['key = "DB_VERSION"'],
+      ['key']
+    );
+    if (versionData.ok === false) {
+      throw new Error(versionData.message);
+    }
+    return (versionData.rows[0][0] as string) || undefined;
+  };
+
+  const migrate = async () => {
+    let relations = await getRelations();
+    if (relations.length === 0) {
+      console.log('CozoDb: apply DB schema', initializeScript);
+      runCommand(initializeScript);
+
+      // set initial version
+      // await put('config', [
+      //   {
+      //     key: 'DB_VERSION',
+      //     group_key: 'system',
+      //     value: DB_VERSION,
+      //   },
+      // ]);
+
+      // const version = await getVersion();
+      // console.log(`DB Version ${version}`);
+
+      relations = await getRelations();
+    }
+
+    return relations;
+  };
+
   const runCommand = async (
     command: string,
     immutable = false
@@ -208,24 +240,23 @@ function DbService() {
 
   const put = async (
     tableName: string,
-    array: any[][]
+    array: DbEntity[]
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(commandFactory!.generatePut(tableName, array));
 
   const rm = async (
     tableName: string,
-    array: any[][]
+    keyValues: Partial<DbEntity>[]
   ): Promise<IDBResult | IDBResultError> =>
-    runCommand(commandFactory!.generateRm(tableName, array));
+    runCommand(commandFactory!.generateRm(tableName, keyValues));
 
   const update = async (
     tableName: string,
-    array: any[][],
-    fieldNames: string[]
+    array: Partial<DbEntity>[]
   ): Promise<IDBResult | IDBResultError> =>
-    runCommand(commandFactory!.generateUpdate(tableName, array, fieldNames));
+    runCommand(commandFactory!.generateUpdate(tableName, array));
 
-  const get = (
+  const get = async (
     tableName: string,
     selectFields: string[] = [],
     conditions: string[] = [],

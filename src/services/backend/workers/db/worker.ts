@@ -2,6 +2,7 @@ import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 import cozoDb from 'src/services/CozoDb/cozoDb';
 import { exposeWorkerApi } from '../factoryMethods';
 import { ServiceStatus } from '../../types';
+import { DbEntity } from 'src/services/CozoDb/types';
 
 const dbApiFactory = () => {
   let isInitialized = false;
@@ -33,17 +34,18 @@ const dbApiFactory = () => {
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
 
-  const executePutCommand = async (tableName: string, array: any[]) =>
+  const executePutCommand = async (tableName: string, array: DbEntity[]) =>
     cozoDb.put(tableName, array);
 
-  const executeRmCommand = async (tableName: string, array: any[]) =>
-    cozoDb.rm(tableName, array);
+  const executeRmCommand = async (
+    tableName: string,
+    keyValues: Partial<DbEntity>[]
+  ) => cozoDb.rm(tableName, keyValues);
 
   const executeUpdateCommand = async (
     tableName: string,
-    array: any[],
-    fieldNames: string[] = []
-  ) => cozoDb.update(tableName, array, fieldNames);
+    array: Partial<DbEntity>[]
+  ) => cozoDb.update(tableName, array);
 
   const executeGetCommand = async (
     tableName: string,
@@ -60,7 +62,7 @@ const dbApiFactory = () => {
 
   const executeBatchPutCommand = async (
     tableName: string,
-    array: any[],
+    array: DbEntity[],
     batchSize: number = array.length,
     onProgress?: (count: number) => void
   ) => {
