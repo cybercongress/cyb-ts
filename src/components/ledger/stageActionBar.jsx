@@ -1070,39 +1070,9 @@ export function ConnectAddress({
   selectNetworkFunc,
   selectNetwork,
   connctAddress,
-  web3,
-  selectAccount,
   keplr,
   onClickBack,
 }) {
-  const [cyberNetwork, setCyberNetwork] = useState(true);
-  const [cosmosNetwork, setCosmosNetwork] = useState(true);
-  const [ethNetwork, setEthrNetwork] = useState(true);
-
-  useEffect(() => {
-    if (selectAccount && selectAccount !== null) {
-      if (selectAccount.cyber) {
-        setCyberNetwork(false);
-      } else {
-        setCyberNetwork(true);
-      }
-      if (selectAccount.cosmos) {
-        setCosmosNetwork(false);
-      } else {
-        setCosmosNetwork(true);
-      }
-      if (selectAccount.eth) {
-        setEthrNetwork(false);
-      } else {
-        setEthrNetwork(true);
-      }
-    } else {
-      setEthrNetwork(true);
-      setCosmosNetwork(true);
-      setCyberNetwork(true);
-    }
-  }, [selectAccount]);
-
   return (
     <ActionBarContainer
       button={{
@@ -1113,81 +1083,40 @@ export function ConnectAddress({
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {(cyberNetwork || cosmosNetwork) && (
-          <>
-            {/* <ButtonIcon
-                onClick={() => selectMethodFunc('ledger')}
-                active={selectMethod === 'ledger'}
-                img={imgLedger}
-                text="ledger"
-              /> */}
-            {keplr ? (
-              <ButtonIcon
-                onClick={() => selectMethodFunc('keplr')}
-                active={selectMethod === 'keplr'}
-                img={imgKeplr}
-                text="keplr"
+        {keplr ? (
+          <ButtonIcon
+            onClick={() => selectMethodFunc('keplr')}
+            active={selectMethod === 'keplr'}
+            img={imgKeplr}
+            text="keplr"
+          />
+        ) : (
+          <LinkWindow to="https://www.keplr.app/">
+            <Pane marginRight={5} width={34} height={30}>
+              <img
+                style={{ width: '34px', height: '30px' }}
+                src={imgKeplr}
+                alt="icon"
               />
-            ) : (
-              <LinkWindow to="https://www.keplr.app/">
-                <Pane marginRight={5} width={34} height={30}>
-                  <img
-                    style={{ width: '34px', height: '30px' }}
-                    src={imgKeplr}
-                    alt="icon"
-                  />
-                </Pane>
-              </LinkWindow>
-            )}
-          </>
+            </Pane>
+          </LinkWindow>
         )}
-        {web3 && web3 !== null && ethNetwork && (
-          <ButtonIcon
-            onClick={() => selectMethodFunc('MetaMask')}
-            active={selectMethod === 'MetaMask'}
-            img={imgMetaMask}
-            text="metaMask"
-          />
-        )}
-        {(cyberNetwork || cosmosNetwork) && (
-          <ButtonIcon
-            onClick={() => selectMethodFunc('read-only')}
-            active={selectMethod === 'read-only'}
-            img={imgRead}
-            text="read-only"
-          />
-        )}
+
+        <ButtonIcon
+          onClick={() => selectMethodFunc('read-only')}
+          active={selectMethod === 'read-only'}
+          img={imgRead}
+          text="read-only"
+        />
       </Pane>
       <span style={{ fontSize: '18px' }}>in</span>
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {selectMethod === 'MetaMask' && (
-          <ButtonIcon
-            img={imgEth}
-            text="eth"
-            onClick={() => selectNetworkFunc('eth')}
-            active={selectNetwork === 'eth'}
-          />
-        )}
-        {selectMethod !== 'MetaMask' && (
-          <>
-            {cyberNetwork && (
-              <ButtonIcon
-                onClick={() => selectNetworkFunc('cyber')}
-                active={selectNetwork === 'cyber'}
-                img={selectNetworkImg(CYBER.CHAIN_ID)}
-                text={CYBER.CHAIN_ID}
-              />
-            )}
-            {cosmosNetwork && (
-              <ButtonIcon
-                img={imgCosmos}
-                text="cosmos"
-                onClick={() => selectNetworkFunc('cosmos')}
-                active={selectNetwork === 'cosmos'}
-              />
-            )}
-          </>
-        )}
+        <ButtonIcon
+          onClick={() => selectNetworkFunc('cyber')}
+          active={selectNetwork === 'cyber'}
+          img={selectNetworkImg(CYBER.CHAIN_ID)}
+          text={CYBER.CHAIN_ID}
+        />
       </Pane>
     </ActionBarContainer>
   );

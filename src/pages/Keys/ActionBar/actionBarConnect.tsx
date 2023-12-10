@@ -2,28 +2,22 @@
 import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import {
-  ConnectLadger,
   Dots,
   ConnectAddress,
   TransactionError,
   Input,
   ActionBar,
-} from 'components';
-import { LEDGER, CYBER, PATTERN_COSMOS, PATTERN_CYBER } from 'src/utils/config';
-import { fromBech32 } from 'src/utils/utils';
+} from 'src/components';
+import { LEDGER, CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { useSigningClient } from 'src/contexts/signerClient';
-import Button from 'src/components/btnGrd';
 import { useDispatch } from 'react-redux';
 import { initPocket, setDefaultAccount } from 'src/redux/features/pocket';
 
-const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
+const { STAGE_INIT, HDPATH, STAGE_ERROR } =
   LEDGER;
 
-const STAGE_ADD_ADDRESS_LEDGER = 1.1;
 const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
-const LEDGER_TX_ACOUNT_INFO = 2.5;
-const STAGE_HDPATH = 1.7;
 
 const checkAddress = (obj, network, address) =>
   Object.keys(obj).some((k) => {
@@ -36,18 +30,14 @@ function ActionBarConnect({
   addAddress,
   updateAddress,
   updateFuncActionBar,
-  web3,
   onClickBack,
   selectAccount,
 }) {
   const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
-  const [hdpath, setHDpath] = useState([44, 118, 0, 0, 0]);
-  const [connectLedger, setConnectLedger] = useState(null);
   const [valueInputAddres, setValueInputAddres] = useState('');
   const [selectMethod, setSelectMethod] = useState('');
-  const [selectNetwork, setSelectNetwork] = useState('');
-  const [addressLedger, setAddressLedger] = useState(null);
+  const [selectNetwork, setSelectNetwork] = useState('cyber');
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
 
@@ -60,35 +50,8 @@ function ActionBarConnect({
   }, [stage, addAddress]);
 
   useEffect(() => {
-    if (selectAccount && selectAccount !== null) {
-      if (selectAccount.cosmos && selectMethod !== 'MetaMask') {
-        setSelectNetwork('cyber');
-      }
-
-      if (selectAccount.cyber && selectMethod !== 'MetaMask') {
-        setSelectNetwork('cosmos');
-      }
-
-      if (selectAccount.cyber && selectAccount.cosmos) {
-        setSelectMethod('MetaMask');
-        setSelectNetwork('eth');
-      }
-    } else {
-      setSelectNetwork('cyber');
-    }
-  }, [selectAccount, selectMethod]);
-
-  useEffect(() => {
     if (selectNetwork === 'cyber') {
       if (valueInputAddres.match(PATTERN_CYBER)) {
-        setValidAddressAddedUser(false);
-      } else {
-        setValidAddressAddedUser(true);
-      }
-    }
-
-    if (selectNetwork === 'cosmos') {
-      if (valueInputAddres.match(PATTERN_COSMOS)) {
         setValidAddressAddedUser(false);
       } else {
         setValidAddressAddedUser(true);
@@ -102,10 +65,6 @@ function ActionBarConnect({
         connectKeplr();
         break;
 
-      case 'MetaMask':
-        onClickConnectWeb3();
-        break;
-
       default:
         onClickAddAddressUser();
         break;
@@ -115,11 +74,8 @@ function ActionBarConnect({
   const clearState = () => {
     setStage(STAGE_INIT);
     setValueInputAddres('');
-    setHDpath(HDPATH);
-    setConnectLedger(null);
     setSelectMethod('');
     setSelectNetwork('');
-    setAddressLedger(null);
     setAddCyberAddress(false);
     setValidAddressAddedUser(true);
   };
@@ -157,26 +113,12 @@ function ActionBarConnect({
       if (valueInputAddres.match(PATTERN_CYBER)) {
         cyberAddress = valueInputAddres;
       }
-      if (valueInputAddres.match(PATTERN_COSMOS)) {
-        cyberAddress = fromBech32(
-          valueInputAddres,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-        );
-      }
+
       if (
         selectAccount !== null ||
         !checkAddress(valueObj, 'cyber', cyberAddress)
       ) {
         accounts.cyber = { bech32: cyberAddress, keys: 'read-only' };
-      }
-    }
-    if (selectNetwork === 'cosmos') {
-      const cosmosAddress = valueInputAddres;
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cosmos', cosmosAddress)
-      ) {
-        accounts.cosmos = { bech32: cosmosAddress, keys: 'read-only' };
       }
     }
 
@@ -221,94 +163,6 @@ function ActionBarConnect({
             'pocket',
             JSON.stringify(localStoragePocketData)
           );
-        }
-      }
-      clearState();
-      if (updateAddress) {
-        updateAddress();
-      }
-      if (updateFuncActionBar) {
-        updateFuncActionBar();
-      }
-    }
-  };
-
-  const onClickConnectWeb3 = async () => {
-    const accounts = {};
-    let key = 'Account 1';
-    let dataPocketAccount = null;
-    let pocketAccount = {};
-    let count = 1;
-
-    const localStorageStory = await localStorage.getItem('pocketAccount');
-    const localStoragePocket = await localStorage.getItem('pocket');
-    const localStorageCount = await localStorage.getItem('count');
-    if (localStorageCount !== null) {
-      const dataCount = JSON.parse(localStorageCount);
-      count = parseFloat(dataCount);
-      key = `Account ${count}`;
-    }
-    localStorage.setItem('count', JSON.stringify(count + 1));
-    if (localStorageStory !== null) {
-      dataPocketAccount = JSON.parse(localStorageStory);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
-      }
-    }
-    if (web3.currentProvider.host) {
-      console.log(
-        'Non-Ethereum browser detected. You should consider trying MetaMask!'
-      );
-    }
-    if (window.ethereum) {
-      try {
-        const address = await window.ethereum.enable();
-        console.log('ethereum', address);
-        accounts.eth = { bech32: address[0], keys: 'MetaMask' };
-      } catch (error) {
-        console.log('You declined transaction', error);
-      }
-    } else if (window.web3) {
-      const getAccounts = await web3.eth.getAccounts();
-      accounts.eth = { bech32: getAccounts[0], keys: 'MetaMask' };
-      console.log('getAccounts', getAccounts);
-    } else {
-      console.log('Your metamask is locked!');
-    }
-    if (Object.keys(accounts).length > 0) {
-      if (selectAccount === null) {
-        if (localStorageStory !== null) {
-          const valueObj = Object.values(dataPocketAccount);
-          if (!checkAddress(valueObj, 'eth', accounts.eth.bech32)) {
-            pocketAccount = { [key]: accounts, ...dataPocketAccount };
-          }
-        } else {
-          pocketAccount = { [key]: accounts };
-        }
-
-        if (Object.keys(pocketAccount).length > 0) {
-          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-        }
-      } else {
-        dataPocketAccount[selectAccount.key][selectNetwork] =
-          accounts[selectNetwork];
-        if (Object.keys(dataPocketAccount).length > 0) {
-          localStorage.setItem(
-            'pocketAccount',
-            JSON.stringify(dataPocketAccount)
-          );
-        }
-        if (localStoragePocket !== null) {
-          const localStoragePocketData = JSON.parse(localStoragePocket);
-          const keyPocket = Object.keys(localStoragePocketData)[0];
-          localStoragePocketData[keyPocket][selectNetwork] =
-            accounts[selectNetwork];
-          if (keyPocket === selectAccount.key) {
-            localStorage.setItem(
-              'pocket',
-              JSON.stringify(localStoragePocketData)
-            );
-          }
         }
       }
       clearState();
@@ -367,22 +221,7 @@ function ActionBarConnect({
           };
         }
       }
-      if (selectNetwork === 'cosmos') {
-        const cosmosAddress = fromBech32(bech32Address, 'cosmos');
-        const cosmosBech32 = cosmosAddress;
-        if (
-          selectAccount !== null ||
-          !checkAddress(valueObj, 'cosmos', cosmosBech32)
-        ) {
-          accounts.cosmos = {
-            bech32: cosmosBech32,
-            keys: 'keplr',
-            pk,
-            path: HDPATH,
-            name,
-          };
-        }
-      }
+
       setStage(STAGE_ADD_ADDRESS_OK);
       if (selectAccount === null) {
         if (localStorageStory !== null) {
@@ -434,50 +273,7 @@ function ActionBarConnect({
     }
   };
 
-  const onChangeAccount = (e) => {
-    let value = null;
-    if (e.target.value === '') {
-      const copyArr = [...hdpath];
-      copyArr[2] = value;
-      setHDpath(copyArr);
-    }
-    if (e.target.value) {
-      value = parseInt(e.target.value, 10);
-      if (Number.isNaN(value)) {
-        const copyArr = [...hdpath];
-        copyArr[2] = '';
-        setHDpath(copyArr);
-      } else {
-        const copyArr = [...hdpath];
-        copyArr[2] = value;
-        setHDpath(copyArr);
-      }
-    }
-  };
-
-  const onChangeIndex = (e) => {
-    let value = null;
-    if (e.target.value === '') {
-      const copyArr = [...hdpath];
-      copyArr[4] = value;
-      setHDpath(copyArr);
-    }
-    if (e.target.value) {
-      value = parseInt(e.target.value, 10);
-      if (Number.isNaN(value)) {
-        const copyArr = [...hdpath];
-        copyArr[4] = '';
-        setHDpath(copyArr);
-      } else {
-        const copyArr = [...hdpath];
-        copyArr[4] = value;
-        setHDpath(copyArr);
-      }
-    }
-  };
-
   const selectMethodFunc = (method) => {
-    setSelectNetwork('');
     if (method !== selectMethod) {
       setSelectMethod(method);
     } else {
@@ -501,8 +297,6 @@ function ActionBarConnect({
         selectNetworkFunc={selectNetworkFunc}
         selectNetwork={selectNetwork}
         connctAddress={connctAddress}
-        web3={web3}
-        selectAccount={selectAccount}
         keplr={signer}
         onClickBack={onClickBack}
       />
@@ -547,15 +341,6 @@ function ActionBarConnect({
           <Dots big />
         </Pane>
       </ActionBar>
-    );
-  }
-
-  if (stage === STAGE_LEDGER_INIT || stage === STAGE_ADD_ADDRESS_LEDGER) {
-    return (
-      <ConnectLadger
-        onClickConnect={() => getLedgerAddress()}
-        connectLedger={connectLedger}
-      />
     );
   }
 

@@ -108,7 +108,7 @@ const slice = createSlice({
 });
 
 export const selectCurrentAddress = (store: RootState) =>
-  store.pocket.defaultAccount.account?.cyber.bech32;
+  store.pocket.defaultAccount.account?.cyber?.bech32;
 
 export const {
   setDefaultAccount,
