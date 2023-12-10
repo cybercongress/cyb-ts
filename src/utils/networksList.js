@@ -50,7 +50,7 @@ const networkList = [
   {
     chainId: 'evmos_9001-2',
     chainName: 'evmos',
-    rpc: 'https://tendermint.bd.evmos.org:26657',
+    rpc: 'https://rpc.evmos-9001-2.bronbro.io',
     prefix: 'evmos',
     explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
     chainIdImageCid: 'QmXhPaHEpLakqEvhY36bzt3ffi9HheF8haPNdbf8RKJbko',

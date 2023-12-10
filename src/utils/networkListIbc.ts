@@ -101,7 +101,7 @@ const networkList: ObjectKey<NetworkCons> = {
   },
   'evmos_9001-2': {
     chainId: 'evmos_9001-2',
-    rpc: 'https://tendermint.bd.evmos.org:26657',
+    rpc: 'https://rpc.evmos-9001-2.bronbro.io',
     sourceChainId: 'bostrom',
     sourceChannelId: 'channel-9',
     destinationChainId: 'evmos_9001-2',

@@ -70,7 +70,7 @@ const coinDecimalsConfig = {
     coinDecimals: 18,
     denom: 'EVMOS',
     coinMinimalDenom: 'aevmos',
-    rpc: 'https://tendermint.bd.evmos.org:26657',
+    rpc: 'https://rpc.evmos-9001-2.bronbro.io',
     sourceChannelId: 'channel-19',
     destChannelId: 'channel-9',
   },
