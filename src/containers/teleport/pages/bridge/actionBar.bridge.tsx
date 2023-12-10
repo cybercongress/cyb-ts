@@ -33,6 +33,8 @@ const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
 const STAGE_CONFIRMED_IBC = 7.1;
 
+const TIMEOUT_TIMESTAMP = 2 * 60 * 1000; // 2 min
+
 const fee = {
   amount: [],
   gas: DEFAULT_GAS_LIMITS.toString(),
@@ -95,7 +97,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const sourcePort = 'transfer';
 
       const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + 60000}000000`
+        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
       );
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(denomIbc);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
@@ -183,7 +185,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const sourcePort = 'transfer';
       const counterpartyAccount = fromBech32(address, prefix);
       const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + 60000}000000`
+        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
       );
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
