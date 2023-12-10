@@ -3,7 +3,7 @@ const networkList = [
     chainId: 'osmosis-1',
     chainName: 'osmosis',
     prefix: 'osmo',
-    rpc: 'https://rpc-osmosis.blockapsis.com/',
+    rpc: 'https://rpc.osmosis-1.bronbro.io',
     explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
     chainIdImageCid: 'QmbS1fKYo9Kxx6g2NwfqABbjKSVcNiRE4wAPYjvak2AZbN',
   },

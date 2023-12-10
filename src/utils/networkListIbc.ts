@@ -30,7 +30,7 @@ const networkList: ObjectKey<NetworkCons> = {
     coinMinimalDenom: 'uosmo',
     coinDecimals: 6,
     denom: 'OSMO',
-    rpc: 'https://rpc-osmosis.blockapsis.com/',
+    rpc: 'https://rpc.osmosis-1.bronbro.io',
     prefix: 'osmo',
     explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
   },

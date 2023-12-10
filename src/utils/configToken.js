@@ -4,7 +4,7 @@ const coinDecimalsConfig = {
     coinDecimals: 6,
     denom: 'OSMO',
     coinMinimalDenom: 'uosmo',
-    rpc: 'https://rpc-osmosis.blockapsis.com/',
+    rpc: 'https://rpc.osmosis-1.bronbro.io',
     prefix: 'osmo',
     sourceChannelId: 'channel-95',
     destChannelId: 'channel-2',
