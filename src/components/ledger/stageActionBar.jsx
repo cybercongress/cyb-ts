@@ -1067,7 +1067,6 @@ export function RewardsDelegators({
 export function ConnectAddress({
   selectMethodFunc,
   selectMethod,
-  selectNetworkFunc,
   selectNetwork,
   connctAddress,
   keplr,
@@ -1112,7 +1111,6 @@ export function ConnectAddress({
       <span style={{ fontSize: '18px' }}>in</span>
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
         <ButtonIcon
-          onClick={() => selectNetworkFunc('cyber')}
           active={selectNetwork === 'cyber'}
           img={selectNetworkImg(CYBER.CHAIN_ID)}
           text={CYBER.CHAIN_ID}

@@ -13,8 +13,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { useDispatch } from 'react-redux';
 import { initPocket, setDefaultAccount } from 'src/redux/features/pocket';
 
-const { STAGE_INIT, HDPATH, STAGE_ERROR } =
-  LEDGER;
+const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
 const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
@@ -37,7 +36,7 @@ function ActionBarConnect({
   const [stage, setStage] = useState(STAGE_INIT);
   const [valueInputAddres, setValueInputAddres] = useState('');
   const [selectMethod, setSelectMethod] = useState('');
-  const [selectNetwork, setSelectNetwork] = useState('cyber');
+  const selectNetwork = 'cyber';
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
 
@@ -50,12 +49,10 @@ function ActionBarConnect({
   }, [stage, addAddress]);
 
   useEffect(() => {
-    if (selectNetwork === 'cyber') {
-      if (valueInputAddres.match(PATTERN_CYBER)) {
-        setValidAddressAddedUser(false);
-      } else {
-        setValidAddressAddedUser(true);
-      }
+    if (valueInputAddres.match(PATTERN_CYBER)) {
+      setValidAddressAddedUser(false);
+    } else {
+      setValidAddressAddedUser(true);
     }
   }, [valueInputAddres]);
 
@@ -75,7 +72,6 @@ function ActionBarConnect({
     setStage(STAGE_INIT);
     setValueInputAddres('');
     setSelectMethod('');
-    setSelectNetwork('');
     setAddCyberAddress(false);
     setValidAddressAddedUser(true);
   };
@@ -281,20 +277,11 @@ function ActionBarConnect({
     }
   };
 
-  const selectNetworkFunc = (network) => {
-    if (network !== selectNetwork) {
-      setSelectNetwork(network);
-    } else {
-      setSelectNetwork('');
-    }
-  };
-
   if (stage === STAGE_INIT) {
     return (
       <ConnectAddress
         selectMethodFunc={selectMethodFunc}
         selectMethod={selectMethod}
-        selectNetworkFunc={selectNetworkFunc}
         selectNetwork={selectNetwork}
         connctAddress={connctAddress}
         keplr={signer}
