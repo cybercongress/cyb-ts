@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -25,6 +25,7 @@ import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
 import { useBackend } from 'src/contexts/backend';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -836,8 +837,9 @@ export function Cyberlink({
   );
 }
 
-function IntupAutoSize({
+function InputAutoSize({
   value,
+  maxValue,
   onChangeInputAmount,
   placeholder,
   autoFocus = true,
@@ -870,6 +872,7 @@ function IntupAutoSize({
     <InputNumber
       value={value}
       id="myInput"
+      maxValue={maxValue}
       onkeypress={changefontsize()}
       autoFocus={autoFocus}
       onValueChange={onChangeInputAmount}
@@ -887,6 +890,7 @@ export function Delegate({
   disabledBtn,
   delegate,
   onClickBack,
+  available,
 }) {
   return (
     <ActionBarContainer
@@ -907,8 +911,9 @@ export function Delegate({
             : moniker}
         </Text>
       </Text>
-      <IntupAutoSize
+      <InputAutoSize
         value={toSend}
+        maxValue={available}
         onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
@@ -926,6 +931,7 @@ export function ReDelegate({
   disabledBtn,
   validators,
   validatorsAll,
+  available,
   valueSelect,
   onChangeReDelegate,
   onClickBack,
@@ -939,8 +945,9 @@ export function ReDelegate({
         disabled: disabledBtn,
       }}
     >
-      <IntupAutoSize
+      <InputAutoSize
         value={toSend}
+        maxValue={available}
         onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
@@ -1005,7 +1012,7 @@ export function ActionBarSend({
           placeholder="recipient"
         />
 
-        <IntupAutoSize
+        <InputAutoSize
           value={valueInputAmount}
           onChangeInputAmount={onChangeInputAmount}
           placeholder="amount"
