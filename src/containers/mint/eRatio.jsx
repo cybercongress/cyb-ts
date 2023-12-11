@@ -1,4 +1,4 @@
-import { Icon, Pane } from '@cybercongress/gravity';
+import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
 import { Tooltip } from '../../components';
 
 function ERatio({ eRatio }) {
@@ -13,15 +13,20 @@ function ERatio({ eRatio }) {
           alignItems: 'center',
         }}
       >
-        E-Ratio{' '}
-        <Pane marginLeft={5}>
+        E-Ratio
+        <div
+          style={{
+            marginLeft: 5,
+            marginTop: 3,
+          }}
+        >
           <Tooltip
             placement="top"
             tooltip="Efficiency ratio show how much of your energy is not utilzed. Investmint H into A or V to improve your E-Ratio. The lower E-Ratio the more benefit you miss"
           >
-            <Icon icon="info-sign" color="#3ab793d4" />
+            <QuestionBtn />
           </Tooltip>
-        </Pane>
+        </div>
       </div>
       <div className="svg_wrap">
         <svg viewBox="0 0 40 40">
