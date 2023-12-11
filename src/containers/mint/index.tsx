@@ -39,6 +39,11 @@ const returnColorDot = (marks) => {
   };
 };
 
+enum SelectedState {
+  millivolt = 'millivolt',
+  milliampere = 'milliampere',
+}
+
 function Mint({ defaultAccount }) {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
@@ -47,7 +52,9 @@ function Mint({ defaultAccount }) {
   // const { balance } = useGetBalance(addressActive, updateAddress);
   const { slotsData, vested, loadingAuthAccounts, originalVesting } =
     useGetSlots(addressActive, updateAddress);
-  const [selected, setSelected] = useState('millivolt');
+  const [selected, setSelected] = useState<SelectedState>(
+    SelectedState.milliampere
+  );
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(0);
@@ -275,14 +282,14 @@ function Mint({ defaultAccount }) {
           justifyContent="center"
         >
           <Btn
-            text={<ValueImg justifyContent="center" text="millivolt" />}
-            checkedSwitch={selected === 'millivolt'}
-            onSelect={() => setSelected('millivolt')}
-          />
-          <Btn
             text={<ValueImg justifyContent="center" text="milliampere" />}
             checkedSwitch={selected === 'milliampere'}
             onSelect={() => setSelected('milliampere')}
+          />
+          <Btn
+            text={<ValueImg justifyContent="center" text="millivolt" />}
+            checkedSwitch={selected === 'millivolt'}
+            onSelect={() => setSelected('millivolt')}
           />
         </Tablist>
         <div style={grid}>
