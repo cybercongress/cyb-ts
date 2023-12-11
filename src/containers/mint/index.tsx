@@ -394,7 +394,7 @@ function Mint({ defaultAccount }) {
               will release {resourceToken} <ValueImg text={selected} /> for you.
               At the end of the period, {selected} becomes liquid automatically,
               but you can use it to boost ranking during the freeze. You can
-              have only 8 slots for investmint at a time.
+              have only 16 slots for investmint at a time.
             </div>
           )}
         </div>
