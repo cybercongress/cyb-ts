@@ -6,11 +6,17 @@
   font-size: 1.125rem;
 
   @if ($position ==left or $position ==right) {
-    @include saber-100($color-saber, $position);
+    @include saber($color-saber, $position);
   }
 
   @else {
     @include saber-horizontal($color-saber);
+  }
+}
+
+@mixin changeWidth($pseudo) {
+  &::#{$pseudo} {
+    width: 100%;
   }
 }
 
@@ -32,7 +38,9 @@
 }
 
 .left {
-  @include saber-100('blue', right, 'color');
+  @include saber('blue', right, 'color');
+  @include changeWidth('after');
+
   border-left: unset;
 
   &::before {
@@ -41,11 +49,18 @@
 
   &Active {
     @include active-saber(right);
+    @include changeWidth('after');
   }
 }
 
 .right {
-  @include saber-100('blue', left, 'color');
+  @include saber('blue', left, 'color');
+  @include changeWidth('before');
+
+  &::before {
+    width: 100%
+  }
+
   border-right: unset;
 
   &::after {
@@ -54,5 +69,6 @@
 
   &Active {
     @include active-saber(left);
+    @include changeWidth('before');
   }
 }

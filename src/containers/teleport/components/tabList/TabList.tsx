@@ -1,45 +1,41 @@
 import { useNavigate } from 'react-router-dom';
-
-import ButtonTeleport from 'src/containers/warp/components/buttonGroup/indexBtn';
+import { TabButton, TabList } from 'src/components';
+import { Position } from 'src/components/tabButton/TabButton';
 import { TypePages } from '../../type';
-import s from './TabList.module.scss';
 
 type TabListProps = {
   selected: TypePages;
 };
 
-function TabList({ selected }: TabListProps) {
+function TabListTeleport({ selected }: TabListProps) {
   const navigate = useNavigate();
 
-  const handleHistory = (to: string) => {
-    navigate(to);
-  };
-
   return (
-    <div className={s.wrapper}>
-      <ButtonTeleport
-        status="left"
-        isSelected={selected === TypePages.send}
-        onClick={() => handleHistory(TypePages.send)}
-      >
-        {TypePages.send}
-      </ButtonTeleport>
-      <ButtonTeleport
-        status="center"
-        isSelected={selected === TypePages.bridge}
-        onClick={() => handleHistory(TypePages.bridge)}
-      >
-        {TypePages.bridge}
-      </ButtonTeleport>
-      <ButtonTeleport
-        status="right"
-        isSelected={selected === TypePages.swap}
-        onClick={() => handleHistory(TypePages.swap)}
-      >
-        {TypePages.swap}
-      </ButtonTeleport>
-    </div>
+    <TabList>
+      {Object.keys(TypePages).map((key, index) => {
+        let type;
+
+        if (index === 0) {
+          type = Position.Left;
+        }
+
+        if (index === Object.keys(TypePages).length - 1) {
+          type = Position.Right;
+        }
+
+        return (
+          <TabButton
+            key={key}
+            type={type}
+            isSelected={selected === key}
+            onSelect={() => navigate(key)}
+          >
+            {key}
+          </TabButton>
+        );
+      })}
+    </TabList>
   );
 }
 
-export default TabList;
+export default TabListTeleport;

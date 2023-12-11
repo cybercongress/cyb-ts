@@ -7,9 +7,9 @@
   @if ($position == left or $position == right) {
     top: 0;
     height: 100%;
-    width: var(--width-gradient);
+    width: 20%;
   } @else {
-    width: var(--width-gradient);
+    width: 100%;
     left: 0;
     height: 50px;
   }
@@ -31,7 +31,6 @@ $valid-positions: 'left', 'right', 'top', 'bottom';
 $saber-border-width: 2px;
 
 @mixin saber($color: 'green', $position, $borderColor: 'white') {
-  --width-gradient: 20%;
   position: relative;
 
   // box-shadow: 0 0 10px rgba(var(--color-r), var(--color-g), var(--color-b), 0.5);
@@ -97,12 +96,6 @@ $saber-border-width: 2px;
 }
 
 @mixin saber-vertical($color) {
-  --width-gradient: 100% !important;
   @include saber($color, top);
   @include saber($color, bottom);
-}
-
-@mixin saber-100($color, $position, $borderColor: 'white') {
-  --width-gradient: 100% !important;
-  @include saber($color, $position, $borderColor);
 }
