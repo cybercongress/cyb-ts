@@ -21,6 +21,7 @@ const initialState: BackendState = {
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
+    sync: { status: 'inactive' },
   },
 };
 

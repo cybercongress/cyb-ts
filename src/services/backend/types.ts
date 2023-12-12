@@ -1,11 +1,14 @@
 export type SyncEntry = 'pin' | 'particle' | 'transaction';
+
 export type SyncProgress = {
   progress?: number;
   done?: boolean;
   error?: string;
+  message?: string;
 };
 
 export type WorkerStatus = 'inactive' | 'idle' | 'syncing' | 'error';
+
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 
 export type SyncBroadcastType = 'sender' | 'reciever';
@@ -35,9 +38,11 @@ export type SyncEntryMessage = {
   value: SyncEntryUpdate;
 };
 
-export type ServiceName = 'db' | 'ipfs';
+export type ServiceName = 'db' | 'ipfs' | 'sync';
 
 export type ServiceStatusMessage = {
   type: 'service_status';
   value: { name: ServiceName; status: ServiceStatus; error?: string };
 };
+
+export type onProgressEvent = (entry: SyncEntry, state: SyncProgress) => void;

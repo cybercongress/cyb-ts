@@ -5,17 +5,18 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AppDispatch, RootState } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
-import styles from './styles.scss';
 
 import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
+
+import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
 
@@ -30,7 +31,23 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
 
-  const { ipfsError } = useBackend();
+  const { ipfsError, isReady, senseApi } = useBackend();
+
+  // TODO: TMP Example of how to use SENSE
+  useEffect(() => {
+    (async () => {
+      const list = await senseApi.getList();
+      console.log('----sense list', list);
+      const summary = await senseApi.getSummary();
+      console.log('----sense summary', summary);
+
+      //MARK AS READ
+      await senseApi.markAsRead('<CID/ADDRESS');
+    })();
+  }, [isReady, senseApi]);
+
+  /// ------------
+
   useEffect(() => {
     dispatch(initPocket());
   }, []);

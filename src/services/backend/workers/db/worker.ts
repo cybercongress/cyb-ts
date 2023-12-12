@@ -14,8 +14,6 @@ const dbApiFactory = () => {
       value: { name: 'db', status },
     });
 
-  console.log('---dbApi worker constructor!');
-
   const init = async () => {
     if (isInitialized) {
       console.log('Db: already initialized!');
@@ -34,8 +32,10 @@ const dbApiFactory = () => {
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
 
-  const executePutCommand = async (tableName: string, array: DbEntity[]) =>
-    cozoDb.put(tableName, array);
+  const executePutCommand = async (
+    tableName: string,
+    array: Partial<DbEntity>[]
+  ) => cozoDb.put(tableName, array);
 
   const executeRmCommand = async (
     tableName: string,
@@ -99,9 +99,9 @@ const dbApiFactory = () => {
     exportRelations,
   };
 };
-const dbApi = dbApiFactory();
+const cozoDbWorkerApi = dbApiFactory();
 
-export type DbWorkerApi = typeof dbApi;
+export type CozoDbWorkerApi = typeof cozoDbWorkerApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, dbApi);
+exposeWorkerApi(self, cozoDbWorkerApi);

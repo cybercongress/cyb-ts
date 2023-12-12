@@ -1,13 +1,16 @@
 import {
   EntryType,
+  LinkDbEntity,
   ParticleDbEntity,
-  PinDbEntry,
+  PinDbEntity,
   SyncStatusDbEntity,
   TransactionDbEntity,
 } from 'src/services/CozoDb/types';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 import { DbWorkerApi } from '../../workers/db/worker';
+import { SenseResult, SenseUnread } from './type';
+import { dbResultToObjects } from 'src/services/CozoDb/utils';
 
 const TIMESTAMP_INTITAL = 958718452000;
 
@@ -17,7 +20,7 @@ type SyncStatus = {
   timestampRead: number;
 };
 
-function CybDb() {
+function DbApiWrapper() {
   let db: DbWorkerApi | undefined;
 
   const init = (dbApi: DbWorkerApi) => {
@@ -75,11 +78,16 @@ function CybDb() {
   const putTransactions = async (transactions: TransactionDbEntity[]) =>
     db!.executePutCommand('transaction', transactions);
 
-  const findSyncStatus = async (
-    entryType: EntryType,
-    id?: NeuronAddress | ParticleCid
-  ) => {
-    const conditions = [`entry_type = ${entryType}`];
+  const findSyncStatus = async ({
+    entryType,
+    id,
+  }: {
+    entryType?: EntryType;
+    id?: NeuronAddress | ParticleCid;
+  }) => {
+    const conditions = [];
+
+    entryType && conditions.push(`entry_type = ${entryType}`);
 
     id && conditions.push(`id = '${id}'`);
 
@@ -97,7 +105,7 @@ function CybDb() {
     return result;
   };
 
-  const putPins = async (pins: PinDbEntry[] | PinDbEntry) => {
+  const putPins = async (pins: PinDbEntity[] | PinDbEntity) => {
     const entitites = Array.isArray(pins) ? pins : [pins];
     await db!.executePutCommand('pin', entitites);
   };
@@ -116,7 +124,7 @@ function CybDb() {
   const deletePins = async (pins: ParticleCid[]) =>
     db!.executeRmCommand(
       'pin',
-      pins.map((cid) => ({ cid } as Partial<PinDbEntry>))
+      pins.map((cid) => ({ cid } as Partial<PinDbEntity>))
     );
 
   const putParticles = async (
@@ -136,6 +144,61 @@ function CybDb() {
     return result;
   };
 
+  const getSenseList = async () => {
+    const syncFields =
+      'entry_type, id, unread_count, timestamp_update, timestamp_read, last_id';
+    const valueNames = `${syncFields}, value, type`;
+    const command = `
+    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=1, *transaction{hash: last_id, value, type}
+    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime
+    ?[${valueNames}] := dt[${valueNames}]
+    `;
+    const result = await db!.runCommand(command);
+
+    return dbResultToObjects(result) as SenseResult[];
+  };
+
+  const getSenseSummary = async () => {
+    const command = `
+    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=1
+    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=2
+    ?[entry_type, unread] := dt[entry_type, unread]`;
+
+    const result = await db!.runCommand(command);
+    return dbResultToObjects(result) as SenseUnread[];
+  };
+
+  const senseMarkAsRead = async (id: NeuronAddress | ParticleCid) => {
+    const result = await db!.executeGetCommand(
+      'sync_status',
+      ['timestamp_update'],
+      [`id = '${id}'`],
+      ['id']
+    );
+    const timestampUpdate = result.rows[0];
+    updateSyncStatus(id, timestampUpdate, timestampUpdate, 0);
+  };
+
+  const getTransactions = async (neuron: NeuronAddress) => {
+    const result = await db!.executeGetCommand(
+      'transaction',
+      ['hash', 'type', 'success', 'value', 'timestamp'],
+      [`neuron = ${neuron}`],
+      ['neuron']
+    );
+    return dbResultToObjects(result);
+  };
+
+  const putCyberlinks = async (links: LinkDbEntity[] | LinkDbEntity) => {
+    const entitites = Array.isArray(links) ? links : [links];
+    //     await dbApi.executeBatchPutCommand(
+    //       'link',
+    //       links.map((l) => ({ ...l, neuron: '' })),
+    //       100
+    //     );
+    return db!.executePutCommand('links', entitites);
+  };
+
   return {
     init,
     getSyncStatus,
@@ -148,7 +211,15 @@ function CybDb() {
     getPins,
     getParticles,
     putParticles,
+    getSenseList,
+    getSenseSummary,
+    senseMarkAsRead,
+    getTransactions,
+    putCyberlinks,
   };
 }
+const dbApiWrapper = DbApiWrapper();
 
-export { CybDb };
+export type DbApi = typeof dbApiWrapper;
+
+export default dbApiWrapper;

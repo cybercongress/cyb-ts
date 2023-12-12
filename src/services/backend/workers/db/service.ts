@@ -4,13 +4,13 @@ import { BehaviorSubject } from 'rxjs';
 import { WorkerUrl } from 'worker-url';
 import { DbEntity } from 'src/services/CozoDb/types';
 
-import { DbWorkerApi } from './worker';
+import { CozoDbWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
 import { DbStackItem as DbQueueItem } from './types';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
-const { apiProxy: dbApiProxy } = createWorkerApi<DbWorkerApi>(
+const { workerApiRemote: dbApiProxyRemote } = createWorkerApi<CozoDbWorkerApi>(
   workerUrl,
   'cyb~cozodb'
 );
@@ -40,20 +40,20 @@ function dbServiceApi() {
       let result: { ok: boolean } | undefined;
       if (action === 'put') {
         result = await (isBatch
-          ? dbApiProxy.executeBatchPutCommand(
+          ? dbApiProxyRemote.executeBatchPutCommand(
               tableName,
               data,
               batchSize!,
               onProgress ? proxy(onProgress) : undefined
             )
-          : dbApiProxy.executePutCommand(tableName, data));
+          : dbApiProxyRemote.executePutCommand(tableName, data));
       }
 
       if (action === 'update') {
-        result = await dbApiProxy.executeUpdateCommand(tableName, data);
+        result = await dbApiProxyRemote.executeUpdateCommand(tableName, data);
       }
       if (action === 'rm') {
-        result = await dbApiProxy.executeRmCommand(tableName, data);
+        result = await dbApiProxyRemote.executeRmCommand(tableName, data);
       }
 
       if (!result) {
@@ -68,11 +68,12 @@ function dbServiceApi() {
   };
 
   const init = async () => {
-    await dbApiProxy.init();
+    await dbApiProxyRemote.init();
     isInitialized$.next(true);
   };
 
-  const runCommand = async (command: string) => dbApiProxy.runCommand(command);
+  const runCommand = async (command: string) =>
+    dbApiProxyRemote.runCommand(command);
 
   const executeGetCommand = async (
     tableName: string,
@@ -80,7 +81,7 @@ function dbServiceApi() {
     conditions?: string[],
     conditionFields?: string[]
   ) =>
-    dbApiProxy.executeGetCommand(
+    dbApiProxyRemote.executeGetCommand(
       tableName,
       selectFields,
       conditions,
@@ -127,10 +128,10 @@ function dbServiceApi() {
     });
 
   const importRelations = async (content: string) =>
-    dbApiProxy.importRelations(content);
+    dbApiProxyRemote.importRelations(content);
 
   const exportRelations = async (relations: string[]) =>
-    dbApiProxy.exportRelations(relations);
+    dbApiProxyRemote.exportRelations(relations);
 
   return {
     init,

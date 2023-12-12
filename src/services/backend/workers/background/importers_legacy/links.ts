@@ -1,4 +1,4 @@
-import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
+import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
 import { request } from 'graphql-request';
 import gql from 'graphql-tag';
 import { Cyberlink, CyberLinkNeuron, ParticleCid } from 'src/types/base';
@@ -174,7 +174,7 @@ const importCyberlink = async ({
   dbApi,
   link,
 }: {
-  dbApi: DbWorkerApi;
+  dbApi: CozoDbWorkerApi;
   link: CyberLinkNeuron;
 }) => {
   try {
@@ -190,12 +190,12 @@ const importCyberlink = async ({
 
 const importCyberlinks = async (
   links: CyberLinkNeuron[],
-  dbApi: DbWorkerApi
+  dbApi: CozoDbWorkerApi
 ) => {
   try {
     await dbApi.executeBatchPutCommand(
       'link',
-      links.map((l) => ({ ...l, neuron: '' })),
+      links.map((l) => ({ ...l, neuron: '', timestamp: 0 })),
       100
     );
   } catch (e) {

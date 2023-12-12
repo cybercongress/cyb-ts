@@ -1,7 +1,8 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { IpfsContentType } from '../ipfs/ipfs';
-import { JsonObject } from '@cybercongress/cyber-js/build/cyberclient';
+import { type } from 'ramda';
+
 type ColumnType = 'String' | 'Int' | 'Bool' | 'Float' | 'Json';
 
 export interface Column {
@@ -34,15 +35,6 @@ export interface IDBResultError {
   ok: false;
 }
 
-export type PinEntryType = Exclude<PinType, 'all'>;
-
-// example of db optimization for classifiers
-export const PinTypeMap: Record<PinEntryType, number> = {
-  indirect: -1,
-  direct: 0,
-  recursive: 1,
-};
-
 export type DBSchema = Record<string, TableSchema>;
 export interface DBResultWithColIndex extends IDBResult {
   index: Record<string, number>;
@@ -53,10 +45,24 @@ export type IndexedDbWriteMessage = {
   value: number;
 };
 
+export type PinEntryType = Exclude<PinType, 'all'>;
+
+// example of db optimization for classifiers
+export const PinTypeMap: Record<PinEntryType, number> = {
+  indirect: -1,
+  direct: 0,
+  recursive: 1,
+};
+
 export enum EntryType {
   transactions = 1,
   particle = 2,
 }
+
+export type PinDbEntity = {
+  cid: string;
+  type: keyof typeof PinTypeMap;
+};
 
 export type TransactionDbEntity = {
   hash: string;
@@ -90,7 +96,14 @@ export type ParticleDbEntity = {
 export type ConfigDbEntity = {
   key: string;
   group_key: string;
-  value: JsonObject;
+  value: Object;
+};
+
+export type LinkDbEntity = {
+  from: ParticleCid;
+  to: ParticleCid;
+  neuron: NeuronAddress;
+  timestamp: number;
 };
 
 export type DbEntity =

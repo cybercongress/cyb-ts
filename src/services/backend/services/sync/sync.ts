@@ -8,6 +8,9 @@ import {
   filter,
   switchMap,
   combineLatest,
+  BehaviorSubject,
+  EMPTY,
+  defer,
 } from 'rxjs';
 import { concatMap, map, startWith, tap } from 'rxjs/operators';
 import { EntryType } from 'src/services/CozoDb/types';
@@ -21,8 +24,7 @@ import { dateToNumber, numberToDate } from 'src/utils/date';
 import { CID_TWEET } from 'src/utils/consts';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import { DbWorkerApi } from '../../workers/db/worker';
-import { CybDb } from '../database/cybDb';
+import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import {
   fetchCyberlinkSyncStats,
   fetchTransactionsIterable,
@@ -35,6 +37,7 @@ import {
   Transaction,
 } from '../dataSource/blockchain/types';
 import { FetchIpfsFunc, SyncServiceParams } from './type';
+import { SyncEntry, SyncProgress, onProgressEvent } from '../../types';
 
 const BLOCKCHAIN_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 10 minutes
@@ -69,22 +72,29 @@ function extractParticles(batch: Transaction[]) {
   return particleTimestampRecord;
 }
 
+// type LoopStatus = 'inProgress' | 'idle';
+
 const createLoopObservable = (
   intervalMs: number,
   actionObservable$: Observable<any>,
-  isInitialized$: Observable<boolean> = of(true)
-) =>
-  isInitialized$.pipe(
-    filter((initialized) => initialized === true), // Wait for isInitialized to be true
-    switchMap(() =>
-      interval(300000) // 5-minute interval
-        .pipe(
-          startWith(0), // Start immediately on subscription
-          tap(() => console.log('Starting task cycle')),
+  isInitialized$: Observable<boolean>
+  // isInProgress$: BehaviorSubject<LoopStatus>
+) => {
+  return isInitialized$.pipe(
+    switchMap((initialized) => {
+      if (initialized) {
+        // When isInitialized$ emits true, start the interval
+        return interval(intervalMs).pipe(
+          startWith(0), // Start immediately
+          // tap(() => console.log('Starting task cycle')),
           concatMap(() => actionObservable$)
-        )
-    )
+        );
+      }
+      // When isInitialized$ emits false, stop the interval
+      return EMPTY;
+    })
   );
+};
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
@@ -92,13 +102,15 @@ export class SyncService {
 
   private ipfsLoop$?: Observable<any>;
 
-  private dbInitialized$: Observable<boolean> = of(false);
+  private dbInitialized$ = new BehaviorSubject(false);
 
-  private ipfsInitialized$: Observable<boolean> = of(false);
+  private ipfsInitialized$ = new BehaviorSubject(false);
 
-  private db = CybDb();
+  private db: typeof DbApi | undefined;
 
   private ipfsNode: CybIpfsNode | undefined;
+
+  private onProgress: onProgressEvent | undefined;
 
   private processParticle: FetchIpfsFunc;
 
@@ -106,15 +118,17 @@ export class SyncService {
 
   constructor(processParticle: FetchIpfsFunc) {
     this.processParticle = processParticle;
+    this.startIpfsLoop();
+    this.startBlockchainLoop();
   }
 
   private startBlockchainLoop() {
     this.blockchainLoop$ = createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
       forkJoin({
-        myTransactions: of(this.syncMyTransactions()),
-        userTransactions: from(this.syncFollowingsTransactions()),
-        particles: of(this.syncParticles()),
+        myTransactions: defer(() => from(this.syncMyTransactions())),
+        userTransactions: defer(() => from(this.syncFollowingsTransactions())),
+        particles: defer(() => from(this.syncParticles())),
       }),
       this.dbInitialized$
     );
@@ -123,7 +137,7 @@ export class SyncService {
       next: (result) =>
         console.log('All blockchain tasks in this cycle completed', result),
       error: (err) => console.error('Error in task cycle', err),
-      complete: () => console.log('Task interval completed.'),
+      // complete: () => console.log('Task interval completed.'),
     });
   }
 
@@ -140,7 +154,7 @@ export class SyncService {
     this.ipfsLoop$ = createLoopObservable(
       IPFS_SYNC_INTERVAL,
       forkJoin({
-        ipfs: of(this.syncPins()),
+        ipfs: defer(() => from(this.syncPins())),
       }),
       isInitialized$
     );
@@ -149,18 +163,19 @@ export class SyncService {
       next: (result) =>
         console.log('All ipfs tasks in this cycle completed', result),
       error: (err) => console.error('Error in task cycle', err),
-      complete: () => console.log('Task interval completed.'),
+      // complete: () => console.log('Task interval completed.'),
     });
   }
 
-  public initDb(dbApi: DbWorkerApi) {
-    this.db.init(dbApi);
-    this.startBlockchainLoop();
+  public initDb(dbApi: typeof DbApi, onProgress: onProgressEvent) {
+    this.db = dbApi;
+    this.onProgress = onProgress;
+    this.dbInitialized$.next(true);
   }
 
   public initIpfs(ipfsNode: CybIpfsNode) {
     this.ipfsNode = ipfsNode;
-    this.startIpfsLoop();
+    this.ipfsInitialized$.next(true);
   }
 
   public setParams(params: Partial<SyncServiceParams>) {
@@ -171,9 +186,13 @@ export class SyncService {
     address: NeuronAddress,
     addCyberlinksToSync = false
   ) {
+    this.onProgress!('transaction', {
+      message: `sync ${address} transactions...`,
+    });
+
     // let conter = 0;
     const { timestampRead, unreadCount, timestampUpdate } =
-      await this.db.getSyncStatus(address);
+      await this.db!.getSyncStatus(address);
 
     const transactionsAsyncIterable = fetchTransactionsIterable(
       this.params.cyberIndexUrl!,
@@ -206,7 +225,7 @@ export class SyncService {
           mapSyncStatusToEntity(cid, EntryType.particle, 0, particles[cid])
         );
 
-        this.db.putSyncStatus(syncStatusEntries);
+        this.db!.putSyncStatus(syncStatusEntries);
 
         // non-blocking call
         particleCIDs.map((cid) => this.processParticle(cid));
@@ -215,7 +234,7 @@ export class SyncService {
 
     if (lastTimestamp) {
       // Update transaction
-      this.db.putSyncStatus({
+      this.db!.putSyncStatus({
         entry_type: EntryType.transactions,
         id: address,
         timestamp_update: lastTimestamp,
@@ -225,40 +244,56 @@ export class SyncService {
         last_id: lastTransactionHash,
       });
     }
-
+    this.onProgress!('transaction', {
+      message: `sync ${address} transactions - unread: ${
+        unreadCount + count
+      }, last - ${numberToDate(lastTimestamp || 0)}`,
+      done: true,
+    });
     // onComplete && onComplete(conter);
   }
 
   private async syncParticles() {
+    this.onProgress!('particle', {
+      message: `sync particles start...`,
+    });
     // fetch observable particles from db
-    const particleSyncStatusResult = await this.db.findSyncStatus(
-      EntryType.particle
-    );
+    const particleSyncStatusResult = await this.db!.findSyncStatus({
+      entryType: EntryType.particle,
+    });
 
     particleSyncStatusResult.rows.map(async (row) => {
       const [id, unreadCount, timestampUpdate, timestampRead] = row;
 
       // fetch new links with particle
-      const { firstTimestamp, lastTimestamp, count, lastParticle } =
+      const { firstTimestamp, lastTimestamp, count, lastLinkedParticle } =
         await fetchCyberlinkSyncStats(
           this.params.cyberIndexUrl!,
           id as string,
           timestampUpdate as number
         );
 
-      this.db.updateSyncStatus(
+      this.db!.updateSyncStatus(
         id as string,
         lastTimestamp,
-        (unreadCount as number) + count,
         (unreadCount as number) ? (timestampRead as number) : firstTimestamp,
-        lastParticle
+        (unreadCount as number) + count,
+        lastLinkedParticle
       );
+    });
+
+    this.onProgress!('particle', {
+      message: `sync particles complete`,
+      done: true,
     });
   }
 
   private async syncPins() {
+    console.log('-----syncPins', this.ipfsNode, this.db);
+    this.onProgress!('pin', { message: 'fetching node pins...' });
     const pinsResult = await fetchPins(this.ipfsNode!);
-    const dbPins = (await this.db.getPins()).rows.map(
+
+    const dbPins = (await this.db!.getPins()).rows.map(
       (row) => row[0] as string
     );
 
@@ -273,11 +308,16 @@ export class SyncService {
     );
 
     if (pinsToRemove.length) {
-      await this.db.deletePins(pinsToRemove);
+      await this.db!.deletePins(pinsToRemove);
     }
 
+    this.onProgress!('pin', {
+      message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
+      done: true,
+    });
+
     const particlesExist = new Set(
-      (await this.db.getParticles(['cid'])).rows.map((row) => row[0] as string)
+      (await this.db!.getParticles(['cid'])).rows.map((row) => row[0] as string)
     );
 
     const cidsToAdd = pinsToAdd.map((pin) => pin.cid.toString());
@@ -286,7 +326,12 @@ export class SyncService {
 
     particlesToAdd.forEach((cid) => this.processParticle(cid));
 
-    await this.db.putPins(pinsToAdd.map(mapPinToEntity));
+    await this.db!.putPins(pinsToAdd.map(mapPinToEntity));
+
+    this.onProgress!('pin', {
+      message: `ipfs node sync: +${pinsToAdd.length} -${pinsToRemove.length} +${particlesToAdd.length}(particles)`,
+      done: true,
+    });
   }
 
   private async syncMyTransactions() {
@@ -294,7 +339,6 @@ export class SyncService {
   }
 
   private async syncFollowingsTransactions() {
-    return;
     await Promise.all(
       this.params.followings.map((addr) => this.syncTransactions(addr))
     );

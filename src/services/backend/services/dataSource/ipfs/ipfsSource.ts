@@ -7,10 +7,11 @@ import {
 
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
 
-import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
+import { LsResult } from 'ipfs-core-types/src/pin';
 
 import { onProgressCallback, onCompleteCallback } from '../types';
-import { LsResult } from 'ipfs-core-types/src/pin';
+
+import type { DbApi } from '../indexedDb/dbApiWrapper';
 
 const fetchPins = async (node: IpfsNode) => {
   const pins: LsResult[] = [];
@@ -33,7 +34,7 @@ const fetchPins = async (node: IpfsNode) => {
 const importParticles = async (
   node: IpfsNode,
   cids: string[],
-  dbApi: DbWorkerApi,
+  dbApi: DbApi,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -48,12 +49,9 @@ const importParticles = async (
         .filter((c) => !!c)
         .map((content) => mapParticleToEntity(content as IPFSContent));
       conter += pinsEntities.length;
-      await dbApi.executeBatchPutCommand(
-        'particle',
-        pinsEntities,
-        pinsEntities.length
-        //   (counter) => onProgress(`⏳ Imported ${counter}/${pins.length} pins.`)
-      );
+
+      await dbApi.putParticles(pinsEntities);
+
       onProgress && onProgress(conter);
     },
     10
@@ -61,23 +59,16 @@ const importParticles = async (
   onComplete && onComplete(conter);
 };
 
-const importParticle = async (
-  cid: string,
-  node: IpfsNode,
-  dbApi: DbWorkerApi
-) => {
+const importParticle = async (cid: string, node: IpfsNode, dbApi: DbApi) => {
   return getIPFSContent(cid, node).then((content) =>
     content ? importParicleContent(content, dbApi) : false
   );
 };
 
-const importParicleContent = async (
-  particle: IPFSContent,
-  dbApi: DbWorkerApi
-) => {
+const importParicleContent = async (particle: IPFSContent, dbApi: DbApi) => {
   try {
     const entity = mapParticleToEntity(particle);
-    const result = await dbApi!.executePutCommand('particle', [entity]);
+    const result = await dbApi!.putParticles(entity);
     return result;
   } catch (e) {
     console.error('importParicleContent', e.toString(), !!dbApi);

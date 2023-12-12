@@ -12,13 +12,14 @@ import {
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 
-import { DbWorkerApi } from 'src/services/backend/workers/db/worker';
+import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-import { PinTypeMap } from 'src/services/CozoDb/types';
+import { LinkDbEntity, PinTypeMap } from 'src/services/CozoDb/types';
 
 import BcChannel from 'src/services/backend/channels/BroadcastChannel';
 
 import {
+  ServiceName,
   ServiceStatus,
   SyncEntry,
   SyncProgress,
@@ -28,23 +29,23 @@ import {
   QueueItemCallback,
   QueueItemOptions,
 } from 'src/services/QueueManager/QueueManager.d';
-import { CyberLinkNeuron, ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
 
 import {
-  importParticles,
-  importPins,
-  importParicleContent,
   importParticle,
-} from './importers_legacy/ipfs';
+  importParicleContent,
+} from '../../services/dataSource/ipfs/ipfsSource';
 import { importTransactions } from './importers_legacy/transactions';
-import { importCyberlinks as importCyberlinks_ } from './importers_legacy/links';
 import { exposeWorkerApi } from '../factoryMethods';
 import { SyncService } from '../../services/sync/sync';
 import { SyncServiceParams } from '../../services/sync/type';
+import DbApiWrapper from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
-  let dbApi: DbWorkerApi | undefined;
+  let dbApi: CozoDbWorkerApi | undefined;
+  const dbApiWrapper = DbApiWrapper;
+
   const ipfsQueue = new QueueManager<IPFSContentMaybe>();
   const channel = new BcChannel();
   // service to sync updates about cyberlinks, transactions, swarm etc.
@@ -54,25 +55,30 @@ const backendApiFactory = () => {
 
   const syncService = new SyncService(fetchIpfsContent);
 
-  const postServiceStatus = (status: ServiceStatus, error?: string) =>
+  const postServiceStatus = (
+    name: ServiceName,
+    status: ServiceStatus,
+    error?: string
+  ) =>
     channel.post({
       type: 'service_status',
-      value: { name: 'ipfs', status, error },
+      value: { name, status, error },
     });
 
   const postWorkerStatus = (status: WorkerStatus, lastError?: string) =>
     channel.post({ type: 'worker_status', value: { status, lastError } });
 
-  const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) =>
+  const postEntrySyncStatus = (entry: SyncEntry, state: SyncProgress) => {
     channel.post({ type: 'sync_entry', value: { entry, state } });
+  };
 
   // TODO: fix wrong type is used
-  const installDbApi = async (dbApiProxy: DbWorkerApi) => {
+  const installDbApi = async (dbApiProxy: CozoDbWorkerApi) => {
     // proxy to worker with db
     dbApi = dbApiProxy;
-
-    syncService.initDb(dbApi);
-
+    dbApiWrapper.init(dbApi);
+    syncService.initDb(dbApiWrapper, postEntrySyncStatus);
+    postServiceStatus('sync', 'started');
     postWorkerStatus('idle');
   };
 
@@ -107,33 +113,34 @@ const backendApiFactory = () => {
       );
 
       const importIpfs = async () => {
+        throw new Error('Legacy - not maintaned anymore due backgroun sync');
         console.log('-----import ipfs');
-        await importPins(
-          ipfsNode!,
-          dbApi!,
-          async (progress) => postEntrySyncStatus('pin', { progress }),
-          async () => postEntrySyncStatus('pin', { done: true })
-        );
-        const pinsData = await dbApi!.executeGetCommand(
-          'pin',
-          ['cid'],
-          [`type = ${PinTypeMap.recursive}`]
-        );
-        if (pinsData.ok === false) {
-          postWorkerStatus('error', pinsData.message);
-          return;
-        }
+        // await importPins(
+        //   ipfsNode!,
+        //   dbApi!,
+        //   async (progress) => postEntrySyncStatus('pin', { progress }),
+        //   async () => postEntrySyncStatus('pin', { done: true })
+        // );
+        // const pinsData = await dbApi!.executeGetCommand(
+        //   'pin',
+        //   ['cid'],
+        //   [`type = ${PinTypeMap.recursive}`]
+        // );
+        // if (pinsData.ok === false) {
+        //   postWorkerStatus('error', pinsData.message);
+        //   return;
+        // }
 
-        const cids = pinsData.rows.map((row) => row[0]) as string[];
+        // const cids = pinsData.rows.map((row) => row[0]) as string[];
 
-        await importParticles(
-          ipfsNode!,
-          cids,
-          dbApi!,
-          async (progress) => postEntrySyncStatus('particle', { progress }),
-          async () => postEntrySyncStatus('particle', { done: true })
-        );
-        console.log('-----import ipfs done');
+        // await importParticles(
+        //   ipfsNode!,
+        //   cids,
+        //   dbApi!,
+        //   async (progress) => postEntrySyncStatus('particle', { progress }),
+        //   async () => postEntrySyncStatus('particle', { done: true })
+        // );
+        // console.log('-----import ipfs done');
       };
 
       const transactionPromise = importTransactions(
@@ -157,18 +164,19 @@ const backendApiFactory = () => {
 
   const importApi = {
     importParicleContent: async (particle: IPFSContent) =>
-      importParicleContent(particle, dbApi!),
-    importCyberlinks: async (links: CyberLinkNeuron[]) =>
-      importCyberlinks_(links, dbApi!),
+      importParicleContent(particle, dbApiWrapper!),
+    importCyberlinks: async (links: LinkDbEntity[]) => {
+      dbApiWrapper.putCyberlinks(links);
+    },
     importParticle: async (cid: string) =>
-      importParticle(cid, ipfsNode!, dbApi!),
+      importParticle(cid, ipfsNode!, dbApiWrapper!),
   };
 
   const stopIpfs = async () => {
     if (ipfsNode) {
       await ipfsNode.stop();
     }
-    postServiceStatus('inactive');
+    postServiceStatus('ipfs', 'inactive');
   };
 
   const startIpfs = async (ipfsOpts: IpfsOptsType) => {
@@ -177,7 +185,7 @@ const backendApiFactory = () => {
         console.log('Ipfs node already started!');
         await ipfsNode.stop();
       }
-      postServiceStatus('starting');
+      postServiceStatus('ipfs', 'starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
 
       ipfsQueue.setNode(ipfsNode);
@@ -191,12 +199,12 @@ const backendApiFactory = () => {
 
       syncService.initIpfs(ipfsNode);
 
-      postServiceStatus('started');
+      postServiceStatus('ipfs', 'started');
       return proxy(ipfsNode);
     } catch (err) {
       console.log('----ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
-      postServiceStatus('error', msg);
+      postServiceStatus('ipfs', 'error', msg);
       throw Error(msg);
     }
   };
@@ -220,19 +228,28 @@ const backendApiFactory = () => {
     clearQueue: async () => ipfsQueue.clear(),
   };
 
+  const senseApi = {
+    getSummary: () => dbApiWrapper.getSenseSummary(),
+    getList: () => dbApiWrapper.getSenseList(),
+    markAsRead: (id: NeuronAddress | ParticleCid) =>
+      dbApiWrapper.senseMarkAsRead(id),
+  };
+
   return {
     installDbApi,
     syncDrive,
     ipfsApi: proxy(ipfsApi),
     importApi: proxy(importApi),
+    senseApi: proxy(senseApi),
+    // dbWrapperApi: proxy(dbApiWrapper),
     setParams: (params: Partial<SyncServiceParams>) =>
       syncService.setParams(params),
   };
 };
 
-const backendApi = backendApiFactory();
+const backendWorkerApi = backendApiFactory();
 
-export type BackendWorkerApi = typeof backendApi;
+export type BackendWorkerApi = typeof backendWorkerApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, backendApi);
+exposeWorkerApi(self, backendWorkerApi);

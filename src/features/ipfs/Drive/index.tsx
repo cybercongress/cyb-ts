@@ -53,7 +53,7 @@ function SyncEntryStatus({
     );
   }
   if (status.done) {
-    return <div>{`☑️ ${entry} items synchronized.`}</div>;
+    return <div>{`☑️ ${entry} ${status.message}`}</div>;
   }
   if (status.error) {
     return (
@@ -251,9 +251,9 @@ function Drive() {
               {syncState.lastError && `(${syncState.lastError})`}
             </Text>
           )}
-          {syncState?.status === 'syncing' && (
-            <SyncInfo syncState={syncState} />
-          )}
+          {/* {syncState?.status === 'syncing' && ( */}
+          <SyncInfo syncState={syncState} />
+          {/* )} */}
           {(syncState?.status === 'idle' || syncState?.status === 'error') && (
             <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
               sync drive

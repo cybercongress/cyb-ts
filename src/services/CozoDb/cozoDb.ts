@@ -67,8 +67,9 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
       .join(', ')}]`;
   };
 
-  const generatePut = (tableName: string, array: DbEntity[]) => {
-    const atomCommand = generateAtomCommand(tableName, array);
+  const generatePut = (tableName: string, array: Partial<DbEntity>[]) => {
+    const fields = Object.keys(array[0]);
+    const atomCommand = generateAtomCommand(tableName, array, fields);
     const putCommand = generateModifyCommand(tableName, 'put');
     return `${atomCommand}\r\n${putCommand}`;
   };
@@ -129,14 +130,9 @@ function DbService() {
   async function init(
     onWrite?: (writesCount: number) => void
   ): Promise<CozoDb> {
-    // if (db) {
-    //   return db;
-    // }
-
     await initCozoDb();
 
     db = await CozoDb.new_from_indexed_db(DB_NAME, DB_STORE_NAME, onWrite);
-    console.log('----db', db);
     dbSchema = await initDbSchema();
     commandFactory = CozoDbCommandFactory(dbSchema);
 
@@ -233,14 +229,14 @@ function DbService() {
     }
     const resultStr = await db.run(command, '', immutable);
     const result = JSON.parse(resultStr);
-    console.log('----> runCommand ', command, result);
+    // console.log('----> runCommand ', command, result);
 
     return result;
   };
 
   const put = async (
     tableName: string,
-    array: DbEntity[]
+    array: Partial<DbEntity>[]
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(commandFactory!.generatePut(tableName, array));
 

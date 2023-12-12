@@ -6,6 +6,7 @@ import {
   DBValue,
   Column,
   DbEntity,
+  IDBResultError,
 } from './types';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
@@ -56,11 +57,10 @@ export const snakeToCamel = (str: string) =>
 export const camelToSnake = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
-export const dbResultToObjects = (
-  dbResult: IDBResult,
-  tableName: string,
-  dbSchema: DBSchema
-) => {
+export const dbResultToObjects = (dbResult: IDBResult | IDBResultError) => {
+  if (!dbResult.ok) {
+    throw new Error(`Can't parse DBResult: ${dbResult.message}`);
+  }
   const { headers, rows } = dbResult;
 
   const camelCaseHeadersMap = headers.reduce((acc, header) => {

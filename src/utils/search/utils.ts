@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
-import { backendApi } from 'src/services/backend/workers/background/service';
+import { backendWorkerApiRemote } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
@@ -921,12 +921,14 @@ export const searchByHash = async (
       options.callback(responseSearchResults.pagination.total);
     }
     if (options.storeToCozo) {
-      console.log('-----searc', hash);
-      backendApi.importApi.importParticle(hash);
-      backendApi.importApi.importCyberlinks(
+      console.log('-----searc', hash, responseSearchResults);
+      backendWorkerApiRemote.importApi.importParticle(hash);
+      backendWorkerApiRemote.importApi.importCyberlinks(
         responseSearchResults.result.map((item) => ({
           from: hash,
           to: item.particle,
+          neuron: '',
+          timestamp: 0,
         }))
       );
     }
