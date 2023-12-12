@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Tablist, Pane, Text } from '@cybercongress/gravity';
-import { useParams } from 'react-router-dom';
+import { Pane, Text } from '@cybercongress/gravity';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getParamNetwork } from '../../utils/search/utils';
-import { Loading, TabBtn } from '../../components';
+import { Loading, TabButton, TabList } from '../../components';
 import {
   BandwidthParam,
   SlashingParam,
@@ -17,6 +17,7 @@ import {
   GridParam,
   DmnParam,
 } from './tabs';
+import { useAdviser } from 'src/features/adviser/context';
 
 const paramsTabs = {
   staking: { text: 'Staking', to: '/network/bostrom/parameters/staking' },
@@ -52,19 +53,30 @@ const initParam = {
 };
 
 function ParamNetwork() {
+  const navigate = useNavigate();
+  const { setAdviser } = useAdviser();
   const [dataParam, setDataParam] = useState(initParam);
   const [loading, setLoading] = useState(true);
   const { param = 'bandwidth' } = useParams();
+
   useEffect(() => {
-    const feachData = async () => {
+    (async () => {
       const response = await getParamNetwork();
       if (response !== null) {
         setDataParam(response);
       }
       setLoading(false);
-    };
-    feachData();
+    })();
   }, []);
+
+  useEffect(() => {
+    setAdviser(
+      <span>
+        Parametrs are adjastable by the consensus. <br /> Everybody can propose
+        change the parametrs to different value.
+      </span>
+    );
+  }, [setAdviser, param]);
 
   if (loading) {
     return (
@@ -85,31 +97,17 @@ function ParamNetwork() {
 
   return (
     <main className="block-body">
-      <Pane
-        boxShadow="0px 0px 5px #36d6ae"
-        paddingX={20}
-        paddingY={20}
-        marginY={20}
-      >
-        <Text fontSize="16px" color="#fff">
-          Parametrs are adjastable by the consensus. Everybody can propose
-          change the parametrs to different value.
-        </Text>
-      </Pane>
-      <Tablist
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(110px, 0.5fr))"
-        gridGap="10px"
-      >
+      <TabList>
         {Object.entries(paramsTabs).map(([key, item]) => (
-          <TabBtn
+          <TabButton
             key={`param_tab_${key}`}
-            text={item.text}
             isSelected={param === key}
-            to={item.to}
-          />
+            onSelect={() => navigate(item.to)}
+          >
+            {item.text}
+          </TabButton>
         ))}
-      </Tablist>
+      </TabList>
       <Pane
         display="flex"
         marginTop={20}

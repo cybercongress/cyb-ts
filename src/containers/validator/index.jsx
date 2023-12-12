@@ -1,6 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { Tablist, Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 
@@ -13,36 +12,22 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy } from '../../components';
+import { Loading, Copy, TabButton, TabList } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
+import { Position } from 'src/components/tabButton/TabButton';
 
-function TabBtn({ text, isSelected, onSelect, to }) {
-  return (
-    <Link to={to}>
-      <Tab
-        key={text}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        paddingX={20}
-        paddingY={20}
-        marginX={3}
-        borderRadius={4}
-        color="#36d6ae"
-        boxShadow="0px 0px 5px #36d6ae"
-        fontSize="16px"
-        whiteSpace="nowrap"
-        width="100%"
-      >
-        {text}
-      </Tab>
-    </Link>
-  );
-}
+const mapTabs = [
+  { text: 'fans', to: 'fans' },
+  { text: 'main', to: undefined },
+  { text: 'rumors', to: 'rumors' },
+  { text: 'leadership', to: 'leadership' },
+];
+
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -225,6 +210,15 @@ class ValidatorsDetails extends React.PureComponent {
     });
   };
 
+  onSelectTabButton = (to) => {
+    const {
+      router: { params, navigate },
+    } = this.props;
+    const { address } = params;
+
+    navigate(`/network/bostrom/hero/${address}/${to || ''}`);
+  };
+
   render() {
     const {
       validatorInfo,
@@ -276,33 +270,26 @@ class ValidatorsDetails extends React.PureComponent {
             </Text>
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
-            gridGap="10px"
-          >
-            <TabBtn
-              text="Fans"
-              isSelected={tab === 'fans'}
-              to={`/network/bostrom/hero/${address}/fans`}
-            />
-            <TabBtn
-              text="Main"
-              isSelected={!tab}
-              to={`/network/bostrom/hero/${address}`}
-            />
-            <TabBtn
-              text="Rumors"
-              isSelected={tab === 'rumors'}
-              to={`/network/bostrom/hero/${address}/rumors`}
-            />
-
-            <TabBtn
-              text="Leadership"
-              isSelected={tab === 'leadership'}
-              to={`/network/bostrom/hero/${address}/leadership`}
-            />
-          </Tablist>
+          <TabList>
+            {mapTabs.map((item, index) => {
+              const type =
+                index === 0
+                  ? Position.Left
+                  : index === mapTabs.length - 1
+                  ? Position.Right
+                  : undefined;
+              return (
+                <TabButton
+                  key={item.text}
+                  type={type}
+                  isSelected={tab === item.to}
+                  onSelect={() => this.onSelectTabButton(item.to)}
+                >
+                  {item.text}
+                </TabButton>
+              );
+            })}
+          </TabList>
           <Pane
             display="flex"
             marginTop={20}

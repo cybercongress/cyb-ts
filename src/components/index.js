@@ -26,7 +26,6 @@ import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
 import Vitalik from './vitalik';
 import BandwidthBar from './BandwidthBar';
-import TabBtn from './tabBtn';
 import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
 import NoItems from './ui/noItems';
@@ -85,7 +84,6 @@ export {
   BandwidthBar,
   ActionBarContentText,
   CheckAddressInfo,
-  TabBtn,
   GovernanceSoftwareUpgrade,
   ConnectAddress,
   ButtonImgText,
