@@ -54,7 +54,7 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
-import Teleport from './containers/teleport/pages/Teleport';
+import Teleport from './pages/teleport/Teleport';
 import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';

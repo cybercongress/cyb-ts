@@ -2,7 +2,7 @@ import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import styles from './TabButton.module.scss';
 
-export const enum Position {
+const enum Position {
   Right = 'right',
   Left = 'left',
 }

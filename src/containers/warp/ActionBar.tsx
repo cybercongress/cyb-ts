@@ -14,7 +14,7 @@ import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 
 import ActionBarStaps from './actionBarSteps';
-import { sortReserveCoinDenoms } from '../teleport/utils';
+import { sortReserveCoinDenoms } from '../../pages/teleport/swap/utils';
 import { TypeTab, TypeTabEnum } from './type';
 
 const POOL_TYPE_INDEX = 1;
