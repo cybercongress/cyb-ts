@@ -1,43 +1,38 @@
-import { Meta } from '@storybook/react';
-import { useState } from 'react';
-import TabButton, { Props } from './TabButton';
+import { Meta, StoryObj } from '@storybook/react';
+import TabButton from './TabButton';
 
-export default {
+const meta: Meta<typeof TabButton> = {
   component: TabButton,
-  title: 'Tech debt/TabButton',
-} as Meta;
+  title: 'atoms/TabButton',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: '',
+    },
+  },
+};
+export default meta;
 
-function Template(args: Props) {
-  const [isSelected, setIsSelected] = useState(false);
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '300px',
-        margin: '0 auto',
-        gap: 10,
-      }}
-    >
-      <TabButton
-        {...args}
-        isSelected={isSelected}
-        onSelect={() => setIsSelected(!isSelected)}
-      >
-        left or right
-      </TabButton>
-      <TabButton
-        isSelected={isSelected}
-        onSelect={() => setIsSelected(!isSelected)}
-      >
-        default
-      </TabButton>
-    </div>
-  );
-}
+type Story = StoryObj<typeof TabButton>;
 
-export const Default = Template.bind({});
-Default.args = {
-  isSelected: true,
-  onSelect: () => {},
+const configTabButton = [
+  {
+    to: '',
+    text: 'left',
+  },
+  {
+    to: '',
+    text: 'default',
+  },
+  {
+    to: '',
+    text: 'right',
+  },
+];
+
+export const Main: Story = {
+  args: {
+    options: configTabButton,
+    selected: configTabButton[1].text,
+  },
 };

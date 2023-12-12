@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import { Link } from 'react-router-dom';
 import styles from './TabButton.module.scss';
 
 export const enum Position {
@@ -6,26 +7,44 @@ export const enum Position {
   Left = 'left',
 }
 
-export type Props = {
-  children: React.ReactNode;
-  isSelected: boolean;
-  type?: Position;
-  onSelect: () => void;
+type optionsProps = {
+  to: string;
+  text: string;
 };
 
-function TabButton({ children, type, isSelected, onSelect }: Props) {
+export type Props = {
+  options: optionsProps[];
+  selected: string;
+};
+
+function TabButton({ options, selected }: Props) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={cx(
-        styles.tabButton,
-        type && styles[`${type}`],
-        isSelected && styles[type ? `${type}Active` : 'tabButtonActive']
-      )}
-    >
-      {children}
-    </button>
+    <>
+      {options.map((item, index) => {
+        const type =
+          index === 0
+            ? Position.Left
+            : index === options.length - 1
+            ? Position.Right
+            : undefined;
+
+        const isSelected = selected === item.text;
+
+        return (
+          <Link
+            key={item.text}
+            to={item.to}
+            className={cx(
+              styles.tabButton,
+              type && styles[`${type}`],
+              isSelected && styles[type ? `${type}Active` : 'tabButtonActive']
+            )}
+          >
+            {item.text}
+          </Link>
+        );
+      })}
+    </>
   );
 }
 

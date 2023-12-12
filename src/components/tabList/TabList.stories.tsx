@@ -1,54 +1,52 @@
-import { Meta } from '@storybook/react';
-import { useState } from 'react';
-import TabButton, { Position } from '../tabButton/TabButton';
+import { Meta, StoryObj } from '@storybook/react';
+import TabButton from '../tabButton/TabButton';
 import TabList from './TabList';
 
-export default {
+const meta: Meta<typeof TabList> = {
   component: TabList,
-  title: 'Tech debt/TabList',
-} as Meta;
+  title: 'atoms/TabList',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: '',
+    },
+  },
+};
+export default meta;
+
+type Story = StoryObj<typeof TabList>;
 
 const TabButtonConfig = [
   {
-    type: Position.Left,
-    key: 'tb1',
-    text: Position.Left,
+    to: '',
+    text: 'left',
   },
   {
-    key: 'tb2',
-    text: 'Default',
+    to: '',
+    text: 'default',
   },
   {
-    type: Position.Right,
-    key: 'tb3',
-    text: Position.Right,
+    to: '',
+    text: 'right',
   },
 ];
 
-function Template() {
-  const [isSelected, setIsSelected] = useState('tb2');
-  return (
-    <div
-      style={{
-        width: '375px',
-        margin: '0 auto',
-      }}
-    >
-      <TabList>
-        {TabButtonConfig.map((item) => (
+export const Main: Story = {
+  render: () => {
+    return (
+      <div
+        style={{
+          width: '375px',
+          margin: '0 auto',
+        }}
+      >
+        <TabList>
           <TabButton
-            key={item.key}
-            type={item.type}
-            isSelected={isSelected === item.key}
-            onSelect={() => setIsSelected(item.key)}
-          >
-            {item.text}
-          </TabButton>
-        ))}
-      </TabList>
-    </div>
-  );
-}
-
-export const Default = Template.bind({});
-Default.args = {};
+            options={TabButtonConfig}
+            selected={TabButtonConfig[1].text}
+          />
+        </TabList>
+      </div>
+    );
+  },
+};
