@@ -10,10 +10,15 @@ import 'rc-slider/assets/index.css';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import ERatio from './eRatio';
-import { Dots, CardStatisics, ValueImg } from '../../components';
+import { Dots, CardStatisics, ValueImg, DenomArr } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
+import { useAdviser } from 'src/features/adviser/context';
+import Display from 'src/components/containerGradient/Display/Display';
+import ImgDenom from 'src/components/valueImg/imgDenom';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 const BASE_VESTING_TIME = 86401;
 const BASE_MAX_MINT_TIME = 41;
@@ -39,14 +44,13 @@ const returnColorDot = (marks) => {
   };
 };
 
-function Mint({ defaultAccount }) {
+const SLOTS_MAX = 16;
+
+function Mint() {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
-  const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
-  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
-    useGetSlots(addressActive, updateAddress);
   const [selected, setSelected] = useState('millivolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
@@ -57,6 +61,32 @@ function Mint({ defaultAccount }) {
   const [height, setHeight] = useState(0);
   const [resourcesParams, setResourcesParams] = useState(null);
   const [balanceHydrogen, SetBalanceHydrogen] = useState(0);
+
+  const addressActive = useAppSelector(selectCurrentAddress);
+  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
+    useGetSlots(addressActive, updateAddress);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    const availableSlots =
+      SLOTS_MAX -
+      slotsData.filter((slot) => slot.status === 'Unfreezing').length;
+
+    setAdviser(
+      <p>
+        {slotsData.length === 0 ? (
+          <>investmint - temporarily invest tokens to mint tokens</>
+        ) : (
+          <>you have {availableSlots} slots available for investmint</>
+        )}
+        <br />
+        choose <ValueImg text="milliampere" /> or <ValueImg text="millivolt" />{' '}
+        to mint, the amount of <ValueImg text="hydrogen" /> to invest, and the
+        timeframe
+      </p>
+    );
+  }, [setAdviser, slotsData]);
 
   useEffect(() => {
     const getBalanceH = async () => {
@@ -82,7 +112,6 @@ function Mint({ defaultAccount }) {
         responseResourcesParams.params &&
         Object.keys(responseResourcesParams.params).length > 0
       ) {
-        console.log(`responseResourcesParams`, responseResourcesParams);
         const { params } = responseResourcesParams;
         setResourcesParams((item) => ({ ...item, ...params }));
       }
@@ -94,21 +123,6 @@ function Mint({ defaultAccount }) {
     };
     getParam();
   }, [queryClient]);
-
-  useEffect(() => {
-    const { account } = defaultAccount;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { bech32 } = account.cyber;
-
-      addressPocket = bech32;
-    }
-    setAddressActive(addressPocket);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount.name]);
 
   useEffect(() => {
     let vestedTokens = 0;
@@ -255,19 +269,6 @@ function Mint({ defaultAccount }) {
             value={`${formatNumber(vestedA * vestedV)} W`}
           />
         </Pane>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: 30,
-          }}
-        >
-          {/* <span style={{ fontSize: '30px', marginBottom: 10 }}>Investmint</span> */}
-          <span style={{ fontSize: '18px' }}>
-            VERB. to invest tokens for sometime for the right to mint tokens
-          </span>
-        </div>
         <Tablist
           display="grid"
           gridTemplateColumns="150px 150px"
@@ -383,16 +384,23 @@ function Mint({ defaultAccount }) {
                 bottom: '30px',
               }}
             >
-              You’re freezing {formatNumber(value)} H for {valueDays} days. It
-              will release {resourceToken} <ValueImg text={selected} /> for you.
-              At the end of the period, {selected} becomes liquid automatically,
-              but you can use it to boost ranking during the freeze. You can
-              have only 8 slots for investmint at a time.
+              You’re freezing {formatNumber(value)} <ValueImg text="hydrogen" />{' '}
+              for <strong>{valueDays} days</strong>. It will release{' '}
+              {resourceToken} <ValueImg text={selected} /> for you. At the end
+              of the period, {selected} becomes liquid automatically, but you
+              can use it to boost ranking during the freeze. You can have only 8
+              slots for investmint at a time.
             </div>
           )}
         </div>
 
-        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
+        {loadingAuthAccounts ? (
+          <Dots big />
+        ) : (
+          <Display>
+            <TableSlots data={slotsData} />
+          </Display>
+        )}
       </main>
       <ActionBar
         value={value}
@@ -406,10 +414,4 @@ function Mint({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Mint);
+export default Mint;

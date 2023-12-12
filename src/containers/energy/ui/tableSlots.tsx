@@ -56,7 +56,7 @@ function TableSlots({ data }: Props) {
           unfreezing: item.time ? <TextTable>{item.time}</TextTable> : '',
           supplied: item.amount[CYBER.DENOM_LIQUID_TOKEN] ? (
             <TextTable>
-              {formatNumber(item.amount[CYBER.DENOM_LIQUID_TOKEN])}
+              {formatNumber(item.amount[CYBER.DENOM_LIQUID_TOKEN])}&nbsp;
               <DenomArr denomValue={CYBER.DENOM_LIQUID_TOKEN} onlyImg />
             </TextTable>
           ) : (
@@ -66,13 +66,14 @@ function TableSlots({ data }: Props) {
             <>
               {item.amount.millivolt && (
                 <TextTable>
-                  {getDisplayAmount(item.amount.millivolt, coinDecimalsV)}
+                  {getDisplayAmount(item.amount.millivolt, coinDecimalsV)}&nbsp;
                   <DenomArr denomValue="millivolt" onlyImg />
                 </TextTable>
               )}
               {item.amount.milliampere && (
                 <TextTable>
                   {getDisplayAmount(item.amount.milliampere, coinDecimalsA)}
+                  &nbsp;
                   <DenomArr denomValue="milliampere" onlyImg />
                 </TextTable>
               )}

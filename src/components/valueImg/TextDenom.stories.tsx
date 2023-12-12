@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react';
 import CoinDenom, { CoinDenomProps } from './TextDenom';
 
 export default {
-  title: 'Atoms/CoinDenom',
+  title: 'atoms/denoms/CoinDenom',
   component: CoinDenom,
   argTypes: {
     coinDenom: {

@@ -6,7 +6,7 @@ import DenomArr from './denomArr';
 
 const meta: Meta<typeof DenomArr> = {
   component: DenomArr,
-  title: 'atoms/DenomArr',
+  title: 'atoms/denoms/DenomArr',
   parameters: {
     design: {
       type: 'figma',
