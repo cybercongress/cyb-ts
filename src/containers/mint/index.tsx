@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
-import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -46,12 +45,19 @@ const returnColorDot = (marks) => {
 
 const SLOTS_MAX = 16;
 
+enum SelectedState {
+  millivolt = 'millivolt',
+  milliampere = 'milliampere',
+}
+
 function Mint() {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
-  const [selected, setSelected] = useState('millivolt');
+  const [selected, setSelected] = useState<SelectedState>(
+    SelectedState.milliampere
+  );
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(0);
@@ -276,14 +282,14 @@ function Mint() {
           justifyContent="center"
         >
           <Btn
-            text={<ValueImg justifyContent="center" text="millivolt" />}
-            checkedSwitch={selected === 'millivolt'}
-            onSelect={() => setSelected('millivolt')}
-          />
-          <Btn
             text={<ValueImg justifyContent="center" text="milliampere" />}
             checkedSwitch={selected === 'milliampere'}
             onSelect={() => setSelected('milliampere')}
+          />
+          <Btn
+            text={<ValueImg justifyContent="center" text="millivolt" />}
+            checkedSwitch={selected === 'millivolt'}
+            onSelect={() => setSelected('millivolt')}
           />
         </Tablist>
         <div style={grid}>
@@ -388,7 +394,8 @@ function Mint() {
               for <strong>{valueDays} days</strong>. It will release{' '}
               {resourceToken} <ValueImg text={selected} /> for you. At the end
               of the period, {selected} becomes liquid automatically, but you
-              can use it to boost ranking during the freeze. You can have only 8
+              can use it to boost ranking during the freeze. You can have only{' '}
+              {SLOTS_MAX}
               slots for investmint at a time.
             </div>
           )}
