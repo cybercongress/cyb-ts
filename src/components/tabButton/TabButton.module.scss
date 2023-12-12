@@ -29,6 +29,7 @@
   height: 42px;
   width: 100%;
   font-size: 1rem;
+  z-index: 0;
 
   @include saber-horizontal('blue', 'color');
 
