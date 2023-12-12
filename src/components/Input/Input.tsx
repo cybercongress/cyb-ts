@@ -17,10 +17,13 @@ export type Props = {
   type?: 'text' | 'password';
   error?: string;
   value: string;
+  maxValue?: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlurFnc?: () => void;
   onFocusFnc?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
+
+const dataPercentAttribute = 'data-percent';
 
 const Input = React.forwardRef<HTMLInputElement, Props>(
   (
@@ -36,6 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       className,
       classNameTextbox,
       focusedProps,
+      maxValue,
       isTextarea,
       onBlurFnc,
       onFocusFnc,
@@ -82,6 +86,21 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       }
     };
 
+    function handleMax(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+      const target = e.target as HTMLButtonElement;
+      const percent = target.getAttribute(dataPercentAttribute);
+      const newValue = ((maxValue! * Number(percent)) / 100).toFixed(0);
+
+      // FIXME: need refactor other components
+      onChange({
+        target: {
+          value: String(newValue),
+          // issue with number input
+          focus() {},
+        },
+      });
+    }
+
     return (
       <div
         className={cx(
@@ -98,6 +117,24 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           color={color}
           title={title}
         >
+          {focused && !!maxValue && (
+            <div className={styles.amount}>
+              {[25, 50, 75, 100].map((percent) => {
+                return (
+                  <button
+                    key={percent}
+                    type="button"
+                    // onMouseDown be called before onBlur
+                    onMouseDown={handleMax}
+                    {...{ [dataPercentAttribute]: percent }}
+                  >
+                    {percent === 100 ? 'max' : `${percent}%`}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           <Tag
             type={type}
             ref={ref}

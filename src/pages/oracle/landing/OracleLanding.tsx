@@ -80,13 +80,8 @@ function OracleLanding() {
   const [searchParams] = useSearchParams();
   const type = searchParams.get(QUERY_KEY);
 
-  const [titleType, setTitleType] = useState<TitleType>(
-    Number(
-      Object.entries(mapTitleTypeToTitle).find(
-        ([, value]) => value === type
-      )?.[0]
-    ) || TitleType.search
-  );
+  const [titleType, setTitleType] = useState<TitleType>(TitleType.ai);
+
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
@@ -139,6 +134,7 @@ function OracleLanding() {
       <header className={styles.header}>
         <Carousel
           color="blue"
+          noAnimation
           activeStep={titleType}
           onChange={(index: TitleType) => {
             setTitleType(index);

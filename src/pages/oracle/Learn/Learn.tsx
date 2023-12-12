@@ -8,7 +8,7 @@ import {
 } from 'src/components';
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
-import { CYBER, PATTERN_IPFS_HASH } from 'src/utils/config';
+import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
 import { useAdviser } from 'src/features/adviser/context';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -42,6 +42,11 @@ const learningListConfig = [
     ),
   },
 ];
+
+const fee = {
+  amount: [],
+  gas: DEFAULT_GAS_LIMITS.toString(),
+};
 
 function Learn() {
   const [ask, setAsk] = useState('');
@@ -150,7 +155,7 @@ function Learn() {
         address,
         fromCid,
         toCid,
-        'auto'
+        fee
       );
 
       if (result.code !== 0) {

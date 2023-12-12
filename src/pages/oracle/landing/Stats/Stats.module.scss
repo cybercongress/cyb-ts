@@ -7,4 +7,13 @@
   strong {
     color: var(--green-light);
   }
+
+  .change {
+    color: rgba(221, 255, 255, 0.38);
+    display: inline;
+
+    strong {
+      color: #fff;
+    }
+  }
 }

@@ -4,7 +4,7 @@ import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
   data: any;
-  currentAddress?: string;
+  // currentAddress?: string;
   size?: number;
 };
 
@@ -14,7 +14,7 @@ const DEFAULT_CAMERA_DISTANCE = 1300;
 const CAMERA_ZOOM_IN_EFFECT_DURATION = 5000;
 const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
 
-function CyberlinksGraph({ data, size, currentAddress }: Props) {
+function CyberlinksGraph({ data, size }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
 
@@ -44,6 +44,10 @@ function CyberlinksGraph({ data, size, currentAddress }: Props) {
     }
 
     setTimeout(() => {
+      if (!fgRef.current) {
+        return;
+      }
+
       fgRef.current.cameraPosition(
         { z: DEFAULT_CAMERA_DISTANCE },
         null,
