@@ -1,14 +1,14 @@
-import { BroadcastChannelMessage } from 'src/services/backend/channels/BroadcastChannel';
 import {
   ServiceName,
-  WorkerState,
+  SyncState,
   ServiceStatus,
+  BroadcastChannelMessage,
 } from 'src/services/backend/types';
 import { assocPath } from 'ramda';
 
 type BackendState = {
   dbPendingWrites: number;
-  syncState: WorkerState;
+  syncState: SyncState;
   services: { [key in ServiceName]: { status: ServiceStatus; error?: string } };
 };
 
@@ -31,7 +31,7 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
     case 'indexeddb_write': {
       return assocPath(['dbPendingWrites'], action.value, state);
     }
-    case 'worker_status': {
+    case 'sync_status': {
       return assocPath(
         ['syncState'],
         { ...state.syncState, ...action.value },
@@ -53,8 +53,8 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
     }
 
     case 'service_status': {
-      const { name, status, error } = action.value;
-      return assocPath(['services', name], { status, error }, state);
+      const { name, status, message } = action.value;
+      return assocPath(['services', name], { status, message }, state);
     }
     default:
       return state;

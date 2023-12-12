@@ -1,18 +1,16 @@
-import BcChannel from 'src/services/backend/channels/BroadcastChannel';
+import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 import cozoDb from 'src/services/CozoDb/cozoDb';
 import { exposeWorkerApi } from '../factoryMethods';
 import { ServiceStatus } from '../../types';
 import { DbEntity } from 'src/services/CozoDb/types';
+import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
 const dbApiFactory = () => {
   let isInitialized = false;
-  const channel = new BcChannel();
+  const channel = new BroadcastChannelSender();
 
   const postServiceStatus = (status: ServiceStatus) =>
-    channel.post({
-      type: 'service_status',
-      value: { name: 'db', status },
-    });
+    channel.postServiceStatus('db', status);
 
   const init = async () => {
     if (isInitialized) {

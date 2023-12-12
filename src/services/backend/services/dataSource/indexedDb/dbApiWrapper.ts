@@ -153,6 +153,7 @@ function DbApiWrapper() {
     dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime
     ?[${valueNames}] := dt[${valueNames}]
     `;
+
     const result = await db!.runCommand(command);
 
     return dbResultToObjects(result) as SenseResult[];

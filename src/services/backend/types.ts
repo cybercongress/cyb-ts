@@ -1,4 +1,6 @@
-export type SyncEntry = 'pin' | 'particle' | 'transaction';
+import { IndexedDbWriteMessage } from "../CozoDb/types";
+
+export type SyncEntryName = 'pin' | 'particle' | 'transaction';
 
 export type SyncProgress = {
   progress?: number;
@@ -7,42 +9,41 @@ export type SyncProgress = {
   message?: string;
 };
 
-export type WorkerStatus = 'inactive' | 'idle' | 'syncing' | 'error';
+// export type WorkerStatus = 'inactive' | 'started' | 'error';
 
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 
-export type SyncBroadcastType = 'sender' | 'reciever';
+export type SyncEntryStatus = Partial<Record<SyncEntryName, SyncProgress>>;
 
-export type SyncEntryStatus = Partial<Record<SyncEntry, SyncProgress>>;
-
-export type WorkerState = {
-  status: WorkerStatus;
+export type SyncState = {
+  status: ServiceStatus;
   entryStatus: SyncEntryStatus;
   lastError?: string;
 };
 
-export type WorkerStatusUpdate = Omit<WorkerState, 'entryStatus'>;
 
-export type SyncEntryUpdate = {
-  entry: SyncEntry;
-  state: SyncProgress;
-};
-
-export type WorkerStatusMessage = {
-  type: 'worker_status';
-  value: WorkerStatusUpdate;
+export type SyncStatusMessage = {
+  type: 'sync_status';
+  value: Omit<SyncState, 'entryStatus'>;
 };
 
 export type SyncEntryMessage = {
   type: 'sync_entry';
-  value: SyncEntryUpdate;
+  value: {
+    entry: SyncEntryName;
+    state: SyncProgress;
+  };;
 };
 
 export type ServiceName = 'db' | 'ipfs' | 'sync';
 
 export type ServiceStatusMessage = {
   type: 'service_status';
-  value: { name: ServiceName; status: ServiceStatus; error?: string };
+  value: { name: ServiceName; status: ServiceStatus; message?: string };
 };
 
-export type onProgressEvent = (entry: SyncEntry, state: SyncProgress) => void;
+export type BroadcastChannelMessage =
+  | SyncStatusMessage
+  | SyncEntryMessage
+  | IndexedDbWriteMessage
+  | ServiceStatusMessage;

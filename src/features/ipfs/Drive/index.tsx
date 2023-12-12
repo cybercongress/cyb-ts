@@ -13,9 +13,9 @@ import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend';
 import {
-  SyncEntry,
+  SyncEntryName,
   SyncProgress,
-  WorkerState,
+  SyncState,
 } from 'src/services/backend/types';
 
 import styles from './drive.scss';
@@ -41,7 +41,7 @@ function SyncEntryStatus({
   entry,
   status,
 }: {
-  entry: SyncEntry;
+  entry: SyncEntryName;
   status: SyncProgress;
 }) {
   if (status.progress === 0) {
@@ -67,7 +67,7 @@ function SyncEntryStatus({
     </div>
   );
 }
-function SyncInfo({ syncState }: { syncState: WorkerState }) {
+function SyncInfo({ syncState }: { syncState: SyncState }) {
   return (
     <div>
       <div className={styles.logs}>
@@ -254,7 +254,8 @@ function Drive() {
           {/* {syncState?.status === 'syncing' && ( */}
           <SyncInfo syncState={syncState} />
           {/* )} */}
-          {(syncState?.status === 'idle' || syncState?.status === 'error') && (
+          {(syncState?.status === 'started' ||
+            syncState?.status === 'error') && (
             <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
               sync drive
             </CybButton>

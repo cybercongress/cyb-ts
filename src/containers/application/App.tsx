@@ -36,15 +36,19 @@ function App() {
   // TODO: TMP Example of how to use SENSE
   useEffect(() => {
     (async () => {
-      const list = await senseApi.getList();
-      console.log('----sense list', list);
-      const summary = await senseApi.getSummary();
-      console.log('----sense summary', summary);
+      if (isReady) {
+        console.log('----isReady', isReady);
+        const list = await senseApi.getList();
+        console.log('----sense list', list);
+        const summary = await senseApi.getSummary();
+        console.log('----sense summary', summary);
 
-      //MARK AS READ
-      await senseApi.markAsRead('<CID/ADDRESS');
+        //MARK AS READ
+        await senseApi.markAsRead('<CID/ADDRESS');
+      }
     })();
-  }, [isReady, senseApi]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]);
 
   /// ------------
 

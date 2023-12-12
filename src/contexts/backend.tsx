@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backendWorkerApiRemote } from 'src/services/backend/workers/background/service';
 
-import BcChannel from 'src/services/backend/channels/BroadcastChannel';
-import dbApiService from 'src/services/backend/workers/db/service';
+import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+import dbApiWorkerRemove from 'src/services/backend/workers/db/service';
 import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode, IpfsOptsType } from 'src/services/ipfs/ipfs';
@@ -17,7 +17,7 @@ import dbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbA
 
 type BackendProviderContextType = {
   startSyncTask?: () => void;
-  dbApi?: typeof dbApiService;
+  dbApi?: typeof dbApiWorkerRemove;
   senseApi: typeof backendWorkerApiRemote.senseApi;
   backendApi?: typeof backendWorkerApiRemote;
   ipfsNode?: Remote<CybIpfsNode> | null;
@@ -60,19 +60,22 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const [isIpfsInitialized, setIsIpfsInitialized] = useState(false);
   const [isDbInitialized, setIsDbItialized] = useState(false);
   const [isSyncInitialized, setIsSyncInitialized] = useState(false);
+
   const [ipfsError, setIpfsError] = useState(null);
   const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
+
   const dbStatus = useAppSelector((state) => state.backend.services.db);
   const ipfsStatus = useAppSelector((state) => state.backend.services.ipfs);
   const syncStatus = useAppSelector((state) => state.backend.services.sync);
+
   const myAddress = useAppSelector(selectCurrentAddress);
   const followings = useAppSelector(selectFollowings);
   // const passport = useAppSelector(selectCurrentPassport);
   // const passports = useCommunityPassports();
   // console.log('-----passport', passport, followings, passports);
-  const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
+  // const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
-  const channelRef = useRef<BcChannel>();
+  const channelRef = useRef<BroadcastChannelListener>();
 
   backendWorkerApiRemote.setParams({ cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS });
 
@@ -101,7 +104,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       // attach db api to backend api
 
       (async () => {
-        await backendWorkerApiRemote.installDbApi(proxy(dbApiService));
+        await backendWorkerApiRemote.installDbApi(proxy(dbApiWorkerRemove));
       })();
     }
 
@@ -121,16 +124,18 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
       // Loading non-blocking, when ready  state.backend.services.* should be changef
       loadIpfs();
-      initDbApi();
+      loadCozoDb();
     })();
 
     // Channel to sync worker's state with redux store
-    channelRef.current = new BcChannel((msg) => dispatch(msg.data));
+    channelRef.current = new BroadcastChannelListener((msg) =>
+      dispatch(msg.data)
+    );
   }, [dispatch]);
 
-  const initDbApi = async () => {
+  const loadCozoDb = async () => {
     console.time('🔋 CozoDb worker started.');
-    await dbApiService
+    await dbApiWorkerRemove
       .init()
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
@@ -155,25 +160,26 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const valueMemo = useMemo(
     () => ({
-      startSyncTask: async () =>
-        backendWorkerApiRemote.syncDrive(
-          useGetAddress,
-          CYBER.CYBER_INDEX_HTTPS
-        ),
+      startSyncTask: async () => console.log('---legacy'),
+      // backendWorkerApiRemote.syncDrive(
+      //   useGetAddress,
+      //   CYBER.CYBER_INDEX_HTTPS
+      // ),
       backendApi: backendWorkerApiRemote,
-      dbApi: isDbInitialized ? dbApiService : undefined,
+      dbApi: isDbInitialized ? dbApiWorkerRemove : undefined,
       senseApi: backendWorkerApiRemote.senseApi,
       // dbApiWrapper: backendWorkerApiRemote.dbWrapperApi,
-      isIpfsInitialized,
-      isDbInitialized,
-      isSyncInitialized,
+
       ipfsNode: isIpfsInitialized ? ipfsNode.current : null,
       loadIpfs,
       ipfsError,
+      isIpfsInitialized,
+      isDbInitialized,
+      isSyncInitialized,
       isReady: isDbInitialized && isIpfsInitialized && isSyncInitialized,
     }),
     [
-      useGetAddress,
+      // useGetAddress,
       isIpfsInitialized,
       isDbInitialized,
       isSyncInitialized,

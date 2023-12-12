@@ -37,7 +37,7 @@ import {
   Transaction,
 } from '../dataSource/blockchain/types';
 import { FetchIpfsFunc, SyncServiceParams } from './type';
-import { SyncEntry, SyncProgress, onProgressEvent } from '../../types';
+import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
 const BLOCKCHAIN_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 10 minutes
@@ -98,51 +98,30 @@ const createLoopObservable = (
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
-  private blockchainLoop$?: Observable<any>;
+  // private blockchainLoop$?: Observable<any>;
 
-  private ipfsLoop$?: Observable<any>;
+  // private ipfsLoop$?: Observable<any>;
 
   private dbInitialized$ = new BehaviorSubject(false);
 
   private ipfsInitialized$ = new BehaviorSubject(false);
 
+  private isInitialized$: Observable<boolean>;
+
   private db: typeof DbApi | undefined;
 
   private ipfsNode: CybIpfsNode | undefined;
-
-  private onProgress: onProgressEvent | undefined;
 
   private processParticle: FetchIpfsFunc;
 
   private params: SyncServiceParams = { myAddress: null, followings: [] };
 
+  private channelApi = new BroadcastChannelSender();
+
   constructor(processParticle: FetchIpfsFunc) {
     this.processParticle = processParticle;
-    this.startIpfsLoop();
-    this.startBlockchainLoop();
-  }
 
-  private startBlockchainLoop() {
-    this.blockchainLoop$ = createLoopObservable(
-      BLOCKCHAIN_SYNC_INTERVAL,
-      forkJoin({
-        myTransactions: defer(() => from(this.syncMyTransactions())),
-        userTransactions: defer(() => from(this.syncFollowingsTransactions())),
-        particles: defer(() => from(this.syncParticles())),
-      }),
-      this.dbInitialized$
-    );
-
-    this.blockchainLoop$.subscribe({
-      next: (result) =>
-        console.log('All blockchain tasks in this cycle completed', result),
-      error: (err) => console.error('Error in task cycle', err),
-      // complete: () => console.log('Task interval completed.'),
-    });
-  }
-
-  private startIpfsLoop() {
-    const isInitialized$ = combineLatest([
+    this.isInitialized$ = combineLatest([
       this.dbInitialized$,
       this.ipfsInitialized$,
     ]).pipe(
@@ -151,25 +130,79 @@ export class SyncService {
       )
     );
 
-    this.ipfsLoop$ = createLoopObservable(
-      IPFS_SYNC_INTERVAL,
-      forkJoin({
-        ipfs: defer(() => from(this.syncPins())),
-      }),
-      isInitialized$
-    );
+    // subscribe when started
+    this.isInitialized$.subscribe({
+      next: (result) => result && this.channelApi.postSyncStatus('started'),
+      // error: (err) => this.channelApi.postSyncStatus('error', err),
+    });
 
-    this.ipfsLoop$.subscribe({
+    this.startIpfsLoop();
+    this.startBlockchainLoop();
+  }
+
+  private startBlockchainLoop() {
+    // this.blockchainLoop$ = createLoopObservable(
+    //   BLOCKCHAIN_SYNC_INTERVAL,
+    //   forkJoin({
+    //     myTransactions: defer(() => from(this.syncMyTransactions())),
+    //     userTransactions: defer(() => from(this.syncFollowingsTransactions())),
+    //     particles: defer(() => from(this.syncParticles())),
+    //   }),
+    //   this.dbInitialized$
+    // );
+
+    // this.blockchainLoop$.subscribe({
+    //   next: (result) =>
+    //     console.log('All blockchain tasks in this cycle completed', result),
+    //   error: (err) => console.error('Error in task cycle', err),
+    //   // complete: () => console.log('Task interval completed.'),
+    // });
+
+    createLoopObservable(
+      BLOCKCHAIN_SYNC_INTERVAL,
+      forkJoin({
+        myTransactions: defer(() => from(this.syncMyTransactions())),
+        userTransactions: defer(() => from(this.syncFollowingsTransactions())),
+        particles: defer(() => from(this.syncParticles())),
+      }),
+      this.dbInitialized$
+    ).subscribe({
       next: (result) =>
-        console.log('All ipfs tasks in this cycle completed', result),
+        console.log('All blockchain tasks in this cycle completed', result),
       error: (err) => console.error('Error in task cycle', err),
       // complete: () => console.log('Task interval completed.'),
     });
   }
 
-  public initDb(dbApi: typeof DbApi, onProgress: onProgressEvent) {
+  private startIpfsLoop() {
+    createLoopObservable(
+      IPFS_SYNC_INTERVAL,
+      forkJoin({
+        ipfs: defer(() => from(this.syncPins())),
+      }),
+      this.isInitialized$
+    ).subscribe({
+      next: (result) =>
+        console.log('All ipfs tasks in this cycle completed', result),
+      error: (err) => console.error('Error in task cycle', err),
+    });
+    // this.ipfsLoop$ = createLoopObservable(
+    //   IPFS_SYNC_INTERVAL,
+    //   forkJoin({
+    //     ipfs: defer(() => from(this.syncPins())),
+    //   }),
+    //   this.isInitialized$
+    // );
+
+    // this.ipfsLoop$.subscribe({
+    //   next: (result) =>
+    //     console.log('All ipfs tasks in this cycle completed', result),
+    //   error: (err) => console.error('Error in task cycle', err),
+    // });
+  }
+
+  public initDb(dbApi: typeof DbApi) {
     this.db = dbApi;
-    this.onProgress = onProgress;
     this.dbInitialized$.next(true);
   }
 
@@ -186,7 +219,7 @@ export class SyncService {
     address: NeuronAddress,
     addCyberlinksToSync = false
   ) {
-    this.onProgress!('transaction', {
+    this.channelApi.postSyncEntryProgress('transaction', {
       message: `sync ${address} transactions...`,
     });
 
@@ -244,7 +277,7 @@ export class SyncService {
         last_id: lastTransactionHash,
       });
     }
-    this.onProgress!('transaction', {
+    this.channelApi.postSyncEntryProgress('transaction', {
       message: `sync ${address} transactions - unread: ${
         unreadCount + count
       }, last - ${numberToDate(lastTimestamp || 0)}`,
@@ -254,7 +287,7 @@ export class SyncService {
   }
 
   private async syncParticles() {
-    this.onProgress!('particle', {
+    this.channelApi.postSyncEntryProgress('particle', {
       message: `sync particles start...`,
     });
     // fetch observable particles from db
@@ -282,7 +315,7 @@ export class SyncService {
       );
     });
 
-    this.onProgress!('particle', {
+    this.channelApi.postSyncEntryProgress('particle', {
       message: `sync particles complete`,
       done: true,
     });
@@ -290,7 +323,11 @@ export class SyncService {
 
   private async syncPins() {
     console.log('-----syncPins', this.ipfsNode, this.db);
-    this.onProgress!('pin', { message: 'fetching node pins...' });
+
+    this.channelApi.postSyncEntryProgress('pin', {
+      message: 'fetching node pins...',
+    });
+
     const pinsResult = await fetchPins(this.ipfsNode!);
 
     const dbPins = (await this.db!.getPins()).rows.map(
@@ -311,7 +348,7 @@ export class SyncService {
       await this.db!.deletePins(pinsToRemove);
     }
 
-    this.onProgress!('pin', {
+    this.channelApi.postSyncEntryProgress('pin', {
       message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
       done: true,
     });
@@ -326,9 +363,11 @@ export class SyncService {
 
     particlesToAdd.forEach((cid) => this.processParticle(cid));
 
-    await this.db!.putPins(pinsToAdd.map(mapPinToEntity));
+    if (pinsToAdd.length > 0) {
+      await this.db!.putPins(pinsToAdd.map(mapPinToEntity));
+    }
 
-    this.onProgress!('pin', {
+    this.channelApi.postSyncEntryProgress('pin', {
       message: `ipfs node sync: +${pinsToAdd.length} -${pinsToRemove.length} +${particlesToAdd.length}(particles)`,
       done: true,
     });
