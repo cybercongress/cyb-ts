@@ -101,7 +101,7 @@ function ParamNetwork() {
           selected={param}
           options={Object.entries(paramsTabs).map(([key, item]) => ({
             to: item.to,
-            text: key,
+            key,
           }))}
         />
       </TabList>

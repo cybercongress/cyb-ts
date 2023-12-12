@@ -10,7 +10,7 @@ function TabListTeleport({ selected }: TabListProps) {
     <TabList>
       <TabButton
         selected={selected}
-        options={Object.keys(TypePages).map((key) => ({ to: key, text: key }))}
+        options={Object.keys(TypePages).map((key) => ({ to: key, key }))}
       />
     </TabList>
   );

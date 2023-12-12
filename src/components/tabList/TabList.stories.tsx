@@ -19,15 +19,15 @@ type Story = StoryObj<typeof TabList>;
 const TabButtonConfig = [
   {
     to: '',
-    text: 'left',
+    key: 'left',
   },
   {
     to: '',
-    text: 'default',
+    key: 'default',
   },
   {
     to: '',
-    text: 'right',
+    key: 'right',
   },
 ];
 
@@ -43,7 +43,7 @@ export const Main: Story = {
         <TabList>
           <TabButton
             options={TabButtonConfig}
-            selected={TabButtonConfig[1].text}
+            selected={TabButtonConfig[1].key}
           />
         </TabList>
       </div>

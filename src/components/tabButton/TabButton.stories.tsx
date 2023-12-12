@@ -18,21 +18,21 @@ type Story = StoryObj<typeof TabButton>;
 const configTabButton = [
   {
     to: '',
-    text: 'left',
+    key: 'left',
   },
   {
     to: '',
-    text: 'default',
+    key: 'default',
   },
   {
     to: '',
-    text: 'right',
+    key: 'right',
   },
 ];
 
 export const Main: Story = {
   args: {
     options: configTabButton,
-    selected: configTabButton[1].text,
+    selected: configTabButton[1].key,
   },
 };

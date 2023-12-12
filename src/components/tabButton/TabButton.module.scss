@@ -5,6 +5,10 @@
   color: #fff;
   font-size: 1.125rem;
 
+  &:hover {
+    color: #fff;
+  }
+
   @if ($position ==left or $position ==right) {
     @include saber($color-saber, $position);
   }

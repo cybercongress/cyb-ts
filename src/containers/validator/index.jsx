@@ -21,10 +21,10 @@ import Leadership from './leadership';
 import Rumors from './rumors';
 
 const mapTabs = [
-  { text: 'fans', to: 'fans' },
-  { text: 'main', to: '' },
-  { text: 'rumors', to: 'rumors' },
-  { text: 'leadership', to: 'leadership' },
+  { key: 'fans', to: 'fans' },
+  { key: 'main', to: '' },
+  { key: 'rumors', to: 'rumors' },
+  { key: 'leadership', to: 'leadership' },
 ];
 
 class ValidatorsDetails extends React.PureComponent {
@@ -264,7 +264,7 @@ class ValidatorsDetails extends React.PureComponent {
             <TabButton
               selected={tab || 'main'}
               options={mapTabs.map((item) => ({
-                text: item.text,
+                key: item.key,
                 to: `/network/bostrom/hero/${address}/${item.to}`,
               }))}
             />

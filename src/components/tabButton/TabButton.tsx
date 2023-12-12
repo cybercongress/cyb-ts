@@ -9,7 +9,8 @@ const enum Position {
 
 type optionsProps = {
   to: string;
-  text: string;
+  key: string;
+  text?: string;
 };
 
 export type Props = {
@@ -28,7 +29,7 @@ function TabButton({ options, selected }: Props) {
             ? Position.Right
             : undefined;
 
-        const isSelected = selected === item.text;
+        const isSelected = selected === item.key;
 
         return (
           <Link
@@ -40,7 +41,7 @@ function TabButton({ options, selected }: Props) {
               isSelected && styles[type ? `${type}Active` : 'tabButtonActive']
             )}
           >
-            {item.text}
+            {item.text || item.key}
           </Link>
         );
       })}
