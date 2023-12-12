@@ -1,22 +1,14 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import styles from './Layout.module.scss';
-import TabList from '../components/tabList/TabList';
-import { TypePages } from '../type';
+import TabListTeleport from '../components/tabList/TabList';
 
 function Layout() {
-  const location = useLocation();
-  const locationSplit = location.pathname.replace(/^\/|\/$/g, '').split('/');
-  const active = Object.values(TypePages).find(
-    (item) => item === locationSplit[1]
-  );
-
   return (
     <div>
-      {active && (
-        <header className={styles.header}>
-          <TabList selected={active} />
-        </header>
-      )}
+      <header className={styles.header}>
+        <TabListTeleport />
+      </header>
+
       <Outlet />
     </div>
   );

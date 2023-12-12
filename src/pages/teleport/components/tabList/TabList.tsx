@@ -1,14 +1,20 @@
 import { TabList } from 'src/components';
+import { useLocation } from 'react-router-dom';
 import { TypePages } from '../../type';
 
-type TabListProps = {
-  selected: TypePages;
-};
+function TabListTeleport() {
+  const location = useLocation();
+  const locationSplit = location.pathname.replace(/^\/|\/$/g, '').split('/');
+  const active = Object.values(TypePages).find(
+    (item) => item === locationSplit[1]
+  );
 
-function TabListTeleport({ selected }: TabListProps) {
+  if (!active) {
+    return null;
+  }
   return (
     <TabList
-      selected={selected}
+      selected={active}
       options={Object.keys(TypePages).map((key) => ({ to: key, key }))}
     />
   );
