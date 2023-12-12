@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Pane, Text } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 
@@ -19,11 +19,10 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
-import { Position } from 'src/components/tabButton/TabButton';
 
 const mapTabs = [
   { text: 'fans', to: 'fans' },
-  { text: 'main', to: undefined },
+  { text: 'main', to: '' },
   { text: 'rumors', to: 'rumors' },
   { text: 'leadership', to: 'leadership' },
 ];
@@ -210,15 +209,6 @@ class ValidatorsDetails extends React.PureComponent {
     });
   };
 
-  onSelectTabButton = (to) => {
-    const {
-      router: { params, navigate },
-    } = this.props;
-    const { address } = params;
-
-    navigate(`/network/bostrom/hero/${address}/${to || ''}`);
-  };
-
   render() {
     const {
       validatorInfo,
@@ -271,24 +261,13 @@ class ValidatorsDetails extends React.PureComponent {
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <TabList>
-            {mapTabs.map((item, index) => {
-              const type =
-                index === 0
-                  ? Position.Left
-                  : index === mapTabs.length - 1
-                  ? Position.Right
-                  : undefined;
-              return (
-                <TabButton
-                  key={item.text}
-                  type={type}
-                  isSelected={tab === item.to}
-                  onSelect={() => this.onSelectTabButton(item.to)}
-                >
-                  {item.text}
-                </TabButton>
-              );
-            })}
+            <TabButton
+              selected={tab || 'main'}
+              options={mapTabs.map((item) => ({
+                text: item.text,
+                to: `/network/bostrom/hero/${address}/${item.to}`,
+              }))}
+            />
           </TabList>
           <Pane
             display="flex"

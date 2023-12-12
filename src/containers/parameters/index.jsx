@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
+import { useParams } from 'react-router-dom';
+import { useAdviser } from 'src/features/adviser/context';
 import { getParamNetwork } from '../../utils/search/utils';
 import { Loading, TabButton, TabList } from '../../components';
 import {
@@ -17,7 +18,6 @@ import {
   GridParam,
   DmnParam,
 } from './tabs';
-import { useAdviser } from 'src/features/adviser/context';
 
 const paramsTabs = {
   staking: { text: 'Staking', to: '/network/bostrom/parameters/staking' },
@@ -53,7 +53,6 @@ const initParam = {
 };
 
 function ParamNetwork() {
-  const navigate = useNavigate();
   const { setAdviser } = useAdviser();
   const [dataParam, setDataParam] = useState(initParam);
   const [loading, setLoading] = useState(true);
@@ -98,15 +97,13 @@ function ParamNetwork() {
   return (
     <main className="block-body">
       <TabList>
-        {Object.entries(paramsTabs).map(([key, item]) => (
-          <TabButton
-            key={`param_tab_${key}`}
-            isSelected={param === key}
-            onSelect={() => navigate(item.to)}
-          >
-            {item.text}
-          </TabButton>
-        ))}
+        <TabButton
+          selected={param}
+          options={Object.entries(paramsTabs).map(([key, item]) => ({
+            to: item.to,
+            text: key,
+          }))}
+        />
       </TabList>
       <Pane
         display="flex"
