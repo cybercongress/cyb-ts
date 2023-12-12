@@ -7,6 +7,7 @@ import { getRankGrade } from 'src/utils/search/utils';
 import styles from './Rank.module.scss';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
+import QuestionBtn from './QuestionBtn/QuestionBtn';
 
 function GradeTooltipContent({ grade, hash, color, rank }) {
   return (
@@ -107,18 +108,7 @@ function Rank({ rank, hash, ...props }) {
         />
       }
     >
-      <button
-        type="button"
-        className={styles.rank2}
-        style={
-          {
-            // backgroundColor: color,
-          }
-        }
-        {...props}
-      >
-        ?{/* {gradeValue.value} */}
-      </button>
+      <QuestionBtn {...props} />
     </Tooltip>
   );
 }
