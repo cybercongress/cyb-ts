@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import s from './TabButton.module.scss';
+import styles from './TabButton.module.scss';
 
 export const enum Position {
   Right = 'right',
@@ -19,9 +19,9 @@ function TabButton({ children, type, isSelected, onSelect }: Props) {
       type="button"
       onClick={onSelect}
       className={cx(
-        s.tabButton,
-        type && s[`${type}`],
-        isSelected && s[type ? `${type}Active` : 'tabButtonActive']
+        styles.tabButton,
+        type && styles[`${type}`],
+        isSelected && styles[type ? `${type}Active` : 'tabButtonActive']
       )}
     >
       {children}

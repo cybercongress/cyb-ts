@@ -1,4 +1,4 @@
-import s from './Slippage.module.scss';
+import styles from './Slippage.module.scss';
 
 type Props = {
   value: number;
@@ -6,8 +6,8 @@ type Props = {
 
 function Slippage({ value }: Props) {
   return (
-    <div className={s.container}>
-      slippage: <span className={s.value}>{value}%</span>
+    <div className={styles.container}>
+      slippage: <span className={styles.value}>{value}%</span>
     </div>
   );
 }
