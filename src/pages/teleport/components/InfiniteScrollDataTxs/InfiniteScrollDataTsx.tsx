@@ -1,6 +1,6 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Dots } from 'src/components';
-import s from './InfiniteScrollDataTsx.module.scss';
+import styles from './InfiniteScrollDataTsx.module.scss';
 
 type Props = {
   dataLength: number;
@@ -12,7 +12,7 @@ type Props = {
 function InfiniteScrollDataTsx({ dataLength, next, hasMore, children }: Props) {
   return (
     <InfiniteScroll
-      className={s.content}
+      className={styles.content}
       dataLength={dataLength}
       next={next}
       hasMore={hasMore}

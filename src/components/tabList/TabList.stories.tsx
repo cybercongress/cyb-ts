@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import TabButton from '../tabButton/TabButton';
+import { useState } from 'react';
 import TabList from './TabList';
 
 const meta: Meta<typeof TabList> = {
@@ -33,6 +33,8 @@ const TabButtonConfig = [
 
 export const Main: Story = {
   render: () => {
+    const [select, setSelect] = useState(TabButtonConfig[1].key);
+
     return (
       <div
         style={{
@@ -40,12 +42,13 @@ export const Main: Story = {
           margin: '0 auto',
         }}
       >
-        <TabList>
-          <TabButton
-            options={TabButtonConfig}
-            selected={TabButtonConfig[1].key}
-          />
-        </TabList>
+        <TabList
+          options={TabButtonConfig.map((item) => ({
+            key: item.key,
+            onClick: () => setSelect(item.key),
+          }))}
+          selected={select}
+        />
       </div>
     );
   },

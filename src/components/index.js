@@ -54,7 +54,7 @@ import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import TabList from './tabList/TabList';
-import TabButton from './tabButton/TabButton';
+import TabButton from './Tabs/TabItem';
 
 const BtnGrd = Button;
 

@@ -1,8 +1,8 @@
-import s from './LogRelayer.module.scss';
+import styles from './LogRelayer.module.scss';
 
 function MessageItem({ text = '' }) {
   return (
-    <div className={s.containerMessageItem}>
+    <div className={styles.containerMessageItem}>
       <span>{text}</span>
     </div>
   );
@@ -10,7 +10,7 @@ function MessageItem({ text = '' }) {
 
 function LogRelayer({ relayerLog }) {
   return (
-    <div className={s.containerLogRelayer}>
+    <div className={styles.containerLogRelayer}>
       {relayerLog &&
         Object.keys(relayerLog).length > 0 &&
         relayerLog.map((item, i) => <MessageItem text={item} key={i} />)}

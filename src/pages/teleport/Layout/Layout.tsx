@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import s from './Layout.module.scss';
+import styles from './Layout.module.scss';
 import TabList from '../components/tabList/TabList';
 import { TypePages } from '../type';
 
@@ -13,7 +13,7 @@ function Layout() {
   return (
     <div>
       {active && (
-        <header className={s.header}>
+        <header className={styles.header}>
           <TabList selected={active} />
         </header>
       )}

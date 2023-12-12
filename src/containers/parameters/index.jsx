@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { useParams } from 'react-router-dom';
 import { useAdviser } from 'src/features/adviser/context';
 import { getParamNetwork } from '../../utils/search/utils';
-import { Loading, TabButton, TabList } from '../../components';
+import { Loading, TabList } from '../../components';
 import {
   BandwidthParam,
   SlashingParam,
@@ -96,15 +96,13 @@ function ParamNetwork() {
 
   return (
     <main className="block-body">
-      <TabList>
-        <TabButton
-          selected={param}
-          options={Object.entries(paramsTabs).map(([key, item]) => ({
-            to: item.to,
-            key,
-          }))}
-        />
-      </TabList>
+      <TabList
+        selected={param}
+        options={Object.entries(paramsTabs).map(([key, item]) => ({
+          to: item.to,
+          key,
+        }))}
+      />
       <Pane
         display="flex"
         marginTop={20}

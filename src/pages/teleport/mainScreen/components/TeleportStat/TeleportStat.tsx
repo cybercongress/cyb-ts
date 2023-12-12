@@ -1,14 +1,14 @@
 import Txs from 'src/containers/brain/tx';
 import AccountCount from 'src/containers/brain/accountCount';
-import s from './TeleportStat.module.scss';
+import styles from './TeleportStat.module.scss';
 
 function Value({ children }: { children: React.ReactNode }) {
-  return <span className={s.value}>{children}</span>;
+  return <span className={styles.value}>{children}</span>;
 }
 
 function TeleportStat() {
   return (
-    <span className={s.container}>
+    <span className={styles.container}>
       <Value>
         <Txs />
       </Value>

@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import styles from './Carousel.module.scss';
+import TabItem, { Position } from '../Tabs/TabItem';
 
 const cx = require('classnames');
 
@@ -148,7 +149,7 @@ function Carousel({
       )}
       id="containerCarousel"
       style={{
-        height: heightSlide || '40px',
+        height: heightSlide || '42px',
       }}
     >
       <div
@@ -163,48 +164,26 @@ function Carousel({
           style={{ left: calculateLeftMargin }}
         >
           {newItemList.map((slide, index) => {
+            let typeTab: Position | undefined;
+            if (index + Math.floor(displaySlideState / 2) === visibleSlide) {
+              typeTab = Position.Left;
+            }
+            if (index - Math.floor(displaySlideState / 2) === visibleSlide) {
+              typeTab = Position.Right;
+            }
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <button
+              <TabItem
+                type={typeTab}
                 key={index}
-                type="button"
                 onClick={() => {
                   setActiveItem(index);
                   onChange?.(slides.indexOf(slide));
                 }}
-                className={cx(styles.slide, {
-                  [styles.active]: index === visibleSlide,
-                  [styles.left]:
-                    index + Math.floor(displaySlideState / 2) === visibleSlide,
-                  [styles.right]:
-                    index - Math.floor(displaySlideState / 2) === visibleSlide,
-                })}
-                style={{
-                  width: `${itemWidth}px`,
-                  color: disableMode ? '#777777' : '#36d6ae',
-                }}
-              >
-                <div
-                  className={cx(styles.lamp, {
-                    [styles.active]: index === visibleSlide,
-                    [styles.left]:
-                      index + Math.floor(displaySlideState / 2) ===
-                      visibleSlide,
-                    [styles.right]:
-                      index - Math.floor(displaySlideState / 2) ===
-                      visibleSlide,
-                  })}
-                >
-                  <div className={styles.containerContent}>
-                    {!!slide.step && (
-                      <div className={styles.step}>step {slide.step}</div>
-                    )}
-                    {!!slide.title && (
-                      <div className={styles.title}>{slide.title}</div>
-                    )}
-                  </div>
-                </div>
-              </button>
+                isSelected={index === visibleSlide}
+                text={slide.title || ''}
+                style={{ width: `${itemWidth}px` }}
+              />
             );
           })}
         </div>

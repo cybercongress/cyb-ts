@@ -260,15 +260,13 @@ class ValidatorsDetails extends React.PureComponent {
             </Text>
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <TabList>
-            <TabButton
-              selected={tab || 'main'}
-              options={mapTabs.map((item) => ({
-                key: item.key,
-                to: `/network/bostrom/hero/${address}/${item.to}`,
-              }))}
-            />
-          </TabList>
+          <TabList
+            selected={tab || 'main'}
+            options={mapTabs.map((item) => ({
+              key: item.key,
+              to: `/network/bostrom/hero/${address}/${item.to}`,
+            }))}
+          />
           <Pane
             display="flex"
             marginTop={20}
