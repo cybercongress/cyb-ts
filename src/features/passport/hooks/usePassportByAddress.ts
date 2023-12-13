@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getPassport } from '../passports.redux';
 
 type Props = {
-  address: string | null;
+  address: string | null | undefined;
 };
 
 // add 'refresh' prop
