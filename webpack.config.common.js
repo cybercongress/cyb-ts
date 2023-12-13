@@ -16,7 +16,11 @@ if (process.env.IPFS_DEPLOY) {
 
 const config = {
   devtool: 'cheap-module-source-map',
-  entry: [path.join(__dirname, 'src', 'index.tsx')],
+  entry: {
+    main: [path.join(__dirname, 'src', 'index.tsx')],
+    helia: 'helia',
+    cozodb: 'cyb-cozo-lib-wasm',
+  },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),

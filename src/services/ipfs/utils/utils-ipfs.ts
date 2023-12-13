@@ -350,12 +350,12 @@ const addContenToIpfs = async (
   if (node) {
     cid = await node.add(content);
   }
-  const pinResponse = await cyberCluster.add(content);
-
-  cid = cid ?? pinResponse?.cid;
+  // TODO: TMP solution make cluster call non-awaitable
+  cyberCluster.add(content);
+  // const pinResponse = await cyberCluster.add(content);
+  // cid = cid || pinResponse?.cid;
 
   cid && (await ipfsCacheDb.add(cid, await contentToUint8Array(content)));
-
   return cid;
 };
 
