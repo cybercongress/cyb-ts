@@ -1,4 +1,4 @@
-@import '../containerGradient/saber/index.module.scss';
+@import '../../containerGradient/saber/index.module.scss';
 
 @mixin active-saber($position) {
   $color-saber: 'white';
@@ -29,6 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   position: relative;
   color: var(--blue-light);
   height: 42px;

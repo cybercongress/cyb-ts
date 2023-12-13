@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import useMediaQuery from '../../hooks/useMediaQuery';
+import useMediaQuery from '../../../hooks/useMediaQuery';
 import styles from './Carousel.module.scss';
-import TabItem, { Position } from '../Tabs/TabItem';
+import TabItem, { Position } from '../TabItem/TabItem';
 
 const cx = require('classnames');
 
@@ -182,7 +182,10 @@ function Carousel({
                 }}
                 isSelected={index === visibleSlide}
                 text={slide.title || ''}
-                style={{ width: `${itemWidth}px` }}
+                style={{
+                  width: `${itemWidth}px`,
+                  height: heightSlide || '42px',
+                }}
               />
             );
           })}

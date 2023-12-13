@@ -1,15 +1,6 @@
-$color-white: #fff;
-$color-shadow-lamp-green: rgba(54, 214, 174, 0.5);
-$color-shadow-lamp-white: rgba(255, 255, 255, 0.44);
-$color-border-lamp-green: #00edeb;
-$color-border-lamp-white: #e2e2e2;
-
-$color-shadow-lamp-blue: rgba(36, 189, 219, 0.705);
-$color-border-lamp-blue: var(--blue-light);
-
 .carousel {
   width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
   height: 40px;
 
   &.disableMode {

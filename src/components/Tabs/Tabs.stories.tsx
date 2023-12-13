@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import TabList from './TabList';
+import Tabs from './Tabs';
 
-const meta: Meta<typeof TabList> = {
-  component: TabList,
-  title: 'atoms/TabList',
+const meta: Meta<typeof Tabs> = {
+  component: Tabs,
+  title: 'atoms/Tabs',
   parameters: {
     design: {
       type: 'figma',
@@ -14,7 +14,7 @@ const meta: Meta<typeof TabList> = {
 };
 export default meta;
 
-type Story = StoryObj<typeof TabList>;
+type Story = StoryObj<typeof Tabs>;
 
 const TabButtonConfig = [
   {
@@ -24,6 +24,17 @@ const TabButtonConfig = [
   {
     to: '',
     key: 'default',
+  },
+  {
+    to: '',
+    key: 'right',
+  },
+];
+
+const TabButtonConfigTwoItems = [
+  {
+    to: '',
+    key: 'left',
   },
   {
     to: '',
@@ -42,8 +53,31 @@ export const Main: Story = {
           margin: '0 auto',
         }}
       >
-        <TabList
+        <Tabs
           options={TabButtonConfig.map((item) => ({
+            key: item.key,
+            onClick: () => setSelect(item.key),
+          }))}
+          selected={select}
+        />
+      </div>
+    );
+  },
+};
+
+export const TwoItems: Story = {
+  render: () => {
+    const [select, setSelect] = useState(TabButtonConfigTwoItems[1].key);
+
+    return (
+      <div
+        style={{
+          width: '375px',
+          margin: '0 auto',
+        }}
+      >
+        <Tabs
+          options={TabButtonConfigTwoItems.map((item) => ({
             key: item.key,
             onClick: () => setSelect(item.key),
           }))}

@@ -18,7 +18,7 @@ import {
 } from '../components';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
-import Carousel from '../../../components/Carousel/CarouselOld/CarouselOld';
+import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import STEP_INFO from './utils';
 import Info from './Info';
 import useGetStatGift from '../hook/useGetStatGift';

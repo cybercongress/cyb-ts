@@ -12,7 +12,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy, TabButton, TabList } from '../../components';
+import { Loading, Copy, Tabs } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -260,7 +260,7 @@ class ValidatorsDetails extends React.PureComponent {
             </Text>
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <TabList
+          <Tabs
             selected={tab || 'main'}
             options={mapTabs.map((item) => ({
               key: item.key,

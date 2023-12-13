@@ -32,7 +32,7 @@ import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
-import Carousel from '../../../components/Carousel/CarouselOld/CarouselOld';
+import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
 

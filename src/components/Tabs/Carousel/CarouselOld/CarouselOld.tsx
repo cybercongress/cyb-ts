@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useCallback } from 'react';
 import styles from './CarouselOld.module.scss';
+import TabItem, { Position } from '../../TabItem/TabItem';
 
 const cx = require('classnames');
 
@@ -100,7 +101,7 @@ function Carousel({
   return (
     <div
       className={styles.carousel}
-      style={{ maxWidth: `${slideWidth * 3}px`, height: heightSlide || '40px' }}
+      style={{ maxWidth: `${slideWidth * 3}px`, height: heightSlide || '42px' }}
     >
       <div
         className={styles.slidesContainer}
@@ -112,35 +113,25 @@ function Carousel({
           style={{ left: calculateLeftMargin() }}
         >
           {stateSlides.map((slide, index) => {
+            let typeTab: Position | undefined;
+
+            if (index + 1 === visibleSlide) {
+              typeTab = Position.Left;
+            }
+            if (index - 1 === visibleSlide) {
+              typeTab = Position.Right;
+            }
+
             return (
-              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <div
+              <TabItem
+                type={typeTab}
                 key={index}
                 onClick={() => setActiveItem(index)}
-                className={cx(styles.slide, {
-                  [styles.active]: index === visibleSlide,
-                  [styles.left]: index + 1 === visibleSlide,
-                  [styles.right]: index - 1 === visibleSlide,
-                })}
+                isSelected={index === visibleSlide}
+                text={slide.title || ''}
+                step={slide.step}
                 style={slideDimensionStyles()}
-              >
-                <div
-                  className={cx(styles.lamp, {
-                    [styles.active]: index === visibleSlide,
-                    [styles.left]: index + 1 === visibleSlide,
-                    [styles.right]: index - 1 === visibleSlide,
-                  })}
-                >
-                  <div className={styles.containerContent}>
-                    {!!slide.step && (
-                      <div className={styles.step}>step {slide.step}</div>
-                    )}
-                    {!!slide.title && (
-                      <div className={styles.title}>{slide.title}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              />
             );
           })}
         </div>

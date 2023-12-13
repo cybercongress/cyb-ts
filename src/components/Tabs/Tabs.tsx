@@ -1,5 +1,5 @@
-import TabItem, { Position } from '../Tabs/TabItem';
-import style from './TabList.module.scss';
+import TabItem, { Position } from './TabItem/TabItem';
+import style from './Tabs.module.scss';
 
 type optionsProps = {
   to?: string;
@@ -13,7 +13,7 @@ export type Props = {
   selected: string;
 };
 
-function TabList({ options, selected }: Props) {
+function Tabs({ options, selected }: Props) {
   return (
     <div className={style.wrapper}>
       {options.map((item, index) => {
@@ -40,4 +40,4 @@ function TabList({ options, selected }: Props) {
   );
 }
 
-export default TabList;
+export default Tabs;

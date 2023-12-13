@@ -10,12 +10,21 @@ export const enum Position {
 export type Props = {
   type?: Position;
   text: string | JSX.Element;
+  step?: number;
   isSelected: boolean;
   to?: string;
   onClick?: () => void;
 };
 
-function TabItem({ type, text, to, isSelected, onClick, ...props }: Props) {
+function TabItem({
+  type,
+  text,
+  step,
+  to,
+  isSelected,
+  onClick,
+  ...props
+}: Props) {
   let Component: HTMLButtonElement | Link = 'button';
   let componentProps: object = {
     type: 'button',
@@ -40,7 +49,8 @@ function TabItem({ type, text, to, isSelected, onClick, ...props }: Props) {
       {...props}
       {...componentProps}
     >
-      {text}
+      {step && <span>step {step}</span>}
+      {text && <span>{text}</span>}
     </Component>
   );
 }

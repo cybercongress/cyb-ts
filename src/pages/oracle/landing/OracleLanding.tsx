@@ -8,7 +8,7 @@ import { useDevice } from 'src/contexts/device';
 
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
-import Carousel from 'src/components/Carousel/Carousel';
+import Carousel from 'src/components/Tabs/Carousel/Carousel';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';

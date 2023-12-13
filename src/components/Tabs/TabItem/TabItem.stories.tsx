@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
-import TabItem from './TabItem';
+import TabItem, { Position } from './TabItem';
 import { useState } from 'react';
 
 const meta: Meta<typeof TabItem> = {
   component: TabItem,
-  title: 'atoms/Tabs',
+  title: 'atoms/Tabs/TabItem',
   parameters: {
     design: {
       type: 'figma',
@@ -17,14 +17,11 @@ export default meta;
 type Story = StoryObj<typeof TabItem>;
 
 export const Main: Story = {
- render: () => {
-  const [select, setSelect] = useState(false)
-  return (
-    <TabItem
-      isSelected={select}
-      onClick={() => setSelect((item) => !item)}
-      text="default"
-    />
-  );
- }
+  args: {
+    text: 'default',
+    type: undefined,
+    onClick: () => {
+      console.log('clicked');
+    },
+  },
 };

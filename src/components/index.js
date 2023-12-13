@@ -53,8 +53,7 @@ import AmountDenom from './AmountDenom/AmountDenom';
 import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
-import TabList from './tabList/TabList';
-import TabButton from './Tabs/TabItem';
+import Tabs from './Tabs/Tabs';
 
 const BtnGrd = Button;
 
@@ -114,8 +113,7 @@ export {
   ButtonSwap,
   Slider,
   CreatedAt,
-  TabList,
-  TabButton,
+  Tabs,
 };
 
 export { Dots } from './ui/Dots';

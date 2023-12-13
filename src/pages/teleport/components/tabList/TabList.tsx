@@ -1,4 +1,4 @@
-import { TabList } from 'src/components';
+import { Tabs } from 'src/components';
 import { useLocation } from 'react-router-dom';
 import { TypePages } from '../../type';
 
@@ -13,7 +13,7 @@ function TabListTeleport() {
     return null;
   }
   return (
-    <TabList
+    <Tabs
       selected={active}
       options={Object.keys(TypePages).map((key) => ({ to: key, key }))}
     />
