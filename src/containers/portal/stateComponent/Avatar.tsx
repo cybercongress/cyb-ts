@@ -15,8 +15,7 @@ function Avatar({
   onFilePickerChange,
   showOpenFileDlg,
 }) {
-  const { isIpfsInitialized, ipfsNode } = useBackend();
-  const isNodeReady = isIpfsInitialized && ipfsNode;
+  const { isIpfsInitialized } = useBackend();
 
   return (
     <ContainerGradient txs={txs} title="Moon Citizenship">
@@ -40,7 +39,7 @@ function Avatar({
           <ButtonContainerAvatar
             uploadNew={upload}
             onClick={showOpenFileDlg}
-            disabled={!isNodeReady}
+            disabled={!isIpfsInitialized}
           >
             {upload ? 'upload avatar' : avatar}
           </ButtonContainerAvatar>

@@ -53,8 +53,7 @@ function ActionBar({
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
 
-  const { isIpfsInitialized, ipfsNode } = useBackend();
-  const isNodeReady = isIpfsInitialized && ipfsNode;
+  const { isIpfsInitialized } = useBackend();
 
   const checkAddress = (obj, network, address) =>
     Object.keys(obj).filter(
@@ -203,7 +202,7 @@ function ActionBar({
   if (step === STEP_AVATAR_UPLOAD) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
-        {!isNodeReady ? (
+        {!isIpfsInitialized ? (
           <NodeIsLoadingButton />
         ) : avatarIpfs === null ? (
           <BtnGrd onClick={showOpenFileDlg} text="upload avatar" />
