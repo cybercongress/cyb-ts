@@ -351,14 +351,15 @@ const addContenToIpfs = async (
     cid = await node.add(content);
   }
 
-  console.log('---add content', node, cid);
-  const pinResponse = await cyberCluster.add(content);
-  console.log(
-    '---add content cluster response ',
-    pinResponse,
-    cid || pinResponse?.cid
-  );
-  cid = cid || pinResponse?.cid;
+  console.log('---add content to node ', cid);
+  cyberCluster.add(content);
+  // const pinResponse = await cyberCluster.add(content);
+  // console.log(
+  //   '---add content cluster response ',
+  //   pinResponse,
+  //   cid || pinResponse?.cid
+  // );
+  // cid = cid || pinResponse?.cid;
 
   cid && (await ipfsCacheDb.add(cid, await contentToUint8Array(content)));
   console.log('---add content added to cache ');
