@@ -153,7 +153,7 @@ function Info({ stepCurrent, useReleasedStage, nextRelease }) {
     case STATE_RELEASE_INIT:
       content = (
         <span>
-          release {formatNumber(useReleasedStage.availableRelease) || ''}
+          release {formatNumber(useReleasedStage.availableRelease) || ''}{' '}
           {BOOT_ICON} right now! <br />
         </span>
       );
