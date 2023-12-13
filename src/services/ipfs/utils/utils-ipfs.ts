@@ -350,12 +350,18 @@ const addContenToIpfs = async (
   if (node) {
     cid = await node.add(content);
   }
-  const pinResponse = await cyberCluster.add(content);
 
-  cid = cid ?? pinResponse?.cid;
+  console.log('---add content', node, cid);
+  const pinResponse = await cyberCluster.add(content);
+  console.log(
+    '---add content cluster response ',
+    pinResponse,
+    cid || pinResponse?.cid
+  );
+  cid = cid || pinResponse?.cid;
 
   cid && (await ipfsCacheDb.add(cid, await contentToUint8Array(content)));
-
+  console.log('---add content added to cache ');
   return cid;
 };
 
