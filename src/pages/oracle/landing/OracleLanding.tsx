@@ -1,6 +1,6 @@
-import { ActionBar, Button } from 'src/components';
+import { ActionBar, Button, Tabs } from 'src/components';
 import { routes } from 'src/routes';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
@@ -8,7 +8,6 @@ import { useDevice } from 'src/contexts/device';
 
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
-import Carousel from 'src/components/Tabs/Carousel/Carousel';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
@@ -116,15 +115,6 @@ function OracleLanding() {
 
   const { title, description, text } = listConfig[titleType];
 
-  const listSlides = useMemo(() => {
-    return [TitleType.search, TitleType.ai, TitleType.learning].map((type) => {
-      return {
-        title: mapTitleTypeToTitle[type],
-        // step: type,
-      };
-    });
-  }, []);
-
   return (
     <div className={styles.wrapper} ref={ref}>
       <div className={styles.starsWrapper}>
@@ -132,17 +122,22 @@ function OracleLanding() {
       </div>
 
       <header className={styles.header}>
-        <Carousel
-          color="blue"
-          noAnimation
-          activeStep={titleType}
-          onChange={(index: TitleType) => {
-            setTitleType(index);
-            navigate(`?${QUERY_KEY}=${mapTitleTypeToTitle[index]}`, {
-              replace: true,
-            });
-          }}
-          slides={listSlides}
+        <Tabs
+          options={[TitleType.search, TitleType.ai, TitleType.learning].map(
+            (type) => {
+              return {
+                onClick: () => {
+                  setTitleType(type);
+                  // navigate(`?${QUERY_KEY}=${mapTitleTypeToTitle[index]}`, {
+                  //   replace: true,
+                  // });
+                },
+                text: mapTitleTypeToTitle[type],
+                key: type,
+              };
+            }
+          )}
+          selected={titleType}
         />
       </header>
 
