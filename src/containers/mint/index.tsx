@@ -18,6 +18,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 import ImgDenom from 'src/components/valueImg/imgDenom';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import styles from './Mint.module.scss';
 
 const BASE_VESTING_TIME = 86401;
 const BASE_MAX_MINT_TIME = 41;
@@ -381,23 +382,16 @@ function Mint() {
             <ERatio eRatio={eRatio} />
           </div>
           {value > 0 && (
-            <div
-              style={{
-                textAlign: 'center',
-                gridArea: '2/2/2/2',
-                fontSize: '17px',
-                position: 'absolute',
-                bottom: '30px',
-              }}
-            >
-              You’re freezing {formatNumber(value)} <ValueImg text="hydrogen" />{' '}
-              for <strong>{valueDays} days</strong>. It will release{' '}
-              {resourceToken} <ValueImg text={selected} /> for you. At the end
-              of the period, {selected} becomes liquid automatically, but you
-              can use it to boost ranking during the freeze. You can have only{' '}
-              {SLOTS_MAX}
-              slots for investmint at a time.
-            </div>
+            <p className={styles.text}>
+              You’re freezing <strong>{formatNumber(value)}</strong>{' '}
+              <DenomArr denomValue="hydrogen" onlyImg /> for{' '}
+              <strong>{valueDays} days</strong>. It will release{' '}
+              <strong>{resourceToken}</strong>{' '}
+              <DenomArr denomValue={selected} onlyImg /> for you. At the end of
+              the period, {selected} becomes liquid automatically, but you can
+              use it to boost ranking during the freeze. You can have only{' '}
+              <strong>{SLOTS_MAX} slots</strong> for investmint at a time.
+            </p>
           )}
         </div>
 
