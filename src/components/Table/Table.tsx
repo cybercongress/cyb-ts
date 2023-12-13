@@ -17,7 +17,7 @@ export type Props<T extends object> = {
   data: T[];
   isLoading?: boolean;
   onSelect?: (id: string | null) => void;
-  style: any;
+  style?: any;
 };
 
 function Table<T extends object>({

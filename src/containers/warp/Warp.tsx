@@ -20,18 +20,17 @@ import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
-import { useGetSwapPrice } from '../teleport/hooks';
-import {
-  calculateCounterPairAmount,
-  getMyTokenBalanceNumber,
-  getPoolToken,
-  sortReserveCoinDenoms,
-} from '../teleport/utils';
-import { MyPoolsT } from '../teleport/type';
+import { useGetSwapPrice } from '../../pages/teleport/hooks';
+import { sortReserveCoinDenoms } from '../../pages/teleport/swap/utils';
 import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
-import { TypeTab } from './type';
+import { TypeTab, MyPoolsT } from './type';
+import {
+  getPoolToken,
+  getMyTokenBalanceNumber,
+  calculateCounterPairAmount,
+} from './utils';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;

@@ -1,0 +1,86 @@
+@import '../../containerGradient/saber/index.module.scss';
+
+@mixin active-saber($position) {
+  $color-saber: 'white';
+  color: #fff;
+  font-size: 1.125rem;
+
+  &:hover {
+    color: #fff;
+    text-shadow: unset;
+  }
+
+  @if ($position ==left or $position ==right) {
+    @include saber($color-saber, $position);
+  }
+
+  @else {
+    @include saber-horizontal($color-saber);
+  }
+}
+
+@mixin changeWidth($pseudo) {
+  &::#{$pseudo} {
+    width: 100%;
+  }
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  color: var(--blue-light);
+  height: 42px;
+  width: 100%;
+  font-size: 1rem;
+  z-index: 0;
+
+  &:hover {
+    color: var(--blue-light);
+    text-shadow: 0px 0px 10px var(--blue-light);
+  }
+
+  @include saber-horizontal('blue', 'color');
+
+  &Active {
+    @include active-saber(center);
+  }
+}
+
+.left {
+  @include saber('blue', right, 'color');
+  @include changeWidth('after');
+
+  border-left: unset;
+
+  &::before {
+    content: unset;
+  }
+
+  &Active {
+    @include active-saber(right);
+    @include changeWidth('after');
+  }
+}
+
+.right {
+  @include saber('blue', left, 'color');
+  @include changeWidth('before');
+
+  &::before {
+    width: 100%
+  }
+
+  border-right: unset;
+
+  &::after {
+    content: unset;
+  }
+
+  &Active {
+    @include active-saber(left);
+    @include changeWidth('before');
+  }
+}

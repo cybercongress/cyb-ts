@@ -23,7 +23,7 @@ function Info({
     case STATE_READY_TO_RELEASE:
       content = (
         <span>
-          release {formatNumber(useReleasedStage.availableRelease) || ''}
+          release {formatNumber(useReleasedStage.availableRelease) || ''}{' '}
           {BOOT_ICON} right now! <br />
         </span>
       );

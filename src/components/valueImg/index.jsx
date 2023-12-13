@@ -167,7 +167,7 @@ function ValueImg({
           >
             {textCurency}
           </span>
-
+          &nbsp;
           {img && (
             <>
               {emojiIcon ? (

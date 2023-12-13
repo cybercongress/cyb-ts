@@ -9,17 +9,14 @@ $mobile-breakpoint: 480px;
   flex-direction: column;
   justify-content: space-between;
   // header, footer widths, TODO: use variables
-  min-height: calc(100vh - 120px - 60px - 45px);
+  min-height: calc(100vh - 120px - 60px - 100px);
 
   padding: 0 10px;
 
   // not good, need fix wrapper
   margin-bottom: 100px;
-  margin-top: -15px;
 
   @media (width <= $mobile-breakpoint) {
-    // padding: 0 50px;
-
     .actionBarBtn {
       min-width: 107px;
     }
@@ -39,7 +36,12 @@ $mobile-breakpoint: 480px;
 
 .header {
   margin: 0px auto;
-  width: 420px;
+  width: 415px;
+
+  // because of adviser container
+  position: relative;
+  top: -45px;
+  z-index: 5;
 
   @media (width <= $mobile-breakpoint) {
     width: unset;

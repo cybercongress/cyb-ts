@@ -20,8 +20,6 @@ function useCyberlinks(
     where = '{}';
   }
 
-  console.time('prepareCyberlinks');
-
   const query = useQuery(
     gql`
     query Cyberlinks {
@@ -71,8 +69,6 @@ function useCyberlinks(
         // curvative: getRandomInt(20, 500) / 1000,
       };
     }
-
-    console.timeEnd('prepareCyberlinks');
 
     return {
       nodes: object,

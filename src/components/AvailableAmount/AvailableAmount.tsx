@@ -1,5 +1,5 @@
 import { formatNumber } from 'src/utils/utils';
-import styles from './styles.module.scss';
+import styles from './AvailableAmount.module.scss';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
