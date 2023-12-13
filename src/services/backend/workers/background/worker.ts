@@ -1,4 +1,4 @@
-import { proxy } from 'comlink';
+import { Remote, proxy } from 'comlink';
 
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
 
@@ -12,7 +12,7 @@ import {
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 
-import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
+// import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
 
 import { LinkDbEntity } from 'src/services/CozoDb/types';
 
@@ -34,10 +34,11 @@ import { SyncServiceParams } from '../../services/sync/type';
 import DbApiWrapper from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
+import { DbServiceApiRemote } from '../db/service';
 
 const backendApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
-  let dbApi: CozoDbWorkerApi | undefined;
+  let dbApiProxy: DbServiceApiRemote | undefined;
   const dbApiWrapper = DbApiWrapper;
 
   const ipfsQueue = new QueueManager();
@@ -50,10 +51,10 @@ const backendApiFactory = () => {
   const syncService = new SyncService(fetchIpfsContent);
 
   // TODO: fix wrong type is used
-  const installDbApi = async (dbApiProxy: CozoDbWorkerApi) => {
+  const installDbApi = async (dbServiceApiProxy: DbServiceApiRemote) => {
     // proxy to worker with db
-    dbApi = dbApiProxy;
-    dbApiWrapper.init(dbApi);
+    dbApiProxy = dbServiceApiProxy;
+    dbApiWrapper.init(dbApiProxy);
     syncService.initDb(dbApiWrapper);
     broadcastApi.postServiceStatus('sync', 'started');
   };
@@ -166,7 +167,9 @@ const backendApiFactory = () => {
       syncService.initIpfs(ipfsNode);
 
       broadcastApi.postServiceStatus('ipfs', 'started');
-      return proxy(ipfsNode);
+
+      return true;
+      // return proxy(ipfsNode);
     } catch (err) {
       console.log('----ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
@@ -188,6 +191,7 @@ const backendApiFactory = () => {
   const ipfsApi = {
     start: startIpfs,
     stop: stopIpfs,
+    getIpfsNode: async () => ipfsNode && proxy(ipfsNode),
     config: async () => ipfsNode?.config,
     info: async () => ipfsNode?.info(),
     fetchWithDetails: async (cid: string, parseAs?: IpfsContentType) =>

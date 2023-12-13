@@ -220,7 +220,7 @@ export class SyncService {
     addCyberlinksToSync = false
   ) {
     this.channelApi.postSyncEntryProgress('transaction', {
-      message: `sync ${address} transactions...`,
+      status: 'in-progress',
     });
 
     // let conter = 0;
@@ -278,9 +278,10 @@ export class SyncService {
       });
     }
     this.channelApi.postSyncEntryProgress('transaction', {
-      message: `sync ${address} transactions - unread: ${
-        unreadCount + count
-      }, last - ${numberToDate(lastTimestamp || 0)}`,
+      status: 'idle',
+      // message: `sync ${address} transactions - unread: ${
+      //   unreadCount + count
+      // }, last - ${numberToDate(lastTimestamp || 0)}`,
       done: true,
     });
     // onComplete && onComplete(conter);
@@ -288,7 +289,7 @@ export class SyncService {
 
   private async syncParticles() {
     this.channelApi.postSyncEntryProgress('particle', {
-      message: `sync particles start...`,
+      status: 'in-progress',
     });
     // fetch observable particles from db
     const particleSyncStatusResult = await this.db!.findSyncStatus({
@@ -316,16 +317,14 @@ export class SyncService {
     });
 
     this.channelApi.postSyncEntryProgress('particle', {
-      message: `sync particles complete`,
+      status: 'idle',
       done: true,
     });
   }
 
   private async syncPins() {
-    console.log('-----syncPins', this.ipfsNode, this.db);
-
     this.channelApi.postSyncEntryProgress('pin', {
-      message: 'fetching node pins...',
+      status: 'in-progress',
     });
 
     const pinsResult = await fetchPins(this.ipfsNode!);
@@ -348,10 +347,10 @@ export class SyncService {
       await this.db!.deletePins(pinsToRemove);
     }
 
-    this.channelApi.postSyncEntryProgress('pin', {
-      message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
-      done: true,
-    });
+    // this.channelApi.postSyncEntryProgress('pin', {
+    //   message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
+    //   done: true,
+    // });
 
     const particlesExist = new Set(
       (await this.db!.getParticles(['cid'])).rows.map((row) => row[0] as string)
@@ -368,7 +367,8 @@ export class SyncService {
     }
 
     this.channelApi.postSyncEntryProgress('pin', {
-      message: `ipfs node sync: +${pinsToAdd.length} -${pinsToRemove.length} +${particlesToAdd.length}(particles)`,
+      status: 'idle',
+      // message: `ipfs node sync: +${pinsToAdd.length} -${pinsToRemove.length} +${particlesToAdd.length}(particles)`,
       done: true,
     });
   }

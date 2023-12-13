@@ -13,6 +13,8 @@ import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend';
 import {
+  ServiceName,
+  ServiceStatus,
   SyncEntryName,
   SyncProgress,
   SyncState,
@@ -37,6 +39,35 @@ const presetsAsSelectOptions = [
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
+function ServiceStatus({
+  name,
+  status,
+  message,
+  tabbed,
+}: {
+  name: string;
+  status: ServiceStatus;
+  message?: string;
+}) {
+  const icon = status === 'error' ? '❌' : status === 'starting' ? '⏳' : '☑️';
+  const msg = message ? ` - ${message}` : '';
+  return <div>{`${icon} ${name} ${status} ${msg}`}</div>;
+}
+
+function EntrySatus({
+  name,
+  progress,
+}: {
+  name: string;
+  progress: SyncProgress;
+}) {
+  return (
+    <div className={styles.tabbed}>{`${name}: ${progress.status} ${
+      progress.error || ''
+    }`}</div>
+  );
+}
+
 function SyncEntryStatus({
   entry,
   status,
@@ -53,7 +84,7 @@ function SyncEntryStatus({
     );
   }
   if (status.done) {
-    return <div>{`☑️ ${entry} ${status.message}`}</div>;
+    return <div>{`☑️ ${entry} ${status.message || ''}`}</div>;
   }
   if (status.error) {
     return (
@@ -94,7 +125,7 @@ function Drive() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
   const { startSyncTask, dbApi, isReady } = useBackend();
-  const { syncState, dbPendingWrites } = useAppSelector(
+  const { syncState, dbPendingWrites, services } = useAppSelector(
     (store) => store.backend
   );
 
@@ -236,7 +267,8 @@ function Drive() {
             <Link to="/search/brain%20feedback">brain feedback</Link>
           </p>
         </Display>
-        <Pane
+
+        {/* <Pane
           width="100%"
           display="flex"
           marginBottom={20}
@@ -251,16 +283,16 @@ function Drive() {
               {syncState.lastError && `(${syncState.lastError})`}
             </Text>
           )}
-          {/* {syncState?.status === 'syncing' && ( */}
+          {syncState?.status === 'syncing' && (
           <SyncInfo syncState={syncState} />
-          {/* )} */}
+          )}
           {(syncState?.status === 'started' ||
             syncState?.status === 'error') && (
             <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
               sync drive
             </CybButton>
           )}
-        </Pane>
+        </Pane> */}
 
         <Pane width="100%">
           <textarea
@@ -321,6 +353,33 @@ function Drive() {
       ) : (
         <div className={styles.errorMessage}>{errorMessage}</div>
       )}
+      <Display color={Colors.GREEN}>
+        <div className={styles.list}>
+          <h3>Backend status</h3>
+          <ServiceStatus
+            name="db"
+            status={services.db.status}
+            message={services.db.error || `${dbPendingWrites} writes.`}
+          />
+          <ServiceStatus
+            name="ipfs"
+            status={services.ipfs.status}
+            message={services.ipfs.error}
+          />
+          <ServiceStatus
+            name="sync"
+            status={services.sync.status}
+            message={services.sync.error}
+          />
+          {Object.keys(syncState.entryStatus).map((name) => (
+            <EntrySatus
+              key={`log_${name}`}
+              name={name}
+              progress={syncState.entryStatus[name]}
+            />
+          ))}
+        </div>
+      </Display>
     </>
   );
 }

@@ -8,9 +8,10 @@ import {
 } from 'src/services/CozoDb/types';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
-import { DbWorkerApi } from '../../workers/db/worker';
+// import { DbWorkerApi } from '../../workers/db/worker';
 import { SenseResult, SenseUnread } from './type';
 import { dbResultToObjects } from 'src/services/CozoDb/utils';
+import { DbServiceApiRemote } from 'src/services/backend/workers/db/service';
 
 const TIMESTAMP_INTITAL = 958718452000;
 
@@ -21,9 +22,9 @@ type SyncStatus = {
 };
 
 function DbApiWrapper() {
-  let db: DbWorkerApi | undefined;
+  let db: DbServiceApiRemote | undefined;
 
-  const init = (dbApi: DbWorkerApi) => {
+  const init = (dbApi: DbServiceApiRemote) => {
     db = dbApi;
   };
 

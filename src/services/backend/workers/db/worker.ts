@@ -1,4 +1,3 @@
-import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 import cozoDb from 'src/services/CozoDb/cozoDb';
 import { exposeWorkerApi } from '../factoryMethods';
 import { ServiceStatus } from '../../types';
@@ -60,7 +59,7 @@ const dbApiFactory = () => {
 
   const executeBatchPutCommand = async (
     tableName: string,
-    array: DbEntity[],
+    array: Partial<DbEntity>[],
     batchSize: number = array.length,
     onProgress?: (count: number) => void
   ) => {

@@ -4,7 +4,7 @@ export type DbStackItem = {
   isBatch: boolean;
   tableName: string;
   action: 'put' | 'update' | 'rm';
-  data: DbEntity[];
+  data: Partial<DbEntity>[];
   batchSize?: number;
   onProgress?: (count: number) => void;
 };

@@ -7,6 +7,7 @@ import { DbEntity } from 'src/services/CozoDb/types';
 import { CozoDbWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
 import { DbStackItem as DbQueueItem } from './types';
+import { type } from 'ramda';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
@@ -88,7 +89,10 @@ function dbServiceApi() {
       conditionFields
     );
 
-  const executePutCommand = async (tableName: string, array: DbEntity[]) =>
+  const executePutCommand = async (
+    tableName: string,
+    array: Partial<DbEntity>[]
+  ) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -96,7 +100,10 @@ function dbServiceApi() {
       action: 'put',
     });
 
-  const executeRmCommand = async (tableName: string, array: DbEntity[]) =>
+  const executeRmCommand = async (
+    tableName: string,
+    array: Partial<DbEntity>[]
+  ) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -104,7 +111,10 @@ function dbServiceApi() {
       action: 'rm',
     });
 
-  const executeUpdateCommand = async (tableName: string, array: DbEntity[]) =>
+  const executeUpdateCommand = async (
+    tableName: string,
+    array: Partial<DbEntity>[]
+  ) =>
     executeOrEnqueue({
       tableName,
       data: array,
@@ -114,7 +124,7 @@ function dbServiceApi() {
 
   const executeBatchPutCommand = async (
     tableName: string,
-    array: DbEntity[],
+    array: Partial<DbEntity>[],
     batchSize: number,
     onProgress?: (count: number) => void
   ) =>
@@ -146,4 +156,7 @@ function dbServiceApi() {
   };
 }
 
-export default dbServiceApi();
+const dbServiceApiRemote = dbServiceApi();
+export type DbServiceApiRemote = typeof dbServiceApiRemote;
+
+export default dbServiceApiRemote;

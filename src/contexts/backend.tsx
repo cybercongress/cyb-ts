@@ -4,7 +4,7 @@ import { proxy, Remote } from 'comlink';
 import { backendWorkerApiRemote } from 'src/services/backend/workers/background/service';
 
 import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
-import dbApiWorkerRemove from 'src/services/backend/workers/db/service';
+import dbServiceApi from 'src/services/backend/workers/db/service';
 import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode, IpfsOptsType } from 'src/services/ipfs/ipfs';
@@ -17,7 +17,7 @@ import dbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbA
 
 type BackendProviderContextType = {
   startSyncTask?: () => void;
-  dbApi?: typeof dbApiWorkerRemove;
+  dbApi?: typeof dbServiceApi;
   senseApi: typeof backendWorkerApiRemote.senseApi;
   backendApi?: typeof backendWorkerApiRemote;
   ipfsNode?: Remote<CybIpfsNode> | null;
@@ -56,13 +56,13 @@ export function useBackend() {
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
+  // const { defaultAccount } = useAppSelector((state) => state.pocket);
   const [isIpfsInitialized, setIsIpfsInitialized] = useState(false);
   const [isDbInitialized, setIsDbItialized] = useState(false);
   const [isSyncInitialized, setIsSyncInitialized] = useState(false);
 
   const [ipfsError, setIpfsError] = useState(null);
-  const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
+  // const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
 
   const dbStatus = useAppSelector((state) => state.backend.services.db);
   const ipfsStatus = useAppSelector((state) => state.backend.services.ipfs);
@@ -96,7 +96,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [syncStatus]);
 
   useEffect(() => {
-    setIsIpfsInitialized(ipfsStatus.status === 'started');
+    const isIpfsStarted = ipfsStatus.status === 'started';
+    setIsIpfsInitialized(isIpfsStarted);
+
+    isIpfsStarted && console.timeEnd('🔋 Ipfs started.');
   }, [ipfsStatus]);
 
   useEffect(() => {
@@ -104,7 +107,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       // attach db api to backend api
 
       (async () => {
-        await backendWorkerApiRemote.installDbApi(proxy(dbApiWorkerRemove));
+        await backendWorkerApiRemote.installDbApi(proxy(dbServiceApi));
       })();
     }
 
@@ -135,7 +138,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const loadCozoDb = async () => {
     console.time('🔋 CozoDb worker started.');
-    await dbApiWorkerRemove
+    await dbServiceApi
       .init()
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
@@ -146,13 +149,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     console.time('🔋 Ipfs started.');
     await backendWorkerApiRemote.ipfsApi
       .start(ipfsOpts)
-      .then((ipfsNodeRemote) => {
-        ipfsNode.current = ipfsNodeRemote;
+      .then(() => {
+        // ipfsNodeRemote
+        // ipfsNode.current = ipfsNodeRemote;
         setIpfsError(null);
-        console.timeEnd('🔋 Ipfs started.');
       })
       .catch((err) => {
-        ipfsNode.current = null;
+        // ipfsNode.current = null;
         setIpfsError(err);
         console.log(`☠️ Ipfs error: ${err}`);
       });
@@ -166,11 +169,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       //   CYBER.CYBER_INDEX_HTTPS
       // ),
       backendApi: backendWorkerApiRemote,
-      dbApi: isDbInitialized ? dbApiWorkerRemove : undefined,
+      dbApi: isDbInitialized ? dbServiceApi : undefined,
       senseApi: backendWorkerApiRemote.senseApi,
       // dbApiWrapper: backendWorkerApiRemote.dbWrapperApi,
 
-      ipfsNode: isIpfsInitialized ? ipfsNode.current : null,
+      ipfsNode: isIpfsInitialized
+        ? backendWorkerApiRemote.ipfsApi.getIpfsNode()
+        : null,
       loadIpfs,
       ipfsError,
       isIpfsInitialized,
