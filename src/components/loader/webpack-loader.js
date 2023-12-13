@@ -152,6 +152,23 @@ class BootloaderPlugin {
             )
           );
         }
+
+        const moduleNames = ['helia', 'cyb-cozo-lib-wasm'];
+
+        moduleNames.forEach((moduleName) => {
+          Object.keys(compilation.assets).forEach((assetName) => {
+            const correctedModuleName = moduleName.replace(/-/g, '_');
+
+            if (assetName.startsWith(correctedModuleName)) {
+              // Assuming you have a method to process these assets
+              this.processModuleAsset(
+                assetName,
+                compilation.assets[assetName],
+                htmlAssets
+              );
+            }
+          });
+        });
       });
       hooks.alterAssetTags.tap('BootloaderPlugin', ({ assetTags }) => {
         const entrypoint = compilation.entrypoints.get(this.options.name);
@@ -184,7 +201,36 @@ class BootloaderPlugin {
             delete compilation.assets[filename];
           });
         }
+
+        const preloadTags = htmlAssets.modules.map((moduleAsset) => {
+          return {
+            tagName: 'script',
+            attributes: {
+              src: moduleAsset.file,
+              type: 'text/javascript',
+            },
+          };
+        });
+        assetTags.scripts = [...preloadTags, ...assetTags.scripts];
       });
+    });
+  }
+
+  processModuleAsset(assetName, asset, htmlAssets) {
+    if (assetName.endsWith('.gz')) {
+      // Skip processing this asset
+      return;
+    }
+
+    // Ensure htmlAssets.modules is initialized
+    if (!htmlAssets.modules) {
+      htmlAssets.modules = [];
+    }
+
+    // Process the module asset and add it to htmlAssets for preloading
+    htmlAssets.modules.push({
+      file: assetName,
+      size: asset.size(),
     });
   }
 }
