@@ -8,7 +8,7 @@ import cx from 'classnames';
 import { trimString } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
-import s from './account.module.scss';
+import styles from './account.module.scss';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -98,14 +98,14 @@ function Account({
 
   return (
     <div
-      className={cx(s.container, containerClassName)}
+      className={cx(styles.container, containerClassName)}
       style={{
         ...styleUser,
       }}
     >
       {avatar && (
         <div
-          className={cx(s.avatar, avatarClassName)}
+          className={cx(styles.avatar, avatarClassName)}
           style={{
             width: sizeAvatar,
             height: sizeAvatar,
@@ -117,7 +117,7 @@ function Account({
       {!onlyAvatar && (
         <Link
           onClick={(e) => disabled && e.preventDefault()}
-          className={cx(s.moniker, monikerClassName)}
+          className={cx(styles.moniker, monikerClassName)}
           style={{
             color: colorText,
             padding: margin,

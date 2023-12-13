@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Carousel from 'src/components/Tabs/Carousel/Carousel';
 import { MainContainer } from '../portal/components';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent as PlayBannerContent } from './pages';
 import { ActionBar, ContainerGradientText } from '../../components';
 import styles from './Temple.module.scss';
-import Carousel from 'components/Carousel/Carousel';
 import Canvas from './components/canvasOne';
 import { useAdviser } from 'src/features/adviser/context';
 

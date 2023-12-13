@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 import BalanceToken from './balanceToken';
 import Select from './Select';
-import { MyPoolsT } from '../../teleport/type';
+import { MyPoolsT } from '../../../pages/teleport/type';
 
 type TypeMyPoolListObj = { [key: string]: MyPoolsT };
 
