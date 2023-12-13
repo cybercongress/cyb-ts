@@ -4,7 +4,7 @@ import { MainContainer } from '../portal/components';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent as PlayBannerContent } from './pages';
 import { ActionBar, ContainerGradientText } from '../../components';
-import styles from './styles.module.scss';
+import styles from './Temple.module.scss';
 import Carousel from 'components/Carousel/Carousel';
 import Canvas from './components/canvasOne';
 import { useAdviser } from 'src/features/adviser/context';

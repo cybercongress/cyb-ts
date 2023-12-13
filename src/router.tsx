@@ -32,7 +32,7 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
-import Temple from './containers/temple';
+import Temple from './containers/temple/Temple';
 // import IpfsSettings from './features/ipfs/ipfsSettings';
 import {
   Codes,
