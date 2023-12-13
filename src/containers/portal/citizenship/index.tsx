@@ -160,7 +160,6 @@ function GetCitizenship({ defaultAccount }) {
     };
   }, []);
 
-  // console.log('avatarImg', avatarImg);
   useEffect(() => {
     const localStorageNickname = localStorage.getItem('nickname');
     if (localStorageNickname !== null) {
@@ -193,19 +192,18 @@ function GetCitizenship({ defaultAccount }) {
   }, [queryClient]);
 
   useEffect(() => {
-    const getPinAvatar = async () => {
+    if (!avatarImg || !ipfsNode || !isIpfsInitialized) {
+      return;
+    }
+
+    (async () => {
       try {
-        if (isIpfsInitialized && avatarImg) {
-          ipfsNode?.addContent(avatarImg).then((cid) => {
-            console.log('pin cid avatar', cid);
-            setAvatarIpfs(cid);
-          });
-        }
+        const cid = await ipfsNode.addContent(avatarImg);
+        setAvatarIpfs(cid);
       } catch (error) {
-        console.log('error', error);
+        console.error(error);
       }
-    };
-    getPinAvatar();
+    })();
   }, [isIpfsInitialized, ipfsNode, avatarImg]);
 
   useEffect(() => {
