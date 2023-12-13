@@ -44,6 +44,7 @@
 }
 .new {
   &:hover {
+    font-size: 0;
     &::before {
       content: 'new avatar';
       width: 100%;
