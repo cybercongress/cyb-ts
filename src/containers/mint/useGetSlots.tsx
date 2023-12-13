@@ -4,6 +4,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { authAccounts } from '../../utils/search/utils';
 import { convertResources } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
+import { Slot } from './types';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
@@ -66,9 +67,10 @@ const balanceFetcher = (address, client) => {
 
   return client.getAllBalances(address);
 };
+
 function useGetSlots(addressActive) {
   const queryClient = useQueryClient();
-  const [slotsData, setSlotsData] = useState([]);
+  const [slotsData, setSlotsData] = useState<Slot[]>([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
   const [balacesResource, setBalacesResource] = useState(initBalacesResource);
@@ -183,7 +185,7 @@ function useGetSlots(addressActive) {
   };
 
   const getVestingPeriodsData = (data, startTime) => {
-    const tempData = [];
+    const tempData: Slot[] = [];
     let length = parseFloat(startTime);
     const vestedAmount = {
       ...initStateVested,
@@ -191,7 +193,7 @@ function useGetSlots(addressActive) {
 
     if (data.length > 0) {
       data.forEach((item) => {
-        const obj = {};
+        const obj: Slot = {};
         length += parseFloat(item.length);
         const lengthMs = length * MILLISECONDS_IN_SECOND;
         obj.length = length * MILLISECONDS_IN_SECOND;

@@ -231,6 +231,7 @@ export function StartStageSearchActionBar({
 }) {
   const { isIpfsInitialized } = useBackend();
   return (
+    // use NodeIsLoadingButton component
     <ActionBarContainer
       button={{
         disabled: !isIpfsInitialized || !contentHash.length,

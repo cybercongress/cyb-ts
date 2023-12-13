@@ -12,6 +12,7 @@ import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
+import { useAdviser } from 'src/features/adviser/context';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -34,6 +35,12 @@ function Validators({ defaultAccount }) {
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
   // FIXME: use useGetHeroes hook instead
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('choose your hero');
+  }, [setAdviser]);
 
   useEffect(() => {
     setValidatorsData(validators);

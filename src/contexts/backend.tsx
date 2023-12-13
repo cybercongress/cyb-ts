@@ -63,15 +63,16 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsDbItialized(dbStatus.status === 'started');
-  }, [dbStatus]);
-
-  useEffect(() => {
-    setIsIpfsInitialized(ipfsStatus.status === 'started');
-    // attach db api to backend api
     (async () => {
       await backendApi.installDbApi(proxy(dbApiService));
     })();
-  }, [ipfsStatus]);
+  }, [dbStatus]);
+
+  // useEffect(() => {
+  //   // setIsIpfsInitialized(ipfsStatus.status === 'started');
+  //   // attach db api to backend api
+
+  // }, [ipfsStatus]);
 
   useEffect(() => {
     if (isDbInitialized && isIpfsInitialized) {
@@ -106,6 +107,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const loadIpfs = async () => {
     const ipfsOpts = getIpfsOpts();
+    setIsIpfsInitialized(false);
     await backendApi.ipfsApi.stop();
     console.time('🔋 Ipfs started.');
     await backendApi.ipfsApi
@@ -114,11 +116,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode.current = ipfsNodeRemote;
         setIpfsError(null);
         console.timeEnd('🔋 Ipfs started.');
+        setIsIpfsInitialized(true);
       })
       .catch((err) => {
         ipfsNode.current = null;
         setIpfsError(err);
         console.log(`☠️ Ipfs error: ${err}`);
+        setIsIpfsInitialized(false);
       });
   };
 
