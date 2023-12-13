@@ -29,6 +29,17 @@ const {
   STEP_ACTIVE_ADD,
 } = steps;
 
+// generated, check
+type Props = {
+  stepCurrent: (typeof steps)[keyof typeof steps];
+  nickname: string;
+  valuePriceNickname: number;
+  registerDisabled: boolean;
+  setStep: (step: (typeof steps)[keyof typeof steps]) => void;
+  counCitizenshipst: number;
+  mobile: boolean;
+};
+
 function Info({
   stepCurrent,
   nickname,
@@ -37,7 +48,7 @@ function Info({
   setStep,
   counCitizenshipst,
   mobile,
-}) {
+}: Props) {
   const useContent = useMemo(() => {
     let content;
 
@@ -58,7 +69,7 @@ function Info({
               <span style={{ color: '#36d6ae' }}>
                 {formatNumber(counCitizenshipst)}
               </span>{' '}
-              beings recieve Moon Citizenship.
+              beings receive Moon Citizenship.
             </div>
             <div>I can also assist you in 7 simple steps.</div>
             {mobile ? (

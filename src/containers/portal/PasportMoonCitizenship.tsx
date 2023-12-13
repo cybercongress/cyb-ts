@@ -19,11 +19,15 @@ import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
 import { Button } from '../../components';
 import { routes } from 'src/routes';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
+import { useAdviser } from 'src/features/adviser/context';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
-const STAGE_LOADING = 0;
-const STAGE_READY = 2;
+// const STAGE_LOADING = 0;
+// const STAGE_READY = 2;
 
 const STATE_AVATAR = 15;
 
@@ -39,18 +43,23 @@ const stopPortalAmbient = () => {
   portalAmbientObg.currentTime = 0;
 };
 
-function PasportMoonCitizenship({ defaultAccount }) {
+function PassportMoonCitizenship() {
   const { isMobile: mobile } = useDevice();
-  const navigate = useNavigate();
+  const defaultAccount = useAppSelector((state) => state.pocket.defaultAccount);
+
+  const p = useAppSelector(selectCurrentPassport);
+  // FIXME: backward compatibility
+  const citizenship = p.data || null;
+
   const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [updateFunc, setUpdateFunc] = useState(0);
+  // const [updateFunc, setUpdateFunc] = useState(0);
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
-  const [citizenship, setCitizenship] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const [txHash, setTxHash] = useState(null);
+
+  const { setAdviser } = useAdviser();
 
   useEffect(() => {
     playPortalAmbient();
@@ -64,10 +73,9 @@ function PasportMoonCitizenship({ defaultAccount }) {
     const confirmTx = async () => {
       if (queryClient && txHash !== null && txHash.status === 'pending') {
         const response = await queryClient.getTx(txHash.txHash);
-        console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
-            setUpdateFunc((item) => item + 1);
+            // setUpdateFunc((item) => item + 1);
             setTxHash((item) => ({
               ...item,
               status: 'confirmed',
@@ -94,43 +102,14 @@ function PasportMoonCitizenship({ defaultAccount }) {
   }, [queryClient, txHash]);
 
   useEffect(() => {
-    const getPasport = async () => {
-      if (queryClient) {
-        setStagePortal(STAGE_LOADING);
-        // TODO: possible to use passport from store
-        const addressActiveData = getActiveAddress(defaultAccount);
-        if (addressActiveData !== null) {
-          const response = await activePassport(
-            queryClient,
-            addressActiveData.bech32
-          );
-          console.log('response', response);
-          if (response !== null) {
-            console.log('response', response);
-            setCitizenship(response);
-            setStagePortal(STAGE_READY);
-          }
-        }
-      }
-    };
-    getPasport();
-  }, [queryClient, defaultAccount, updateFunc]);
+    const nickname = citizenship?.extension?.nickname || '';
 
-  const getActiveAddress = (address) => {
-    const { account } = address;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { keys, bech32 } = account.cyber;
-      addressPocket = {
-        bech32,
-        keys,
-      };
-    }
-    return addressPocket;
-  };
+    const content = (
+      <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname} />
+    );
+
+    setAdviser(content);
+  }, [setAdviser, citizenship]);
 
   const onClickProveeAddress = () => {
     setStepApp(STEP_INFO.STATE_PROVE_CONNECT);
@@ -148,13 +127,12 @@ function PasportMoonCitizenship({ defaultAccount }) {
     setTxHash(data);
   };
 
-  const nickname = citizenship !== null ? citizenship.extension.nickname : '';
   return (
     <>
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
-        <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname || ''} />
+
         <PasportCitizenship
           citizenship={citizenship}
           txHash={txHash}
@@ -194,10 +172,4 @@ function PasportMoonCitizenship({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(PasportMoonCitizenship);
+export default PassportMoonCitizenship;
