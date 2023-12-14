@@ -37,7 +37,6 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useAppDispatch } from 'src/redux/hooks';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
