@@ -54,19 +54,22 @@ function ActionBarRelease({
   const getRelease = useCallback(async () => {
     try {
       if (signer && signingClient && currentRelease) {
+        const { isNanoLedger, bech32Address: addressKeplr } =
+          await signer.keplr.getKey(CYBER.CHAIN_ID);
+
         const msgs = [];
+
         if (currentRelease.length > 0) {
-          currentRelease.forEach((item) => {
-            const { address } = item;
-            const msgObject = releaseMsg(address);
-            msgs.push(msgObject);
-          });
+          currentRelease
+            .slice(0, isNanoLedger ? 4 : currentRelease.length)
+            .forEach((item) => {
+              const { address } = item;
+              const msgObject = releaseMsg(address);
+              msgs.push(msgObject);
+            });
         }
 
-        const [{ address: addressKeplr }] = await signer.getAccounts();
-
         if (msgs.length > 0) {
-          const gasLimits = 400000 * msgs.length;
           const executeResponseResult = await signingClient.executeArray(
             addressKeplr,
             CONTRACT_ADDRESS_GIFT,
