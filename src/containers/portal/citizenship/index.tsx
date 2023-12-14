@@ -35,6 +35,8 @@ import Info from './Info';
 import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { useAppDispatch } from 'src/redux/hooks';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -137,6 +139,7 @@ const calculatePriceNicname = (valueNickname) => {
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { isIpfsInitialized, ipfsNode } = useBackend();
+  const dispatch = useAppDispatch();
 
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
@@ -234,6 +237,14 @@ function GetCitizenship({ defaultAccount }) {
     getKeplrSetup();
   }, [step, addressActive]);
 
+  const dispatchGetPassport = useCallback(() => {
+    if (step === STEP_DONE) {
+      queryClient &&
+        addressActive?.bech32 &&
+        dispatch(getPassport({ address: addressActive.bech32, queryClient }));
+    }
+  }, [step, queryClient, dispatch, addressActive]);
+
   useEffect(() => {
     const confirmTx = async () => {
       if (queryClient && txHash !== null && txHash.status === 'pending') {
@@ -245,6 +256,9 @@ function GetCitizenship({ defaultAccount }) {
               ...item,
               status: 'confirmed',
             }));
+
+            dispatchGetPassport();
+
             try {
               playPortalConfirmed();
             } catch (error) {
@@ -270,7 +284,7 @@ function GetCitizenship({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [queryClient, txHash]);
+  }, [queryClient, txHash, dispatchGetPassport]);
 
   const usePriceNickname = useMemo(() => {
     if (valueNickname.length < 8) {
