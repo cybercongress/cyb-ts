@@ -5,11 +5,10 @@ import styles from './Twitter.module.scss';
 
 function Twitter() {
   return (
-    <div className={styles.wrapper}>
-      <LinkWindow to="https://twitter.com/cyber_devs">
-        <img className={styles.icon} src={twitterIcon} alt="Cyber Twitter" />
-      </LinkWindow>
-    </div>
+    <LinkWindow to="https://twitter.com/cyber_devs">
+      <img className={styles.icon} src={twitterIcon} alt="Twitter" />
+      <span>Twitter</span>
+    </LinkWindow>
   );
 }
 

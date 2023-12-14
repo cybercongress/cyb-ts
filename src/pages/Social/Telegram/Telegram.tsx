@@ -34,7 +34,7 @@ export function Telegram() {
               src={telegram}
             />
           </div>
-          <span>eng</span>
+          <span>t/eng</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/cyber_russian_community">
@@ -45,7 +45,7 @@ export function Telegram() {
               src={telegram}
             />
           </div>
-          <span>ru</span>
+          <span>t/ru</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/bostrom_news">
@@ -56,7 +56,7 @@ export function Telegram() {
               src={telegram}
             />
           </div>
-          <span>news</span>
+          <span>t/news</span>
         </LinkWindow>
       </div>
     );
