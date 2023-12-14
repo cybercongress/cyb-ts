@@ -37,6 +37,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useAppDispatch } from 'src/redux/hooks';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -237,7 +238,7 @@ function GetCitizenship({ defaultAccount }) {
     getKeplrSetup();
   }, [step, addressActive]);
 
-  const UseGetPassport = useCallback(() => {
+  const dispatchGetPassport = useCallback(() => {
     if (step === STEP_DONE) {
       queryClient &&
         addressActive?.bech32 &&
@@ -257,7 +258,7 @@ function GetCitizenship({ defaultAccount }) {
               status: 'confirmed',
             }));
 
-            UseGetPassport();
+            dispatchGetPassport();
 
             try {
               playPortalConfirmed();
@@ -284,7 +285,7 @@ function GetCitizenship({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [queryClient, txHash, UseGetPassport]);
+  }, [queryClient, txHash, dispatchGetPassport]);
 
   const usePriceNickname = useMemo(() => {
     if (valueNickname.length < 8) {
