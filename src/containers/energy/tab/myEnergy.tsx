@@ -1,20 +1,21 @@
 import { Pane } from '@cybercongress/gravity';
 import { Card, TableSlots } from '../ui';
-import { Dots, LinkWindow } from '../../../components';
+import { DenomArr, Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
-const voltImg = require('../../../image/lightning2.png');
-const amperImg = require('../../../image/light.png');
+// TODO: finish
+type Props = {
+  balacesResource: {
+    milliampere: number | null;
+    millivolt: number | null;
+  };
+  slotsData: unknown;
+  loadingAuthAccounts: unknown;
+};
 
-function ValueImg({ text, img }) {
-  return (
-    <div style={{ display: 'flex' }}>
-      <span>{text}</span> <img style={{ width: 20 }} src={img} alt="text" />
-    </div>
-  );
-}
-
-function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
+function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
   return (
     <div>
       <div
@@ -23,8 +24,10 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         }}
       >
         <Pane marginY={30} textAlign="center">
-          <LinkWindow>Energy </LinkWindow> (W) is the product of{' '}
-          <LinkWindow>ampers </LinkWindow> and <LinkWindow>volts</LinkWindow>
+          <Link to={routes.oracle.ask.getLink('energy')}>Energy </Link> (W) is
+          the product of{' '}
+          <Link to={routes.oracle.ask.getLink('amper')}>ampers </Link> and{' '}
+          <Link to={routes.oracle.ask.getLink('volt')}>volts</Link>
         </Pane>
         <Pane marginBottom={20} fontSize="20px">
           Balance:
@@ -37,7 +40,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
           flex-irection="row"
         >
           <Card
-            title={<ValueImg text="A" img={amperImg} />}
+            title={<DenomArr denomValue="a" />}
             value={
               balacesResource.milliampere
                 ? formatNumber(balacesResource.milliampere)
@@ -49,7 +52,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
             x
           </Pane>
           <Card
-            title={<ValueImg text="V" img={voltImg} />}
+            title={<DenomArr denomValue="V" />}
             value={
               balacesResource.millivolt
                 ? formatNumber(balacesResource.millivolt)
