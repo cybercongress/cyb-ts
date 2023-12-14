@@ -6,6 +6,7 @@ import {
   PATTERN_COSMOS,
   PATTERN_OSMOS,
   PATTERN_TERRA,
+  PATTERN_CYBER_VALOPER,
 } from '../../utils/config';
 
 const DICTIONARY_ABC = {
@@ -134,6 +135,10 @@ const cutAddress = (address) => {
 
   if (address.match(PATTERN_COSMOS)) {
     sliceAddress = parseAddress(address, 10);
+  }
+
+  if (address.match(PATTERN_CYBER_VALOPER)) {
+    sliceAddress = parseAddress(address, 14);
   }
 
   if (address.match(PATTERN_CYBER)) {

@@ -19,6 +19,8 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
+import { MusicalAddress } from '../portal/components';
+import Loader2 from 'src/components/ui/Loader2';
 
 const mapTabs = [
   { key: 'fans', to: 'fans' },
@@ -220,7 +222,6 @@ class ValidatorsDetails extends React.PureComponent {
       unStake,
     } = this.state;
     const {
-      mobile,
       router: { params },
     } = this.props;
 
@@ -233,7 +234,7 @@ class ValidatorsDetails extends React.PureComponent {
             height: '50vh',
           }}
         >
-          <Loading />
+          <Loader2 />
         </div>
       );
     }
@@ -251,13 +252,7 @@ class ValidatorsDetails extends React.PureComponent {
             justifyContent="center"
             alignItems="center"
           >
-            <Text color="#fff" fontSize="18px">
-              {/* seems better use viewport width or css */}
-              {mobile
-                ? trimString(validatorInfo.operator_address, 16, 5)
-                : validatorInfo.operator_address}{' '}
-              <Copy text={validatorInfo.operator_address} />
-            </Text>
+            <MusicalAddress address={validatorInfo.operator_address} />
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tabs
