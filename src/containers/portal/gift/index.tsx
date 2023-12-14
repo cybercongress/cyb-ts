@@ -98,6 +98,7 @@ function PortalGift() {
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
+  const [error, setError] = useState<string>();
 
   const [isRelease, setIsRelease] = useState(false);
   const [currentRelease, setCurrentRelease] =
@@ -494,6 +495,26 @@ function PortalGift() {
     return 0;
   }, [currentStage, claimStat]);
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (!appStep) {
+      return;
+    }
+
+    if (error) {
+      setAdviser(error, 'red');
+    } else {
+      setAdviser(
+        <Info
+          stepCurrent={appStep}
+          nextRelease={useNextRelease}
+          useReleasedStage={useReleasedStage}
+        />
+      );
+    }
+  }, [appStep, useReleasedStage, useNextRelease, setAdviser, error]);
+
   const redirectFunc = (key: 'claim' | 'prove') => {
     if (key === 'claim') {
       setStepApp(STEP_INFO.STATE_CLAIME);
@@ -565,22 +586,6 @@ function PortalGift() {
     );
   }
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    if (!appStep) {
-      return;
-    }
-
-    setAdviser(
-      <Info
-        stepCurrent={appStep}
-        nextRelease={useNextRelease}
-        useReleasedStage={useReleasedStage}
-      />
-    );
-  }, [appStep, useReleasedStage, useNextRelease, setAdviser]);
-
   return (
     <>
       <MainContainer>
@@ -618,6 +623,9 @@ function PortalGift() {
           txHash={txHash}
           currentRelease={currentRelease}
           totalGift={totalGift}
+          callback={(err) => {
+            setError(err);
+          }}
           isRelease={isRelease}
           totalRelease={totalRelease}
           loadingRelease={loadingRelease}

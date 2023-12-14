@@ -33,6 +33,7 @@ type Props = {
   addressActive: Nullable<AccountValue>;
   currentRelease: Nullable<CurrentRelease[]>;
   redirectFunc: (steps: 'claim' | 'prove') => void;
+  callback?: (error: string) => void;
 };
 
 function ActionBarRelease({
@@ -44,6 +45,7 @@ function ActionBarRelease({
   totalGift,
   totalRelease,
   loadingRelease,
+  callback,
   addressActive,
   redirectFunc,
 }: Props) {
@@ -97,7 +99,9 @@ function ActionBarRelease({
         setStep(STEP_INIT);
       }
     } catch (error) {
-      console.log('error', error);
+      console.error(error);
+      // FIXME: not clear how to handle error codes
+      callback?.('contract call error');
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

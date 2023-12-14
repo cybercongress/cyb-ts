@@ -56,6 +56,8 @@ function Release() {
   const { defaultAccount } = useSelector((store: RootState) => store.pocket);
   const { txHash, updateFunc, updateTxHash } = usePingTxs();
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [error, setError] = useState<string>();
+
   const { citizenship, loading: loadingCitizenship } =
     useGetActivePassport(defaultAccount);
   const { totalGift, totalGiftClaimed, giftData, loadingGift } = useCheckGift(
@@ -287,8 +289,12 @@ function Release() {
       nextRelease: useNextRelease,
     });
 
-    setAdviser(content);
-  }, [setAdviser, useReleasedStage, stateInfo, useNextRelease]);
+    if (error) {
+      setAdviser(error, 'red');
+    } else {
+      setAdviser(content);
+    }
+  }, [setAdviser, useReleasedStage, stateInfo, useNextRelease, error]);
 
   const useUnClaimedGiftData = useMemo(() => {
     if (
@@ -357,6 +363,9 @@ function Release() {
         addressActive={addressActive}
         updateTxHash={updateTxHash}
         isRelease={isRelease}
+        callback={(err: string) => {
+          setError(err);
+        }}
         selectedAddress={selectedAddress}
         currentRelease={currentRelease}
         totalGift={totalGift}

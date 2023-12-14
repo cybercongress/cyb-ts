@@ -9,6 +9,18 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
 import { ContainerGradient } from '../../../components';
+import { Citizenship } from 'src/types/citizenship';
+
+// generated, check
+type Props = {
+  title: string;
+  initState: any; // Replace 'any' with the actual type
+  stateOpen: any; // Replace 'any' with the actual type
+  citizenship: Citizenship | null;
+  karma: number;
+  onClickEditAvatar?: () => void;
+  addressActiveSignatures: any | null; // Replace 'any' with the actual type
+};
 
 function PasportCitizenship({
   citizenship,
@@ -21,7 +33,7 @@ function PasportCitizenship({
   onClickDeleteAddress,
   onClickProveeAddress,
   onClickEditAvatar,
-}) {
+}: Props) {
   const queryClient = useQueryClient();
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
@@ -192,9 +204,8 @@ function PasportCitizenship({
         style={{
           height: '100%',
           color: '#36D6AE',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '7px',
+          display: 'grid',
+          gap: '15px 0',
         }}
       >
         <div
@@ -217,7 +228,14 @@ function PasportCitizenship({
               }
             />
             {onClickEditAvatar && (
-              <BtnPasport onClick={onClickEditAvatar} typeBtn="blue">
+              <BtnPasport
+                onClick={onClickEditAvatar}
+                typeBtn="blue"
+                style={{
+                  position: 'absolute',
+                  left: '100%',
+                }}
+              >
                 edit
               </BtnPasport>
             )}
@@ -227,10 +245,8 @@ function PasportCitizenship({
           <div
             style={{
               // height: 'calc(100% - 50px)',
-              display: 'flex',
-              flexDirection: 'column',
-              // justifyContent: 'flex-end',
-              gridGap: '10px',
+              display: 'grid',
+              gap: '20px 0',
             }}
           >
             <div style={{ position: 'relative' }}>
@@ -245,16 +261,32 @@ function PasportCitizenship({
                 {renderItemImg}
               </div>
               {active === 0 && onClickProveeAddress && (
-                <BtnPasport onClick={onClickProveeAddress} typeBtn="blue">
+                <BtnPasport
+                  onClick={onClickProveeAddress}
+                  typeBtn="blue"
+                  style={{
+                    position: 'absolute',
+                    left: '100%',
+                    top: 0,
+                  }}
+                >
                   <img
-                    style={{ width: '13', height: '13px' }}
+                    style={{ width: 13, height: 13 }}
                     src={plus}
                     alt="plus"
                   />
                 </BtnPasport>
               )}
               {active !== 0 && onClickDeleteAddress && (
-                <BtnPasport onClick={onClickDeleteAddress} typeBtn="red">
+                <BtnPasport
+                  onClick={onClickDeleteAddress}
+                  typeBtn="red"
+                  style={{
+                    position: 'absolute',
+                    left: '100%',
+                    top: 0,
+                  }}
+                >
                   X
                 </BtnPasport>
               )}
