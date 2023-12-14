@@ -18,8 +18,8 @@ const config = {
   devtool: 'cheap-module-source-map',
   entry: {
     main: [path.join(__dirname, 'src', 'index.tsx')],
-    helia: 'helia',
-    cozodb: 'cyb-cozo-lib-wasm',
+    // helia: 'helia',
+    // cozodb: 'cyb-cozo-lib-wasm',
   },
   output: {
     filename: '[name].js',
