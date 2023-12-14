@@ -4,8 +4,28 @@ import { Option } from 'src/types';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import Denom from './index';
 
+// generated, recheck
+type PossibleTokens =
+  | 'millivolt'
+  | 'v'
+  | 'milliampere'
+  | 'a'
+  | 'hydrogen'
+  | 'h'
+  | 'liquidpussy'
+  | 'lp'
+  | 'boot'
+  | 'pussy'
+  | 'tocyb'
+  | 'eth'
+  | 'bostrom'
+  | 'space-pussy'
+  | 'cosmos'
+  | 'osmo'
+  | 'terra';
+
 type DenomArrProps = {
-  denomValue: string;
+  denomValue: PossibleTokens | any;
   onlyText?: boolean;
   onlyImg?: boolean;
   tooltipStatusImg?: boolean;

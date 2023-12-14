@@ -15,6 +15,7 @@ import { trimString } from '../../utils/utils';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import styles from './TextDenom.module.scss';
 
+// maybe reuse enum from DenomArr
 const nativeImageMap = {
   millivolt: voltImg,
   v: voltImg,
