@@ -1,4 +1,4 @@
-import github from '../../../image/github-mark-white.svg';
+import githubIcon from './github-white-icon.svg';
 import star from '../../../image/star-reg.svg';
 import share from '../../../image/share.svg';
 
@@ -64,12 +64,20 @@ export function GitHub() {
         }}
       >
         <LinkWindow to="https://github.com/cybercongress/cyb-ts">
-          <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          <img
+            alt="github"
+            style={{ width: 30, height: 30 }}
+            src={githubIcon}
+          />
           <span>app</span>
         </LinkWindow>
 
         <LinkWindow to="https://github.com/cybercongress">
-          <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          <img
+            alt="github"
+            style={{ width: 30, height: 30 }}
+            src={githubIcon}
+          />
 
           <span>congress</span>
         </LinkWindow>

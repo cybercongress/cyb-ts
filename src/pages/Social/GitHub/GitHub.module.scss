@@ -1,10 +1,3 @@
-@import '../../../style/mixins.scss';
-
 .wrapper {
   display: flex;
-  a {
-    span {
-      @include withShareIcon;
-    }
-  }
 }

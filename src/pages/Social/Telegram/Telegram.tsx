@@ -1,6 +1,6 @@
 import Tooltip from '../../../components/tooltip/tooltip';
 import share from '../../../image/share.svg';
-import telegram from '../../../image/telegram.png';
+import telegram from './telegram-icon.svg';
 import { LinkWindow } from '../../../components/link/link';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import React from 'react';
@@ -27,35 +27,32 @@ export function Telegram() {
         }}
       >
         <LinkWindow to="https://t.me/cyber">
-          <div>
-            <img
-              alt="telegram"
-              style={{ width: 30, height: 30 }}
-              src={telegram}
-            />
-          </div>
+          <img
+            alt="telegram"
+            style={{ width: 30, height: 30 }}
+            src={telegram}
+          />
+
           <span>t/eng</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/cyber_russian_community">
-          <div>
-            <img
-              alt="telegram"
-              style={{ width: 30, height: 30 }}
-              src={telegram}
-            />
-          </div>
+          <img
+            alt="telegram"
+            style={{ width: 30, height: 30 }}
+            src={telegram}
+          />
+
           <span>t/ru</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/bostrom_news">
-          <div>
-            <img
-              alt="telegram"
-              style={{ width: 30, height: 30 }}
-              src={telegram}
-            />
-          </div>
+          <img
+            alt="telegram"
+            style={{ width: 30, height: 30 }}
+            src={telegram}
+          />
+
           <span>t/news</span>
         </LinkWindow>
       </div>
