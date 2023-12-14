@@ -70,7 +70,7 @@ export type QueueItemPostProcessor = (
 
 export interface IIpfsQueuePostProcessor {
   // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
-  euqueProcessing: (content: IPFSContentMaybe) => void;
+  enuqueProcessing: (content: IPFSContentMaybe) => void;
 }
 
 export type EnqueuedIpfsResult = QueueItemAsyncResult<IPFSContentMaybe>;

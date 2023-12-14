@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
 import gql from 'graphql-tag';
-import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
+import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { numberToDate } from 'src/utils/date';
 import { Transaction } from 'src/types/transaction';
@@ -84,7 +84,7 @@ async function* fetchTransactionsAsyncIterable(
 
 // eslint-disable-next-line import/prefer-default-export
 const importTransactions = async (
-  dbApi: CozoDbWorkerApi,
+  dbApi: CozoDbWorker,
   address: NeuronAddress,
   cyberIndexUrl: string,
   onProgress?: onProgressCallback,

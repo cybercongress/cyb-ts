@@ -10,7 +10,7 @@ import {
   mapPinToEntity,
 } from 'src/services/CozoDb/mapping';
 
-import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
+import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 
 import {
   onProgressCallback,
@@ -19,7 +19,7 @@ import {
 
 const importPins = async (
   node: IpfsNode,
-  dbApi: CozoDbWorkerApi,
+  dbApi: CozoDbWorker,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -47,7 +47,7 @@ const importPins = async (
 const importParticles = async (
   node: IpfsNode,
   cids: string[],
-  dbApi: CozoDbWorkerApi,
+  dbApi: CozoDbWorker,
   onProgress?: onProgressCallback,
   onComplete?: onCompleteCallback
 ) => {
@@ -78,7 +78,7 @@ const importParticles = async (
 const importParticle = async (
   cid: string,
   node: IpfsNode,
-  dbApi: CozoDbWorkerApi
+  dbApi: CozoDbWorker
 ) => {
   return getIPFSContent(cid, node).then((content) =>
     content ? importParicleContent(content, dbApi) : false
@@ -87,7 +87,7 @@ const importParticle = async (
 
 const importParicleContent = async (
   particle: IPFSContent,
-  dbApi: CozoDbWorkerApi
+  dbApi: CozoDbWorker
 ) => {
   try {
     const entity = mapParticleToEntity(particle);

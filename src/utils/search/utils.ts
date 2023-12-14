@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import Unixfs from 'ipfs-unixfs';
-import { backgroundWorkerProxy } from 'src/services/backend/workers/background/service';
+import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
@@ -922,8 +922,8 @@ export const searchByHash = async (
     }
     if (options.storeToCozo) {
       console.log('-----searc', hash, responseSearchResults);
-      backgroundWorkerProxy.importApi.importParticle(hash);
-      backgroundWorkerProxy.importApi.importCyberlinks(
+      backgroundWorkerInstance.importApi.importParticle(hash);
+      backgroundWorkerInstance.importApi.importCyberlinks(
         responseSearchResults.result.map((item) => ({
           from: hash,
           to: item.particle,

@@ -15,9 +15,8 @@ import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 import { dbResultToObjects } from 'src/services/CozoDb/utils';
 
-import { DbApiService } from 'src/services/backend/workers/db/service';
-
 import { SenseResult, SenseUnread } from './type';
+import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 
 const TIMESTAMP_INTITAL = 958718452000;
 
@@ -28,11 +27,10 @@ type SyncStatus = {
 };
 
 function DbApiWrapper() {
-  let db: DbApiService | undefined;
+  let db: CozoDbWorker | undefined;
 
-  const init = (dbApi: DbApiService) => {
+  const init = (dbApi: CozoDbWorker) => {
     db = dbApi;
-    console.log('------DbApiWrapper initialized', db);
   };
 
   const getSyncStatus = async (id: NeuronAddress | ParticleCid) => {
@@ -115,7 +113,7 @@ function DbApiWrapper() {
 
   const putPins = async (pins: PinDbEntity[] | PinDbEntity) => {
     const entitites = Array.isArray(pins) ? pins : [pins];
-    await db!.executePutCommand('pin', entitites);
+    const result = await db!.executePutCommand('pin', entitites);
   };
 
   const getPins = async (withType = false) => {

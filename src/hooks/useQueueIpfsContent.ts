@@ -33,7 +33,11 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const [content, setContent] = useState<IPFSContentMaybe>();
   const prevParentIdRef = useRef<string | undefined>();
 
-  const { backendApi, ipfsNode, isIpfsInitialized } = useBackend();
+  const {
+    // backgroundWorker: backendApi,
+    ipfsNode,
+    ipfsApi,
+  } = useBackend();
 
   const fetchParticle = useCallback(
     async (cid: string, rank?: number) => {
@@ -53,43 +57,39 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
           (async () => Promise.resolve(result).then(setContent))();
         }
       };
-      await backendApi?.ipfsApi.enqueue(cid, proxy(callback), {
+      await ipfsApi?.enqueue(cid, proxy(callback), {
         parent: parentId,
         priority: rank || 0,
         viewPortPriority: 0,
       });
     },
-    [parentId, backendApi]
+    [parentId, ipfsApi]
   );
 
   const fetchParticleAsync = useCallback(
     async (cid: string, options?: QueueItemOptions) =>
-      backendApi!.ipfsApi.enqueueAndWait(cid, options),
-    [backendApi]
+      ipfsApi?.enqueueAndWait(cid, options),
+    [ipfsApi]
   );
 
   useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
       if (prevParentIdRef.current) {
-        backendApi!.ipfsApi.dequeueByParent(prevParentIdRef.current);
+        ipfsApi.dequeueByParent(prevParentIdRef.current);
       }
       prevParentIdRef.current = parentId;
     }
-  }, [parentId, backendApi]);
+  }, [parentId, ipfsApi]);
 
   return {
-    isReady: !!backendApi,
+    isReady: !!ipfsApi,
     status,
     source,
     content,
-    cancel: backendApi
-      ? (cid: string) => backendApi!.ipfsApi.dequeue(cid)
-      : undefined,
-    clear: backendApi
-      ? async () => backendApi!.ipfsApi.clearQueue()
-      : undefined,
-    fetchParticle: backendApi ? fetchParticle : undefined,
-    fetchParticleAsync: backendApi ? fetchParticleAsync : undefined,
+    cancel: ipfsApi ? (cid: string) => ipfsApi.dequeue(cid) : undefined,
+    clear: ipfsApi ? async () => ipfsApi.clearQueue() : undefined,
+    fetchParticle: ipfsApi ? fetchParticle : undefined,
+    fetchParticleAsync: ipfsApi ? fetchParticleAsync : undefined,
     fetchWithDetails: ipfsNode ? ipfsNode.fetchWithDetails : undefined,
   };
 }

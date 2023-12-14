@@ -38,7 +38,7 @@ import dbApiWrapper, {
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import IpfsPostProcessor from '../../services/ipfsPostProcessor/ipfsPostProcessor';
 
-const backgroundApiFactory = () => {
+const createBackgroundWorkerApi = () => {
   let ipfsNode: CybIpfsNode | undefined;
   const ipfsPostProcessor = new IpfsPostProcessor();
 
@@ -158,16 +158,9 @@ const backgroundApiFactory = () => {
 
       ipfsQueue.setNode(ipfsNode);
 
-      // add post processor to queue manager
-      // ipfsQueue.setPostProcessor(async (content) => {
-      //   content &&
-      //     importApi.importParicleContent({ ...content, result: undefined });
-      //   return content;
-      // });
-
       syncService.initIpfs(ipfsNode);
-      broadcastApi.postServiceStatus('ipfs', 'started');
 
+      setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
       // return proxy(ipfsNode);
     } catch (err) {
@@ -217,7 +210,7 @@ const backgroundApiFactory = () => {
   };
 
   return {
-    installDbApi: init,
+    init,
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     importApi: proxy(importApi),
@@ -227,9 +220,9 @@ const backgroundApiFactory = () => {
   };
 };
 
-const backgroundWorkerApi = backgroundApiFactory();
+const backgroundWorker = createBackgroundWorkerApi();
 
-export type BackgroundWorkerApi = typeof backgroundWorkerApi;
+export type BackgroundWorker = typeof backgroundWorker;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, backgroundWorkerApi);
+exposeWorkerApi(self, backgroundWorker);

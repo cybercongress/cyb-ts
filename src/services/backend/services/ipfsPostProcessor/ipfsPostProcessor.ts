@@ -20,7 +20,7 @@ class IpfsPostProcessor implements IIpfsQueuePostProcessor {
         concatMap(() => from(this.processQueue()))
       )
       .subscribe({
-        next: () => console.log('Queue processed'),
+        // next: () => console.log('Queue processed'),
         error: (err) => console.error('Error processing IPFS queue', err),
       });
   }
@@ -30,7 +30,7 @@ class IpfsPostProcessor implements IIpfsQueuePostProcessor {
     this.isInitialized$.next(true);
   }
 
-  public euqueProcessing(content: IPFSContentMaybe) {
+  public enuqueProcessing(content: IPFSContentMaybe) {
     if (!content) {
       return;
     }
@@ -44,7 +44,7 @@ class IpfsPostProcessor implements IIpfsQueuePostProcessor {
     const queue = this.queue$.value;
     // eslint-disable-next-line no-restricted-syntax
     for (const [cid, content] of queue) {
-      console.log(`PostProcessing item with cid: ${content.cid}`, content);
+      //   console.debug(`PostProcessing queue item: ${content.cid}`, content);
       // eslint-disable-next-line no-await-in-loop
       await importParicleContent(content, this.dbApi!);
       queue.delete(cid);

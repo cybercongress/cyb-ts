@@ -4,7 +4,7 @@ import { ServiceStatus } from '../../types';
 import { DbEntity } from 'src/services/CozoDb/types';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
-const dbApiFactory = () => {
+const createDbWorkerApi = () => {
   let isInitialized = false;
   const channel = new BroadcastChannelSender();
 
@@ -96,9 +96,9 @@ const dbApiFactory = () => {
     exportRelations,
   };
 };
-const cozoDbWorkerApi = dbApiFactory();
+const cozoDbWorker = createDbWorkerApi();
 
-export type CozoDbWorkerApi = typeof cozoDbWorkerApi;
+export type CozoDbWorker = typeof cozoDbWorker;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, cozoDbWorkerApi);
+exposeWorkerApi(self, cozoDbWorker);

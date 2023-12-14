@@ -168,7 +168,7 @@ class QueueManager<T extends IPFSContentMaybe> {
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
         return this.ipfsPostProcessor
-          ? this.ipfsPostProcessor.euqueProcessing(content)
+          ? this.ipfsPostProcessor.enuqueProcessing(content)
           : content;
       })
     ).pipe(

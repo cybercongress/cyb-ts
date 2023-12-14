@@ -9,12 +9,12 @@ interface VideoPlayerProps {
 }
 
 function VideoPlayerGatewayOnly({ content }: VideoPlayerProps) {
-  const { backendApi } = useBackend();
+  const { ipfsApi } = useBackend();
   const [contentUrl, setContentUrl] = useState<string>('');
   useEffect(() => {
     const load = async () => {
       if (content.source === 'node') {
-        const { gatewayUrl } = (await backendApi!.ipfsApi.config()) || {
+        const { gatewayUrl } = (await ipfsApi.config()) || {
           gatewayUrl: CYBER_GATEWAY_URL,
         };
         setContentUrl(`${gatewayUrl}/ipfs/${content.cid}`);
@@ -25,7 +25,7 @@ function VideoPlayerGatewayOnly({ content }: VideoPlayerProps) {
       }
     };
     load();
-  }, [backendApi, content]);
+  }, [ipfsApi, content]);
 
   return contentUrl ? (
     <video style={{ width: '100%' }} src={contentUrl} controls />

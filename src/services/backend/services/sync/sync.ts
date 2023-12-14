@@ -328,7 +328,7 @@ export class SyncService {
     });
 
     const pinsResult = await fetchPins(this.ipfsNode!);
-
+    // console.log('---syncPins pinsResult', pinsResult);
     const dbPins = (await this.db!.getPins()).rows.map(
       (row) => row[0] as string
     );
@@ -346,7 +346,7 @@ export class SyncService {
     if (pinsToRemove.length) {
       await this.db!.deletePins(pinsToRemove);
     }
-
+    // console.log('---syncPins pinsToAdd pinsToRemove', pinsToAdd, pinsToRemove);
     // this.channelApi.postSyncEntryProgress('pin', {
     //   message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
     //   done: true,
@@ -359,6 +359,7 @@ export class SyncService {
     const cidsToAdd = pinsToAdd.map((pin) => pin.cid.toString());
 
     const particlesToAdd = cidsToAdd.filter((cid) => !particlesExist.has(cid));
+    // console.log('---syncPins particlesToAdd', particlesToAdd);
 
     particlesToAdd.forEach((cid) => this.processParticle(cid));
 

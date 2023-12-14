@@ -1,24 +1,24 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
-import { backgroundWorkerProxy } from 'src/services/backend/workers/background/service';
-
+import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
+import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
 import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
-import dbApiService, {
-  DbApiService,
-} from 'src/services/backend/workers/db/service';
+
 import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
-import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { selectFollowings } from 'src/redux/features/currentAccount';
-import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
+// import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+// import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiInstance, {
   DbApi,
 } from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
+import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
 const createSenseApi = (dbApi: DbApi) => ({
   getSummary: () => dbApi.getSenseSummary(),
@@ -40,9 +40,9 @@ const setupStoragePersistence = async () => {
 };
 
 type BackendProviderContextType = {
-  dbApi: DbApiService | null;
+  cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: ReturnType<typeof createSenseApi> | null;
-  backendApi: typeof backgroundWorkerProxy | null;
+  ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
   loadIpfs?: () => Promise<void>;
@@ -59,7 +59,7 @@ const valueContext = {
   isReady: false,
   dbApi: null,
   senseApi: null,
-  backendApi: null,
+  ipfsApi: null,
 };
 
 const BackendContext =
@@ -94,30 +94,30 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   // const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   useEffect(() => {
-    backgroundWorkerProxy.setParams({ myAddress });
+    backgroundWorkerInstance.setParams({ myAddress });
   }, [myAddress]);
 
   useEffect(() => {
-    backgroundWorkerProxy.setParams({ followings });
+    backgroundWorkerInstance.setParams({ followings });
   }, [followings]);
 
-  useEffect(() => {
-    if (isDbInitialized) {
-      (async () => {
-        // init dbApi
-        DbApiInstance.init(proxy(dbApiService));
-        // pass dbApi into background worker
-        await backgroundWorkerProxy.installDbApi(proxy(DbApiInstance));
-      })();
-    }
-  }, [isDbInitialized]);
+  // useEffect(() => {
+  //   if (isDbInitialized) {
+  //     (async () => {
+  //       // init dbApi
+  //       DbApiInstance.init(proxy(cozoDbWorkerInstance));
+  //       // pass dbApi into background worker
+  //       await backgroundWorkerInstance.init(proxy(DbApiInstance));
+  //     })();
+  //   }
+  // }, [isDbInitialized]);
 
   useEffect(() => {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
   useEffect(() => {
-    backgroundWorkerProxy.setParams({
+    backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
     });
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
@@ -139,17 +139,25 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const loadCozoDb = async () => {
     console.time('🔋 CozoDb worker started.');
-    await dbApiService
+    await cozoDbWorkerInstance
       .init()
+      .then(() => {
+        // init dbApi
+        // TODO: refactor to use simple object instead of global instance
+        DbApiInstance.init(proxy(cozoDbWorkerInstance));
+
+        // pass dbApi into background worker
+        backgroundWorkerInstance.init(proxy(DbApiInstance));
+      })
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
 
   const loadIpfs = async () => {
     const ipfsOpts = getIpfsOpts();
-    await backgroundWorkerProxy.ipfsApi.stop();
+    await backgroundWorkerInstance.ipfsApi.stop();
     console.time('🔋 Ipfs started.');
 
-    await backgroundWorkerProxy.ipfsApi
+    await backgroundWorkerInstance.ipfsApi
       .start(ipfsOpts)
       .then(() => {
         setIpfsError(null);
@@ -162,20 +170,22 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   };
 
   const valueMemo = useMemo(
-    () => ({
-      backendApi: backgroundWorkerProxy,
-      dbApi: dbApiService,
-      senseApi: isDbInitialized ? createSenseApi(DbApiInstance) : null,
-      ipfsNode: isIpfsInitialized
-        ? backgroundWorkerProxy.ipfsApi.getIpfsNode()
-        : null,
-      loadIpfs,
-      ipfsError,
-      isIpfsInitialized,
-      isDbInitialized,
-      isSyncInitialized,
-      isReady,
-    }),
+    () =>
+      ({
+        // backgroundWorker: backgroundWorkerInstance,
+        cozoDbRemote: cozoDbWorkerInstance,
+        ipfsApi: backgroundWorkerInstance.ipfsApi,
+        ipfsNode: isIpfsInitialized
+          ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
+          : null,
+        senseApi: isDbInitialized ? createSenseApi(DbApiInstance) : null,
+        loadIpfs,
+        ipfsError,
+        isIpfsInitialized,
+        isDbInitialized,
+        isSyncInitialized,
+        isReady,
+      } as BackendProviderContextType),
     [isReady, isIpfsInitialized, isDbInitialized, isSyncInitialized, ipfsError]
   );
 
