@@ -1,4 +1,4 @@
-import { Remote, proxy } from 'comlink';
+import { ProxyMarked, Remote, proxy } from 'comlink';
 
 import { initIpfsNode } from 'src/services/ipfs/node/factory';
 
@@ -19,8 +19,8 @@ import { LinkDbEntity } from 'src/services/CozoDb/types';
 import {
   QueueItemCallback,
   QueueItemOptions,
-} from 'src/services/QueueManager/QueueManager.d';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+} from 'src/services/QueueManager/types';
+import { ParticleCid } from 'src/types/base';
 
 import {
   importParticle,
@@ -31,18 +31,20 @@ import { exposeWorkerApi } from '../factoryMethods';
 import { SyncService } from '../../services/sync/sync';
 import { SyncServiceParams } from '../../services/sync/type';
 
-import DbApiWrapper from '../../services/dataSource/indexedDb/dbApiWrapper';
+import dbApiWrapper, {
+  DbApi,
+} from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import { DbServiceApiRemote } from '../db/service';
+import IpfsPostProcessor from '../../services/ipfsPostProcessor/ipfsPostProcessor';
 
-const backendApiFactory = () => {
+const backgroundApiFactory = () => {
   let ipfsNode: CybIpfsNode | undefined;
-  let dbApiProxy: DbServiceApiRemote | undefined;
-  const dbApiWrapper = DbApiWrapper;
+  const ipfsPostProcessor = new IpfsPostProcessor();
 
-  const ipfsQueue = new QueueManager();
+  const ipfsQueue = new QueueManager({ ipfsPostProcessor });
   const broadcastApi = new BroadcastChannelSender();
+
   // service to sync updates about cyberlinks, transactions, swarm etc.
 
   const fetchIpfsContent = async (cid: ParticleCid) =>
@@ -51,11 +53,10 @@ const backendApiFactory = () => {
   const syncService = new SyncService(fetchIpfsContent);
 
   // TODO: fix wrong type is used
-  const installDbApi = async (dbServiceApiProxy: DbServiceApiRemote) => {
+  const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     // proxy to worker with db
-    dbApiProxy = dbServiceApiProxy;
-    dbApiWrapper.init(dbApiProxy);
-    syncService.initDb(dbApiWrapper);
+    syncService.init(dbApiProxy);
+    ipfsPostProcessor.init(dbApiProxy);
     broadcastApi.postServiceStatus('sync', 'started');
   };
 
@@ -158,14 +159,13 @@ const backendApiFactory = () => {
       ipfsQueue.setNode(ipfsNode);
 
       // add post processor to queue manager
-      ipfsQueue.setPostProcessor(async (content) => {
-        content &&
-          importApi.importParicleContent({ ...content, result: undefined });
-        return content;
-      });
+      // ipfsQueue.setPostProcessor(async (content) => {
+      //   content &&
+      //     importApi.importParicleContent({ ...content, result: undefined });
+      //   return content;
+      // });
 
       syncService.initIpfs(ipfsNode);
-
       broadcastApi.postServiceStatus('ipfs', 'started');
 
       return true;
@@ -179,13 +179,21 @@ const backendApiFactory = () => {
   };
 
   const importApi = {
-    importParicleContent: async (particle: IPFSContent) =>
-      importParicleContent(particle, dbApiWrapper!),
-    importCyberlinks: async (links: LinkDbEntity[]) => {
-      dbApiWrapper.putCyberlinks(links);
+    importParicleContent: async (particle: IPFSContent) => {
+      // await waitUtilInitialized();
+      console.log('-----importParicleContent');
+      return importParicleContent(particle, dbApiWrapper!);
     },
-    importParticle: async (cid: string) =>
-      importParticle(cid, ipfsNode!, dbApiWrapper!),
+    importCyberlinks: async (links: LinkDbEntity[]) => {
+      // await waitUtilInitialized();
+      console.log('-----importCyberlinks');
+      return dbApiWrapper!.putCyberlinks(links);
+    },
+    importParticle: async (cid: string) => {
+      // await waitUtilInitialized();
+      console.log('-----importParticle');
+      return importParticle(cid, ipfsNode!, dbApiWrapper!);
+    },
   };
 
   const ipfsApi = {
@@ -208,28 +216,20 @@ const backendApiFactory = () => {
     clearQueue: async () => ipfsQueue.clear(),
   };
 
-  const senseApi = {
-    getSummary: () => dbApiWrapper.getSenseSummary(),
-    getList: () => dbApiWrapper.getSenseList(),
-    markAsRead: (id: NeuronAddress | ParticleCid) =>
-      dbApiWrapper.senseMarkAsRead(id),
-  };
-
   return {
-    installDbApi,
+    installDbApi: init,
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     importApi: proxy(importApi),
-    senseApi: proxy(senseApi),
     // dbWrapperApi: proxy(dbApiWrapper),
     setParams: (params: Partial<SyncServiceParams>) =>
       syncService.setParams(params),
   };
 };
 
-const backendWorkerApi = backendApiFactory();
+const backgroundWorkerApi = backgroundApiFactory();
 
-export type BackendWorkerApi = typeof backendWorkerApi;
+export type BackgroundWorkerApi = typeof backgroundWorkerApi;
 
 // Expose the API to the main thread as shared/regular worker
-exposeWorkerApi(self, backendWorkerApi);
+exposeWorkerApi(self, backgroundWorkerApi);

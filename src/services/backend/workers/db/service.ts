@@ -7,16 +7,15 @@ import { DbEntity } from 'src/services/CozoDb/types';
 import { CozoDbWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
 import { DbStackItem as DbQueueItem } from './types';
-import { type } from 'ramda';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
-const { workerApiRemote: dbApiProxyRemote } = createWorkerApi<CozoDbWorkerApi>(
+const { workerApiProxy: dbApiWorkerProxy } = createWorkerApi<CozoDbWorkerApi>(
   workerUrl,
   'cyb~cozodb'
 );
 
-function dbServiceApi() {
+function createDbApiService() {
   // accumulate here values while db is not initialized
   const tmpQueue: DbQueueItem[] = [];
 
@@ -41,20 +40,20 @@ function dbServiceApi() {
       let result: { ok: boolean } | undefined;
       if (action === 'put') {
         result = await (isBatch
-          ? dbApiProxyRemote.executeBatchPutCommand(
+          ? dbApiWorkerProxy.executeBatchPutCommand(
               tableName,
               data,
               batchSize!,
               onProgress ? proxy(onProgress) : undefined
             )
-          : dbApiProxyRemote.executePutCommand(tableName, data));
+          : dbApiWorkerProxy.executePutCommand(tableName, data));
       }
 
       if (action === 'update') {
-        result = await dbApiProxyRemote.executeUpdateCommand(tableName, data);
+        result = await dbApiWorkerProxy.executeUpdateCommand(tableName, data);
       }
       if (action === 'rm') {
-        result = await dbApiProxyRemote.executeRmCommand(tableName, data);
+        result = await dbApiWorkerProxy.executeRmCommand(tableName, data);
       }
 
       if (!result) {
@@ -69,12 +68,12 @@ function dbServiceApi() {
   };
 
   const init = async () => {
-    await dbApiProxyRemote.init();
+    await dbApiWorkerProxy.init();
     isInitialized$.next(true);
   };
 
   const runCommand = async (command: string) =>
-    dbApiProxyRemote.runCommand(command);
+    dbApiWorkerProxy.runCommand(command);
 
   const executeGetCommand = async (
     tableName: string,
@@ -82,7 +81,7 @@ function dbServiceApi() {
     conditions?: string[],
     conditionFields?: string[]
   ) =>
-    dbApiProxyRemote.executeGetCommand(
+    dbApiWorkerProxy.executeGetCommand(
       tableName,
       selectFields,
       conditions,
@@ -138,10 +137,10 @@ function dbServiceApi() {
     });
 
   const importRelations = async (content: string) =>
-    dbApiProxyRemote.importRelations(content);
+    dbApiWorkerProxy.importRelations(content);
 
   const exportRelations = async (relations: string[]) =>
-    dbApiProxyRemote.exportRelations(relations);
+    dbApiWorkerProxy.exportRelations(relations);
 
   return {
     init,
@@ -156,7 +155,7 @@ function dbServiceApi() {
   };
 }
 
-const dbServiceApiRemote = dbServiceApi();
-export type DbServiceApiRemote = typeof dbServiceApiRemote;
+const dbApiService = createDbApiService();
+export type DbApiService = typeof dbApiService;
 
-export default dbServiceApiRemote;
+export default dbApiService;

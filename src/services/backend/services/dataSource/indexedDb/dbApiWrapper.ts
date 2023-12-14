@@ -9,9 +9,15 @@ import {
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 // import { DbWorkerApi } from '../../workers/db/worker';
-import { SenseResult, SenseUnread } from './type';
+// import dbApiServiceProxy, {
+//   DbApiServiceProxy,
+// } from 'src/services/backend/workers/db/service';
+
 import { dbResultToObjects } from 'src/services/CozoDb/utils';
-import { DbServiceApiRemote } from 'src/services/backend/workers/db/service';
+
+import { DbApiService } from 'src/services/backend/workers/db/service';
+
+import { SenseResult, SenseUnread } from './type';
 
 const TIMESTAMP_INTITAL = 958718452000;
 
@@ -22,10 +28,11 @@ type SyncStatus = {
 };
 
 function DbApiWrapper() {
-  let db: DbServiceApiRemote | undefined;
+  let db: DbApiService | undefined;
 
-  const init = (dbApi: DbServiceApiRemote) => {
+  const init = (dbApi: DbApiService) => {
     db = dbApi;
+    console.log('------DbApiWrapper initialized', db);
   };
 
   const getSyncStatus = async (id: NeuronAddress | ParticleCid) => {
@@ -220,8 +227,8 @@ function DbApiWrapper() {
     putCyberlinks,
   };
 }
-const dbApiWrapper = DbApiWrapper();
+const dbApiWrapperInstance = DbApiWrapper();
 
-export type DbApi = typeof dbApiWrapper;
+export type DbApi = typeof dbApiWrapperInstance;
 
-export default dbApiWrapper;
+export default dbApiWrapperInstance;

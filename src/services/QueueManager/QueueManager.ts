@@ -36,12 +36,13 @@ import type {
   QueueItemAsyncResult,
   QueueItemPostProcessor,
   EnqueuedIpfsResult,
-} from './QueueManager.d';
+  IIpfsQueuePostProcessor,
+} from './types';
 
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { BackendWorkerApi } from '../backend/workers/background/worker';
+// import { BackgroundWorkerApi } from '../backend/workers/background/worker';
 // import { postProcessIpfContent } from './utils';
 
 const QUEUE_DEBOUNCE_MS = 33;
@@ -91,7 +92,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private node: CybIpfsNode | undefined = undefined;
 
-  private postProcessItem: QueueItemPostProcessor | undefined = undefined;
+  private ipfsPostProcessor?: IIpfsQueuePostProcessor;
 
   private strategy: QueueStrategy;
 
@@ -107,10 +108,6 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private switchStrategy(strategy: QueueStrategy): void {
     this.strategy = strategy;
-  }
-
-  public setPostProcessor(func: QueueItemPostProcessor) {
-    this.postProcessItem = func;
   }
 
   public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
@@ -170,7 +167,9 @@ class QueueManager<T extends IPFSContentMaybe> {
         node: this.node,
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
-        return this.postProcessItem ? this?.postProcessItem(content) : content;
+        return this.ipfsPostProcessor
+          ? this.ipfsPostProcessor.euqueProcessing(content)
+          : content;
       })
     ).pipe(
       timeout({
@@ -268,12 +267,18 @@ class QueueManager<T extends IPFSContentMaybe> {
     );
   }
 
-  constructor(
-    strategy: QueueStrategy = strategies.embedded,
-    queueDebounceMs = QUEUE_DEBOUNCE_MS
-  ) {
-    this.strategy = strategy;
-    this.queueDebounceMs = queueDebounceMs;
+  constructor({
+    strategy,
+    queueDebounceMs,
+    ipfsPostProcessor,
+  }: {
+    strategy?: QueueStrategy;
+    queueDebounceMs?: number;
+    ipfsPostProcessor?: IIpfsQueuePostProcessor;
+  }) {
+    this.strategy = strategy || strategies.embedded;
+    this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
+    this.ipfsPostProcessor = ipfsPostProcessor;
 
     // Little hack to handle keep-alive connection to swarm cyber node
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)

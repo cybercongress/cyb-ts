@@ -16,7 +16,7 @@ export type QueueSourceSettings = {
   maxConcurrentExecutions: number;
 };
 
-type QueueSource = IpfsContentSource;
+export type QueueSource = IpfsContentSource;
 
 export type QueueSettings = Record<QueueSource, QueueSourceSettings>;
 
@@ -67,5 +67,10 @@ export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;
 export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
 ) => Promise<IPFSContentMaybe>;
+
+export interface IIpfsQueuePostProcessor {
+  // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
+  euqueProcessing: (content: IPFSContentMaybe) => void;
+}
 
 export type EnqueuedIpfsResult = QueueItemAsyncResult<IPFSContentMaybe>;

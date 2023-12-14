@@ -13,6 +13,9 @@ class BroadcastChannelListener {
       this.channel.onmessage = (event) => onMessage(event);
     }
   }
+  close() {
+    this.channel.close();
+  }
 }
 
 export default BroadcastChannelListener;

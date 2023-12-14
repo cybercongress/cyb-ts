@@ -1,10 +1,10 @@
 import { WorkerUrl } from 'worker-url';
-import { BackendWorkerApi } from './worker';
+import { BackgroundWorkerApi } from './worker';
 import { createWorkerApi } from '../factoryMethods';
 
 const workerUrl = new WorkerUrl(new URL('./worker.ts', import.meta.url));
 
-export const { workerApiRemote: backendWorkerApiRemote } =
-  createWorkerApi<BackendWorkerApi>(workerUrl, 'cyb~backend');
+export const { workerApiProxy: backgroundWorkerProxy } =
+  createWorkerApi<BackgroundWorkerApi>(workerUrl, 'cyb~backend');
 
 // export const backendApi;

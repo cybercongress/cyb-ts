@@ -1,4 +1,4 @@
-import { IndexedDbWriteMessage } from "../CozoDb/types";
+import { IndexedDbWriteMessage } from '../CozoDb/types';
 
 export type SyncEntryName = 'pin' | 'particle' | 'transaction';
 
@@ -22,7 +22,6 @@ export type SyncState = {
   lastError?: string;
 };
 
-
 export type SyncStatusMessage = {
   type: 'sync_status';
   value: Omit<SyncState, 'entryStatus'>;
@@ -33,7 +32,7 @@ export type SyncEntryMessage = {
   value: {
     entry: SyncEntryName;
     state: SyncProgress;
-  };;
+  };
 };
 
 export type ServiceName = 'db' | 'ipfs' | 'sync';

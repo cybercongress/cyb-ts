@@ -36,8 +36,8 @@ function App() {
   // TODO: TMP Example of how to use SENSE
   useEffect(() => {
     (async () => {
-      if (isReady) {
-        console.log('----isReady', isReady);
+      if (isReady && senseApi) {
+        console.log('----isReady', isReady, senseApi);
         const list = await senseApi.getList();
         console.log('----sense list', list);
         const summary = await senseApi.getSummary();
@@ -48,7 +48,7 @@ function App() {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady]);
+  }, [isReady, senseApi]);
 
   /// ------------
 

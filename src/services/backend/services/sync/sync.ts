@@ -201,7 +201,7 @@ export class SyncService {
     // });
   }
 
-  public initDb(dbApi: typeof DbApi) {
+  public init(dbApi: typeof DbApi) {
     this.db = dbApi;
     this.dbInitialized$.next(true);
   }

@@ -7,6 +7,7 @@ import {
   IDBResultError,
   TableSchema,
   DbEntity,
+  ConfigDbEntity,
 } from './types';
 
 import { toListOfObjects, entityToArray, resetIndexedDBStore } from './utils';
@@ -121,7 +122,7 @@ function CozoDbCommandFactory(dbSchema: DBSchema) {
   };
 }
 
-function DbService() {
+function createCozoDb() {
   let db: CozoDb | undefined;
 
   let dbSchema: DBSchema = {};
@@ -151,7 +152,6 @@ function DbService() {
 
   const initDbSchema = async (): Promise<DBSchema> => {
     const relations = await migrate();
-    console.log('-------initDbSchema', relations);
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
         const columnResult = await runCommand(`::columns ${table}`);
@@ -203,13 +203,13 @@ function DbService() {
       runCommand(initializeScript);
 
       // set initial version
-      // await put('config', [
-      //   {
-      //     key: 'DB_VERSION',
-      //     group_key: 'system',
-      //     value: DB_VERSION,
-      //   },
-      // ]);
+      await put('config', [
+        {
+          key: 'DB_VERSION',
+          group_key: 'system',
+          value: DB_VERSION,
+        },
+      ]);
 
       // const version = await getVersion();
       // console.log(`DB Version ${version}`);
@@ -287,4 +287,4 @@ function DbService() {
   };
 }
 
-export default DbService();
+export default createCozoDb();

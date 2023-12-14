@@ -3,7 +3,7 @@ import {
   QueueItemAsyncResult,
   QueueItemOptions,
   QueueItemStatus,
-} from 'src/services/QueueManager/QueueManager.d';
+} from 'src/services/QueueManager/types';
 
 import {
   FetchWithDetailsFunc,
