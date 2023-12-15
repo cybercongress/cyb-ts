@@ -1,15 +1,12 @@
 import { LinkWindow } from 'src/components/link/link';
-import twitterIcon from './twitter.png';
-
-import styles from './Twitter.module.scss';
+import twitterIcon from './twitter-x-icon.svg';
 
 function Twitter() {
   return (
-    <div className={styles.wrapper}>
-      <LinkWindow to="https://twitter.com/cyber_devs">
-        <img className={styles.icon} src={twitterIcon} alt="Cyber Twitter" />
-      </LinkWindow>
-    </div>
+    <LinkWindow to="https://twitter.com/cyber_devs">
+      <img src={twitterIcon} alt="Twitter" />
+      <span>twitter</span>
+    </LinkWindow>
   );
 }
 

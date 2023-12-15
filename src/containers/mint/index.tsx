@@ -9,7 +9,13 @@ import 'rc-slider/assets/index.css';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import ERatio from './eRatio';
-import { Dots, CardStatisics, ValueImg, DenomArr } from '../../components';
+import {
+  Dots,
+  CardStatisics,
+  ValueImg,
+  DenomArr,
+  Tabs,
+} from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
@@ -276,23 +282,20 @@ function Mint() {
             value={`${formatNumber(vestedA * vestedV)} W`}
           />
         </Pane>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="150px 150px"
-          gridGap="8px"
-          justifyContent="center"
-        >
-          <Btn
-            text={<ValueImg justifyContent="center" text="milliampere" />}
-            checkedSwitch={selected === 'milliampere'}
-            onSelect={() => setSelected('milliampere')}
+
+        <div className={styles.tabs}>
+          <Tabs
+            options={['milliampere', 'millivolt'].map((item) => {
+              return {
+                text: <DenomArr denomValue={item} />,
+                key: item,
+                onClick: () => setSelected(item),
+              };
+            })}
+            selected={selected}
           />
-          <Btn
-            text={<ValueImg justifyContent="center" text="millivolt" />}
-            checkedSwitch={selected === 'millivolt'}
-            onSelect={() => setSelected('millivolt')}
-          />
-        </Tablist>
+        </div>
+
         <div style={grid}>
           <div
             style={{
@@ -398,7 +401,7 @@ function Mint() {
         {loadingAuthAccounts ? (
           <Dots big />
         ) : (
-          <Display>
+          <Display noPaddingX>
             <TableSlots data={slotsData} />
           </Display>
         )}

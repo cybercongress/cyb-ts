@@ -1,3 +1,8 @@
+.tabs {
+  width: clamp(300px, 100%, 380px);
+  margin: 0 auto;
+}
+
 .text {
   text-align: center;
   grid-area: 2/2/2/2;

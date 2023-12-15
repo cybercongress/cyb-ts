@@ -4,6 +4,8 @@ import { formatNumber, convertResources } from '../../../utils/utils';
 import Table from 'src/components/Table/Table';
 import { DestinationRoute } from '../hooks/useSourceRouted';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 
 export function renderTableRows({
   address,
@@ -40,8 +42,8 @@ function Income({
   return (
     <div>
       <Pane marginY={30} textAlign="center">
-        These
-        <LinkWindow> energy </LinkWindow> (W) was route to you
+        These <Link to={routes.oracle.ask.getLink('energy')}>energy</Link> (W)
+        was route to you
       </Pane>
 
       <Table

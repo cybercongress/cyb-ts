@@ -24,6 +24,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
     OptionNeverArray<PoolsWithAssetsCapType[]>
   >([]);
   const [totalCap, setTotalCap] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const lastPoolCapLocalStorage = localStorage.getItem('lastPoolCap');
@@ -44,12 +45,14 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
   useEffect(() => {
     const getBalances = async () => {
       if (queryClient && pools) {
+        setLoading(true);
         const newArrPools: PoolsWithAssetsType[] = [];
+        // TODO: use Promise.all
         for (let index = 0; index < pools.length; index += 1) {
           const pool = pools[index];
           const assetsData: AssetsType = {};
           const { reserveAccountAddress } = pool;
-          // eslint-disable-next-line no-await-in-loop
+
           const getBalancePromise = await queryClient.getAllBalances(
             reserveAccountAddress
           );
@@ -65,6 +68,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
           }
         }
         setPoolsBal(newArrPools);
+        setLoading(false);
       }
     };
     getBalances();
@@ -116,7 +120,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
     }
   }, [poolsBal, marketData]);
 
-  return { poolsData, totalCap };
+  return { poolsData, totalCap, loading };
 };
 
 export default usePoolsAssetAmount;

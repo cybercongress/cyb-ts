@@ -4,6 +4,8 @@ import Table from 'src/components/Table/Table';
 import { renderTableRows } from './income';
 import { DestinationRoute } from '../hooks/useSourceRouted';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 
 type Props = {
   sourceRouted: DestinationRoute[];
@@ -20,8 +22,9 @@ function Outcome({ sourceRouted, selectRouteFunc }: Props) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
-        Route your
-        <LinkWindow> free energy </LinkWindow> (W) to those who deserve it
+        Route your{' '}
+        <Link to={routes.oracle.ask.getLink('free energy')}>free energy</Link>{' '}
+        (W) to those who deserve it
       </Pane>
 
       <Table
