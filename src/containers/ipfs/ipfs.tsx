@@ -20,24 +20,24 @@ function Ipfs() {
   const [cid, setCid] = useState<string>('');
 
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
-  const { ipfsNode } = useBackend();
+  const { ipfsApi, isIpfsInitialized } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
   const { setAdviser } = useAdviser();
 
   const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
-
   useEffect(() => {
     if (!isText) {
       setCid(query);
-    } else {
+    } else if (isIpfsInitialized) {
       (async () => {
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
-        await ipfsNode?.addContent(query);
+        console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
+        await ipfsApi!.addContent(query);
         setCid(cidFromQuery);
       })();
     }
-  }, [isText, query, ipfsNode]);
+  }, [isText, query, ipfsApi, isIpfsInitialized]);
 
   useEffect(() => {
     (async () => {

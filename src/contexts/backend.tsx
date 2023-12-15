@@ -43,6 +43,7 @@ type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: ReturnType<typeof createSenseApi> | null;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
+  defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
   loadIpfs?: () => Promise<void>;
@@ -101,26 +102,16 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     backgroundWorkerInstance.setParams({ followings });
   }, [followings]);
 
-  // useEffect(() => {
-  //   if (isDbInitialized) {
-  //     (async () => {
-  //       // init dbApi
-  //       DbApiInstance.init(proxy(cozoDbWorkerInstance));
-  //       // pass dbApi into background worker
-  //       await backgroundWorkerInstance.init(proxy(DbApiInstance));
-  //     })();
-  //   }
-  // }, [isDbInitialized]);
-
   useEffect(() => {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
   useEffect(() => {
+    const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
+
     backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
     });
-    const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
 
     (async () => {
       console.log(
@@ -132,9 +123,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
       // Loading non-blocking, when ready  state.backend.services.* should be changef
       Promise.all([loadIpfs(), loadCozoDb()]);
-
-      return () => channel.close();
     })();
+
+    return () => channel.close();
   }, [dispatch]);
 
   const loadCozoDb = async () => {
@@ -175,6 +166,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         // backgroundWorker: backgroundWorkerInstance,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi: backgroundWorkerInstance.ipfsApi,
+        defferedDbApi: backgroundWorkerInstance.defferedDbApi,
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,

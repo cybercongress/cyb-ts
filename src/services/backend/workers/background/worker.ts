@@ -22,27 +22,21 @@ import {
 } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
 
-import {
-  importParticle,
-  importParicleContent,
-} from '../../services/dataSource/ipfs/ipfsSource';
 import { exposeWorkerApi } from '../factoryMethods';
 
 import { SyncService } from '../../services/sync/sync';
 import { SyncServiceParams } from '../../services/sync/type';
 
-import dbApiWrapper, {
-  DbApi,
-} from '../../services/dataSource/indexedDb/dbApiWrapper';
+import { DbApi } from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import IpfsPostProcessor from '../../services/ipfsPostProcessor/ipfsPostProcessor';
+import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbProcessor';
 
 const createBackgroundWorkerApi = () => {
   let ipfsNode: CybIpfsNode | undefined;
-  const ipfsPostProcessor = new IpfsPostProcessor();
+  const defferedDbProcessor = new DeferredDbProcessor();
 
-  const ipfsQueue = new QueueManager({ ipfsPostProcessor });
+  const ipfsQueue = new QueueManager({ defferedDbProcessor });
   const broadcastApi = new BroadcastChannelSender();
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
@@ -56,7 +50,7 @@ const createBackgroundWorkerApi = () => {
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     // proxy to worker with db
     syncService.init(dbApiProxy);
-    ipfsPostProcessor.init(dbApiProxy);
+    defferedDbProcessor.init(dbApiProxy);
     broadcastApi.postServiceStatus('sync', 'started');
   };
 
@@ -162,7 +156,6 @@ const createBackgroundWorkerApi = () => {
 
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
-      // return proxy(ipfsNode);
     } catch (err) {
       console.log('----ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
@@ -171,22 +164,15 @@ const createBackgroundWorkerApi = () => {
     }
   };
 
-  const importApi = {
-    importParicleContent: async (particle: IPFSContent) => {
-      // await waitUtilInitialized();
-      console.log('-----importParicleContent');
-      return importParicleContent(particle, dbApiWrapper!);
-    },
-    importCyberlinks: async (links: LinkDbEntity[]) => {
-      // await waitUtilInitialized();
+  const defferedDbApi = {
+    importCyberlinks: (links: LinkDbEntity[]) => {
       console.log('-----importCyberlinks');
-      return dbApiWrapper!.putCyberlinks(links);
+      defferedDbProcessor.enqueueLinks(links);
     },
-    importParticle: async (cid: string) => {
-      // await waitUtilInitialized();
-      console.log('-----importParticle');
-      return importParticle(cid, ipfsNode!, dbApiWrapper!);
-    },
+    // importParticle: async (cid: string) => {
+    //   console.log('-----importParticle');
+    //   return importParticle(cid, ipfsNode!, dbApiWrapper!);
+    // },
   };
 
   const ipfsApi = {
@@ -207,14 +193,14 @@ const createBackgroundWorkerApi = () => {
     dequeue: async (cid: string) => ipfsQueue.cancel(cid),
     dequeueByParent: async (parent: string) => ipfsQueue.cancelByParent(parent),
     clearQueue: async () => ipfsQueue.clear(),
+    addContent: async (content: string | File) => ipfsNode?.addContent(content),
   };
 
   return {
     init,
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
-    importApi: proxy(importApi),
-    // dbWrapperApi: proxy(dbApiWrapper),
+    defferedDbApi: proxy(defferedDbApi),
     setParams: (params: Partial<SyncServiceParams>) =>
       syncService.setParams(params),
   };

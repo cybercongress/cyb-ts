@@ -53,6 +53,7 @@
     "@types/dateformat": "^5.0.0",
     "@types/react-helmet": "^6.1.6",
     "@types/react-transition-group": "^4.4.5",
+    "@types/uuid": "^9.0.7",
     "@types/webpack": "^5.28.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",

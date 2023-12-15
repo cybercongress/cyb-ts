@@ -1,5 +1,5 @@
-import type { IpfsContentSource } from 'src/utils/ipfs/ipfs';
-import { IPFSContentMaybe } from '../ipfs/ipfs';
+import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
+import { LinkDbEntity } from '../CozoDb/types';
 
 /* eslint-disable import/no-unused-modules */
 type QueueItemStatus =
@@ -68,9 +68,10 @@ export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
 ) => Promise<IPFSContentMaybe>;
 
-export interface IIpfsQueuePostProcessor {
+export interface IDefferedDbProcessor {
   // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
-  enuqueProcessing: (content: IPFSContentMaybe) => void;
+  enuqueIpfsContent: (content: IPFSContentMaybe) => void;
+  enqueueLinks: (links: LinkDbEntity[]) => void;
 }
 
 export type EnqueuedIpfsResult = QueueItemAsyncResult<IPFSContentMaybe>;

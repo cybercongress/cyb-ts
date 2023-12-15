@@ -900,38 +900,10 @@ export const getDenomTraces = async () => {
   }
 };
 
-export const searchByHash = async (
-  client,
-  hash,
-  page,
-  options = { storeToCozo: false, callback: undefined }
-) => {
+export const searchByHash = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash, page);
+    const results = await client.search(hash, page);
 
-    // TODO: refactor ???
-
-    const results = responseSearchResults.result ? responseSearchResults : [];
-
-    if (
-      page === 0 &&
-      options.callback &&
-      responseSearchResults.pagination.total
-    ) {
-      options.callback(responseSearchResults.pagination.total);
-    }
-    if (options.storeToCozo) {
-      console.log('-----searc', hash, responseSearchResults);
-      backgroundWorkerInstance.importApi.importParticle(hash);
-      backgroundWorkerInstance.importApi.importCyberlinks(
-        responseSearchResults.result.map((item) => ({
-          from: hash,
-          to: item.particle,
-          neuron: '',
-          timestamp: 0,
-        }))
-      );
-    }
     return results;
   } catch (error) {
     // TODO: handle

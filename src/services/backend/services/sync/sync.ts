@@ -24,7 +24,7 @@ import { dateToNumber, numberToDate } from 'src/utils/date';
 import { CID_TWEET } from 'src/utils/consts';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import DbApi from '../dataSource/indexedDb/dbApiWrapper';
+import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
 import {
   fetchCyberlinkSyncStats,
   fetchTransactionsIterable,
@@ -108,7 +108,7 @@ export class SyncService {
 
   private isInitialized$: Observable<boolean>;
 
-  private db: typeof DbApi | undefined;
+  private db: DbApi | undefined;
 
   private ipfsNode: CybIpfsNode | undefined;
 
@@ -141,23 +141,6 @@ export class SyncService {
   }
 
   private startBlockchainLoop() {
-    // this.blockchainLoop$ = createLoopObservable(
-    //   BLOCKCHAIN_SYNC_INTERVAL,
-    //   forkJoin({
-    //     myTransactions: defer(() => from(this.syncMyTransactions())),
-    //     userTransactions: defer(() => from(this.syncFollowingsTransactions())),
-    //     particles: defer(() => from(this.syncParticles())),
-    //   }),
-    //   this.dbInitialized$
-    // );
-
-    // this.blockchainLoop$.subscribe({
-    //   next: (result) =>
-    //     console.log('All blockchain tasks in this cycle completed', result),
-    //   error: (err) => console.error('Error in task cycle', err),
-    //   // complete: () => console.log('Task interval completed.'),
-    // });
-
     createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
       forkJoin({
@@ -186,22 +169,9 @@ export class SyncService {
         console.log('All ipfs tasks in this cycle completed', result),
       error: (err) => console.error('Error in task cycle', err),
     });
-    // this.ipfsLoop$ = createLoopObservable(
-    //   IPFS_SYNC_INTERVAL,
-    //   forkJoin({
-    //     ipfs: defer(() => from(this.syncPins())),
-    //   }),
-    //   this.isInitialized$
-    // );
-
-    // this.ipfsLoop$.subscribe({
-    //   next: (result) =>
-    //     console.log('All ipfs tasks in this cycle completed', result),
-    //   error: (err) => console.error('Error in task cycle', err),
-    // });
   }
 
-  public init(dbApi: typeof DbApi) {
+  public init(dbApi: DbApi) {
     this.db = dbApi;
     this.dbInitialized$.next(true);
   }

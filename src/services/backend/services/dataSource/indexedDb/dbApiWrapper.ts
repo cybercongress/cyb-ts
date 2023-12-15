@@ -16,9 +16,10 @@ import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { dbResultToObjects } from 'src/services/CozoDb/utils';
 
 import { SenseResult, SenseUnread } from './type';
+
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 
-const TIMESTAMP_INTITAL = 958718452000;
+const TIMESTAMP_INTITAL = 1230940800000;
 
 type SyncStatus = {
   unreadCount: number;
@@ -203,7 +204,8 @@ function DbApiWrapper() {
     //       links.map((l) => ({ ...l, neuron: '' })),
     //       100
     //     );
-    return db!.executePutCommand('links', entitites);
+    console.log('------putCyberlinks', entitites);
+    return db!.executePutCommand('link', entitites);
   };
 
   return {

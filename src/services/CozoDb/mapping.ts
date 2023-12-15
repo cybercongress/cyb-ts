@@ -7,7 +7,7 @@ import {
   TransactionDbEntity,
   SyncStatusDbEntity,
 } from './types';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid, Cyberlink } from 'src/types/base';
 import { dateToNumber } from 'src/utils/date';
 import { Transaction } from '../backend/workers/background/services/blockchain/types';
 
@@ -75,3 +75,15 @@ export const mapSyncStatusToEntity = (
     last_id: lastId,
   };
 };
+
+export const mapLinkToEntity = (
+  from: ParticleCid,
+  to: ParticleCid,
+  neuron: NeuronAddress = '',
+  timestamp: number = 0
+) => ({
+  from,
+  to,
+  neuron,
+  timestamp,
+});

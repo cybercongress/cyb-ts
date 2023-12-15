@@ -1,8 +1,8 @@
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { exposeWorkerApi } from '../factoryMethods';
-import { ServiceStatus } from '../../types';
 import { DbEntity } from 'src/services/CozoDb/types';
+import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
+import { ServiceStatus } from '../../types';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;

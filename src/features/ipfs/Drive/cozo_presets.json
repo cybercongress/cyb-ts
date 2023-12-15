@@ -8,7 +8,7 @@
     "?[pinned, cid, mime, text, size] := r[cid, pinned], *particle{cid:cid, mime, text, size}",
     ":order -size"
   ],
-  "particle: filter": "?[cid, text] := *particle{cid, mime, text, blocks, size, sizeLocal, type}, mime=\"text/plain\"",
+  "particle: filter": "?[cid, text] := *particle{cid, mime, text, blocks, size, size_local, type}, mime=\"text/plain\"",
   "particle: stats": "?[mime, sum(size), count(mime), sum(blocks)] := *particle{mime, blocks, size}\r\n :order -sum(size)\r\n:limit 10",
   "link: stats": [
     "r[from, count(to), side] := *link{from, to}, side=\"from\"",
@@ -32,5 +32,11 @@
   "tx: parse cyberlinks": [
     "?[from, to, t] := *transaction{type, value, timestamp}, type = 'cyber.graph.v1beta1.MsgCyberlink', links = get(value, 'links'), l_ = get(links, 0), from =get(l_,'from'), to =get(l_,'to'), t = format_timestamp(timestamp/1000)",
     ":order -t"
+  ],
+  "sense": [
+    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, entry_type=1, *transaction{hash: last_id, value, type}",
+    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime",
+    "?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type]",
+    ":order -timestamp_update"
   ]
 }

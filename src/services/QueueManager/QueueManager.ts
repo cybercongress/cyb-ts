@@ -36,7 +36,7 @@ import type {
   QueueItemAsyncResult,
   QueueItemPostProcessor,
   EnqueuedIpfsResult,
-  IIpfsQueuePostProcessor,
+  IDefferedDbProcessor,
 } from './types';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -92,7 +92,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private node: CybIpfsNode | undefined = undefined;
 
-  private ipfsPostProcessor?: IIpfsQueuePostProcessor;
+  private defferedDbProcessor?: IDefferedDbProcessor;
 
   private strategy: QueueStrategy;
 
@@ -167,9 +167,8 @@ class QueueManager<T extends IPFSContentMaybe> {
         node: this.node,
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
-        return this.ipfsPostProcessor
-          ? this.ipfsPostProcessor.enuqueProcessing(content)
-          : content;
+        this.defferedDbProcessor?.enuqueIpfsContent(content);
+        return content;
       })
     ).pipe(
       timeout({
@@ -270,15 +269,15 @@ class QueueManager<T extends IPFSContentMaybe> {
   constructor({
     strategy,
     queueDebounceMs,
-    ipfsPostProcessor,
+    defferedDbProcessor,
   }: {
     strategy?: QueueStrategy;
     queueDebounceMs?: number;
-    ipfsPostProcessor?: IIpfsQueuePostProcessor;
+    defferedDbProcessor?: IDefferedDbProcessor;
   }) {
     this.strategy = strategy || strategies.embedded;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
-    this.ipfsPostProcessor = ipfsPostProcessor;
+    this.defferedDbProcessor = defferedDbProcessor;
 
     // Little hack to handle keep-alive connection to swarm cyber node
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
