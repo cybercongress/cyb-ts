@@ -1,5 +1,4 @@
 import { MainContainer, Slider } from 'src/components';
-import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RootState } from 'src/redux/store';
@@ -16,9 +15,7 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
-import TokenSetterSwap, {
-  TokenSetterId,
-} from './components/TokenSetterSwap';
+import TokenSetterSwap, { TokenSetterId } from './components/TokenSetterSwap';
 import { useGetParams, useGetSwapPrice } from '../hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
 
@@ -34,7 +31,11 @@ const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 function Swap() {
   const { traseDenom } = useIbcDenom();
-  const { accountBalances, refreshBalances } = useTeleport();
+  const {
+    totalSupplyProofList: totalSupply,
+    accountBalances,
+    refreshBalances,
+  } = useTeleport();
   const queryClient = useQueryClient();
   const [update, setUpdate] = useState(0);
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
@@ -45,7 +46,6 @@ function Swap() {
   );
   const poolsData = usePoolListInterval({ refetchInterval: 5 * 60 * 1000 });
   const params = useGetParams();
-  const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
   const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
