@@ -47,7 +47,8 @@ function Send() {
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { accountBalances, refreshBalances } = useTeleport();
+  const { totalSupplyProofList, accountBalances, refreshBalances } =
+    useTeleport();
   const [update, setUpdate] = useState(0);
   const [recipient, setRecipient] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -159,22 +160,20 @@ function Send() {
     );
   }, [recipientBalances, tokenSelect]);
 
-  const reduceOptions = useMemo(() => {
-    const tempList: SelectOption[] = [];
+  const reduceOptions = useMemo(
+    () =>
+      totalSupplyProofList
+        ? Object.keys(totalSupplyProofList).map((key) => ({
+            value: key,
+            text: (
+              <DenomArr denomValue={key} onlyText tooltipStatusText={false} />
+            ),
+            img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
+          }))
+        : [],
 
-    if (accountBalances) {
-      Object.keys(accountBalances).forEach((key) => {
-        tempList.push({
-          value: key,
-          text: (
-            <DenomArr denomValue={key} onlyText tooltipStatusText={false} />
-          ),
-          img: <DenomArr denomValue={key} onlyImg tooltipStatusImg={false} />,
-        });
-      });
-    }
-    return tempList;
-  }, [accountBalances]);
+    [totalSupplyProofList]
+  );
 
   const setPercentageBalanceHook = useCallback(
     (value: number) => {

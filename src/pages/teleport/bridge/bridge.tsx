@@ -38,7 +38,8 @@ const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;
 function Bridge() {
   const { traseDenom } = useIbcDenom();
   const { channels } = useChannels();
-  const { accountBalances, refreshBalances } = useTeleport();
+  const { totalSupplyProofList, accountBalances, refreshBalances } =
+    useTeleport();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [tokenSelect, setTokenSelect] = useState<string>(
@@ -151,8 +152,8 @@ function Bridge() {
 
   const tokenOptions = useMemo(
     () =>
-      accountBalances
-        ? Object.keys(accountBalances).map((key) => ({
+      totalSupplyProofList
+        ? Object.keys(totalSupplyProofList).map((key) => ({
             value: key,
             text: (
               <DenomArr
@@ -165,7 +166,7 @@ function Bridge() {
           }))
         : [],
 
-    [accountBalances, tokenSelect]
+    [totalSupplyProofList, tokenSelect]
   );
 
   const validInputAmountToken = useMemo(() => {
