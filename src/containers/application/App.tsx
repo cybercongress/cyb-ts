@@ -43,8 +43,8 @@ function App() {
         const summary = await senseApi.getSummary();
         console.log('----sense summary', summary);
 
-        //MARK AS READ
-        await senseApi.markAsRead('<CID/ADDRESS');
+        // MARK AS READ
+        // await senseApi.markAsRead('<CID/ADDRESS');
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -43,7 +43,8 @@
         timestamp_update: Int,
         timestamp_read: Int,
         unread_count: Int,
-        last_id: String
+        last_id: String,
+        meta: Json
     }
 }
 

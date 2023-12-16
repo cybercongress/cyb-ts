@@ -64,14 +64,14 @@ class ActionBarContainer extends Component {
 
   calculationIpfsTo = async (contentHash) => {
     const { file } = this.state;
-    const { node } = this.props;
+    const { ipfsApi } = this.props;
 
     let toCid = contentHash;
 
     if (file !== null) {
-      toCid = await node.addContent(file);
+      toCid = await ipfsApi.addContent(file);
     } else if (!contentHash.match(PATTERN_IPFS_HASH)) {
-      toCid = await node.addContent(contentHash);
+      toCid = await ipfsApi.addContent(contentHash);
     }
 
     return toCid;
@@ -79,8 +79,15 @@ class ActionBarContainer extends Component {
 
   generateTxSendKplr = async () => {
     const { contentHash, toSendAddres, toSend } = this.state;
-    const { type, addressSend, follow, tweets, signer, signingClient, node } =
-      this.props;
+    const {
+      type,
+      addressSend,
+      follow,
+      tweets,
+      signer,
+      signingClient,
+      ipfsApi,
+    } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
       amount: [],
@@ -118,12 +125,12 @@ class ActionBarContainer extends Component {
         }
       } else if (type === 'log' && follow) {
         // TODO: REFACT need to just get cid of 'follow' instead of pin
-        const fromCid = await node.addContent('follow');
-        const toCid = await node.addContent(addressSend);
+        const fromCid = await ipfsApi.addContent('follow');
+        const toCid = await ipfsApi.addContent(addressSend);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'log' && tweets) {
         // TODO: REFACT need to just get cid of 'tweet' instead of pin
-        const fromCid = await node.addContent('tweet');
+        const fromCid = await ipfsApi.addContent('tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
         response = await signingClient.cyberlink(address, fromCid, toCid, fee);
       } else {

@@ -7,7 +7,7 @@ import {
   TransactionDbEntity,
   SyncStatusDbEntity,
 } from './types';
-import { NeuronAddress, ParticleCid, Cyberlink } from 'src/types/base';
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { dateToNumber } from 'src/utils/date';
 import { Transaction } from '../backend/workers/background/services/blockchain/types';
 
@@ -60,10 +60,11 @@ export const mapTransactionToEntity = (
 export const mapSyncStatusToEntity = (
   id: NeuronAddress | ParticleCid,
   entryType: EntryType,
-  unreadCount: int,
+  unreadCount: number,
   timestampUpdate: number,
   lastId: TransactionHash | ParticleCid = '',
-  timestampRead: number = timestampUpdate
+  timestampRead: number = timestampUpdate,
+  meta: Object = {}
 ): SyncStatusDbEntity => {
   return {
     entry_type: entryType,
@@ -73,6 +74,7 @@ export const mapSyncStatusToEntity = (
     unread_count: unreadCount,
     disabled: false,
     last_id: lastId,
+    meta,
   };
 };
 

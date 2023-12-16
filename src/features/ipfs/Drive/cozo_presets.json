@@ -34,9 +34,10 @@
     ":order -t"
   ],
   "sense": [
-    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, entry_type=1, *transaction{hash: last_id, value, type}",
-    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime",
-    "?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type] := dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, value, type]",
+    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}",
+    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime",
+    "    dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''",
+    "?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type]",
     ":order -timestamp_update"
   ]
 }

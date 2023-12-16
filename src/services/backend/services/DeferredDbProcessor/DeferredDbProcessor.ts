@@ -1,10 +1,18 @@
-import { BehaviorSubject, concatMap, filter, from } from 'rxjs';
+import {
+  BehaviorSubject,
+  concatMap,
+  defer,
+  filter,
+  from,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 import {
   importParicleContent,
-  importParticle,
-  importParticles,
+  // importParticle,
+  // importParticles,
 } from '../dataSource/ipfs/ipfsSource';
 import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
 import { v4 as uuidv4 } from 'uuid';
@@ -29,7 +37,10 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     this.isInitialized$
       .pipe(
         filter((isInitialized) => isInitialized === true),
-        concatMap(() => from(this.processQueue()))
+        tap(() => console.log('DeferredDbProcessor Initialized')),
+        mergeMap(() => this.queue$), // Merge the queue$ stream here.
+        filter((queue) => queue.size > 0),
+        mergeMap(() => defer(() => from(this.processQueue())))
       )
       .subscribe({
         // next: () => console.log('Queue processed'),
@@ -39,7 +50,6 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
 
   public init(dbApi: DbApi) {
     this.dbApi = dbApi;
-    console.log('----init IpfsPostProcessor', dbApi);
     this.isInitialized$.next(true);
   }
 
@@ -68,22 +78,28 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
 
   private async processQueue() {
     const queue = this.queue$.value;
+    // console.log('---POSTPROCESSING QUEUE', queue);
+
     // eslint-disable-next-line no-restricted-syntax
     for (const [cid, item] of queue) {
-      const { content, links } = item;
-      //   console.debug(`PostProcessing queue item: ${content.cid}`, content);
-      if (content) {
-        // eslint-disable-next-line no-await-in-loop
-        await importParicleContent(content, this.dbApi!);
-      }
-
-      if (links) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.dbApi!.putCyberlinks(links);
-      }
+      this.processQueueItem(item);
       queue.delete(cid);
     }
     this.queue$.next(queue);
+  }
+
+  private async processQueueItem(queueItem: QueueItem) {
+    const { content, links } = queueItem;
+    // console.log(`PostProcessing queue item: ${cid}`, item);
+    if (content) {
+      // eslint-disable-next-line no-await-in-loop
+      await importParicleContent(content, this.dbApi!);
+    }
+
+    if (links) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.dbApi!.putCyberlinks(links);
+    }
   }
 }
 

@@ -24,6 +24,7 @@ import {
 import { trimString } from '../../utils/utils';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import { DefaultAccount } from 'src/types/defaultAccount';
+import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -50,7 +51,7 @@ interface Props {
   rankLink?: string;
   update: () => void;
   signer: any;
-  node: any;
+  ipfsApi: BackgroundWorker['ipfsApi'];
   signingClient: any;
   keywordHash: string;
 }
@@ -119,7 +120,7 @@ class ActionBarContainer extends Component<Props, any> {
 
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
-    const { node } = this.props;
+    const { ipfsApi } = this.props;
     let content = '';
     let toCid;
 
@@ -131,7 +132,7 @@ class ActionBarContainer extends Component<Props, any> {
     if (file === null && content.match(PATTERN_IPFS_HASH)) {
       toCid = content;
     } else {
-      toCid = await node.addContent(content);
+      toCid = await ipfsApi.addContent(content);
     }
 
     this.setState({
@@ -140,12 +141,12 @@ class ActionBarContainer extends Component<Props, any> {
   };
 
   calculationIpfsFrom = async () => {
-    const { keywordHash, node } = this.props;
+    const { keywordHash, ipfsApi } = this.props;
 
     let fromCid = keywordHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await node.addContent(fromCid);
+      fromCid = await ipfsApi.addContent(fromCid);
     }
 
     this.setState({

@@ -125,7 +125,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       Promise.all([loadIpfs(), loadCozoDb()]);
     })();
 
-    return () => channel.close();
+    // return () => channel.close();
   }, [dispatch]);
 
   const loadCozoDb = async () => {

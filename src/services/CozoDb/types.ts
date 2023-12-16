@@ -70,7 +70,7 @@ export type TransactionDbEntity = {
   timestamp: number;
   value: Object; // Transaction;
   success: boolean;
-  neuron_address: NeuronAddress;
+  neuron: NeuronAddress;
 };
 
 export type SyncStatusDbEntity = {
@@ -81,6 +81,7 @@ export type SyncStatusDbEntity = {
   disabled: boolean;
   unread_count: number;
   last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
+  meta: Object;
 };
 
 export type ParticleDbEntity = {

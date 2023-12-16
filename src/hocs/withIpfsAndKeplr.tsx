@@ -2,13 +2,13 @@ import { useBackend } from 'src/contexts/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
 
 const withIpfsAndKeplr = (Component) => (props) => {
-  const { ipfsNode } = useBackend();
+  const { ipfsApi } = useBackend();
   const { signer, signingClient } = useSigningClient();
 
   return (
     <Component
       {...props}
-      node={ipfsNode}
+      ipfsApi={ipfsApi}
       signer={signer}
       signingClient={signingClient}
     />

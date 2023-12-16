@@ -15,11 +15,11 @@ import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 import { dbResultToObjects } from 'src/services/CozoDb/utils';
 
-import { SenseResult, SenseUnread } from './type';
-
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 
-const TIMESTAMP_INTITAL = 1230940800000;
+import { SenseResult, SenseUnread } from './type';
+
+const TIMESTAMP_INTITAL = 0;
 
 type SyncStatus = {
   unreadCount: number;
@@ -69,7 +69,8 @@ function DbApiWrapper() {
     timestampUpdate: number,
     timestampRead: number,
     unreadCount: number,
-    lastEntityId: TransactionHash | ParticleCid = ''
+    lastEntityId: TransactionHash | ParticleCid | undefined = undefined,
+    meta: Object | undefined = undefined
   ) => {
     const entity = {
       id,
@@ -77,9 +78,17 @@ function DbApiWrapper() {
       timestamp_read: timestampRead,
       unread_count: unreadCount,
       last_id: lastEntityId,
+      meta,
     } as Partial<SyncStatusDbEntity>;
 
-    db!.executeUpdateCommand('sync_status', [entity]);
+    Object.keys(entity).forEach((key) => {
+      if (entity[key] === undefined) {
+        delete entity[key];
+      }
+    });
+
+    console.log('------updateSyncStatus', id, entity);
+    return db!.executeUpdateCommand('sync_status', [entity]);
   };
 
   const putTransactions = async (transactions: TransactionDbEntity[]) =>
@@ -153,11 +162,12 @@ function DbApiWrapper() {
 
   const getSenseList = async () => {
     const syncFields =
-      'entry_type, id, unread_count, timestamp_update, timestamp_read, last_id';
+      'entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta';
     const valueNames = `${syncFields}, value, type`;
     const command = `
     dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=1, *transaction{hash: last_id, value, type}
     dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime
+    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''
     ?[${valueNames}] := dt[${valueNames}]
     `;
 

@@ -188,6 +188,11 @@ const fetchCyberlinkSyncStats = async (
     },
   } = res;
   const lastCyberlink = last[0];
+  if (!lastCyberlink) {
+    return undefined;
+  }
+
+  const isFrom = lastCyberlink?.from === particleCid;
   const lastLinkedParticle =
     lastCyberlink &&
     (lastCyberlink.from === particleCid
@@ -198,6 +203,7 @@ const fetchCyberlinkSyncStats = async (
     firstTimestamp: first.length > 0 ? dateToNumber(first[0].timestamp) : 0,
     lastTimestamp: lastCyberlink ? dateToNumber(lastCyberlink.timestamp) : 0,
     lastLinkedParticle,
+    isFrom,
     count,
   };
 };

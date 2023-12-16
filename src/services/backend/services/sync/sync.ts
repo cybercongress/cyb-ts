@@ -41,15 +41,21 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
 const BLOCKCHAIN_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 10 minutes
+type ParticleResult = {
+  timestamp: number;
+  direction: 'from' | 'to';
+  from?: ParticleCid;
+  to?: ParticleCid;
+};
 
-function extractParticles(batch: Transaction[]) {
+function extractParticlesResults(batch: Transaction[]) {
   const cyberlinks = batch.filter(
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
   ) as CyberLinkTransaction[];
 
   // Get links: only from TWEETS
-  const particleTimestampRecord: Record<ParticleCid, number> =
-    cyberlinks.reduce<Record<ParticleCid, number>>(
+  const particleTimestampRecord: Record<ParticleCid, ParticleResult> =
+    cyberlinks.reduce<Record<ParticleCid, ParticleResult>>(
       (
         acc,
         {
@@ -62,7 +68,11 @@ function extractParticles(batch: Transaction[]) {
         value.links
           .filter((link) => link.from === CID_TWEET)
           .forEach((link) => {
-            acc[link.to] = dateToNumber(timestamp);
+            acc[link.to] = {
+              timestamp: dateToNumber(timestamp),
+              direction: 'from',
+              from: CID_TWEET,
+            };
           });
         return acc;
       },
@@ -112,14 +122,14 @@ export class SyncService {
 
   private ipfsNode: CybIpfsNode | undefined;
 
-  private processParticle: FetchIpfsFunc;
+  private resolveAndSaveParticle: FetchIpfsFunc;
 
   private params: SyncServiceParams = { myAddress: null, followings: [] };
 
   private channelApi = new BroadcastChannelSender();
 
-  constructor(processParticle: FetchIpfsFunc) {
-    this.processParticle = processParticle;
+  constructor(resolveAndSaveParticle: FetchIpfsFunc) {
+    this.resolveAndSaveParticle = resolveAndSaveParticle;
 
     this.isInitialized$ = combineLatest([
       this.dbInitialized$,
@@ -136,18 +146,19 @@ export class SyncService {
       // error: (err) => this.channelApi.postSyncStatus('error', err),
     });
 
-    this.startIpfsLoop();
+    // this.startIpfsLoop();
     this.startBlockchainLoop();
   }
 
   private startBlockchainLoop() {
     createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
-      forkJoin({
-        myTransactions: defer(() => from(this.syncMyTransactions())),
-        userTransactions: defer(() => from(this.syncFollowingsTransactions())),
-        particles: defer(() => from(this.syncParticles())),
-      }),
+      // forkJoin({
+      //   myTransactions: defer(() => from(this.syncMyTransactions())),
+      //   userTransactions: defer(() => from(this.syncFollowingsTransactions())),
+      //   particles: defer(() => from(this.syncParticles())),
+      // }),
+      defer(() => from(this.syncAllTransactions())),
       this.dbInitialized$
     ).subscribe({
       next: (result) =>
@@ -160,9 +171,7 @@ export class SyncService {
   private startIpfsLoop() {
     createLoopObservable(
       IPFS_SYNC_INTERVAL,
-      forkJoin({
-        ipfs: defer(() => from(this.syncPins())),
-      }),
+      defer(() => from(this.syncPins())),
       this.isInitialized$
     ).subscribe({
       next: (result) =>
@@ -221,17 +230,26 @@ export class SyncService {
 
       // Add cyberlink to sync observables
       if (addCyberlinksToSync) {
-        const particles = extractParticles(batch);
+        const particles = extractParticlesResults(batch);
         const particleCIDs = Object.keys(particles);
 
-        const syncStatusEntries = particleCIDs.map((cid) =>
-          mapSyncStatusToEntity(cid, EntryType.particle, 0, particles[cid])
-        );
+        const syncStatusEntries = particleCIDs.map((cid) => {
+          const { timestamp, direction, from } = particles[cid];
+          return mapSyncStatusToEntity(
+            cid,
+            EntryType.particle,
+            0,
+            timestamp,
+            from,
+            timestamp,
+            { direction }
+          );
+        });
 
         this.db!.putSyncStatus(syncStatusEntries);
-
+        console.log('---syncTransactions', particleCIDs);
         // non-blocking call
-        particleCIDs.map((cid) => this.processParticle(cid));
+        particleCIDs.map((cid) => this.resolveAndSaveParticle(cid));
       }
     }
 
@@ -245,6 +263,7 @@ export class SyncService {
         timestamp_read: timestampRead,
         disabled: false,
         last_id: lastTransactionHash,
+        meta: {},
       });
     }
     this.channelApi.postSyncEntryProgress('transaction', {
@@ -265,25 +284,38 @@ export class SyncService {
     const particleSyncStatusResult = await this.db!.findSyncStatus({
       entryType: EntryType.particle,
     });
-
+    console.log('----particleSyncStatusResult', particleSyncStatusResult);
     particleSyncStatusResult.rows.map(async (row) => {
       const [id, unreadCount, timestampUpdate, timestampRead] = row;
 
       // fetch new links with particle
-      const { firstTimestamp, lastTimestamp, count, lastLinkedParticle } =
-        await fetchCyberlinkSyncStats(
-          this.params.cyberIndexUrl!,
-          id as string,
-          timestampUpdate as number
-        );
-
-      this.db!.updateSyncStatus(
+      const result = await fetchCyberlinkSyncStats(
+        this.params.cyberIndexUrl!,
         id as string,
-        lastTimestamp,
-        (unreadCount as number) ? (timestampRead as number) : firstTimestamp,
-        (unreadCount as number) + count,
-        lastLinkedParticle
+        timestampUpdate as number
       );
+      console.log('----item', id, result);
+
+      if (result) {
+        const {
+          firstTimestamp,
+          lastTimestamp,
+          count,
+          lastLinkedParticle,
+          isFrom,
+        } = result;
+
+        this.resolveAndSaveParticle(lastLinkedParticle);
+
+        await this.db!.updateSyncStatus(
+          id as string,
+          lastTimestamp,
+          (unreadCount as number) ? (timestampRead as number) : firstTimestamp,
+          (unreadCount as number) + count,
+          lastLinkedParticle,
+          { direction: isFrom ? 'from' : 'to' }
+        );
+      }
     });
 
     this.channelApi.postSyncEntryProgress('particle', {
@@ -331,7 +363,7 @@ export class SyncService {
     const particlesToAdd = cidsToAdd.filter((cid) => !particlesExist.has(cid));
     // console.log('---syncPins particlesToAdd', particlesToAdd);
 
-    particlesToAdd.forEach((cid) => this.processParticle(cid));
+    particlesToAdd.forEach((cid) => this.resolveAndSaveParticle(cid));
 
     if (pinsToAdd.length > 0) {
       await this.db!.putPins(pinsToAdd.map(mapPinToEntity));
@@ -352,5 +384,13 @@ export class SyncService {
     await Promise.all(
       this.params.followings.map((addr) => this.syncTransactions(addr))
     );
+  }
+
+  private async syncAllTransactions() {
+    console.log('>>> Sync transactions');
+    await this.syncMyTransactions();
+    console.log('>>> Sync particles');
+    // await this.syncFollowingsTransactions();
+    await this.syncParticles();
   }
 }
