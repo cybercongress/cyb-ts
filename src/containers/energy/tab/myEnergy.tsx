@@ -40,7 +40,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
           flex-irection="row"
         >
           <Card
-            title={<DenomArr denomValue="a" />}
+            title={<DenomArr denomValue="milliampere" />}
             value={
               balacesResource.milliampere
                 ? formatNumber(balacesResource.milliampere)
@@ -52,7 +52,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
             x
           </Pane>
           <Card
-            title={<DenomArr denomValue="V" />}
+            title={<DenomArr denomValue="millivolt" />}
             value={
               balacesResource.millivolt
                 ? formatNumber(balacesResource.millivolt)
