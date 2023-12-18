@@ -148,6 +148,7 @@ export class SyncService {
 
     this.startIpfsLoop();
     this.startBlockchainLoop();
+    this.startParticlesLoop();
   }
 
   private startBlockchainLoop() {
