@@ -7,9 +7,7 @@ import Denom from './index';
 // generated, recheck
 type PossibleTokens =
   | 'millivolt'
-  | 'v'
   | 'milliampere'
-  | 'a'
   | 'hydrogen'
   | 'h'
   | 'liquidpussy'
