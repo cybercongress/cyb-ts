@@ -16,6 +16,7 @@ import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
+import { useAdviser } from 'src/features/adviser/context';
 
 function Title({
   capData,
@@ -44,6 +45,12 @@ function Nebula() {
   const { traseDenom } = useIbcDenom();
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('nebula');
+  }, [setAdviser]);
 
   useEffect(() => {
     if (Object.keys(dataTotalSupply).length > 0) {

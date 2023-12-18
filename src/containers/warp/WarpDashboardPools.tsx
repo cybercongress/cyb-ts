@@ -33,7 +33,7 @@ function WarpDashboardPools() {
     if (loading) {
       setAdviser('loading...', 'yellow');
     } else {
-      setAdviser('bostrom pools');
+      setAdviser('add or sub liquidity. create a pool');
     }
   }, [setAdviser, loading]);
 

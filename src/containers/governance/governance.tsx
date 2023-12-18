@@ -9,6 +9,7 @@ import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
+import { useAdviser } from 'src/features/adviser/context';
 
 const dateFormat = require('dateformat');
 
@@ -46,9 +47,19 @@ function Governance() {
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
 
+  const { setAdviser } = useAdviser();
+
   useEffect(() => {
     feachMinDeposit();
   }, []);
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        the place where community will hear you. <br /> propose your idea here
+      </>
+    );
+  }, [setAdviser]);
 
   useEffect(() => {
     const getStatistics = async () => {

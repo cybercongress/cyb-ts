@@ -23,6 +23,7 @@ import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend';
 import { IPFSNodes } from 'src/services/ipfs/ipfs.d.ts';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
@@ -45,14 +46,25 @@ function IpfsSettings() {
     }
   }, []);
 
-  const adviserContext = useAdviser();
+  const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    adviserContext.setAdviser(
-      !isIpfsInitialized ? 'trying to connect to ipfs...' : null,
-      'yellow'
-    );
-  }, [adviserContext, isIpfsInitialized]);
+    let text;
+    let status: AdviserColors = undefined;
+    if (!isIpfsInitialized) {
+      text = 'trying to connect to ipfs...';
+      status = 'yellow';
+    } else {
+      text = (
+        <>
+          manage and store neurones public data drive <br />
+          drive storing data forever before the 6th great extinction
+        </>
+      );
+    }
+
+    setAdviser(text, status);
+  }, [setAdviser, isIpfsInitialized]);
 
   const onChangeSelect = (item) => {
     setValueSelect(item);

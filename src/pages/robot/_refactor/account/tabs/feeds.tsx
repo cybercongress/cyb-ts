@@ -16,9 +16,17 @@ function FeedsTab() {
   useEffect(() => {
     if (error) {
       setAdviser(error.message, 'red');
+    } else {
+      setAdviser(
+        <>
+          free unlimited public feed made by neuron <br />
+          we accepting all type of content
+        </>
+      );
     }
 
     return () => {
+      // maybe remove
       setAdviser(null);
     };
   }, [setAdviser, error]);
