@@ -102,7 +102,7 @@ function TokenSetterSwap({
             options={[
               {
                 value: 'warp',
-                text: 'warp',
+                text: <span style={{ textAlign: 'start' }}>warp</span>,
                 img: (
                   <DenomArr
                     denomValue={CYBER.CHAIN_ID}

@@ -33,6 +33,9 @@ type Query = {
   amount?: string;
 };
 
+const ibcDenomAtom =
+  'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159';
+
 const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;
 
 function Bridge() {
@@ -42,12 +45,10 @@ function Bridge() {
     useTeleport();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [tokenSelect, setTokenSelect] = useState<string>(
-    CYBER.DENOM_LIQUID_TOKEN
-  );
+  const [tokenSelect, setTokenSelect] = useState<string>(ibcDenomAtom);
   const [tokenAmount, setTokenAmount] = useState<string>('');
-  const [networkA, setNetworkA] = useState<string>(Networks.BOSTROM);
-  const [networkB, setNetworkB] = useState<string>(Networks.SPACE_PUSSY);
+  const [networkA, setNetworkA] = useState<string>(Networks.COSMOS);
+  const [networkB, setNetworkB] = useState<string>(Networks.BOSTROM);
   const [typeTxs, setTypeTxs] = useState<TypeTxsT>('deposit');
   const [sourceChannel, setSourceChannel] = useState<string | null>(null);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
