@@ -1,17 +1,12 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
-import { IPFSContent } from 'src/utils/ipfs/ipfs';
-
-import {
-  PinTypeMap,
-  EntryType,
-  TransactionDbEntity,
-  SyncStatusDbEntity,
-} from './types';
-import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { dateToNumber } from 'src/utils/date';
-import { Transaction } from '../backend/workers/background/services/blockchain/types';
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
+import { IPFSContent } from '../ipfs/ipfs';
+import { PinTypeMap } from './types/entities';
+import { Transaction } from '../backend/services/dataSource/blockchain/types';
+import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
 
-export const mapParticleToEntity = (particle: IPFSContent): any => {
+export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;
   const { size, mime, type, blocks, sizeLocal } = meta;
   // hack to fix string command
@@ -28,7 +23,7 @@ export const mapParticleToEntity = (particle: IPFSContent): any => {
 };
 
 //TODO: REFACTOR
-export const mapPinToEntity = (pin: LsResult) => ({
+export const mapPinToEntity = (pin: LsResult): PinDto => ({
   cid: pin.cid.toString(),
   type: PinTypeMap[pin.type],
 });
@@ -36,7 +31,7 @@ export const mapPinToEntity = (pin: LsResult) => ({
 export const mapTransactionToEntity = (
   neuron: string,
   tx: Transaction
-): TransactionDbEntity => {
+): TransactionDto => {
   const {
     transaction_hash,
     transaction: {
@@ -57,33 +52,33 @@ export const mapTransactionToEntity = (
   };
 };
 
-export const mapSyncStatusToEntity = (
-  id: NeuronAddress | ParticleCid,
-  entryType: EntryType,
-  unreadCount: number,
-  timestampUpdate: number,
-  lastId: TransactionHash | ParticleCid = '',
-  timestampRead: number = timestampUpdate,
-  meta: Object = {}
-): SyncStatusDbEntity => {
-  return {
-    entry_type: entryType,
-    id,
-    timestamp_update: timestampUpdate,
-    timestamp_read: timestampRead,
-    unread_count: unreadCount,
-    disabled: false,
-    last_id: lastId,
-    meta,
-  };
-};
+// export const mapSyncStatusToEntity = (
+//   id: NeuronAddress | ParticleCid,
+//   entryType: EntryType,
+//   unreadCount: number,
+//   timestampUpdate: number,
+//   lastId: TransactionHash | ParticleCid = '',
+//   timestampRead: number = timestampUpdate,
+//   meta: Object = {}
+// ): SyncStatusDbEntity => {
+//   return {
+//     entry_type: entryType,
+//     id,
+//     timestamp_update: timestampUpdate,
+//     timestamp_read: timestampRead,
+//     unread_count: unreadCount,
+//     disabled: false,
+//     last_id: lastId,
+//     meta,
+//   };
+// };
 
 export const mapLinkToEntity = (
   from: ParticleCid,
   to: ParticleCid,
   neuron: NeuronAddress = '',
   timestamp: number = 0
-) => ({
+): LinkDto => ({
   from,
   to,
   neuron,

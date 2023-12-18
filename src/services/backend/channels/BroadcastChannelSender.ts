@@ -8,7 +8,11 @@ import {
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 class BroadcastChannelSender {
+  static mockClear() {
+    throw new Error('Method not implemented.');
+  }
   private channel: BroadcastChannel;
+  static mock: any;
 
   constructor() {
     this.channel = new BroadcastChannel(CYB_BROADCAST_CHANNEL);

@@ -12,21 +12,15 @@ import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend';
-import {
-  ServiceName,
-  ServiceStatus,
-  SyncEntryName,
-  SyncProgress,
-  SyncState,
-} from 'src/services/backend/types';
+import { ServiceStatus, SyncProgress } from 'src/services/backend/types';
 
-import styles from './drive.scss';
-
-import cozoPresets from './cozo_presets.json';
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
 import classNames from 'classnames';
 import BackendStatus from './BackendStatus';
+import cozoPresets from './cozo_presets.json';
+
+import styles from './drive.scss';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -50,7 +44,7 @@ function ServiceStatus({
   message?: string;
 }) {
   const icon = status === 'error' ? '❌' : status === 'starting' ? '⏳' : '';
-  const msg = message ? ` ${message}` : '';
+  const msg = message ? `- ${message}` : '';
   return <div>{`${icon} ${name} ${status} ${msg}`}</div>;
 }
 
@@ -61,9 +55,11 @@ function EntrySatus({
   name: string;
   progress: SyncProgress;
 }) {
+  const msg = progress.message ? `- ${progress.message}` : '';
+
   return (
     <div className={styles.tabbed}>{`${name}: ${progress.status} ${
-      progress.error || ''
+      progress.error || msg
     }`}</div>
   );
 }

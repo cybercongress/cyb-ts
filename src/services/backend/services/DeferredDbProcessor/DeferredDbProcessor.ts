@@ -9,15 +9,12 @@ import {
 } from 'rxjs';
 import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
-import {
-  importParicleContent,
-  // importParticle,
-  // importParticles,
-} from '../dataSource/ipfs/ipfsSource';
-import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
+
 import { v4 as uuidv4 } from 'uuid';
-import { LinkDbEntity } from 'src/services/CozoDb/types';
+import { LinkDbEntity } from 'src/services/CozoDb/types/entities';
 import { ParticleCid } from 'src/types/base';
+import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
+import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
 
 type QueueItem = {
   content?: IPFSContent;
@@ -37,7 +34,7 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     this.isInitialized$
       .pipe(
         filter((isInitialized) => isInitialized === true),
-        tap(() => console.log('DeferredDbProcessor Initialized')),
+        tap(() => console.log('DeferredDbProcessor - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
         mergeMap(() => defer(() => from(this.processQueue())))
@@ -78,7 +75,7 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
 
   private async processQueue() {
     const queue = this.queue$.value;
-    // console.log('---POSTPROCESSING QUEUE', queue);
+    console.log('---POSTPROCESSING QUEUE', queue);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [cid, item] of queue) {
@@ -93,7 +90,8 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     // console.log(`PostProcessing queue item: ${cid}`, item);
     if (content) {
       // eslint-disable-next-line no-await-in-loop
-      await importParicleContent(content, this.dbApi!);
+      const entity = mapParticleToEntity(content);
+      await this.dbApi!.putParticles(entity);
     }
 
     if (links) {

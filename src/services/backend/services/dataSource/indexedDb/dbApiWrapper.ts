@@ -5,7 +5,7 @@ import {
   PinDbEntity,
   SyncStatusDbEntity,
   TransactionDbEntity,
-} from 'src/services/CozoDb/types';
+} from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 // import { DbWorkerApi } from '../../workers/db/worker';
@@ -13,9 +13,15 @@ import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 //   DbApiServiceProxy,
 // } from 'src/services/backend/workers/db/service';
 
-import { dbResultToObjects } from 'src/services/CozoDb/utils';
+import {
+  dbResultToDtoList,
+  removeUndefinedFields,
+  transformListToDbEntity,
+  transformToDbEntity,
+} from 'src/services/CozoDb/utils';
 
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 import { SenseResult, SenseUnread } from './type';
 
@@ -57,38 +63,18 @@ function DbApiWrapper() {
     } as SyncStatus;
   };
 
-  const putSyncStatus = async (
-    entity: SyncStatusDbEntity[] | SyncStatusDbEntity
-  ) => {
-    const entitites = Array.isArray(entity) ? entity : [entity];
+  const putSyncStatus = async (entity: SyncStatusDto[] | SyncStatusDto) => {
+    const entitites = transformListToDbEntity(
+      Array.isArray(entity) ? entity : [entity]
+    );
+
     await db!.executePutCommand('sync_status', entitites);
   };
 
-  const updateSyncStatus = async (
-    id: NeuronAddress | ParticleCid,
-    timestampUpdate: number,
-    timestampRead: number,
-    unreadCount: number,
-    lastEntityId: TransactionHash | ParticleCid | undefined = undefined,
-    meta: Object | undefined = undefined
-  ) => {
-    const entity = {
-      id,
-      timestamp_update: timestampUpdate,
-      timestamp_read: timestampRead,
-      unread_count: unreadCount,
-      last_id: lastEntityId,
-      meta,
-    } as Partial<SyncStatusDbEntity>;
-
-    Object.keys(entity).forEach((key) => {
-      if (entity[key] === undefined) {
-        delete entity[key];
-      }
-    });
-
-    console.log('------updateSyncStatus', id, entity);
-    return db!.executeUpdateCommand('sync_status', [entity]);
+  const updateSyncStatus = async (entity: Partial<SyncStatusDto>) => {
+    return db!.executeUpdateCommand('sync_status', [
+      transformToDbEntity(removeUndefinedFields(entity)),
+    ]);
   };
 
   const putTransactions = async (transactions: TransactionDbEntity[]) =>
@@ -123,7 +109,7 @@ function DbApiWrapper() {
 
   const putPins = async (pins: PinDbEntity[] | PinDbEntity) => {
     const entitites = Array.isArray(pins) ? pins : [pins];
-    const result = await db!.executePutCommand('pin', entitites);
+    return db!.executePutCommand('pin', entitites);
   };
 
   const getPins = async (withType = false) => {
@@ -173,7 +159,7 @@ function DbApiWrapper() {
 
     const result = await db!.runCommand(command);
 
-    return dbResultToObjects(result) as SenseResult[];
+    return dbResultToDtoList(result) as SenseResult[];
   };
 
   const getSenseSummary = async () => {
@@ -183,7 +169,7 @@ function DbApiWrapper() {
     ?[entry_type, unread] := dt[entry_type, unread]`;
 
     const result = await db!.runCommand(command);
-    return dbResultToObjects(result) as SenseUnread[];
+    return dbResultToDtoList(result) as SenseUnread[];
   };
 
   const senseMarkAsRead = async (id: NeuronAddress | ParticleCid) => {
@@ -204,7 +190,7 @@ function DbApiWrapper() {
       [`neuron = ${neuron}`],
       ['neuron']
     );
-    return dbResultToObjects(result);
+    return dbResultToDtoList(result);
   };
 
   const putCyberlinks = async (links: LinkDbEntity[] | LinkDbEntity) => {

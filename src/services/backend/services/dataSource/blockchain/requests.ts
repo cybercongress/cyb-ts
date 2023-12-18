@@ -210,6 +210,7 @@ const fetchCyberlinkSyncStats = async (
 
 export {
   fetchTransactionsIterable,
+  fetchTransactions,
   fetchCyberlinksIterable,
   fetchCyberlinkSyncStats,
 };

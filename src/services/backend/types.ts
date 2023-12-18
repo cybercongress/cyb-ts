@@ -1,4 +1,4 @@
-import { IndexedDbWriteMessage } from '../CozoDb/types';
+import { IndexedDbWriteMessage } from '../CozoDb/types/types';
 
 export type SyncEntryName = 'pin' | 'particle' | 'transaction';
 

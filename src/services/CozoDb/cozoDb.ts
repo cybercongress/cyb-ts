@@ -6,9 +6,8 @@ import {
   DBSchema,
   IDBResultError,
   TableSchema,
-  DbEntity,
-  ConfigDbEntity,
-} from './types';
+} from './types/types';
+import { DbEntity, ConfigDbEntity } from './types/entities';
 
 import { toListOfObjects, entityToArray, resetIndexedDBStore } from './utils';
 
@@ -151,7 +150,13 @@ function createCozoDb() {
   };
 
   const initDbSchema = async (): Promise<DBSchema> => {
-    const relations = await migrate();
+    let relations = await getRelations();
+    if (relations.length === 0) {
+      console.log('CozoDb: apply DB schema', initializeScript);
+      await runCommand(initializeScript);
+      relations = await getRelations();
+    }
+
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
         const columnResult = await runCommand(`::columns ${table}`);
@@ -193,31 +198,20 @@ function createCozoDb() {
     if (versionData.ok === false) {
       throw new Error(versionData.message);
     }
-    return (versionData.rows[0][0] as string) || undefined;
+    return (versionData.rows[0][0] as string) || DB_VERSION;
   };
 
   const migrate = async () => {
-    let relations = await getRelations();
-    if (relations.length === 0) {
-      console.log('CozoDb: apply DB schema', initializeScript);
-      runCommand(initializeScript);
-
-      // set initial version
-      // await put('config', [
-      //   {
-      //     key: 'DB_VERSION',
-      //     group_key: 'system',
-      //     value: DB_VERSION,
-      //   },
-      // ]);
-
-      // const version = await getVersion();
-      // console.log(`DB Version ${version}`);
-
-      relations = await getRelations();
-    }
-
-    return relations;
+    // set initial version
+    // await put('config', [
+    //   {
+    //     key: 'DB_VERSION',
+    //     group_key: 'system',
+    //     value: DB_VERSION,
+    //   },
+    // ]);
+    // const version = await getVersion();
+    // console.log(`DB Version ${version}`);
   };
 
   const runCommand = async (

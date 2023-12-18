@@ -13,14 +13,13 @@ import {
   defer,
 } from 'rxjs';
 import { concatMap, map, startWith, tap } from 'rxjs/operators';
-import { EntryType } from 'src/services/CozoDb/types';
+import { EntryType } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import {
   mapPinToEntity,
-  mapSyncStatusToEntity,
   mapTransactionToEntity,
 } from 'src/services/CozoDb/mapping';
-import { dateToNumber, numberToDate } from 'src/utils/date';
+import { dateToNumber } from 'src/utils/date';
 import { CID_TWEET } from 'src/utils/consts';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
@@ -38,6 +37,8 @@ import {
 } from '../dataSource/blockchain/types';
 import { FetchIpfsFunc, SyncServiceParams } from './type';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
+import { string } from 'prop-types';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 const BLOCKCHAIN_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 10 minutes
@@ -87,8 +88,8 @@ function extractParticlesResults(batch: Transaction[]) {
 const createLoopObservable = (
   intervalMs: number,
   actionObservable$: Observable<any>,
-  isInitialized$: Observable<boolean>
-  // isInProgress$: BehaviorSubject<LoopStatus>
+  isInitialized$: Observable<boolean>,
+  beforeCallback?: () => void
 ) => {
   return isInitialized$.pipe(
     switchMap((initialized) => {
@@ -96,11 +97,10 @@ const createLoopObservable = (
         // When isInitialized$ emits true, start the interval
         return interval(intervalMs).pipe(
           startWith(0), // Start immediately
-          // tap(() => console.log('Starting task cycle')),
+          tap(() => beforeCallback!()),
           concatMap(() => actionObservable$)
         );
       }
-      // When isInitialized$ emits false, stop the interval
       return EMPTY;
     })
   );
@@ -146,7 +146,7 @@ export class SyncService {
       // error: (err) => this.channelApi.postSyncStatus('error', err),
     });
 
-    // this.startIpfsLoop();
+    this.startIpfsLoop();
     this.startBlockchainLoop();
   }
 
@@ -159,12 +159,23 @@ export class SyncService {
       //   particles: defer(() => from(this.syncParticles())),
       // }),
       defer(() => from(this.syncAllTransactions())),
-      this.dbInitialized$
+      this.dbInitialized$,
+      () =>
+        this.channelApi.postSyncEntryProgress('transaction', {
+          status: 'in-progress',
+        })
     ).subscribe({
       next: (result) =>
-        console.log('All blockchain tasks in this cycle completed', result),
-      error: (err) => console.error('Error in task cycle', err),
-      // complete: () => console.log('Task interval completed.'),
+        this.channelApi.postSyncEntryProgress('transaction', {
+          status: 'idle',
+          done: true,
+        }),
+      error: (err) =>
+        this.channelApi.postSyncEntryProgress('transaction', {
+          status: 'error',
+          message: err,
+          done: true,
+        }),
     });
   }
 
@@ -172,11 +183,47 @@ export class SyncService {
     createLoopObservable(
       IPFS_SYNC_INTERVAL,
       defer(() => from(this.syncPins())),
-      this.isInitialized$
+      this.isInitialized$,
+      () =>
+        this.channelApi.postSyncEntryProgress('pin', {
+          status: 'in-progress',
+        })
     ).subscribe({
       next: (result) =>
-        console.log('All ipfs tasks in this cycle completed', result),
-      error: (err) => console.error('Error in task cycle', err),
+        this.channelApi.postSyncEntryProgress('pin', {
+          status: 'idle',
+          done: true,
+        }),
+      error: (err) =>
+        this.channelApi.postSyncEntryProgress('pin', {
+          status: 'error',
+          message: err,
+          done: true,
+        }),
+    });
+  }
+
+  private startParticlesLoop() {
+    createLoopObservable(
+      IPFS_SYNC_INTERVAL,
+      defer(() => from(this.syncParticles())),
+      this.isInitialized$,
+      () =>
+        this.channelApi.postSyncEntryProgress('particle', {
+          status: 'in-progress',
+        })
+    ).subscribe({
+      next: (result) =>
+        this.channelApi.postSyncEntryProgress('particle', {
+          status: 'idle',
+          done: true,
+        }),
+      error: (err) =>
+        this.channelApi.postSyncEntryProgress('particle', {
+          status: 'error',
+          message: err,
+          done: true,
+        }),
     });
   }
 
@@ -200,12 +247,18 @@ export class SyncService {
   ) {
     this.channelApi.postSyncEntryProgress('transaction', {
       status: 'in-progress',
+      message: `sync ${address} transactions`,
     });
 
     // let conter = 0;
     const { timestampRead, unreadCount, timestampUpdate } =
       await this.db!.getSyncStatus(address);
-
+    console.log(
+      '--------syncTransactions',
+      timestampRead,
+      unreadCount,
+      timestampUpdate
+    );
     const transactionsAsyncIterable = fetchTransactionsIterable(
       this.params.cyberIndexUrl!,
       address,
@@ -233,102 +286,140 @@ export class SyncService {
         const particles = extractParticlesResults(batch);
         const particleCIDs = Object.keys(particles);
 
-        const syncStatusEntries = particleCIDs.map((cid) => {
-          const { timestamp, direction, from } = particles[cid];
-          return mapSyncStatusToEntity(
-            cid,
-            EntryType.particle,
-            0,
-            timestamp,
-            from,
-            timestamp,
-            { direction }
-          );
-        });
+        const syncStatusEntries = await Promise.all(
+          particleCIDs.map(async (cid) => {
+            const { timestamp, direction, from } = particles[cid];
+            const syncStatus = await this.fetchParticleSyncStatus(
+              cid,
+              timestamp
+            );
+            const linkedCid = from as string;
+            // non-blocking
+            this.resolveAndSaveParticle(linkedCid);
+
+            return (
+              syncStatus || {
+                id: cid as string,
+                entryType: EntryType.particle,
+                timestampUpdate: timestamp,
+                timestampRead: timestamp,
+                unreadCount: 0,
+                lastId: linkedCid,
+                disabled: false,
+                meta: { direction },
+              } // or default
+            );
+          })
+        );
 
         this.db!.putSyncStatus(syncStatusEntries);
         console.log('---syncTransactions', particleCIDs);
         // non-blocking call
-        particleCIDs.map((cid) => this.resolveAndSaveParticle(cid));
+        // particleCIDs.map((cid) => this.resolveAndSaveParticle(cid));
       }
     }
-
+    const unreadTransactionsCount = unreadCount + count;
     if (lastTimestamp) {
       // Update transaction
       this.db!.putSyncStatus({
-        entry_type: EntryType.transactions,
+        entryType: EntryType.transactions,
         id: address,
-        timestamp_update: lastTimestamp,
-        unread_count: unreadCount + count,
-        timestamp_read: timestampRead,
+        timestampUpdate: lastTimestamp,
+        unreadCount: unreadTransactionsCount,
+        timestampRead,
         disabled: false,
-        last_id: lastTransactionHash,
+        lastId: lastTransactionHash,
         meta: {},
       });
     }
     this.channelApi.postSyncEntryProgress('transaction', {
-      status: 'idle',
-      // message: `sync ${address} transactions - unread: ${
-      //   unreadCount + count
-      // }, last - ${numberToDate(lastTimestamp || 0)}`,
-      done: true,
+      status: 'in-progress',
+      message: `sync ${address} transactions - unread: ${unreadTransactionsCount}`,
     });
     // onComplete && onComplete(conter);
   }
 
+  private async fetchParticleSyncStatus(
+    cid: ParticleCid,
+    timestampUpdate = 0,
+    timestampRead = 0,
+    unreadCount = 0
+  ): Promise<SyncStatusDto | undefined> {
+    const result = await fetchCyberlinkSyncStats(
+      this.params.cyberIndexUrl!,
+      cid,
+      timestampUpdate
+    );
+    // console.log('----fetchAndSyncParticle', cid, result, timestampUpdate);
+
+    if (!result) {
+      return undefined;
+    }
+    const { firstTimestamp, lastTimestamp, count, lastLinkedParticle, isFrom } =
+      result;
+
+    await this.resolveAndSaveParticle(lastLinkedParticle);
+
+    // await this.db!.updateSyncStatus();
+    return {
+      id: cid as string,
+      timestampUpdate: lastTimestamp,
+      timestampRead: count ? timestampRead : firstTimestamp,
+      unreadCount: (unreadCount as number) + count,
+      lastId: lastLinkedParticle,
+      meta: { direction: isFrom ? 'from' : 'to' },
+      disabled: false,
+      entryType: EntryType.particle,
+    } as SyncStatusDto;
+  }
+
   private async syncParticles() {
-    this.channelApi.postSyncEntryProgress('particle', {
-      status: 'in-progress',
-    });
     // fetch observable particles from db
-    const particleSyncStatusResult = await this.db!.findSyncStatus({
+    const dbResult = await this.db!.findSyncStatus({
       entryType: EntryType.particle,
     });
-    console.log('----particleSyncStatusResult', particleSyncStatusResult);
-    particleSyncStatusResult.rows.map(async (row) => {
+    dbResult.rows.map(async (row) => {
       const [id, unreadCount, timestampUpdate, timestampRead] = row;
-
-      // fetch new links with particle
-      const result = await fetchCyberlinkSyncStats(
-        this.params.cyberIndexUrl!,
+      await this.fetchParticleSyncStatus(
         id as string,
-        timestampUpdate as number
+        timestampUpdate as number,
+        timestampRead as number,
+        unreadCount as number
       );
-      console.log('----item', id, result);
+      // fetch new links with particle
+      // const result = await fetchCyberlinkSyncStats(
+      //   this.params.cyberIndexUrl!,
+      //   id as string,
+      //   timestampUpdate as number
+      // );
+      // console.log('----item', id, result);
 
-      if (result) {
-        const {
-          firstTimestamp,
-          lastTimestamp,
-          count,
-          lastLinkedParticle,
-          isFrom,
-        } = result;
+      // if (result) {
+      //   const {
+      //     firstTimestamp,
+      //     lastTimestamp,
+      //     count,
+      //     lastLinkedParticle,
+      //     isFrom,
+      //   } = result;
 
-        this.resolveAndSaveParticle(lastLinkedParticle);
+      //   this.resolveAndSaveParticle(lastLinkedParticle);
 
-        await this.db!.updateSyncStatus(
-          id as string,
-          lastTimestamp,
-          (unreadCount as number) ? (timestampRead as number) : firstTimestamp,
-          (unreadCount as number) + count,
-          lastLinkedParticle,
-          { direction: isFrom ? 'from' : 'to' }
-        );
-      }
-    });
-
-    this.channelApi.postSyncEntryProgress('particle', {
-      status: 'idle',
-      done: true,
+      //   await this.db!.updateSyncStatus({
+      //     id: id as string,
+      //     timestampUpdate: lastTimestamp,
+      //     timestampRead: (unreadCount as number)
+      //       ? (timestampRead as number)
+      //       : firstTimestamp,
+      //     unreadCount: (unreadCount as number) + count,
+      //     lastId: lastLinkedParticle,
+      //     meta: { direction: isFrom ? 'from' : 'to' },
+      //   });
+      // }
     });
   }
 
   private async syncPins() {
-    this.channelApi.postSyncEntryProgress('pin', {
-      status: 'in-progress',
-    });
-
     const pinsResult = await fetchPins(this.ipfsNode!);
     // console.log('---syncPins pinsResult', pinsResult);
     const dbPins = (await this.db!.getPins()).rows.map(
@@ -348,11 +439,6 @@ export class SyncService {
     if (pinsToRemove.length) {
       await this.db!.deletePins(pinsToRemove);
     }
-    // console.log('---syncPins pinsToAdd pinsToRemove', pinsToAdd, pinsToRemove);
-    // this.channelApi.postSyncEntryProgress('pin', {
-    //   message: `ipfs node process: +${pinsToAdd.length} -${pinsToRemove.length}`,
-    //   done: true,
-    // });
 
     const particlesExist = new Set(
       (await this.db!.getParticles(['cid'])).rows.map((row) => row[0] as string)
@@ -361,19 +447,12 @@ export class SyncService {
     const cidsToAdd = pinsToAdd.map((pin) => pin.cid.toString());
 
     const particlesToAdd = cidsToAdd.filter((cid) => !particlesExist.has(cid));
-    // console.log('---syncPins particlesToAdd', particlesToAdd);
 
     particlesToAdd.forEach((cid) => this.resolveAndSaveParticle(cid));
 
     if (pinsToAdd.length > 0) {
       await this.db!.putPins(pinsToAdd.map(mapPinToEntity));
     }
-
-    this.channelApi.postSyncEntryProgress('pin', {
-      status: 'idle',
-      // message: `ipfs node sync: +${pinsToAdd.length} -${pinsToRemove.length} +${particlesToAdd.length}(particles)`,
-      done: true,
-    });
   }
 
   private async syncMyTransactions() {
@@ -389,8 +468,6 @@ export class SyncService {
   private async syncAllTransactions() {
     console.log('>>> Sync transactions');
     await this.syncMyTransactions();
-    console.log('>>> Sync particles');
-    // await this.syncFollowingsTransactions();
-    await this.syncParticles();
+    await this.syncFollowingsTransactions();
   }
 }

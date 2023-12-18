@@ -1,5 +1,5 @@
 import cozoDb from 'src/services/CozoDb/cozoDb';
-import { DbEntity } from 'src/services/CozoDb/types';
+import { DbEntity } from 'src/services/CozoDb/types/entities';
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types';

@@ -1,5 +1,5 @@
 import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
-import { LinkDbEntity } from '../CozoDb/types';
+import { LinkDbEntity } from '../CozoDb/types/entities';
 
 /* eslint-disable import/no-unused-modules */
 type QueueItemStatus =

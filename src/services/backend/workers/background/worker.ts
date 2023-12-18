@@ -14,7 +14,7 @@ import QueueManager from 'src/services/QueueManager/QueueManager';
 
 // import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-import { LinkDbEntity } from 'src/services/CozoDb/types';
+import { LinkDbEntity } from 'src/services/CozoDb/types/entities';
 
 import {
   QueueItemCallback,

@@ -27,9 +27,10 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const response = await searchByHash(queryClient, cid, pageParam);
-      defferedDbApi?.importCyberlinks(
-        response.result.map((l) => mapLinkToEntity(hash, l.particle))
-      );
+      response.result &&
+        defferedDbApi?.importCyberlinks(
+          response.result.map((l) => mapLinkToEntity(hash, l.particle))
+        );
       return { data: response, page: pageParam };
     },
     {
