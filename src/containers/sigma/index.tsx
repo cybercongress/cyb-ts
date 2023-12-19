@@ -109,7 +109,7 @@ function Sigma() {
   const updateDataCap = (newData) => {
     setValue((item) => ({
       ...item,
-      dataCap: { ...item.dataCap, ...newData },
+      dataCap: superSigma ? { ...item.dataCap, ...newData } : { ...newData },
     }));
   };
 
