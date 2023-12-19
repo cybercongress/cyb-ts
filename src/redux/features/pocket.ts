@@ -16,7 +16,7 @@ type SliceState = {
     tweet: string;
   };
   defaultAccount: DefaultAccount;
-  accounts: null | { [key: string]: Account };
+  accounts: null | Accounts;
 };
 
 const initialState: SliceState = {
@@ -73,6 +73,8 @@ const slice = createSlice({
     },
     setAccounts: (state, { payload }: PayloadAction<Accounts>) => {
       state.accounts = payload;
+
+      saveToLocalStorage(state);
     },
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {
       state.actionBar.tweet = payload;
@@ -191,16 +193,10 @@ export const initPocket = () => (dispatch: Dispatch) => {
   accountsTemp && dispatch(setAccounts(accountsTemp));
 };
 
-export const addPocket = (accounts: AccountValue) => (dispatch: Dispatch) => {
+const defaultNameAccount = () => {
   let key = 'Account 1';
   let count = 1;
-  let dataPocketAccount = null;
-  let valueObj = {};
-  let pocketAccount = {};
 
-  const localStorageStory = localStorage.getItem(
-    localStorageKeys.pocket.POCKET_ACCOUNT
-  );
   const localStorageCount = localStorage.getItem('count');
 
   if (localStorageCount !== null) {
@@ -208,31 +204,49 @@ export const addPocket = (accounts: AccountValue) => (dispatch: Dispatch) => {
     count = parseFloat(dataCount);
     key = `Account ${count}`;
   }
+
   localStorage.setItem('count', JSON.stringify(count + 1));
 
-  if (localStorageStory !== null) {
-    dataPocketAccount = JSON.parse(localStorageStory);
-    valueObj = Object.values(dataPocketAccount);
-  }
-
-  const isAdded = !checkAddress(valueObj, 'cyber', accounts.bech32);
-
-  if (!isAdded) {
-    return;
-  }
-
-  const cyberAccounts: Account = {
-    cyber: accounts,
-  };
-
-  if (localStorageStory !== null) {
-    pocketAccount = { [key]: cyberAccounts, ...dataPocketAccount };
-  } else {
-    pocketAccount = { [key]: cyberAccounts };
-  }
-
-  if (Object.keys(pocketAccount).length > 0) {
-    dispatch(setAccounts(pocketAccount));
-    dispatch(setDefaultAccount({ name: key, account: cyberAccounts }));
-  }
+  return key;
 };
+
+export const addAddressPocket =
+  (accounts: AccountValue) => (dispatch: Dispatch) => {
+    const key = accounts.name || defaultNameAccount();
+
+    let dataPocketAccount = null;
+    let valueObj = {};
+    let pocketAccount: Accounts = {};
+
+    const localStorageStory = localStorage.getItem(
+      localStorageKeys.pocket.POCKET_ACCOUNT
+    );
+
+    if (localStorageStory !== null) {
+      dataPocketAccount = JSON.parse(localStorageStory);
+      valueObj = Object.values(dataPocketAccount);
+    }
+
+    const isAdded = !checkAddress(valueObj, 'cyber', accounts.bech32);
+
+    if (!isAdded) {
+      return;
+    }
+
+    const cyberAccounts: Account = {
+      cyber: accounts,
+    };
+
+    if (localStorageStory !== null) {
+      pocketAccount = { [key]: cyberAccounts, ...dataPocketAccount };
+    } else {
+      pocketAccount = { [key]: cyberAccounts };
+    }
+
+    if (Object.keys(pocketAccount).length > 0) {
+      dispatch(setAccounts(pocketAccount));
+      if (accounts.keys !== 'read-only') {
+        dispatch(setDefaultAccount({ name: key, account: cyberAccounts }));
+      }
+    }
+  };

@@ -11,11 +11,7 @@ import {
 import { LEDGER, CYBER, PATTERN_CYBER } from 'src/utils/config';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useDispatch } from 'react-redux';
-import {
-  initPocket,
-  setDefaultAccount,
-  addPocket,
-} from 'src/redux/features/pocket';
+import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
@@ -86,93 +82,21 @@ function ActionBarConnect({
   };
 
   const onClickAddAddressUserToLocalStr = async () => {
-    const accounts = {};
-    let key = 'Account 1';
-    let dataPocketAccount = null;
-    let pocketAccount = {};
-    let valueObj = {};
-    let count = 1;
+    const accounts = { bech32: valueInputAddres, keys: 'read-only' };
 
-    const localStorageStory = await localStorage.getItem('pocketAccount');
-    const localStoragePocket = await localStorage.getItem('pocket');
-    const localStorageCount = await localStorage.getItem('count');
-    if (localStorageCount !== null) {
-      const dataCount = JSON.parse(localStorageCount);
-      count = parseFloat(dataCount);
-      key = `Account ${count}`;
+
+    setTimeout(() => {
+      dispatch(addAddressPocket(accounts));
+    }, 100);
+
+        setStage(STAGE_ADD_ADDRESS_OK);
+
+    clearState();
+    if (updateAddress) {
+      updateAddress();
     }
-    localStorage.setItem('count', JSON.stringify(count + 1));
-    if (localStorageStory !== null) {
-      dataPocketAccount = JSON.parse(localStorageStory);
-      valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
-      }
-    }
-    if (selectNetwork === 'cyber' || addCyberAddress) {
-      let cyberAddress = null;
-      if (valueInputAddres.match(PATTERN_CYBER)) {
-        cyberAddress = valueInputAddres;
-      }
-
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cyber', cyberAddress)
-      ) {
-        accounts.cyber = { bech32: cyberAddress, keys: 'read-only' };
-      }
-    }
-
-    setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
-      if (localStorageStory !== null) {
-        if (Object.keys(accounts).length > 0) {
-          pocketAccount = { [key]: accounts, ...dataPocketAccount };
-        }
-      } else {
-        pocketAccount = { [key]: accounts };
-      }
-
-      if (Object.keys(pocketAccount).length > 0) {
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-        clearState();
-        if (updateAddress) {
-          updateAddress();
-        }
-        if (updateFuncActionBar) {
-          updateFuncActionBar();
-        }
-      } else {
-        setStage(STAGE_ERROR);
-      }
-    } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
-        accounts[selectNetwork];
-      if (Object.keys(dataPocketAccount).length > 0) {
-        localStorage.setItem(
-          'pocketAccount',
-          JSON.stringify(dataPocketAccount)
-        );
-      }
-      if (localStoragePocket !== null) {
-        const localStoragePocketData = JSON.parse(localStoragePocket);
-        const keyPocket = Object.keys(localStoragePocketData)[0];
-        localStoragePocketData[keyPocket][selectNetwork] =
-          accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
-          localStorage.setItem(
-            'pocket',
-            JSON.stringify(localStoragePocketData)
-          );
-        }
-      }
-      clearState();
-      if (updateAddress) {
-        updateAddress();
-      }
-      if (updateFuncActionBar) {
-        updateFuncActionBar();
-      }
+    if (updateFuncActionBar) {
+      updateFuncActionBar();
     }
   };
 
@@ -193,7 +117,7 @@ function ActionBarConnect({
 
       setStage(STAGE_ADD_ADDRESS_OK);
       setTimeout(() => {
-        dispatch(addPocket(accounts));
+        dispatch(addAddressPocket(accounts));
       }, 100);
 
       clearState();

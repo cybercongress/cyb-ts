@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 
@@ -28,6 +28,7 @@ function AccountItem({
   link,
 }) {
   const address = data?.cyber?.bech32;
+  const location = useLocation();
 
   const { passport } = usePassportByAddress(address);
 
@@ -41,13 +42,15 @@ function AccountItem({
     setControlledVisible(false);
   }
 
+  const robotPath = nickname
+    ? routes.robotPassport.getLink(nickname)
+    : routes.robot.path;
+
+  const linkToRobot = location.pathname.includes('@') ? robotPath : undefined;
+
   return (
     <Link
-      to={
-        link ||
-        (nickname && routes.robotPassport.getLink(nickname)) ||
-        routes.robot.path
-      }
+      to={link || linkToRobot}
       onClick={handleClick}
       className={cx(
         styles.containerSwichAccount,
