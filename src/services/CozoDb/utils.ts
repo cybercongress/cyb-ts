@@ -117,45 +117,41 @@ export const dbResultToDtoList = (dbResult: IDBResult | IDBResultError) => {
   });
 };
 
-export function resetIndexedDBStore(
+export async function clearIndexedDBStore(
   dbName: string,
   storeName: string
-): Promise<string> {
+): Promise<void> {
   return new Promise((resolve, reject) => {
-    const dbOpenReq = indexedDB.open(dbName, 1);
+    // Open a connection to the database
+    const request = indexedDB.open(dbName);
 
-    dbOpenReq.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        db.createObjectStore(storeName);
-      }
+    request.onerror = (event) => {
+      reject(`Database error: ${request.error?.message}`);
     };
 
-    dbOpenReq.onsuccess = (event: Event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+    request.onsuccess = (event) => {
+      const db = request.result;
+
+      // Start a transaction and get the store
       const transaction = db.transaction(storeName, 'readwrite');
-      const objectStore = transaction.objectStore(storeName);
-      const clearReq = objectStore.clear();
+      const store = transaction.objectStore(storeName);
 
-      clearReq.onsuccess = () => {
-        resolve(`${dbName}-${storeName} store cleared successfully`);
+      // Clear the store
+      const clearRequest = store.clear();
+
+      clearRequest.onsuccess = () => {
+        console.log(`Store cleared ${dbName}/${storeName}`);
+        resolve();
       };
 
-      clearReq.onerror = () => {
-        reject(
-          new Error(
-            `Error clearing ${dbName}-${storeName} store: ${clearReq.error}`
-          )
-        );
+      clearRequest.onerror = () => {
+        reject(`Error clearing the store: ${clearRequest.error?.message}`);
       };
-    };
 
-    dbOpenReq.onerror = (event: Event) => {
-      reject(
-        new Error(
-          `Error opening ${dbName}-${storeName} IndexedB: ${dbOpenReq.error}`
-        )
-      );
+      // Close the database when the transaction is complete
+      transaction.oncomplete = () => {
+        db.close();
+      };
     };
   });
 }

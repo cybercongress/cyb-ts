@@ -26,6 +26,7 @@ import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
 import {
   fetchCyberlinkSyncStats,
+  fetchCyberlinksIterable,
   fetchTransactionsIterable,
 } from '../dataSource/blockchain/requests';
 import { fetchPins } from '../dataSource/ipfs/ipfsSource';
@@ -37,7 +38,6 @@ import {
 } from '../dataSource/blockchain/types';
 import { FetchIpfsFunc, SyncServiceParams } from './type';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import { string } from 'prop-types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 const BLOCKCHAIN_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
@@ -346,32 +346,44 @@ export class SyncService {
     timestampRead = 0,
     unreadCount = 0
   ): Promise<SyncStatusDto | undefined> {
-    const result = await fetchCyberlinkSyncStats(
+    const cyberlinsIterable = fetchCyberlinksIterable(
       this.params.cyberIndexUrl!,
       cid,
       timestampUpdate
     );
-    // console.log('----fetchAndSyncParticle', cid, result, timestampUpdate);
-
-    if (!result) {
-      return undefined;
+    const links = [];
+    for await (const batch of cyberlinsIterable) {
+      links.push(...batch);
     }
-    const { firstTimestamp, lastTimestamp, count, lastLinkedParticle, isFrom } =
-      result;
+    // firstTimestamp, lastTimestamp, count, lastLinkedParticle, isFrom
+    const lastTimestamp = links[0]?.timestamp;
+    const lastTo = links[0]?.to;
+    const lastFrom = links[0]?.from;
+    const firstTimestamp = links[links.length - 1]?.timestamp;
+    const count = links.length;
+    const isFrom = lastFrom === cid;
 
-    await this.resolveAndSaveParticle(lastLinkedParticle);
+    const lastId = isFrom ? lastTo : lastFrom;
 
-    // await this.db!.updateSyncStatus();
-    return {
+    await this.resolveAndSaveParticle(lastId);
+
+    // non-blocking
+    links.map((link) => this.resolveAndSaveParticle(link.to));
+
+    console.log('---fetchParticleSyncStatus', cid, links);
+
+    const syncStatus = {
       id: cid as string,
       timestampUpdate: lastTimestamp,
       timestampRead: count ? timestampRead : firstTimestamp,
-      unreadCount: (unreadCount as number) + count,
-      lastId: lastLinkedParticle,
+      unreadCount: unreadCount + count,
+      lastId,
       meta: { direction: isFrom ? 'from' : 'to' },
       disabled: false,
       entryType: EntryType.particle,
     } as SyncStatusDto;
+
+    return syncStatus;
   }
 
   private async syncParticles() {
@@ -387,36 +399,6 @@ export class SyncService {
         timestampRead as number,
         unreadCount as number
       );
-      // fetch new links with particle
-      // const result = await fetchCyberlinkSyncStats(
-      //   this.params.cyberIndexUrl!,
-      //   id as string,
-      //   timestampUpdate as number
-      // );
-      // console.log('----item', id, result);
-
-      // if (result) {
-      //   const {
-      //     firstTimestamp,
-      //     lastTimestamp,
-      //     count,
-      //     lastLinkedParticle,
-      //     isFrom,
-      //   } = result;
-
-      //   this.resolveAndSaveParticle(lastLinkedParticle);
-
-      //   await this.db!.updateSyncStatus({
-      //     id: id as string,
-      //     timestampUpdate: lastTimestamp,
-      //     timestampRead: (unreadCount as number)
-      //       ? (timestampRead as number)
-      //       : firstTimestamp,
-      //     unreadCount: (unreadCount as number) + count,
-      //     lastId: lastLinkedParticle,
-      //     meta: { direction: isFrom ? 'from' : 'to' },
-      //   });
-      // }
     });
   }
 

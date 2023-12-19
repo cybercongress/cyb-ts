@@ -9,135 +9,40 @@ import {
 } from './types/types';
 import { DbEntity, ConfigDbEntity } from './types/entities';
 
-import { toListOfObjects, entityToArray, resetIndexedDBStore } from './utils';
+import { toListOfObjects, clearIndexedDBStore } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
+import { CozoDbCommandFactory } from './CozoDbCommandFactory';
 
 const DB_NAME = 'cyb-cozo-idb';
 const DB_STORE_NAME = 'cozodb';
 const DB_VERSION = '1.1';
 
-function CozoDbCommandFactory(dbSchema: DBSchema) {
-  const schema = dbSchema;
-
-  const generateRmCommand = (tableName: string, keys: string[]): string => {
-    return `:rm ${tableName} {${keys}}`;
-  };
-
-  const generateModifyCommand = (
-    tableName: string,
-    command: 'put' | 'update' = 'put',
-    fieldNames: string[] = []
-  ): string => {
-    const { keys, values } = schema[tableName];
-    const hasValues = values.length > 0;
-
-    const actualValues =
-      fieldNames.length > 0
-        ? fieldNames.filter((f) => values.includes(f))
-        : values;
-
-    return !hasValues
-      ? `:${command} ${tableName} {${keys}}`
-      : `:${command} ${tableName} {${keys} => ${actualValues}}`;
-  };
-
-  const generateAtomCommand = (
-    tableName: string,
-    items: Partial<DbEntity>[],
-    fieldNames: string[] = []
-  ): string => {
-    const tableSchema = dbSchema[tableName];
-
-    const selectedColumns =
-      fieldNames.length > 0
-        ? Object.keys(tableSchema.columns).reduce((acc, key) => {
-            if (fieldNames.includes(key)) {
-              acc[key] = tableSchema.columns[key];
-            }
-            return acc;
-          }, {} as Record<string, Column>)
-        : tableSchema.columns;
-
-    const colKeys = Object.keys(selectedColumns);
-    const colValues = Object.values(selectedColumns) as Column[];
-
-    return `?[${colKeys.join(', ')}] <- [${items
-      .map((item) => entityToArray(item, colValues))
-      .join(', ')}]`;
-  };
-
-  const generatePut = (tableName: string, array: Partial<DbEntity>[]) => {
-    const fields = Object.keys(array[0]);
-    const atomCommand = generateAtomCommand(tableName, array, fields);
-    const putCommand = generateModifyCommand(tableName, 'put');
-    return `${atomCommand}\r\n${putCommand}`;
-  };
-
-  const generateRm = (tableName: string, keyValues: Partial<DbEntity>[]) => {
-    const { keys } = schema[tableName];
-
-    const atomCommand = generateAtomCommand(tableName, keyValues, keys);
-    const rmCommand = generateRmCommand(tableName, keys);
-    return `${atomCommand}\r\n${rmCommand}`;
-  };
-
-  const generateUpdate = (tableName: string, array: Partial<DbEntity>[]) => {
-    // align fields by first entity
-    const fields = Object.keys(array[0]);
-    const atomCommand = generateAtomCommand(tableName, array, fields);
-    const updateCommand = generateModifyCommand(tableName, 'update', fields);
-    return `${atomCommand}\r\n${updateCommand}`;
-  };
-
-  const generateGet = (
-    tableName: string,
-    selectFields: string[] = [],
-    conditions: string[] = [],
-    conditionFields: string[] = []
-  ) => {
-    const tableSchema = dbSchema[tableName];
-
-    const queryFields =
-      selectFields.length > 0 ? selectFields : Object.keys(tableSchema.columns);
-
-    const requiredFields = [...queryFields, ...conditionFields];
-
-    const conditionsStr =
-      conditions.length > 0 ? `, ${conditions.join(', ')} ` : '';
-
-    return `?[${queryFields.join(', ')}] := *${tableName}{${requiredFields.join(
-      ', '
-    )}} ${conditionsStr}`;
-  };
-
-  return {
-    generateModifyCommand,
-    generateAtomCommand,
-    generatePut,
-    generateGet,
-    generateUpdate,
-    generateRm,
-  };
-}
+type OnWrite = (writesCount: number) => void;
 
 function createCozoDb() {
   let db: CozoDb | undefined;
 
   let dbSchema: DBSchema = {};
   let commandFactory: ReturnType<typeof CozoDbCommandFactory> | undefined;
+  let onIndexedDbWrite: OnWrite | undefined;
 
-  async function init(
-    onWrite?: (writesCount: number) => void
-  ): Promise<CozoDb> {
-    await initCozoDb();
-
-    db = await CozoDb.new_from_indexed_db(DB_NAME, DB_STORE_NAME, onWrite);
-    dbSchema = await initDbSchema();
+  const loadCozoDb = async () => {
+    db = await CozoDb.new_from_indexed_db(
+      DB_NAME,
+      DB_STORE_NAME,
+      onIndexedDbWrite
+    );
+    await initDbSchema();
     commandFactory = CozoDbCommandFactory(dbSchema);
+  };
 
-    console.log('CozoDb schema initialized: ', dbSchema);
-    return db;
+  async function init(onWrite?: OnWrite): Promise<void> {
+    onIndexedDbWrite = onWrite;
+    await initCozoDb();
+    await loadCozoDb();
+
+    await migrate();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -149,8 +54,9 @@ function createCozoDb() {
     return result.rows.map((row) => row[0] as string);
   };
 
-  const initDbSchema = async (): Promise<DBSchema> => {
+  const initDbSchema = async (): Promise<void> => {
     let relations = await getRelations();
+
     if (relations.length === 0) {
       console.log('CozoDb: apply DB schema', initializeScript);
       await runCommand(initializeScript);
@@ -185,7 +91,8 @@ function createCozoDb() {
       })
     );
 
-    return Object.fromEntries(schemasMap);
+    dbSchema = Object.fromEntries(schemasMap);
+    console.log('CozoDb schema initialized: ', dbSchema);
   };
 
   const getVersion = async () => {
@@ -202,6 +109,18 @@ function createCozoDb() {
   };
 
   const migrate = async () => {
+    if (!dbSchema.config) {
+      console.log('💀 HARD RESET experemental db...');
+      await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
+      await loadCozoDb();
+      await put('config', [
+        {
+          key: 'DB_VERSION',
+          group_key: 'system',
+          value: DB_VERSION,
+        },
+      ]);
+    }
     // set initial version
     // await put('config', [
     //   {

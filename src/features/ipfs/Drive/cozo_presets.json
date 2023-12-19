@@ -33,6 +33,7 @@
     "?[from, to, t] := *transaction{type, value, timestamp}, type = 'cyber.graph.v1beta1.MsgCyberlink', links = get(value, 'links'), l_ = get(links, 0), from =get(l_,'from'), to =get(l_,'to'), t = format_timestamp(timestamp/1000)",
     ":order -t"
   ],
+  "config": "?[key, group_key, value] := *config{key, group_key, value}",
   "sense": [
     "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}",
     "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime",
