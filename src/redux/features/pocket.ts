@@ -1,7 +1,12 @@
 import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
-import { Account, Accounts, DefaultAccount } from 'src/types/defaultAccount';
+import {
+  Account,
+  AccountValue,
+  Accounts,
+  DefaultAccount,
+} from 'src/types/defaultAccount';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { POCKET } from '../../utils/config';
 import { RootState } from '../store';
@@ -24,6 +29,13 @@ const initialState: SliceState = {
   },
   accounts: null,
 };
+
+const checkAddress = (obj, network, address) =>
+  Object.keys(obj).some((k) => {
+    if (obj[k][network]) {
+      return obj[k][network].bech32 === address;
+    }
+  });
 
 function saveToLocalStorage(state: SliceState) {
   const { defaultAccount, accounts } = state;
@@ -177,4 +189,50 @@ export const initPocket = () => (dispatch: Dispatch) => {
     });
 
   accountsTemp && dispatch(setAccounts(accountsTemp));
+};
+
+export const addPocket = (accounts: AccountValue) => (dispatch: Dispatch) => {
+  let key = 'Account 1';
+  let count = 1;
+  let dataPocketAccount = null;
+  let valueObj = {};
+  let pocketAccount = {};
+
+  const localStorageStory = localStorage.getItem(
+    localStorageKeys.pocket.POCKET_ACCOUNT
+  );
+  const localStorageCount = localStorage.getItem('count');
+
+  if (localStorageCount !== null) {
+    const dataCount = JSON.parse(localStorageCount);
+    count = parseFloat(dataCount);
+    key = `Account ${count}`;
+  }
+  localStorage.setItem('count', JSON.stringify(count + 1));
+
+  if (localStorageStory !== null) {
+    dataPocketAccount = JSON.parse(localStorageStory);
+    valueObj = Object.values(dataPocketAccount);
+  }
+
+  const isAdded = !checkAddress(valueObj, 'cyber', accounts.bech32);
+
+  if (!isAdded) {
+    return;
+  }
+
+  const cyberAccounts: Account = {
+    cyber: accounts,
+  };
+
+  if (localStorageStory !== null) {
+    pocketAccount = { [key]: cyberAccounts, ...dataPocketAccount };
+  } else {
+    pocketAccount = { [key]: cyberAccounts };
+  }
+
+  if (Object.keys(pocketAccount).length > 0) {
+    dispatch(setAccounts(pocketAccount));
+    dispatch(setDefaultAccount({ name: key, account: cyberAccounts }));
+  }
 };
