@@ -31,6 +31,7 @@ import {
   getMyTokenBalanceNumber,
   calculateCounterPairAmount,
 } from './utils';
+import { useAdviser } from 'src/features/adviser/context';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -68,6 +69,35 @@ function Warp() {
     tokenBPoolAmount
   );
   const firstEffectOccured = useRef(false);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    let text;
+
+    switch (tab) {
+      case 'add-liquidity':
+        text = 'play with pools earn more values';
+        break;
+      case 'create-pool':
+        text = (
+          <>
+            the unlimited number of variations. combine your favorite tokens{' '}
+            <br /> cultivate your values. place of cyber alchemists
+          </>
+        );
+
+        break;
+      case 'sub-liquidity':
+        text = 'manage your liquidity';
+        break;
+
+      default:
+        break;
+    }
+
+    setAdviser(text);
+  }, [setAdviser, tab]);
 
   useEffect(() => {
     if (firstEffectOccured.current) {

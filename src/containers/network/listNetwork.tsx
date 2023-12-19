@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNetworks } from 'src/contexts/networks';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 import { ContainerGradientText } from '../../components';
 import BtnPasport from '../portal/pasport/btnPasport';
+import { useAdviser } from 'src/features/adviser/context';
 
 function ValueItem({ children }) {
   return (
@@ -34,6 +35,12 @@ const statusCard = (status) => {
 
 function ListNetwork() {
   const { networks, updateNetworks } = useNetworks();
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('runing cyber networks');
+  }, [setAdviser]);
 
   const onClickDeleteAddress = useCallback(
     (key) => {

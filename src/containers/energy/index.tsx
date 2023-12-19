@@ -10,6 +10,7 @@ import { useRobotContext } from 'src/pages/robot/robot.context';
 import Display from 'src/components/containerGradient/Display/Display';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { useAdviser } from 'src/features/adviser/context';
 
 function RoutedEnergy() {
   const location = useLocation();
@@ -20,6 +21,17 @@ function RoutedEnergy() {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const isOwner = currentAddress === address;
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        place to manage energy wisely. investmint and route <br />
+        both volts and amperes allow to create cyberlinks
+      </>
+    );
+  }, [setAdviser]);
 
   const {
     slotsData,

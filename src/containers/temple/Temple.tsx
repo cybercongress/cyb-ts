@@ -60,7 +60,12 @@ function Temple() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser('welcome to cyb');
+    setAdviser(
+      <>
+        welcome to the temple, home for knowledge about cyber and cyb <br />
+        cybertemple reduces uncertainty
+      </>
+    );
   }, [setAdviser]);
 
   return (
