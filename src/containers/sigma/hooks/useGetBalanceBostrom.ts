@@ -115,15 +115,13 @@ function useGetBalanceBostrom(address: Nullable<string>) {
         lastCap = lastCap.plus(JSON.parse(lastCapLs));
       }
 
-      console.log('lastCap', lastCap.toNumber());
       if (useGetCapTokens > 0) {
         const currentCap = new BigNumber(useGetCapTokens);
-        const changeCap = new BigNumber(0);
-        // let changeCap = currentCap.minus(lastCap).dp(0, BigNumber.ROUND_FLOOR);
+        let changeCap = currentCap.minus(lastCap).dp(0, BigNumber.ROUND_FLOOR);
 
-        // if (currentCap.comparedTo(changeCap) <= 0) {
-        //   changeCap = new BigNumber(0);
-        // }
+        if (currentCap.comparedTo(changeCap) <= 0) {
+          changeCap = new BigNumber(0);
+        }
 
         setTotalAmountInLiquid({
           change: changeCap.toNumber(),
@@ -144,7 +142,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
   return {
     totalAmountInLiquid,
     balanceMainToken,
-    balanceToken: {},
+    balanceToken,
     balances,
     totalAmountInLiquidOld,
   };
