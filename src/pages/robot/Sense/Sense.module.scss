@@ -1,0 +1,13 @@
+.wrapper {
+  display: flex;
+  justify-content: stretch;
+  align-content: stretch;
+
+  > :nth-child(2) {
+    flex: 1;
+
+    > div {
+      height: 100%;
+    }
+  }
+}

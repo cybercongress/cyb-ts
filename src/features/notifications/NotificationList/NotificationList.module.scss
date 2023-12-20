@@ -1,0 +1,9 @@
+.wrapper {
+  max-width: 40%;
+}
+
+.item {
+  &:hover {
+    opacity: 0.8;
+  }
+}

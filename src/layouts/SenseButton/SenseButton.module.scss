@@ -1,0 +1,13 @@
+.senseBtn {
+  display: flex;
+  flex-direction: column;
+
+  > span {
+    margin-top: 5px;
+    color: white;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

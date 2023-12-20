@@ -39,6 +39,9 @@ export const routes = {
       drive: {
         path: '/robot/drive',
       },
+      sense: {
+        path: '/robot/sense',
+      },
     },
   },
   robotPassport: {
