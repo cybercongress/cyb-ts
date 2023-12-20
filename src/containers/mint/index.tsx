@@ -270,12 +270,12 @@ function Mint() {
           justifyContent="center"
         >
           <CardStatisics
-            title={<ValueImg text="millivolt" />}
-            value={formatNumber(vestedV)}
-          />
-          <CardStatisics
             title={<ValueImg text="milliampere" />}
             value={formatNumber(vestedA)}
+          />
+          <CardStatisics
+            title={<ValueImg text="millivolt" />}
+            value={formatNumber(vestedV)}
           />
           <CardStatisics
             title="My Energy"
