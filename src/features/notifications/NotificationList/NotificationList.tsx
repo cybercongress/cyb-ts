@@ -10,12 +10,13 @@ import Display from 'src/components/containerGradient/Display/Display';
 import NItem from './NItem/NItem';
 import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
+import cx from 'classnames';
 
 type Props = {
   select: (id: string) => void;
 };
 
-function NotificationList({ select }: Props) {
+function NotificationList({ select, selected }: Props) {
   const { senseApi } = useBackend();
 
   const getListQuery = useQuery({
@@ -43,10 +44,12 @@ function NotificationList({ select }: Props) {
     <div className={styles.wrapper}>
       <Display noPaddingX>
         <ul>
-          <NItem
-            value="all new"
-            unreadCount={getSummaryQuery.data?.[0]?.unread}
-          />
+          <li>
+            <NItem
+              value="all new"
+              unreadCount={getSummaryQuery.data?.[0]?.unread}
+            />
+          </li>
           {/* <NItem value="my log" unreadCount={sum?.[0]?.unread} /> */}
           {getListQuery.isFetching ? (
             <Loader2 />
@@ -54,9 +57,13 @@ function NotificationList({ select }: Props) {
             getListQuery.data.map(
               ({ id, value, unreadCount, timestampUpdate }) => {
                 return (
-                  <li key={id}>
+                  <li
+                    key={id}
+                    className={cx(styles.item, {
+                      [styles.selected]: id === selected,
+                    })}
+                  >
                     <button
-                      className={styles.item}
                       type="button"
                       onClick={() => {
                         select(id);

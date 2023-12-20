@@ -28,7 +28,9 @@ function NItem({ unreadCount, address, timestamp, value }: Props) {
       )}
       <p className={styles.text}>{value}</p>
 
-      <time className={styles.time}>{dateFormat(timestamp, 'HH:MM')}</time>
+      <time className={styles.date}>
+        {dateFormat(timestamp, 'dd/mm HH:MM')}
+      </time>
       {unreadCount > 0 && (
         <Pill className={styles.unread} text={unreadCount}></Pill>
       )}

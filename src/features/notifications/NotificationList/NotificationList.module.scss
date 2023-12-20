@@ -1,9 +1,26 @@
+@import 'src/style/mixins';
+
 .wrapper {
   max-width: 40%;
+
+  > div {
+    // not good
+    padding: 0;
+  }
+
+  ul {
+    li {
+      &,
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+      }
+    }
+  }
 }
 
 .item {
+  &.selected,
   &:hover {
-    opacity: 0.8;
+    @include tableHover;
   }
 }

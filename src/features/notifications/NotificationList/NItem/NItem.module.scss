@@ -8,16 +8,25 @@
   grid-template-areas:
     'avatar title date'
     'avatar text  unread';
+
+  gap: 5px;
+
+  &::before {
+    content: '';
+    grid-area: title;
+  }
 }
 
 .avatar {
   grid-area: avatar;
   height: 50px;
   width: 50px;
+  border-radius: 100%;
 }
 
 .title {
   grid-area: title;
+  font-size: 16px;
 }
 
 .text {
@@ -33,8 +42,10 @@
 }
 
 .date {
+  text-align: right;
   grid-area: date;
   font-size: 12px;
+  white-space: nowrap;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -44,5 +55,5 @@
 
 .date,
 .unread {
-  align-self: flex-end;
+  justify-self: flex-end;
 }

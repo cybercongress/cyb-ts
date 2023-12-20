@@ -7,7 +7,10 @@ function Sense() {
   const [selected, setSelected] = useState<string>();
   return (
     <div className={styles.wrapper}>
-      <NotificationList select={(id: string) => setSelected(id)} />
+      <NotificationList
+        select={(id: string) => setSelected(id)}
+        selected={selected}
+      />
       <Area selected={selected} />
     </div>
   );

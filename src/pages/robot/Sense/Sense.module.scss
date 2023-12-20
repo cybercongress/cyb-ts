@@ -5,6 +5,8 @@
 
   > :nth-child(2) {
     flex: 1;
+    position: relative;
+    left: -2px;
 
     > div {
       height: 100%;
