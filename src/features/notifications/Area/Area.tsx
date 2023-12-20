@@ -4,6 +4,7 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import styles from './Area.module.scss';
 import { useBackend } from 'src/contexts/backend';
 import { Account } from 'src/components';
+import { useQuery } from '@tanstack/react-query';
 
 type Props = {
   selected: string | undefined;
@@ -12,31 +13,27 @@ type Props = {
 function Area({ selected }: Props) {
   const { senseApi } = useBackend();
 
-  useEffect(() => {
-    if (!senseApi || !selected) {
-      return;
-    }
+  const getListQuery = useQuery({
+    queryKey: ['senseApi', 'getList'],
+    queryFn: async () => {
+      return senseApi!.getList();
+    },
+    enabled: !!senseApi,
+  });
 
-    (async () => {
-      try {
-        const data = await senseApi?.getList();
-        console.log('----data', data);
-      } catch (error) {
-        console.error('----error', error);
-      }
-    })();
+  const value = getListQuery.data?.find((item) => item.id === selected)?.value;
 
-    (async () => {
-      try {
-        return;
-        const data = await senseApi?.markAsRead(selected);
-        console.log('----data', data);
-        debugger;
-      } catch (error) {
-        console.error('----error', error);
-      }
-    })();
-  }, [senseApi]);
+  //   (async () => {
+  //     try {
+  //       return;
+  //       const data = await senseApi?.markAsRead(selected);
+  //       console.log('----data', data);
+  //       debugger;
+  //     } catch (error) {
+  //       console.error('----error', error);
+  //     }
+  //   })();
+  // }, [senseApi]);
 
   return (
     <div className={styles.wrapper}>
@@ -50,8 +47,8 @@ function Area({ selected }: Props) {
         }
       >
         <div className={styles.content}>
-          {selected ? (
-            <div>{selected}</div>
+          {value ? (
+            <p>{value}</p>
           ) : (
             <p>
               post to your log, <br />

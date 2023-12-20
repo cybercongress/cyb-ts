@@ -25,7 +25,9 @@ function SenseButton({ className }) {
       className={cx(styles.senseBtn, className)}
       to={routes.robot.routes.sense.path}
     >
-      sense {unread > 0 && <span>{unread}</span>}
+      <span>⚪️</span>
+      <span>⚪️</span>
+      {unread > 0 && <span>{unread}</span>}
     </Link>
   );
 }

@@ -1,13 +1,19 @@
 .senseBtn {
   display: flex;
   flex-direction: column;
+  padding-left: 3px;
 
   > span {
+    &:not(:last-child) {
+      font-size: 5px;
+    }
     margin-top: 5px;
     color: white;
   }
 
   &:hover {
-    opacity: 0.8;
+    span {
+      color: var(--primary-color);
+    }
   }
 }
