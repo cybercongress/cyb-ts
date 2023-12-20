@@ -6,6 +6,7 @@ import { Nullable } from 'src/types';
 import { CYBER } from 'src/utils/config';
 import { Col, GridContainer } from '../../components/containers/Containers';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
+import styles from './TokenSetterSwap.module.scss';
 
 export const enum TokenSetterId {
   tokenAAmount = 'tokenAAmount',
@@ -102,7 +103,7 @@ function TokenSetterSwap({
             options={[
               {
                 value: 'warp',
-                text: <span style={{ textAlign: 'start' }}>warp</span>,
+                text: <span className={styles.defaultOptions}>warp</span>,
                 img: (
                   <DenomArr
                     denomValue={CYBER.CHAIN_ID}
