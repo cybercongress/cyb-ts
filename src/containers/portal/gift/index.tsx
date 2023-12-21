@@ -602,6 +602,8 @@ function PortalGift() {
       </MainContainer>
       {Math.floor(appStep) !== STEP_RELEASE && (
         <ActionBarPortalGift
+          currentBonus={currentBonus.current}
+          progressClaim={progressClaim}
           addressActive={addressActive}
           citizenship={citizenship}
           updateTxHash={updateTxHash}
