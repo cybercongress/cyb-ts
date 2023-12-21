@@ -28,11 +28,9 @@ function EntrySatus({
   name: string;
   progress: SyncProgress;
 }) {
-  return (
-    <div className={styles.tabbed}>{`${name}: ${progress.status} ${
-      progress.error || ''
-    }`}</div>
-  );
+  const msg = progress.error || progress.message ? `- ${progress.message}` : '';
+  const text = `${name}: ${progress.status} ${msg}`;
+  return <div className={styles.tabbed}>{text}</div>;
 }
 
 const BackendStatus = () => {

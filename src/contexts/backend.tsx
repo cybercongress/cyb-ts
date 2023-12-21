@@ -24,6 +24,7 @@ const createSenseApi = (dbApi: DbApi) => ({
   getSummary: () => dbApi.getSenseSummary(),
   getList: () => dbApi.getSenseList(),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
+  getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
 });
 
 const setupStoragePersistence = async () => {

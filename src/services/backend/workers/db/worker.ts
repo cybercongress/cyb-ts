@@ -3,6 +3,7 @@ import { DbEntity } from 'src/services/CozoDb/types/entities';
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types';
+import { GetCommandOptions } from 'src/services/CozoDb/types/types';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;
@@ -24,7 +25,10 @@ const createDbWorkerApi = () => {
 
     await cozoDb.init(onWriteCallback);
     isInitialized = true;
-    postServiceStatus('started');
+
+    setTimeout(() => {
+      postServiceStatus('started');
+    }, 0);
   };
 
   const runCommand = async (command: string) => cozoDb.runCommand(command);
@@ -48,8 +52,10 @@ const createDbWorkerApi = () => {
     tableName: string,
     selectFields?: string[],
     conditions?: string[],
-    conditionFields?: string[]
-  ) => cozoDb.get(tableName, conditions, selectFields, conditionFields);
+    conditionFields?: string[],
+    options: GetCommandOptions = {}
+  ) =>
+    cozoDb.get(tableName, conditions, selectFields, conditionFields, options);
 
   const importRelations = async (content: string) =>
     cozoDb.importRelations(content);

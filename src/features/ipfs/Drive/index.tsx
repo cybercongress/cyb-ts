@@ -48,22 +48,6 @@ function ServiceStatus({
   return <div>{`${icon} ${name} ${status} ${msg}`}</div>;
 }
 
-function EntrySatus({
-  name,
-  progress,
-}: {
-  name: string;
-  progress: SyncProgress;
-}) {
-  const msg = progress.message ? `- ${progress.message}` : '';
-
-  return (
-    <div className={styles.tabbed}>{`${name}: ${progress.status} ${
-      progress.error || msg
-    }`}</div>
-  );
-}
-
 // function SyncEntryStatus({
 //   entry,
 //   status,
@@ -351,7 +335,7 @@ function Drive() {
       ) : (
         <div className={styles.errorMessage}>{errorMessage}</div>
       )}
-      <Display color={Colors.GREEN}>
+      {/* <Display color={Colors.GREEN}>
         <div className={styles.list}>
           <h3>Backend status</h3>
           <ServiceStatus
@@ -370,14 +354,14 @@ function Drive() {
             message={services.sync.error}
           />
           {Object.keys(syncState.entryStatus).map((name) => (
-            <EntrySatus
-              key={`log_${name}`}
+            <EntryStatus
+              key={`entry_s_${name}`}
               name={name}
               progress={syncState.entryStatus[name]}
             />
           ))}
         </div>
-      </Display>
+      </Display> */}
     </>
   );
 }
