@@ -43,37 +43,37 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
   }, []);
 
   useEffect(() => {
-    const getBalances = async () => {
-      if (queryClient && pools) {
-        setLoading(true);
-        const newArrPools: PoolsWithAssetsType[] = [];
-        // TODO: use Promise.all
-        for (let index = 0; index < pools.length; index += 1) {
-          const pool = pools[index];
-          const assetsData: AssetsType = {};
-          const { reserveAccountAddress } = pool;
-
-          const getBalancePromise = await queryClient.getAllBalances(
-            reserveAccountAddress
-          );
-          const dataReduceBalances = reduceBalances(getBalancePromise);
-          Object.keys(dataReduceBalances).forEach((key) => {
-            const amount = new BigNumber(dataReduceBalances[key]).toNumber();
-            const [{ coinDecimals }] = traseDenom(key);
-            const reduceAmoun = convertAmount(amount, coinDecimals);
-            assetsData[key] = reduceAmoun;
-          });
-          if (Object.keys(assetsData).length > 0) {
-            newArrPools.push({ ...pool, assets: { ...assetsData } });
-          }
-        }
-        setPoolsBal(newArrPools);
-        setLoading(false);
+    (async () => {
+      if (!queryClient || !pools) {
+        return;
       }
-    };
-    getBalances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryClient, pools]);
+      setLoading(true);
+      const newArrPools: PoolsWithAssetsType[] = [];
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const pool of pools) {
+        const assetsData: AssetsType = {};
+        const { reserveAccountAddress } = pool;
+
+        const getBalancePromise = await queryClient.getAllBalances(
+          reserveAccountAddress
+        );
+
+        const dataReduceBalances = reduceBalances(getBalancePromise);
+        Object.keys(dataReduceBalances).forEach((key) => {
+          const amount = new BigNumber(dataReduceBalances[key]).toNumber();
+          const [{ coinDecimals }] = traseDenom(key);
+          const reduceAmoun = convertAmount(amount, coinDecimals);
+          assetsData[key] = reduceAmoun;
+        });
+        if (Object.keys(assetsData).length > 0) {
+          newArrPools.push({ ...pool, assets: { ...assetsData } });
+        }
+      }
+
+      setPoolsBal(newArrPools);
+      setLoading(false);
+    })();
+  }, [queryClient, pools, traseDenom]);
 
   useEffect(() => {
     if (poolsBal.length > 0) {
