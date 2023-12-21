@@ -5,6 +5,7 @@ import {
   ParticleDbEntity,
   ConfigDbEntity,
   LinkDbEntity,
+  SyncQueueDbEntity,
 } from './entities';
 
 // Utility type to capitalize the first letter of a string
@@ -28,3 +29,4 @@ export type TransactionDto = DbEntityToDto<TransactionDbEntity>;
 export type ParticleDto = DbEntityToDto<ParticleDbEntity>;
 export type ConfigDto = DbEntityToDto<ConfigDbEntity>;
 export type LinkDto = DbEntityToDto<LinkDbEntity>;
+export type SyncQueueDto = DbEntityToDto<SyncQueueDbEntity>;

@@ -37,6 +37,7 @@ class BroadcastChannelSender {
   }
 
   public postSyncEntryProgress(entry: SyncEntryName, state: SyncProgress) {
+    // console.log('postSyncEntryProgress', entry, state);
     this.channel.postMessage({ type: 'sync_entry', value: { entry, state } });
   }
 

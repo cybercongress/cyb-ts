@@ -6,6 +6,7 @@ import {
   DBSchema,
   IDBResultError,
   TableSchema,
+  GetCommandOptions,
 } from './types/types';
 import { DbEntity, ConfigDbEntity } from './types/entities';
 
@@ -42,7 +43,7 @@ function createCozoDb() {
     await initCozoDb();
     await loadCozoDb();
 
-    await migrate();
+    // await migrate();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -59,7 +60,12 @@ function createCozoDb() {
 
     if (relations.length === 0) {
       console.log('CozoDb: apply DB schema', initializeScript);
-      await runCommand(initializeScript);
+      const result = await runCommand(initializeScript);
+      if (!result.ok) {
+        throw new Error(
+          `DB SCHEMA INITIALIZATION FAILED. \r\n ${result.message}`
+        );
+      }
       relations = await getRelations();
     }
 
@@ -92,7 +98,7 @@ function createCozoDb() {
     );
 
     dbSchema = Object.fromEntries(schemasMap);
-    console.log('CozoDb schema initialized: ', dbSchema);
+    console.log('CozoDb schema initialized: ', dbSchema, relations, schemasMap);
   };
 
   const getVersion = async () => {
@@ -112,7 +118,7 @@ function createCozoDb() {
     if (!dbSchema.config) {
       console.log('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
-      await loadCozoDb();
+      await init(onIndexedDbWrite);
       await put('config', [
         {
           key: 'DB_VERSION',
@@ -169,14 +175,16 @@ function createCozoDb() {
     tableName: string,
     selectFields: string[] = [],
     conditions: string[] = [],
-    conditionFields: string[] = []
+    conditionFields: string[] = [],
+    options: GetCommandOptions = {}
   ): Promise<IDBResult | IDBResultError> =>
     runCommand(
       commandFactory!.generateGet(
         tableName,
         conditions,
         selectFields,
-        conditionFields
+        conditionFields,
+        options
       ),
       true
     );

@@ -1,4 +1,4 @@
-import { Column, DBSchema } from './types/types';
+import { Column, DBSchema, GetCommandOptions } from './types/types';
 import { DbEntity } from './types/entities';
 import { entityToArray } from './utils';
 
@@ -79,7 +79,8 @@ export function CozoDbCommandFactory(dbSchema: DBSchema) {
     tableName: string,
     selectFields: string[] = [],
     conditions: string[] = [],
-    conditionFields: string[] = []
+    conditionFields: string[] = [],
+    options: GetCommandOptions = {}
   ) => {
     const tableSchema = dbSchema[tableName];
 
@@ -91,9 +92,12 @@ export function CozoDbCommandFactory(dbSchema: DBSchema) {
     const conditionsStr =
       conditions.length > 0 ? `, ${conditions.join(', ')} ` : '';
 
+    const orderByStr = options.orderBy ? `:order ${options.orderBy}` : '';
+    const limitStr = options.limit ? `:limit ${options.limit}` : '';
+    const offsetStr = options.limit ? `:offset ${options.offset}` : '';
     return `?[${queryFields.join(', ')}] := *${tableName}{${requiredFields.join(
       ', '
-    )}} ${conditionsStr}`;
+    )}} ${conditionsStr} ${orderByStr} ${limitStr} ${offsetStr}`;
   };
 
   return {

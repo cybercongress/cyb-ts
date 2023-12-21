@@ -55,3 +55,11 @@
         value: Json
     }
 }
+
+{
+    :create sync_queue {
+        id: String =>
+        status: Int default 0,
+        priority: Int default 0,
+    }
+}

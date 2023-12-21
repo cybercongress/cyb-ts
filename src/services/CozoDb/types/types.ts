@@ -39,3 +39,9 @@ export type IndexedDbWriteMessage = {
   type: 'indexeddb_write';
   value: number;
 };
+
+export type GetCommandOptions = {
+  limit?: number;
+  offset?: number;
+  orderBy?: string[];
+};

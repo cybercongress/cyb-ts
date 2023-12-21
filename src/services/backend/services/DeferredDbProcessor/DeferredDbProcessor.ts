@@ -1,24 +1,16 @@
-import {
-  BehaviorSubject,
-  concatMap,
-  defer,
-  filter,
-  from,
-  mergeMap,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, defer, filter, from, mergeMap, tap } from 'rxjs';
 import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 
 import { v4 as uuidv4 } from 'uuid';
-import { LinkDbEntity } from 'src/services/CozoDb/types/entities';
 import { ParticleCid } from 'src/types/base';
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
 import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
+import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 type QueueItem = {
   content?: IPFSContent;
-  links?: LinkDbEntity[];
+  links?: LinkDto[];
 };
 
 class DeferredDbProcessor implements IDefferedDbProcessor {
@@ -55,34 +47,30 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
       return;
     }
     const { cid } = content;
-    const queue = this.queue$.value;
-    queue.set(cid, { content });
-    this.queue$.next(queue);
+    this.queue$.next(new Map(this.queue$.value).set(cid, { content }));
   }
 
-  public enqueueLinks(links: LinkDbEntity[]) {
+  public enqueueLinks(links: LinkDto[]) {
     if (!links || !links.length) {
       return;
     }
-    const queue = this.queue$.value;
-
     const id = uuidv4();
-
-    queue.set(id, { links });
-
-    this.queue$.next(queue);
+    this.queue$.next(new Map(this.queue$.value).set(id, { links }));
   }
 
   private async processQueue() {
-    const queue = this.queue$.value;
-    console.log('---POSTPROCESSING QUEUE', queue);
+    const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
+    this.queue$.next(new Map());
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const [cid, item] of queue) {
-      this.processQueueItem(item);
-      queue.delete(cid);
+    for (const [cid, item] of processingQueue) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.processQueueItem(item);
+      // console.log(' deffered DB done ', cid, item);
+
+      processingQueue.delete(cid);
     }
-    this.queue$.next(queue);
+    // this.queue$.next(queue);
   }
 
   private async processQueueItem(queueItem: QueueItem) {

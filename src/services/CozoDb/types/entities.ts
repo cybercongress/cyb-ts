@@ -63,8 +63,27 @@ export type LinkDbEntity = {
   timestamp: number;
 };
 
+export type ConfigDbEntity = {
+  key: string;
+  group_key: string;
+  value: Object;
+};
+
+export enum SyncQueueStatus {
+  pending = 0,
+  done = 1,
+  error = -1,
+}
+
+export type SyncQueueDbEntity = {
+  id: string;
+  status: SyncQueueStatus;
+  priority: number;
+};
+
 export type DbEntity =
   | TransactionDbEntity
   | ParticleDbEntity
   | SyncStatusDbEntity
-  | ConfigDbEntity;
+  | ConfigDbEntity
+  | SyncQueueDbEntity;

@@ -14,8 +14,6 @@ import QueueManager from 'src/services/QueueManager/QueueManager';
 
 // import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
 
-import { LinkDbEntity } from 'src/services/CozoDb/types/entities';
-
 import {
   QueueItemCallback,
   QueueItemOptions,
@@ -31,6 +29,7 @@ import { DbApi } from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbProcessor';
+import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 const createBackgroundWorkerApi = () => {
   let ipfsNode: CybIpfsNode | undefined;
@@ -165,8 +164,7 @@ const createBackgroundWorkerApi = () => {
   };
 
   const defferedDbApi = {
-    importCyberlinks: (links: LinkDbEntity[]) => {
-      console.log('-----importCyberlinks');
+    importCyberlinks: (links: LinkDto[]) => {
       defferedDbProcessor.enqueueLinks(links);
     },
     // importParticle: async (cid: string) => {

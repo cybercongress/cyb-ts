@@ -87,6 +87,12 @@ export function transformListToDbEntity<T extends Record<string, any>>(
   return array.map((dto) => transformToDbEntity(dto)) as Partial<T>[];
 }
 
+export function transformListToDto<T extends Record<string, any>>(
+  array: T[]
+): T[] {
+  return array.map((dto) => transformToDto(dto)) as Partial<T>[];
+}
+
 export function removeUndefinedFields(entity: Record<string, any>) {
   Object.keys(entity).forEach((key) => {
     if (entity[key] === undefined) {

@@ -5,6 +5,7 @@ import {
   PinDbEntity,
   SyncStatusDbEntity,
   TransactionDbEntity,
+  SyncQueueStatus,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -21,7 +22,12 @@ import {
 } from 'src/services/CozoDb/utils';
 
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import {
+  LinkDto,
+  ParticleDto,
+  SyncQueueDto,
+  SyncStatusDto,
+} from 'src/services/CozoDb/types/dto';
 
 import { SenseResult, SenseUnread } from './type';
 
@@ -129,10 +135,10 @@ function DbApiWrapper() {
       pins.map((cid) => ({ cid } as Partial<PinDbEntity>))
     );
 
-  const putParticles = async (
-    particles: ParticleDbEntity[] | ParticleDbEntity
-  ) => {
-    const entitites = Array.isArray(particles) ? particles : [particles];
+  const putParticles = async (particles: ParticleDto[] | ParticleDto) => {
+    const entitites = transformListToDbEntity(
+      Array.isArray(particles) ? particles : [particles]
+    );
     await db!.executePutCommand('particle', entitites);
   };
 
@@ -155,6 +161,7 @@ function DbApiWrapper() {
     dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime
     dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''
     ?[${valueNames}] := dt[${valueNames}]
+    :order -timestamp_update
     `;
 
     const result = await db!.runCommand(command);
@@ -180,7 +187,12 @@ function DbApiWrapper() {
       ['id']
     );
     const timestampUpdate = result.rows[0];
-    updateSyncStatus(id, timestampUpdate, timestampUpdate, 0);
+    updateSyncStatus({
+      id,
+      timestampUpdate,
+      timestampRead: timestampUpdate,
+      unreadCount: 0,
+    });
   };
 
   const getTransactions = async (neuron: NeuronAddress) => {
@@ -193,7 +205,7 @@ function DbApiWrapper() {
     return dbResultToDtoList(result);
   };
 
-  const putCyberlinks = async (links: LinkDbEntity[] | LinkDbEntity) => {
+  const putCyberlinks = async (links: LinkDto[] | LinkDto) => {
     const entitites = Array.isArray(links) ? links : [links];
     //     await dbApi.executeBatchPutCommand(
     //       'link',
@@ -202,6 +214,50 @@ function DbApiWrapper() {
     //     );
     console.log('------putCyberlinks', entitites);
     return db!.executePutCommand('link', entitites);
+  };
+
+  const putSyncQueue = async (
+    item: Omit<SyncQueueDto, 'status'>[] | Omit<SyncQueueDto, 'status'>
+  ) => {
+    const entitites = Array.isArray(item) ? item : [item];
+    return db!.executePutCommand('sync_queue', entitites);
+  };
+
+  const updateSyncQueue = async (
+    item: Partial<SyncQueueDto>[] | Partial<SyncQueueDto>
+  ) => {
+    const entitites = Array.isArray(item) ? item : [item];
+    return db!.executeUpdateCommand('sync_queue', entitites);
+  };
+
+  const removeSyncQueue = async (id: ParticleCid) => {
+    return db!.executeRmCommand('sync_queue', [{ id }]);
+  };
+
+  const getSyncQueue = async ({
+    statuses,
+    limit,
+  }: {
+    statuses: SyncQueueStatus[];
+    limit?: number;
+  }): Promise<SyncQueueDto[]> => {
+    const result = await db!.executeGetCommand(
+      'sync_queue',
+      ['id', 'status', 'priority'],
+      [`status in [${statuses.join(',')}]`],
+      [],
+      { orderBy: ['-priority'], limit }
+    );
+
+    if (!result.ok) {
+      throw new Error(result.message);
+    }
+
+    return result.rows.map((row) => ({
+      id: row[0] as string,
+      status: row[1] as SyncQueueStatus,
+      priority: row[2] as number,
+    }));
   };
 
   return {
@@ -221,6 +277,10 @@ function DbApiWrapper() {
     senseMarkAsRead,
     getTransactions,
     putCyberlinks,
+    putSyncQueue,
+    updateSyncQueue,
+    getSyncQueue,
+    removeSyncQueue,
   };
 }
 const dbApiWrapperInstance = DbApiWrapper();
