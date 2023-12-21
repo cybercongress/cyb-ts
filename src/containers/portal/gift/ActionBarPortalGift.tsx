@@ -4,10 +4,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice, coin } from '@cosmjs/launchpad';
-import { toAscii, toBase64, toUtf8 } from '@cosmjs/encoding';
+import { GasPrice } from '@cosmjs/launchpad';
+import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import { useDispatch, useSelector } from 'react-redux';
+import { Citizenship } from 'src/types/citizenship';
+import { RootState } from 'src/redux/store';
+import { useBackend } from 'src/contexts/backend';
 import txs from '../../../utils/txs';
 import {
   Dots,
@@ -15,12 +20,11 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_CYBER } from '../../../utils/config';
+import { CYBER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
-  CONTRACT_ADDRESS_GIFT,
   BOOT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
@@ -32,17 +36,12 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import { Citizenship } from 'src/types/citizenship';
-import { RootState } from 'src/redux/store';
-import { useBackend } from 'src/contexts/backend';
-import BigNumber from 'bignumber.js';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import mssgsClaim from './utilsMsgs';
+import { ClaimMsg } from './type';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -62,15 +61,6 @@ const deleteAddressMsg = (address, nickname) => {
       address,
       nickname,
     },
-  };
-};
-
-type ClaimMsg = {
-  claim: {
-    proof: string[];
-    gift_amount: string;
-    gift_claiming_address: string;
-    nickname: string;
   };
 };
 
@@ -356,8 +346,6 @@ function ActionBarPortalGift({
         }
       }
 
-      const multipliedBy = new BigNumber(progressClaim).dividedBy(100);
-
       if (
         signer &&
         signingClient &&
@@ -373,7 +361,9 @@ function ActionBarPortalGift({
             const msgObject = claimMsg(nickname, address, amount, proof);
             msgs.push(msgObject);
           });
-          const { bech32Address } = await signer.keplr.getKey(CYBER.CHAIN_ID);
+          const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
+            CYBER.CHAIN_ID
+          );
 
           if (!msgs.length) {
             return;
@@ -381,52 +371,21 @@ function ActionBarPortalGift({
 
           const elementMsg: ClaimMsg[] = groupMsg(msgs, 1)[0] as ClaimMsg[];
 
-          const MsgsBroadcast = [];
-          const soft3js = new Soft3jsMsgs(bech32Address);
-
-          elementMsg.forEach((item) => {
-            const amountStake = new BigNumber(item.claim.gift_amount)
-              .multipliedBy(currentBonus)
-              .multipliedBy(multipliedBy)
-              .dp(0, BigNumber.ROUND_FLOOR);
-
-            MsgsBroadcast.push(soft3js.execute(CONTRACT_ADDRESS_GIFT, item));
-            multipliedBy.comparedTo(0) &&
-              MsgsBroadcast.push(
-                soft3js.delegateTokens(
-                  'bostromvaloper1ydc5fy9fjdygvgw36u49yj39fr67pd9m5qexm8',
-                  coin(amountStake.toString(), Soft3jsMsgs.denom())
-                ),
-                soft3js.investmint(
-                  coin(
-                    amountStake
-                      .dividedBy(2)
-                      .dp(0, BigNumber.ROUND_FLOOR)
-                      .toString(),
-                    Soft3jsMsgs.liquidDenom()
-                  ),
-                  'milliampere',
-                  1041
-                ),
-                soft3js.investmint(
-                  coin(
-                    amountStake
-                      .dividedBy(2)
-                      .dp(0, BigNumber.ROUND_FLOOR)
-                      .toString(),
-                    Soft3jsMsgs.liquidDenom()
-                  ),
-                  'millivolt',
-                  1041
-                )
-              );
-          });
+          const MsgsBroadcast = mssgsClaim(
+            elementMsg,
+            {
+              sender: bech32Address,
+              isNanoLedger,
+            },
+            { progressClaim, currentBonus },
+            'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
+          );
 
           if (!MsgsBroadcast.length) {
             return;
           }
 
-          const gasLimits = 500000 * MsgsBroadcast.length;
+          const gasLimits = 150000 * MsgsBroadcast.length;
 
           const executeResponseResult = await signingClient.signAndBroadcast(
             bech32Address,
