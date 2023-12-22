@@ -17,8 +17,11 @@ const mssgsClaim = (
 
   const amountStake = new BigNumber(availableRelease);
 
+  releaseMsg.forEach((item) => {
+    MsgsBroadcast.push(soft3js.execute(CONTRACT_ADDRESS_GIFT, item));
+  });
+
   MsgsBroadcast.push(
-    soft3js.execute(CONTRACT_ADDRESS_GIFT, releaseMsg),
     soft3js.delegateTokens(
       validatorAddress,
       coin(amountStake.toString(), Soft3jsMsgs.denom())
