@@ -34,7 +34,7 @@ import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbPr
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
 
-  const ipfsInstance$ = new Subject<CybIpfsNode | undefined>();
+  const ipfsInstance$ = new BehaviorSubject<CybIpfsNode | undefined>(undefined);
 
   const params$ = new BehaviorSubject<SyncServiceParams>({
     myAddress: null,
@@ -64,6 +64,9 @@ const createBackgroundWorkerApi = () => {
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     // proxy to worker with db
     dbInstance$.next(dbApiProxy);
+    if (ipfsNode) {
+      broadcastApi.postServiceStatus('ipfs', 'started');
+    }
   };
 
   const stopIpfs = async () => {
@@ -126,6 +129,7 @@ const createBackgroundWorkerApi = () => {
 
   return {
     init,
+    isInitialized: () => !!ipfsInstance$.value,
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     defferedDbApi: proxy(defferedDbApi),

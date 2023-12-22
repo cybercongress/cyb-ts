@@ -108,8 +108,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [isReady]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
-
     backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
     });
@@ -121,9 +121,32 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           : '🧬 Starting backend in PROD mode...'
       );
       await setupStoragePersistence();
+      console.log(
+        '----statys',
+        await backgroundWorkerInstance.isInitialized(),
+        await cozoDbWorkerInstance.isInitialized()
+      );
+
+      const ipfsLoadPromise = async () => {
+        const isInitialized = await backgroundWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 Background worker already active.');
+          return Promise.resolve();
+        }
+        return loadIpfs();
+      };
+
+      const cozoDbLoadPromise = async () => {
+        const isInitialized = await cozoDbWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 CozoDb worker already active.');
+          return Promise.resolve();
+        }
+        return loadCozoDb();
+      };
 
       // Loading non-blocking, when ready  state.backend.services.* should be changef
-      Promise.all([loadIpfs(), loadCozoDb()]);
+      Promise.all([ipfsLoadPromise(), cozoDbLoadPromise()]);
     })();
 
     // return () => channel.close();
