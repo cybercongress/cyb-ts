@@ -632,6 +632,7 @@ function PortalGift() {
           totalRelease={totalRelease}
           loadingRelease={loadingRelease}
           redirectFunc={redirectFunc}
+          useReleasedStage={useReleasedStage}
         />
       )}
     </>

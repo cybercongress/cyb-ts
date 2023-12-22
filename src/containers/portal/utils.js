@@ -8,7 +8,7 @@ const CONSTITUTION_HASH = 'QmcHB9GKHAKCLQhmSj71qNJhENJJg8Gymd1PvvsCQBhG7M';
 
 // test root
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1kytv5yjkkszr2zs8937lp6kvqhxxx2e429qwqk2dr7rh99pklf9scxlrwx';
+  'bostrom1dwzfa74hzpt6393czajlldnxjup8zk3xh3skegnm67yzqx33k2cssyduk8';
 // const CONTRACT_ADDRESS_PASSPORT =
 //   'bostrom1fzm6gzyccl8jvdv3qq6hp9vs6ylaruervs4m06c7k0ntzn2f8faq7ha2z2';
 

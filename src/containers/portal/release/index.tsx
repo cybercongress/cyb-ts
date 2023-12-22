@@ -368,6 +368,7 @@ function Release() {
         }}
         selectedAddress={selectedAddress}
         currentRelease={currentRelease}
+        useReleasedStage={useReleasedStage}
         totalGift={totalGift}
         totalRelease={totalRelease}
         loadingRelease={loadingRelease}

@@ -10,6 +10,8 @@ import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import mssgsClaim from '../gift/utilsMsgs';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -34,6 +36,13 @@ type Props = {
   currentRelease: Nullable<CurrentRelease[]>;
   redirectFunc: (steps: 'claim' | 'prove') => void;
   callback?: (error: string) => void;
+  useReleasedStage: {
+    alreadyClaimed: number;
+    availableRelease: number;
+    gift: number;
+    leftRelease: number;
+    released: number;
+  };
 };
 
 function ActionBarRelease({
@@ -46,12 +55,23 @@ function ActionBarRelease({
   totalRelease,
   loadingRelease,
   callback,
+  useReleasedStage,
   addressActive,
   redirectFunc,
 }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
+
+  const [currentTx, setCurrentTx] = useState<{
+    hash: string;
+    onSuccess: () => void;
+  }>();
+
+  useWaitForTransaction({
+    hash: currentTx?.hash,
+    onSuccess: currentTx?.onSuccess,
+  });
 
   const getRelease = useCallback(async () => {
     try {
@@ -86,6 +106,13 @@ function ActionBarRelease({
               status: 'pending',
               txHash: executeResponseResult.transactionHash,
             });
+
+            setCurrentTx({
+              hash: executeResponseResult.transactionHash,
+              onSuccess: () => {
+                delegateAndMint();
+              },
+            });
           }
 
           if (executeResponseResult.code) {
@@ -106,6 +133,43 @@ function ActionBarRelease({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, signingClient, currentRelease]);
+
+  const delegateAndMint = useCallback(async () => {
+    if (!signer || !signingClient || !useReleasedStage.availableRelease) {
+      return;
+    }
+
+    const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
+      CYBER.CHAIN_ID
+    );
+
+    const MsgsBroadcast = mssgsClaim(
+      {
+        sender: bech32Address,
+        isNanoLedger,
+      },
+      useReleasedStage.availableRelease,
+      'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
+    );
+
+    if (!MsgsBroadcast.length) {
+      return;
+    }
+
+    const executeResponseResult = await signingClient.signAndBroadcast(
+      bech32Address,
+      [...MsgsBroadcast],
+      'auto',
+      'cyber'
+    );
+
+    if (executeResponseResult.code === 0) {
+      updateTxHash({
+        status: 'pending',
+        txHash: executeResponseResult.transactionHash,
+      });
+    }
+  }, [signer, signingClient, useReleasedStage]);
 
   useEffect(() => {
     const checkAddress = async () => {

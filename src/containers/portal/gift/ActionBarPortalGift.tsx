@@ -20,12 +20,17 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_CYBER } from '../../../utils/config';
+import {
+  CYBER,
+  DEFAULT_GAS_LIMITS,
+  PATTERN_CYBER,
+} from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
   BOOT_ICON,
+  CONTRACT_ADDRESS_GIFT,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import STEP_INFO from './utils';
@@ -369,42 +374,19 @@ function ActionBarPortalGift({
             return;
           }
 
-          const elementMsg: ClaimMsg[] = groupMsg(msgs, 1)[0] as ClaimMsg[];
+          let elementMsg = msgs;
 
-          const MsgsBroadcast = mssgsClaim(
-            elementMsg,
-            {
-              sender: bech32Address,
-              isNanoLedger,
-            },
-            { progressClaim, currentBonus },
-            'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
-          );
-
-          if (!MsgsBroadcast.length) {
-            return;
+          if (isNanoLedger) {
+            elementMsg = groupMsg(msgs, 1)[0] as ClaimMsg[];
           }
 
-          const gasLimits = 400000 * MsgsBroadcast.length;
-
-          const fee = {
-            amount: [],
-            gas: gasLimits.toString(),
-          };
-
-          const executeResponseResult = await signingClient.signAndBroadcast(
+          const executeResponseResult = await signingClient.executeArray(
             bech32Address,
-            [...MsgsBroadcast],
-            fee,
+            CONTRACT_ADDRESS_GIFT,
+            elementMsg,
+            'auto',
             'cyber'
           );
-          // const executeResponseResult = await signingClient.executeArray(
-          //   bech32Address,
-          //   CONTRACT_ADDRESS_GIFT,
-          //   elementMsg,
-          //   'auto',
-          //   'cyber'
-          // );
 
           console.log('executeResponseResult', executeResponseResult);
           if (executeResponseResult.code === 0) {
@@ -412,11 +394,12 @@ function ActionBarPortalGift({
               status: 'pending',
               txHash: executeResponseResult.transactionHash,
             });
-            // setStep(STEP_INIT);
+
             if (setLoadingGift) {
               setLoadingGift(true);
             }
             setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
+            // setStep(STEP_INIT);
           }
 
           if (executeResponseResult.code) {
