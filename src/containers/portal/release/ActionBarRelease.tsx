@@ -91,38 +91,60 @@ function ActionBarRelease({
             });
         }
 
-        if (msgs.length > 0) {
-          const executeResponseResult = await signingClient.executeArray(
-            addressKeplr,
-            CONTRACT_ADDRESS_GIFT,
-            msgs,
-            'auto',
-            CYBER.MEMO_KEPLR
-          );
-
-          console.log('executeResponseResult', executeResponseResult);
-          if (executeResponseResult.code === 0) {
-            updateTxHash({
-              status: 'pending',
-              txHash: executeResponseResult.transactionHash,
-            });
-
-            setCurrentTx({
-              hash: executeResponseResult.transactionHash,
-              onSuccess: () => {
-                delegateAndMint();
-              },
-            });
-          }
-
-          if (executeResponseResult.code) {
-            updateTxHash({
-              txHash: executeResponseResult?.transactionHash,
-              status: 'error',
-              rawLog: executeResponseResult?.rawLog.toString(),
-            });
-          }
+        if (msgs.length === 0) {
+          return;
         }
+
+        const MsgsBroadcast = mssgsClaim(
+          {
+            sender: addressKeplr,
+            isNanoLedger,
+          },
+          msgs,
+          useReleasedStage.availableRelease,
+          'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
+        );
+
+        if (!MsgsBroadcast.length) {
+          return;
+        }
+
+        const gasLimit = 400000 * MsgsBroadcast.length
+
+        const fee = {
+          amount: [],
+          gas: gasLimit.toString(),
+        };
+        const executeResponseResult = await signingClient.signAndBroadcast(
+          addressKeplr,
+          [...MsgsBroadcast],
+          fee,
+          'cyber'
+        );
+        // const executeResponseResult = await signingClient.executeArray(
+        //   addressKeplr,
+        //   CONTRACT_ADDRESS_GIFT,
+        //   msgs,
+        //   'auto',
+        //   CYBER.MEMO_KEPLR
+        // );
+
+        console.log('executeResponseResult', executeResponseResult);
+        if (executeResponseResult.code === 0) {
+          updateTxHash({
+            status: 'pending',
+            txHash: executeResponseResult.transactionHash,
+          });
+        }
+
+        if (executeResponseResult.code) {
+          updateTxHash({
+            txHash: executeResponseResult?.transactionHash,
+            status: 'error',
+            rawLog: executeResponseResult?.rawLog.toString(),
+          });
+        }
+
         setStep(STEP_INIT);
       }
     } catch (error) {

@@ -1,11 +1,13 @@
 import Soft3jsMsgs from 'src/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { coin } from '@cosmjs/launchpad';
+import { CONTRACT_ADDRESS_GIFT } from '../utils';
 
 const LENGTH_INVESTMINT = 1041;
 
 const mssgsClaim = (
   signerInfo: { sender: string; isNanoLedger: boolean },
+  releaseMsg: object[],
   availableRelease: number,
   validatorAddress: string
 ) => {
@@ -16,6 +18,7 @@ const mssgsClaim = (
   const amountStake = new BigNumber(availableRelease);
 
   MsgsBroadcast.push(
+    soft3js.execute(CONTRACT_ADDRESS_GIFT, releaseMsg),
     soft3js.delegateTokens(
       validatorAddress,
       coin(amountStake.toString(), Soft3jsMsgs.denom())
