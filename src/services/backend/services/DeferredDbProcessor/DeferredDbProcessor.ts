@@ -1,4 +1,12 @@
-import { BehaviorSubject, defer, filter, from, mergeMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  defer,
+  Observable,
+  filter,
+  from,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 
@@ -18,14 +26,16 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     Map<ParticleCid | typeof uuidv4, QueueItem>
   >(new Map());
 
-  private isInitialized$ = new BehaviorSubject(false);
-
   private dbApi: DbApi | undefined;
 
-  constructor() {
-    this.isInitialized$
+  constructor(dbInstance$: Observable<DbApi | undefined>) {
+    dbInstance$.subscribe((db) => {
+      this.dbApi = db;
+    });
+
+    dbInstance$
       .pipe(
-        filter((isInitialized) => isInitialized === true),
+        filter((dbInstance) => !!dbInstance),
         tap(() => console.log('DeferredDbProcessor - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
@@ -35,11 +45,6 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
         // next: () => console.log('Queue processed'),
         error: (err) => console.error('Error processing IPFS queue', err),
       });
-  }
-
-  public init(dbApi: DbApi) {
-    this.dbApi = dbApi;
-    this.isInitialized$.next(true);
   }
 
   public enuqueIpfsContent(content: IPFSContentMaybe) {

@@ -19,124 +19,58 @@ import {
   QueueItemOptions,
 } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
-
+import { LinkDto } from 'src/services/CozoDb/types/dto';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { exposeWorkerApi } from '../factoryMethods';
 
 import { SyncService } from '../../services/sync/sync';
-import { SyncServiceParams } from '../../services/sync/type';
+import { SyncServiceParams } from '../../services/sync/types';
 
 import { DbApi } from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbProcessor';
-import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 const createBackgroundWorkerApi = () => {
+  const dbInstance$ = new Subject<DbApi | undefined>();
+
+  const ipfsInstance$ = new Subject<CybIpfsNode | undefined>();
+
+  const params$ = new BehaviorSubject<SyncServiceParams>({
+    myAddress: null,
+    followings: [],
+  });
+
   let ipfsNode: CybIpfsNode | undefined;
-  const defferedDbProcessor = new DeferredDbProcessor();
+  const defferedDbProcessor = new DeferredDbProcessor(dbInstance$);
 
   const ipfsQueue = new QueueManager({ defferedDbProcessor });
   const broadcastApi = new BroadcastChannelSender();
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
 
-  const fetchIpfsContent = async (cid: ParticleCid) =>
+  const resolveAndSaveParticle = async (cid: ParticleCid) =>
     ipfsQueue.enqueueAndWait(cid, { postProcessing: true });
 
-  const syncService = new SyncService(fetchIpfsContent);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const syncService = new SyncService({
+    resolveAndSaveParticle,
+    dbInstance$,
+    ipfsInstance$,
+    params$,
+  });
 
   // TODO: fix wrong type is used
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     // proxy to worker with db
-    syncService.init(dbApiProxy);
-    defferedDbProcessor.init(dbApiProxy);
-    broadcastApi.postServiceStatus('sync', 'started');
+    dbInstance$.next(dbApiProxy);
   };
-
-  // TODO: refact, params need to be synced with main thread
-  // const syncDrive = async (
-  //   address: string | null,
-  //   cyberIndexUrl: string
-  // ): Promise<void> => {
-  //   try {
-  //     if (!address) {
-  //       postWorkerStatus('error', 'Wallet is not connected');
-  //       return;
-  //     }
-  //     if (!ipfsNode) {
-  //       postWorkerStatus('error', 'IPFS node is not initialized');
-  //       return;
-  //     }
-
-  //     if (!dbApi) {
-  //       postWorkerStatus('error', 'CozoDb is not initialized');
-  //       return;
-  //     }
-
-  //     // postWorkerStatus('syncing');
-
-  //     ['transaction', 'pin', 'particle'].forEach((entry) =>
-  //       postEntrySyncStatus(entry as SyncEntryName, {
-  //         progress: 0,
-  //         done: false,
-  //         error: undefined,
-  //       })
-  //     );
-
-  //     const importIpfs = async () => {
-  //       throw new Error('Legacy - not maintaned anymore due backgroun sync');
-  //       console.log('-----import ipfs');
-  //       // await importPins(
-  //       //   ipfsNode!,
-  //       //   dbApi!,
-  //       //   async (progress) => postEntrySyncStatus('pin', { progress }),
-  //       //   async () => postEntrySyncStatus('pin', { done: true })
-  //       // );
-  //       // const pinsData = await dbApi!.executeGetCommand(
-  //       //   'pin',
-  //       //   ['cid'],
-  //       //   [`type = ${PinTypeMap.recursive}`]
-  //       // );
-  //       // if (pinsData.ok === false) {
-  //       //   postWorkerStatus('error', pinsData.message);
-  //       //   return;
-  //       // }
-
-  //       // const cids = pinsData.rows.map((row) => row[0]) as string[];
-
-  //       // await importParticles(
-  //       //   ipfsNode!,
-  //       //   cids,
-  //       //   dbApi!,
-  //       //   async (progress) => postEntrySyncStatus('particle', { progress }),
-  //       //   async () => postEntrySyncStatus('particle', { done: true })
-  //       // );
-  //       // console.log('-----import ipfs done');
-  //     };
-
-  //     const transactionPromise = importTransactions(
-  //       dbApi,
-  //       address,
-  //       cyberIndexUrl,
-  //       async (progress) => postEntrySyncStatus('transaction', { progress }),
-  //       async (total) => postEntrySyncStatus('transaction', { done: true })
-  //     );
-  //     // const transactionPromise = Promise.resolve();
-  //     const ipfsPromise = importIpfs();
-  //     //
-  //     await Promise.all([transactionPromise, ipfsPromise]);
-
-  //     postWorkerStatus('started');
-  //   } catch (e) {
-  //     console.error('syncDrive', e);
-  //     postWorkerStatus('error', e.toString());
-  //   }
-  // };
 
   const stopIpfs = async () => {
     if (ipfsNode) {
       await ipfsNode.stop();
     }
+    ipfsInstance$.next(undefined);
     broadcastApi.postServiceStatus('ipfs', 'inactive');
   };
 
@@ -149,9 +83,9 @@ const createBackgroundWorkerApi = () => {
       broadcastApi.postServiceStatus('ipfs', 'starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
 
-      ipfsQueue.setNode(ipfsNode);
+      ipfsInstance$.next(ipfsNode);
 
-      syncService.initIpfs(ipfsNode);
+      ipfsQueue.setNode(ipfsNode);
 
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
@@ -167,10 +101,6 @@ const createBackgroundWorkerApi = () => {
     importCyberlinks: (links: LinkDto[]) => {
       defferedDbProcessor.enqueueLinks(links);
     },
-    // importParticle: async (cid: string) => {
-    //   console.log('-----importParticle');
-    //   return importParticle(cid, ipfsNode!, dbApiWrapper!);
-    // },
   };
 
   const ipfsApi = {
@@ -200,7 +130,7 @@ const createBackgroundWorkerApi = () => {
     ipfsApi: proxy(ipfsApi),
     defferedDbApi: proxy(defferedDbApi),
     setParams: (params: Partial<SyncServiceParams>) =>
-      syncService.setParams(params),
+      params$.next({ ...params$.value, ...params }),
   };
 };
 

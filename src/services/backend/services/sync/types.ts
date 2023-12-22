@@ -1,4 +1,4 @@
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import { SyncQueueDto } from 'src/services/CozoDb/types/dto';
 import { EnqueuedIpfsResult } from 'src/services/QueueManager/types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
@@ -9,3 +9,12 @@ export type SyncServiceParams = {
 };
 
 export type FetchIpfsFunc = (cid: ParticleCid) => Promise<EnqueuedIpfsResult>;
+
+export type ParticleResult = {
+  timestamp: number;
+  direction: 'from' | 'to';
+  from: ParticleCid;
+  to: ParticleCid;
+};
+
+export type SyncQueueItem = Omit<SyncQueueDto, 'status'>;
