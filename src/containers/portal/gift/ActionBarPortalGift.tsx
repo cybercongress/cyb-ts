@@ -4,7 +4,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice } from '@cosmjs/launchpad';
+import { GasPrice, coins } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
@@ -20,7 +20,7 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import { CYBER, PATTERN_CYBER } from '../../../utils/config';
+import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
@@ -385,12 +385,17 @@ function ActionBarPortalGift({
             return;
           }
 
-          const gasLimits = 150000 * MsgsBroadcast.length;
+          const gasLimits = 400000 * MsgsBroadcast.length;
+
+          const fee = {
+            amount: [],
+            gas: gasLimits.toString(),
+          };
 
           const executeResponseResult = await signingClient.signAndBroadcast(
             bech32Address,
             [...MsgsBroadcast],
-            txs.calculateFee(gasLimits, gasPrice),
+            fee,
             'cyber'
           );
           // const executeResponseResult = await signingClient.executeArray(

@@ -144,8 +144,8 @@ const checkGift = async (address) => {
   try {
     const response = await axios({
       method: 'GET',
-      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`, // prod root
-      // url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`, // test root
+      // url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`, // prod root
+      url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`, // test root
     });
 
     if (response && response.data) {
