@@ -14,7 +14,7 @@ import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import SyncQueue from './SyncQueue';
 import { extractParticlesResults, fetchCyberlinksAndGetStatus } from '../utils';
-import { FetchIpfsFunc, SyncServiceParams } from '../types';
+import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
 
 import { fetchTransactionsIterable } from '../../dataSource/blockchain/requests';
 
@@ -49,6 +49,7 @@ class SyncTransactionsLoop {
     this.syncQueue = syncQueue;
 
     deps.dbInstance$.subscribe((db) => {
+      console.log('---subscribe dbInstance', this.db);
       this.db = db;
     });
 
@@ -75,8 +76,8 @@ class SyncTransactionsLoop {
   start() {
     createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
-      defer(() => from(this.syncAllTransactions())),
       this.isInitialized$,
+      defer(() => from(this.syncAllTransactions())),
       () => this.statusApi.sendStatus('in-progress')
     ).subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
@@ -87,6 +88,7 @@ class SyncTransactionsLoop {
   }
 
   private async syncAllTransactions() {
+    console.log('---syncAllTransactions', this.db);
     try {
       this.params.myAddress &&
         (await this.syncTransactions(this.params.myAddress, true));
@@ -95,7 +97,7 @@ class SyncTransactionsLoop {
         this.params.followings.map((addr) => this.syncTransactions(addr))
       );
     } catch (err) {
-      console.log('---syncAllTransactions', err);
+      console.log('>>> syncAllTransactions', err);
       throw err;
     }
   }
@@ -106,6 +108,9 @@ class SyncTransactionsLoop {
   ) {
     this.statusApi.sendStatus('in-progress', `sync ${address}...`);
     // let conter = 0;
+
+    console.log('--------syncTransactions begin', this.db);
+
     const { timestampRead, unreadCount, timestampUpdate } =
       await this.db!.getSyncStatus(address);
     console.log(
@@ -143,9 +148,14 @@ class SyncTransactionsLoop {
 
       // Add cyberlink to sync observables
       if (addCyberlinksToSync) {
-        const { tweets: particles, particlesFound } =
-          extractParticlesResults(batch);
-
+        const {
+          tweets: particles,
+          particlesFound,
+          links,
+        } = extractParticlesResults(batch);
+        await this.db!.putCyberlinks(
+          links.map((link) => ({ ...link, neuron: '' }))
+        );
         // const mysteryParticles = particlesFound.filter(
         //   (cid) => !!NOT_FOUND_CIDS.find((c) => c === cid)
         // );
@@ -164,7 +174,7 @@ class SyncTransactionsLoop {
               undefined,
               undefined,
               this.resolveAndSaveParticle,
-              this.syncQueue!.pushToSyncQueue
+              (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
             );
             const lastId = direction === 'from' ? from : to;
             // const linkedCid = from as string;
@@ -199,9 +209,11 @@ class SyncTransactionsLoop {
         //   particlesFound.map((cid) => ({ id: cid, priority: 1 }))
         // );
 
-        this.db!.putSyncStatus(syncStatusEntries);
+        if (syncStatusEntries.length > 0) {
+          this.db!.putSyncStatus(syncStatusEntries);
+        }
         console.log(
-          '---syncTransactions',
+          '---syncTransactions end',
           Object.keys(particles),
           particlesFound
         );

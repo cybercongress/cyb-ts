@@ -106,6 +106,9 @@ class SyncQueue {
   }
 
   public async pushToSyncQueue(items: SyncQueueItem[]) {
+    if (items.length === 0) {
+      return;
+    }
     await this.db!.putSyncQueue(items);
     const queue = this.syncQueue$.value;
     // console.log('------pushToSyncQueue', items, typeof queue);
@@ -124,8 +127,6 @@ class SyncQueue {
     });
 
     this.syncQueue$.next(this.syncQueue$.value);
-
-    return this;
   }
 }
 

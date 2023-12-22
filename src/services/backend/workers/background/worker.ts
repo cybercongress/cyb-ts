@@ -44,29 +44,21 @@ const createBackgroundWorkerApi = () => {
   let ipfsNode: CybIpfsNode | undefined;
   const defferedDbProcessor = new DeferredDbProcessor(dbInstance$);
 
-  const ipfsQueue = new QueueManager({ defferedDbProcessor });
+  const ipfsQueue = new QueueManager(ipfsInstance$, { defferedDbProcessor });
   const broadcastApi = new BroadcastChannelSender();
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
-
-  const resolveAndSaveParticle = async (cid: ParticleCid) =>
-    ipfsQueue.enqueueAndWait(cid, { postProcessing: true });
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const syncService = new SyncService({
-    resolveAndSaveParticle,
+    resolveAndSaveParticle: async (cid: ParticleCid) =>
+      ipfsQueue.enqueueAndWait(cid, { postProcessing: true }),
     dbInstance$,
     ipfsInstance$,
     params$,
   });
 
-  // TODO: fix wrong type is used
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
-    // proxy to worker with db
     dbInstance$.next(dbApiProxy);
-    if (ipfsNode) {
-      broadcastApi.postServiceStatus('ipfs', 'started');
-    }
   };
 
   const stopIpfs = async () => {
@@ -87,8 +79,6 @@ const createBackgroundWorkerApi = () => {
       ipfsNode = await initIpfsNode(ipfsOpts);
 
       ipfsInstance$.next(ipfsNode);
-
-      ipfsQueue.setNode(ipfsNode);
 
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;

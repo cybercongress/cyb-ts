@@ -12,7 +12,7 @@ import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import SyncQueue from './SyncQueue';
 import { fetchCyberlinksAndGetStatus } from '../utils';
-import { FetchIpfsFunc, SyncServiceParams } from '../types';
+import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -86,7 +86,7 @@ class SyncParticlesLoop {
         timestampRead as number,
         unreadCount as number,
         this.resolveAndSaveParticle,
-        this.syncQueue!.pushToSyncQueue
+        (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
       );
     });
   }
@@ -94,8 +94,8 @@ class SyncParticlesLoop {
   start() {
     createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
-      defer(() => from(this.syncParticles())),
       this.isInitialized$,
+      defer(() => from(this.syncParticles())),
       () => this.statusApi.sendStatus('in-progress')
     ).subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),

@@ -1,6 +1,11 @@
 import { dateToNumber } from 'src/utils/date';
 
-import { ParticleCid } from 'src/types/base';
+import {
+  CyberLinkSimple,
+  CyberLinkTimestamp,
+  Cyberlink,
+  ParticleCid,
+} from 'src/types/base';
 import { CID_TWEET } from 'src/utils/consts';
 import {
   Transaction,
@@ -16,6 +21,7 @@ export function extractParticlesResults(batch: Transaction[]) {
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
   ) as CyberLinkTransaction[];
   const particlesFound = new Set<string>();
+  const links: CyberLinkTimestamp[] = [];
   // Get links: only from TWEETS
   const particleTimestampRecord: Record<ParticleCid, ParticleResult> =
     cyberlinks.reduce<Record<ParticleCid, ParticleResult>>(
@@ -31,6 +37,7 @@ export function extractParticlesResults(batch: Transaction[]) {
         value.links.forEach((link) => {
           particlesFound.add(link.to);
           particlesFound.add(link.from);
+          links.push({ ...link, timestamp: dateToNumber(timestamp) });
           if (link.from === CID_TWEET) {
             acc[link.to] = {
               timestamp: dateToNumber(timestamp),
@@ -48,6 +55,7 @@ export function extractParticlesResults(batch: Transaction[]) {
   return {
     tweets: particleTimestampRecord,
     particlesFound: [...particlesFound],
+    links,
   };
 }
 

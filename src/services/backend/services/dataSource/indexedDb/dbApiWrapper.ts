@@ -30,6 +30,7 @@ import {
 } from 'src/services/CozoDb/types/dto';
 
 import { SenseResult, SenseUnread } from './type';
+import { SyncQueueItem } from '../../sync/types';
 
 const TIMESTAMP_INTITAL = 0;
 
@@ -200,7 +201,8 @@ function DbApiWrapper() {
       'transaction',
       ['hash', 'type', 'success', 'value', 'timestamp'],
       [`neuron = ${neuron}`],
-      ['neuron']
+      ['neuron'],
+      { orderBy: ['-timestamp'] }
     );
     return dbResultToDtoList(result);
   };
@@ -216,9 +218,7 @@ function DbApiWrapper() {
     return db!.executePutCommand('link', entitites);
   };
 
-  const putSyncQueue = async (
-    item: Omit<SyncQueueDto, 'status'>[] | Omit<SyncQueueDto, 'status'>
-  ) => {
+  const putSyncQueue = async (item: SyncQueueItem[] | SyncQueueItem) => {
     const entitites = Array.isArray(item) ? item : [item];
     return db!.executePutCommand('sync_queue', entitites);
   };
@@ -260,6 +260,8 @@ function DbApiWrapper() {
     }));
   };
 
+  const getLinks = async (cid: ParticleCid) => {};
+
   return {
     init,
     getSyncStatus,
@@ -281,6 +283,7 @@ function DbApiWrapper() {
     updateSyncQueue,
     getSyncQueue,
     removeSyncQueue,
+    getLinks,
   };
 }
 const dbApiWrapperInstance = DbApiWrapper();

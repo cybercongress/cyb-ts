@@ -61,8 +61,8 @@ class SyncIpfsLoop {
   start() {
     createLoopObservable(
       IPFS_SYNC_INTERVAL,
-      defer(() => from(this.syncPins())),
       this.isInitialized$,
+      defer(() => from(this.syncPins())),
       () => this.statusApi.sendStatus('in-progress')
     ).subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),

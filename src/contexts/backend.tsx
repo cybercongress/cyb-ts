@@ -25,6 +25,8 @@ const createSenseApi = (dbApi: DbApi) => ({
   getList: () => dbApi.getSenseList(),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
+  getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
+  getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
 });
 
 const setupStoragePersistence = async () => {
@@ -36,7 +38,9 @@ const setupStoragePersistence = async () => {
   const message = isPersistedStorage
     ? `🔰 Storage is persistent.`
     : `⚠️ Storage is non-persitent.`;
+
   console.log(message);
+
   return isPersistedStorage;
 };
 

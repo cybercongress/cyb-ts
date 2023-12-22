@@ -10,8 +10,8 @@ import {
 
 export const createLoopObservable = (
   intervalMs: number,
-  actionObservable$: Observable<any>,
   isInitialized$: Observable<boolean>,
+  actionObservable$: Observable<any>,
   beforeCallback?: () => void
 ) => {
   return isInitialized$.pipe(
