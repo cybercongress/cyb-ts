@@ -45,7 +45,7 @@ import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import mssgsClaim from './utilsMsgs';
+import mssgsClaim from '../utilsMsgs';
 import { ClaimMsg } from './type';
 
 const gasPrice = GasPrice.fromString('0.001boot');
@@ -286,7 +286,7 @@ function ActionBarPortalGift({
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          txs.calculateFee(400000, gasPrice),
+          'auto',
           'cyber'
         );
 
@@ -467,7 +467,7 @@ function ActionBarPortalGift({
         address,
         CONTRACT_ADDRESS_PASSPORT,
         msgObject,
-        txs.calculateFee(400000, gasPrice),
+       'auto',
         'cyber'
       );
 

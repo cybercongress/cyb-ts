@@ -1,24 +1,58 @@
 import { toUtf8 } from '@cosmjs/encoding';
 import { Coin } from '@cosmjs/launchpad';
+import { BondStatus } from '@cosmjs/launchpad/build/lcdapi/staking';
 import { Uint53 } from '@cosmjs/math';
+import { CyberClient } from '@cybercongress/cyber-js';
+import { QueryLiquidityPoolResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
+import BigNumber from 'bignumber.js';
+import { QueryValidatorsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import Long from 'long';
-import { CYBER } from 'src/utils/config';
+import { calculatePairAmount } from 'src/pages/teleport/swap/utils';
+import { ObjKeyValue } from 'src/types/data';
+import { CYBER, DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import { convertAmount, reduceBalances } from 'src/utils/utils';
+
+const coinFunc = (amount: number, denom: string): Coin => {
+  return { denom, amount: new BigNumber(amount).toString(10) };
+};
+
+const checkDenom = (denom: string) => {
+  if (denom === 'millivolt' || denom === 'milliampere') {
+    return 3;
+  }
+
+  return 0;
+};
 
 class Soft3jsMsgs {
   private readonly senderAddress: string;
 
+  protected readonly queryClient: CyberClient | undefined;
+
   private BASE_VESTING_TIME = 86401;
+
+  private POOL_TYPE_INDEX = 1;
+
+  private SWAP_FEE_RATE = 0.003;
 
   static denom() {
     return CYBER.DENOM_CYBER;
+  }
+
+  static fee(gas: number | undefined = DEFAULT_GAS_LIMITS) {
+    return {
+      amount: [],
+      gas: gas.toString(),
+    };
   }
 
   static liquidDenom() {
     return CYBER.DENOM_LIQUID_TOKEN;
   }
 
-  constructor(senderAddress: string) {
+  constructor(senderAddress: string, queryClient?: CyberClient) {
     this.senderAddress = senderAddress;
+    this.queryClient = queryClient;
   }
 
   public investmint(
@@ -55,13 +89,148 @@ class Soft3jsMsgs {
     };
   }
 
-  public delegateTokens(validatorAddress: string, amount: Coin) {
+  public async delegateTokens(amount: Coin) {
+    const address = await this.getValidatorAddress();
     return {
       typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
       value: {
         delegatorAddress: this.senderAddress,
-        validatorAddress,
+        validatorAddress: address,
         amount,
+      },
+    };
+  }
+
+  private async getValidatorAddress() {
+    if (!this.queryClient) {
+      return undefined;
+    }
+
+    const result = (await this.queryClient.validators(
+      'BOND_STATUS_BONDED'
+    )) as QueryValidatorsResponse;
+
+    if (!result.validators.length) {
+      return undefined;
+    }
+
+    const sortedArray = result.validators
+      .sort(
+        (itemA, itemB) => parseFloat(itemB.tokens) - parseFloat(itemA.tokens)
+      )
+      .slice(10, result.validators.length - 1);
+
+    const randomIndex = Math.floor(Math.random() * sortedArray.length);
+
+    return sortedArray[randomIndex].operatorAddress;
+  }
+
+  private async getBalPool(poolId: number): Promise<ObjKeyValue | undefined> {
+    if (!this.queryClient) {
+      return undefined;
+    }
+
+    const resultPool = (await this.queryClient.pool(
+      poolId
+    )) as QueryLiquidityPoolResponse;
+
+    const { pool } = resultPool;
+
+    if (!pool) {
+      return undefined;
+    }
+
+    const resultBalances = await this.queryClient?.getAllBalances(
+      pool.reserveAccountAddress
+    );
+
+    if (!resultBalances) {
+      return undefined;
+    }
+
+    const dataReduceBalances = reduceBalances(resultBalances);
+
+    return dataReduceBalances;
+  }
+
+  private async getPrice(
+    poolId: number,
+    token: {
+      offerCoin: Coin;
+      demandCoinDenom: string;
+    }
+  ): Promise<string | undefined> {
+    const { offerCoin, demandCoinDenom } = token;
+
+    const getBalPool = await this.getBalPool(poolId);
+
+    if (!getBalPool) {
+      return undefined;
+    }
+
+    const tokenAPoolAmount = getBalPool[offerCoin.denom] || 0;
+    const tokenBPoolAmount = getBalPool[demandCoinDenom] || 0;
+
+    if (
+      !tokenAPoolAmount ||
+      !tokenBPoolAmount ||
+      Number(offerCoin.amount) === 0
+    ) {
+      return undefined;
+    }
+
+    const state = {
+      tokenA: offerCoin.denom,
+      tokenB: demandCoinDenom,
+      tokenAPoolAmount,
+      tokenBPoolAmount,
+      coinDecimalsA: checkDenom(offerCoin.denom),
+      coinDecimalsB: checkDenom(demandCoinDenom),
+      isReverse: false,
+    };
+
+    const { price } = calculatePairAmount(Number(offerCoin.amount), state);
+
+    const exp = new BigNumber(10).pow(18).toString();
+
+    const convertSwapPrice = new BigNumber(price.toNumber())
+      .multipliedBy(exp)
+      .dp(0, BigNumber.ROUND_FLOOR)
+      .toString(10);
+
+    return convertSwapPrice;
+  }
+
+  public async swap(poolId: number, offerCoin: Coin, demandCoinDenom: string) {
+    const orderPrice = await this.getPrice(poolId, {
+      offerCoin,
+      demandCoinDenom,
+    });
+
+    if (!orderPrice) {
+      return {};
+    }
+
+    const offerCoinFee = coinFunc(
+      new BigNumber(offerCoin.amount)
+        .multipliedBy(this.SWAP_FEE_RATE)
+        .multipliedBy(0.5)
+        .dp(0, BigNumber.ROUND_CEIL)
+        .toNumber(),
+
+      offerCoin.denom
+    );
+
+    return {
+      typeUrl: '/tendermint.liquidity.v1beta1.MsgSwapWithinBatch',
+      value: {
+        swapRequesterAddress: this.senderAddress,
+        poolId,
+        swapTypeId: this.POOL_TYPE_INDEX,
+        offerCoin,
+        demandCoinDenom,
+        offerCoinFee,
+        orderPrice,
       },
     };
   }

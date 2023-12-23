@@ -449,7 +449,7 @@ function GetCitizenship({ defaultAccount }) {
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          txs.calculateFee(500000, gasPrice),
+          'auto',
           'cyber',
           funds
         );

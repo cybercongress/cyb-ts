@@ -58,7 +58,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
-            txs.calculateFee(500000, gasPrice),
+            'auto',
             'cyber'
           );
           if (executeResponseResult.code === 0) {

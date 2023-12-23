@@ -11,7 +11,8 @@ import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import mssgsClaim from '../gift/utilsMsgs';
+import mssgsClaim from '../utilsMsgs';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -62,6 +63,7 @@ function ActionBarRelease({
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
+  const queryClient = useQueryClient();
 
   const [currentTx, setCurrentTx] = useState<{
     hash: string;
@@ -95,21 +97,23 @@ function ActionBarRelease({
           return;
         }
 
-        const MsgsBroadcast = mssgsClaim(
+        const MsgsBroadcast = await mssgsClaim(
           {
             sender: addressKeplr,
             isNanoLedger,
           },
           msgs,
           useReleasedStage.availableRelease,
-          'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
+          queryClient
         );
+
+        console.log('MsgsBroadcast', MsgsBroadcast);
 
         if (!MsgsBroadcast.length) {
           return;
         }
 
-        const gasLimit = 400000 * MsgsBroadcast.length
+        const gasLimit = 400000 * MsgsBroadcast.length;
 
         const fee = {
           amount: [],
@@ -154,7 +158,7 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, signingClient, currentRelease]);
+  }, [signer, signingClient, currentRelease, queryClient]);
 
   const delegateAndMint = useCallback(async () => {
     if (!signer || !signingClient || !useReleasedStage.availableRelease) {

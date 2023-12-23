@@ -6,6 +6,8 @@ export function sortReserveCoinDenoms(x, y) {
 }
 
 export function calculatePairAmount(inputAmount: string | number, state) {
+  console.log('state', state)
+  console.log('inputAmount', inputAmount)
   const {
     tokenB,
     tokenA,
