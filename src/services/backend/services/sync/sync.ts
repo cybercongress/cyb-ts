@@ -19,15 +19,16 @@ export class SyncService {
 
   constructor(deps: ServiceDeps) {
     const { dbInstance$, ipfsInstance$ } = deps;
-
     this.isInitialized$ = combineLatest([dbInstance$, ipfsInstance$]).pipe(
       map(([dbInstance, ipfsInstance]) => !!dbInstance && !!ipfsInstance)
     );
 
     // subscribe when started
     this.isInitialized$.subscribe({
-      next: (result) => result && this.channelApi.postSyncStatus('started'),
-      // error: (err) => this.channelApi.postSyncStatus('error', err),
+      next: (result) => {
+        return result && this.channelApi.postServiceStatus('sync', 'started');
+      },
+      error: (err) => this.channelApi.postServiceStatus('sync', 'error', err),
     });
 
     const syncQueue = new SyncQueue(deps).start();

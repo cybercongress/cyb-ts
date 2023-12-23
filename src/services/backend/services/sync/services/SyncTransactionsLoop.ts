@@ -97,7 +97,7 @@ class SyncTransactionsLoop {
         this.params.followings.map((addr) => this.syncTransactions(addr))
       );
     } catch (err) {
-      console.log('>>> syncAllTransactions', err);
+      console.error('>>> syncAllTransactions', err);
       throw err;
     }
   }
@@ -214,7 +214,7 @@ class SyncTransactionsLoop {
         }
         console.log(
           '---syncTransactions end',
-          Object.keys(particles),
+          syncStatusEntries,
           particlesFound
         );
       }

@@ -15,6 +15,7 @@ import {
 import { FetchIpfsFunc, ParticleResult, SyncQueueItem } from './types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { fetchCyberlinksIterable } from '../dataSource/blockchain/requests';
+import { EntryType } from 'src/services/CozoDb/types/entities';
 
 export function extractParticlesResults(batch: Transaction[]) {
   const cyberlinks = batch.filter(
@@ -83,10 +84,10 @@ export async function fetchCyberlinksAndGetStatus(
     return undefined;
   }
   // firstTimestamp, lastTimestamp, count, lastLinkedParticle, isFrom
-  const lastTimestamp = links[0]?.timestamp;
-  const lastTo = links[0]?.to;
-  const lastFrom = links[0]?.from;
-  const firstTimestamp = links[links.length - 1]?.timestamp;
+  const lastTimestamp = dateToNumber(links[0].timestamp);
+  const lastTo = links[0].to;
+  const lastFrom = links[0].from;
+  const firstTimestamp = dateToNumber(links[links.length - 1].timestamp);
   const count = links.length;
   const isFrom = lastFrom === cid;
 

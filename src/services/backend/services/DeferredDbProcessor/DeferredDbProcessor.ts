@@ -21,10 +21,10 @@ type QueueItem = {
   links?: LinkDto[];
 };
 
+type QueueMap = Map<ParticleCid | typeof uuidv4, QueueItem>;
+
 class DeferredDbProcessor implements IDefferedDbProcessor {
-  private queue$ = new BehaviorSubject<
-    Map<ParticleCid | typeof uuidv4, QueueItem>
-  >(new Map());
+  private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private dbApi: DbApi | undefined;
 
@@ -39,7 +39,7 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
         tap(() => console.log('DeferredDbProcessor - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
-        mergeMap(() => defer(() => from(this.processQueue())))
+        mergeMap((queue) => defer(() => from(this.processQueue(queue))))
       )
       .subscribe({
         // next: () => console.log('Queue processed'),
@@ -63,17 +63,17 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     this.queue$.next(new Map(this.queue$.value).set(id, { links }));
   }
 
-  private async processQueue() {
-    const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
+  private async processQueue(queue: QueueMap) {
+    // const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
     this.queue$.next(new Map());
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const [cid, item] of processingQueue) {
+    for (const [cid, item] of queue) {
       // eslint-disable-next-line no-await-in-loop
       await this.processQueueItem(item);
       // console.log(' deffered DB done ', cid, item);
 
-      processingQueue.delete(cid);
+      queue.delete(cid);
     }
     // this.queue$.next(queue);
   }

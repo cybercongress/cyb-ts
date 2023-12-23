@@ -75,7 +75,8 @@ function DbApiWrapper() {
       Array.isArray(entity) ? entity : [entity]
     );
 
-    await db!.executePutCommand('sync_status', entitites);
+    const result = await db!.executePutCommand('sync_status', entitites);
+    console.log('putSyncStatus', result);
   };
 
   const updateSyncStatus = async (entity: Partial<SyncStatusDto>) => {
@@ -200,7 +201,7 @@ function DbApiWrapper() {
     const result = await db!.executeGetCommand(
       'transaction',
       ['hash', 'type', 'success', 'value', 'timestamp'],
-      [`neuron = ${neuron}`],
+      [`neuron = '${neuron}'`],
       ['neuron'],
       { orderBy: ['-timestamp'] }
     );
@@ -260,7 +261,14 @@ function DbApiWrapper() {
     }));
   };
 
-  const getLinks = async (cid: ParticleCid) => {};
+  const getLinks = async (cid: ParticleCid) => {
+    const command = `pf[mime, text, from, to, dir, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, dir='from'
+    pf[mime, text, from, to, dir, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, dir='to'
+    ?[timestamp, dir, text, mime, from, to] := pf[mime, text, from, to, dir, timestamp], from='${cid}' or to='${cid}'
+    :order -timestamp`;
+    const result = await db!.runCommand(command);
+    return dbResultToDtoList(result);
+  };
 
   return {
     init,

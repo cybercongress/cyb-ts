@@ -16,10 +16,11 @@
     "?[side, lnk, cnt] := r[lnk, cnt, side]",
     ":order -cnt"
   ],
-  "link: list text-to-text": [
-    "rt[text, from] := *link{from, to}, *particle{cid: from, text}",
-    "rf[text, to] := *link{from, to}, *particle{cid: to, text}",
-    "?[text_from, text_to]  := rt[text_from, from] , rf[text_to, to], text_from != '', text_to != ''"
+  "link: history": [
+    "pf[mime, text, from, to, dir, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, dir='from'",
+    "pf[mime, text, from, to, dir, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, dir='to'",
+    "?[timestamp, dir, text, mime, from, to] := pf[mime, text, from, to, dir, timestamp]",
+    ":order -timestamp"
   ],
   "tx: list with trim": [
     "?[type, v_trim, success, t] := *transaction{type, value, success, timestamp}, v_trim = from_substrings(slice(chars(dump_json(value)),0, 100)),  t = format_timestamp(timestamp/1000)",
@@ -36,7 +37,7 @@
   "sense": [
     "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}",
     "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime",
-    "    dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''",
+    "dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''",
     "?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type] := dt[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta, value, type]",
     ":order -timestamp_update"
   ],

@@ -28,7 +28,7 @@ type CyberlinksSyncStatsResponse = {
 };
 
 type CyberlinksByParticleResponse = {
-  cyberlinks: Cyberlink[];
+  cyberlinks: (Omit<Cyberlink, 'timestamp'> & { timestamp: string })[];
 };
 
 const messagesByAddress = gql(`
