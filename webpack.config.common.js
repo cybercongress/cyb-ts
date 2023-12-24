@@ -98,6 +98,8 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
+      'process.env.CHAIN_ID': JSON.stringify(process.env.CHAIN_ID),
+
       'process.env.CYBER_NODE_URL_API': JSON.stringify(
         process.env.CYBER_NODE_URL_API
       ),

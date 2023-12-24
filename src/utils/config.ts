@@ -80,7 +80,7 @@ const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
 
 let CHAIN_PARAMS = {
-  CHAIN_ID: Networks.BOSTROM,
+  CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
   DENOM_CYBER_G: `GBOOT`,
