@@ -3,13 +3,14 @@
   justify-content: stretch;
   align-content: stretch;
 
+  > div,
+  > div > div {
+    height: 100%;
+  }
+
   > :nth-child(2) {
     flex: 1;
     position: relative;
     left: -2px;
-
-    > div {
-      height: 100%;
-    }
   }
 }

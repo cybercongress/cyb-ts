@@ -93,4 +93,8 @@ export const routes = {
   brain: {
     path: '/brain',
   },
+  txExplorer: {
+    path: '/tx/:hash',
+    getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
+  },
 };

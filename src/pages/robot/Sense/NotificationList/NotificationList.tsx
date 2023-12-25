@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Account } from 'src/components';
 import { useBackend } from 'src/contexts/backend';
-import {
-  SenseResult,
-  SenseUnread,
-} from 'src/services/backend/services/dataSource/indexedDb/type';
+
 import styles from './NotificationList.module.scss';
 import Display from 'src/components/containerGradient/Display/Display';
 import NItem from './NItem/NItem';
@@ -50,12 +47,11 @@ function NotificationList({ select, selected }: Props) {
               unreadCount={getSummaryQuery.data?.[0]?.unread}
             />
           </li>
-          {/* <NItem value="my log" unreadCount={sum?.[0]?.unread} /> */}
           {getListQuery.isFetching ? (
             <Loader2 />
           ) : getListQuery.data ? (
             getListQuery.data.map(
-              ({ id, value, unreadCount, timestampUpdate }) => {
+              ({ id, value, unreadCount, timestampUpdate, type }) => {
                 return (
                   <li
                     key={id}
@@ -73,7 +69,7 @@ function NotificationList({ select, selected }: Props) {
                         address={id}
                         timestamp={timestampUpdate}
                         unreadCount={unreadCount}
-                        value={value}
+                        value={type}
                       />
                     </button>
                   </li>

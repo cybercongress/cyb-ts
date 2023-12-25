@@ -1,8 +1,7 @@
 @import 'src/style/mixins';
 
 .wrapper {
-  max-width: 40%;
-
+  max-width: 300px;
   > div {
     // not good
     padding: 0;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Area from 'src/features/notifications/Area/Area';
-import NotificationList from 'src/features/notifications/NotificationList/NotificationList';
+import Area from 'src/pages/robot/Sense/Area/Area';
+import NotificationList from 'src/pages/robot/Sense/NotificationList/NotificationList';
 import styles from './Sense.module.scss';
 
 function Sense() {

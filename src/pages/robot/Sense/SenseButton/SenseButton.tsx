@@ -12,8 +12,9 @@ function SenseButton({ className }) {
   const { data } = useQuery({
     queryKey: ['senseApi', 'getSummary'],
     queryFn: async () => {
-      return senseApi?.getSummary();
+      return senseApi!.getSummary();
     },
+    enabled: !!senseApi,
   });
 
   console.log('----data', data);
