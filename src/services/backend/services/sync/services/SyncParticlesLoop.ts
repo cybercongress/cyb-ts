@@ -3,7 +3,7 @@ import BroadcastChannelSender, {
   broadcastStatus,
 } from 'src/services/backend/channels/BroadcastChannelSender';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
@@ -18,8 +18,6 @@ class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
-
-  private ipfsNode: CybIpfsNode | undefined;
 
   private syncQueue: SyncQueue | undefined;
 
@@ -48,10 +46,6 @@ class SyncParticlesLoop {
       this.params = params;
     });
 
-    deps.ipfsInstance$.subscribe((ipfsInstance) => {
-      this.ipfsNode = ipfsInstance;
-    });
-
     this.syncQueue = syncQueue;
 
     // this.isInitialized$ = isInitialized$;
@@ -77,9 +71,10 @@ class SyncParticlesLoop {
     const dbResult = await this.db!.findSyncStatus({
       entryType: EntryType.particle,
     });
+    const syncStatusEntities: SyncStatusDto[] = [];
     dbResult.rows.map(async (row) => {
       const [id, unreadCount, timestampUpdate, timestampRead] = row;
-      await fetchCyberlinksAndGetStatus(
+      const syncStatusItem = await fetchCyberlinksAndGetStatus(
         this.params!.cyberIndexUrl!,
         id as string,
         timestampUpdate as number,
@@ -88,7 +83,10 @@ class SyncParticlesLoop {
         this.resolveAndSaveParticle,
         (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
       );
+      syncStatusItem && syncStatusEntities.push(syncStatusItem);
     });
+
+    syncStatusEntities.length > 0 && this.db!.putSyncStatus(syncStatusEntities);
   }
 
   start() {

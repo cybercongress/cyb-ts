@@ -163,7 +163,7 @@ class SyncTransactionsLoop {
         //   console.log('----NOT FOUND mysteryParticles', mysteryParticles);
         // }
 
-        const syncStatusEntries = await Promise.all(
+        const syncStatusEntities = await Promise.all(
           Object.keys(particles).map(async (cid) => {
             const { timestamp, direction, from, to } = particles[cid];
             const syncStatus = await fetchCyberlinksAndGetStatus(
@@ -208,8 +208,8 @@ class SyncTransactionsLoop {
         //   particlesFound.map((cid) => ({ id: cid, priority: 1 }))
         // );
 
-        if (syncStatusEntries.length > 0) {
-          this.db!.putSyncStatus(syncStatusEntries);
+        if (syncStatusEntities.length > 0) {
+          this.db!.putSyncStatus(syncStatusEntities);
         }
       }
     }
