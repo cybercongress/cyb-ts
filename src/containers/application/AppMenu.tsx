@@ -28,15 +28,15 @@ const itemsMenu = () => {
     },
     {
       name: 'Explorer',
-      to: '/',
+      to: '/oracle/stats',
       icon: oracle,
       subItems: [
         { name: 'Particles', to: '/particles' },
-        { name: 'Stats', to: '/oracle/stats' },
+        { name: 'Contracts', to: '/contracts' },
+        { name: 'Codes', to: '/libs' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
         { name: 'Txs', to: '/network/bostrom/tx' },
-        { name: 'Contracts', to: '/contracts' },
-        { name: 'Libs', to: '/libs' },
+
       ],
     },
     // { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
