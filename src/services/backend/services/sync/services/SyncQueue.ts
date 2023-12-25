@@ -14,7 +14,7 @@ import BroadcastChannelSender, {
 } from 'src/services/backend/channels/BroadcastChannelSender';
 import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
-import { DbApi } from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { FetchIpfsFunc, SyncQueueItem } from '../types';
 

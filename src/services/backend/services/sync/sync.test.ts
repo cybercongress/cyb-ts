@@ -1,7 +1,5 @@
-import { BehaviorSubject, combineLatest, defer, from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { SyncService } from './sync';
-import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { FetchIpfsFunc } from './types';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';

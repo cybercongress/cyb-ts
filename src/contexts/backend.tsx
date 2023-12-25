@@ -13,14 +13,12 @@ import { selectFollowings } from 'src/redux/features/currentAccount';
 // import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 // import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import DbApiInstance, {
-  DbApi,
-} from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
-const createSenseApi = (dbApi: DbApi) => ({
+const createSenseApi = (dbApi: DbApiWrapper) => ({
   getSummary: () => dbApi.getSenseSummary(),
   getList: () => dbApi.getSenseList(),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
@@ -75,6 +73,8 @@ export function useBackend() {
   return useContext(BackendContext);
 }
 
+const dbApi = new DbApiWrapper();
+
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   // const { defaultAccount } = useAppSelector((state) => state.pocket);
@@ -125,11 +125,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           : '🧬 Starting backend in PROD mode...'
       );
       await setupStoragePersistence();
-      console.log(
-        '----statys',
-        await backgroundWorkerInstance.isInitialized(),
-        await cozoDbWorkerInstance.isInitialized()
-      );
 
       const ipfsLoadPromise = async () => {
         const isInitialized = await backgroundWorkerInstance.isInitialized();
@@ -163,10 +158,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       .then(() => {
         // init dbApi
         // TODO: refactor to use simple object instead of global instance
-        DbApiInstance.init(proxy(cozoDbWorkerInstance));
+        dbApi.init(proxy(cozoDbWorkerInstance));
 
         // pass dbApi into background worker
-        backgroundWorkerInstance.init(proxy(DbApiInstance));
+        backgroundWorkerInstance.init(proxy(dbApi));
       })
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
@@ -198,7 +193,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
-        senseApi: isDbInitialized ? createSenseApi(DbApiInstance) : null,
+        senseApi: isDbInitialized ? createSenseApi(dbApi) : null,
         loadIpfs,
         ipfsError,
         isIpfsInitialized,

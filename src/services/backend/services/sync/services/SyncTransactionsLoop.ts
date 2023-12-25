@@ -7,7 +7,7 @@ import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress, TransactionHash } from 'src/types/base';
 
-import { DbApi } from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';
@@ -108,8 +108,6 @@ class SyncTransactionsLoop {
   ) {
     this.statusApi.sendStatus('in-progress', `sync ${address}...`);
     // let conter = 0;
-
-    console.log('--------syncTransactions begin', this.db);
 
     const { timestampRead, unreadCount, timestampUpdate } =
       await this.db!.getSyncStatus(address);
@@ -212,11 +210,6 @@ class SyncTransactionsLoop {
         if (syncStatusEntries.length > 0) {
           this.db!.putSyncStatus(syncStatusEntries);
         }
-        console.log(
-          '---syncTransactions end',
-          syncStatusEntries,
-          particlesFound
-        );
       }
     }
 

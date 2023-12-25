@@ -1,18 +1,8 @@
-import {
-  BehaviorSubject,
-  Observable,
-  defer,
-  filter,
-  mergeMap,
-  tap,
-  from,
-  map,
-  combineLatest,
-} from 'rxjs';
+import { Observable, defer, from, map, combineLatest } from 'rxjs';
 import BroadcastChannelSender, {
   broadcastStatus,
 } from 'src/services/backend/channels/BroadcastChannelSender';
-import { DbApi } from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';

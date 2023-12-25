@@ -5,7 +5,7 @@ import BroadcastChannelSender, {
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import { DbApi } from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';

@@ -26,7 +26,7 @@ import { exposeWorkerApi } from '../factoryMethods';
 import { SyncService } from '../../services/sync/sync';
 import { SyncServiceParams } from '../../services/sync/types';
 
-import { DbApi } from '../../services/dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbProcessor';

@@ -1,5 +1,5 @@
 import DeferredDbProcessor from './DeferredDbProcessor';
-import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import { IPFSContent } from 'src/services/ipfs/ipfs';
 
 describe('DeferredDbProcessor', () => {
