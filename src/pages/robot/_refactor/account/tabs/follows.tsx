@@ -5,6 +5,8 @@ import { NoItems, Account, ContainerGradient } from '../../../../../components';
 import { useGetCommunity } from '../hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
+import { useAdviser } from 'src/features/adviser/context';
+import { useEffect } from 'react';
 
 type CommunityEntityProps = {
   items: string[];
@@ -62,6 +64,16 @@ function FollowsTab() {
   );
 
   const communityHook = useGetCommunity(address, isOwner);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        neurons surrounding <br /> trace the connections
+      </>
+    );
+  }, [setAdviser]);
 
   const community = isOwner
     ? currentAccount.community

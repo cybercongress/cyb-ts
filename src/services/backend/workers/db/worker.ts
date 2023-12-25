@@ -1,9 +1,10 @@
 import cozoDb from 'src/services/CozoDb/cozoDb';
 import { DbEntity } from 'src/services/CozoDb/types/entities';
+import { GetCommandOptions } from 'src/services/CozoDb/types/types';
+
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types';
-import { GetCommandOptions } from 'src/services/CozoDb/types/types';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;
@@ -13,11 +14,13 @@ const createDbWorkerApi = () => {
     channel.postServiceStatus('db', status);
 
   const init = async () => {
+    postServiceStatus('starting');
+
     if (isInitialized) {
       console.log('Db: already initialized!');
+      postServiceStatus('started');
       return;
     }
-    postServiceStatus('starting');
 
     // callback to sync writes count worker -> main thread
     const onWriteCallback = (writesCount: number) =>
@@ -91,6 +94,7 @@ const createDbWorkerApi = () => {
   };
 
   return {
+    isInitialized: async () => isInitialized,
     init,
     runCommand,
     executeRmCommand,

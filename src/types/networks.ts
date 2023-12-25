@@ -4,7 +4,7 @@ export const enum Networks {
   ETH = 'eth',
   OSMO = 'osmo',
   TERRA = 'terra',
-  COSMOS = 'cosmos',
+  COSMOS = 'cosmoshub-4',
 }
 
 export type NetworkConfig = {

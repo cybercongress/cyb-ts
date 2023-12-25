@@ -266,15 +266,24 @@ class QueueManager<T extends IPFSContentMaybe> {
     );
   }
 
-  constructor({
-    strategy,
-    queueDebounceMs,
-    defferedDbProcessor,
-  }: {
-    strategy?: QueueStrategy;
-    queueDebounceMs?: number;
-    defferedDbProcessor?: IDefferedDbProcessor;
-  }) {
+  constructor(
+    ipfsInstance$: Observable<CybIpfsNode | undefined>,
+    {
+      strategy,
+      queueDebounceMs,
+      defferedDbProcessor,
+    }: {
+      strategy?: QueueStrategy;
+      queueDebounceMs?: number;
+      defferedDbProcessor?: IDefferedDbProcessor;
+    }
+  ) {
+    ipfsInstance$.subscribe((node) => {
+      if (node) {
+        this.setNode(node);
+      }
+    });
+
     this.strategy = strategy || strategies.embedded;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
     this.defferedDbProcessor = defferedDbProcessor;

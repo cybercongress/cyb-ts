@@ -14,6 +14,7 @@ import terra from 'images/terra.svg';
 import defaultImg from '../../image/large-orange-circle.png';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
+// maybe reuse enum from DenomArr
 const getNativeImg = (text) => {
   let img = null;
 

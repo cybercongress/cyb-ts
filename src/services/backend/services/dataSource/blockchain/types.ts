@@ -1,4 +1,4 @@
-import { CyberLinkType, NeuronAddress } from 'src/types/base';
+import { CyberLinkSimple, NeuronAddress } from 'src/types/base';
 
 interface GenericTransaction<T> {
   value: T;
@@ -36,7 +36,7 @@ interface TransferValue {
 
 interface CyberLinkValue {
   neuron: NeuronAddress;
-  links: CyberLinkType[];
+  links: CyberLinkSimple[];
 }
 
 export interface DelegateTransaction

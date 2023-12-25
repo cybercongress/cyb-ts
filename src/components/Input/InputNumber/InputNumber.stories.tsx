@@ -1,22 +1,32 @@
-import { Story, Meta } from '@storybook/react';
-import InputNumber, { Props } from './InputNumber';
+/* eslint-disable import/no-unused-modules */
 
-export default {
-  title: 'Atoms/Input/InputNumber',
+import { Meta, StoryObj } from '@storybook/react';
+
+import InputNumber from './InputNumber';
+
+const meta: Meta<typeof InputNumber> = {
   component: InputNumber,
-  argTypes: {
-    value: {
-      control: {
-        type: 'text',
-      },
+  title: 'Atoms/Input/InputNumber',
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/file/7i0Ly3YF587km0F8iDZod4/cyb?type=design&node-id=11052-15433',
     },
   },
-} as Meta;
+};
+export default meta;
 
-const Template: Story<Props> = (args) => <InputNumber {...args} />;
+type Story = StoryObj<typeof InputNumber>;
 
-export const Default = Template.bind({});
-Default.args = {
-  value: '238293289202380',
+const defaultArgs = {
+  value: 1100000000,
   onValueChange: () => {},
+};
+
+export const Main: Story = {
+  args: defaultArgs,
+};
+
+export const withMax: Story = {
+  args: { ...defaultArgs, maxValue: 1000000000000 },
 };

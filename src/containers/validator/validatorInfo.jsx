@@ -3,6 +3,7 @@ import { Card, StatusTooltip } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseAvatar from './keybaseAvatar';
 import UptimeHook from './UptimeHook';
+import Display from 'src/components/containerGradient/Display/Display';
 
 // function Row({ value, title, marginBottom }) {
 //   return (
@@ -52,15 +53,17 @@ function ValidatorInfo({ data }) {
       gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
       gridGap="10px"
     >
-      <Card
-        title="Voting Power"
-        value={`${formatNumber(data.votingPower, 3)} %`}
-        stylesContainer={{
-          width: '100%',
-          maxWidth: 'unset',
-          margin: 0,
-        }}
-      />
+      <Display>
+        <Card
+          title="Voting Power"
+          value={`${formatNumber(data.votingPower, 3)} %`}
+          stylesContainer={{
+            width: '100%',
+            maxWidth: 'unset',
+            margin: 0,
+          }}
+        />
+      </Display>
       <Pane display="flex" flexDirection="column" alignItems="center">
         <Pane
           width={80}
@@ -78,15 +81,17 @@ function ValidatorInfo({ data }) {
           </Pane>
         </Pane>
       </Pane>
-      <Card
-        title="Uptime"
-        value={<UptimeHook accountUser={data.delegateAddress} />}
-        stylesContainer={{
-          width: '100%',
-          maxWidth: 'unset',
-          margin: 0,
-        }}
-      />
+      <Display>
+        <Card
+          title="Uptime"
+          value={<UptimeHook accountUser={data.delegateAddress} />}
+          stylesContainer={{
+            width: '100%',
+            maxWidth: 'unset',
+            margin: 0,
+          }}
+        />
+      </Display>
     </Pane>
   );
 }

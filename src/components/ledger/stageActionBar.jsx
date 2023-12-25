@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -25,6 +25,7 @@ import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
 import { useBackend } from 'src/contexts/backend';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
 
 const { DENOM_CYBER } = CYBER;
 
@@ -230,6 +231,7 @@ export function StartStageSearchActionBar({
 }) {
   const { isIpfsInitialized } = useBackend();
   return (
+    // use NodeIsLoadingButton component
     <ActionBarContainer
       button={{
         disabled: !isIpfsInitialized || !contentHash.length,
@@ -836,8 +838,9 @@ export function Cyberlink({
   );
 }
 
-function IntupAutoSize({
+function InputAutoSize({
   value,
+  maxValue,
   onChangeInputAmount,
   placeholder,
   autoFocus = true,
@@ -870,6 +873,7 @@ function IntupAutoSize({
     <InputNumber
       value={value}
       id="myInput"
+      maxValue={maxValue}
       onkeypress={changefontsize()}
       autoFocus={autoFocus}
       onValueChange={onChangeInputAmount}
@@ -887,6 +891,7 @@ export function Delegate({
   disabledBtn,
   delegate,
   onClickBack,
+  available,
 }) {
   return (
     <ActionBarContainer
@@ -907,8 +912,9 @@ export function Delegate({
             : moniker}
         </Text>
       </Text>
-      <IntupAutoSize
+      <InputAutoSize
         value={toSend}
+        maxValue={available}
         onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
@@ -926,6 +932,7 @@ export function ReDelegate({
   disabledBtn,
   validators,
   validatorsAll,
+  available,
   valueSelect,
   onChangeReDelegate,
   onClickBack,
@@ -939,8 +946,9 @@ export function ReDelegate({
         disabled: disabledBtn,
       }}
     >
-      <IntupAutoSize
+      <InputAutoSize
         value={toSend}
+        maxValue={available}
         onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
@@ -1005,7 +1013,7 @@ export function ActionBarSend({
           placeholder="recipient"
         />
 
-        <IntupAutoSize
+        <InputAutoSize
           value={valueInputAmount}
           onChangeInputAmount={onChangeInputAmount}
           placeholder="amount"
@@ -1067,42 +1075,11 @@ export function RewardsDelegators({
 export function ConnectAddress({
   selectMethodFunc,
   selectMethod,
-  selectNetworkFunc,
   selectNetwork,
   connctAddress,
-  web3,
-  selectAccount,
   keplr,
   onClickBack,
 }) {
-  const [cyberNetwork, setCyberNetwork] = useState(true);
-  const [cosmosNetwork, setCosmosNetwork] = useState(true);
-  const [ethNetwork, setEthrNetwork] = useState(true);
-
-  useEffect(() => {
-    if (selectAccount && selectAccount !== null) {
-      if (selectAccount.cyber) {
-        setCyberNetwork(false);
-      } else {
-        setCyberNetwork(true);
-      }
-      if (selectAccount.cosmos) {
-        setCosmosNetwork(false);
-      } else {
-        setCosmosNetwork(true);
-      }
-      if (selectAccount.eth) {
-        setEthrNetwork(false);
-      } else {
-        setEthrNetwork(true);
-      }
-    } else {
-      setEthrNetwork(true);
-      setCosmosNetwork(true);
-      setCyberNetwork(true);
-    }
-  }, [selectAccount]);
-
   return (
     <ActionBarContainer
       button={{
@@ -1113,81 +1090,39 @@ export function ConnectAddress({
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {(cyberNetwork || cosmosNetwork) && (
-          <>
-            {/* <ButtonIcon
-                onClick={() => selectMethodFunc('ledger')}
-                active={selectMethod === 'ledger'}
-                img={imgLedger}
-                text="ledger"
-              /> */}
-            {keplr ? (
-              <ButtonIcon
-                onClick={() => selectMethodFunc('keplr')}
-                active={selectMethod === 'keplr'}
-                img={imgKeplr}
-                text="keplr"
+        {keplr ? (
+          <ButtonIcon
+            onClick={() => selectMethodFunc('keplr')}
+            active={selectMethod === 'keplr'}
+            img={imgKeplr}
+            text="keplr"
+          />
+        ) : (
+          <LinkWindow to="https://www.keplr.app/">
+            <Pane marginRight={5} width={34} height={30}>
+              <img
+                style={{ width: '34px', height: '30px' }}
+                src={imgKeplr}
+                alt="icon"
               />
-            ) : (
-              <LinkWindow to="https://www.keplr.app/">
-                <Pane marginRight={5} width={34} height={30}>
-                  <img
-                    style={{ width: '34px', height: '30px' }}
-                    src={imgKeplr}
-                    alt="icon"
-                  />
-                </Pane>
-              </LinkWindow>
-            )}
-          </>
+            </Pane>
+          </LinkWindow>
         )}
-        {web3 && web3 !== null && ethNetwork && (
-          <ButtonIcon
-            onClick={() => selectMethodFunc('MetaMask')}
-            active={selectMethod === 'MetaMask'}
-            img={imgMetaMask}
-            text="metaMask"
-          />
-        )}
-        {(cyberNetwork || cosmosNetwork) && (
-          <ButtonIcon
-            onClick={() => selectMethodFunc('read-only')}
-            active={selectMethod === 'read-only'}
-            img={imgRead}
-            text="read-only"
-          />
-        )}
+
+        <ButtonIcon
+          onClick={() => selectMethodFunc('read-only')}
+          active={selectMethod === 'read-only'}
+          img={imgRead}
+          text="read-only"
+        />
       </Pane>
       <span style={{ fontSize: '18px' }}>in</span>
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {selectMethod === 'MetaMask' && (
-          <ButtonIcon
-            img={imgEth}
-            text="eth"
-            onClick={() => selectNetworkFunc('eth')}
-            active={selectNetwork === 'eth'}
-          />
-        )}
-        {selectMethod !== 'MetaMask' && (
-          <>
-            {cyberNetwork && (
-              <ButtonIcon
-                onClick={() => selectNetworkFunc('cyber')}
-                active={selectNetwork === 'cyber'}
-                img={selectNetworkImg(CYBER.CHAIN_ID)}
-                text={CYBER.CHAIN_ID}
-              />
-            )}
-            {cosmosNetwork && (
-              <ButtonIcon
-                img={imgCosmos}
-                text="cosmos"
-                onClick={() => selectNetworkFunc('cosmos')}
-                active={selectNetwork === 'cosmos'}
-              />
-            )}
-          </>
-        )}
+        <ButtonIcon
+          active={selectNetwork === 'cyber'}
+          img={selectNetworkImg(CYBER.CHAIN_ID)}
+          text={CYBER.CHAIN_ID}
+        />
       </Pane>
     </ActionBarContainer>
   );

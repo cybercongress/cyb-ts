@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -14,16 +14,28 @@ import { PoolsInfo, PoolCard } from './pool';
 import styles from './pool/styles.module.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
+import Loader2 from 'src/components/ui/Loader2';
+import { useAdviser } from 'src/features/adviser/context';
 
 function WarpDashboardPools() {
   const { defaultAccount } = useSelector((state) => state.pocket);
   const { vol24Total, vol24ByPool } = useWarpDexTickers();
   const data = usePoolListInterval();
-  const { poolsData, totalCap } = usePoolsAssetAmount(data);
+  const { poolsData, totalCap, loading } = usePoolsAssetAmount(data);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { liquidBalances: accountBalances } = useGetBalances(addressActive);
   const { myCap } = useGetMySharesInPools(accountBalances);
   const { totalSupplyAll } = useGetTotalSupply();
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (loading) {
+      setAdviser('loading...', 'yellow');
+    } else {
+      setAdviser('add or sub liquidity. create a pool');
+    }
+  }, [setAdviser, loading]);
 
   const useMyProcent = useMemo(() => {
     if (totalCap > 0 && myCap > 0) {
@@ -71,11 +83,9 @@ function WarpDashboardPools() {
           useMyProcent={useMyProcent}
           vol24={vol24Total}
         />
-        {Object.keys(itemsPools).length > 0 ? (
-          itemsPools
-        ) : (
-          <NoItems text="No Pools" />
-        )}
+        {Object.keys(itemsPools).length > 0
+          ? itemsPools
+          : !loading && <NoItems text="No Pools" />}
       </div>
     </MainContainer>
   );

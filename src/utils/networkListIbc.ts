@@ -30,7 +30,7 @@ const networkList: ObjectKey<NetworkCons> = {
     coinMinimalDenom: 'uosmo',
     coinDecimals: 6,
     denom: 'OSMO',
-    rpc: 'https://rpc-osmosis.blockapsis.com/',
+    rpc: 'https://rpc.osmosis-1.bronbro.io',
     prefix: 'osmo',
     explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
   },
@@ -101,7 +101,7 @@ const networkList: ObjectKey<NetworkCons> = {
   },
   'evmos_9001-2': {
     chainId: 'evmos_9001-2',
-    rpc: 'https://tendermint.bd.evmos.org:26657',
+    rpc: 'https://rpc.evmos-9001-2.bronbro.io',
     sourceChainId: 'bostrom',
     sourceChannelId: 'channel-9',
     destinationChainId: 'evmos_9001-2',

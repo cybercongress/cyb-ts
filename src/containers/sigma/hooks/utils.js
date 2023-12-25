@@ -118,12 +118,27 @@ export const useGetBalance = (client, addressBech32) => {
           responsevalidatorCommission
         );
 
-        return {
+        const resultBalance = {
           liquid: responsegetBalance,
           frozen: delegationsAmount,
           melting: unbondingAmount,
           growth: rewardsAmount,
-          commission: commissionAmount,
+        };
+
+        if (commissionAmount.amount > 0) {
+          resultBalance.commission = commissionAmount;
+        }
+
+        const total = Object.values(resultBalance).reduce((acc, item) => {
+          return new BigNumber(acc).plus(item.amount).toString();
+        }, 0);
+
+        return {
+          ...resultBalance,
+          total: {
+            denom: DENOM_CYBER,
+            amount: total,
+          },
         };
       },
       {

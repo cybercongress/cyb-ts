@@ -3,7 +3,7 @@ const networkList = [
     chainId: 'osmosis-1',
     chainName: 'osmosis',
     prefix: 'osmo',
-    rpc: 'https://rpc-osmosis.blockapsis.com/',
+    rpc: 'https://rpc.osmosis-1.bronbro.io',
     explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
     chainIdImageCid: 'QmbS1fKYo9Kxx6g2NwfqABbjKSVcNiRE4wAPYjvak2AZbN',
   },
@@ -50,7 +50,7 @@ const networkList = [
   {
     chainId: 'evmos_9001-2',
     chainName: 'evmos',
-    rpc: 'https://tendermint.bd.evmos.org:26657',
+    rpc: 'https://rpc.evmos-9001-2.bronbro.io',
     prefix: 'evmos',
     explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
     chainIdImageCid: 'QmXhPaHEpLakqEvhY36bzt3ffi9HheF8haPNdbf8RKJbko',

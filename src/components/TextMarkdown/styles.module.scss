@@ -29,7 +29,7 @@
 .markdownContainer {
   margin: 0 auto;
 
-  width: clamp(320px, 62vw, 580px);
+  width: clamp(320px, 100%, 580px);
   min-height: 200px;
 
   display: flex;

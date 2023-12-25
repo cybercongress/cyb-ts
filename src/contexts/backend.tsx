@@ -13,18 +13,18 @@ import { selectFollowings } from 'src/redux/features/currentAccount';
 // import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 // import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import DbApiInstance, {
-  DbApi,
-} from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
-const createSenseApi = (dbApi: DbApi) => ({
+const createSenseApi = (dbApi: DbApiWrapper) => ({
   getSummary: () => dbApi.getSenseSummary(),
   getList: () => dbApi.getSenseList(),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
+  getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
+  getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
 });
 
 const setupStoragePersistence = async () => {
@@ -36,7 +36,9 @@ const setupStoragePersistence = async () => {
   const message = isPersistedStorage
     ? `🔰 Storage is persistent.`
     : `⚠️ Storage is non-persitent.`;
+
   console.log(message);
+
   return isPersistedStorage;
 };
 
@@ -70,6 +72,8 @@ const BackendContext =
 export function useBackend() {
   return useContext(BackendContext);
 }
+
+const dbApi = new DbApiWrapper();
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
@@ -108,8 +112,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [isReady]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
-
     backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
     });
@@ -122,8 +126,26 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       );
       await setupStoragePersistence();
 
+      const ipfsLoadPromise = async () => {
+        const isInitialized = await backgroundWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 Background worker already active.');
+          return Promise.resolve();
+        }
+        return loadIpfs();
+      };
+
+      const cozoDbLoadPromise = async () => {
+        const isInitialized = await cozoDbWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 CozoDb worker already active.');
+          return Promise.resolve();
+        }
+        return loadCozoDb();
+      };
+
       // Loading non-blocking, when ready  state.backend.services.* should be changef
-      Promise.all([loadIpfs(), loadCozoDb()]);
+      Promise.all([ipfsLoadPromise(), cozoDbLoadPromise()]);
     })();
 
     // return () => channel.close();
@@ -136,10 +158,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       .then(() => {
         // init dbApi
         // TODO: refactor to use simple object instead of global instance
-        DbApiInstance.init(proxy(cozoDbWorkerInstance));
+        dbApi.init(proxy(cozoDbWorkerInstance));
 
         // pass dbApi into background worker
-        backgroundWorkerInstance.init(proxy(DbApiInstance));
+        backgroundWorkerInstance.init(proxy(dbApi));
       })
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
@@ -171,7 +193,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
-        senseApi: isDbInitialized ? createSenseApi(DbApiInstance) : null,
+        senseApi: isDbInitialized ? createSenseApi(dbApi) : null,
         loadIpfs,
         ipfsError,
         isIpfsInitialized,

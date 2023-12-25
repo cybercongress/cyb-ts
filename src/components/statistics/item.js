@@ -24,7 +24,7 @@ export function Card({
   stylesContainer,
 }) {
   return (
-    <div style={{ ...stylesContainer }} className="container-card">
+    <div style={{ ...stylesContainer }} className={styles.card}>
       <span className="card-title">{value}</span>
       <span className="card-value">
         {title}{' '}

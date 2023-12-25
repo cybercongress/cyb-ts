@@ -11,7 +11,7 @@ import { LsResult } from 'ipfs-core-types/src/pin';
 
 import { onProgressCallback, onCompleteCallback } from '../types';
 
-import type { DbApi } from '../indexedDb/dbApiWrapper';
+import DbApi from '../indexedDb/dbApiWrapper';
 
 const fetchPins = async (node: IpfsNode) => {
   const pins: LsResult[] = [];

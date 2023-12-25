@@ -1,5 +1,5 @@
 import imgSwap from 'images/exchange-arrows.svg';
-import s from './index.module.scss';
+import styles from './index.module.scss';
 
 function ButtonSwap({
   disabled,
@@ -14,7 +14,7 @@ function ButtonSwap({
   return (
     <button
       type="button"
-      className={s.buttonIcon}
+      className={styles.buttonIcon}
       disabled={disabled}
       onClick={onClick}
       {...props}

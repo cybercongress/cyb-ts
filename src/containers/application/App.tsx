@@ -37,12 +37,18 @@ function App() {
   useEffect(() => {
     (async () => {
       if (isReady && senseApi) {
-        console.log('----isReady', isReady, senseApi);
         const list = await senseApi.getList();
         console.log('----sense list', list);
         const summary = await senseApi.getSummary();
         console.log('----sense summary', summary);
-
+        const links = await senseApi.getLinks(
+          'QmVrZci1LVijze8ZwFQQWLMBDwC3qUUZw16j7uWopV2Krb'
+        );
+        console.log('----sense links', links);
+        const transactions = await senseApi.getTransactions(
+          'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
+        );
+        console.log('----sense transactions', transactions);
         // MARK AS READ
         // await senseApi.markAsRead('<CID/ADDRESS');
       }
@@ -113,7 +119,7 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        <AdviserContainer />
+        {!(location.pathname === '/') && <AdviserContainer />}
 
         <Outlet />
       </>

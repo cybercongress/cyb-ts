@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNetworks } from 'src/contexts/networks';
 import { ActionBarSteps } from '../portal/components';
@@ -8,6 +8,7 @@ import {
   ContainerGradientText,
   MainContainer,
 } from '../../components';
+import { useAdviser } from 'src/features/adviser/context';
 
 function ValueItem({ text, value, onChange }) {
   return (
@@ -43,6 +44,12 @@ function CustomNetwork() {
   const navigate = useNavigate();
   const { networks, updateNetworks } = useNetworks();
   const [customConfig, setCustomConfig] = useState({ ...initValue });
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('run your public network inside bostrom ');
+  }, [setAdviser]);
 
   const onChangeValue = (e, key) => {
     const { value } = e.target;

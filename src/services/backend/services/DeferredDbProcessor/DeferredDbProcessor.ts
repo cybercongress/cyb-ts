@@ -1,11 +1,19 @@
-import { BehaviorSubject, defer, filter, from, mergeMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  defer,
+  Observable,
+  filter,
+  from,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 
 import { v4 as uuidv4 } from 'uuid';
 import { ParticleCid } from 'src/types/base';
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
-import { DbApi } from '../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 type QueueItem = {
@@ -13,33 +21,30 @@ type QueueItem = {
   links?: LinkDto[];
 };
 
-class DeferredDbProcessor implements IDefferedDbProcessor {
-  private queue$ = new BehaviorSubject<
-    Map<ParticleCid | typeof uuidv4, QueueItem>
-  >(new Map());
+type QueueMap = Map<ParticleCid | typeof uuidv4, QueueItem>;
 
-  private isInitialized$ = new BehaviorSubject(false);
+class DeferredDbProcessor implements IDefferedDbProcessor {
+  private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private dbApi: DbApi | undefined;
 
-  constructor() {
-    this.isInitialized$
+  constructor(dbInstance$: Observable<DbApi | undefined>) {
+    dbInstance$.subscribe((db) => {
+      this.dbApi = db;
+    });
+
+    dbInstance$
       .pipe(
-        filter((isInitialized) => isInitialized === true),
+        filter((dbInstance) => !!dbInstance),
         tap(() => console.log('DeferredDbProcessor - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
-        mergeMap(() => defer(() => from(this.processQueue())))
+        mergeMap((queue) => defer(() => from(this.processQueue(queue))))
       )
       .subscribe({
         // next: () => console.log('Queue processed'),
         error: (err) => console.error('Error processing IPFS queue', err),
       });
-  }
-
-  public init(dbApi: DbApi) {
-    this.dbApi = dbApi;
-    this.isInitialized$.next(true);
   }
 
   public enuqueIpfsContent(content: IPFSContentMaybe) {
@@ -58,17 +63,17 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     this.queue$.next(new Map(this.queue$.value).set(id, { links }));
   }
 
-  private async processQueue() {
-    const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
+  private async processQueue(queue: QueueMap) {
+    // const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
     this.queue$.next(new Map());
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const [cid, item] of processingQueue) {
+    for (const [cid, item] of queue) {
       // eslint-disable-next-line no-await-in-loop
       await this.processQueueItem(item);
       // console.log(' deffered DB done ', cid, item);
 
-      processingQueue.delete(cid);
+      queue.delete(cid);
     }
     // this.queue$.next(queue);
   }

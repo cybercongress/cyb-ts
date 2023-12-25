@@ -1,4 +1,4 @@
-import { IpfsOptsType } from './ipfs';
+import { IPFSNodes, IpfsOptsType } from './ipfs.d';
 
 export const CYBER_NODE_SWARM_PEER_ID =
   'QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
@@ -13,8 +13,8 @@ export const CYBER_GATEWAY_URL = 'https://gateway.ipfs.cybernode.ai';
 export const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
 export const getIpfsOpts = () => {
-  let ipfsOpts = {
-    ipfsNodeType: 'embedded',
+  let ipfsOpts: IpfsOptsType = {
+    ipfsNodeType: IPFSNodes.HELIA,
     urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
     userGateway: 'http://127.0.0.1:8080',
   };

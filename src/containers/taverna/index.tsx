@@ -13,6 +13,7 @@ import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { CID_TWEET } from 'src/utils/consts';
+import { useAdviser } from 'src/features/adviser/context';
 
 const LOAD_COUNT = 10;
 
@@ -25,6 +26,16 @@ function Taverna() {
   const [update, setUpdate] = useState(1);
 
   const [itemsToShow, setItemsToShow] = useState(20);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        real feed. <br /> no ad, no spam, no scam.
+      </>
+    );
+  }, [setAdviser]);
 
   useEffect(() => {
     setRankLink(null);
