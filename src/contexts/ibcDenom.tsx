@@ -139,7 +139,8 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
     [ibcDenoms, traseDenom]
   );
 
-  if (!poolsData) {
+  // TODO refactor
+  if (!poolsData || !ibcDenoms) {
     return null;
   }
 

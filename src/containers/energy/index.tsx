@@ -1,24 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { connect, useSelector } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
 import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
 import { ContainerGradientText } from 'src/components';
-import { RootState } from 'src/redux/store';
 import { useRobotContext } from 'src/pages/robot/robot.context';
+import Display from 'src/components/containerGradient/Display/Display';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { useAdviser } from 'src/features/adviser/context';
 
 function RoutedEnergy() {
   const location = useLocation();
   const [selected, setSelected] = useState('myEnegy');
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
   const { address } = useRobotContext();
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
 
-  const isOwner =
-    defaultAccount && defaultAccount.account?.cyber.bech32 === address;
+  const currentAddress = useAppSelector(selectCurrentAddress);
+
+  const isOwner = currentAddress === address;
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        place to manage energy wisely. investmint and route <br />
+        both volts and amperes allow to create cyberlinks
+      </>
+    );
+  }, [setAdviser]);
 
   const {
     slotsData,
@@ -100,13 +113,7 @@ function RoutedEnergy() {
           />
         </ContainerGradientText>
 
-        <ContainerGradientText
-          userStyleContent={{
-            padding: '15px 0',
-          }}
-        >
-          {content}
-        </ContainerGradientText>
+        <Display noPaddingX>{content}</Display>
       </div>
 
       <div

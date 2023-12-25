@@ -14,7 +14,7 @@ function Social() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser('join our community');
+    setAdviser('join our community!');
   }, [setAdviser]);
 
   return (
@@ -24,11 +24,14 @@ function Social() {
           <div className={styles.main}>
             <Discord />
             <Twitter />
+            <Telegram />
           </div>
 
-          <Telegram />
+          <DisplayTitle inDisplay title="code" />
 
-          <GitHub />
+          <div className={styles.code}>
+            <GitHub />
+          </div>
         </div>
       </Display>
     </MainContainer>

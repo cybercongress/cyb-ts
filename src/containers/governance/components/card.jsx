@@ -6,6 +6,7 @@ import {
   ContainerGradientText,
 } from '../../../components';
 import { PROPOSAL_STATUS } from '../../../utils/config';
+import Display from 'src/components/containerGradient/Display/Display';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
@@ -92,10 +93,7 @@ function TypeProps({ type }) {
 
 function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
   return (
-    <ContainerGradientText
-      status="green"
-      userStyleContent={{ padding: '10px 35px 20px 15px' }}
-    >
+    <Display>
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
@@ -110,16 +108,13 @@ function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
         <Pane marginBottom={2}>Time accepted:</Pane>
         <Pane>{timeEnd}</Pane>
       </Pane>
-    </ContainerGradientText>
+    </Display>
   );
 }
 
 function RejectedCard({ id, name, votes, type, amount, timeEnd }) {
   return (
-    <ContainerGradientText
-      status="red"
-      userStyleContent={{ padding: '10px 35px 20px 15px' }}
-    >
+    <Display color="red">
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
@@ -134,7 +129,7 @@ function RejectedCard({ id, name, votes, type, amount, timeEnd }) {
         <Pane marginBottom={2}>Time rejected:</Pane>
         <Pane>{timeEnd}</Pane>
       </Pane>
-    </ContainerGradientText>
+    </Display>
   );
 }
 
@@ -151,9 +146,7 @@ function ActiveCard({
   minDeposit,
 }) {
   return (
-    <ContainerGradientText
-      userStyleContent={{ padding: '10px 35px 20px 15px' }}
-    >
+    <Display color="blue">
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
@@ -185,7 +178,7 @@ function ActiveCard({
           <Pane>{timeEndVoting}</Pane>
         </Pane>
       )}
-    </ContainerGradientText>
+    </Display>
   );
 }
 

@@ -20,18 +20,18 @@ import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
-import { useGetSwapPrice } from '../teleport/hooks';
-import {
-  calculateCounterPairAmount,
-  getMyTokenBalanceNumber,
-  getPoolToken,
-  sortReserveCoinDenoms,
-} from '../teleport/utils';
-import { MyPoolsT } from '../teleport/type';
+import { useGetSwapPrice } from '../../pages/teleport/hooks';
+import { sortReserveCoinDenoms } from '../../pages/teleport/swap/utils';
 import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
-import { TypeTab } from './type';
+import { TypeTab, MyPoolsT } from './type';
+import {
+  getPoolToken,
+  getMyTokenBalanceNumber,
+  calculateCounterPairAmount,
+} from './utils';
+import { useAdviser } from 'src/features/adviser/context';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -69,6 +69,35 @@ function Warp() {
     tokenBPoolAmount
   );
   const firstEffectOccured = useRef(false);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    let text;
+
+    switch (tab) {
+      case 'add-liquidity':
+        text = 'play with pools earn more values';
+        break;
+      case 'create-pool':
+        text = (
+          <>
+            the unlimited number of variations. combine your favorite tokens{' '}
+            <br /> cultivate your values. place of cyber alchemists
+          </>
+        );
+
+        break;
+      case 'sub-liquidity':
+        text = 'manage your liquidity';
+        break;
+
+      default:
+        break;
+    }
+
+    setAdviser(text);
+  }, [setAdviser, tab]);
 
   useEffect(() => {
     if (firstEffectOccured.current) {

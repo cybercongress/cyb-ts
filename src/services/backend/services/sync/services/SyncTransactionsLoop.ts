@@ -113,6 +113,7 @@ class SyncTransactionsLoop {
       await this.db!.getSyncStatus(address);
     console.log(
       '--------syncTransactions',
+      address,
       timestampRead,
       unreadCount,
       timestampUpdate

@@ -2,7 +2,7 @@ import cx from 'classnames';
 import { $TsFixMe } from 'src/types/tsfix';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
@@ -41,6 +41,7 @@ export type Props = {
   link?: string;
   onClick?: () => void;
   small?: boolean;
+  reloadDocument?: LinkProps['reloadDocument'];
 };
 
 function Button({
@@ -53,6 +54,7 @@ function Button({
   onClick,
   link,
   className,
+  reloadDocument,
   small,
   ...props
 }: Props) {
@@ -97,6 +99,7 @@ function Button({
     Component = Link;
     componentProps = {
       to: link,
+      reloadDocument,
     };
   }
 

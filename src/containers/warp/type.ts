@@ -21,3 +21,8 @@ export const enum TypeTabEnum {
   CREATE_POOL = 'create-pool',
   SUB_LIQUIDITY = 'sub-liquidity',
 }
+
+export interface MyPoolsT extends Pool {
+  coinDenom: string;
+  myTokenAmount: number;
+}

@@ -119,7 +119,7 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        <AdviserContainer />
+        {!(location.pathname === '/') && <AdviserContainer />}
 
         <Outlet />
       </>

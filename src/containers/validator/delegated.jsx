@@ -4,6 +4,7 @@ import { CardTemplate, FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
+import Display from 'src/components/containerGradient/Display/Display';
 
 const dateFormat = require('dateformat');
 
@@ -46,7 +47,6 @@ function Row({ value, title, marginBottom }) {
 }
 
 function Delegated({ data, marginBottom }) {
-  console.log('Delegated', data);
   const {
     self,
     selfPercent,
@@ -68,7 +68,8 @@ function Delegated({ data, marginBottom }) {
       marginBottom={marginBottom || 0}
       // className="ValidatorInfo__Delegated-MissedBlocks-wrapper"
     >
-      <CardTemplate paddingLeftChild={10} paddingBottom={20}>
+      <Display>
+        {/* <CardTemplate paddingLeftChild={10} paddingBottom={20}> */}
         <Row title="Operator Address" value={data.operator_address} />
         <Row
           title="Address"
@@ -134,7 +135,8 @@ function Delegated({ data, marginBottom }) {
             />
           </Pane>
         )}
-      </CardTemplate>
+        {/* </CardTemplate> */}
+      </Display>
     </Pane>
   );
 }

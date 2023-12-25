@@ -32,7 +32,7 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
-import Temple from './containers/temple';
+import Temple from './containers/temple/Temple';
 // import IpfsSettings from './features/ipfs/ipfsSettings';
 import {
   Codes,
@@ -54,7 +54,7 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
-import Teleport from './containers/teleport/pages/Teleport';
+import Teleport from './pages/teleport/Teleport';
 import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';

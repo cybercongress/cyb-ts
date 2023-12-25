@@ -8,6 +8,8 @@ import styles from './Stats.module.scss';
 import { TitleType } from '../OracleLanding';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
+import gql from 'graphql-tag';
+import { useQuery } from 'react-apollo';
 
 type Props = {
   type: TitleType;
@@ -15,17 +17,40 @@ type Props = {
 
 const REFETCH_INTERVAL = 1000 * 7;
 
+const twentyFourHoursAgo = new Date(
+  new Date().getTime() - 24 * 60 * 60 * 1000
+).toISOString();
+
+function generateQuery(type: string) {
+  return gql`
+    query Query {
+      ${type}(where: {timestamp: {_gte: "${twentyFourHoursAgo}"}}) {
+        aggregate {
+          count
+        }
+      }
+    }
+  `;
+}
+
 function Stats({ type }: Props) {
   const dataGetGraphStats = useGetGraphStats(REFETCH_INTERVAL);
   const negentropy = useGetNegentropy(REFETCH_INTERVAL);
 
+  const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
+  const particlesQuery = useQuery(generateQuery('particles_aggregate'));
+
   let value: number | undefined;
   let text: string | JSX.Element;
+  let change: number | undefined;
 
   switch (type) {
     case TitleType.search:
       value = dataGetGraphStats.data?.particles;
       text = <Link to={routes.oracle.ask.getLink('particle')}>particles</Link>;
+      if (!(particlesQuery.loading || particlesQuery.error)) {
+        change = particlesQuery.data?.particles_aggregate.aggregate.count;
+      }
       break;
 
     case TitleType.learning:
@@ -33,6 +58,9 @@ function Stats({ type }: Props) {
       text = (
         <Link to={routes.oracle.ask.getLink('cyberlink')}>cyberlinks</Link>
       );
+      if (!(cyberlinksQuery.loading || cyberlinksQuery.error)) {
+        change = cyberlinksQuery.data?.cyberlinks_aggregate.aggregate.count;
+      }
       break;
 
     case TitleType.ai:
@@ -53,7 +81,16 @@ function Stats({ type }: Props) {
             content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
             delay={40}
           />{' '}
-          <strong>{text}</strong> and <strong>growing</strong>
+          <strong>{text}</strong>{' '}
+          {change ? (
+            <p className={styles.change}>
+              | <strong>+{change}</strong> in 24 hours
+            </p>
+          ) : (
+            <>
+              and <strong>growing</strong>
+            </>
+          )}
         </>
       )}
     </div>

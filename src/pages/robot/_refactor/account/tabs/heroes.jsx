@@ -8,6 +8,7 @@ import { formatNumber, formatCurrency } from '../../../../../utils/utils';
 import { CYBER } from '../../../../../utils/config';
 import { useGetHeroes } from '../hooks';
 import hS from './heroes.module.scss';
+import { useAdviser } from 'src/features/adviser/context';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -78,6 +79,17 @@ function Heroes() {
   useEffect(() => {
     addRefetch(refetch);
   }, [addRefetch]);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        collection of heroes at one place <br />
+        claim rewards now
+      </>
+    );
+  }, [setAdviser]);
 
   const delegationsItem = Object.keys(data).map((key) => {
     let amount = 0;
