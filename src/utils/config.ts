@@ -75,7 +75,7 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
-const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId') || Networks.SPACE_PUSSY;
 
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
 

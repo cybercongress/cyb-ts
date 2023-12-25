@@ -5,29 +5,29 @@ import { CYBER } from '../../utils/config';
 import nebulaIcon from '../../image/temple/nebula.png';
 import teleport from '../../image/temple/teleport.png';
 import hfr from '../../image/temple/hfr.png';
-import temple from '../../image/temple/temple.png';
+// import temple from '../../image/temple/temple.png';
 import robot from '../../image/temple/robot.png';
 import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
 import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
-import hub from '../../image/temple/hub.png';
-import congress from './images/congress.png';
+// import hub from '../../image/temple/hub.png';
+// import congress from './images/congress.png';
 
 import { routes } from '../../routes';
 
 const itemsMenu = () => {
   const listItemMenu = [
     {
-      name: 'My robot',
+      name: 'My account',
       icon: robot,
       to: '/robot',
       subItems: [],
       // subItems: myRobotLinks,
     },
     {
-      name: 'Oracle',
+      name: 'Explorer',
       to: '/',
       icon: oracle,
       subItems: [
@@ -39,21 +39,21 @@ const itemsMenu = () => {
         { name: 'Libs', to: '/libs' },
       ],
     },
-    { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
-    { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
+    // { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
+    { name: 'Assets', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
-      name: 'Teleport',
-      to: '/teleport',
+      name: 'Swap',
+      to: routes.teleport.swap.path,
       icon: teleport,
-      active: false,
-      subItems: [
-        { name: 'Send', to: routes.teleport.send.path },
-        { name: 'Bridge', to: routes.teleport.bridge.path },
-        { name: 'Swap', to: routes.teleport.swap.path },
-      ],
+      // active: false,
+      // subItems: [
+      //   { name: 'Swap', to: routes.teleport.swap.path },
+        // { name: 'Bridge', to: routes.teleport.bridge.path },
+        // { name: 'Send', to: routes.teleport.send.path },
+      // ],
     },
     {
-      name: 'Warp',
+      name: 'Pools',
       icon: warp,
       to: '/warp',
       subItems: [
@@ -63,24 +63,24 @@ const itemsMenu = () => {
       ],
     },
     {
-      name: 'Sphere',
+      name: 'Stake',
       icon: shpere,
       to: routes.sphere.path,
       subItems: [{ name: 'Heroes at rest', to: routes.sphereJailed.path }],
     },
-    { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
+    { name: 'Investmint', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
-    {
-      name: 'Hub',
-      to: '/search/hub',
-      icon: hub,
-      subItems: [
-        { name: 'Networks', to: '/networks' },
-        { name: 'Add network', to: '/networks/add' },
-      ],
-    },
-    { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
-    { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
+    // {
+    //   name: 'Hub',
+    //   to: '/search/hub',
+    //   icon: hub,
+    //   subItems: [
+    //     { name: 'Networks', to: '/networks' },
+    //     { name: 'Add network', to: '/networks/add' },
+    //   ],
+    // },
+    { name: 'Governance', icon: senate, to: '/senate', subItems: [] },
+    // { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
     //   icon: zhdun,
@@ -128,8 +128,7 @@ const itemsMenu = () => {
   ];
 
   if (
-    CYBER.CHAIN_ID === Networks.BOSTROM ||
-    CYBER.CHAIN_ID === Networks.SPACE_PUSSY
+    CYBER.CHAIN_ID === Networks.BOSTROM
   ) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
