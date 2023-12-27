@@ -5,9 +5,8 @@ import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import SyncQueue from 'src/services/backend/services/sync/services/SyncQueue';
 import { fetchPins } from 'src/services/backend/services/dataSource/ipfs/ipfsSource';
 import { mapPinToEntity } from 'src/services/CozoDb/mapping';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 // jest.mock('src/services/ipfs/ipfs');
@@ -46,11 +45,9 @@ describe('SyncIpfsLoop', () => {
   let ipfsNode: CybIpfsNode;
   let syncQueue: SyncQueue;
   let syncIpfsLoop: SyncIpfsLoop;
-  const sendStatusMock = broadcastStatus().sendStatus;
 
   beforeEach(() => {
     // You can also reset the mock if needed
-    sendStatusMock.mockReset();
 
     dbApi = new DbApi();
     ipfsNode = createMock<CybIpfsNode>();

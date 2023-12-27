@@ -9,9 +9,8 @@ import {
   map,
   combineLatest,
 } from 'rxjs';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
@@ -46,7 +45,6 @@ class SyncQueue {
 
     deps.dbInstance$.subscribe(async (db) => {
       this.db = db;
-      console.log('---SyncQueue deps.dbInstance$', db);
       await this.loadSyncQueue();
     });
 
@@ -111,7 +109,7 @@ class SyncQueue {
     }
     await this.db!.putSyncQueue(items);
     const queue = this.syncQueue$.value;
-    // console.log('------pushToSyncQueue', items, typeof queue);
+    console.log('------pushToSyncQueue', items, typeof queue);
     items.forEach((item) => queue.set(item.id, item));
     this.syncQueue$.next(queue);
   }

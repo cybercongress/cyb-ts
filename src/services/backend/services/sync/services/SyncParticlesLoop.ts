@@ -1,7 +1,6 @@
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
@@ -27,6 +26,12 @@ class SyncParticlesLoop {
 
   private resolveAndSaveParticle: FetchIpfsFunc;
 
+  private _loop$: Observable<any>;
+
+  public get loop$(): Observable<any> {
+    return this._loop$;
+  }
+
   constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
     if (!deps.resolveAndSaveParticle) {
       throw new Error('resolveAndSaveParticle is not defined');
@@ -48,8 +53,6 @@ class SyncParticlesLoop {
 
     this.syncQueue = syncQueue;
 
-    // this.isInitialized$ = isInitialized$;
-
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
@@ -68,34 +71,43 @@ class SyncParticlesLoop {
 
   private async syncParticles() {
     // fetch observable particles from db
-    const dbResult = await this.db!.findSyncStatus({
+    const result = await this.db!.findSyncStatus({
       entryType: EntryType.particle,
     });
-    const syncStatusEntities: SyncStatusDto[] = [];
-    dbResult.rows.map(async (row) => {
-      const [id, unreadCount, timestampUpdate, timestampRead] = row;
-      const syncStatusItem = await fetchCyberlinksAndGetStatus(
-        this.params!.cyberIndexUrl!,
-        id as string,
-        timestampUpdate as number,
-        timestampRead as number,
-        unreadCount as number,
-        this.resolveAndSaveParticle,
-        (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
-      );
-      syncStatusItem && syncStatusEntities.push(syncStatusItem);
-    });
+    // const syncStatusEntities: SyncStatusDto[] = [];
+    console.log('---syncParticles result', result);
+    const syncStatusEntities = (
+      await Promise.all(
+        result.map(async (syncStatus) => {
+          const { id, unreadCount, timestampUpdate, timestampRead } =
+            syncStatus;
+          return fetchCyberlinksAndGetStatus(
+            this.params!.cyberIndexUrl!,
+            id as string,
+            timestampUpdate as number,
+            timestampRead as number,
+            unreadCount as number,
+            this.resolveAndSaveParticle,
+            (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
+          );
+        })
+      )
+    ).filter((i) => i !== undefined) as SyncStatusDto[];
+    console.log('---syncParticles syncStatusEntities', syncStatusEntities);
 
-    syncStatusEntities.length > 0 && this.db!.putSyncStatus(syncStatusEntities);
+    syncStatusEntities.length > 0 &&
+      (await this.db!.putSyncStatus(syncStatusEntities));
   }
 
   start() {
-    createLoopObservable(
+    this._loop$ = createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncParticles())),
       () => this.statusApi.sendStatus('in-progress')
-    ).subscribe({
+    );
+
+    this._loop$.subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });

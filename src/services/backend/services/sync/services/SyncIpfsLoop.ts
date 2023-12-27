@@ -1,7 +1,6 @@
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';

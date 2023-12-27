@@ -8,7 +8,7 @@ import {
 } from '../types';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
-class BroadcastChannelSender {
+export class BroadcastChannelSender {
   static mockClear() {
     throw new Error('Method not implemented.');
   }
@@ -48,20 +48,5 @@ class BroadcastChannelSender {
     this.channel.postMessage(msg);
   }
 }
-
-export const broadcastStatus = (
-  name: SyncEntryName,
-  channelApi: BroadcastChannelSender
-) => {
-  return {
-    sendStatus: (status: SyncProgress['status'], message?: string) => {
-      channelApi.postSyncEntryProgress(name, {
-        status,
-        message,
-        done: status === 'idle' || status === 'error',
-      });
-    },
-  };
-};
 
 export default BroadcastChannelSender;

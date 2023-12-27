@@ -74,12 +74,11 @@ export async function fetchCyberlinksAndGetStatus(
     cid,
     timestampUpdate
   );
-
   const links = [];
+  // eslint-disable-next-line no-restricted-syntax
   for await (const batch of cyberlinsIterable) {
     links.push(...batch);
   }
-
   if (!links.length) {
     return undefined;
   }
@@ -96,11 +95,6 @@ export async function fetchCyberlinksAndGetStatus(
   // resolve particle direct
   await resolveAndSaveParticle(lastId);
 
-  // await this.db!.putSyncQueue(
-  //   links.map((link) => ({ id: link.to, priority: 1 }))
-  // );
-
-  // resolve particles using ueue
   await pushToSyncQueue(links.map((link) => ({ id: link.to, priority: 1 })));
 
   const syncStatus = {

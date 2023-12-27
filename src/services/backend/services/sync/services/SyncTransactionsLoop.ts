@@ -1,7 +1,6 @@
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
@@ -24,6 +23,12 @@ class SyncTransactionsLoop {
   private db: DbApi | undefined;
 
   private syncQueue: SyncQueue | undefined;
+
+  private _loop$: Observable<any>;
+
+  public get loop$(): Observable<any> {
+    return this._loop$;
+  }
 
   private statusApi = broadcastStatus(
     'transaction',
@@ -74,12 +79,14 @@ class SyncTransactionsLoop {
   }
 
   start() {
-    createLoopObservable(
+    this._loop$ = createLoopObservable(
       BLOCKCHAIN_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncAllTransactions())),
       () => this.statusApi.sendStatus('in-progress')
-    ).subscribe({
+    );
+
+    this._loop$.subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });
@@ -88,7 +95,6 @@ class SyncTransactionsLoop {
   }
 
   private async syncAllTransactions() {
-    console.log('---syncAllTransactions', this.db);
     try {
       this.params.myAddress &&
         (await this.syncTransactions(this.params.myAddress, true));
@@ -130,7 +136,7 @@ class SyncTransactionsLoop {
     // eslint-disable-next-line no-restricted-syntax
     for await (const batch of transactionsAsyncIterable) {
       // filter only supported transactions
-
+      console.log('---batch', batch);
       const items = batch.filter((t) =>
         [
           'cyber.graph.v1beta1.MsgCyberlink',

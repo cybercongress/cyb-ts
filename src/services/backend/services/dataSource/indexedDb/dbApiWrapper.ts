@@ -53,7 +53,7 @@ class DbApiWrapper {
       timestampUpdate: row[0],
       unreadCount: row[1],
       timestampRead: row[2],
-    } as SyncStatus;
+    } as SyncStatusDto;
   }
 
   public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {
@@ -95,11 +95,7 @@ class DbApiWrapper {
       ['entry_type']
     );
 
-    if (!result.ok) {
-      throw new Error("Can't get particles to sync");
-    }
-
-    return result;
+    return dbResultToDtoList(result) as Partial<SyncStatusDto>[];
   }
 
   public async putPins(pins: PinDbEntity[] | PinDbEntity) {
