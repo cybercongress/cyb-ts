@@ -211,8 +211,12 @@ class Soft3jsMsgs {
       return {};
     }
 
+    const amount = new BigNumber(offerCoin.amount)
+      .multipliedBy(1 - this.SWAP_FEE_RATE)
+      .dp(0, BigNumber.ROUND_CEIL);
+
     const offerCoinFee = coinFunc(
-      new BigNumber(offerCoin.amount)
+      new BigNumber(amount)
         .multipliedBy(this.SWAP_FEE_RATE)
         .multipliedBy(0.5)
         .dp(0, BigNumber.ROUND_CEIL)
@@ -227,7 +231,10 @@ class Soft3jsMsgs {
         swapRequesterAddress: this.senderAddress,
         poolId,
         swapTypeId: this.POOL_TYPE_INDEX,
-        offerCoin,
+        offerCoin: {
+          amount: amount.toString(),
+          denom: offerCoin.denom,
+        },
         demandCoinDenom,
         offerCoinFee,
         orderPrice,

@@ -10,7 +10,8 @@ const mssgsClaim = async (
   signerInfo: { sender: string; isNanoLedger: boolean },
   releaseMsg: object[],
   availableRelease: number,
-  queryClient?: CyberClient
+  queryClient?: CyberClient,
+  onlyDelegate?: boolean
 ) => {
   const MsgsBroadcast = [];
   const { sender, isNanoLedger } = signerInfo;
@@ -28,7 +29,7 @@ const mssgsClaim = async (
 
   MsgsBroadcast.push(resultMsgDelegate);
 
-  if (isNanoLedger) {
+  if (isNanoLedger || onlyDelegate) {
     return MsgsBroadcast;
   }
 
