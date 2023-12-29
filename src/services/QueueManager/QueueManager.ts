@@ -42,6 +42,7 @@ import type {
 import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
 // import { BackgroundWorkerApi } from '../backend/workers/background/worker';
 // import { postProcessIpfContent } from './utils';
 
@@ -100,6 +101,8 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private lastNodeCallTime: number = Date.now();
 
+  private channel = new BroadcastChannelSender();
+
   private executing: Record<QueueSource, Set<string>> = {
     db: new Set(),
     node: new Set(),
@@ -145,11 +148,17 @@ class QueueManager<T extends IPFSContentMaybe> {
     return itemsToExecute;
   }
 
+  private postSummary() {
+    const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size}, node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
+    this.channel.postServiceStatus('ipfs', 'started', summary);
+  }
+
   private fetchData$(item: QueueItem<T>) {
     const { cid, source, controller, callbacks } = item;
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
-
+    this.postSummary();
+    debugCid(cid, '------fetch start', item);
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {
@@ -325,7 +334,7 @@ class QueueManager<T extends IPFSContentMaybe> {
         }
 
         this.executing[source].delete(cid);
-
+        this.postSummary();
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // debugCid(cid, '------done', item, status, source, result);

@@ -50,12 +50,12 @@ const BackendStatus = () => {
         <ServiceStatus
           name="ipfs"
           status={services.ipfs.status}
-          message={services.ipfs.error}
+          message={services.ipfs.error || services.ipfs.message}
         />
         <ServiceStatus
           name="sync"
           status={services.sync.status}
-          message={services.sync.error}
+          message={services.sync.error || services.sync.message}
         />
         {Object.keys(syncState.entryStatus).map((name) => (
           <EntrySatus

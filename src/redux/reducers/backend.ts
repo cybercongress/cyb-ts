@@ -9,7 +9,13 @@ import { assocPath } from 'ramda';
 type BackendState = {
   dbPendingWrites: number;
   syncState: SyncState;
-  services: { [key in ServiceName]: { status: ServiceStatus; error?: string } };
+  services: {
+    [key in ServiceName]: {
+      status: ServiceStatus;
+      error?: string;
+      message?: string;
+    };
+  };
 };
 
 const initialState: BackendState = {
