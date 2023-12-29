@@ -1,9 +1,9 @@
 import { of } from 'rxjs';
-
-import { fetchCyberlinksAndGetStatus } from 'src/services/backend/services/sync/utils';
-import SyncQueue from 'src/services/backend/services/sync/services/SyncQueue';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
+import { updateSyncState } from 'src/services/backend/services/sync/utils';
+import SyncQueue from '../SyncQueue';
+import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 import { ServiceDeps } from '../types';
 import SyncParticlesLoop from '../SyncParticlesLoop';
 
@@ -12,6 +12,7 @@ import DbApi, {
   mockPutSyncStatus,
 } from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 
+jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/sync/utils');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
@@ -49,8 +50,8 @@ describe('SyncParticlesLoop', () => {
     syncParticlesLoop = new SyncParticlesLoop(mockServiceDeps, mockSyncQueue);
   });
 
-  it('should call fetchCyberlinksAndGetStatus and putSyncStatus correctly', (done) => {
-    const stubSyncStatus = {
+  it('should call updateSyncState and putSyncStatus correctly', (done) => {
+    const mockSyncStatus = {
       id: 'cid',
       entryType: 'particle',
       timestampUpdate: 123,
@@ -60,14 +61,13 @@ describe('SyncParticlesLoop', () => {
       disabled: false,
       meta: { direction: 'from' },
     };
+    fetchAllCyberlinks.mockResolvedValueOnce([]);
 
-    (fetchCyberlinksAndGetStatus as jest.Mock).mockResolvedValueOnce(
-      stubSyncStatus
-    );
+    (updateSyncState as jest.Mock).mockResolvedValueOnce(mockSyncStatus);
 
     syncParticlesLoop.start().loop$.subscribe({
       next: () => {
-        expect(mockPutSyncStatus).toHaveBeenCalledWith([stubSyncStatus]);
+        expect(mockPutSyncStatus).toHaveBeenCalledWith([mockSyncStatus]);
         done();
       },
       error: (err) => done(err),

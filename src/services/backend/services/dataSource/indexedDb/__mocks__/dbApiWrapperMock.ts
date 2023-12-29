@@ -52,7 +52,7 @@ const mock = jest.fn().mockImplementation(() => ({
     console.log('---------mockDbApi putCyberlinks', args);
     return mockPutCyberlinks(args);
   },
-  putPins: async (...args) => {
+  putPins: async (args) => {
     console.log('---------mockDbApi putPins', args);
     return mockPutPins(args);
   },
@@ -60,11 +60,11 @@ const mock = jest.fn().mockImplementation(() => ({
     console.log('---------mockDbApi getPins', args);
     return mockGetPins(args);
   },
-  deletePins: async (...args) => {
+  deletePins: async (args) => {
     console.log('---------mockDbApi deletePins', args);
     return mockDeletePins(args);
   },
-  putParticles: async (...args) => {
+  putParticles: async (args) => {
     console.log('---------mockDbApi putParticles', args);
     return mockPutParticles(args);
   },
@@ -72,7 +72,7 @@ const mock = jest.fn().mockImplementation(() => ({
     console.log('---------mockDbApi getParticles', args);
     return mockGetParticles(args);
   },
-  putSyncQueue: async (...args) => {
+  putSyncQueue: async (args) => {
     console.log('---------mockDbApi putSyncQueue', args);
     return mockPutSyncQueue(args);
   },

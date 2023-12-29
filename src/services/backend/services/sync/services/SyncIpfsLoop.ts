@@ -22,6 +22,12 @@ class SyncIpfsLoop {
 
   private statusApi = broadcastStatus('pin', new BroadcastChannelSender());
 
+  private _loop$: Observable<any>;
+
+  public get loop$(): Observable<any> {
+    return this._loop$;
+  }
+
   constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
     deps.dbInstance$.subscribe((db) => {
       this.db = db;
@@ -48,12 +54,14 @@ class SyncIpfsLoop {
   }
 
   start() {
-    createLoopObservable(
+    this._loop$ = createLoopObservable(
       IPFS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncPins())),
       () => this.statusApi.sendStatus('in-progress')
-    ).subscribe({
+    );
+
+    this._loop$.subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });
@@ -76,7 +84,6 @@ class SyncIpfsLoop {
 
       // Find and exclude overlapping pins
       const pinsToRemove = dbPins.filter((pin) => !pinsResultSet.has(pin));
-
       const pinsToAdd = pinsResult.filter(
         (pin) => !dbPinsSet.has(pin.cid.toString())
       );
@@ -98,7 +105,7 @@ class SyncIpfsLoop {
       );
 
       if (particlesToAdd.length > 0) {
-        await this.syncQueue!.pushToSyncQueue(
+        await this.syncQueue!.enqueue(
           particlesToAdd.map((cid) => ({ id: cid, priority: 1 }))
         );
       }
@@ -108,6 +115,7 @@ class SyncIpfsLoop {
       }
     } catch (e) {
       console.log('---syncPins error', e);
+      throw e;
     }
   }
 }

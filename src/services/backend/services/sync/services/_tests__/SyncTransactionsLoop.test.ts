@@ -11,6 +11,7 @@ import DbApi, {
   mockPutSyncStatus,
   mockGetSyncStatus,
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
+import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
 import SyncQueue from '../SyncQueue';
 import { ServiceDeps } from '../types';
@@ -19,6 +20,7 @@ import { createAsyncIterable } from 'src/utils/async/iterable';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/types';
 import { CID_TWEET } from 'src/utils/consts';
 import { EntryType } from 'src/services/CozoDb/types/entities';
+import { dateToNumber } from 'src/utils/date';
 
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
@@ -70,7 +72,7 @@ describe('SyncTransactionsLoop', () => {
   it('should call fetchTransactionsIterable and putSyncStatus correctly', (done) => {
     const particleTest = 'cid';
 
-    const stubTransactionsBatched = [
+    const mockTransactionsBatched = [
       [
         {
           type: CYBER_LINK_TRANSACTION_TYPE,
@@ -78,24 +80,22 @@ describe('SyncTransactionsLoop', () => {
             links: [{ from: CID_TWEET, to: particleTest }],
           },
           transaction: {
-            block: { timestamp: '2022-01-01' },
+            block: { timestamp: '2021-01-01' },
             transaction_hash: 'hash123',
           },
         },
       ],
     ];
 
-    const stubCyberlinksData = [
-      [{ from: particleTest, to: 'mockTo2', timestamp: '2022-01-10' }],
-      [{ from: 'mockFrom1', to: particleTest, timestamp: '2022-01-01' }],
+    const mockCyberlinksData = [
+      { from: particleTest, to: 'mockTo2', timestamp: '2022-01-10' },
+      { from: 'mockFrom1', to: particleTest, timestamp: '2022-01-01' },
     ];
 
-    (fetchTransactionsIterable as jest.Mock).mockReturnValue(
-      createAsyncIterable(stubTransactionsBatched)
+    (fetchTransactionsIterable as jest.Mock).mockReturnValueOnce(
+      createAsyncIterable(mockTransactionsBatched)
     );
-    (fetchCyberlinksIterable as jest.Mock).mockReturnValue(
-      createAsyncIterable(stubCyberlinksData)
-    );
+    (fetchAllCyberlinks as jest.Mock).mockResolvedValue(mockCyberlinksData);
 
     syncTransactionsLoop.start().loop$.subscribe({
       next: () => {
@@ -103,8 +103,8 @@ describe('SyncTransactionsLoop', () => {
           {
             id: particleTest,
             entryType: EntryType.particle,
-            timestampUpdate: 1641753000000,
-            timestampRead: 0,
+            timestampUpdate: dateToNumber('2022-01-10'),
+            timestampRead: dateToNumber('2021-01-01'),
             unreadCount: 2,
             lastId: 'mockTo2',
             disabled: false,

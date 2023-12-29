@@ -10,8 +10,9 @@ import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import SyncQueue from './SyncQueue';
-import { fetchCyberlinksAndGetStatus } from '../utils';
+import { updateSyncState } from '../utils';
 import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
+import { fetchAllCyberlinks } from '../../dataSource/blockchain/requests';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -79,20 +80,32 @@ class SyncParticlesLoop {
     const syncStatusEntities = (
       await Promise.all(
         result.map(async (syncStatus) => {
-          const { id, unreadCount, timestampUpdate, timestampRead } =
-            syncStatus;
-          return fetchCyberlinksAndGetStatus(
+          const { id, timestampUpdate } = syncStatus;
+          const links = await fetchAllCyberlinks(
             this.params!.cyberIndexUrl!,
             id as string,
-            timestampUpdate as number,
-            timestampRead as number,
-            unreadCount as number,
-            this.resolveAndSaveParticle,
-            (items: SyncQueueItem[]) => this.syncQueue!.pushToSyncQueue(items)
+            timestampUpdate as number
           );
+
+          if (links.length) {
+            return undefined;
+          }
+
+          const allLinks = [
+            ...new Set([
+              ...links.map((link) => link.to),
+              ...links.map((link) => link.from),
+            ]),
+          ];
+
+          await this.syncQueue!.enqueue(
+            allLinks.map((link) => ({ id: link, priority: 1 }))
+          );
+
+          return updateSyncState(syncStatus, links);
         })
       )
-    ).filter((i) => i !== undefined) as SyncStatusDto[];
+    ).filter((i) => !!i) as SyncStatusDto[];
     console.log('---syncParticles syncStatusEntities', syncStatusEntities);
 
     syncStatusEntities.length > 0 &&

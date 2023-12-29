@@ -69,7 +69,6 @@ test('extractParticlesResults should return correct results', () => {
       from: CID_TWEET,
       to: 'to3',
     },
-    // Add assertions for the new transaction types and links
   });
   expect(result.tweets).toEqual(
     expect.objectContaining({
@@ -99,7 +98,7 @@ test('fetchCyberlinksAndGetStatus should return correct status', async () => {
   (fetchCyberlinksIterable as jest.Mock).mockReturnValue(
     createAsyncIterable(mockCyberlinksData)
   );
-  // Call the function
+
   const result = await fetchCyberlinksAndGetStatus(
     'mockUrl',
     cid,

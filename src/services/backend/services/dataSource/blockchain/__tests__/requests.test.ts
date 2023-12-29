@@ -1,5 +1,3 @@
-// Assuming you are using a testing framework like Jest
-
 import {
   fetchTransactionsIterable,
   fetchTransactions,
@@ -7,8 +5,6 @@ import {
   fetchCyberlinkSyncStats,
 } from '../requests';
 import { request } from 'graphql-request';
-import { gql } from 'graphql-tag';
-import { dateToNumber } from 'src/utils/date';
 
 jest.mock('graphql-request');
 
@@ -107,11 +103,11 @@ describe('fetchCyberlinkSyncStats', () => {
     const result = await fetchCyberlinkSyncStats('mockUrl', 'A', 12345);
 
     expect(result).toEqual({
-      firstTimestamp: 1640975400000, // timestamp converted to number
-      lastTimestamp: 1641753000000, // timestamp converted to number
-      lastLinkedParticle: 'B', // last linked particle
-      isFrom: false, // example value, based on the mock response
-      count: 5, // count of cyberlinks
+      firstTimestamp: 1640975400000,
+      lastTimestamp: 1641753000000,
+      lastLinkedParticle: 'B',
+      isFrom: false,
+      count: 5,
     });
   });
 });

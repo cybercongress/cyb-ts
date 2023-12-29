@@ -1,5 +1,3 @@
-// Assuming you are using a testing framework like Jest
-
 import { fetchIterable } from '../utils';
 
 describe('fetchIterable', () => {

@@ -12,10 +12,14 @@ import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import SyncQueue from './SyncQueue';
-import { extractParticlesResults, fetchCyberlinksAndGetStatus } from '../utils';
+import { extractParticlesResults, updateSyncState } from '../utils';
 import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
 
-import { fetchTransactionsIterable } from '../../dataSource/blockchain/requests';
+import {
+  fetchAllCyberlinks,
+  fetchTransactionsIterable,
+} from '../../dataSource/blockchain/requests';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -164,15 +168,12 @@ class SyncTransactionsLoop {
 
         // Add cyberlink to sync observables
         if (addCyberlinksToSync) {
-          const {
-            tweets: particles,
-            particlesFound,
-            links,
-          } = extractParticlesResults(items);
+          const { tweets, particlesFound, links } =
+            extractParticlesResults(items);
           await this.db!.putCyberlinks(
             links.map((link) => ({ ...link, neuron: '' }))
           );
-
+          console.log('------data', tweets, particlesFound, links);
           // const mysteryParticles = particlesFound.filter(
           //   (cid) => !!NOT_FOUND_CIDS.find((c) => c === cid)
           // );
@@ -180,47 +181,51 @@ class SyncTransactionsLoop {
           // if (mysteryParticles.length > 0) {
           //   console.log('----NOT FOUND mysteryParticles', mysteryParticles);
           // }
-
           const syncStatusEntities = await Promise.all(
-            Object.keys(particles).map(async (cid) => {
-              const { timestamp, direction, from, to } = particles[cid];
-              const syncStatus = await fetchCyberlinksAndGetStatus(
+            Object.keys(tweets).map(async (cid) => {
+              const { timestamp, direction, from, to } = tweets[cid];
+
+              // Initial state
+              let syncStatus = {
+                id: cid as string,
+                entryType: EntryType.particle,
+                timestampUpdate: timestamp,
+                timestampRead: timestamp,
+                unreadCount: 0,
+                lastId: direction === 'from' ? from : to,
+                disabled: false,
+                meta: { direction },
+              } as SyncStatusDto;
+
+              await this.resolveAndSaveParticle(cid);
+              console.log('----syncTransactions fetchAllCyberlinks', cid);
+              const links = await fetchAllCyberlinks(
                 this.params.cyberIndexUrl!,
                 cid,
-                timestamp,
-                undefined,
-                undefined,
-                this.resolveAndSaveParticle,
-                (items: SyncQueueItem[]) =>
-                  this.syncQueue!.pushToSyncQueue(items)
+                timestamp
               );
-              const lastId = direction === 'from' ? from : to;
-              // const linkedCid = from as string;
 
-              return (
-                syncStatus || {
-                  id: cid as string,
-                  entryType: EntryType.particle,
-                  timestampUpdate: timestamp,
-                  timestampRead: timestamp,
-                  unreadCount: 0,
-                  lastId,
-                  disabled: false,
-                  meta: { direction },
-                } // or default
-              );
+              if (links.length > 0) {
+                syncStatus = updateSyncState(syncStatus, links);
+                console.log(
+                  '----syncTransactions fetchAllCyberlinks',
+                  cid,
+                  links,
+                  syncStatus
+                );
+                await this.syncQueue!.enqueue(
+                  links.map((link) => ({
+                    id: link.to /* from is tweet */,
+                    priority: 1,
+                  }))
+                );
+              }
+
+              return syncStatus;
             })
           );
 
-          // RESOLVE PARTICLE CONTENT FIRST
-          // await Promise.all(
-          //   particlesFound.map((cid) => {
-          //     console.log('---syncTransactions', cid);
-          //     return this.resolveAndSaveParticle(cid);
-          //   })
-          // );
-          // put sync particles to queue
-          await this.syncQueue!.pushToSyncQueue(
+          await this.syncQueue!.enqueue(
             particlesFound.map((cid) => ({ id: cid, priority: 1 }))
           );
           // await this.db!.putSyncQueue(

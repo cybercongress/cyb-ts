@@ -1,21 +1,15 @@
 import { dateToNumber } from 'src/utils/date';
 
-import {
-  CyberLinkSimple,
-  CyberLinkTimestamp,
-  Cyberlink,
-  ParticleCid,
-} from 'src/types/base';
+import { CyberLinkTimestamp, ParticleCid } from 'src/types/base';
 import { CID_TWEET } from 'src/utils/consts';
 import {
   Transaction,
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkTransaction,
 } from '../dataSource/blockchain/types';
-import { FetchIpfsFunc, ParticleResult, SyncQueueItem } from './types';
+import { ParticleResult } from './types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
-import { fetchCyberlinksIterable } from '../dataSource/blockchain/requests';
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import { CyberlinksByParticleResponse } from '../dataSource/blockchain/requests';
 
 export function extractParticlesResults(batch: Transaction[]) {
   const cyberlinks = batch.filter(
@@ -38,6 +32,7 @@ export function extractParticlesResults(batch: Transaction[]) {
         value.links.forEach((link) => {
           particlesFound.add(link.to);
           particlesFound.add(link.from);
+
           links.push({ ...link, timestamp: dateToNumber(timestamp) });
           if (link.from === CID_TWEET) {
             acc[link.to] = {
@@ -60,53 +55,36 @@ export function extractParticlesResults(batch: Transaction[]) {
   };
 }
 
-export async function fetchCyberlinksAndGetStatus(
-  cyberIndexUrl: string,
+export function extractLinkData(
   cid: ParticleCid,
-  timestampUpdate = 0,
-  timestampRead = 0,
-  unreadCount = 0,
-  resolveAndSaveParticle: FetchIpfsFunc,
-  pushToSyncQueue: (items: SyncQueueItem[]) => Promise<void>
-): Promise<SyncStatusDto | undefined> {
-  const cyberlinsIterable = fetchCyberlinksIterable(
-    cyberIndexUrl,
-    cid,
-    timestampUpdate
-  );
-  const links = [];
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const batch of cyberlinsIterable) {
-    links.push(...batch);
-  }
-  if (!links.length) {
-    return undefined;
-  }
-  // firstTimestamp, lastTimestamp, count, lastLinkedParticle, isFrom
-  const lastTimestamp = dateToNumber(links[0].timestamp);
-  const lastTo = links[0].to;
-  const lastFrom = links[0].from;
-  const firstTimestamp = dateToNumber(links[links.length - 1].timestamp);
-  const count = links.length;
-  const isFrom = lastFrom === cid;
+  links: CyberlinksByParticleResponse['cyberlinks']
+) {
+  const isFrom = links[0].from === cid;
 
-  const lastId = isFrom ? lastTo : lastFrom;
+  return {
+    direction: (isFrom ? 'from' : 'to') as 'from' | 'to',
+    lastLinkCid: isFrom ? links[0].to : links[0].from,
+    count: links.length,
+    lastTimestamp: dateToNumber(links[0].timestamp),
+    firstTimestamp: dateToNumber(links[links.length - 1].timestamp),
+  };
+}
 
-  // resolve particle direct
-  await resolveAndSaveParticle(lastId);
+export function updateSyncState(
+  statusEntity: Partial<SyncStatusDto>,
+  links: CyberlinksByParticleResponse['cyberlinks']
+) {
+  const { direction, lastLinkCid, count, lastTimestamp, firstTimestamp } =
+    extractLinkData(statusEntity.id as ParticleCid, links);
 
-  await pushToSyncQueue(links.map((link) => ({ id: link.to, priority: 1 })));
-
-  const syncStatus = {
-    id: cid as string,
+  const unreadCount = (statusEntity.unreadCount || 0) + count;
+  const timestampRead = count ? statusEntity.timestampRead : firstTimestamp;
+  return {
+    ...statusEntity,
+    lastId: lastLinkCid,
+    unreadCount,
+    meta: { direction },
     timestampUpdate: lastTimestamp,
-    timestampRead: count ? timestampRead : firstTimestamp,
-    unreadCount: unreadCount + count,
-    lastId,
-    meta: { direction: isFrom ? 'from' : 'to' },
-    disabled: false,
-    entryType: EntryType.particle,
+    timestampRead,
   } as SyncStatusDto;
-
-  return syncStatus;
 }

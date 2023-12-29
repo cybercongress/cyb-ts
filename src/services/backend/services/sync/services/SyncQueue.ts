@@ -8,6 +8,7 @@ import {
   from,
   map,
   combineLatest,
+  share,
 } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
@@ -30,9 +31,19 @@ class SyncQueue {
 
   private statusApi = broadcastStatus('resolver', new BroadcastChannelSender());
 
-  private syncQueue$ = new BehaviorSubject<Map<ParticleCid, SyncQueueItem>>(
+  private _syncQueue$ = new BehaviorSubject<Map<ParticleCid, SyncQueueItem>>(
     new Map()
   );
+
+  public get queue(): Map<ParticleCid, SyncQueueItem> {
+    return this._syncQueue$.getValue();
+  }
+
+  private _loop$: Observable<any>;
+
+  public get loop$(): Observable<any> {
+    return this._loop$;
+  }
 
   private processingQueue = new Map<ParticleCid, SyncQueueItem>();
 
@@ -42,13 +53,10 @@ class SyncQueue {
     }
 
     this.resolveAndSaveParticle = deps.resolveAndSaveParticle;
-
     deps.dbInstance$.subscribe(async (db) => {
       this.db = db;
       await this.loadSyncQueue();
     });
-
-    // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
@@ -59,8 +67,8 @@ class SyncQueue {
   }
 
   private async processSyncQueue() {
-    this.processingQueue = new Map(this.syncQueue$.value); // Snapshot of the current queue
-    this.syncQueue$.next(new Map());
+    this.processingQueue = new Map(this._syncQueue$.value); // Snapshot of the current queue
+    this._syncQueue$.next(new Map());
 
     const batchSize = this.processingQueue.size;
     let i = 0;
@@ -74,6 +82,7 @@ class SyncQueue {
       );
       // eslint-disable-next-line no-await-in-loop
       await this.resolveAndSaveParticle(cid).then((result) => {
+        console.log('------resolveAndSaveParticle', result);
         if (result.status === 'not_found') {
           this.db!.updateSyncQueue({ id: cid, status: SyncQueueStatus.error });
         } else {
@@ -86,32 +95,35 @@ class SyncQueue {
   }
 
   start() {
-    this.isInitialized$
-      .pipe(
-        filter((isInitialized) => isInitialized === true),
-        mergeMap(() => this.syncQueue$), // Merge the queue$ stream here.
-        tap((q) => console.log(`sync queue - ${q.size}`)),
-        filter((queue) => queue.size > 0 && this.processingQueue.size === 0),
-        tap(() => this.statusApi.sendStatus('in-progress', `starting...`)),
-        mergeMap(() => defer(() => from(this.processSyncQueue())))
-      )
-      .subscribe({
-        next: (result) => this.statusApi.sendStatus('idle'),
-        error: (err) => this.statusApi.sendStatus('error', err.toString()),
-      });
+    const source$ = this.isInitialized$.pipe(
+      tap((q) => console.log(`sync queue isInitialized - ${q}`)),
+      filter((isInitialized) => isInitialized === true),
+      mergeMap(() => this._syncQueue$), // Merge the queue$ stream here.
+      tap((q) => console.log(`sync queue - ${q.size}`)),
+      filter((queue) => queue.size > 0 && this.processingQueue.size === 0),
+      tap(() => this.statusApi.sendStatus('in-progress', `starting...`)),
+      mergeMap(() => defer(() => from(this.processSyncQueue())))
+    );
+
+    this._loop$ = source$.pipe(share());
+
+    this._loop$.subscribe({
+      next: (result) => this.statusApi.sendStatus('idle'),
+      error: (err) => this.statusApi.sendStatus('error', err.toString()),
+    });
 
     return this;
   }
 
-  public async pushToSyncQueue(items: SyncQueueItem[]) {
+  public async enqueue(items: SyncQueueItem[]) {
     if (items.length === 0) {
       return;
     }
     await this.db!.putSyncQueue(items);
-    const queue = this.syncQueue$.value;
-    console.log('------pushToSyncQueue', items, typeof queue);
+    const queue = this._syncQueue$.value;
+    console.log('------pushToSyncQueue', items);
     items.forEach((item) => queue.set(item.id, item));
-    this.syncQueue$.next(queue);
+    this._syncQueue$.next(queue);
   }
 
   private async loadSyncQueue() {
@@ -121,10 +133,10 @@ class SyncQueue {
     console.log('---loadSyncQueue', queue);
 
     queue.forEach((item) => {
-      this.syncQueue$.value.set(item.id, item);
+      this._syncQueue$.value.set(item.id, item);
     });
 
-    this.syncQueue$.next(this.syncQueue$.value);
+    this._syncQueue$.next(this._syncQueue$.value);
   }
 }
 
