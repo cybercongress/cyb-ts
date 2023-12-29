@@ -38,7 +38,7 @@ export type SyncStatusDbEntity = {
   disabled: boolean;
   unread_count: number;
   last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
-  meta: { direction: 'from' | 'to' } | {};
+  meta: { direction: 'from' | 'to' } | { memo: string };
 };
 export type ParticleDbEntity = {
   id: ParticleCid;

@@ -1,8 +1,6 @@
 import {
   fetchTransactionsIterable,
-  fetchTransactions,
   fetchCyberlinksIterable,
-  fetchCyberlinkSyncStats,
 } from '../requests';
 import { request } from 'graphql-request';
 
@@ -10,18 +8,27 @@ jest.mock('graphql-request');
 
 describe('fetchTransactionsIterable', () => {
   it('should iterate over fetched transactions', async () => {
-    const mockResponse = {
-      messages_by_address: [
+    const mockResponse = [
+      [
         { id: 1, value: 100 },
         { id: 2, value: 200 },
       ],
-    };
+      [{ id: 3, value: 300 }],
+    ];
+
     const mockCyberIndexUrl = 'mockUrl';
     const mockNeuronAddress = 'mockAddress';
     const mockTimestamp = 12345;
 
-    request.mockResolvedValue(mockResponse);
-
+    (request as jest.Mock).mockResolvedValueOnce({
+      messages_by_address: mockResponse[0],
+    });
+    (request as jest.Mock).mockResolvedValueOnce({
+      messages_by_address: mockResponse[1],
+    });
+    (request as jest.Mock).mockResolvedValueOnce({
+      messages_by_address: [],
+    });
     const iterable = fetchTransactionsIterable(
       mockCyberIndexUrl,
       mockNeuronAddress,
@@ -29,39 +36,50 @@ describe('fetchTransactionsIterable', () => {
     );
 
     const result1 = await iterable.next();
-    expect(result1.value).toEqual([
-      { id: 1, value: 100 },
-      { id: 2, value: 200 },
-    ]);
+    console.log('--res1', result1.value);
+    expect(result1.value).toEqual(mockResponse[0]);
+    const result2 = await iterable.next();
+    console.log('--res2', result2);
+    expect(result2.value).toEqual(mockResponse[1]);
+    const result3 = await iterable.next();
+    expect(result3.done).toEqual(true);
   });
 });
 
-describe('fetchTransactions', () => {
-  it('should fetch transactions by address', async () => {
-    const mockResponse = {
-      messages_by_address: [
-        { id: 1, value: 100 },
-        { id: 2, value: 200 },
-      ],
-    };
-    const mockCyberIndexUrl = 'mockUrl';
-    const mockNeuronAddress = 'mockAddress';
-    const mockTimestampFrom = 12345;
-
-    request.mockResolvedValue(mockResponse);
-
-    const result = await fetchTransactions(
-      mockCyberIndexUrl,
-      mockNeuronAddress,
-      mockTimestampFrom
-    );
-
-    expect(result).toEqual([
-      { id: 1, value: 100 },
-      { id: 2, value: 200 },
-    ]);
-  });
-});
+// const mockResponse = {
+//   messages_by_address: [
+//     {
+//       transaction_hash: 'th1',
+//       value: {
+//         msg: 'msg1==',
+//         funds: [],
+//         sender: 'sender-addr',
+//         contract: 'contact-addr',
+//       },
+//       transaction: {
+//         success: true,
+//         block: {
+//           timestamp: '2023-12-18T10:28:13.942406',
+//           height: 11324342,
+//         },
+//         memo: '[bostrom] cyb.ai, using keplr',
+//       },
+//       type: 'cosmwasm.wasm.v1.MsgExecuteContract',
+//     },
+//     {
+//       transaction_hash: 'th2',
+//       value: {
+//         links: [
+//           {
+//             to: 'cid1',
+//             from: 'cid2',
+//           },
+//         ],
+//         neuron: 'neuron-addre',
+//       },
+//     },
+//   ],
+// };
 
 describe('fetchCyberlinksIterable', () => {
   it('should iterate over fetched cyberlinks', async () => {
@@ -88,26 +106,5 @@ describe('fetchCyberlinksIterable', () => {
       { id: 1, from: 'A', to: 'B' },
       { id: 2, from: 'C', to: 'D' },
     ]);
-  });
-});
-
-describe('fetchCyberlinkSyncStats', () => {
-  it('should fetch sync stats for cyberlinks', async () => {
-    const mockResponse = {
-      first: [{ timestamp: '2022-01-01' }],
-      last: [{ timestamp: '2022-01-10', to: 'A', from: 'B' }],
-      cyberlinks_aggregate: { aggregate: { count: 5 } },
-    };
-    request.mockResolvedValue(mockResponse);
-
-    const result = await fetchCyberlinkSyncStats('mockUrl', 'A', 12345);
-
-    expect(result).toEqual({
-      firstTimestamp: 1640975400000,
-      lastTimestamp: 1641753000000,
-      lastLinkedParticle: 'B',
-      isFrom: false,
-      count: 5,
-    });
   });
 });

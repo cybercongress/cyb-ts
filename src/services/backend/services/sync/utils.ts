@@ -2,13 +2,14 @@ import { dateToNumber } from 'src/utils/date';
 
 import { CyberLinkTimestamp, ParticleCid } from 'src/types/base';
 import { CID_TWEET } from 'src/utils/consts';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+
 import {
   Transaction,
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkTransaction,
 } from '../dataSource/blockchain/types';
 import { ParticleResult } from './types';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/requests';
 
 export function extractParticlesResults(batch: Transaction[]) {
@@ -18,6 +19,7 @@ export function extractParticlesResults(batch: Transaction[]) {
   const particlesFound = new Set<string>();
   const links: CyberLinkTimestamp[] = [];
   // Get links: only from TWEETS
+  console.log('-----extractParticlesResults', cyberlinks);
   const particleTimestampRecord: Record<ParticleCid, ParticleResult> =
     cyberlinks.reduce<Record<ParticleCid, ParticleResult>>(
       (

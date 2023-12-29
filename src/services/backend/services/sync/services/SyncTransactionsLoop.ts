@@ -20,6 +20,7 @@ import {
   fetchTransactionsIterable,
 } from '../../dataSource/blockchain/requests';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { Transaction } from '../../dataSource/blockchain/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -122,7 +123,7 @@ class SyncTransactionsLoop {
     const { timestampRead, unreadCount, timestampUpdate } =
       await this.db!.getSyncStatus(address);
     console.log(
-      '--------syncTransactions',
+      '--------syncTransactions start',
       address,
       timestampRead,
       unreadCount,
@@ -135,12 +136,13 @@ class SyncTransactionsLoop {
     );
 
     let count = 0;
-    let lastTimestamp: number | undefined;
-    let lastTransactionHash: TransactionHash = '';
+    // let lastTimestamp: number | undefined;
+    // let lastTransactionHash: TransactionHash = '';
+    // let lastTrasactionMemo = '';
+    let lastTransaction: Transaction | undefined;
     // eslint-disable-next-line no-restricted-syntax
     for await (const batch of transactionsAsyncIterable) {
       // filter only supported transactions
-      console.log('---batch', batch);
       const items = batch.filter((t) =>
         [
           'cyber.graph.v1beta1.MsgCyberlink',
@@ -148,18 +150,20 @@ class SyncTransactionsLoop {
           'cosmos.bank.v1beta1.MsgMultiSend',
         ].includes(t.type)
       );
+      console.log('---syncTransactions batch ', batch.length, items.length);
 
       if (items.length > 0) {
-        if (!lastTimestamp) {
-          const lastItem = items.at(0)!;
-          lastTimestamp = dateToNumber(lastItem.transaction.block.timestamp);
-          lastTransactionHash = lastItem.transaction_hash;
+        // pick last transaction = first item based on request orderby
+        if (!lastTransaction) {
+          lastTransaction = items.at(0)!;
         }
-        console.log('---syncTransactions ', items);
-        count += items.length;
-        await this.db!.putTransactions(
-          items.map((t) => mapTransactionToEntity(address, t))
+
+        const transactions = items.map((i) =>
+          mapTransactionToEntity(address, i)
         );
+        console.log('---syncTransactions putTransactions ', transactions);
+        count += items.length;
+        await this.db!.putTransactions(transactions);
 
         this.statusApi.sendStatus(
           'in-progress',
@@ -173,14 +177,13 @@ class SyncTransactionsLoop {
           await this.db!.putCyberlinks(
             links.map((link) => ({ ...link, neuron: '' }))
           );
-          console.log('------data', tweets, particlesFound, links);
-          // const mysteryParticles = particlesFound.filter(
-          //   (cid) => !!NOT_FOUND_CIDS.find((c) => c === cid)
-          // );
+          console.log(
+            '------syncTransactions extractParticlesResults',
+            tweets,
+            particlesFound,
+            links
+          );
 
-          // if (mysteryParticles.length > 0) {
-          //   console.log('----NOT FOUND mysteryParticles', mysteryParticles);
-          // }
           const syncStatusEntities = await Promise.all(
             Object.keys(tweets).map(async (cid) => {
               const { timestamp, direction, from, to } = tweets[cid];
@@ -208,7 +211,7 @@ class SyncTransactionsLoop {
               if (links.length > 0) {
                 syncStatus = updateSyncState(syncStatus, links);
                 console.log(
-                  '----syncTransactions fetchAllCyberlinks',
+                  '----syncTransactions updateSyncState',
                   cid,
                   links,
                   syncStatus
@@ -241,17 +244,19 @@ class SyncTransactionsLoop {
 
     const unreadTransactionsCount = unreadCount + count;
 
-    if (lastTimestamp) {
+    if (lastTransaction) {
       // Update transaction
       this.db!.putSyncStatus({
         entryType: EntryType.transactions,
         id: address,
-        timestampUpdate: lastTimestamp,
+        timestampUpdate: dateToNumber(
+          lastTransaction.transaction.block.timestamp
+        ),
         unreadCount: unreadTransactionsCount,
         timestampRead,
         disabled: false,
-        lastId: lastTransactionHash,
-        meta: {},
+        lastId: lastTransaction.transaction_hash,
+        meta: { memo: lastTransaction?.transaction?.memo || '' },
       });
     }
 

@@ -78,11 +78,10 @@ class SyncQueue {
       i++;
       this.statusApi.sendStatus(
         'in-progress',
-        `processing batch ${i}/${batchSize}...`
+        `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
       );
       // eslint-disable-next-line no-await-in-loop
       await this.resolveAndSaveParticle(cid).then((result) => {
-        console.log('------resolveAndSaveParticle', result);
         if (result.status === 'not_found') {
           this.db!.updateSyncQueue({ id: cid, status: SyncQueueStatus.error });
         } else {

@@ -1,11 +1,11 @@
 import { CID_TWEET } from 'src/utils/consts';
-import { EntryType } from 'src/services/CozoDb/types/entities';
-import { dateToNumber } from 'src/utils/date';
 
-import { extractParticlesResults, fetchCyberlinksAndGetStatus } from '../utils';
+import {
+  extractParticlesResults,
+  extractLinkData,
+  updateSyncState,
+} from '../utils';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../dataSource/blockchain/types';
-import { fetchCyberlinksIterable } from '../../dataSource/blockchain/requests';
-import { createAsyncIterable } from 'src/utils/async/iterable';
 
 jest.mock('../../dataSource/blockchain/requests', () => ({
   fetchCyberlinksIterable: jest.fn(),
@@ -44,11 +44,21 @@ test('extractParticlesResults should return correct results', () => {
         block: { timestamp: new Date() },
       },
     },
+    {
+      type: CYBER_LINK_TRANSACTION_TYPE,
+      value: {
+        links: [{ from: 'to4', to: 'to5' }],
+      },
+      transaction: {
+        block: { timestamp: new Date() },
+      },
+    },
     // Add more mock transactions as needed
   ];
 
   // Call the function
   const result = extractParticlesResults(batch);
+  console.log(result);
   // Assert the expected output
   expect(result.tweets).toEqual({
     to1: {
@@ -78,47 +88,90 @@ test('extractParticlesResults should return correct results', () => {
     })
   );
   expect(result.particlesFound).toEqual(
-    expect.arrayContaining([CID_TWEET, 'to1', 'to2', 'to3'])
+    expect.arrayContaining([CID_TWEET, 'to1', 'to2', 'to3', 'to5', 'to4'])
   );
-  expect(result.links.length).toBe(3); // Update the expected links count
+  expect(result.links.length).toBe(4); // Update the expected links count
 });
 
-test('fetchCyberlinksAndGetStatus should return correct status', async () => {
-  // Mock input parameters
-  const cid = 'mockCid';
-  const resolveAndSaveParticle = jest.fn();
-  const pushToSyncQueue = jest.fn();
+const mockTransaction = [
+  {
+    transaction_hash: 'hash1',
+    type: CYBER_LINK_TRANSACTION_TYPE,
+    value: {
+      links: [
+        { from: 'from_cid_1', to: 'to_cid_1' },
+        { from: 'from_cid_2', to: 'to_cid_2' },
+      ],
+      neuron: 'neuron1',
+    },
+    transaction: {
+      memo: 'M33M0',
+      block: { timestamp: new Date() },
+    },
+  },
+  {
+    transaction_hash: 'hash2',
+    value: {
+      msg: 'msg1==',
+      funds: [],
+      sender: 'sender-addr',
+      contract: 'contact-addr',
+    },
+    transaction: {
+      success: true,
+      block: {
+        timestamp: '2023-12-18T10:28:13.942406',
+        height: 11324342,
+      },
+      memo: '[bostrom] cyb.ai, using keplr',
+    },
+    type: 'cosmwasm.wasm.v1.MsgExecuteContract',
+  },
+  // Add more mock transactions as needed
+];
 
-  // WARN fetchCyberlinksIterable should return values in descending order
-  const mockCyberlinksData = [
-    [{ from: 'mockFrom2', to: 'mockTo2', timestamp: '2022-01-10' }],
-    [{ from: 'mockFrom1', to: 'mockTo1', timestamp: '2022-01-01' }],
-  ];
+const mockCyberlinks = {
+  cyberlinks: [
+    { from: 'from_cid_1', to: 'to_cid_1', timestamp: '2022-01-01' },
+    { from: 'from_cid_2', to: 'to_cid_2', timestamp: '2022-01-10' },
+  ],
+  // Add more mock cyberlinks as needed
+};
 
-  (fetchCyberlinksIterable as jest.Mock).mockReturnValue(
-    createAsyncIterable(mockCyberlinksData)
-  );
+// Test for extractParticlesResults function
+test('extractParticlesResults should return the expected result', () => {
+  const result = extractParticlesResults(mockTransaction);
+  expect(result.tweets).toBeDefined();
+  expect(result.particlesFound).toBeDefined();
+  expect(result.links).toBeDefined();
+  // Add more specific assertions as needed
+});
 
-  const result = await fetchCyberlinksAndGetStatus(
-    'mockUrl',
-    cid,
-    0,
-    0,
-    0,
-    resolveAndSaveParticle,
-    pushToSyncQueue
-  );
-  // Assert the expected output based on the mockCyberlinksData
-  expect(result).toEqual({
-    id: cid,
-    timestampUpdate: dateToNumber(mockCyberlinksData[0][0].timestamp),
-    timestampRead: 0,
-    unreadCount: 2,
-    lastId: 'mockFrom2',
-    meta: { direction: 'to' },
-    disabled: false,
-    entryType: EntryType.particle,
-  });
+// Test for extractLinkData function
+test('extractLinkData should return the expected result', () => {
+  const result = extractLinkData('from_cid_1', mockCyberlinks.cyberlinks);
+  expect(result.direction).toEqual('from');
+  expect(result.lastLinkCid).toEqual('to_cid_1');
+  expect(result.count).toEqual(2);
+  expect(result.lastTimestamp).toEqual(1640975400000);
+  expect(result.firstTimestamp).toEqual(1641753000000);
+  // Add more specific assertions as needed
+});
 
-  expect(resolveAndSaveParticle).toHaveBeenCalledWith('mockFrom2');
+// Test for updateSyncState function
+test('updateSyncState should return the expected result', () => {
+  const mockStatusEntity = {
+    id: 'from_cid_xx',
+    unreadCount: 5,
+    timestampRead: 1641753000000,
+  };
+  const result = updateSyncState(mockStatusEntity, mockCyberlinks.cyberlinks);
+  console.log(result);
+
+  expect(result.lastId).toEqual('from_cid_1');
+  expect(result.unreadCount).toEqual(7);
+  expect(result.meta).toBeDefined();
+  expect(result.timestampUpdate).toEqual(1640975400000);
+  expect(result.timestampRead).toEqual(1641753000000);
+  // Add more specific assertions as needed
 });

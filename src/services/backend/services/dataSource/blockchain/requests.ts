@@ -47,6 +47,7 @@ const messagesByAddress = gql(`
     transaction_hash
     value
     transaction {
+      memo
       success
       block {
         timestamp,
@@ -103,7 +104,8 @@ const fetchTransactions = async (
       offset,
     }
   );
-  return res.messages_by_address;
+
+  return res?.messages_by_address;
 };
 
 const fetchCyberlinks = async (

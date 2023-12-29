@@ -35,6 +35,7 @@ export const mapTransactionToEntity = (
   const {
     transaction_hash,
     transaction: {
+      memo,
       block: { timestamp },
       success,
     },
@@ -46,6 +47,7 @@ export const mapTransactionToEntity = (
     type,
     timestamp: dateToNumber(timestamp),
     // value: JSON.stringify(value),
+    memo,
     value,
     success,
     neuron,

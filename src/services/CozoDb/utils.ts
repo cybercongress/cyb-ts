@@ -102,7 +102,10 @@ export function removeUndefinedFields(entity: Record<string, any>) {
   return entity;
 }
 
-export const dbResultToDtoList = (dbResult: IDBResult | IDBResultError) => {
+export const dbResultToDtoList = (
+  dbResult: IDBResult | IDBResultError,
+  jsonFields: string[]
+) => {
   if (!dbResult.ok) {
     throw new Error(`Can't parse DBResult: ${dbResult.message}`);
   }
@@ -116,12 +119,24 @@ export const dbResultToDtoList = (dbResult: IDBResult | IDBResultError) => {
   return rows.map((row) => {
     const obj = {};
     headers.forEach((header, index) => {
-      // const camelCaseHeader = snakeToCamel(header);
       obj[camelCaseHeadersMap[header]] = row[index];
     });
     return obj;
   });
 };
+
+export function jsonifyFields(obj: Object, fields: string[]) {
+  Object.keys(obj).forEach((k) => {
+    if (fields.includes(k)) {
+      if (obj[k]) {
+        try {
+          obj[k] = JSON.parse(obj[k]);
+        } catch {}
+      }
+    }
+  });
+  return obj;
+}
 
 export async function clearIndexedDBStore(
   dbName: string,

@@ -37,6 +37,8 @@ function App() {
   useEffect(() => {
     (async () => {
       if (isReady && senseApi) {
+        console.log('----sense ', isReady, senseApi);
+
         const list = await senseApi.getList();
         console.log('----sense list', list);
         const summary = await senseApi.getSummary();

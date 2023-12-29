@@ -17,9 +17,9 @@
     ":order -cnt"
   ],
   "link: history": [
-    "pf[mime, text, from, to, dir, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, dir='from'",
-    "pf[mime, text, from, to, dir, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, dir='to'",
-    "?[timestamp, dir, text, mime, from, to] := pf[mime, text, from, to, dir, timestamp]",
+    "pf[mime, text, from, to, direction, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'",
+    "pf[mime, text, from, to, direction, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, direction='to'",
+    "?[timestamp, direction, text, mime, from, to] := pf[mime, text, from, to, direction, timestamp]",
     ":order -timestamp"
   ],
   "tx: list with trim": [

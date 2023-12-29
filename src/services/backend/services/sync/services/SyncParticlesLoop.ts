@@ -13,6 +13,7 @@ import SyncQueue from './SyncQueue';
 import { updateSyncState } from '../utils';
 import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
 import { fetchAllCyberlinks } from '../../dataSource/blockchain/requests';
+import { links } from '@cybercongress/cyber-js/build/signingcyberclient';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -86,23 +87,27 @@ class SyncParticlesLoop {
             id as string,
             timestampUpdate as number
           );
+          try {
+            if (links.length === 0) {
+              return undefined;
+            }
 
-          if (links.length) {
-            return undefined;
+            const allLinks = [
+              ...new Set([
+                ...links.map((link) => link.to),
+                ...links.map((link) => link.from),
+              ]),
+            ];
+
+            await this.syncQueue!.enqueue(
+              allLinks.map((cid) => ({ id: cid, priority: 1 }))
+            );
+
+            return updateSyncState(syncStatus, links);
+          } catch (e) {
+            console.log('---------syncStatusEntities', e, links, syncStatus);
+            throw e;
           }
-
-          const allLinks = [
-            ...new Set([
-              ...links.map((link) => link.to),
-              ...links.map((link) => link.from),
-            ]),
-          ];
-
-          await this.syncQueue!.enqueue(
-            allLinks.map((link) => ({ id: link, priority: 1 }))
-          );
-
-          return updateSyncState(syncStatus, links);
         })
       )
     ).filter((i) => !!i) as SyncStatusDto[];

@@ -5,6 +5,7 @@ interface GenericTransaction<T> {
   type: string;
   transaction_hash: string;
   transaction: {
+    memo?: string;
     success: boolean;
     block: {
       timestamp: string;

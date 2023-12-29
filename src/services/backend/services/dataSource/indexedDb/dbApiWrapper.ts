@@ -8,6 +8,7 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 
 import {
   dbResultToDtoList,
+  jsonifyFields,
   removeUndefinedFields,
   transformListToDbEntity,
   transformToDbEntity,
@@ -152,7 +153,9 @@ class DbApiWrapper {
 
     const result = await this.db!.runCommand(command);
 
-    return dbResultToDtoList(result) as SenseResult[];
+    return dbResultToDtoList(result).map((i) =>
+      jsonifyFields(i, ['meta', 'value'])
+    ) as SenseResult[];
   }
 
   public async getSenseSummary() {
@@ -184,21 +187,16 @@ class DbApiWrapper {
   public async getTransactions(neuron: NeuronAddress) {
     const result = await this.db!.executeGetCommand(
       'transaction',
-      ['hash', 'type', 'success', 'value', 'timestamp'],
+      ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
       [`neuron = '${neuron}'`],
       ['neuron'],
       { orderBy: ['-timestamp'] }
     );
-    return dbResultToDtoList(result);
+    return dbResultToDtoList(result).map((i) => jsonifyFields(i, ['value']));
   }
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {
     const entitites = Array.isArray(links) ? links : [links];
-    //     await dbApi.executeBatchPutCommand(
-    //       'link',
-    //       links.map((l) => ({ ...l, neuron: '' })),
-    //       100
-    //     );
     console.log('------putCyberlinks', entitites);
     return this.db!.executePutCommand('link', entitites);
   }
@@ -246,9 +244,9 @@ class DbApiWrapper {
   }
 
   public async getLinks(cid: ParticleCid) {
-    const command = `pf[mime, text, from, to, dir, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, dir='from'
-    pf[mime, text, from, to, dir, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, dir='to'
-    ?[timestamp, dir, text, mime, from, to] := pf[mime, text, from, to, dir, timestamp], from='${cid}' or to='${cid}'
+    const command = `pf[mime, text, from, to, direction, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
+    pf[mime, text, from, to, direction, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, direction='to'
+    ?[timestamp, direction, text, mime, from, to] := pf[mime, text, from, to, direction, timestamp], from='${cid}' or to='${cid}'
     :order -timestamp`;
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result);

@@ -31,7 +31,8 @@
         success: Bool,
         timestamp: Int,
         value: Json,
-        neuron: String
+        neuron: String,
+        memo: String
     }
 }
 
