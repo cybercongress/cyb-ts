@@ -1,4 +1,5 @@
 import { PinType } from 'ipfs-core-types/src/pin';
+import { QueuePriority } from 'src/services/QueueManager/types';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -78,7 +79,7 @@ export enum SyncQueueStatus {
 export type SyncQueueDbEntity = {
   id: string;
   status: SyncQueueStatus;
-  priority: number;
+  priority: QueuePriority | number;
 };
 
 export type DbEntity =

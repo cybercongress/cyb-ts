@@ -3,12 +3,11 @@ import {
   ServiceName,
   ServiceStatus,
   SyncEntryName,
-  SyncEntryStatus,
   SyncProgress,
 } from '../types';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
-export class BroadcastChannelSender {
+class BroadcastChannelSender {
   static mockClear() {
     throw new Error('Method not implemented.');
   }

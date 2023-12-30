@@ -9,7 +9,8 @@ import { createLoopObservable } from './utils';
 import { IPFS_SYNC_INTERVAL } from './consts';
 import { fetchPins } from '../../dataSource/ipfs/ipfsSource';
 import { mapPinToEntity } from 'src/services/CozoDb/mapping';
-import SyncQueue from './SyncQueue';
+import ParticlesResolverQueue from './ParticlesResolverQueue';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncIpfsLoop {
   private isInitialized$: Observable<boolean>;
@@ -18,7 +19,7 @@ class SyncIpfsLoop {
 
   private ipfsNode: CybIpfsNode | undefined;
 
-  private syncQueue: SyncQueue | undefined;
+  private particlesResolver: ParticlesResolverQueue | undefined;
 
   private statusApi = broadcastStatus('pin', new BroadcastChannelSender());
 
@@ -28,7 +29,7 @@ class SyncIpfsLoop {
     return this._loop$;
   }
 
-  constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     deps.dbInstance$.subscribe((db) => {
       this.db = db;
     });
@@ -37,14 +38,14 @@ class SyncIpfsLoop {
       this.ipfsNode = ipfsInstance;
     });
 
-    this.syncQueue = syncQueue;
+    this.particlesResolver = particlesResolver;
 
     // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
-      syncQueue.isInitialized$,
+      particlesResolver.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, ipfsInstance, syncQueueInitialized]) =>
@@ -105,8 +106,11 @@ class SyncIpfsLoop {
       );
 
       if (particlesToAdd.length > 0) {
-        await this.syncQueue!.enqueue(
-          particlesToAdd.map((cid) => ({ id: cid, priority: 1 }))
+        await this.particlesResolver!.enqueue(
+          particlesToAdd.map((cid) => ({
+            id: cid,
+            priority: QueuePriority.LOW,
+          }))
         );
       }
 

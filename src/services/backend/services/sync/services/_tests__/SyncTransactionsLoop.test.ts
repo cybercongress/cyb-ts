@@ -13,7 +13,7 @@ import DbApi, {
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
-import SyncQueue from '../SyncQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
 import SyncTransactionsLoop from '../SyncTransactionsLoop';
 import { createAsyncIterable } from 'src/utils/async/iterable';
@@ -59,9 +59,9 @@ describe('SyncTransactionsLoop', () => {
         followings: [],
         cyberIndexUrl: 'test-index-url',
       }),
-      resolveAndSaveParticle: jest.fn(),
+      waitForParticleResolve: jest.fn(),
     };
-    mockSyncQueue = new SyncQueue(mockServiceDeps);
+    mockSyncQueue = new ParticlesResolverQueue(mockServiceDeps);
 
     syncTransactionsLoop = new SyncTransactionsLoop(
       mockServiceDeps,

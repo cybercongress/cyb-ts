@@ -23,6 +23,7 @@ import {
   IPFSContentMaybe,
   IpfsContentSource,
 } from 'src/services/ipfs/ipfs';
+import { ParticleCid } from 'src/types/base';
 
 import { promiseToObservable } from '../../utils/helpers';
 
@@ -33,8 +34,6 @@ import type {
   QueueItemOptions,
   QueueStats,
   QueueSource,
-  QueueItemAsyncResult,
-  QueueItemPostProcessor,
   EnqueuedIpfsResult,
   IDefferedDbProcessor,
 } from './types';
@@ -43,8 +42,6 @@ import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
-// import { BackgroundWorkerApi } from '../backend/workers/background/worker';
-// import { postProcessIpfContent } from './utils';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -53,7 +50,7 @@ function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
-const debugCid = (cid: string, prefix: string, ...args) => {
+const debugCid = (cid: ParticleCid, prefix: string, ...args) => {
   // if (cid === 'QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao') {
   console.log(`>>> ${prefix}: ${cid}`, ...args);
   // }
@@ -63,7 +60,7 @@ const strategies = {
   external: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
@@ -71,7 +68,7 @@ const strategies = {
   embedded: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'gateway', 'node']
@@ -79,14 +76,14 @@ const strategies = {
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 21 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),
 };
 
-type QueueMap<T> = Map<string, QueueItem<T>>;
+type QueueMap<T> = Map<ParticleCid, QueueItem<T>>;
 
 class QueueManager<T extends IPFSContentMaybe> {
   private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
@@ -103,7 +100,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private channel = new BroadcastChannelSender();
 
-  private executing: Record<QueueSource, Set<string>> = {
+  private executing: Record<QueueSource, Set<ParticleCid>> = {
     db: new Set(),
     node: new Set(),
     gateway: new Set(),
@@ -114,8 +111,7 @@ class QueueManager<T extends IPFSContentMaybe> {
   }
 
   public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
-    // console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
-
+    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
     this.node = node;
     this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
@@ -149,7 +145,13 @@ class QueueManager<T extends IPFSContentMaybe> {
   }
 
   private postSummary() {
-    const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size}, node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
+    const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size} node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
+    // console.log(
+    //   '-----postSummary',
+    //   this.queue$.value,
+    //   [...this.queue$.value.values()][0]
+    // );
+
     this.channel.postServiceStatus('ipfs', 'started', summary);
   }
 
@@ -158,7 +160,9 @@ class QueueManager<T extends IPFSContentMaybe> {
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
     this.postSummary();
-    debugCid(cid, '------fetch start', item);
+    if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+      debugCid(cid, '------fetch start', item, this.executing);
+    }
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {
@@ -176,7 +180,11 @@ class QueueManager<T extends IPFSContentMaybe> {
         node: this.node,
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
+
         this.defferedDbProcessor?.enuqueIpfsContent(content);
+        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+          debugCid(cid, '------fetch resolved 2', content);
+        }
         return content;
       })
     ).pipe(
@@ -188,16 +196,21 @@ class QueueManager<T extends IPFSContentMaybe> {
             return new QueueItemTimeoutError(settings.timeout);
           }),
       }),
-      map(
-        (result): QueueItemResult<T> => ({
+      map((result): QueueItemResult<T> => {
+        const res = {
           item,
           status: result ? 'completed' : 'error',
           source,
           result,
-        })
-      ),
+        };
+        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+          debugCid(cid, '------fetch resolved 3', result, res);
+        }
+
+        return res;
+      }),
       catchError((error): Observable<QueueItemResult<T>> => {
-        // debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
+        debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
         if (error instanceof QueueItemTimeoutError) {
           return of({
             item,
@@ -335,6 +348,9 @@ class QueueManager<T extends IPFSContentMaybe> {
 
         this.executing[source].delete(cid);
         this.postSummary();
+        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+          debugCid(cid, '------fetch end', item, this.executing);
+        }
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // debugCid(cid, '------done', item, status, source, result);
@@ -365,10 +381,15 @@ class QueueManager<T extends IPFSContentMaybe> {
     const queue = this.queue$.value;
 
     const existingItem = queue.get(cid);
-
+    if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+      debugCid(cid, '------enqueue ', cid, existingItem);
+    }
     // In case if item already in queue,
     // just attach one more callback to quieued item
     if (existingItem) {
+      if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
+        debugCid(cid, '------enqueue existingItem', existingItem);
+      }
       this.mutateQueueItem(cid, {
         callbacks: [...existingItem.callbacks, callback],
       });

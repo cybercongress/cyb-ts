@@ -8,7 +8,7 @@ import DbApi, {
   mockRemoveSyncQueue,
   mockUpdateSyncQueue,
 } from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
-import SyncQueue from '../SyncQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
 import { SyncQueueItem } from '../../types';
 
@@ -24,7 +24,7 @@ describe('SyncTransactionsLoop', () => {
   });
 
   it('start should subscribe to isInitialized$ and keep queue unprocessed', async () => {
-    const resolveAndSaveParticle = jest.fn();
+    const waitForParticleResolve = jest.fn();
     const mockItems: SyncQueueItem[] = [
       {
         id: 'mockId',
@@ -38,9 +38,9 @@ describe('SyncTransactionsLoop', () => {
         myAddress: null,
         followings: [],
       }),
-      resolveAndSaveParticle,
+      waitForParticleResolve,
     };
-    const syncQueue = new SyncQueue(mockServiceDeps);
+    const syncQueue = new ParticlesResolverQueue(mockServiceDeps);
     await syncQueue.enqueue(mockItems);
 
     syncQueue.start().loop$.subscribe({
@@ -48,7 +48,7 @@ describe('SyncTransactionsLoop', () => {
       error: console.error,
     });
     expect(mockPutSyncQueue).toHaveBeenCalledWith(mockItems);
-    expect(resolveAndSaveParticle).toHaveBeenCalledTimes(0);
+    expect(waitForParticleResolve).toHaveBeenCalledTimes(0);
     expect([...syncQueue.queue.keys()]).toEqual([mockItems[0].id]);
 
     return Promise.resolve();
@@ -56,13 +56,13 @@ describe('SyncTransactionsLoop', () => {
 
   // Unit test for processSyncQueue method
   it('processSyncQueue should process the items in the sync queue', (done) => {
-    const resolveAndSaveParticle = jest.fn();
-    resolveAndSaveParticle.mockResolvedValueOnce({
+    const waitForParticleResolve = jest.fn();
+    waitForParticleResolve.mockResolvedValueOnce({
       item: {},
       status: 'completed',
       source: 'db',
     });
-    resolveAndSaveParticle.mockResolvedValueOnce({
+    waitForParticleResolve.mockResolvedValueOnce({
       item: {},
       status: 'not_found',
       source: 'db',
@@ -75,9 +75,9 @@ describe('SyncTransactionsLoop', () => {
         myAddress: null,
         followings: [],
       }),
-      resolveAndSaveParticle,
+      waitForParticleResolve: waitForParticleResolve,
     };
-    const syncQueue = new SyncQueue(mockServiceDeps);
+    const syncQueue = new ParticlesResolverQueue(mockServiceDeps);
     const mockItems = [
       {
         id: 'mockToOk',
@@ -93,7 +93,7 @@ describe('SyncTransactionsLoop', () => {
     syncQueue.start().loop$.subscribe({
       next: () => {
         expect(mockPutSyncQueue).toHaveBeenCalledWith(mockItems);
-        expect(resolveAndSaveParticle).toHaveBeenCalledTimes(2);
+        expect(waitForParticleResolve).toHaveBeenCalledTimes(2);
         expect(mockRemoveSyncQueue).toHaveBeenCalledWith(['mockToOk']);
         expect(mockUpdateSyncQueue).toHaveBeenCalledWith([
           {

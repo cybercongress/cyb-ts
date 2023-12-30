@@ -1,5 +1,8 @@
 import { SyncQueueDto } from 'src/services/CozoDb/types/dto';
-import { EnqueuedIpfsResult } from 'src/services/QueueManager/types';
+import {
+  EnqueuedIpfsResult,
+  QueuePriority,
+} from 'src/services/QueueManager/types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
 export type SyncServiceParams = {
@@ -8,7 +11,10 @@ export type SyncServiceParams = {
   cyberIndexUrl?: string;
 };
 
-export type FetchIpfsFunc = (cid: ParticleCid) => Promise<EnqueuedIpfsResult>;
+export type FetchIpfsFunc = (
+  cid: ParticleCid,
+  priority: QueuePriority
+) => Promise<EnqueuedIpfsResult>;
 
 export type ParticleResult = {
   timestamp: number;

@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import { updateSyncState } from 'src/services/backend/services/sync/utils';
-import SyncQueue from '../SyncQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue';
 import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 import { ServiceDeps } from '../types';
 import SyncParticlesLoop from '../SyncParticlesLoop';
@@ -43,9 +43,9 @@ describe('SyncParticlesLoop', () => {
         followings: [],
         cyberIndexUrl: 'test-index-url',
       }), // replace with your mock data
-      resolveAndSaveParticle: jest.fn(), // replace with your mock data
+      waitForParticleResolve: jest.fn(), // replace with your mock data
     };
-    mockSyncQueue = new SyncQueue(mockServiceDeps);
+    mockSyncQueue = new ParticlesResolverQueue(mockServiceDeps);
 
     syncParticlesLoop = new SyncParticlesLoop(mockServiceDeps, mockSyncQueue);
   });

@@ -19,15 +19,16 @@ import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 import { FetchIpfsFunc, SyncQueueItem } from '../types';
 
 import { ServiceDeps } from './types';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
-class SyncQueue {
+class ParticlesResolverQueue {
   public isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
 
   // private ipfsNode: CybIpfsNode | undefined;
 
-  private resolveAndSaveParticle: FetchIpfsFunc;
+  private waitForParticleResolve: FetchIpfsFunc;
 
   private statusApi = broadcastStatus('resolver', new BroadcastChannelSender());
 
@@ -45,14 +46,15 @@ class SyncQueue {
     return this._loop$;
   }
 
-  private processingQueue = new Map<ParticleCid, SyncQueueItem>();
+  private processingQueue: SyncQueueItem[] = [];
 
   constructor(deps: ServiceDeps) {
-    if (!deps.resolveAndSaveParticle) {
-      throw new Error('resolveAndSaveParticle is not defined');
+    if (!deps.waitForParticleResolve) {
+      throw new Error('waitForParticleResolve is not defined');
     }
 
-    this.resolveAndSaveParticle = deps.resolveAndSaveParticle;
+    this.waitForParticleResolve = deps.waitForParticleResolve;
+
     deps.dbInstance$.subscribe(async (db) => {
       this.db = db;
       await this.loadSyncQueue();
@@ -67,30 +69,41 @@ class SyncQueue {
   }
 
   private async processSyncQueue() {
-    this.processingQueue = new Map(this._syncQueue$.value); // Snapshot of the current queue
+    this.processingQueue = Array.from(this._syncQueue$.value.values()).sort(
+      (a, b) => {
+        return a.priority - b.priority;
+      }
+    ); // Snapshot of the current queue by priority
     this._syncQueue$.next(new Map());
 
-    const batchSize = this.processingQueue.size;
+    const batchSize = this.processingQueue.length;
     let i = 0;
+    await Promise.all(
+      this.processingQueue.map(async (item) => {
+        const { id } = item;
+        i++;
+        console.log('--process queue', i, batchSize);
+        this.statusApi.sendStatus(
+          'in-progress',
+          `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
+        );
+        // eslint-disable-next-line no-await-in-loop
+        return this.waitForParticleResolve(id, QueuePriority.MEDIUM).then(
+          async (result) => {
+            if (result.status === 'not_found') {
+              await this.db!.updateSyncQueue({
+                id,
+                status: SyncQueueStatus.error,
+              });
+            } else {
+              await this.db!.removeSyncQueue(id);
+            }
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [cid, item] of this.processingQueue) {
-      i++;
-      this.statusApi.sendStatus(
-        'in-progress',
-        `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
-      );
-      // eslint-disable-next-line no-await-in-loop
-      await this.resolveAndSaveParticle(cid).then((result) => {
-        if (result.status === 'not_found') {
-          this.db!.updateSyncQueue({ id: cid, status: SyncQueueStatus.error });
-        } else {
-          this.db!.removeSyncQueue(cid);
-        }
-
-        this.processingQueue.delete(cid);
-      });
-    }
+            this.processingQueue.filter((i) => i.id !== id);
+          }
+        );
+      })
+    );
   }
 
   start() {
@@ -98,8 +111,10 @@ class SyncQueue {
       tap((q) => console.log(`sync queue isInitialized - ${q}`)),
       filter((isInitialized) => isInitialized === true),
       mergeMap(() => this._syncQueue$), // Merge the queue$ stream here.
-      tap((q) => console.log(`sync queue - ${q.size}`)),
-      filter((queue) => queue.size > 0 && this.processingQueue.size === 0),
+      // tap((q) =>
+      //   console.log(`sync queue - ${q.size}  ${this.processingQueue.length}`)
+      // ),
+      filter((queue) => queue.size > 0 && this.processingQueue.length === 0),
       tap(() => this.statusApi.sendStatus('in-progress', `starting...`)),
       mergeMap(() => defer(() => from(this.processSyncQueue())))
     );
@@ -120,7 +135,7 @@ class SyncQueue {
     }
     await this.db!.putSyncQueue(items);
     const queue = this._syncQueue$.value;
-    console.log('------pushToSyncQueue', items);
+    console.log('------paericleResolverQueue', items);
     items.forEach((item) => queue.set(item.id, item));
     this._syncQueue$.next(queue);
   }
@@ -139,4 +154,4 @@ class SyncQueue {
   }
 }
 
-export default SyncQueue;
+export default ParticlesResolverQueue;

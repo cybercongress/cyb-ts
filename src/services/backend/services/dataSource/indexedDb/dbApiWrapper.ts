@@ -63,7 +63,8 @@ class DbApiWrapper {
     );
 
     const result = await this.db!.executePutCommand('sync_status', entitites);
-    console.log('putSyncStatus', result);
+    // console.log('putSyncStatus', result);
+    return result;
   }
 
   public async updateSyncStatus(entity: Partial<SyncStatusDto>) {

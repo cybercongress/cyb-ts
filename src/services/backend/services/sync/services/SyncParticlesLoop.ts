@@ -9,24 +9,22 @@ import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
-import SyncQueue from './SyncQueue';
+import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { updateSyncState } from '../utils';
-import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
+import { SyncServiceParams } from '../types';
 import { fetchAllCyberlinks } from '../../dataSource/blockchain/requests';
-import { links } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
 
-  private syncQueue: SyncQueue | undefined;
+  private particlesResolver: ParticlesResolverQueue | undefined;
 
   private params: SyncServiceParams | undefined;
 
   private statusApi = broadcastStatus('particle', new BroadcastChannelSender());
-
-  private resolveAndSaveParticle: FetchIpfsFunc;
 
   private _loop$: Observable<any>;
 
@@ -34,16 +32,10 @@ class SyncParticlesLoop {
     return this._loop$;
   }
 
-  constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
-    if (!deps.resolveAndSaveParticle) {
-      throw new Error('resolveAndSaveParticle is not defined');
-    }
-
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     if (!deps.params$) {
       throw new Error('params$ is not defined');
     }
-
-    this.resolveAndSaveParticle = deps.resolveAndSaveParticle;
 
     deps.dbInstance$.subscribe((db) => {
       this.db = db;
@@ -53,13 +45,13 @@ class SyncParticlesLoop {
       this.params = params;
     });
 
-    this.syncQueue = syncQueue;
+    this.particlesResolver = particlesResolver;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
       deps.params$,
-      syncQueue.isInitialized$,
+      particlesResolver.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, ipfsInstance, params, syncQueueInitialized]) =>
@@ -99,8 +91,11 @@ class SyncParticlesLoop {
               ]),
             ];
 
-            await this.syncQueue!.enqueue(
-              allLinks.map((cid) => ({ id: cid, priority: 1 }))
+            await this.particlesResolver!.enqueue(
+              allLinks.map((cid) => ({
+                id: cid,
+                priority: QueuePriority.MEDIUM,
+              }))
             );
 
             return updateSyncState(syncStatus, links);

@@ -10,7 +10,7 @@ import DbApi, {
   mockPutSyncQueue,
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 
-import SyncQueue from '../SyncQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
 import SyncIpfsLoop from '../SyncIpfsLoop';
 
@@ -42,9 +42,9 @@ describe('SyncIpfsLoop', () => {
         followings: [],
         cyberIndexUrl: 'test-index-url',
       }),
-      resolveAndSaveParticle: jest.fn(),
+      waitForParticleResolve: jest.fn(),
     };
-    mockSyncQueue = new SyncQueue(mockServiceDeps);
+    mockSyncQueue = new ParticlesResolverQueue(mockServiceDeps);
 
     syncIpfsLoop = new SyncIpfsLoop(mockServiceDeps, mockSyncQueue);
   });

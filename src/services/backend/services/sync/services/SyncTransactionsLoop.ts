@@ -11,7 +11,7 @@ import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 import { ServiceDeps } from './types';
 import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
-import SyncQueue from './SyncQueue';
+import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { extractParticlesResults, updateSyncState } from '../utils';
 import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
 
@@ -21,13 +21,14 @@ import {
 } from '../../dataSource/blockchain/requests';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { Transaction } from '../../dataSource/blockchain/types';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
 
-  private syncQueue: SyncQueue | undefined;
+  private particlesResolver: ParticlesResolverQueue | undefined;
 
   private _loop$: Observable<any>;
 
@@ -45,18 +46,12 @@ class SyncTransactionsLoop {
     followings: [],
   };
 
-  private resolveAndSaveParticle: FetchIpfsFunc;
-
-  constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
-    if (!deps.resolveAndSaveParticle) {
-      throw new Error('resolveAndSaveParticle is not defined');
-    }
-
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     if (!deps.params$) {
       throw new Error('params$ is not defined');
     }
 
-    this.syncQueue = syncQueue;
+    this.particlesResolver = particlesResolver;
 
     deps.dbInstance$.subscribe((db) => {
       console.log('---subscribe dbInstance', this.db);
@@ -67,14 +62,12 @@ class SyncTransactionsLoop {
       this.params = params;
     });
 
-    this.resolveAndSaveParticle = deps.resolveAndSaveParticle;
-
     // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.params$,
-      syncQueue.isInitialized$,
+      particlesResolver.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
@@ -169,11 +162,25 @@ class SyncTransactionsLoop {
           'in-progress',
           `sync ${address} batch processing...`
         );
+        const { tweets, particlesFound, links } =
+          extractParticlesResults(items);
+
+        // await Promise.all(
+        //   Object.keys(tweets).map(async (cid) =>
+        //     this.resolveAndSaveParticle(cid)
+        //   )
+        // );
+
+        // resolve 'tweets' particles
+        await this.particlesResolver!.enqueue(
+          Object.keys(tweets).map((cid) => ({
+            id: cid /* from is tweet */,
+            priority: QueuePriority.HIGH,
+          }))
+        );
 
         // Add cyberlink to sync observables
         if (addCyberlinksToSync) {
-          const { tweets, particlesFound, links } =
-            extractParticlesResults(items);
           await this.db!.putCyberlinks(
             links.map((link) => ({ ...link, neuron: '' }))
           );
@@ -200,7 +207,7 @@ class SyncTransactionsLoop {
                 meta: { direction },
               } as SyncStatusDto;
 
-              await this.resolveAndSaveParticle(cid);
+              // await this.resolveAndSaveParticle(cid);
               console.log('----syncTransactions fetchAllCyberlinks', cid);
               const links = await fetchAllCyberlinks(
                 this.params.cyberIndexUrl!,
@@ -216,10 +223,10 @@ class SyncTransactionsLoop {
                   links,
                   syncStatus
                 );
-                await this.syncQueue!.enqueue(
+                await this.particlesResolver!.enqueue(
                   links.map((link) => ({
                     id: link.to /* from is tweet */,
-                    priority: 1,
+                    priority: QueuePriority.HIGH,
                   }))
                 );
               }
@@ -228,8 +235,11 @@ class SyncTransactionsLoop {
             })
           );
 
-          await this.syncQueue!.enqueue(
-            particlesFound.map((cid) => ({ id: cid, priority: 1 }))
+          await this.particlesResolver!.enqueue(
+            particlesFound.map((cid) => ({
+              id: cid,
+              priority: QueuePriority.LOW,
+            }))
           );
           // await this.db!.putSyncQueue(
           //   particlesFound.map((cid) => ({ id: cid, priority: 1 }))

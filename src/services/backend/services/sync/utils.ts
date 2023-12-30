@@ -19,7 +19,6 @@ export function extractParticlesResults(batch: Transaction[]) {
   const particlesFound = new Set<string>();
   const links: CyberLinkTimestamp[] = [];
   // Get links: only from TWEETS
-  console.log('-----extractParticlesResults', cyberlinks);
   const particleTimestampRecord: Record<ParticleCid, ParticleResult> =
     cyberlinks.reduce<Record<ParticleCid, ParticleResult>>(
       (

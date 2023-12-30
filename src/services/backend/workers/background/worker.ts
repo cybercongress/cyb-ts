@@ -17,6 +17,7 @@ import QueueManager from 'src/services/QueueManager/QueueManager';
 import {
   QueueItemCallback,
   QueueItemOptions,
+  QueuePriority,
 } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
@@ -50,8 +51,10 @@ const createBackgroundWorkerApi = () => {
   // service to sync updates about cyberlinks, transactions, swarm etc.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const syncService = new SyncService({
-    resolveAndSaveParticle: async (cid: ParticleCid) =>
-      ipfsQueue.enqueueAndWait(cid, { postProcessing: true }),
+    waitForParticleResolve: async (
+      cid: ParticleCid,
+      priority: QueuePriority = QueuePriority.MEDIUM
+    ) => ipfsQueue.enqueueAndWait(cid, { postProcessing: true, priority }),
     dbInstance$,
     ipfsInstance$,
     params$,
