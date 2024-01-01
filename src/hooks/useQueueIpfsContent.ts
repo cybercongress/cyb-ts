@@ -91,7 +91,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
     clear: ipfsApi ? async () => ipfsApi.clearQueue() : undefined,
     fetchParticle: ipfsApi ? fetchParticle : undefined,
     fetchParticleAsync: ipfsApi ? fetchParticleAsync : undefined,
-    fetchWithDetails: ipfsNode ? ipfsNode.fetchWithDetails : undefined,
+    fetchWithDetails: ipfsApi ? ipfsApi.fetchWithDetails : undefined,
   };
 }
 

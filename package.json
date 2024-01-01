@@ -217,7 +217,6 @@
     "ledger-cosmos-js": "2.1.7",
     "libp2p": "^0.46.12",
     "long": "^5.2.0",
-    "moment": "^2.29.4",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "process": "^0.11.10",
     "query-string": "^6.12.1",
