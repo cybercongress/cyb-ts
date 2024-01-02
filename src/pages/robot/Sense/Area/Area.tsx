@@ -10,35 +10,18 @@ import { SupportedTypes } from '../types';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
+import useSenseItem from '../useSenseItem';
 
 type Props = {
   selected: string | undefined;
 };
 
-const supportedTypes = Object.values(SupportedTypes);
+// const supportedTypes = Object.values(SupportedTypes);
 
 function Area({ selected }: Props) {
-  const { senseApi } = useBackend();
-
   const address = useAppSelector(selectCurrentAddress);
 
-  const getTxsQuery = useQuery({
-    queryKey: ['senseApi', 'getList', selected],
-    queryFn: async () => {
-      return senseApi!.getTransactions(selected!);
-    },
-    enabled: !!senseApi,
-  });
-
-  // TODO:remove
-  const items = getTxsQuery.data
-    ?.filter((item) => {
-      return supportedTypes.includes(item.type);
-    })
-    .splice(0, 3);
-
-  console.log('----getTxsQuery', getTxsQuery);
-  console.log('items', items);
+  const { data, loading, error } = useSenseItem({ id: selected });
 
   return (
     <div className={styles.wrapper}>
@@ -50,16 +33,16 @@ function Area({ selected }: Props) {
         }
       >
         <div className={styles.content}>
-          {items ? (
-            items.map(({ id, timestamp, type, value, hash }, i) => {
-              let v = JSON.parse(value);
+          {data ? (
+            data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
+              let v = value && JSON.parse(value);
 
-              let from;
+              let from2;
               let amount: Coin[] | undefined;
 
               switch (type) {
                 case SupportedTypes.MsgSend: {
-                  from = v.from_address;
+                  from2 = v.from_address;
                   amount = v.amount;
 
                   break;
@@ -68,7 +51,7 @@ function Area({ selected }: Props) {
                 case SupportedTypes.MsgMultiSend: {
                   v = v as MsgMultiSend;
 
-                  from = v.inputs[0].address;
+                  from2 = v.inputs[0].address;
                   amount = v.outputs.find(
                     (output) => output.address === address
                   )?.coins;
@@ -76,15 +59,20 @@ function Area({ selected }: Props) {
                   break;
                 }
 
-                default:
-                  return null;
+                default: {
+                  if (!isParticle) {
+                    return null;
+                  }
+
+                  from2 = from;
+                }
               }
 
               return (
                 <Message
                   key={i}
-                  address={from}
-                  text={type}
+                  address={from2}
+                  text={type || text}
                   txHash={hash}
                   amount={amount}
                   date={timestamp}

@@ -8,6 +8,8 @@
   justify-content: flex-end;
   gap: 20px 0;
 
+  overflow-y: auto;
+
   p {
     word-break: break-all;
   }
