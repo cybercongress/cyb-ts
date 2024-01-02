@@ -16,7 +16,6 @@ function useParticlesPreview() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log('useParticlesPreview', senseApi, isDbInitialized);
     if (senseApi && isDbInitialized) {
       (async () => {
         setIsLoading(true);

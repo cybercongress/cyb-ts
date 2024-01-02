@@ -3,6 +3,7 @@ import {
   QueueItemAsyncResult,
   QueueItemOptions,
   QueueItemStatus,
+  QueuePriority,
 } from 'src/services/QueueManager/types';
 
 import {
@@ -59,7 +60,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
       };
       await ipfsApi?.enqueue(cid, proxy(callback), {
         parent: parentId,
-        priority: rank || 0,
+        priority: QueuePriority.URGENT, //rank || 0,
         viewPortPriority: 0,
       });
     },
@@ -75,7 +76,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   useEffect(() => {
     if (prevParentIdRef.current !== parentId) {
       if (prevParentIdRef.current) {
-        ipfsApi.dequeueByParent(prevParentIdRef.current);
+        ipfsApi?.dequeueByParent(prevParentIdRef.current);
       }
       prevParentIdRef.current = parentId;
     }
@@ -90,7 +91,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
     clear: ipfsApi ? async () => ipfsApi.clearQueue() : undefined,
     fetchParticle: ipfsApi ? fetchParticle : undefined,
     fetchParticleAsync: ipfsApi ? fetchParticleAsync : undefined,
-    fetchWithDetails: ipfsNode ? ipfsNode.fetchWithDetails : undefined,
+    fetchWithDetails: ipfsApi ? ipfsApi.fetchWithDetails : undefined,
   };
 }
 

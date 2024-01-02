@@ -1,5 +1,6 @@
 import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
 import { LinkDbEntity } from '../CozoDb/types/entities';
+import { ZERO } from 'long';
 
 /* eslint-disable import/no-unused-modules */
 type QueueItemStatus =
@@ -31,9 +32,16 @@ export type QueueStats = {
   count: number;
 };
 
+export enum QueuePriority {
+  ZERO = 0,
+  LOW = 0.1,
+  MEDIUM = 0.5,
+  HIGH = 0.9,
+  URGENT = 1,
+}
 export type QueueItemOptions = {
   parent?: string;
-  priority?: number;
+  priority?: QueuePriority | number;
   viewPortPriority?: number;
   initialSource?: QueueSource;
   postProcessing?: boolean;

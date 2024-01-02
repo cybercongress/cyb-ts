@@ -1,6 +1,12 @@
 import { request } from 'graphql-request';
 import gql from 'graphql-tag';
-import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
+import {
+  Cyberlink,
+  ParticleCid,
+  NeuronAddress,
+  CyberLinkNeuron,
+  CyberLinkTimestamp,
+} from 'src/types/base';
 import { dateToNumber, numberToDate } from 'src/utils/date';
 import { Transaction } from './types';
 
@@ -27,7 +33,7 @@ type CyberlinksSyncStatsResponse = {
   }[];
 };
 
-type CyberlinksByParticleResponse = {
+export type CyberlinksByParticleResponse = {
   cyberlinks: (Omit<Cyberlink, 'timestamp'> & { timestamp: string })[];
 };
 
@@ -41,6 +47,7 @@ const messagesByAddress = gql(`
     transaction_hash
     value
     transaction {
+      memo
       success
       block {
         timestamp,
@@ -97,7 +104,8 @@ const fetchTransactions = async (
       offset,
     }
   );
-  return res.messages_by_address;
+
+  return res?.messages_by_address;
 };
 
 const fetchCyberlinks = async (
@@ -138,6 +146,24 @@ const fetchCyberlinks = async (
   );
   return res.cyberlinks;
 };
+
+export async function fetchAllCyberlinks(
+  cyberIndexUrl: string,
+  cid: ParticleCid,
+  timestampFrom = 0
+) {
+  const cyberlinsIterable = fetchCyberlinksIterable(
+    cyberIndexUrl,
+    cid,
+    timestampFrom
+  );
+  const links = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const batch of cyberlinsIterable) {
+    links.push(...batch);
+  }
+  return links;
+}
 
 const fetchTransactionsIterable = (
   cyberIndexUrl: string,

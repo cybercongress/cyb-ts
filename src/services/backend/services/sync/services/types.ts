@@ -7,5 +7,5 @@ export type ServiceDeps = {
   dbInstance$: Observable<DbApi | undefined>;
   ipfsInstance$: Observable<CybIpfsNode | undefined>;
   params$: Observable<SyncServiceParams> | undefined;
-  resolveAndSaveParticle?: FetchIpfsFunc;
+  waitForParticleResolve?: FetchIpfsFunc;
 };

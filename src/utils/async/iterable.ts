@@ -33,9 +33,26 @@ async function asyncIterableToArray<T>(asyncIterable: AsyncIterable<T>) {
   }
   return resultArray;
 }
+// Create a helper function to create AsyncIterable from a list and iterate one by one
+function createAsyncIterable<T>(data: T[]): AsyncIterable<T> {
+  let index = 0;
+  return {
+    [Symbol.asyncIterator]() {
+      return {
+        next(): Promise<IteratorResult<T>> {
+          if (index < data.length) {
+            return Promise.resolve({ done: false, value: data[index++] });
+          }
+          return Promise.resolve({ done: true, value: undefined as any });
+        },
+      };
+    },
+  };
+}
 
 export {
   arrayToAsyncIterable,
   asyncIterableBatchProcessor,
   asyncIterableToArray,
+  createAsyncIterable,
 };

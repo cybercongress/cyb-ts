@@ -250,31 +250,6 @@ function Drive() {
           </p>
         </Display>
         <BackendStatus />
-        {/* <Pane
-          width="100%"
-          display="flex"
-          marginBottom={20}
-          padding={10}
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-        >
-          {syncState?.status && (
-            <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-              backend status - {syncState?.status}{' '}
-              {syncState.lastError && `(${syncState.lastError})`}
-            </Text>
-          )}
-          {syncState?.status === 'syncing' && (
-          <SyncInfo syncState={syncState} />
-          )}
-          {(syncState?.status === 'started' ||
-            syncState?.status === 'error') && (
-            <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
-              sync drive
-            </CybButton>
-          )}
-        </Pane> */}
 
         <Pane width="100%">
           <textarea
@@ -335,33 +310,6 @@ function Drive() {
       ) : (
         <div className={styles.errorMessage}>{errorMessage}</div>
       )}
-      {/* <Display color={Colors.GREEN}>
-        <div className={styles.list}>
-          <h3>Backend status</h3>
-          <ServiceStatus
-            name="db"
-            status={services.db.status}
-            message={services.db.error || `(queries: ${dbPendingWrites})`}
-          />
-          <ServiceStatus
-            name="ipfs"
-            status={services.ipfs.status}
-            message={services.ipfs.error}
-          />
-          <ServiceStatus
-            name="sync"
-            status={services.sync.status}
-            message={services.sync.error}
-          />
-          {Object.keys(syncState.entryStatus).map((name) => (
-            <EntryStatus
-              key={`entry_s_${name}`}
-              name={name}
-              progress={syncState.entryStatus[name]}
-            />
-          ))}
-        </div>
-      </Display> */}
     </>
   );
 }

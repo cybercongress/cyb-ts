@@ -1,7 +1,6 @@
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender, {
-  broadcastStatus,
-} from 'src/services/backend/channels/BroadcastChannelSender';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
@@ -10,7 +9,8 @@ import { createLoopObservable } from './utils';
 import { IPFS_SYNC_INTERVAL } from './consts';
 import { fetchPins } from '../../dataSource/ipfs/ipfsSource';
 import { mapPinToEntity } from 'src/services/CozoDb/mapping';
-import SyncQueue from './SyncQueue';
+import ParticlesResolverQueue from './ParticlesResolverQueue';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncIpfsLoop {
   private isInitialized$: Observable<boolean>;
@@ -19,11 +19,17 @@ class SyncIpfsLoop {
 
   private ipfsNode: CybIpfsNode | undefined;
 
-  private syncQueue: SyncQueue | undefined;
+  private particlesResolver: ParticlesResolverQueue | undefined;
 
   private statusApi = broadcastStatus('pin', new BroadcastChannelSender());
 
-  constructor(deps: ServiceDeps, syncQueue: SyncQueue) {
+  private _loop$: Observable<any>;
+
+  public get loop$(): Observable<any> {
+    return this._loop$;
+  }
+
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     deps.dbInstance$.subscribe((db) => {
       this.db = db;
     });
@@ -32,14 +38,14 @@ class SyncIpfsLoop {
       this.ipfsNode = ipfsInstance;
     });
 
-    this.syncQueue = syncQueue;
+    this.particlesResolver = particlesResolver;
 
     // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
-      syncQueue.isInitialized$,
+      particlesResolver.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, ipfsInstance, syncQueueInitialized]) =>
@@ -49,12 +55,14 @@ class SyncIpfsLoop {
   }
 
   start() {
-    createLoopObservable(
+    this._loop$ = createLoopObservable(
       IPFS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncPins())),
       () => this.statusApi.sendStatus('in-progress')
-    ).subscribe({
+    );
+
+    this._loop$.subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });
@@ -77,7 +85,6 @@ class SyncIpfsLoop {
 
       // Find and exclude overlapping pins
       const pinsToRemove = dbPins.filter((pin) => !pinsResultSet.has(pin));
-
       const pinsToAdd = pinsResult.filter(
         (pin) => !dbPinsSet.has(pin.cid.toString())
       );
@@ -99,8 +106,11 @@ class SyncIpfsLoop {
       );
 
       if (particlesToAdd.length > 0) {
-        await this.syncQueue!.pushToSyncQueue(
-          particlesToAdd.map((cid) => ({ id: cid, priority: 1 }))
+        await this.particlesResolver!.enqueue(
+          particlesToAdd.map((cid) => ({
+            id: cid,
+            priority: QueuePriority.LOW,
+          }))
         );
       }
 
@@ -109,6 +119,7 @@ class SyncIpfsLoop {
       }
     } catch (e) {
       console.log('---syncPins error', e);
+      throw e;
     }
   }
 }

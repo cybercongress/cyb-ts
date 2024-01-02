@@ -6,6 +6,8 @@ import {
   tap,
   concatMap,
   EMPTY,
+  distinctUntilChanged,
+  share,
 } from 'rxjs';
 
 export const createLoopObservable = (
@@ -14,7 +16,7 @@ export const createLoopObservable = (
   actionObservable$: Observable<any>,
   beforeCallback?: () => void
 ) => {
-  return isInitialized$.pipe(
+  const source$ = isInitialized$.pipe(
     switchMap((initialized) => {
       if (initialized) {
         // When isInitialized$ emits true, start the interval
@@ -27,4 +29,5 @@ export const createLoopObservable = (
       return EMPTY;
     })
   );
+  return source$.pipe(share()); // Use the share operator to multicast the source observable
 };

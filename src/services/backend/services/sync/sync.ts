@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
-import SyncQueue from './services/SyncQueue';
+import ParticlesResolverQueue from './services/ParticlesResolverQueue';
 
 import SyncIpfsLoop from './services/SyncIpfsLoop';
 import SyncTransactionsLoop from './services/SyncTransactionsLoop';
@@ -31,12 +31,12 @@ export class SyncService {
       error: (err) => this.channelApi.postServiceStatus('sync', 'error', err),
     });
 
-    const syncQueue = new SyncQueue(deps).start();
+    const particlesResolver = new ParticlesResolverQueue(deps).start();
 
-    new SyncIpfsLoop(deps, syncQueue).start();
+    new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop(deps, syncQueue).start();
+    new SyncTransactionsLoop(deps, particlesResolver).start();
 
-    new SyncParticlesLoop(deps, syncQueue).start();
+    new SyncParticlesLoop(deps, particlesResolver).start();
   }
 }
