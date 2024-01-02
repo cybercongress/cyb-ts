@@ -23,6 +23,8 @@ function Area({ selected }: Props) {
 
   const { data, loading, error } = useSenseItem({ id: selected });
 
+  const isParticle = selected?.startsWith('Qm');
+
   return (
     <div className={styles.wrapper}>
       <Display
