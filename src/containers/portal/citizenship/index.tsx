@@ -37,6 +37,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useAppDispatch } from 'src/redux/hooks';
+import Soft3jsMsgs from 'src/soft.js/api/msgs';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -449,7 +450,7 @@ function GetCitizenship({ defaultAccount }) {
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          'auto',
+          Soft3jsMsgs.fee(500000),
           'cyber',
           funds
         );

@@ -7,6 +7,7 @@ import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
 import { useBackend } from 'src/contexts/backend';
+import Soft3jsMsgs from 'src/soft.js/api/msgs';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;
@@ -58,7 +59,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
-            'auto',
+            Soft3jsMsgs.fee(500000),
             'cyber'
           );
           if (executeResponseResult.code === 0) {

@@ -160,43 +160,6 @@ function ActionBarRelease({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, signingClient, currentRelease, queryClient]);
 
-  const delegateAndMint = useCallback(async () => {
-    if (!signer || !signingClient || !useReleasedStage.availableRelease) {
-      return;
-    }
-
-    const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
-      CYBER.CHAIN_ID
-    );
-
-    const MsgsBroadcast = mssgsClaim(
-      {
-        sender: bech32Address,
-        isNanoLedger,
-      },
-      useReleasedStage.availableRelease,
-      'bostromvaloper1zy553za8nenzukmv65240323jhuvxzymdmc97x'
-    );
-
-    if (!MsgsBroadcast.length) {
-      return;
-    }
-
-    const executeResponseResult = await signingClient.signAndBroadcast(
-      bech32Address,
-      [...MsgsBroadcast],
-      'auto',
-      'cyber'
-    );
-
-    if (executeResponseResult.code === 0) {
-      updateTxHash({
-        status: 'pending',
-        txHash: executeResponseResult.transactionHash,
-      });
-    }
-  }, [signer, signingClient, useReleasedStage]);
-
   useEffect(() => {
     const checkAddress = async () => {
       if (step === STEP_CHECK_ACC || step === STATE_CHANGE_ACCOUNT) {
