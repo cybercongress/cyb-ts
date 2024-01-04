@@ -68,8 +68,7 @@ class SyncParticlesLoop {
     const result = await this.db!.findSyncStatus({
       entryType: EntryType.particle,
     });
-    // const syncStatusEntities: SyncStatusDto[] = [];
-    console.log('---syncParticles result', result);
+
     const syncStatusEntities = (
       await Promise.all(
         result.map(async (syncStatus) => {

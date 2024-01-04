@@ -23,4 +23,6 @@ export type ParticleResult = {
   to: ParticleCid;
 };
 
-export type SyncQueueItem = Omit<SyncQueueDto, 'status'>;
+export type SyncQueueItem = Omit<SyncQueueDto, 'status'> & {
+  status?: SyncQueueDto['status'];
+};

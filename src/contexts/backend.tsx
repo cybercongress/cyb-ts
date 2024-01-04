@@ -148,6 +148,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       Promise.all([ipfsLoadPromise(), cozoDbLoadPromise()]);
     })();
 
+    window.q = backgroundWorkerInstance.ipfsQueue;
     // return () => channel.close();
   }, [dispatch]);
 

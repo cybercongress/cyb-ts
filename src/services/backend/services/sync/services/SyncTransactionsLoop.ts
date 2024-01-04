@@ -4,7 +4,9 @@ import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
-import { NeuronAddress, TransactionHash } from 'src/types/base';
+import { NeuronAddress } from 'src/types/base';
+import { QueuePriority } from 'src/services/QueueManager/types';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
@@ -13,15 +15,13 @@ import { createLoopObservable } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { extractParticlesResults, updateSyncState } from '../utils';
-import { FetchIpfsFunc, SyncQueueItem, SyncServiceParams } from '../types';
+import { SyncServiceParams } from '../types';
 
 import {
   fetchAllCyberlinks,
   fetchTransactionsIterable,
 } from '../../dataSource/blockchain/requests';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { Transaction } from '../../dataSource/blockchain/types';
-import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -129,9 +129,7 @@ class SyncTransactionsLoop {
     );
 
     let count = 0;
-    // let lastTimestamp: number | undefined;
-    // let lastTransactionHash: TransactionHash = '';
-    // let lastTrasactionMemo = '';
+
     let lastTransaction: Transaction | undefined;
     // eslint-disable-next-line no-restricted-syntax
     for await (const batch of transactionsAsyncIterable) {
@@ -143,7 +141,7 @@ class SyncTransactionsLoop {
           'cosmos.bank.v1beta1.MsgMultiSend',
         ].includes(t.type)
       );
-      console.log('---syncTransactions batch ', batch.length, items.length);
+      // console.log('---syncTransactions batch ', batch.length, items.length);
 
       if (items.length > 0) {
         // pick last transaction = first item based on request orderby
@@ -154,7 +152,7 @@ class SyncTransactionsLoop {
         const transactions = items.map((i) =>
           mapTransactionToEntity(address, i)
         );
-        console.log('---syncTransactions putTransactions ', transactions);
+        // console.log('---syncTransactions putTransactions ', transactions);
         count += items.length;
         await this.db!.putTransactions(transactions);
 
@@ -165,12 +163,6 @@ class SyncTransactionsLoop {
         const { tweets, particlesFound, links } =
           extractParticlesResults(items);
 
-        // await Promise.all(
-        //   Object.keys(tweets).map(async (cid) =>
-        //     this.resolveAndSaveParticle(cid)
-        //   )
-        // );
-
         // resolve 'tweets' particles
         await this.particlesResolver!.enqueue(
           Object.keys(tweets).map((cid) => ({
@@ -180,16 +172,16 @@ class SyncTransactionsLoop {
         );
 
         // Add cyberlink to sync observables
-        if (addCyberlinksToSync) {
+        if (addCyberlinksToSync && links.length > 0) {
           await this.db!.putCyberlinks(
             links.map((link) => ({ ...link, neuron: '' }))
           );
-          console.log(
-            '------syncTransactions extractParticlesResults',
-            tweets,
-            particlesFound,
-            links
-          );
+          // console.log(
+          //   '------syncTransactions extractParticlesResults',
+          //   tweets,
+          //   particlesFound,
+          //   links
+          // );
 
           const syncStatusEntities = await Promise.all(
             Object.keys(tweets).map(async (cid) => {
@@ -208,7 +200,6 @@ class SyncTransactionsLoop {
               } as SyncStatusDto;
 
               // await this.resolveAndSaveParticle(cid);
-              console.log('----syncTransactions fetchAllCyberlinks', cid);
               const links = await fetchAllCyberlinks(
                 this.params.cyberIndexUrl!,
                 cid,
@@ -216,19 +207,21 @@ class SyncTransactionsLoop {
               );
 
               if (links.length > 0) {
-                syncStatus = updateSyncState(syncStatus, links);
-                console.log(
-                  '----syncTransactions updateSyncState',
-                  cid,
-                  links,
-                  syncStatus
-                );
+                const allLinks = [
+                  ...new Set([
+                    ...links.map((link) => link.to),
+                    ...links.map((link) => link.from),
+                  ]),
+                ];
+
                 await this.particlesResolver!.enqueue(
-                  links.map((link) => ({
-                    id: link.to /* from is tweet */,
+                  allLinks.map((link) => ({
+                    id: link,
                     priority: QueuePriority.HIGH,
                   }))
                 );
+
+                syncStatus = updateSyncState(syncStatus, links);
               }
 
               return syncStatus;
