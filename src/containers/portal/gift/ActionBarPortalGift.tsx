@@ -306,7 +306,6 @@ function ActionBarPortalGift({
                   currentAddress,
                 })
               );
-              setStepApp(STEP_INFO.STATE_PROVE_DONE);
             },
           });
 
