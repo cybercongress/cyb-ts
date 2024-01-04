@@ -11,6 +11,8 @@ import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import useSenseItem from '../useSenseItem';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 type Props = {
   selected: string | undefined;
@@ -30,14 +32,22 @@ function Area({ selected }: Props) {
       <Display
         title={
           selected && (
-            <DisplayTitle title={<Account address={selected} avatar />} />
+            <DisplayTitle title={
+              isParticle ? (
+              <Link to={routes.oracle.ask.getLink(selected)}>{selected}</Link>
+              ) : (
+                <Account address={selected} avatar />
+              )
+            }
+            />
+              
           )
         }
       >
         <div className={styles.content}>
           {data ? (
             data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
-              let v = value && JSON.parse(value);
+              let v = value;
 
               let from2;
               let amount: Coin[] | undefined;

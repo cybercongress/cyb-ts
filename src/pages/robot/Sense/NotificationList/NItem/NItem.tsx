@@ -7,6 +7,8 @@ import { classNames } from 'classnames';
 
 import Pill from 'src/components/Pill/Pill';
 import Date from '../../Date/Date';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 
 type Props = {
   unreadCount: number;
@@ -16,12 +18,22 @@ type Props = {
 };
 
 function NItem({ unreadCount, address, timestamp, value }: Props) {
+  const isParticle = address?.startsWith('Qm');
   return (
     <div className={styles.wrapper}>
-      <AvataImgIpfs className={styles.avatar} addressCyber={address} />
+      {address && (
+        <Account
+          className={styles.avatar}
+          address={address}
+          onlyAvatar
+          avatar
+        />
+      )}
 
       {address && (
         <h5 className={styles.title} onClickCapture={(e) => e.preventDefault()}>
+          {isParticle ? '#' : '@'}
+
           <Account address={address} />
         </h5>
       )}

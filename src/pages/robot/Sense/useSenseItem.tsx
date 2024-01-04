@@ -12,12 +12,14 @@ function useSenseItem({ id }: Props) {
   // FIXME:
   //   const isParticle = id?.startsWith('Qm');
 
+  console.log(id);
+
   const enabled = Boolean(senseApi && id);
 
   const getTxsQuery = useQuery({
     queryKey: ['senseApi', 'getTransactions', id],
     queryFn: async () => {
-      return senseApi!.getLinks(id!);
+      return senseApi!.getTransactions(id!);
     },
     enabled,
   });
