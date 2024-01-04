@@ -76,7 +76,7 @@ export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
 ) => Promise<IPFSContentMaybe>;
 
-export interface IDefferedDbProcessor {
+export interface IDeferredDbSaver {
   // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
   enuqueIpfsContent: (content: IPFSContentMaybe) => void;
   enqueueLinks: (links: LinkDbEntity[]) => void;

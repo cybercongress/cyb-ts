@@ -1,9 +1,9 @@
-import DeferredDbProcessor from './DeferredDbProcessor';
+import DeferredDbSaver from './DeferredDbSaver';
 import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import { IPFSContent } from 'src/services/ipfs/ipfs';
 
-describe('DeferredDbProcessor', () => {
-  let deferredDbProcessor: DeferredDbProcessor;
+describe('DeferredDbSaver', () => {
+  let deferredDbProcessor: DeferredDbSaver;
   let dbApiMock: jest.Mocked<DbApi>;
 
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('DeferredDbProcessor', () => {
       putCyberlinks: jest.fn(),
     } as jest.Mocked<DbApi>;
 
-    deferredDbProcessor = new DeferredDbProcessor();
+    deferredDbProcessor = new DeferredDbSaver();
   });
 
   afterEach(() => {

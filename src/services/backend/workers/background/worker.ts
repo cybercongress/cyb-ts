@@ -30,7 +30,7 @@ import { SyncServiceParams } from '../../services/sync/types';
 import DbApi from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import DeferredDbProcessor from '../../services/DeferredDbProcessor/DeferredDbProcessor';
+import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
@@ -43,9 +43,11 @@ const createBackgroundWorkerApi = () => {
   });
 
   let ipfsNode: CybIpfsNode | undefined;
-  const defferedDbProcessor = new DeferredDbProcessor(dbInstance$);
+  const defferedDbSaver = new DeferredDbSaver(dbInstance$);
 
-  const ipfsQueue = new QueueManager(ipfsInstance$, { defferedDbProcessor });
+  const ipfsQueue = new QueueManager(ipfsInstance$, {
+    defferedDbSaver,
+  });
   const broadcastApi = new BroadcastChannelSender();
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
@@ -95,7 +97,7 @@ const createBackgroundWorkerApi = () => {
 
   const defferedDbApi = {
     importCyberlinks: (links: LinkDto[]) => {
-      defferedDbProcessor.enqueueLinks(links);
+      defferedDbSaver.enqueueLinks(links);
     },
   };
 
@@ -126,6 +128,7 @@ const createBackgroundWorkerApi = () => {
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     defferedDbApi: proxy(defferedDbApi),
+    ipfsQueue: proxy(ipfsQueue),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
   };

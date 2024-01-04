@@ -35,7 +35,7 @@ import type {
   QueueStats,
   QueueSource,
   EnqueuedIpfsResult,
-  IDefferedDbProcessor,
+  IDeferredDbSaver,
 } from './types';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -90,7 +90,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private node: CybIpfsNode | undefined = undefined;
 
-  private defferedDbProcessor?: IDefferedDbProcessor;
+  private defferedDbSaver?: IDeferredDbSaver;
 
   private strategy: QueueStrategy;
 
@@ -146,11 +146,6 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   private postSummary() {
     const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size} node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
-    // console.log(
-    //   '-----postSummary',
-    //   this.queue$.value,
-    //   [...this.queue$.value.values()][0]
-    // );
 
     this.channel.postServiceStatus('ipfs', 'started', summary);
   }
@@ -160,9 +155,7 @@ class QueueManager<T extends IPFSContentMaybe> {
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
     this.postSummary();
-    if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-      debugCid(cid, '------fetch start', item, this.executing);
-    }
+
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {
@@ -181,10 +174,8 @@ class QueueManager<T extends IPFSContentMaybe> {
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
 
-        this.defferedDbProcessor?.enuqueIpfsContent(content);
-        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-          debugCid(cid, '------fetch resolved 2', content);
-        }
+        this.defferedDbSaver?.enuqueIpfsContent(content);
+
         return content;
       })
     ).pipe(
@@ -197,17 +188,12 @@ class QueueManager<T extends IPFSContentMaybe> {
           }),
       }),
       map((result): QueueItemResult<T> => {
-        const res = {
+        return {
           item,
           status: result ? 'completed' : 'error',
           source,
           result,
         };
-        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-          debugCid(cid, '------fetch resolved 3', result, res);
-        }
-
-        return res;
       }),
       catchError((error): Observable<QueueItemResult<T>> => {
         debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
@@ -244,6 +230,9 @@ class QueueManager<T extends IPFSContentMaybe> {
   }
 
   private removeAndNext(cid: string): void {
+    // if (cid === 'QmX7XZ5VDLDaBhzx54fkE2rz1u52TCeD7aFpyTYGv763Mv') {
+    // debugCid(cid, '------removeAndNext 4', cid);
+    // }
     const queue = this.queue$.value;
     queue.delete(cid);
     this.queue$.next(queue);
@@ -293,11 +282,11 @@ class QueueManager<T extends IPFSContentMaybe> {
     {
       strategy,
       queueDebounceMs,
-      defferedDbProcessor,
+      defferedDbSaver,
     }: {
       strategy?: QueueStrategy;
       queueDebounceMs?: number;
-      defferedDbProcessor?: IDefferedDbProcessor;
+      defferedDbSaver?: IDeferredDbSaver;
     }
   ) {
     ipfsInstance$.subscribe((node) => {
@@ -308,7 +297,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
     this.strategy = strategy || strategies.embedded;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
-    this.defferedDbProcessor = defferedDbProcessor;
+    this.defferedDbSaver = defferedDbSaver;
 
     // Little hack to handle keep-alive connection to swarm cyber node
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
@@ -318,7 +307,6 @@ class QueueManager<T extends IPFSContentMaybe> {
 
     this.queue$
       .pipe(
-        // tap((queue) => console.log('---tap', queue)),
         debounceTime(this.queueDebounceMs),
         map((queue) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {
@@ -347,16 +335,14 @@ class QueueManager<T extends IPFSContentMaybe> {
         }
 
         this.executing[source].delete(cid);
-        this.postSummary();
-        if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-          debugCid(cid, '------fetch end', item, this.executing);
-        }
+
         // success execution -> next
         if (status === 'completed' || status === 'cancelled') {
           // debugCid(cid, '------done', item, status, source, result);
           this.removeAndNext(cid);
         } else {
           // debugCid(cid, '------error', item, status, source, result);
+
           // Retry -> (next sources) or -> next
           const nextSource = this.strategy.getNextSource(source);
 
@@ -370,6 +356,8 @@ class QueueManager<T extends IPFSContentMaybe> {
             );
           }
         }
+
+        this.postSummary();
       });
   }
 
@@ -379,17 +367,12 @@ class QueueManager<T extends IPFSContentMaybe> {
     options: QueueItemOptions = {}
   ): void {
     const queue = this.queue$.value;
-
     const existingItem = queue.get(cid);
-    if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-      debugCid(cid, '------enqueue ', cid, existingItem);
-    }
+    // debugCid(cid, '------enqueue ', cid, existingItem);
+
     // In case if item already in queue,
     // just attach one more callback to quieued item
     if (existingItem) {
-      if (cid === 'QmUz61y49mSKauXftYt6DppcgNU3iU1ckLi4MVhHravkYZ') {
-        debugCid(cid, '------enqueue existingItem', existingItem);
-      }
       this.mutateQueueItem(cid, {
         callbacks: [...existingItem.callbacks, callback],
       });

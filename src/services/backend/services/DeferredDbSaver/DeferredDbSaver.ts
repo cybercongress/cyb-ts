@@ -7,7 +7,7 @@ import {
   mergeMap,
   tap,
 } from 'rxjs';
-import { IDefferedDbProcessor } from 'src/services/QueueManager/types';
+import { IDeferredDbSaver } from 'src/services/QueueManager/types';
 import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +23,7 @@ type QueueItem = {
 
 type QueueMap = Map<ParticleCid | typeof uuidv4, QueueItem>;
 
-class DeferredDbProcessor implements IDefferedDbProcessor {
+class DeferredDbSaver implements IDeferredDbSaver {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private dbApi: DbApi | undefined;
@@ -36,7 +36,7 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
     dbInstance$
       .pipe(
         filter((dbInstance) => !!dbInstance),
-        tap(() => console.log('DeferredDbProcessor - initialized')),
+        tap(() => console.log('DeferredDbSaver - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
         mergeMap((queue) => defer(() => from(this.processQueue(queue))))
@@ -52,6 +52,9 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
       return;
     }
     const { cid } = content;
+    if (cid === 'QmX7XZ5VDLDaBhzx54fkE2rz1u52TCeD7aFpyTYGv763Mv') {
+      console.log('-----defferedDBSaver', cid, content);
+    }
     this.queue$.next(new Map(this.queue$.value).set(cid, { content }));
   }
 
@@ -87,11 +90,11 @@ class DeferredDbProcessor implements IDefferedDbProcessor {
       await this.dbApi!.putParticles(entity);
     }
 
-    if (links) {
+    if (links && links.length > 0) {
       // eslint-disable-next-line no-await-in-loop
       await this.dbApi!.putCyberlinks(links);
     }
   }
 }
 
-export default DeferredDbProcessor;
+export default DeferredDbSaver;

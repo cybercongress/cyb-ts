@@ -72,7 +72,8 @@ export type ConfigDbEntity = {
 
 export enum SyncQueueStatus {
   pending = 0,
-  done = 1,
+  executing = 1,
+  done = 2,
   error = -1,
 }
 

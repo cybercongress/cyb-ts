@@ -9,17 +9,23 @@ import {
   map,
   combineLatest,
   share,
+  concatMap,
+  EMPTY,
+  of,
 } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
+import { QueuePriority } from 'src/services/QueueManager/types';
+
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { FetchIpfsFunc, SyncQueueItem } from '../types';
 
 import { ServiceDeps } from './types';
-import { QueuePriority } from 'src/services/QueueManager/types';
+
+const QUEUE_BATCH_SIZE = 100;
 
 class ParticlesResolverQueue {
   public isInitialized$: Observable<boolean>;
@@ -46,8 +52,6 @@ class ParticlesResolverQueue {
     return this._loop$;
   }
 
-  private processingQueue: SyncQueueItem[] = [];
-
   constructor(deps: ServiceDeps) {
     if (!deps.waitForParticleResolve) {
       throw new Error('waitForParticleResolve is not defined');
@@ -68,25 +72,26 @@ class ParticlesResolverQueue {
     );
   }
 
-  private async processSyncQueue() {
-    this.processingQueue = Array.from(this._syncQueue$.value.values()).sort(
-      (a, b) => {
-        return a.priority - b.priority;
-      }
-    ); // Snapshot of the current queue by priority
-    this._syncQueue$.next(new Map());
+  private async processSyncQueue(pendingItems: SyncQueueItem[]) {
+    // console.log('------processSyncQueue ', pendingItems);
 
-    const batchSize = this.processingQueue.length;
-    let i = 0;
+    const batchSize = pendingItems.length;
+
+    this.statusApi.sendStatus(
+      'in-progress',
+      `processing batch ${batchSize}/${batchSize} batch. ${this.queue.size} pending...`
+    );
+
+    let i = batchSize;
     await Promise.all(
-      this.processingQueue.map(async (item) => {
+      pendingItems.map(async (item) => {
         const { id } = item;
-        i++;
-        console.log('--process queue', i, batchSize);
-        this.statusApi.sendStatus(
-          'in-progress',
-          `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
-        );
+        // i++;
+        // console.log('--process queue', i, batchSize);
+        // this.statusApi.sendStatus(
+        //   'in-progress',
+        //   `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
+        // );
         // eslint-disable-next-line no-await-in-loop
         return this.waitForParticleResolve(id, QueuePriority.MEDIUM).then(
           async (result) => {
@@ -99,7 +104,17 @@ class ParticlesResolverQueue {
               await this.db!.removeSyncQueue(id);
             }
 
-            this.processingQueue.filter((i) => i.id !== id);
+            const queue = this._syncQueue$.value;
+            queue.delete(id);
+            i--;
+            this._syncQueue$.next(queue);
+
+            this.statusApi.sendStatus(
+              'in-progress',
+              `processing batch ${batchSize - i}/${batchSize} batch. ${
+                this.queue.size
+              } pending...`
+            );
           }
         );
       })
@@ -111,18 +126,54 @@ class ParticlesResolverQueue {
       tap((q) => console.log(`sync queue isInitialized - ${q}`)),
       filter((isInitialized) => isInitialized === true),
       mergeMap(() => this._syncQueue$), // Merge the queue$ stream here.
-      // tap((q) =>
-      //   console.log(`sync queue - ${q.size}  ${this.processingQueue.length}`)
-      // ),
-      filter((queue) => queue.size > 0 && this.processingQueue.length === 0),
-      tap(() => this.statusApi.sendStatus('in-progress', `starting...`)),
-      mergeMap(() => defer(() => from(this.processSyncQueue())))
+      // tap((q) => console.log(`sync queue - ${q.size}`)),
+      filter((q) => q.size > 0),
+      mergeMap((queue) => {
+        const list = [...queue.values()];
+
+        const executingCount = list.filter(
+          (i) => i.status === SyncQueueStatus.executing
+        ).length;
+
+        const batchSize = QUEUE_BATCH_SIZE - executingCount;
+
+        if (batchSize > 0) {
+          const pendingItems = [...queue.values()]
+            .filter((i) => i.status === SyncQueueStatus.pending)
+            .sort((a, b) => {
+              return a.priority - b.priority;
+            })
+            .slice(0, batchSize);
+
+          if (pendingItems.length > 0) {
+            pendingItems.forEach((i) => {
+              queue.set(i.id, {
+                ...i,
+                status: SyncQueueStatus.executing,
+              });
+            });
+
+            this._syncQueue$.next(queue);
+
+            this.statusApi.sendStatus('in-progress', `starting...`);
+            return this.processSyncQueue(pendingItems);
+          }
+        }
+
+        return EMPTY;
+      })
     );
 
     this._loop$ = source$.pipe(share());
 
     this._loop$.subscribe({
-      next: (result) => this.statusApi.sendStatus('idle'),
+      next: (result) => {
+        this.statusApi.sendStatus('idle');
+
+        // if (this._syncQueue$.getValue().size === 0) {
+        //   this.statusApi.sendStatus('idle');
+        // }
+      },
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });
 
@@ -135,8 +186,10 @@ class ParticlesResolverQueue {
     }
     await this.db!.putSyncQueue(items);
     const queue = this._syncQueue$.value;
-    console.log('------paericleResolverQueue', items);
-    items.forEach((item) => queue.set(item.id, item));
+
+    items.forEach((item) =>
+      queue.set(item.id, { ...item, status: SyncQueueStatus.pending })
+    );
     this._syncQueue$.next(queue);
   }
 
@@ -146,11 +199,7 @@ class ParticlesResolverQueue {
     }).then((items) => new Map(items.map((item) => [item.id, item])));
     console.log('---loadSyncQueue', queue);
 
-    queue.forEach((item) => {
-      this._syncQueue$.value.set(item.id, item);
-    });
-
-    this._syncQueue$.next(this._syncQueue$.value);
+    this._syncQueue$.next(queue);
   }
 }
 
