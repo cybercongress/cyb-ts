@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/launchpad';
-import { AmountDenom } from 'src/components';
+import { AmountDenom, Cid } from 'src/components';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
@@ -7,6 +7,7 @@ import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import cx from 'classnames';
+import { trimString } from 'src/utils/utils';
 import styles from './DataSendTxs.module.scss';
 
 function MemoIpfsContent({ cid }: { cid: string }) {
@@ -28,6 +29,14 @@ function MemoIpfsContent({ cid }: { cid: string }) {
       setIpfsDatDetails(details);
     })();
   }, [content, status, cid]);
+
+  if (status !== 'completed') {
+    return (
+      <Cid cid={cid}>
+        <span className={styles.cidText}>{trimString(cid, 5, 6)}</span>
+      </Cid>
+    );
+  }
 
   return <ContentIpfs details={ipfsDataDetails} content={content} cid={cid} />;
 }
