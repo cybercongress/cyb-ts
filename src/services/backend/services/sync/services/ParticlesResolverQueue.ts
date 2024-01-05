@@ -138,7 +138,7 @@ class ParticlesResolverQueue {
         const batchSize = QUEUE_BATCH_SIZE - executingCount;
 
         if (batchSize > 0) {
-          const pendingItems = [...queue.values()]
+          const pendingItems = list
             .filter((i) => i.status === SyncQueueStatus.pending)
             .sort((a, b) => {
               return a.priority - b.priority;
