@@ -16,7 +16,7 @@ jest.mock('src/services/backend/services/sync/utils');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
 
-describe('SyncTransactionsLoop', () => {
+describe('ParticlesResolverQueue', () => {
   beforeEach(() => {
     mockPutSyncStatus.mockClear(); // = jest.fn();
     mockPutSyncQueue.mockClear();

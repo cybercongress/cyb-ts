@@ -41,7 +41,7 @@ export const entityToArray = (
       const key = col.column as keyof DbEntity;
       const value = obj[key];
       return col.type === 'Json'
-        ? `'${JSON.stringify(value)}'`
+        ? `parse_json('${JSON.stringify(value)}')`
         : col.type === 'String'
         ? `"${value}"`
         : value;
@@ -102,10 +102,7 @@ export function removeUndefinedFields(entity: Record<string, any>) {
   return entity;
 }
 
-export const dbResultToDtoList = (
-  dbResult: IDBResult | IDBResultError,
-  jsonFields: string[]
-) => {
+export const dbResultToDtoList = (dbResult: IDBResult | IDBResultError) => {
   if (!dbResult.ok) {
     throw new Error(`Can't parse DBResult: ${dbResult.message}`);
   }

@@ -11,7 +11,7 @@ import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
-import { createLoopObservable } from './utils';
+import { createLoopObservable, getUniqueParticlesFromLinks } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { extractParticlesResults, updateSyncState } from '../utils';
@@ -106,7 +106,7 @@ class SyncTransactionsLoop {
     }
   }
 
-  private async syncTransactions(
+  public async syncTransactions(
     address: NeuronAddress,
     addCyberlinksToSync = false
   ) {
@@ -207,12 +207,7 @@ class SyncTransactionsLoop {
               );
 
               if (links.length > 0) {
-                const allLinks = [
-                  ...new Set([
-                    ...links.map((link) => link.to),
-                    ...links.map((link) => link.from),
-                  ]),
-                ];
+                const allLinks = getUniqueParticlesFromLinks(links);
 
                 await this.particlesResolver!.enqueue(
                   allLinks.map((link) => ({
@@ -228,15 +223,14 @@ class SyncTransactionsLoop {
             })
           );
 
-          await this.particlesResolver!.enqueue(
-            particlesFound.map((cid) => ({
-              id: cid,
-              priority: QueuePriority.LOW,
-            }))
-          );
-          // await this.db!.putSyncQueue(
-          //   particlesFound.map((cid) => ({ id: cid, priority: 1 }))
-          // );
+          if (particlesFound.length > 0) {
+            await this.particlesResolver!.enqueue(
+              particlesFound.map((cid) => ({
+                id: cid,
+                priority: QueuePriority.LOW,
+              }))
+            );
+          }
 
           if (syncStatusEntities.length > 0) {
             this.db!.putSyncStatus(syncStatusEntities);
@@ -262,8 +256,6 @@ class SyncTransactionsLoop {
         meta: { memo: lastTransaction?.transaction?.memo || '' },
       });
     }
-
-    // onComplete && onComplete(conter);
   }
 }
 

@@ -141,21 +141,29 @@ class DbApiWrapper {
   }
 
   public async getSenseList() {
-    const syncFields =
-      'entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta';
-    const valueNames = `${syncFields}, value, type`;
     const command = `
-    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=1, *transaction{hash: last_id, value, type}
-    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, *particle{cid: last_id, text, mime}, value=text, type=mime
-    dt[${valueNames}] := *sync_status{${syncFields}}, entry_type=2, not *particle{cid: last_id, text, mime}, value='', type=''
-    ?[${valueNames}] := dt[${valueNames}]
+    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
+
+    p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
+    p_last[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
+
+    p_id[last_id, id, meta, text, mime] :=  ss_p[last_id, id, meta], *particle{cid: id, text, mime}
+    p_id[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: id, text, mime}, empty=''
+
+    p_last_m[last_id, id, m] :=  p_last[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
+
+    p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
+
+    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type))
+
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta]
     :order -timestamp_update
     `;
 
     const result = await this.db!.runCommand(command);
 
     return dbResultToDtoList(result).map((i) =>
-      jsonifyFields(i, ['meta', 'value'])
+      jsonifyFields(i, ['meta'])
     ) as SenseResult[];
   }
 
@@ -198,7 +206,6 @@ class DbApiWrapper {
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {
     const entitites = Array.isArray(links) ? links : [links];
-    // console.log('------putCyberlinks', entitites);
     return this.db!.executePutCommand('link', entitites);
   }
 
@@ -245,9 +252,19 @@ class DbApiWrapper {
   }
 
   public async getLinks(cid: ParticleCid) {
-    const command = `pf[mime, text, from, to, direction, timestamp] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
-    pf[mime, text, from, to, direction, timestamp] := *link{from, to, timestamp}, *particle{cid: to, text, mime}, direction='to'
-    ?[timestamp, direction, text, mime, from, to] := pf[mime, text, from, to, direction, timestamp], from='${cid}' or to='${cid}'
+    const fields = [
+      'mime',
+      'text',
+      'from',
+      'to',
+      'direction',
+      'timestamp',
+    ].join(', ');
+
+    const command = `
+    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
+    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: to, text, mime}, direction='to'
+    ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
     :order -timestamp`;
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result);
