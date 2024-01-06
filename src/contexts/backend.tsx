@@ -9,7 +9,7 @@ import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
-import { selectFollowings } from 'src/redux/features/currentAccount';
+import { selectFriends } from 'src/redux/features/currentAccount';
 // import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 // import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -94,7 +94,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
-  const followings = useAppSelector(selectFollowings);
+  const followings = useAppSelector(selectFriends);
   // const passport = useAppSelector(selectCurrentPassport);
   // const passports = useCommunityPassports();
   // const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
