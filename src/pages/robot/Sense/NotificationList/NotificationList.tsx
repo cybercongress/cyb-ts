@@ -53,22 +53,24 @@ function NotificationList({ select, selected, setLoading }: Props) {
   console.log('----getListQuery', getListQuery.data);
   console.log('----getSummaryQuery', getSummaryQuery.data);
 
-  // const isLoading = getListQuery.isLoading || getSummaryQuery.isLoading;
+  const isLoading = getListQuery.isLoading || getSummaryQuery.isLoading;
 
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
-        <ul>
-          <li>
-            <NItem
-              value="all new"
-              unreadCount={getSummaryQuery.data?.[0]?.unread}
-            />
-          </li>
-          {getListQuery.isFetching ? (
+        {isLoading ? (
+          <div className={styles.center}>
             <Loader2 />
-          ) : getListQuery.data ? (
-            getListQuery.data.map(
+          </div>
+        ) : getListQuery.data ? (
+          <ul>
+            <li>
+              <NItem
+                value="all new"
+                unreadCount={getSummaryQuery.data?.[0]?.unread}
+              />
+            </li>
+            {getListQuery.data.map(
               ({ id, value, unreadCount, timestampUpdate, type, meta }) => {
                 let text = meta.id?.text || '-';
                 // temp reset after select
@@ -114,11 +116,11 @@ function NotificationList({ select, selected, setLoading }: Props) {
                   </li>
                 );
               }
-            )
-          ) : (
-            'no data'
-          )}
-        </ul>
+            )}
+          </ul>
+        ) : (
+          <div className={styles.center}>no data</div>
+        )}
       </Display>
     </div>
   );

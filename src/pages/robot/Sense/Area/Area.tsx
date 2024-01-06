@@ -13,7 +13,8 @@ import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import useSenseItem from '../useSenseItem';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import Loader2 from 'src/components/ui/Loader2';
 
 type Props = {
   selected: string | undefined;
@@ -27,6 +28,16 @@ function Area({ selected }: Props) {
   const { senseApi } = useBackend();
 
   const { data, loading, error } = useSenseItem({ id: selected });
+
+  const ref = useRef();
+
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    ref.current.scrollTop = ref.current.scrollHeight + 100;
+  }, [ref, data]);
 
   useEffect(() => {
     if (!selected) {
@@ -60,9 +71,9 @@ function Area({ selected }: Props) {
           )
         }
       >
-        <div className={styles.content}>
-          {selected && data ? (
-            data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
+        {selected && data ? (
+          <div className={styles.messages} ref={ref}>
+            {data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
               let v = value;
 
               let from2;
@@ -107,14 +118,18 @@ function Area({ selected }: Props) {
                   // type={type}
                 />
               );
-            })
-          ) : (
-            <p>
-              post to your log, <br />
-              or select chat to start messaging
-            </p>
-          )}
-        </div>
+            })}
+          </div>
+        ) : loading ? (
+          <div className={styles.noData}>
+            <Loader2 />
+          </div>
+        ) : (
+          <p className={styles.noData}>
+            post to your log, <br />
+            or select chat to start messaging
+          </p>
+        )}
       </Display>
     </div>
   );

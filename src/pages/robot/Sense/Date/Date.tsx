@@ -8,12 +8,28 @@ type Props = {
   className?: string;
 };
 
-function Date({ timestamp, className }: Props) {
+function Date2({ timestamp, className }: Props) {
+  const date = new Date(timestamp);
+  const today = new Date();
+
+  // Compare the date part of the timestamp with the date part of the current date
+  const isToday =
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  const formattedDate = isToday
+    ? dateFormat(date, 'HH:MM')
+    : dateFormat(date, 'dd/mm HH:MM');
+
   return (
     <time className={cx(styles.date, className)}>
-      {dateFormat(timestamp, 'dd/mm HH:MM')}
+      {/* {formattedDate} */}
+      {dateFormat(timestamp, 'HH:MM')}
+      <br />
+      {dateFormat(timestamp, 'dd/mm')}
     </time>
   );
 }
 
-export default Date;
+export default Date2;

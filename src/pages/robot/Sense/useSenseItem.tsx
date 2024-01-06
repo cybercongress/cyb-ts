@@ -35,11 +35,14 @@ function useSenseItem({ id }: Props) {
   console.log('----getTxsQuery', getTxsQuery);
   console.log('----getLinks', getLinksQuery);
 
-  const items = [...(getTxsQuery.data || []), ...(getLinksQuery.data || [])];
+  const items = [
+    ...(getTxsQuery.data?.reverse() || []),
+    ...(getLinksQuery.data?.reverse() || []),
+  ];
 
   return {
     data: items,
-    loading: getTxsQuery.isLoading || getLinksQuery.isLoading,
+    loading: id && (getTxsQuery.isLoading || getLinksQuery.isLoading),
     error: getTxsQuery.error || getLinksQuery.error,
   };
 }

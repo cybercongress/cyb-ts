@@ -2,9 +2,16 @@
 
 .wrapper {
   max-width: 300px;
+
+  .center {
+    margin: auto;
+    color: #616161;
+  }
+
   > div {
-    // not good
     padding: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   ul {

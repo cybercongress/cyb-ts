@@ -27,7 +27,7 @@ export function CoinAmount({
   denom: string;
 }) {
   return (
-    <div>
+    <div className={styles.coinAmount}>
       <span>{formatNumber(amount)}</span>
       <DenomArr denomValue={denom} onlyImg />
     </div>

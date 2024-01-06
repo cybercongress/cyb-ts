@@ -48,12 +48,16 @@
 .amount {
   > div {
     grid-area: amount;
-    display: flex;
-    gap: 0 3px;
   }
 }
 
 .content,
 .amount {
   font-size: 14px;
+}
+
+.coinAmount {
+  display: flex;
+  align-items: center;
+  gap: 0 4px;
 }

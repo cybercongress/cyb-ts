@@ -9,6 +9,8 @@ import Pill from 'src/components/Pill/Pill';
 import Date from '../../Date/Date';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
+import cx from 'classnames';
+import { cutSenseItem } from '../../utils';
 
 type Props = {
   unreadCount: number;
@@ -19,11 +21,18 @@ type Props = {
 
 function NItem({ unreadCount, address, timestamp, value }: Props) {
   const isParticle = address?.startsWith('Qm');
+
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={cx(styles.wrapper, {
+        [styles.particle]: isParticle,
+      })}
+    >
       {address && (
         <div className={styles.avatar}>
-          <Account address={address} onlyAvatar avatar />
+          {!isParticle && (
+            <Account address={address} onlyAvatar avatar sizeAvatar={50} />
+          )}
         </div>
       )}
 
@@ -31,12 +40,13 @@ function NItem({ unreadCount, address, timestamp, value }: Props) {
         <h5 className={styles.title} onClickCapture={(e) => e.preventDefault()}>
           {isParticle ? '#' : '@'}
 
-          <Account address={address} />
+          {!isParticle && <Account address={address} />}
+          {isParticle && cutSenseItem(address)}
         </h5>
       )}
       <p className={styles.text}>{value}</p>
 
-      <Date timestamp={timestamp} className={styles.date} />
+      {timestamp && <Date timestamp={timestamp} className={styles.date} />}
 
       {unreadCount > 0 && (
         <Pill className={styles.unread} text={unreadCount}></Pill>
