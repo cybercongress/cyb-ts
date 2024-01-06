@@ -3,17 +3,17 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
-import { createLoopObservable } from './utils';
-import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
+import { createLoopObservable, getUniqueParticlesFromLinks } from './utils';
+import { BLOCKCHAIN_SYNC_INTERVAL, PARTICLES_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { updateSyncState } from '../utils';
 import { SyncServiceParams } from '../types';
 import { fetchAllCyberlinks } from '../../dataSource/blockchain/requests';
-import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -83,12 +83,7 @@ class SyncParticlesLoop {
               return undefined;
             }
 
-            const allLinks = [
-              ...new Set([
-                ...links.map((link) => link.to),
-                ...links.map((link) => link.from),
-              ]),
-            ];
+            const allLinks = getUniqueParticlesFromLinks(links);
 
             await this.particlesResolver!.enqueue(
               allLinks.map((cid) => ({
@@ -113,7 +108,7 @@ class SyncParticlesLoop {
 
   start() {
     this._loop$ = createLoopObservable(
-      BLOCKCHAIN_SYNC_INTERVAL,
+      PARTICLES_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncParticles())),
       () => this.statusApi.sendStatus('in-progress')

@@ -1,17 +1,13 @@
 import {
   BehaviorSubject,
   Observable,
-  defer,
   filter,
   mergeMap,
   tap,
-  from,
   map,
   combineLatest,
   share,
-  concatMap,
   EMPTY,
-  of,
 } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
@@ -31,8 +27,6 @@ class ParticlesResolverQueue {
   public isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
-
-  // private ipfsNode: CybIpfsNode | undefined;
 
   private waitForParticleResolve: FetchIpfsFunc;
 
@@ -86,12 +80,6 @@ class ParticlesResolverQueue {
     await Promise.all(
       pendingItems.map(async (item) => {
         const { id } = item;
-        // i++;
-        // console.log('--process queue', i, batchSize);
-        // this.statusApi.sendStatus(
-        //   'in-progress',
-        //   `processing batch ${i}/${batchSize}(pending batch: ${this.queue.size})...`
-        // );
         // eslint-disable-next-line no-await-in-loop
         return this.waitForParticleResolve(id, QueuePriority.MEDIUM).then(
           async (result) => {
@@ -138,7 +126,7 @@ class ParticlesResolverQueue {
         const batchSize = QUEUE_BATCH_SIZE - executingCount;
 
         if (batchSize > 0) {
-          const pendingItems = [...queue.values()]
+          const pendingItems = list
             .filter((i) => i.status === SyncQueueStatus.pending)
             .sort((a, b) => {
               return a.priority - b.priority;
@@ -169,10 +157,6 @@ class ParticlesResolverQueue {
     this._loop$.subscribe({
       next: (result) => {
         this.statusApi.sendStatus('idle');
-
-        // if (this._syncQueue$.getValue().size === 0) {
-        //   this.statusApi.sendStatus('idle');
-        // }
       },
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });

@@ -8,7 +8,9 @@ import {
   EMPTY,
   distinctUntilChanged,
   share,
+  catchError,
 } from 'rxjs';
+import { CyberLinkSimple } from 'src/types/base';
 
 export const createLoopObservable = (
   intervalMs: number,
@@ -23,7 +25,14 @@ export const createLoopObservable = (
         return interval(intervalMs).pipe(
           startWith(0), // Start immediately
           tap(() => beforeCallback && beforeCallback()),
-          concatMap(() => actionObservable$)
+          concatMap((value) =>
+            actionObservable$.pipe(
+              catchError((error) => {
+                console.log('Error:', error);
+                throw error;
+              })
+            )
+          )
         );
       }
       return EMPTY;
@@ -31,3 +40,10 @@ export const createLoopObservable = (
   );
   return source$.pipe(share()); // Use the share operator to multicast the source observable
 };
+
+export const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) => [
+  ...new Set([
+    ...links.map((link) => link.to),
+    ...links.map((link) => link.from),
+  ]),
+];
