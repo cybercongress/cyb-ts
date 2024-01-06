@@ -1,7 +1,3 @@
-import { proxy, transferHandlers } from 'comlink';
-import { BehaviorSubject, concatMap, filter, from } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
-
 import { WorkerUrl } from 'worker-url';
 import { CozoDbWorker } from './worker';
 import { createWorkerApi } from '../factoryMethods';

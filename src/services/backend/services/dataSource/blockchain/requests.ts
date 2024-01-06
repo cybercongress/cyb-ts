@@ -1,12 +1,6 @@
 import { request } from 'graphql-request';
 import gql from 'graphql-tag';
-import {
-  Cyberlink,
-  ParticleCid,
-  NeuronAddress,
-  CyberLinkNeuron,
-  CyberLinkTimestamp,
-} from 'src/types/base';
+import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
 import { dateToNumber, numberToDate } from 'src/utils/date';
 import { Transaction } from './types';
 

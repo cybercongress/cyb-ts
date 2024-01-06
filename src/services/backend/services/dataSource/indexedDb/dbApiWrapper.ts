@@ -141,16 +141,7 @@ class DbApiWrapper {
   }
 
   public async getSenseList() {
-    // const syncFields =
-    //   'entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta';
-
-    // const valueNames = `${syncFields}, value, type`;
-
-    // const relParticleLast = '*particle{cid: last_id, text, mime}';
-    // const relParticleMain = '*particle{cid: id, text, mime}';
-
     const command = `
-
     ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
 
     p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
@@ -172,7 +163,7 @@ class DbApiWrapper {
     const result = await this.db!.runCommand(command);
 
     return dbResultToDtoList(result).map((i) =>
-      jsonifyFields(i, ['meta', 'value'])
+      jsonifyFields(i, ['meta'])
     ) as SenseResult[];
   }
 
@@ -215,7 +206,6 @@ class DbApiWrapper {
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {
     const entitites = Array.isArray(links) ? links : [links];
-    // console.log('------putCyberlinks', entitites);
     return this.db!.executePutCommand('link', entitites);
   }
 
@@ -271,7 +261,8 @@ class DbApiWrapper {
       'timestamp',
     ].join(', ');
 
-    const command = `pf[${fields}] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
+    const command = `
+    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
     pf[${fields}] := *link{from, to,timestamp}, *particle{cid: to, text, mime}, direction='to'
     ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
     :order -timestamp`;

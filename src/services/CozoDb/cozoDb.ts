@@ -127,14 +127,6 @@ function createCozoDb() {
         },
       ]);
     }
-    // set initial version
-    // await put('config', [
-    //   {
-    //     key: 'DB_VERSION',
-    //     group_key: 'system',
-    //     value: DB_VERSION,
-    //   },
-    // ]);
     // const version = await getVersion();
     // console.log(`DB Version ${version}`);
   };
