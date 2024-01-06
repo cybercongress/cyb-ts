@@ -19,6 +19,21 @@ type Props = {
   txHash?: string;
 };
 
+export function CoinAmount({
+  amount,
+  denom,
+}: {
+  amount: string;
+  denom: string;
+}) {
+  return (
+    <div>
+      <span>{formatNumber(amount)}</span>
+      <DenomArr denomValue={denom} onlyImg />
+    </div>
+  );
+}
+
 function Message({ address, text, type, date, amount, txHash }: Props) {
   return (
     <div className={styles.wrapper}>
@@ -36,12 +51,7 @@ function Message({ address, text, type, date, amount, txHash }: Props) {
 
       <div className={styles.amount}>
         {amount?.map(({ amount, denom }, i) => {
-          return (
-            <div key={i}>
-              <span>{formatNumber(amount)}</span>
-              <DenomArr denomValue={denom} onlyImg />
-            </div>
-          );
+          return <CoinAmount key={i} amount={amount} denom={denom} />;
         })}
       </div>
     </div>

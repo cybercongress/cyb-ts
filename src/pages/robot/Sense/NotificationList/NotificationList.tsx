@@ -8,12 +8,13 @@ import NItem from './NItem/NItem';
 import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
+import { CoinAmount } from '../Area/Message/Message';
 
 type Props = {
   select: (id: string) => void;
 };
 
-function NotificationList({ select, selected }: Props) {
+function NotificationList({ select, selected, setLoading }: Props) {
   const { senseApi } = useBackend();
 
   const getListQuery = useQuery({
@@ -31,6 +32,23 @@ function NotificationList({ select, selected }: Props) {
     },
     enabled: !!senseApi,
   });
+
+  useEffect(() => {
+    if (getListQuery.isLoading || getSummaryQuery.isLoading) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [getListQuery.isLoading, getSummaryQuery.isLoading, setLoading]);
+
+  // useEffect(() => {
+  //   if (!selected) {
+  //     return;
+  //   }
+
+  //   getListQuery.refetch();
+  //   getSummaryQuery.refetch();
+  // }, [getListQuery, getSummaryQuery, selected]);
 
   console.log('----getListQuery', getListQuery.data);
   console.log('----getSummaryQuery', getSummaryQuery.data);
@@ -51,7 +69,28 @@ function NotificationList({ select, selected }: Props) {
             <Loader2 />
           ) : getListQuery.data ? (
             getListQuery.data.map(
-              ({ id, value, unreadCount, timestampUpdate, type }) => {
+              ({ id, value, unreadCount, timestampUpdate, type, meta }) => {
+                let text = meta.id?.text || '-';
+                // temp reset after select
+                const unread = id === selected ? undefined : unreadCount;
+
+                if (meta?.type === 'cosmos.bank.v1beta1.MsgSend') {
+                  const {
+                    value: { amount },
+                  } = meta;
+
+                  text = (
+                    <CoinAmount
+                      amount={amount[0].amount}
+                      denom={amount[0].denom}
+                    />
+                  );
+                }
+
+                if (meta?.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
+                  text = 'MsgMultiSend TODO:';
+                }
+
                 return (
                   <li
                     key={id}
@@ -68,8 +107,8 @@ function NotificationList({ select, selected }: Props) {
                       <NItem
                         address={id}
                         timestamp={timestampUpdate}
-                        unreadCount={unreadCount}
-                        value={type}
+                        unreadCount={unread}
+                        value={text}
                       />
                     </button>
                   </li>

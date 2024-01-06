@@ -22,12 +22,9 @@ function NItem({ unreadCount, address, timestamp, value }: Props) {
   return (
     <div className={styles.wrapper}>
       {address && (
-        <Account
-          className={styles.avatar}
-          address={address}
-          onlyAvatar
-          avatar
-        />
+        <div className={styles.avatar}>
+          <Account address={address} onlyAvatar avatar />
+        </div>
       )}
 
       {address && (

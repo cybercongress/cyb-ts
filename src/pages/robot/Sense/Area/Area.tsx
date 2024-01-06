@@ -13,6 +13,7 @@ import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import useSenseItem from '../useSenseItem';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 type Props = {
   selected: string | undefined;
@@ -23,7 +24,17 @@ type Props = {
 function Area({ selected }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
+  const { senseApi } = useBackend();
+
   const { data, loading, error } = useSenseItem({ id: selected });
+
+  useEffect(() => {
+    if (!selected) {
+      return;
+    }
+
+    senseApi?.markAsRead(selected);
+  }, [selected, senseApi]);
 
   const isParticle = selected?.startsWith('Qm');
 
@@ -32,20 +43,25 @@ function Area({ selected }: Props) {
       <Display
         title={
           selected && (
-            <DisplayTitle title={
-              isParticle ? (
-              <Link to={routes.oracle.ask.getLink(selected)}>{selected}</Link>
-              ) : (
-                <Account address={selected} avatar />
-              )
-            }
+            <DisplayTitle
+              title={
+                isParticle ? (
+                  <Link
+                    className={styles.title}
+                    to={routes.oracle.ask.getLink(selected)}
+                  >
+                    {selected}
+                  </Link>
+                ) : (
+                  <Account address={selected} avatar />
+                )
+              }
             />
-              
           )
         }
       >
         <div className={styles.content}>
-          {data ? (
+          {selected && data ? (
             data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
               let v = value;
 

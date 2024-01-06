@@ -11,6 +11,10 @@
   > h6 {
     grid-area: title;
     font-size: 16px;
+
+    a {
+      text-transform: none;
+    }
   }
 }
 
