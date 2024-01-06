@@ -34,6 +34,9 @@ const slice = createSlice({
 export const selectFollowings = (state: RootState) =>
   state.currentAccount.community.following;
 
+export const selectFriends = (state: RootState) =>
+  state.currentAccount.community.friends;
+
 export const { setCommunity } = slice.actions;
 
 export default slice.reducer;
