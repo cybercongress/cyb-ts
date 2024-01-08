@@ -1,6 +1,11 @@
 import { IndexedDbWriteMessage } from '../CozoDb/types/types';
 
-export type SyncEntryName = 'pin' | 'particle' | 'transaction' | 'resolver';
+export type SyncEntryName =
+  | 'pin'
+  | 'particle'
+  | 'transaction'
+  | 'resolver'
+  | 'myChats';
 
 export type SyncProgress = {
   status?: 'idle' | 'in-progress' | 'error';

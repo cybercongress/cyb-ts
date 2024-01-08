@@ -27,6 +27,11 @@ const mock = jest.fn().mockImplementation(() => ({
     await mockPutSyncStatus(syncStatus);
     return Promise.resolve();
   },
+  updateSyncStatus: async (syncStatus) => {
+    console.log('---------mockDbApi updateSyncStatus!!!!', syncStatus);
+    await mockUpdateSyncStatus(syncStatus);
+    return Promise.resolve();
+  },
   getSyncQueue: async (...args) => {
     console.log('---------mockDbApi getSyncQueue', args);
     return [];
@@ -35,7 +40,7 @@ const mock = jest.fn().mockImplementation(() => ({
   //   console.log('---------mockDbApi getSyncQueue', args);
   //   return mockGetSyncQueue(args);
   // },
-  findSyncStatus: async (...args) => {
+  findSyncStatus: async (args) => {
     const result = await mockFindSyncStatus(args);
     console.log('---------mockDbApi findSyncStatus', args, result);
     return result;

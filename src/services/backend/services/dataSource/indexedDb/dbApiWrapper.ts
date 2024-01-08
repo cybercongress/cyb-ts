@@ -20,6 +20,7 @@ import {
   ParticleDto,
   SyncQueueDto,
   SyncStatusDto,
+  TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
 import { SenseResult, SenseUnread } from './type';
@@ -171,6 +172,7 @@ class DbApiWrapper {
     const command = `
     dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=1
     dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=2
+    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=3
     ?[entry_type, unread] := dt[entry_type, unread]`;
 
     const result = await this.db!.runCommand(command);
@@ -193,15 +195,20 @@ class DbApiWrapper {
     });
   }
 
-  public async getTransactions(neuron: NeuronAddress) {
+  public async getTransactions(
+    neuron: NeuronAddress,
+    order: 'desc' | 'asc' = 'desc'
+  ) {
     const result = await this.db!.executeGetCommand(
       'transaction',
       ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
       [`neuron = '${neuron}'`],
       ['neuron'],
-      { orderBy: ['-timestamp'] }
+      { orderBy: [order === 'desc' ? '-timestamp' : 'timestamp'] }
     );
-    return dbResultToDtoList(result).map((i) => jsonifyFields(i, ['value']));
+    return dbResultToDtoList(result).map((i) =>
+      jsonifyFields(i, ['value'])
+    ) as TransactionDto[];
   }
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {

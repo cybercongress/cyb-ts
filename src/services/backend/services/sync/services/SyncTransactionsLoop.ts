@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
@@ -15,13 +16,19 @@ import { createLoopObservable, getUniqueParticlesFromLinks } from './utils';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { extractParticlesResults, updateSyncState } from '../utils';
-import { SyncServiceParams } from '../types';
+import { SenseChat, SyncServiceParams } from '../types';
 
 import {
   fetchAllCyberlinks,
   fetchTransactionsIterable,
 } from '../../dataSource/blockchain/requests';
-import { Transaction } from '../../dataSource/blockchain/types';
+import {
+  MSG_MULTI_SEND_TRANSACTION_TYPE,
+  MSG_SEND_TRANSACTION_TYPE,
+  MsgMultiSendTransaction,
+  MsgSendTransaction,
+  Transaction,
+} from '../../dataSource/blockchain/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -141,7 +148,6 @@ class SyncTransactionsLoop {
           'cosmos.bank.v1beta1.MsgMultiSend',
         ].includes(t.type)
       );
-      // console.log('---syncTransactions batch ', batch.length, items.length);
 
       if (items.length > 0) {
         // pick last transaction = first item based on request orderby

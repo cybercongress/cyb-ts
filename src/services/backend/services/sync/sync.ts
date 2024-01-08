@@ -9,6 +9,8 @@ import ParticlesResolverQueue from './services/ParticlesResolverQueue';
 import SyncIpfsLoop from './services/SyncIpfsLoop';
 import SyncTransactionsLoop from './services/SyncTransactionsLoop';
 import SyncParticlesLoop from './services/SyncParticlesLoop';
+import SyncMyChatsLoop from './services/SyncMyChatsLoop';
+
 import { ServiceDeps } from './services/types';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -38,5 +40,7 @@ export class SyncService {
     new SyncTransactionsLoop(deps, particlesResolver).start();
 
     new SyncParticlesLoop(deps, particlesResolver).start();
+
+    new SyncMyChatsLoop(deps).start();
   }
 }
