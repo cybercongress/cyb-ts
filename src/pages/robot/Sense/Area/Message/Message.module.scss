@@ -27,11 +27,13 @@
   grid-area: avatar;
 }
 
-.date {
+.timestampBlock {
   grid-area: date;
   justify-self: flex-end;
+  display: flex;
+  align-items: center;
 
-  > a {
+  .tx {
     color: var(--green-light);
     margin-right: 6px;
 

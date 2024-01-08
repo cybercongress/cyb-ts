@@ -9,13 +9,24 @@ import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
 import { CoinAmount } from '../Area/Message/Message';
+import SenseListFilters from './SenseListFilters/SenseListFilters';
+import { Filters } from '../types';
+import { EntryType } from 'src/services/CozoDb/types/entities';
+import { log } from 'tone/build/esm/core/util/Debug';
 
 type Props = {
   select: (id: string) => void;
 };
 
+const mapFilterWithEntryType = {
+  [EntryType.transactions]: Filters.Neuron,
+  [EntryType.particle]: Filters.Particle,
+};
+
 function NotificationList({ select, selected, setLoading }: Props) {
   const { senseApi } = useBackend();
+
+  const [filter, setFilter] = useState(Filters.All);
 
   const getListQuery = useQuery({
     queryKey: ['senseApi', 'getList'],
@@ -53,6 +64,14 @@ function NotificationList({ select, selected, setLoading }: Props) {
   console.log('----getListQuery', getListQuery.data);
   console.log('----getSummaryQuery', getSummaryQuery.data);
 
+  let items = getListQuery.data || [];
+
+  if (filter !== Filters.All) {
+    items = items.filter((item) => {
+      return mapFilterWithEntryType[item.entryType] === filter;
+    });
+  }
+
   const isLoading = getListQuery.isLoading || getSummaryQuery.isLoading;
 
   return (
@@ -62,62 +81,70 @@ function NotificationList({ select, selected, setLoading }: Props) {
           <div className={styles.center}>
             <Loader2 />
           </div>
-        ) : getListQuery.data ? (
-          <ul>
-            <li>
-              <NItem
-                value="all new"
-                unreadCount={getSummaryQuery.data?.[0]?.unread}
+        ) : items.length ? (
+          <aside>
+            <NItem
+              value="all new"
+              unreadCount={getSummaryQuery.data?.[0]?.unread}
+            />
+
+            <div className={styles.filters}>
+              <SenseListFilters
+                selected={filter}
+                onChangeFilter={(filter: Filters) => setFilter(filter)}
               />
-            </li>
-            {getListQuery.data.map(
-              ({ id, value, unreadCount, timestampUpdate, type, meta }) => {
-                let text = meta.id?.text || '-';
-                // temp reset after select
-                const unread = id === selected ? undefined : unreadCount;
+            </div>
 
-                if (meta?.type === 'cosmos.bank.v1beta1.MsgSend') {
-                  const {
-                    value: { amount },
-                  } = meta;
+            <ul>
+              {items.map(
+                ({ id, value, unreadCount, timestampUpdate, type, meta }) => {
+                  let text = meta.id?.text || '-';
+                  // temp reset after select
+                  const unread = id === selected ? undefined : unreadCount;
 
-                  text = (
-                    <CoinAmount
-                      amount={amount[0].amount}
-                      denom={amount[0].denom}
-                    />
+                  if (meta?.type === 'cosmos.bank.v1beta1.MsgSend') {
+                    const {
+                      value: { amount },
+                    } = meta;
+
+                    text = (
+                      <CoinAmount
+                        amount={amount[0].amount}
+                        denom={amount[0].denom}
+                      />
+                    );
+                  }
+
+                  if (meta?.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
+                    text = 'MsgMultiSend TODO:';
+                  }
+
+                  return (
+                    <li
+                      key={id}
+                      className={cx(styles.item, {
+                        [styles.selected]: id === selected,
+                      })}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          select(id);
+                        }}
+                      >
+                        <NItem
+                          address={id}
+                          timestamp={timestampUpdate}
+                          unreadCount={unread}
+                          value={text}
+                        />
+                      </button>
+                    </li>
                   );
                 }
-
-                if (meta?.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-                  text = 'MsgMultiSend TODO:';
-                }
-
-                return (
-                  <li
-                    key={id}
-                    className={cx(styles.item, {
-                      [styles.selected]: id === selected,
-                    })}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        select(id);
-                      }}
-                    >
-                      <NItem
-                        address={id}
-                        timestamp={timestampUpdate}
-                        unreadCount={unread}
-                        value={text}
-                      />
-                    </button>
-                  </li>
-                );
-              }
-            )}
-          </ul>
+              )}
+            </ul>
+          </aside>
         ) : (
           <div className={styles.center}>no data</div>
         )}

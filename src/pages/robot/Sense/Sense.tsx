@@ -5,6 +5,7 @@ import styles from './Sense.module.scss';
 import Loading from '../../../components/ui/Loading';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppSelector } from 'src/redux/hooks';
+import ActionBar from './ActionBar/ActionBar';
 
 function Sense() {
   const [selected, setSelected] = useState<string>();
@@ -26,14 +27,18 @@ function Sense() {
   }, [setAdviser, loading]);
 
   return (
-    <div className={styles.wrapper}>
-      <NotificationList
-        select={(id: string) => setSelected(id)}
-        selected={selected}
-        setLoading={setLoading}
-      />
-      <Area selected={selected} setLoading={setLoading} />
-    </div>
+    <>
+      <div className={styles.wrapper}>
+        <NotificationList
+          select={(id: string) => setSelected(id)}
+          selected={selected}
+          setLoading={setLoading}
+        />
+        <Area selected={selected} setLoading={setLoading} />
+      </div>
+
+      <ActionBar id={selected} />
+    </>
   );
 }
 

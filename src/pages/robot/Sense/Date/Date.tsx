@@ -2,6 +2,7 @@ import dateFormat from 'dateformat';
 
 import cx from 'classnames';
 import styles from './Date.module.scss';
+import { Tooltip } from 'src/components';
 
 type Props = {
   timestamp: number;
@@ -20,15 +21,14 @@ function Date2({ timestamp, className }: Props) {
 
   const formattedDate = isToday
     ? dateFormat(date, 'HH:MM')
-    : dateFormat(date, 'dd/mm HH:MM');
+    : dateFormat(date, 'dd/mm');
 
   return (
-    <time className={cx(styles.date, className)}>
-      {/* {formattedDate} */}
-      {dateFormat(timestamp, 'HH:MM')}
-      <br />
-      {dateFormat(timestamp, 'dd/mm')}
-    </time>
+    <div className={cx(styles.date, className)}>
+      <Tooltip tooltip={dateFormat(date, 'dd/mm/yyyy HH:MM')}>
+        <time>{formattedDate}</time>
+      </Tooltip>
+    </div>
   );
 }
 

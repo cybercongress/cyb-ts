@@ -15,12 +15,15 @@ import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Loader2 from 'src/components/ui/Loader2';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
+import { cutSenseItem } from '../utils';
+import ParticleAvatar from '../components/ParticleAvatar/ParticleAvatar';
+import useParticleDetails from '../_temp/useParticleDetails';
+import { isParticle as isParticleFunc } from 'src/features/particles/utils';
 
 type Props = {
   selected: string | undefined;
 };
-
-// const supportedTypes = Object.values(SupportedTypes);
 
 function Area({ selected }: Props) {
   const address = useAppSelector(selectCurrentAddress);
@@ -28,6 +31,14 @@ function Area({ selected }: Props) {
   const { senseApi } = useBackend();
 
   const { data, loading, error } = useSenseItem({ id: selected });
+
+  const isParticle = isParticleFunc(selected || '');
+
+  const { data: particleData } = useParticleDetails(selected, {
+    skip: !isParticle,
+  });
+
+  const text = particleData?.text;
 
   const ref = useRef();
 
@@ -47,8 +58,6 @@ function Area({ selected }: Props) {
     senseApi?.markAsRead(selected);
   }, [selected, senseApi]);
 
-  const isParticle = selected?.startsWith('Qm');
-
   return (
     <div className={styles.wrapper}>
       <Display
@@ -57,12 +66,16 @@ function Area({ selected }: Props) {
             <DisplayTitle
               title={
                 isParticle ? (
-                  <Link
-                    className={styles.title}
-                    to={routes.oracle.ask.getLink(selected)}
-                  >
-                    {selected}
-                  </Link>
+                  <header className={styles.header}>
+                    <ParticleAvatar particleId={selected} />
+                    <Link
+                      className={styles.title}
+                      to={routes.oracle.ask.getLink(selected)}
+                    >
+                      {cutSenseItem(selected)}
+                    </Link>
+                    {text && <p>{text}</p>}
+                  </header>
                 ) : (
                   <Account address={selected} avatar />
                 )
@@ -73,52 +86,55 @@ function Area({ selected }: Props) {
       >
         {selected && data ? (
           <div className={styles.messages} ref={ref}>
-            {data.map(({ id, timestamp, type, value, text, hash, from }, i) => {
-              let v = value;
+            {data.map(
+              ({ id, timestamp, type, value, text, memo, hash, from }, i) => {
+                let v = value;
 
-              let from2;
-              let amount: Coin[] | undefined;
+                let from2;
+                let amount: Coin[] | undefined;
 
-              switch (type) {
-                case SupportedTypes.MsgSend: {
-                  from2 = v.from_address;
-                  amount = v.amount;
+                switch (type) {
+                  case SupportedTypes.MsgSend: {
+                    from2 = v.from_address;
+                    amount = v.amount;
+                    v = memo;
 
-                  break;
-                }
-
-                case SupportedTypes.MsgMultiSend: {
-                  v = v as MsgMultiSend;
-
-                  from2 = v.inputs[0].address;
-                  amount = v.outputs.find(
-                    (output) => output.address === address
-                  )?.coins;
-
-                  break;
-                }
-
-                default: {
-                  if (!isParticle) {
-                    return null;
+                    break;
                   }
 
-                  from2 = from;
-                }
-              }
+                  case SupportedTypes.MsgMultiSend: {
+                    v = v as MsgMultiSend;
 
-              return (
-                <Message
-                  key={i}
-                  address={from2}
-                  text={type || text}
-                  txHash={hash}
-                  amount={amount}
-                  date={timestamp}
-                  // type={type}
-                />
-              );
-            })}
+                    from2 = v.inputs[0].address;
+                    amount = v.outputs.find(
+                      (output) => output.address === address
+                    )?.coins;
+
+                    break;
+                  }
+
+                  default: {
+                    if (!isParticle) {
+                      return null;
+                    }
+
+                    from2 = from;
+                  }
+                }
+
+                return (
+                  <Message
+                    key={i}
+                    address={from2}
+                    text={text || memo}
+                    txHash={hash}
+                    amount={amount}
+                    date={timestamp}
+                    // type={type}
+                  />
+                );
+              }
+            )}
           </div>
         ) : loading ? (
           <div className={styles.noData}>

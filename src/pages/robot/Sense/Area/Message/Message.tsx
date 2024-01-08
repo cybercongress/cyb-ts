@@ -1,5 +1,5 @@
 import React from 'react';
-import { Account, DenomArr } from 'src/components';
+import { Account, DenomArr, Tooltip } from 'src/components';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import styles from './Message.module.scss';
 import dateFormat from 'dateformat';
@@ -37,14 +37,23 @@ export function CoinAmount({
 function Message({ address, text, type, date, amount, txHash }: Props) {
   return (
     <div className={styles.wrapper}>
-      <AvataImgIpfs cidAvatar={address} className={styles.avatar} />
+      {/* <AvataImgIpfs cidAvatar={address}  /> */}
+      <div className={styles.avatar}>
+        <Account address={address} onlyAvatar avatar sizeAvatar={40} />
+      </div>
       <h6>
         <Account address={address} />
       </h6>
 
-      <div className={styles.date}>
-        {txHash && <Link to={routes.txExplorer.getLink(txHash)}>✔</Link>}
-        <Date timestamp={date} />
+      <div className={styles.timestampBlock}>
+        {txHash && (
+          <Tooltip tooltip="View tx">
+            <Link className={styles.tx} to={routes.txExplorer.getLink(txHash)}>
+              ✔
+            </Link>
+          </Tooltip>
+        )}
+        <Date timestamp={+date} />
       </div>
 
       <p className={styles.content}>{text}</p>

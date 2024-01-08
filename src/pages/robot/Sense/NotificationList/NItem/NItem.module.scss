@@ -12,7 +12,7 @@
 
   // grid-template-columns: 50px minmax(auto, 150px) 50px;
 
-  gap: 5px 15px;
+  gap: 3px 15px;
 
   &::before {
     content: '';
@@ -25,12 +25,6 @@
   height: 50px;
   width: 50px;
   border-radius: 100%;
-
-  .particle & {
-    background-image: url('./particle.png');
-    border-radius: 10px;
-    background-size: cover;
-  }
 }
 
 .title {
@@ -39,9 +33,11 @@
   display: flex;
   font-weight: 400;
 
+  &,
   > div > a {
     text-transform: none;
     font-weight: 400;
+
     &:hover {
       color: unset;
     }

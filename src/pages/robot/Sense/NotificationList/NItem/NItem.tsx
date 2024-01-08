@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
 import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
+import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 
 type Props = {
   unreadCount: number;
@@ -30,8 +31,10 @@ function NItem({ unreadCount, address, timestamp, value }: Props) {
     >
       {address && (
         <div className={styles.avatar}>
-          {!isParticle && (
+          {!isParticle ? (
             <Account address={address} onlyAvatar avatar sizeAvatar={50} />
+          ) : (
+            <ParticleAvatar particleId={address} />
           )}
         </div>
       )}

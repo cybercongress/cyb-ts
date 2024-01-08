@@ -14,11 +14,31 @@
     flex-direction: column;
   }
 
-  ul {
+  > ul {
     li {
       &,
       &:not(:last-child) {
         border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+      }
+    }
+  }
+
+  .filters {
+    padding: 10px;
+    min-height: 62px;
+    display: flex;
+
+    > * {
+      margin: auto;
+      justify-content: space-around;
+      flex: 1;
+      text-align: center;
+
+      > * {
+        width: 30px;
+        label {
+          font-size: 20px;
+        }
       }
     }
   }

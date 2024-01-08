@@ -1,4 +1,5 @@
 .wrapper {
+  // Display
   > div {
     padding-right: 5px;
     display: flex;
@@ -6,8 +7,29 @@
   }
 }
 
-.title {
-  text-transform: none;
+.header {
+  display: grid;
+  grid-template-areas:
+    'avatar title'
+    'avatar text';
+
+  gap: 0 10px;
+
+  & > :nth-child(1) {
+    grid-area: avatar;
+  }
+
+  .title {
+    font-size: 16px;
+    text-transform: none;
+    grid-area: title;
+  }
+
+  > p {
+    grid-area: text;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+  }
 }
 
 .messages {

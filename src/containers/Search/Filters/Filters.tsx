@@ -6,7 +6,8 @@ import { initialContentTypeFilterState } from '../SearchResults';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { Tooltip } from 'src/components';
 
-const contentTypeConfig = {
+// TODO: move to ipfs config, global
+export const contentTypeConfig = {
   text: {
     label: '📄',
     tooltip: 'show only articles with text',

@@ -1,0 +1,15 @@
+.wrapper {
+  height: 50px;
+  width: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  font-size: 20px;
+
+  background: rgba(217, 217, 217, 0.1);
+  // background-image: url('./particle.png');
+  // background-size: cover;
+}
