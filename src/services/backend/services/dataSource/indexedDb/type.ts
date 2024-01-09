@@ -6,13 +6,13 @@ type SenseParticleMeta = {
   lastId: { text: string; mime: string };
 };
 
-type SenseUsereMeta = {
+type SenseUserMeta = {
   value: Object;
   memo?: string;
   type: string;
 };
 
-type SenseMeta = SenseParticleMeta | SenseUsereMeta;
+type SenseMeta = SenseParticleMeta | SenseUserMeta;
 
 export type SenseResult = {
   entryType: EntryType;
