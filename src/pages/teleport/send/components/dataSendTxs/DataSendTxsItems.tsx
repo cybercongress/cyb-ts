@@ -33,7 +33,7 @@ function MemoIpfsContent({ cid }: { cid: string }) {
   if (status !== 'completed') {
     return (
       <Cid cid={cid}>
-        <span className={styles.cidText}>{trimString(cid, 5, 6)}</span>
+        <span>{trimString(cid, 5, 6)}</span>
       </Cid>
     );
   }

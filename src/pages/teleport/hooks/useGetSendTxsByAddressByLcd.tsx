@@ -81,24 +81,17 @@ function useGetSendTxsByAddressByLcd(
   const [addressSender, setAddressSender] = useState<Option<string>>();
   const [dataTsx, setDataTxs] = useState<Option<TxsResponse[]>>(undefined);
 
-  const {
-    data: dataSend,
-    refetch: refetchSend,
-    fetchNextPage: fetchNextPageSend,
-    hasNextPage: hasNextPageSend,
-  } = useGetSendBySenderRecipient(addressSender, addressRecipient);
-  const {
-    data: dataReceive,
-    refetch: refetchReceive,
-    fetchNextPage: fetchNextPageReceive,
-    hasNextPage: hasNextPageReceive,
-  } = useGetSendBySenderRecipient(addressRecipient, addressSender);
+  const dataSend = useGetSendBySenderRecipient(addressSender, addressRecipient);
+  const dataReceive = useGetSendBySenderRecipient(
+    addressRecipient,
+    addressSender
+  );
 
   useEffect(() => {
     let firstSendItem = '0';
     let lastSendItem = '0';
-    const dataSendArr: TxsResponse[] = concatResponse(dataSend);
-    const dataReceiveArr: TxsResponse[] = concatResponse(dataReceive);
+    const dataSendArr: TxsResponse[] = concatResponse(dataSend.data);
+    const dataReceiveArr: TxsResponse[] = concatResponse(dataReceive.data);
 
     let dataTxs: TxsResponse[] = [];
 
@@ -134,7 +127,7 @@ function useGetSendTxsByAddressByLcd(
     }
 
     setDataTxs(dataTxs);
-  }, [dataSend, dataReceive]);
+  }, [dataSend.data, dataReceive.data]);
 
   useEffect(() => {
     if (sender) {
@@ -143,20 +136,20 @@ function useGetSendTxsByAddressByLcd(
   }, [sender]);
 
   const fetchNextPage = useCallback(() => {
-    fetchNextPageSend();
-    fetchNextPageReceive();
-  }, [fetchNextPageSend, fetchNextPageReceive]);
+    dataReceive.fetchNextPage();
+    dataSend.fetchNextPage();
+  }, [dataReceive, dataSend]);
 
   const refetch = useCallback(() => {
-    refetchSend();
-    refetchReceive();
-  }, [refetchSend, refetchReceive]);
+    dataReceive.refetch();
+    dataSend.refetch();
+  }, [dataReceive, dataSend]);
 
   return {
     data: dataTsx,
     fetchNextPage,
     refetch,
-    hasNextPage: Boolean(hasNextPageSend || hasNextPageReceive),
+    hasNextPage: Boolean(dataReceive.hasNextPage || dataSend.hasNextPage),
   };
 }
 
