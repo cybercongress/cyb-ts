@@ -5,7 +5,7 @@ export type SyncEntryName =
   | 'particle'
   | 'transaction'
   | 'resolver'
-  | 'myChats';
+  | 'my-chats';
 
 export type SyncProgress = {
   status?: 'idle' | 'in-progress' | 'error';

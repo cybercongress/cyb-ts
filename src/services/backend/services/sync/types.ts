@@ -4,11 +4,7 @@ import {
   QueuePriority,
 } from 'src/services/QueueManager/types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
-import {
-  MsgMultiSendTransaction,
-  MsgSendTransaction,
-  Coin,
-} from '../dataSource/blockchain/types';
+import { Coin } from '../dataSource/blockchain/types';
 
 export type SyncServiceParams = {
   myAddress: NeuronAddress | null;

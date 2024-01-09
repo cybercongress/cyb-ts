@@ -68,7 +68,6 @@ const updateChat = (
     : [];
 
   transactions.push(t);
-  console.log('---updateChat', addr, t, amount);
   chats.set(addr, {
     userAddress: addr,
     last: { amount, memo: t.memo },
@@ -82,6 +81,16 @@ export const extractSenseChats = (
   myAddress: NeuronAddress,
   transactions: TransactionDto[]
 ) => {
+  const sendTransactions =
+    transactions!.filter(
+      (t) =>
+        t.type === MSG_SEND_TRANSACTION_TYPE ||
+        t.type === MSG_MULTI_SEND_TRANSACTION_TYPE
+    ) || [];
+
+  if (sendTransactions.length === 0) {
+    return [];
+  }
   const chats = new Map<NeuronAddress, SenseChat>();
   transactions.forEach((t) => {
     let userAddress = '';

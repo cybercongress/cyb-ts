@@ -25,6 +25,11 @@ import {
 
 import { SenseResult, SenseUnread } from './type';
 import { SyncQueueItem } from '../../sync/types';
+import { extractSenseChats } from '../../sync/services/utils';
+import {
+  MSG_MULTI_SEND_TRANSACTION_TYPE,
+  MSG_SEND_TRANSACTION_TYPE,
+} from '../blockchain/types';
 
 const TIMESTAMP_INTITAL = 0;
 
@@ -141,7 +146,7 @@ class DbApiWrapper {
     return result;
   }
 
-  public async getSenseList() {
+  public async getSenseList(myAddress: string) {
     const command = `
     ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
 
@@ -155,8 +160,8 @@ class DbApiWrapper {
 
     p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
 
-    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type))
-
+    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}'
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3
     ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta]
     :order -timestamp_update
     `;
@@ -168,12 +173,8 @@ class DbApiWrapper {
     ) as SenseResult[];
   }
 
-  public async getSenseSummary() {
-    const command = `
-    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=1
-    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=2
-    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=3
-    ?[entry_type, unread] := dt[entry_type, unread]`;
+  public async getSenseSummary(myAddress: NeuronAddress) {
+    const command = `?[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'`;
 
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result) as SenseUnread[];
@@ -209,6 +210,31 @@ class DbApiWrapper {
     return dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['value'])
     ) as TransactionDto[];
+  }
+
+  public async getMyChats(
+    myAddress: NeuronAddress,
+    userAddress: NeuronAddress
+  ) {
+    const result = await this.db!.executeGetCommand(
+      'transaction',
+      ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
+      [
+        `neuron = '${myAddress}', type='${MSG_SEND_TRANSACTION_TYPE}' or type='${MSG_MULTI_SEND_TRANSACTION_TYPE}'`,
+      ],
+      ['neuron'],
+      { orderBy: ['-timestamp'] }
+    );
+    const sendTransactions = dbResultToDtoList(result).map((i) =>
+      jsonifyFields(i, ['value'])
+    ) as TransactionDto[];
+
+    const chats = extractSenseChats(myAddress, sendTransactions);
+    const userChats = [...chats.values()].find(
+      (c) => c.userAddress === userAddress
+    );
+
+    return userChats ? userChats.transactions : [];
   }
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {

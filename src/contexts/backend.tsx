@@ -19,12 +19,14 @@ import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
 const createSenseApi = (dbApi: DbApiWrapper) => ({
-  getSummary: () => dbApi.getSenseSummary(),
-  getList: () => dbApi.getSenseList(),
+  getSummary: (myAddress: NeuronAddress) => dbApi.getSenseSummary(myAddress),
+  getList: (myAddress: NeuronAddress) => dbApi.getSenseList(myAddress),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
+  getMyChats: (myAddress: NeuronAddress, userAddress: NeuronAddress) =>
+    dbApi.getMyChats(myAddress, userAddress),
 });
 
 const setupStoragePersistence = async () => {
