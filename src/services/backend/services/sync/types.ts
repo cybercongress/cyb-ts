@@ -1,10 +1,9 @@
-import { SyncQueueDto, TransactionDto } from 'src/services/CozoDb/types/dto';
+import { SyncQueueDto } from 'src/services/CozoDb/types/dto';
 import {
   EnqueuedIpfsResult,
   QueuePriority,
 } from 'src/services/QueueManager/types';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
-import { Coin } from '../dataSource/blockchain/types';
 
 export type SyncServiceParams = {
   myAddress: NeuronAddress | null;
@@ -26,15 +25,4 @@ export type ParticleResult = {
 
 export type SyncQueueItem = Omit<SyncQueueDto, 'status'> & {
   status?: SyncQueueDto['status'];
-};
-
-export type SenseChatMessage = {
-  amount: Coin[];
-  memo?: string;
-};
-
-export type SenseChat = {
-  userAddress: NeuronAddress;
-  last: SenseChatMessage;
-  transactions: TransactionDto[];
 };

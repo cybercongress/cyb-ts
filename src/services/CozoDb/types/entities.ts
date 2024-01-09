@@ -1,11 +1,7 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import {
-  CyberLinkValue,
-  MsgMultiSendValue,
-  MsgSendValue,
-} from 'src/services/backend/services/dataSource/blockchain/types';
-import { SenseChatMessage } from 'src/services/backend/services/sync/types';
+import { SenseTransaction } from 'src/services/backend/types/sense';
+import { SenseChatMessage } from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -33,7 +29,7 @@ export type TransactionDbEntity = {
   hash: string;
   type: string;
   timestamp: number;
-  value: MsgMultiSendValue | MsgSendValue | CyberLinkValue; // Transaction;
+  value: SenseTransaction['value'];
   success: boolean;
   memo: string;
   neuron: NeuronAddress;
@@ -59,12 +55,6 @@ export type ParticleDbEntity = {
   text: string;
 };
 
-export type ConfigDbEntity = {
-  key: string;
-  group_key: string;
-  value: Object;
-};
-
 export type LinkDbEntity = {
   from: ParticleCid;
   to: ParticleCid;
@@ -75,7 +65,7 @@ export type LinkDbEntity = {
 export type ConfigDbEntity = {
   key: string;
   group_key: string;
-  value: Object;
+  value: NonNullable<unknown>;
 };
 
 export enum SyncQueueStatus {

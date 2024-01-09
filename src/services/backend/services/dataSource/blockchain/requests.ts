@@ -5,7 +5,7 @@ import { dateToNumber, numberToDate } from 'src/utils/date';
 import { Transaction } from './types';
 
 import { TRANSACTIONS_BATCH_LIMIT, CYBERLINKS_BATCH_LIMIT } from './consts';
-import { fetchIterable } from './utils';
+import { fetchIterable } from './utils/fetch';
 
 type TransactionsByAddressResponse = {
   messages_by_address: Transaction[];

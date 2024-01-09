@@ -1,5 +1,6 @@
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { SenseTransaction } from 'src/services/backend/types/sense';
 
 type SenseParticleMeta = {
   id: { text: string; mime: string };
@@ -7,7 +8,7 @@ type SenseParticleMeta = {
 };
 
 type SenseUserMeta = {
-  value: Object;
+  value: SenseTransaction['value'];
   memo?: string;
   type: string;
 };

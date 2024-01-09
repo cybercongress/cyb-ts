@@ -12,23 +12,18 @@ import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
-import { createLoopObservable, getUniqueParticlesFromLinks } from './utils';
+import { getUniqueParticlesFromLinks } from './utils/links';
+import { createLoopObservable } from './utils/rxjs';
 import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { extractParticlesResults, updateSyncState } from '../utils';
-import { SenseChat, SyncServiceParams } from '../types';
+import { SyncServiceParams } from '../types';
 
 import {
   fetchAllCyberlinks,
   fetchTransactionsIterable,
 } from '../../dataSource/blockchain/requests';
-import {
-  MSG_MULTI_SEND_TRANSACTION_TYPE,
-  MSG_SEND_TRANSACTION_TYPE,
-  MsgMultiSendTransaction,
-  MsgSendTransaction,
-  Transaction,
-} from '../../dataSource/blockchain/types';
+import { Transaction } from '../../dataSource/blockchain/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -37,7 +32,7 @@ class SyncTransactionsLoop {
 
   private particlesResolver: ParticlesResolverQueue | undefined;
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
   public get loop$(): Observable<any> {
     return this._loop$;

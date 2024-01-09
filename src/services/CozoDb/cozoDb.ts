@@ -13,7 +13,7 @@ import { DbEntity, ConfigDbEntity } from './types/entities';
 import { toListOfObjects, clearIndexedDBStore } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
-import { CozoDbCommandFactory } from './CozoDbCommandFactory';
+import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
 const DB_NAME = 'cyb-cozo-idb';
 const DB_STORE_NAME = 'cozodb';
@@ -25,7 +25,7 @@ function createCozoDb() {
   let db: CozoDb | undefined;
 
   let dbSchema: DBSchema = {};
-  let commandFactory: ReturnType<typeof CozoDbCommandFactory> | undefined;
+  let commandFactory: ReturnType<typeof createCozoDbCommandFactory> | undefined;
   let onIndexedDbWrite: OnWrite | undefined;
 
   const loadCozoDb = async () => {
@@ -35,7 +35,7 @@ function createCozoDb() {
       onIndexedDbWrite
     );
     await initDbSchema();
-    commandFactory = CozoDbCommandFactory(dbSchema);
+    commandFactory = createCozoDbCommandFactory(dbSchema);
   };
 
   async function init(onWrite?: OnWrite): Promise<void> {

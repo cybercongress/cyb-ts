@@ -8,7 +8,8 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
-import { createLoopObservable, getUniqueParticlesFromLinks } from './utils';
+import { getUniqueParticlesFromLinks } from './utils/links';
+import { createLoopObservable } from './utils/rxjs';
 import { BLOCKCHAIN_SYNC_INTERVAL, PARTICLES_SYNC_INTERVAL } from './consts';
 import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { updateSyncState } from '../utils';
@@ -26,7 +27,7 @@ class SyncParticlesLoop {
 
   private statusApi = broadcastStatus('particle', new BroadcastChannelSender());
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
   public get loop$(): Observable<any> {
     return this._loop$;

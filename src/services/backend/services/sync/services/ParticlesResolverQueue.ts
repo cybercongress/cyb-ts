@@ -40,7 +40,7 @@ class ParticlesResolverQueue {
     return this._syncQueue$.getValue();
   }
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
   public get loop$(): Observable<any> {
     return this._loop$;

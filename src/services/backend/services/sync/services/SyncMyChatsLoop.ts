@@ -7,7 +7,8 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
-import { createLoopObservable, extractSenseChats } from './utils';
+import { extractSenseChats } from './utils/sense';
+import { createLoopObservable } from './utils/rxjs';
 import { MY_CHATS_SYNC_INTERVAL } from './consts';
 import { SyncServiceParams } from '../types';
 
@@ -16,7 +17,7 @@ class SyncMyChatsLoop {
 
   private db: DbApi | undefined;
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
   public get loop$(): Observable<any> {
     return this._loop$;

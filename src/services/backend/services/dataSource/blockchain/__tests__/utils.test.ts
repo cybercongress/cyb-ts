@@ -1,4 +1,4 @@
-import { fetchIterable } from '../utils';
+import { fetchIterable } from '../utils/fetch';
 
 describe('fetchIterable', () => {
   it('should iterate over fetched items', async () => {

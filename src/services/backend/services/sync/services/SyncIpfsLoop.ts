@@ -5,7 +5,7 @@ import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from './types';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
-import { createLoopObservable } from './utils';
+import { createLoopObservable } from './utils/rxjs';
 import { IPFS_SYNC_INTERVAL } from './consts';
 import { fetchPins } from '../../dataSource/ipfs/ipfsSource';
 import { mapPinToEntity } from 'src/services/CozoDb/mapping';
@@ -23,7 +23,7 @@ class SyncIpfsLoop {
 
   private statusApi = broadcastStatus('pin', new BroadcastChannelSender());
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
   public get loop$(): Observable<any> {
     return this._loop$;
