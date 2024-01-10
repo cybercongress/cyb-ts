@@ -8,9 +8,9 @@ import DbApi, {
   mockRemoveSyncQueue,
   mockUpdateSyncQueue,
 } from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
-import ParticlesResolverQueue from '../ParticlesResolverQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
-import { SyncQueueItem } from '../../types';
+import { SyncQueueItem } from '../ParticlesResolverQueue/types';
 
 jest.mock('src/services/backend/services/sync/utils');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');

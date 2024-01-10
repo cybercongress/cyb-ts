@@ -11,7 +11,6 @@ import {
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 
 // eslint-disable-next-line import/no-unused-modules
-
 export const extractSenseChats = (
   myAddress: NeuronAddress,
   transactions: TransactionDto[]

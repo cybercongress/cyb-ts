@@ -1,4 +1,3 @@
-import { SyncQueueDto } from 'src/services/CozoDb/types/dto';
 import {
   EnqueuedIpfsResult,
   QueuePriority,
@@ -21,8 +20,4 @@ export type ParticleResult = {
   direction: 'from' | 'to';
   from: ParticleCid;
   to: ParticleCid;
-};
-
-export type SyncQueueItem = Omit<SyncQueueDto, 'status'> & {
-  status?: SyncQueueDto['status'];
 };

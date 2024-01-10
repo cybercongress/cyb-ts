@@ -2,10 +2,10 @@ import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import { updateSyncState } from 'src/services/backend/services/sync/utils';
-import ParticlesResolverQueue from '../ParticlesResolverQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 import { ServiceDeps } from '../types';
-import SyncParticlesLoop from '../SyncParticlesLoop';
+import SyncParticlesLoop from '../SyncParticlesLoop/SyncParticlesLoop';
 
 import DbApi, {
   mockFindSyncStatus,

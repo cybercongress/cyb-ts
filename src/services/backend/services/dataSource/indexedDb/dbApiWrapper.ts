@@ -24,7 +24,7 @@ import {
 } from 'src/services/CozoDb/types/dto';
 
 import { SenseResult, SenseUnread } from './type';
-import { SyncQueueItem } from '../../sync/types';
+import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
 import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,

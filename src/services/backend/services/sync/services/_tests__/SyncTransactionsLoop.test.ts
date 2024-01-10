@@ -13,9 +13,9 @@ import DbApi, {
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
-import ParticlesResolverQueue from '../ParticlesResolverQueue';
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
-import SyncTransactionsLoop from '../SyncTransactionsLoop';
+import SyncTransactionsLoop from '../SyncTransactionsLoop/SyncTransactionsLoop';
 import { createAsyncIterable } from 'src/utils/async/iterable';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/types';
 import { CID_TWEET } from 'src/utils/consts';

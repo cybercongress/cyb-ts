@@ -15,11 +15,12 @@ import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { FetchIpfsFunc, SyncQueueItem } from '../types';
+import { FetchIpfsFunc } from '../../types';
+import { SyncQueueItem } from './types';
 
-import { ServiceDeps } from './types';
+import { ServiceDeps } from '../../types';
 
 const QUEUE_BATCH_SIZE = 100;
 

@@ -4,13 +4,13 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from './types';
-import { extractSenseChats } from './utils/sense';
-import { createLoopObservable } from './utils/rxjs';
-import { MY_CHATS_SYNC_INTERVAL } from './consts';
-import { SyncServiceParams } from '../types';
+import { ServiceDeps } from '../../types';
+import { extractSenseChats } from '../utils/sense';
+import { createLoopObservable } from '../utils/rxjs';
+import { MY_CHATS_SYNC_INTERVAL } from '../consts';
+import { SyncServiceParams } from '../../types';
 
 class SyncMyChatsLoop {
   private isInitialized$: Observable<boolean>;

@@ -9,21 +9,22 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from './types';
-import { getUniqueParticlesFromLinks } from './utils/links';
-import { createLoopObservable } from './utils/rxjs';
-import { BLOCKCHAIN_SYNC_INTERVAL } from './consts';
-import ParticlesResolverQueue from './ParticlesResolverQueue';
-import { extractParticlesResults, updateSyncState } from '../utils';
-import { SyncServiceParams } from '../types';
+import { ServiceDeps } from '../types';
+import { getUniqueParticlesFromLinks } from '../utils/links';
+import { createLoopObservable } from '../utils/rxjs';
+import { BLOCKCHAIN_SYNC_INTERVAL } from '../consts';
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import { updateSyncState } from '../../utils';
+import { extractParticlesResults } from './utils';
+import { SyncServiceParams } from '../../types';
 
 import {
   fetchAllCyberlinks,
   fetchTransactionsIterable,
-} from '../../dataSource/blockchain/requests';
-import { Transaction } from '../../dataSource/blockchain/types';
+} from '../../../dataSource/blockchain/requests';
+import { Transaction } from '../../../dataSource/blockchain/types';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;

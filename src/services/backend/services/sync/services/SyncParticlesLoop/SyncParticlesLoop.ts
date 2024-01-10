@@ -5,16 +5,16 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from './types';
-import { getUniqueParticlesFromLinks } from './utils/links';
-import { createLoopObservable } from './utils/rxjs';
-import { BLOCKCHAIN_SYNC_INTERVAL, PARTICLES_SYNC_INTERVAL } from './consts';
-import ParticlesResolverQueue from './ParticlesResolverQueue';
-import { updateSyncState } from '../utils';
-import { SyncServiceParams } from '../types';
-import { fetchAllCyberlinks } from '../../dataSource/blockchain/requests';
+import { ServiceDeps } from '../../types';
+import { getUniqueParticlesFromLinks } from '../utils/links';
+import { createLoopObservable } from '../utils/rxjs';
+import { BLOCKCHAIN_SYNC_INTERVAL, PARTICLES_SYNC_INTERVAL } from '../consts';
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import { updateSyncState } from '../../utils';
+import { SyncServiceParams } from '../../types';
+import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;

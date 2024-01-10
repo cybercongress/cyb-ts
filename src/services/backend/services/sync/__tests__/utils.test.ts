@@ -1,10 +1,7 @@
 import { CID_TWEET } from 'src/utils/consts';
 
-import {
-  extractParticlesResults,
-  extractLinkData,
-  updateSyncState,
-} from '../utils';
+import { extractLinkData, updateSyncState } from '../utils';
+import { extractParticlesResults } from '../services/SyncTransactionsLoop/utils';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../dataSource/blockchain/types';
 
 jest.mock('../../dataSource/blockchain/requests', () => ({
