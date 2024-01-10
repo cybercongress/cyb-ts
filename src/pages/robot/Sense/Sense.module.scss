@@ -4,14 +4,14 @@
 
   max-height: 80vh;
 
+  // Display
+  > div > div {
+    height: 100%;
+  }
+
   > :nth-child(2) {
     flex: 1;
     position: relative;
     left: -2px;
-
-    // Display
-    > div {
-      height: 100%;
-    }
   }
 }

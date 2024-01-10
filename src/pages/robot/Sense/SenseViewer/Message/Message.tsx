@@ -7,7 +7,7 @@ import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import Denom from 'src/components/denom';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import Date from '../../Date/Date';
+import Date from '../../_refactor/Date/Date';
 import { formatNumber } from 'src/utils/utils';
 
 type Props = {

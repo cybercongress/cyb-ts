@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import Area from 'src/pages/robot/Sense/Area/Area';
-import NotificationList from 'src/pages/robot/Sense/NotificationList/NotificationList';
+import { useEffect, useState } from 'react';
+import SenseViewer from 'src/pages/robot/Sense/SenseViewer/SenseViewer';
+import SenseList from 'src/pages/robot/Sense/SenseList/SenseList';
 import styles from './Sense.module.scss';
-import Loading from '../../../components/ui/Loading';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
@@ -12,9 +11,9 @@ function Sense() {
 
   const [loading, setLoading] = useState(false);
 
-  const status = useAppSelector(
-    (state) => state.backend.services.sync.status === ''
-  );
+  // const status = useAppSelector(
+  //   (state) => state.backend.services.sync.status === ''
+  // );
 
   const { setAdviser } = useAdviser();
 
@@ -29,12 +28,15 @@ function Sense() {
   return (
     <>
       <div className={styles.wrapper}>
-        <NotificationList
+        <SenseList
           select={(id: string) => setSelected(id)}
           selected={selected}
           setLoading={setLoading}
         />
-        <Area selected={selected} setLoading={setLoading} />
+        <SenseViewer
+          selected={selected}
+          setLoading={(isLoading: boolean) => setLoading(isLoading)}
+        />
       </div>
 
       <ActionBar id={selected} />

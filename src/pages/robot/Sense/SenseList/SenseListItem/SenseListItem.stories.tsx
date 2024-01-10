@@ -2,11 +2,11 @@
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import NItem from './NItem';
+import SenseListItem from './SenseListItem';
 
-const meta: Meta<typeof NItem> = {
-  component: NItem,
-  title: 'features/sense/NItem',
+const meta: Meta<typeof SenseListItem> = {
+  component: SenseListItem,
+  title: 'features/sense/SenseListItem',
   parameters: {
     design: {
       type: 'figma',
@@ -16,8 +16,8 @@ const meta: Meta<typeof NItem> = {
 };
 export default meta;
 
-type Story = StoryObj<typeof NItem>;
-type Props = React.ComponentProps<typeof NItem>;
+type Story = StoryObj<typeof SenseListItem>;
+type Props = React.ComponentProps<typeof SenseListItem>;
 
 const defaultArgs: Props = {};
 

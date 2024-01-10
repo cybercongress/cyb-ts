@@ -1,46 +1,74 @@
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import styles from './Area.module.scss';
+import styles from './SenseViewer.module.scss';
 import { useBackend } from 'src/contexts/backend';
 import { Account } from 'src/components';
 import { useQuery } from '@tanstack/react-query';
 import Message from './Message/Message';
-import { MsgMultiSend, MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
+import { MsgMultiSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { SupportedTypes } from '../types';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import useSenseItem from '../useSenseItem';
+import useSenseItem from '../_refactor/useSenseItem';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Loader2 from 'src/components/ui/Loader2';
-import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import { cutSenseItem } from '../utils';
 import ParticleAvatar from '../components/ParticleAvatar/ParticleAvatar';
-import useParticleDetails from '../_temp/useParticleDetails';
+import useParticleDetails from '../_refactor/useParticleDetails';
 import { isParticle as isParticleFunc } from 'src/features/particles/utils';
+import { EntryType } from 'src/services/CozoDb/types/entities';
 
 type Props = {
   selected: string | undefined;
 };
 
-function Area({ selected }: Props) {
-  const address = useAppSelector(selectCurrentAddress);
+const REFETCH_INTERVAL = 1000 * 20;
 
+function SenseViewer({ selected }: Props) {
   const { senseApi } = useBackend();
 
-  const { data, loading, error } = useSenseItem({ id: selected });
+  const address = useAppSelector(selectCurrentAddress);
+  const enabled = Boolean(senseApi && address);
+
+  const getListQuery = useQuery({
+    queryKey: ['senseApi', 'getList', address],
+    queryFn: async () => {
+      return senseApi!.getList(address!);
+    },
+    enabled,
+  });
+
+  const entryType = selected
+    ? getListQuery?.data?.find((item) => item.id === selected)?.entryType
+    : undefined;
+  const isChatEntry = entryType === EntryType.chat;
 
   const isParticle = isParticleFunc(selected || '');
 
   const { data: particleData } = useParticleDetails(selected, {
-    skip: !isParticle,
+    skip: !isParticle || isChatEntry,
+  });
+
+  const { data, loading, error } = useSenseItem({ id: selected });
+
+  const getChatQuery = useQuery({
+    queryKey: ['senseApi', 'getMyChats', address, selected],
+    queryFn: async () => {
+      return senseApi!.getMyChats(address!, selected!);
+    },
+    enabled: !!(senseApi && address && selected && isChatEntry),
+    refetchInterval: REFETCH_INTERVAL,
+    onSuccess(data) {
+      console.log('--getChatQuery', data);
+    },
   });
 
   const text = particleData?.text;
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>();
 
   useEffect(() => {
     if (!ref.current) {
@@ -51,12 +79,10 @@ function Area({ selected }: Props) {
   }, [ref, data]);
 
   useEffect(() => {
-    if (!selected) {
-      return;
-    }
-
-    senseApi?.markAsRead(selected);
+    selected && senseApi?.markAsRead(selected);
   }, [selected, senseApi]);
+
+  const items = isChatEntry ? getChatQuery.data?.reverse() : data;
 
   return (
     <div className={styles.wrapper}>
@@ -84,9 +110,9 @@ function Area({ selected }: Props) {
           )
         }
       >
-        {selected && data ? (
+        {selected && items ? (
           <div className={styles.messages} ref={ref}>
-            {data.map(
+            {items.map(
               ({ id, timestamp, type, value, text, memo, hash, from }, i) => {
                 let v = value;
 
@@ -151,4 +177,4 @@ function Area({ selected }: Props) {
   );
 }
 
-export default Area;
+export default SenseViewer;

@@ -1,18 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { useBackend } from 'src/contexts/backend';
+import { isParticle as isParticleFunc } from 'src/features/particles/utils';
 
 type Props = {
   // neuron or particle
   id?: string;
 };
 
+// pass as prop
+const REFETCH_INTERVAL = 1000 * 20;
+
 function useSenseItem({ id }: Props) {
   const { senseApi } = useBackend();
 
-  // FIXME:
-  //   const isParticle = id?.startsWith('Qm');
-
-  console.log(id);
+  const isParticle = Boolean(id && isParticleFunc(id));
 
   const enabled = Boolean(senseApi && id);
 
@@ -21,7 +22,8 @@ function useSenseItem({ id }: Props) {
     queryFn: async () => {
       return senseApi!.getTransactions(id!);
     },
-    enabled,
+    enabled: enabled && !isParticle,
+    refetchInterval: REFETCH_INTERVAL,
   });
 
   const getLinksQuery = useQuery({
@@ -29,12 +31,14 @@ function useSenseItem({ id }: Props) {
     queryFn: async () => {
       return senseApi!.getLinks(id!);
     },
-    enabled,
+    enabled: enabled && !isParticle,
+    refetchInterval: REFETCH_INTERVAL,
   });
 
   console.log('----getTxsQuery', getTxsQuery);
   console.log('----getLinks', getLinksQuery);
 
+  // delete
   const items = [
     ...(getTxsQuery.data?.reverse() || []),
     ...(getLinksQuery.data?.reverse() || []),

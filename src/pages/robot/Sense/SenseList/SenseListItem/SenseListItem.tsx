@@ -1,14 +1,8 @@
-import React from 'react';
 import { Account } from 'src/components';
-import Display from 'src/components/containerGradient/Display/Display';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
-import styles from './NItem.module.scss';
-import { classNames } from 'classnames';
+import styles from './SenseListItem.module.scss';
 
 import Pill from 'src/components/Pill/Pill';
-import Date from '../../Date/Date';
-import { Link } from 'react-router-dom';
-import { routes } from 'src/routes';
+import Date from '../../_refactor/Date/Date';
 import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
@@ -20,7 +14,7 @@ type Props = {
   value: string;
 };
 
-function NItem({ unreadCount, address, timestamp, value }: Props) {
+function SenseListItem({ unreadCount, address, timestamp, value }: Props) {
   const isParticle = address?.startsWith('Qm');
 
   return (
@@ -58,4 +52,4 @@ function NItem({ unreadCount, address, timestamp, value }: Props) {
   );
 }
 
-export default NItem;
+export default SenseListItem;
