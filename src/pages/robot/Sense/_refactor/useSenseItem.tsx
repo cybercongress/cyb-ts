@@ -38,14 +38,8 @@ function useSenseItem({ id }: Props) {
   console.log('----getTxsQuery', getTxsQuery);
   console.log('----getLinks', getLinksQuery);
 
-  // delete
-  const items = [
-    ...(getTxsQuery.data?.reverse() || []),
-    ...(getLinksQuery.data?.reverse() || []),
-  ];
-
   return {
-    data: items,
+    data: getTxsQuery.data || getLinksQuery.data,
     loading: id && (getTxsQuery.isLoading || getLinksQuery.isLoading),
     error: getTxsQuery.error || getLinksQuery.error,
   };

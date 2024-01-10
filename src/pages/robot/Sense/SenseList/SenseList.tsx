@@ -116,12 +116,15 @@ function SenseList({ select, selected, setLoading }: Props) {
                       break;
 
                     case EntryType.transactions:
+                      text = meta.memo;
+
                       if (meta.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-                        text = 'MultiSend TODO:';
+                        amount = meta.value.outputs.find(
+                          (output) => output.address === id
+                        )?.coins;
                         break;
                       }
 
-                      text = meta.memo;
                       amount = meta.value.amount;
                       break;
 

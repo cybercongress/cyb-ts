@@ -82,7 +82,9 @@ function SenseViewer({ selected }: Props) {
     selected && senseApi?.markAsRead(selected);
   }, [selected, senseApi]);
 
-  const items = isChatEntry ? getChatQuery.data?.reverse() : data;
+  console.log(data);
+
+  const items = [...((isChatEntry ? getChatQuery.data : data) || [])].reverse();
 
   return (
     <div className={styles.wrapper}>
