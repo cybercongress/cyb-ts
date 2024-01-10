@@ -1,4 +1,4 @@
-import { BroadcastChannelMessage } from '../types';
+import { BroadcastChannelMessage } from '../types/services';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 class BroadcastChannelListener {

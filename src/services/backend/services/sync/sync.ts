@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
-import ParticlesResolverQueue from './services/ParticlesResolverQueue';
+import ParticlesResolverQueue from './services/ParticlesResolverQueue/ParticlesResolverQueue';
 
-import SyncIpfsLoop from './services/SyncIpfsLoop';
-import SyncTransactionsLoop from './services/SyncTransactionsLoop';
-import SyncParticlesLoop from './services/SyncParticlesLoop';
-import SyncMyChatsLoop from './services/SyncMyChatsLoop';
+import SyncIpfsLoop from './services/SyncIpfsLoop/SyncIpfsLoop';
+import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactionsLoop';
+import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
+import SyncMyChatsLoop from './services/SyncMyChatsLoop/SyncMyChatsLoop';
 
 import { ServiceDeps } from './services/types';
 

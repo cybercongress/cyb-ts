@@ -12,7 +12,10 @@ import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend';
-import { ServiceStatus, SyncProgress } from 'src/services/backend/types';
+import {
+  ServiceStatus,
+  SyncProgress,
+} from 'src/services/backend/types/services';
 
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';

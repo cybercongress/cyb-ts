@@ -5,7 +5,10 @@ import { Colors } from 'src/components/containerGradient/types';
 import Display from 'src/components/containerGradient/Display/Display';
 // import { ServiceStatus, SyncEntryStatus } from 'src/services/backend/types';
 import styles from './drive.scss';
-import { ServiceStatus, SyncProgress } from 'src/services/backend/types';
+import {
+  ServiceStatus,
+  SyncProgress,
+} from 'src/services/backend/types/services';
 
 function ServiceStatus({
   name,

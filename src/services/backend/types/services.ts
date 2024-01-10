@@ -1,4 +1,4 @@
-import { IndexedDbWriteMessage } from '../CozoDb/types/types';
+import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
 
 export type SyncEntryName =
   | 'pin'
@@ -14,8 +14,6 @@ export type SyncProgress = {
   error?: string;
   message?: string;
 };
-
-// export type WorkerStatus = 'inactive' | 'started' | 'error';
 
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 

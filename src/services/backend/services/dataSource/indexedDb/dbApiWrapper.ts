@@ -23,9 +23,9 @@ import {
   TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
-import { SenseResult, SenseUnread } from './type';
-import { SyncQueueItem } from '../../sync/types';
-import { extractSenseChats } from '../../sync/services/utils';
+import { SenseListItem, SenseUnread } from 'src/services/backend/types/sense';
+import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
+import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
@@ -170,7 +170,7 @@ class DbApiWrapper {
 
     return dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
-    ) as SenseResult[];
+    ) as SenseListItem[];
   }
 
   public async getSenseSummary(myAddress: NeuronAddress) {

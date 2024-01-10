@@ -1,4 +1,4 @@
-import { SyncEntryName, SyncProgress } from '../types';
+import { SyncEntryName, SyncProgress } from '../types/services';
 import { BroadcastChannelSender } from './BroadcastChannelSender';
 
 export const broadcastStatus = (

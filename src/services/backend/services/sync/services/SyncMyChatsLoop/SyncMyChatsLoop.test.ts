@@ -1,7 +1,8 @@
 import { of } from 'rxjs';
+
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { dateToNumber } from 'src/utils/date';
-import SyncMyChatsLoop from '../SyncMyChatsLoop';
+import SyncMyChatsLoop from './SyncMyChatsLoop';
 import { ServiceDeps } from '../types';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
@@ -45,10 +46,8 @@ describe('SyncMyChatsLoop', () => {
           from_address: myAddress,
           to_address: 'receiver1',
         },
-        transaction: {
-          block: { timestamp: '2022-01-01' },
-          transaction_hash: 'hash123',
-        },
+        timestamp: dateToNumber('2022-01-01'),
+        hash: 'hash000',
       },
       {
         type: MSG_SEND_TRANSACTION_TYPE,
@@ -57,11 +56,9 @@ describe('SyncMyChatsLoop', () => {
           from_address: myAddress,
           to_address: 'receiver1',
         },
-        transaction: {
-          block: { timestamp: '2022-01-10' },
-          transaction_hash: 'hash321',
-          memo: 'hello test',
-        },
+        timestamp: dateToNumber('2022-01-10'),
+        hash: 'hash321',
+        memo: 'hello test',
       },
       {
         type: MSG_MULTI_SEND_TRANSACTION_TYPE,
@@ -73,10 +70,8 @@ describe('SyncMyChatsLoop', () => {
             { address: myAddress, coins: [{ amount: '50', denom: 'ATOM' }] },
           ],
         },
-        transaction: {
-          block: { timestamp: '2022-01-02' },
-          transaction_hash: 'hash456',
-        },
+        timestamp: dateToNumber('2022-01-02'),
+        hash: 'hash456',
       },
     ];
 
@@ -94,16 +89,9 @@ describe('SyncMyChatsLoop', () => {
 
     mockGetTransactions.mockResolvedValueOnce(mockTransactions);
 
-    syncMyChatsLoop.start().loop$.subscribe(() => {
+    syncMyChatsLoop.start().loop$!.subscribe(() => {
       expect(mockFindSyncStatus).toHaveBeenCalledWith({
         entryType: EntryType.chat,
-      });
-
-      expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
-        id: 'sender2',
-        timestampUpdate: dateToNumber('2022-01-02'),
-        unreadCount: 1,
-        meta: { amount: [{ denom: 'ATOM', amount: '50' }], memo: undefined },
       });
 
       expect(mockPutSyncStatus).toHaveBeenCalledWith({
@@ -113,9 +101,17 @@ describe('SyncMyChatsLoop', () => {
         unreadCount: 2,
         timestampRead: 0,
         disabled: false,
-        lastId: undefined,
+        lastId: 'hash321',
         meta: { amount: [{ denom: 'ATOM', amount: '10' }], memo: 'hello test' },
       });
+
+      expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
+        id: 'sender2',
+        timestampUpdate: dateToNumber('2022-01-02'),
+        unreadCount: 1,
+        meta: { amount: [{ denom: 'ATOM', amount: '50' }], memo: undefined },
+      });
+
       done();
     });
   });

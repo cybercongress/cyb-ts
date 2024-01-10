@@ -2,7 +2,7 @@ import { Column, DBSchema, GetCommandOptions } from './types/types';
 import { DbEntity } from './types/entities';
 import { entityToArray } from './utils';
 
-export function CozoDbCommandFactory(dbSchema: DBSchema) {
+export function createCozoDbCommandFactory(dbSchema: DBSchema) {
   const schema = dbSchema;
 
   const generateRmCommand = (tableName: string, keys: string[]): string => {

@@ -8,9 +8,9 @@ import DbApi, {
   mockRemoveSyncQueue,
   mockUpdateSyncQueue,
 } from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
-import ParticlesResolverQueue from '../ParticlesResolverQueue';
+import ParticlesResolverQueue from './ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
-import { SyncQueueItem } from '../../types';
+import { SyncQueueItem } from './types';
 
 jest.mock('src/services/backend/services/sync/utils');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
@@ -41,12 +41,13 @@ describe('ParticlesResolverQueue', () => {
       waitForParticleResolve,
     };
     const syncQueue = new ParticlesResolverQueue(mockServiceDeps);
-    await syncQueue.enqueue(mockItems);
-
-    syncQueue.start().loop$.subscribe({
+    syncQueue.start().loop$!.subscribe({
       next: console.log,
       error: console.error,
     });
+
+    await syncQueue.enqueue(mockItems);
+
     expect(mockPutSyncQueue).toHaveBeenCalledWith(mockItems);
     expect(waitForParticleResolve).toHaveBeenCalledTimes(0);
     expect([...syncQueue.queue.keys()]).toEqual([mockItems[0].id]);
@@ -75,7 +76,7 @@ describe('ParticlesResolverQueue', () => {
         myAddress: null,
         followings: [],
       }),
-      waitForParticleResolve: waitForParticleResolve,
+      waitForParticleResolve,
     };
     const syncQueue = new ParticlesResolverQueue(mockServiceDeps);
     const mockItems = [
@@ -90,7 +91,7 @@ describe('ParticlesResolverQueue', () => {
     ];
     syncQueue.enqueue(mockItems);
 
-    syncQueue.start().loop$.subscribe({
+    syncQueue.start().loop$!.subscribe({
       next: () => {
         expect(mockPutSyncQueue).toHaveBeenCalledWith(mockItems);
         expect(waitForParticleResolve).toHaveBeenCalledTimes(2);

@@ -4,7 +4,7 @@ import {
   ServiceStatus,
   SyncEntryName,
   SyncProgress,
-} from '../types';
+} from '../types/services';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 class BroadcastChannelSender {

@@ -4,21 +4,23 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from './types';
-import { createLoopObservable, extractSenseChats } from './utils';
-import { MY_CHATS_SYNC_INTERVAL } from './consts';
-import { SyncServiceParams } from '../types';
+import { ServiceDeps } from '../types';
+import { SyncServiceParams } from '../../types';
+
+import { extractSenseChats } from '../utils/sense';
+import { createLoopObservable } from '../utils/rxjs';
+import { MY_CHATS_SYNC_INTERVAL } from '../consts';
 
 class SyncMyChatsLoop {
   private isInitialized$: Observable<boolean>;
 
   private db: DbApi | undefined;
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
-  public get loop$(): Observable<any> {
+  public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 
@@ -76,13 +78,18 @@ class SyncMyChatsLoop {
         'asc'
       );
 
-      const myChats = extractSenseChats(this.params.myAddress!, myTransactions);
+      const myChats = extractSenseChats(
+        this.params.myAddress!,
+        myTransactions!
+      );
+
       myChats.forEach((chat) => {
         const syncItem = syncItemsMap.get(chat.userAddress);
 
         const { hash, timestamp } = chat.transactions.at(-1)!;
 
         const lastChatTimestamp = timestamp;
+
         if (!syncItem) {
           this.db!.putSyncStatus({
             entryType: EntryType.chat,
@@ -96,6 +103,7 @@ class SyncMyChatsLoop {
           });
         } else {
           const { id, timestampRead, timestampUpdate } = syncItem;
+
           const unreadCount = chat.transactions.filter(
             (t) => t.timestamp > timestampRead!
           ).length;

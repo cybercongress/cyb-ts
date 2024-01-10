@@ -15,11 +15,11 @@ import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
 
-import DbApi from '../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { FetchIpfsFunc, SyncQueueItem } from '../types';
-
-import { ServiceDeps } from './types';
+import { FetchIpfsFunc } from '../../types';
+import { ServiceDeps } from '../types';
+import { SyncQueueItem } from './types';
 
 const QUEUE_BATCH_SIZE = 100;
 
@@ -40,9 +40,9 @@ class ParticlesResolverQueue {
     return this._syncQueue$.getValue();
   }
 
-  private _loop$: Observable<any>;
+  private _loop$: Observable<any> | undefined;
 
-  public get loop$(): Observable<any> {
+  public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 
@@ -114,7 +114,7 @@ class ParticlesResolverQueue {
       tap((q) => console.log(`sync queue isInitialized - ${q}`)),
       filter((isInitialized) => isInitialized === true),
       mergeMap(() => this._syncQueue$), // Merge the queue$ stream here.
-      // tap((q) => console.log(`sync queue - ${q.size}`)),
+      tap((q) => console.log(`sync queue - ${q.size}`)),
       filter((q) => q.size > 0),
       mergeMap((queue) => {
         const list = [...queue.values()];
@@ -181,9 +181,8 @@ class ParticlesResolverQueue {
     const queue = await this.db!.getSyncQueue({
       statuses: [SyncQueueStatus.pending],
     }).then((items) => new Map(items.map((item) => [item.id, item])));
-    console.log('---loadSyncQueue', queue);
 
-    this._syncQueue$.next(queue);
+    this._syncQueue$.next(new Map([...queue, ...this.queue]));
   }
 }
 

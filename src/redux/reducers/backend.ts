@@ -3,7 +3,7 @@ import {
   SyncState,
   ServiceStatus,
   BroadcastChannelMessage,
-} from 'src/services/backend/types';
+} from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 
 type BackendState = {
