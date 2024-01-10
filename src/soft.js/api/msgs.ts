@@ -34,6 +34,10 @@ class Soft3jsMsgs {
 
   private BASE_VESTING_TIME = 86401;
 
+  private BASE_INVESTMINT_AMOUNT_VOLT = 1 * 10 ** 9;
+
+  private BASE_INVESTMINT_AMOUNT_AMPERE = 100 * 10 ** 6;
+
   private MAX_SLOTS = 16;
 
   private POOL_TYPE_INDEX = 1;
@@ -61,9 +65,7 @@ class Soft3jsMsgs {
   }
 
   private async checkFreeSlotMint() {
-    const dataAuthAccounts = await authAccounts(
-      this.senderAddress
-    );
+    const dataAuthAccounts = await authAccounts(this.senderAddress);
 
     if (!dataAuthAccounts?.result?.value?.vesting_periods) {
       return true;
@@ -102,14 +104,14 @@ class Soft3jsMsgs {
     const isMint = await this.checkFreeSlotMint();
 
     if (!isMint) {
-      return;
+      return undefined;
     }
 
     const minAmountMint =
-      resource === 'milliampere' ? 100 * 10 ** 6 : 1 * 10 ** 9;
+      resource === 'milliampere' ? this.BASE_INVESTMINT_AMOUNT_AMPERE : this.BASE_INVESTMINT_AMOUNT_VOLT;
 
     if (new BigNumber(amount.amount).comparedTo(minAmountMint) < 0) {
-      return;
+      return undefined;
     }
 
     return {
