@@ -10,6 +10,7 @@ import Long from 'long';
 import { calculatePairAmount } from 'src/pages/teleport/swap/utils';
 import { ObjKeyValue } from 'src/types/data';
 import { CYBER, DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import { authAccounts } from 'src/utils/search/utils';
 import { convertAmount, reduceBalances } from 'src/utils/utils';
 
 const coinFunc = (amount: number, denom: string): Coin => {
@@ -24,12 +25,16 @@ const checkDenom = (denom: string) => {
   return 0;
 };
 
+const MILLISECONDS_IN_SECOND = 1000;
+
 class Soft3jsMsgs {
   private readonly senderAddress: string;
 
   protected readonly queryClient: CyberClient | undefined;
 
   private BASE_VESTING_TIME = 86401;
+
+  private MAX_SLOTS = 16;
 
   private POOL_TYPE_INDEX = 1;
 
@@ -55,11 +60,58 @@ class Soft3jsMsgs {
     this.queryClient = queryClient;
   }
 
-  public investmint(
+  private async checkFreeSlotMint() {
+    const dataAuthAccounts = await authAccounts(
+      this.senderAddress
+    );
+
+    if (!dataAuthAccounts?.result?.value?.vesting_periods) {
+      return true;
+    }
+
+    const { vesting_periods: vestingPeriods, start_time: startTime } =
+      dataAuthAccounts.result.value;
+
+    if (vestingPeriods.length < this.MAX_SLOTS) {
+      return true;
+    }
+
+    const slotData = [];
+    let length = parseFloat(startTime);
+    vestingPeriods.forEach((item) => {
+      length += parseFloat(item.length);
+      const lengthMs = length * MILLISECONDS_IN_SECOND;
+      const d = new Date();
+      if (lengthMs >= Date.parse(d)) {
+        slotData.push(item);
+      }
+    });
+
+    if (slotData.length === this.MAX_SLOTS) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public async investmint(
     amount: Coin,
     resource: 'millivolt' | 'milliampere',
     length: number
   ) {
+    const isMint = await this.checkFreeSlotMint();
+
+    if (!isMint) {
+      return;
+    }
+
+    const minAmountMint =
+      resource === 'milliampere' ? 100 * 10 ** 6 : 1 * 10 ** 9;
+
+    if (new BigNumber(amount.amount).comparedTo(minAmountMint) < 0) {
+      return;
+    }
+
     return {
       typeUrl: '/cyber.resources.v1beta1.MsgInvestmint',
       value: {

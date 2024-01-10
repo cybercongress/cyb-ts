@@ -48,42 +48,36 @@ const constructorMintSwap = async (
   amountStake: BigNumber
 ) => {
   const MsgsBroadcast = [];
-  const halfAmountStake = amountStake.dividedBy(2).dp(0, BigNumber.ROUND_FLOOR);
+  const halfAmountStake = amountStake.dividedBy(2).dp(0, BigNumber.ROUND_FLOOR).toString();
 
-  if (halfAmountStake.comparedTo(100 * 10 ** 6) >= 0) {
-    MsgsBroadcast.push(
-      soft3js.investmint(
-        coin(
-          amountStake.dividedBy(2).dp(0, BigNumber.ROUND_FLOOR).toString(),
-          Soft3jsMsgs.liquidDenom()
-        ),
-        'milliampere',
-        LENGTH_INVESTMINT
-      )
-    );
+  const resultMintA = await soft3js.investmint(
+    coin(halfAmountStake, Soft3jsMsgs.liquidDenom()),
+    'milliampere',
+    LENGTH_INVESTMINT
+  );
+
+  if (resultMintA) {
+    MsgsBroadcast.push(resultMintA);
   } else {
     const offerCoin = coin(
-      halfAmountStake.toString(),
+      halfAmountStake,
       Soft3jsMsgs.liquidDenom()
     );
     const resultSwapMsg = await soft3js.swap(5, offerCoin, 'milliampere');
     MsgsBroadcast.push(resultSwapMsg);
   }
 
-  if (halfAmountStake.comparedTo(1 * 10 ** 9) >= 0) {
-    MsgsBroadcast.push(
-      soft3js.investmint(
-        coin(
-          amountStake.dividedBy(2).dp(0, BigNumber.ROUND_FLOOR).toString(),
-          Soft3jsMsgs.liquidDenom()
-        ),
-        'millivolt',
-        LENGTH_INVESTMINT
-      )
-    );
+  const resultMintV = await soft3js.investmint(
+    coin(halfAmountStake, Soft3jsMsgs.liquidDenom()),
+    'millivolt',
+    LENGTH_INVESTMINT
+  );
+
+  if (resultMintV) {
+    MsgsBroadcast.push(resultMintV);
   } else {
     const offerCoin = coin(
-      halfAmountStake.toString(),
+      halfAmountStake,
       Soft3jsMsgs.liquidDenom()
     );
     const resultSwapMsg = await soft3js.swap(6, offerCoin, 'millivolt');
