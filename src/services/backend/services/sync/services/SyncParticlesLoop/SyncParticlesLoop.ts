@@ -7,10 +7,10 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from '../../types';
+import { ServiceDeps } from '../types';
 import { getUniqueParticlesFromLinks } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-import { BLOCKCHAIN_SYNC_INTERVAL, PARTICLES_SYNC_INTERVAL } from '../consts';
+import { PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { updateSyncState } from '../../utils';
 import { SyncServiceParams } from '../../types';
@@ -29,7 +29,7 @@ class SyncParticlesLoop {
 
   private _loop$: Observable<any> | undefined;
 
-  public get loop$(): Observable<any> {
+  public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 
@@ -65,46 +65,50 @@ class SyncParticlesLoop {
   }
 
   private async syncParticles() {
-    // fetch observable particles from db
-    const result = await this.db!.findSyncStatus({
-      entryType: EntryType.particle,
-    });
+    try {
+      // fetch observable particles from db
+      const result = await this.db!.findSyncStatus({
+        entryType: EntryType.particle,
+      });
 
-    const syncStatusEntities = (
-      await Promise.all(
-        result.map(async (syncStatus) => {
-          const { id, timestampUpdate } = syncStatus;
-          const links = await fetchAllCyberlinks(
-            this.params!.cyberIndexUrl!,
-            id as string,
-            timestampUpdate as number
-          );
-          try {
-            if (links.length === 0) {
-              return undefined;
-            }
-
-            const allLinks = getUniqueParticlesFromLinks(links);
-
-            await this.particlesResolver!.enqueue(
-              allLinks.map((cid) => ({
-                id: cid,
-                priority: QueuePriority.MEDIUM,
-              }))
+      const syncStatusEntities = (
+        await Promise.all(
+          result.map(async (syncStatus) => {
+            const { id, timestampUpdate } = syncStatus;
+            const links = await fetchAllCyberlinks(
+              this.params!.cyberIndexUrl!,
+              id as string,
+              timestampUpdate as number
             );
+            try {
+              if (links.length === 0) {
+                return undefined;
+              }
 
-            return updateSyncState(syncStatus, links);
-          } catch (e) {
-            console.log('---------syncStatusEntities', e, links, syncStatus);
-            throw e;
-          }
-        })
-      )
-    ).filter((i) => !!i) as SyncStatusDto[];
-    console.log('---syncParticles syncStatusEntities', syncStatusEntities);
+              const allLinks = getUniqueParticlesFromLinks(links);
 
-    syncStatusEntities.length > 0 &&
-      (await this.db!.putSyncStatus(syncStatusEntities));
+              await this.particlesResolver!.enqueue(
+                allLinks.map((cid) => ({
+                  id: cid,
+                  priority: QueuePriority.MEDIUM,
+                }))
+              );
+
+              return updateSyncState(syncStatus, links);
+            } catch (e) {
+              console.log('---------syncStatusEntities', e, links, syncStatus);
+              throw e;
+            }
+          })
+        )
+      ).filter((i) => !!i) as SyncStatusDto[];
+
+      syncStatusEntities.length > 0 &&
+        (await this.db!.putSyncStatus(syncStatusEntities));
+    } catch (e) {
+      console.log('>>> SyncParticlesLoop error:', e);
+      throw e;
+    }
   }
 
   start() {

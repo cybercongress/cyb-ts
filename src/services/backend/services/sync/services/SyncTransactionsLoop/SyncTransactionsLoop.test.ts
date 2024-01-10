@@ -1,26 +1,22 @@
 import { of } from 'rxjs';
 
-import {
-  fetchTransactionsIterable,
-  fetchCyberlinksIterable,
-} from 'src/services/backend/services/dataSource/blockchain/requests';
+import { fetchTransactionsIterable } from 'src/services/backend/services/dataSource/blockchain/requests';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import DbApi, {
-  mockFindSyncStatus,
   mockPutSyncStatus,
   mockGetSyncStatus,
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
+import { createAsyncIterable } from 'src/utils/async/iterable';
+import { CID_TWEET } from 'src/utils/consts';
+import { EntryType } from 'src/services/CozoDb/types/entities';
+import { dateToNumber } from 'src/utils/date';
 import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
-import SyncTransactionsLoop from '../SyncTransactionsLoop/SyncTransactionsLoop';
-import { createAsyncIterable } from 'src/utils/async/iterable';
+import SyncTransactionsLoop from './SyncTransactionsLoop';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/types';
-import { CID_TWEET } from 'src/utils/consts';
-import { EntryType } from 'src/services/CozoDb/types/entities';
-import { dateToNumber } from 'src/utils/date';
 
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');

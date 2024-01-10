@@ -12,7 +12,8 @@ import DbApi, {
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
-import SyncIpfsLoop from '../SyncIpfsLoop/SyncIpfsLoop';
+import SyncIpfsLoop from './SyncIpfsLoop';
+import { QueuePriority } from 'src/services/QueueManager/types';
 
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
@@ -64,12 +65,12 @@ describe('SyncIpfsLoop', () => {
       rows: [['pin1']],
     });
 
-    syncIpfsLoop.start().loop$.subscribe({
+    syncIpfsLoop.start().loop$!.subscribe({
       next: () => {
         expect(mockPutSyncQueue).toHaveBeenCalledWith([
           {
             id: 'pin3',
-            priority: 1,
+            priority: QueuePriority.LOW,
           },
         ]);
         expect(mockDeletePins).toHaveBeenCalledWith(['dbpin1']);

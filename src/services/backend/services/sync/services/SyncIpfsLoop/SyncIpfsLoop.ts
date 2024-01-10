@@ -1,16 +1,17 @@
 import { Observable, defer, from, map, combineLatest } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
+import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { mapPinToEntity } from 'src/services/CozoDb/mapping';
+import { QueuePriority } from 'src/services/QueueManager/types';
+
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
-import { ServiceDeps } from '../../types';
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { ServiceDeps } from '../types';
 import { createLoopObservable } from '../utils/rxjs';
 import { IPFS_SYNC_INTERVAL } from '../consts';
 import { fetchPins } from '../../../dataSource/ipfs/ipfsSource';
-import { mapPinToEntity } from 'src/services/CozoDb/mapping';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { QueuePriority } from 'src/services/QueueManager/types';
 
 class SyncIpfsLoop {
   private isInitialized$: Observable<boolean>;
@@ -25,7 +26,7 @@ class SyncIpfsLoop {
 
   private _loop$: Observable<any> | undefined;
 
-  public get loop$(): Observable<any> {
+  public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 

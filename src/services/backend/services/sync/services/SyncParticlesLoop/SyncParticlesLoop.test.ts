@@ -1,11 +1,12 @@
 import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import { updateSyncState } from 'src/services/backend/services/sync/utils';
+import { fetchAllCyberlinks } from 'src/services/backend/services/dataSource/blockchain/requests';
+import { numberToDate } from 'src/utils/date';
+
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 import { ServiceDeps } from '../types';
-import SyncParticlesLoop from '../SyncParticlesLoop/SyncParticlesLoop';
+import SyncParticlesLoop from './SyncParticlesLoop';
 
 import DbApi, {
   mockFindSyncStatus,
@@ -13,7 +14,6 @@ import DbApi, {
 } from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
-jest.mock('src/services/backend/services/sync/utils');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
 
@@ -21,29 +21,19 @@ describe('SyncParticlesLoop', () => {
   let syncParticlesLoop: SyncParticlesLoop;
   let mockSyncQueue;
   beforeEach(() => {
-    // putSyncStatusMock = jest.fn().mockResolvedValue(undefined);
-    mockPutSyncStatus.mockClear(); // = jest.fn();
+    mockPutSyncStatus.mockClear();
     DbApi.mockClear();
-    // const db = new DbApi();
-    mockFindSyncStatus.mockResolvedValueOnce([
-      {
-        id: 'cid',
-        unreadCount: 0,
-        timestampUpdate: 333,
-        timestampRead: 222,
-      },
-    ]);
 
     const db = new DbApi();
     const mockServiceDeps: ServiceDeps = {
       dbInstance$: of(db),
-      ipfsInstance$: of({} as CybIpfsNode), // replace with your mock data
+      ipfsInstance$: of({} as CybIpfsNode),
       params$: of({
         myAddress: null,
         followings: [],
         cyberIndexUrl: 'test-index-url',
-      }), // replace with your mock data
-      waitForParticleResolve: jest.fn(), // replace with your mock data
+      }),
+      waitForParticleResolve: jest.fn(),
     };
     mockSyncQueue = new ParticlesResolverQueue(mockServiceDeps);
 
@@ -51,23 +41,31 @@ describe('SyncParticlesLoop', () => {
   });
 
   it('should call updateSyncState and putSyncStatus correctly', (done) => {
-    const mockSyncStatus = {
+    (fetchAllCyberlinks as jest.Mock).mockResolvedValueOnce([
+      { from: 'cid', to: 'cid1', timestamp: numberToDate(333) },
+    ]);
+
+    mockFindSyncStatus.mockResolvedValueOnce([
+      {
+        id: 'cid',
+        unreadCount: 0,
+        timestampUpdate: 123,
+        timestampRead: 123,
+      },
+    ]);
+
+    const resultSyncStatus = {
       id: 'cid',
-      entryType: 'particle',
-      timestampUpdate: 123,
+      timestampUpdate: 333,
       timestampRead: 123,
-      unreadCount: 0,
-      lastId: 'neuron1',
-      disabled: false,
+      unreadCount: 1,
+      lastId: 'cid1',
       meta: { direction: 'from' },
     };
-    fetchAllCyberlinks.mockResolvedValueOnce([]);
 
-    (updateSyncState as jest.Mock).mockResolvedValueOnce(mockSyncStatus);
-
-    syncParticlesLoop.start().loop$.subscribe({
+    syncParticlesLoop.start().loop$!.subscribe({
       next: () => {
-        expect(mockPutSyncStatus).toHaveBeenCalledWith([mockSyncStatus]);
+        expect(mockPutSyncStatus).toHaveBeenCalledWith([resultSyncStatus]);
         done();
       },
       error: (err) => done(err),

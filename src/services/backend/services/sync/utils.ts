@@ -29,6 +29,14 @@ export function updateSyncState(
 
   const unreadCount = (statusEntity.unreadCount || 0) + count;
   const timestampRead = count ? statusEntity.timestampRead : firstTimestamp;
+  console.log('-------aaaaaaa updateSyncState', {
+    ...statusEntity,
+    lastId: lastLinkCid,
+    unreadCount,
+    meta: { direction },
+    timestampUpdate: lastTimestamp,
+    timestampRead,
+  });
   return {
     ...statusEntity,
     lastId: lastLinkCid,
