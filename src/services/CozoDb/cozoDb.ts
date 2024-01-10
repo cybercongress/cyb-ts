@@ -13,7 +13,7 @@ import { DbEntity, ConfigDbEntity } from './types/entities';
 import { toListOfObjects, clearIndexedDBStore } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
-import { CozoDbCommandFactory } from './CozoDbCommandFactory';
+import { CozoDbCommandFactory } from './cozoDbCommandFactory';
 
 const DB_NAME = 'cyb-cozo-idb';
 const DB_STORE_NAME = 'cozodb';
