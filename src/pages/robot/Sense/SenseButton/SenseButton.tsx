@@ -5,19 +5,21 @@ import { routes } from 'src/routes';
 import { useBackend } from 'src/contexts/backend';
 import { useQuery } from '@tanstack/react-query';
 import cx from 'classnames';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 function SenseButton({ className }) {
   const { senseApi } = useBackend();
 
-  const { data } = useQuery({
-    queryKey: ['senseApi', 'getSummary'],
-    queryFn: async () => {
-      return senseApi!.getSummary();
-    },
-    enabled: !!senseApi,
-  });
+  const address = useAppSelector(selectCurrentAddress);
 
-  console.log('----data', data);
+  const { data } = useQuery({
+    queryKey: ['senseApi', 'getSummary', address],
+    queryFn: async () => {
+      return senseApi!.getSummary(address!);
+    },
+    enabled: Boolean(senseApi && address),
+  });
 
   const unread = data?.[0]?.unread || 0;
 
@@ -28,7 +30,7 @@ function SenseButton({ className }) {
     >
       <span>⚪️</span>
       <span>⚪️</span>
-      {unread > 0 && <span>{unread}</span>}
+      <span>{unread}</span>
     </Link>
   );
 }
