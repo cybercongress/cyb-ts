@@ -29,7 +29,7 @@ export function CoinAmount({
   return (
     <div className={styles.coinAmount}>
       <span>{formatNumber(amount)}</span>
-      <DenomArr denomValue={denom} onlyImg />
+      <DenomArr denomValue={denom} onlyImg size={13} />
     </div>
   );
 }

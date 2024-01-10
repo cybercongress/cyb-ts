@@ -9,6 +9,12 @@
     height: 100%;
   }
 
+  > :first-child {
+    > div {
+      overflow-x: hidden;
+    }
+  }
+
   > :nth-child(2) {
     flex: 1;
     position: relative;
