@@ -98,6 +98,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const followings = useAppSelector(({ currentAccount }) => {
     const { friends, following } = currentAccount.community;
+
+    return friends;
+
     return Array.from(new Set([...friends, ...following]));
   });
 

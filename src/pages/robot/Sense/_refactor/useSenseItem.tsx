@@ -31,7 +31,7 @@ function useSenseItem({ id }: Props) {
     queryFn: async () => {
       return senseApi!.getLinks(id!);
     },
-    enabled: enabled && !isParticle,
+    enabled: enabled && isParticle,
     refetchInterval: REFETCH_INTERVAL,
   });
 
