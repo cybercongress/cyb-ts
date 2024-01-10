@@ -36,10 +36,8 @@ describe('fetchTransactionsIterable', () => {
     );
 
     const result1 = await iterable.next();
-    console.log('--res1', result1.value);
     expect(result1.value).toEqual(mockResponse[0]);
     const result2 = await iterable.next();
-    console.log('--res2', result2);
     expect(result2.value).toEqual(mockResponse[1]);
     const result3 = await iterable.next();
     expect(result3.done).toEqual(true);

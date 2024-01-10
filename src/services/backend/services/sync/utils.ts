@@ -4,6 +4,7 @@ import { ParticleCid } from 'src/types/base';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/requests';
+import { LinkDirection } from './types';
 
 function extractLinkData(
   cid: ParticleCid,
@@ -12,7 +13,7 @@ function extractLinkData(
   const isFrom = links[0].from === cid;
 
   return {
-    direction: (isFrom ? 'from' : 'to') as 'from' | 'to',
+    direction: (isFrom ? 'from' : 'to') as LinkDirection,
     lastLinkCid: isFrom ? links[0].to : links[0].from,
     count: links.length,
     lastTimestamp: dateToNumber(links[0].timestamp),

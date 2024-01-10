@@ -15,9 +15,11 @@ export type FetchIpfsFunc = (
   priority: QueuePriority
 ) => Promise<EnqueuedIpfsResult>;
 
+export type LinkDirection = 'from' | 'to';
+
 export type ParticleResult = {
   timestamp: number;
-  direction: 'from' | 'to';
+  direction: LinkDirection;
   from: ParticleCid;
   to: ParticleCid;
 };

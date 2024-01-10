@@ -1,7 +1,7 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { QueuePriority } from 'src/services/QueueManager/types';
+import { SenseMeta } from 'src/services/backend/types/sense';
 import { SenseTransaction } from 'src/services/backend/types/sense';
-import { SenseChatMessage } from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -43,7 +43,7 @@ export type SyncStatusDbEntity = {
   disabled: boolean;
   unread_count: number;
   last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
-  meta: { direction: 'from' | 'to' } | { memo: string } | SenseChatMessage;
+  meta: SenseMeta;
 };
 export type ParticleDbEntity = {
   id: ParticleCid;

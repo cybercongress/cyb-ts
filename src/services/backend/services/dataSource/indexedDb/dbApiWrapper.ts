@@ -23,7 +23,7 @@ import {
   TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
-import { SenseResult, SenseUnread } from './type';
+import { SenseListItem, SenseUnread } from 'src/services/backend/types/sense';
 import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
 import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
@@ -170,7 +170,7 @@ class DbApiWrapper {
 
     return dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
-    ) as SenseResult[];
+    ) as SenseListItem[];
   }
 
   public async getSenseSummary(myAddress: NeuronAddress) {
