@@ -142,11 +142,7 @@ function Carousel({
 
   return (
     <div
-      className={cx(
-        styles.carousel,
-        disableMode && styles.disableMode,
-        styles[`color_${color}`]
-      )}
+      className={cx(styles.carousel, styles[`color_${color}`])}
       id="containerCarousel"
       style={{
         height: heightSlide || '42px',
@@ -176,6 +172,7 @@ function Carousel({
               <TabItem
                 type={typeTab}
                 key={index}
+                disable={disableMode}
                 onClick={() => {
                   setActiveItem(index);
                   onChange?.(slides.indexOf(slide));
