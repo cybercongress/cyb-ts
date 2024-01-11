@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { useMemo } from 'react';
 import { CID_TWEET } from 'src/utils/config';
 import { getTransactions } from 'src/utils/search/utils';
 
@@ -57,13 +58,16 @@ function useGetLog(address: string | null) {
       }
     );
 
-  const d =
-    data?.pages?.reduce((acc, page) => {
-      return acc.concat(page.data.tx_responses);
-    }, []) || [];
+  const memoData = useMemo(() => {
+    return (
+      (data?.pages?.reduce((acc, page) => {
+        return acc.concat(page.data.tx_responses);
+      }, []) as unknown as GetTxsEventResponse['txResponses']) || []
+    );
+  }, [data]);
 
   return {
-    data: d,
+    data: memoData,
     fetchNextPage,
     hasNextPage,
     refetch,
