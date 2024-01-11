@@ -14,9 +14,11 @@ type Props = {
   type: TitleType;
 };
 
+const REFETCH_INTERVAL = 1000 * 7;
+
 function Stats({ type }: Props) {
-  const dataGetGraphStats = useGetGraphStats(undefined);
-  const negentropy = useGetNegentropy(undefined);
+  const dataGetGraphStats = useGetGraphStats(REFETCH_INTERVAL);
+  const negentropy = useGetNegentropy(REFETCH_INTERVAL);
   let value: number | undefined;
   let text: string | JSX.Element;
   let change: number | undefined;
