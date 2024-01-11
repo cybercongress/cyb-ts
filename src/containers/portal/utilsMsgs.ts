@@ -5,6 +5,8 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { CONTRACT_ADDRESS_GIFT } from './utils';
 
 const LENGTH_INVESTMINT = 1041;
+const POOL_ID_H_A = 5;
+const POOL_ID_H_V = 6;
 
 const mssgsClaim = async (
   signerInfo: { sender: string; isNanoLedger: boolean },
@@ -13,24 +15,24 @@ const mssgsClaim = async (
   queryClient?: CyberClient,
   onlyDelegate?: boolean
 ) => {
-  const MsgsBroadcast = [];
+  const msgsBroadcast = [];
   const { sender, isNanoLedger } = signerInfo;
   const soft3js = new Soft3jsMsgs(sender, queryClient);
 
   const amountStake = new BigNumber(availableRelease);
 
   releaseMsg.forEach((item) => {
-    MsgsBroadcast.push(soft3js.execute(CONTRACT_ADDRESS_GIFT, item));
+    msgsBroadcast.push(soft3js.execute(CONTRACT_ADDRESS_GIFT, item));
   });
 
   const resultMsgDelegate = await soft3js.delegateTokens(
     coin(amountStake.toString(), Soft3jsMsgs.denom())
   );
 
-  MsgsBroadcast.push(resultMsgDelegate);
+  msgsBroadcast.push(resultMsgDelegate);
 
   if (isNanoLedger || onlyDelegate) {
-    return MsgsBroadcast;
+    return msgsBroadcast;
   }
 
   const resultConstructorMintSwap = await constructorMintSwap(
@@ -38,16 +40,16 @@ const mssgsClaim = async (
     amountStake
   );
 
-  MsgsBroadcast.push(...resultConstructorMintSwap);
+  msgsBroadcast.push(...resultConstructorMintSwap);
 
-  return MsgsBroadcast;
+  return msgsBroadcast;
 };
 
 const constructorMintSwap = async (
   soft3js: Soft3jsMsgs,
   amountStake: BigNumber
 ) => {
-  const MsgsBroadcast = [];
+  const msgsBroadcast = [];
   const halfAmountStake = amountStake
     .dividedBy(2)
     .dp(0, BigNumber.ROUND_FLOOR)
@@ -60,11 +62,15 @@ const constructorMintSwap = async (
   );
 
   if (resultMintA) {
-    MsgsBroadcast.push(resultMintA);
+    msgsBroadcast.push(resultMintA);
   } else {
     const offerCoin = coin(halfAmountStake, Soft3jsMsgs.liquidDenom());
-    const resultSwapMsg = await soft3js.swap(5, offerCoin, 'milliampere');
-    MsgsBroadcast.push(resultSwapMsg);
+    const resultSwapMsg = await soft3js.swap(
+      POOL_ID_H_A,
+      offerCoin,
+      'milliampere'
+    );
+    msgsBroadcast.push(resultSwapMsg);
   }
 
   const resultMintV = await soft3js.investmint(
@@ -74,14 +80,18 @@ const constructorMintSwap = async (
   );
 
   if (resultMintV) {
-    MsgsBroadcast.push(resultMintV);
+    msgsBroadcast.push(resultMintV);
   } else {
     const offerCoin = coin(halfAmountStake, Soft3jsMsgs.liquidDenom());
-    const resultSwapMsg = await soft3js.swap(6, offerCoin, 'millivolt');
-    MsgsBroadcast.push(resultSwapMsg);
+    const resultSwapMsg = await soft3js.swap(
+      POOL_ID_H_V,
+      offerCoin,
+      'millivolt'
+    );
+    msgsBroadcast.push(resultSwapMsg);
   }
 
-  return MsgsBroadcast;
+  return msgsBroadcast;
 };
 
 export default mssgsClaim;

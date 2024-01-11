@@ -86,7 +86,7 @@ function ActionBarRelease({
           return;
         }
 
-        const MsgsBroadcast = await mssgsClaim(
+        const msgsBroadcast = await mssgsClaim(
           {
             sender: addressKeplr,
             isNanoLedger,
@@ -96,13 +96,11 @@ function ActionBarRelease({
           queryClient
         );
 
-        console.log('MsgsBroadcast', MsgsBroadcast);
-
-        if (!MsgsBroadcast.length) {
+        if (!msgsBroadcast.length) {
           return;
         }
 
-        const gasLimit = 400000 * MsgsBroadcast.length;
+        const gasLimit = 400000 * msgsBroadcast.length;
 
         const fee = {
           amount: [],
@@ -110,19 +108,11 @@ function ActionBarRelease({
         };
         const executeResponseResult = await signingClient.signAndBroadcast(
           addressKeplr,
-          [...MsgsBroadcast],
+          [...msgsBroadcast],
           fee,
           'cyber'
         );
-        // const executeResponseResult = await signingClient.executeArray(
-        //   addressKeplr,
-        //   CONTRACT_ADDRESS_GIFT,
-        //   msgs,
-        //   'auto',
-        //   CYBER.MEMO_KEPLR
-        // );
 
-        console.log('executeResponseResult', executeResponseResult);
         if (executeResponseResult.code === 0) {
           updateTxHash({
             status: 'pending',

@@ -1,6 +1,5 @@
 import { toUtf8 } from '@cosmjs/encoding';
 import { Coin } from '@cosmjs/launchpad';
-import { BondStatus } from '@cosmjs/launchpad/build/lcdapi/staking';
 import { Uint53 } from '@cosmjs/math';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryLiquidityPoolResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
@@ -10,8 +9,9 @@ import Long from 'long';
 import { calculatePairAmount } from 'src/pages/teleport/swap/utils';
 import { ObjKeyValue } from 'src/types/data';
 import { CYBER, DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import coinDecimalsConfig from 'src/utils/configToken';
 import { authAccounts } from 'src/utils/search/utils';
-import { convertAmount, reduceBalances } from 'src/utils/utils';
+import { reduceBalances } from 'src/utils/utils';
 
 const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
@@ -19,7 +19,7 @@ const coinFunc = (amount: number, denom: string): Coin => {
 
 const checkDenom = (denom: string) => {
   if (denom === 'millivolt' || denom === 'milliampere') {
-    return 3;
+    return coinDecimalsConfig[denom].coinDecimals;
   }
 
   return 0;
@@ -196,7 +196,7 @@ class Soft3jsMsgs {
       return undefined;
     }
 
-    const resultBalances = await this.queryClient?.getAllBalances(
+    const resultBalances = await this.queryClient.getAllBalances(
       pool.reserveAccountAddress
     );
 
