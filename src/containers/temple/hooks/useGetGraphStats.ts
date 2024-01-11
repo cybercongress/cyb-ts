@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { getNowUtcTime } from 'src/utils/utils';
 
 const keyQuery = 'graphStats';
 
-function useGetGraphStats(refetchInterval: number | undefined = 1000 * 60 * 3) {
+function useGetGraphStats(refetchInterval: number | undefined) {
   const queryClient = useQueryClient();
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     particles: 0,
@@ -43,7 +44,7 @@ function useGetGraphStats(refetchInterval: number | undefined = 1000 * 60 * 3) {
             .dp(3, BigNumber.ROUND_FLOOR)
             .toNumber();
         }
-        const d = new Date();
+        const d = getNowUtcTime();
         response = {
           cyberlinks,
           particles,
@@ -64,8 +65,9 @@ function useGetGraphStats(refetchInterval: number | undefined = 1000 * 60 * 3) {
       if (lastgraphStatsLs !== null) {
         const oldData = JSON.parse(lastgraphStatsLs);
 
-        const timeChange =
-          Date.parse(data.timestamp) - Date.parse(oldData.timestamp);
+        const timeChange = new BigNumber(data.timestamp)
+          .minus(oldData.timestamp)
+          .toNumber();
         const cyberlinksAmount = new BigNumber(data.cyberlinks)
           .minus(oldData.cyberlinks)
           .toNumber();
