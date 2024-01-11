@@ -108,7 +108,9 @@ class Soft3jsMsgs {
     }
 
     const minAmountMint =
-      resource === 'milliampere' ? this.BASE_INVESTMINT_AMOUNT_AMPERE : this.BASE_INVESTMINT_AMOUNT_VOLT;
+      resource === 'milliampere'
+        ? this.BASE_INVESTMINT_AMOUNT_AMPERE
+        : this.BASE_INVESTMINT_AMOUNT_VOLT;
 
     if (new BigNumber(amount.amount).comparedTo(minAmountMint) < 0) {
       return undefined;
