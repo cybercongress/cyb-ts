@@ -9,6 +9,8 @@ import styles from './Social.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import { useEffect } from 'react';
 
+export const HUB_LINK = 'https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ';
+
 // TODO: folder is dirty, can be refactored
 function Social() {
   const { setAdviser } = useAdviser();
@@ -35,10 +37,7 @@ function Social() {
 
           <DisplayTitle inDisplay title="More links" />
 
-          <LinkWindow
-            className={styles.hubLinks}
-            to="https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ"
-          >
+          <LinkWindow className={styles.hubLinks} to={HUB_LINK}>
             <div>👾</div>
             <span>Hub links</span>
           </LinkWindow>
