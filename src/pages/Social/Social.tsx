@@ -1,4 +1,4 @@
-import { MainContainer } from 'src/components';
+import { LinkWindow, MainContainer } from 'src/components';
 import Discord from 'src/pages/Social/Discord/Discord';
 import { GitHub } from 'src/pages/Social/GitHub/GitHub';
 import { Telegram } from 'src/pages/Social/Telegram/Telegram';
@@ -32,6 +32,16 @@ function Social() {
           <div className={styles.code}>
             <GitHub />
           </div>
+
+          <DisplayTitle inDisplay title="More links" />
+
+          <LinkWindow
+            className={styles.hubLinks}
+            to="https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ"
+          >
+            <div>👾</div>
+            <span>Hub links</span>
+          </LinkWindow>
         </div>
       </Display>
     </MainContainer>
