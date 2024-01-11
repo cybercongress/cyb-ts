@@ -4,15 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
-import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import mssgsClaim from '../utilsMsgs';
-import { useQueryClient } from 'src/contexts/queryClient';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -64,16 +63,6 @@ function ActionBarRelease({
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
   const queryClient = useQueryClient();
-
-  const [currentTx, setCurrentTx] = useState<{
-    hash: string;
-    onSuccess: () => void;
-  }>();
-
-  useWaitForTransaction({
-    hash: currentTx?.hash,
-    onSuccess: currentTx?.onSuccess,
-  });
 
   const getRelease = useCallback(async () => {
     try {
