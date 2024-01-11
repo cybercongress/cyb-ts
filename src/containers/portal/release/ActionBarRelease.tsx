@@ -85,7 +85,7 @@ function ActionBarRelease({
 
         if (currentRelease.length > 0) {
           currentRelease
-            .slice(0, isNanoLedger ? 4 : currentRelease.length)
+            .slice(0, isNanoLedger ? 1 : currentRelease.length)
             .forEach((item) => {
               const { address } = item;
               const msgObject = releaseMsg(address);
