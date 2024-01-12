@@ -5,25 +5,52 @@ import styles from './Sense.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
+import { SyncEntryName } from 'src/services/backend/types/services';
+
+export type AdviserProps = {
+  adviser: {
+    setLoading: (isLoading: boolean) => void;
+    setError: (error: string) => void;
+  };
+};
 
 function Sense() {
   const [selected, setSelected] = useState<string>();
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
 
-  // const status = useAppSelector(
-  //   (state) => state.backend.services.sync.status === ''
-  // );
+  const senseBackendIsLoading = useAppSelector((state) => {
+    const { entryStatus } = state.backend.syncState;
+
+    return (['my-chats', 'particle'] as SyncEntryName[]).some((entry) => {
+      return entryStatus[entry]?.status !== 'idle';
+    });
+  });
 
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    if (loading) {
-      setAdviser('loading...', 'yellow');
+    let text;
+    let color;
+
+    if (error) {
+      color = 'red';
+      text = error;
+    } else if (loading || senseBackendIsLoading) {
+      color = 'yellow';
+      text = loading ? 'loading...' : 'database syncing...';
     } else {
-      setAdviser('welcome to sense');
+      text = 'welcome to sense 🧬';
     }
-  }, [setAdviser, loading]);
+    setAdviser(text, color);
+  }, [setAdviser, loading, senseBackendIsLoading]);
+
+  // maybe use context
+  const adviserProps = {
+    setLoading: (isLoading: boolean) => setLoading(isLoading),
+    setError: (error: string) => setError(error),
+  };
 
   return (
     <>
@@ -31,12 +58,9 @@ function Sense() {
         <SenseList
           select={(id: string) => setSelected(id)}
           selected={selected}
-          setLoading={setLoading}
+          adviser={adviserProps}
         />
-        <SenseViewer
-          selected={selected}
-          setLoading={(isLoading: boolean) => setLoading(isLoading)}
-        />
+        <SenseViewer selected={selected} adviser={adviserProps} />
       </div>
 
       <ActionBar id={selected} />

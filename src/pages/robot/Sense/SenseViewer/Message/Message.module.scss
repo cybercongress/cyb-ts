@@ -62,4 +62,9 @@
   display: flex;
   align-items: center;
   gap: 0 4px;
+  color: var(--green-light);
+
+  .send {
+    color: #ff5c00;
+  }
 }

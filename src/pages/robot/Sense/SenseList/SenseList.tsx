@@ -7,18 +7,19 @@ import SenseListItem from './SenseListItem/SenseListItem';
 import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
-import { CoinAmount } from '../SenseViewer/Message/Message';
+import { CoinAction, CoinAmount } from '../SenseViewer/Message/Message';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { AdviserProps } from '../Sense';
 
 type Props = {
   select: (id: string) => void;
   selected?: string;
   setLoading: (isLoading: boolean) => void;
-};
+} & AdviserProps;
 
 const mapFilterWithEntryType = {
   [EntryType.transactions]: Filters.Neuron,
@@ -28,7 +29,7 @@ const mapFilterWithEntryType = {
 
 const REFETCH_INTERVAL = 1000 * 20;
 
-function SenseList({ select, selected, setLoading }: Props) {
+function SenseList({ select, selected, adviser }: Props) {
   const [filter, setFilter] = useState(Filters.All);
   const address = useAppSelector(selectCurrentAddress);
 
@@ -39,7 +40,7 @@ function SenseList({ select, selected, setLoading }: Props) {
   const getSummaryQuery = useQuery({
     queryKey: ['senseApi', 'getSummary', address],
     queryFn: async () => {
-      return senseApi!.getSummary(address!);
+      return senseApi!.getSummary();
     },
     enabled,
     refetchInterval: REFETCH_INTERVAL,
@@ -48,17 +49,24 @@ function SenseList({ select, selected, setLoading }: Props) {
   const getListQuery = useQuery({
     queryKey: ['senseApi', 'getList', address],
     queryFn: async () => {
-      return senseApi!.getList(address!);
+      return senseApi!.getList();
     },
     enabled,
     refetchInterval: REFETCH_INTERVAL,
   });
 
   const isLoading = getListQuery.isLoading || getSummaryQuery.isLoading;
+  const error = (getListQuery.error || getSummaryQuery.error) as
+    | Error
+    | undefined;
 
   useEffect(() => {
-    setLoading(isLoading);
-  }, [isLoading, setLoading]);
+    adviser.setLoading(isLoading);
+  }, [isLoading, adviser]);
+
+  useEffect(() => {
+    adviser.setError(error?.message || '');
+  }, [error, adviser]);
 
   useEffect(() => {
     if (!selected) {
@@ -106,6 +114,8 @@ function SenseList({ select, selected, setLoading }: Props) {
                 ({ id, entryType, meta, timestampUpdate, unreadCount }) => {
                   let text;
                   let amount;
+                  let isAmountSend = false;
+
                   switch (entryType) {
                     case EntryType.particle:
                       text = meta.id?.text;
@@ -126,6 +136,7 @@ function SenseList({ select, selected, setLoading }: Props) {
                       }
 
                       amount = meta.value.amount;
+                      isAmountSend = meta.value.from_address === address;
                       break;
 
                     default:
@@ -136,7 +147,17 @@ function SenseList({ select, selected, setLoading }: Props) {
                     <>
                       {text}
                       {amount?.map((a) => {
-                        return <CoinAmount amount={a.amount} denom={a.denom} />;
+                        return (
+                          <CoinAmount
+                            amount={a.amount}
+                            denom={a.denom}
+                            type={
+                              isAmountSend
+                                ? CoinAction.send
+                                : CoinAction.receive
+                            }
+                          />
+                        );
                       })}
                     </>
                   );
