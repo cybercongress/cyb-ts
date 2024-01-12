@@ -28,7 +28,7 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
     if (!myAddress) {
       throw new Error('myAddress is not defined');
     }
-    dbApi.getMyChats(myAddress, userAddress);
+    return dbApi.getMyChats(myAddress, userAddress);
   },
 });
 

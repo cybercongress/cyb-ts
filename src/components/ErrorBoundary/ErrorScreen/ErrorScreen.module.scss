@@ -8,13 +8,35 @@
     margin-bottom: 25px;
   }
 
-  p {
+  p,
+  pre {
     color: #777777;
     margin-bottom: 18px;
   }
 
+  pre {
+    &:first-of-type {
+      margin-top: 40px;
+    }
+
+    line-height: 20px;
+    display: inline-block;
+  }
+
+  .stack {
+    text-align: left;
+  }
+
   .btnGoBack {
     margin-right: 48px;
+  }
+
+  > footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 10px;
   }
 
   @media (max-width: 768px) {
