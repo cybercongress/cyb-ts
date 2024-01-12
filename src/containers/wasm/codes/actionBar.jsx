@@ -16,7 +16,7 @@ import {
 import { getTxs } from '../../../utils/search/utils';
 import Button from 'src/components/btnGrd';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -77,7 +77,7 @@ function ActionBar({ updateFnc, addressActive }) {
           const response = await signingClient.upload(
             address,
             wasmBytes,
-            Soft3jsMsgs.fee(4000000),
+            Soft3MessageFactory.fee(2),
             CYBER.MEMO_KEPLR
           );
           if (response.code === 0) {

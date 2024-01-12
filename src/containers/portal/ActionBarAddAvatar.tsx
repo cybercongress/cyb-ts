@@ -2,18 +2,17 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
-import txs from '../../utils/txs';
+import { useBackend } from 'src/contexts/backend';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import { DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
-import { useBackend } from 'src/contexts/backend';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;
 const STATE_AVATAR_IN_PROCESS = 15.1;
 
-const gasPrice = GasPrice.fromString('0.001boot');
 
 function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { signingClient, signer } = useSigningClient();
@@ -59,7 +58,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
-            Soft3jsMsgs.fee(500000),
+            Soft3MessageFactory.fee(2.5),
             'cyber'
           );
           if (executeResponseResult.code === 0) {

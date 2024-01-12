@@ -5,7 +5,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../../utils/txs';
 import { CYBER } from '../../../../utils/config';
 import JsonSchemaParse from './JsonSchemaParse';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -79,7 +79,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
         address,
         contractAddress,
         formData,
-        Soft3jsMsgs.fee(400000),
+        Soft3MessageFactory.fee(2),
         CYBER.MEMO_KEPLR
         // coinsPlaceholder
       );

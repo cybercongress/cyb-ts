@@ -5,6 +5,8 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useQueryClient } from 'src/contexts/queryClient';
+import BigNumber from 'bignumber.js';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
@@ -100,16 +102,12 @@ function ActionBarRelease({
           return;
         }
 
-        const gasLimit = 400000 * msgsBroadcast.length;
+        const multiplier = new BigNumber(2).multipliedBy(msgsBroadcast.length);
 
-        const fee = {
-          amount: [],
-          gas: gasLimit.toString(),
-        };
         const executeResponseResult = await signingClient.signAndBroadcast(
           addressKeplr,
           [...msgsBroadcast],
-          fee,
+          Soft3MessageFactory.fee(multiplier.toNumber()),
           'cyber'
         );
 

@@ -1,4 +1,4 @@
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { coin } from '@cosmjs/launchpad';
 import { CyberClient } from '@cybercongress/cyber-js';
@@ -17,7 +17,7 @@ const mssgsClaim = async (
 ) => {
   const msgsBroadcast = [];
   const { sender, isNanoLedger } = signerInfo;
-  const soft3js = new Soft3jsMsgs(sender, queryClient);
+  const soft3js = new Soft3MessageFactory(sender, queryClient);
 
   const amountStake = new BigNumber(availableRelease);
 
@@ -26,7 +26,7 @@ const mssgsClaim = async (
   });
 
   const resultMsgDelegate = await soft3js.delegateTokens(
-    coin(amountStake.toString(), Soft3jsMsgs.denom())
+    coin(amountStake.toString(), Soft3MessageFactory.denom())
   );
 
   msgsBroadcast.push(resultMsgDelegate);
@@ -46,7 +46,7 @@ const mssgsClaim = async (
 };
 
 const constructorMintSwap = async (
-  soft3js: Soft3jsMsgs,
+  soft3js: Soft3MessageFactory,
   amountStake: BigNumber
 ) => {
   const msgsBroadcast = [];
@@ -56,7 +56,7 @@ const constructorMintSwap = async (
     .toString();
 
   const resultMintA = await soft3js.investmint(
-    coin(halfAmountStake, Soft3jsMsgs.liquidDenom()),
+    coin(halfAmountStake, Soft3MessageFactory.liquidDenom()),
     'milliampere',
     LENGTH_INVESTMINT
   );
@@ -64,7 +64,7 @@ const constructorMintSwap = async (
   if (resultMintA) {
     msgsBroadcast.push(resultMintA);
   } else {
-    const offerCoin = coin(halfAmountStake, Soft3jsMsgs.liquidDenom());
+    const offerCoin = coin(halfAmountStake, Soft3MessageFactory.liquidDenom());
     const resultSwapMsg = await soft3js.swap(
       POOL_ID_H_A,
       offerCoin,
@@ -74,7 +74,7 @@ const constructorMintSwap = async (
   }
 
   const resultMintV = await soft3js.investmint(
-    coin(halfAmountStake, Soft3jsMsgs.liquidDenom()),
+    coin(halfAmountStake, Soft3MessageFactory.liquidDenom()),
     'millivolt',
     LENGTH_INVESTMINT
   );
@@ -82,7 +82,7 @@ const constructorMintSwap = async (
   if (resultMintV) {
     msgsBroadcast.push(resultMintV);
   } else {
-    const offerCoin = coin(halfAmountStake, Soft3jsMsgs.liquidDenom());
+    const offerCoin = coin(halfAmountStake, Soft3MessageFactory.liquidDenom());
     const resultSwapMsg = await soft3js.swap(
       POOL_ID_H_V,
       offerCoin,

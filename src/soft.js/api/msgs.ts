@@ -26,32 +26,37 @@ const checkDenom = (denom: string) => {
 };
 
 const MILLISECONDS_IN_SECOND = 1000;
+const BASE_VESTING_TIME = 86401;
+const BASE_INVESTMINT_AMOUNT_VOLT = 1 * 10 ** 9;
+const BASE_INVESTMINT_AMOUNT_AMPERE = 100 * 10 ** 6;
+const MAX_SLOTS = 16;
+const POOL_TYPE_INDEX = 1;
+const SWAP_FEE_RATE = 0.003;
 
-class Soft3jsMsgs {
+class Soft3MessageFactory {
   private readonly senderAddress: string;
 
   protected readonly queryClient: CyberClient | undefined;
-
-  private BASE_VESTING_TIME = 86401;
-
-  private BASE_INVESTMINT_AMOUNT_VOLT = 1 * 10 ** 9;
-
-  private BASE_INVESTMINT_AMOUNT_AMPERE = 100 * 10 ** 6;
-
-  private MAX_SLOTS = 16;
-
-  private POOL_TYPE_INDEX = 1;
-
-  private SWAP_FEE_RATE = 0.003;
 
   static denom() {
     return CYBER.DENOM_CYBER;
   }
 
-  static fee(gas: number | undefined = DEFAULT_GAS_LIMITS) {
+  static fee(fee: number | string | undefined = DEFAULT_GAS_LIMITS.toString()) {
+    let usedFee;
+
+    if (typeof fee === 'number') {
+      usedFee = new BigNumber(DEFAULT_GAS_LIMITS)
+        .multipliedBy(fee)
+        .dp(0, BigNumber.ROUND_CEIL)
+        .toString();
+    } else {
+      usedFee = fee;
+    }
+
     return {
       amount: [],
-      gas: gas.toString(),
+      gas: usedFee,
     };
   }
 
@@ -74,7 +79,7 @@ class Soft3jsMsgs {
     const { vesting_periods: vestingPeriods, start_time: startTime } =
       dataAuthAccounts.result.value;
 
-    if (vestingPeriods.length < this.MAX_SLOTS) {
+    if (vestingPeriods.length < MAX_SLOTS) {
       return true;
     }
 
@@ -89,7 +94,7 @@ class Soft3jsMsgs {
       }
     });
 
-    if (slotData.length === this.MAX_SLOTS) {
+    if (slotData.length === MAX_SLOTS) {
       return false;
     }
 
@@ -109,8 +114,8 @@ class Soft3jsMsgs {
 
     const minAmountMint =
       resource === 'milliampere'
-        ? this.BASE_INVESTMINT_AMOUNT_AMPERE
-        : this.BASE_INVESTMINT_AMOUNT_VOLT;
+        ? BASE_INVESTMINT_AMOUNT_AMPERE
+        : BASE_INVESTMINT_AMOUNT_VOLT;
 
     if (new BigNumber(amount.amount).comparedTo(minAmountMint) < 0) {
       return undefined;
@@ -123,7 +128,7 @@ class Soft3jsMsgs {
         amount,
         resource,
         length: Long.fromString(
-          new Uint53(length * this.BASE_VESTING_TIME).toString()
+          new Uint53(length * BASE_VESTING_TIME).toString()
         ),
       },
     };
@@ -268,12 +273,12 @@ class Soft3jsMsgs {
     }
 
     const amount = new BigNumber(offerCoin.amount)
-      .multipliedBy(1 - this.SWAP_FEE_RATE)
+      .multipliedBy(1 - SWAP_FEE_RATE)
       .dp(0, BigNumber.ROUND_CEIL);
 
     const offerCoinFee = coinFunc(
       new BigNumber(amount)
-        .multipliedBy(this.SWAP_FEE_RATE)
+        .multipliedBy(SWAP_FEE_RATE)
         .multipliedBy(0.5)
         .dp(0, BigNumber.ROUND_CEIL)
         .toNumber(),
@@ -286,7 +291,7 @@ class Soft3jsMsgs {
       value: {
         swapRequesterAddress: this.senderAddress,
         poolId,
-        swapTypeId: this.POOL_TYPE_INDEX,
+        swapTypeId: POOL_TYPE_INDEX,
         offerCoin: {
           amount: amount.toString(),
           denom: offerCoin.denom,
@@ -299,4 +304,4 @@ class Soft3jsMsgs {
   }
 }
 
-export default Soft3jsMsgs;
+export default Soft3MessageFactory;

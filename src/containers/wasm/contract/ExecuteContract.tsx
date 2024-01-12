@@ -9,7 +9,7 @@ import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
 import { Input } from 'src/components';
 import Button from 'src/components/btnGrd';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const executePlaceholder = {
   transfer: {
@@ -77,7 +77,7 @@ function ExecuteContract({ contractAddress }: { contractAddress: string }) {
         address,
         contractAddress,
         msgObject.result,
-        Soft3jsMsgs.fee(4000000),
+        Soft3MessageFactory.fee(2),
         memo,
         coinsObject.result
       );

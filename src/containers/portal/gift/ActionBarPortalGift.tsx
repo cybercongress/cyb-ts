@@ -47,7 +47,8 @@ import {
 } from '../../../features/passport/passports.redux';
 import mssgsClaim from '../utilsMsgs';
 import { ClaimMsg } from './type';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import BigNumber from 'bignumber.js';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -287,7 +288,7 @@ function ActionBarPortalGift({
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          Soft3jsMsgs.fee(400000),
+          Soft3MessageFactory.fee(2),
           'cyber'
         );
 
@@ -380,13 +381,15 @@ function ActionBarPortalGift({
             elementMsg = groupMsg(msgs, 1)[0] as ClaimMsg[];
           }
 
-          const gasLimits = 500000 * Object.keys(elementMsg).length;
+          const multiplier = new BigNumber(2.5)
+            .multipliedBy(Object.keys(elementMsg).length)
+            .toNumber();
 
           const executeResponseResult = await signingClient.executeArray(
             bech32Address,
             CONTRACT_ADDRESS_GIFT,
             elementMsg,
-            Soft3jsMsgs.fee(gasLimits),
+            Soft3MessageFactory.fee(multiplier),
             'cyber'
           );
 
@@ -469,7 +472,7 @@ function ActionBarPortalGift({
         address,
         CONTRACT_ADDRESS_PASSPORT,
         msgObject,
-        Soft3jsMsgs.fee(400000),
+        Soft3MessageFactory.fee(2),
         'cyber'
       );
 

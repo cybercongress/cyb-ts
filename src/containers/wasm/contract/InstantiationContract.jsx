@@ -14,7 +14,7 @@ import SelectFile from './renderAbi/SelectFile';
 import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 import Button from 'src/components/btnGrd';
 import { Input } from 'src/components';
-import Soft3jsMsgs from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -110,7 +110,7 @@ function InstantiationContract({ codeId, updateFnc }) {
         parseFloat(codeId),
         msgObject.result,
         label,
-        Soft3jsMsgs.fee(600000),
+        Soft3MessageFactory.fee(3),
         {
           memo,
           funds: coinsObject.result,
