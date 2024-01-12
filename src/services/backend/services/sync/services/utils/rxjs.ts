@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import {
   Observable,
   switchMap,
@@ -6,8 +7,9 @@ import {
   tap,
   concatMap,
   catchError,
-  EMPTY,
   share,
+  distinctUntilChanged,
+  filter,
 } from 'rxjs';
 
 export const createLoopObservable = (
@@ -17,23 +19,21 @@ export const createLoopObservable = (
   beforeCallback?: () => void
 ) => {
   const source$ = isInitialized$.pipe(
-    switchMap((initialized) => {
-      if (initialized) {
-        // When isInitialized$ emits true, start the interval
-        return interval(intervalMs).pipe(
-          startWith(0), // Start immediately
-          tap(() => beforeCallback && beforeCallback()),
-          concatMap((value) =>
-            actionObservable$.pipe(
-              catchError((error) => {
-                console.log('Error:', error);
-                throw error;
-              })
-            )
+    distinctUntilChanged(),
+    filter((initialized) => initialized),
+    switchMap(() => {
+      return interval(intervalMs).pipe(
+        startWith(0), // Start immediately
+        tap(() => beforeCallback && beforeCallback()),
+        concatMap(() =>
+          actionObservable$.pipe(
+            catchError((error) => {
+              console.log('Error:', error);
+              throw error;
+            })
           )
-        );
-      }
-      return EMPTY;
+        )
+      );
     })
   );
   return source$.pipe(share());

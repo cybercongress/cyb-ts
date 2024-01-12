@@ -17,15 +17,19 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
-const createSenseApi = (dbApi: DbApiWrapper) => ({
-  getSummary: (myAddress: NeuronAddress) => dbApi.getSenseSummary(myAddress),
-  getList: (myAddress: NeuronAddress) => dbApi.getSenseList(myAddress),
+const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
+  getSummary: () => dbApi.getSenseSummary(myAddress),
+  getList: () => dbApi.getSenseList(myAddress),
   markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
-  getMyChats: (myAddress: NeuronAddress, userAddress: NeuronAddress) =>
-    dbApi.getMyChats(myAddress, userAddress),
+  getMyChats: (userAddress: NeuronAddress) => {
+    if (!myAddress) {
+      throw new Error('myAddress is not defined');
+    }
+    dbApi.getMyChats(myAddress, userAddress);
+  },
 });
 
 const setupStoragePersistence = async () => {
@@ -193,6 +197,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
+  const senseApi = useMemo(
+    () => (isDbInitialized ? createSenseApi(dbApi, myAddress) : null),
+    [isDbInitialized, myAddress]
+  );
+
   const valueMemo = useMemo(
     () =>
       ({
@@ -203,7 +212,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
-        senseApi: isDbInitialized ? createSenseApi(dbApi) : null,
+        senseApi,
         loadIpfs,
         ipfsError,
         isIpfsInitialized,
@@ -211,7 +220,14 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isSyncInitialized,
         isReady,
       } as BackendProviderContextType),
-    [isReady, isIpfsInitialized, isDbInitialized, isSyncInitialized, ipfsError]
+    [
+      isReady,
+      isIpfsInitialized,
+      isDbInitialized,
+      isSyncInitialized,
+      ipfsError,
+      myAddress,
+    ]
   );
 
   return (

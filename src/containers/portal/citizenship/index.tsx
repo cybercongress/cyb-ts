@@ -138,7 +138,7 @@ const calculatePriceNicname = (valueNickname) => {
 
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
   const dispatch = useAppDispatch();
 
   const queryClient = useQueryClient();
@@ -195,19 +195,19 @@ function GetCitizenship({ defaultAccount }) {
   }, [queryClient]);
 
   useEffect(() => {
-    if (!avatarImg || !ipfsNode || !isIpfsInitialized) {
+    if (!avatarImg || !ipfsApi || !isIpfsInitialized) {
       return;
     }
 
     (async () => {
       try {
-        const cid = await ipfsNode.addContent(avatarImg);
+        const cid = await ipfsApi.addContent(avatarImg);
         setAvatarIpfs(cid);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [isIpfsInitialized, ipfsNode, avatarImg]);
+  }, [isIpfsInitialized, ipfsApi, avatarImg]);
 
   useEffect(() => {
     const getKeplrSetup = async () => {
@@ -471,10 +471,10 @@ function GetCitizenship({ defaultAccount }) {
         }
 
         if (isIpfsInitialized) {
-          ipfsNode?.addContent(valueNickname).then((cid) => {
+          ipfsApi?.addContent(valueNickname).then((cid) => {
             console.log('pin cid nickname', cid);
           });
-          ipfsNode?.addContent(address).then((cid) => {
+          ipfsApi?.addContent(address).then((cid) => {
             console.log('pin cid address', cid);
           });
         }
@@ -488,7 +488,6 @@ function GetCitizenship({ defaultAccount }) {
     signer,
     signingClient,
     signedMessage,
-    ipfsNode,
     isIpfsInitialized,
   ]);
 

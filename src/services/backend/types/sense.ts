@@ -5,9 +5,9 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import {
   MsgSendTransaction,
   CyberLinkTransaction,
+  MsgMultiSendTransaction,
 } from '../services/dataSource/blockchain/types';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { SenseTransaction } from './sense';
 import { LinkDirection } from '../services/sync/types';
 
 export type SenseChat = {
@@ -52,5 +52,5 @@ export type SenseListItem = {
 
 export type SenseTransaction =
   | MsgSendTransaction
-  | MsgSendTransaction
+  | MsgMultiSendTransaction
   | CyberLinkTransaction;

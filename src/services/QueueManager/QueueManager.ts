@@ -18,11 +18,7 @@ import {
 import * as R from 'ramda';
 
 import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
-import {
-  CybIpfsNode,
-  IPFSContentMaybe,
-  IpfsContentSource,
-} from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IpfsContentSource } from 'src/services/ipfs/ipfs';
 import { ParticleCid } from 'src/types/base';
 
 import { promiseToObservable } from '../../utils/helpers';
@@ -46,7 +42,7 @@ import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
 
-function getQueueItemTotalPriority<T>(item: QueueItem<T>): number {
+function getQueueItemTotalPriority(item: QueueItem): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
@@ -83,10 +79,10 @@ const strategies = {
   ),
 };
 
-type QueueMap<T> = Map<ParticleCid, QueueItem<T>>;
+type QueueMap = Map<ParticleCid, QueueItem>;
 
-class QueueManager<T extends IPFSContentMaybe> {
-  private queue$ = new BehaviorSubject<QueueMap<T>>(new Map());
+class QueueManager {
+  private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private node: CybIpfsNode | undefined = undefined;
 
@@ -116,14 +112,14 @@ class QueueManager<T extends IPFSContentMaybe> {
     this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
 
-  private getItemBySourceAndPriority(queue: QueueMap<T>) {
+  private getItemBySourceAndPriority(queue: QueueMap) {
     const pendingItems = [...queue.values()].filter(
       (i) => i.status === 'pending'
     );
 
     const pendingBySource = R.groupBy((i) => i.source, pendingItems);
 
-    const itemsToExecute: QueueItem<T>[] = [];
+    const itemsToExecute: QueueItem[] = [];
     // eslint-disable-next-line no-loop-func, no-restricted-syntax
     for (const [queueSource, items] of Object.entries(pendingBySource)) {
       const settings = this.strategy.settings[queueSource as IpfsContentSource];
@@ -150,7 +146,7 @@ class QueueManager<T extends IPFSContentMaybe> {
     this.channel.postServiceStatus('ipfs', 'started', summary);
   }
 
-  private fetchData$(item: QueueItem<T>) {
+  private fetchData$(item: QueueItem) {
     const { cid, source, controller, callbacks } = item;
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
@@ -163,18 +159,18 @@ class QueueManager<T extends IPFSContentMaybe> {
       status: 'executing',
       executionTime: Date.now(),
       controller: new AbortController(),
-    } as QueueItem<T>);
+    } as QueueItem);
     // debugCid(cid, 'fetchData', cid, source);
     callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(async () =>
-      fetchIpfsContent<T>(cid, source, {
+      fetchIpfsContent(cid, source, {
         controller,
         node: this.node,
       }).then((content: T) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
 
-        this.defferedDbSaver?.enuqueIpfsContent(content);
+        this.defferedDbSaver?.enqueueIpfsContent(content);
 
         return content;
       })
@@ -187,7 +183,7 @@ class QueueManager<T extends IPFSContentMaybe> {
             return new QueueItemTimeoutError(settings.timeout);
           }),
       }),
-      map((result): QueueItemResult<T> => {
+      map((result): QueueItemResult => {
         return {
           item,
           status: result ? 'completed' : 'error',
@@ -195,7 +191,7 @@ class QueueManager<T extends IPFSContentMaybe> {
           result,
         };
       }),
-      catchError((error): Observable<QueueItemResult<T>> => {
+      catchError((error): Observable<QueueItemResult> => {
         debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
         if (error instanceof QueueItemTimeoutError) {
           return of({
@@ -219,7 +215,7 @@ class QueueManager<T extends IPFSContentMaybe> {
    * @param changes
    * @returns
    */
-  private mutateQueueItem(cid: string, changes: Partial<QueueItem<T>>) {
+  private mutateQueueItem(cid: string, changes: Partial<QueueItem>) {
     const queue = this.queue$.value;
     const item = queue.get(cid);
     if (item) {
@@ -239,16 +235,13 @@ class QueueManager<T extends IPFSContentMaybe> {
   }
 
   // reset status and switch to next source
-  private switchSourceAndNext(
-    item: QueueItem<T>,
-    nextSource: QueueSource
-  ): void {
+  private switchSourceAndNext(item: QueueItem, nextSource: QueueSource): void {
     item.callbacks.map((callback) => callback(item.cid, 'pending', nextSource));
 
     this.mutateQueueItem(item.cid, { status: 'pending', source: nextSource });
   }
 
-  private cancelDeprioritizedItems(queue: QueueMap<T>): QueueMap<T> {
+  private cancelDeprioritizedItems(queue: QueueMap): QueueMap {
     (['node', 'gateway'] as IpfsContentSource[]).forEach((source) => {
       Array.from(this.executing[source]).forEach((cid) => {
         const item = queue.get(cid);
@@ -363,7 +356,7 @@ class QueueManager<T extends IPFSContentMaybe> {
 
   public enqueue(
     cid: string,
-    callback: QueueItemCallback<T>,
+    callback: QueueItemCallback,
     options: QueueItemOptions = {}
   ): void {
     const queue = this.queue$.value;
@@ -378,7 +371,7 @@ class QueueManager<T extends IPFSContentMaybe> {
       });
     } else {
       const source = options.initialSource || this.strategy.order[0];
-      const item: QueueItem<T> = {
+      const item: QueueItem = {
         cid,
         callbacks: [callback],
         source, // initial method to fetch
@@ -403,7 +396,7 @@ class QueueManager<T extends IPFSContentMaybe> {
         if (status === 'completed' || status === 'not_found') {
           resolve({ status, source, result });
         }
-      }) as QueueItemCallback<T>;
+      }) as QueueItemCallback;
 
       this.enqueue(cid, callback, options);
     });
@@ -453,17 +446,17 @@ class QueueManager<T extends IPFSContentMaybe> {
     this.queue$.next(new Map());
   }
 
-  public getQueueMap(): QueueMap<T> {
+  public getQueueMap(): QueueMap {
     return this.queue$.value;
   }
 
-  public getQueueList(): QueueItem<T>[] {
+  public getQueueList(): QueueItem[] {
     return Array.from(this.queue$.value.values());
   }
 
   public getStats(): QueueStats[] {
     const fn = R.pipe(
-      R.countBy<QueueItem<T>>(R.prop('status')),
+      R.countBy<QueueItem>(R.prop('status')),
       R.toPairs,
       R.map(R.zipObj(['status', 'count']))
     );

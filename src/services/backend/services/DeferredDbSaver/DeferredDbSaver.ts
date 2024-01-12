@@ -47,7 +47,7 @@ class DeferredDbSaver implements IDeferredDbSaver {
       });
   }
 
-  public enuqueIpfsContent(content: IPFSContentMaybe) {
+  public enqueueIpfsContent(content: IPFSContentMaybe) {
     if (!content) {
       return;
     }

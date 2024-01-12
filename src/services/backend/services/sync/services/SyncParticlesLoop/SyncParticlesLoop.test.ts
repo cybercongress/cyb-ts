@@ -1,8 +1,9 @@
 import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import { fetchAllCyberlinks } from 'src/services/backend/services/dataSource/blockchain/requests';
+import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/requests';
 import { numberToDate } from 'src/utils/date';
+import { createAsyncIterable } from 'src/utils/async/iterable';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
@@ -41,9 +42,15 @@ describe('SyncParticlesLoop', () => {
   });
 
   it('should call updateSyncState and putSyncStatus correctly', (done) => {
-    (fetchAllCyberlinks as jest.Mock).mockResolvedValueOnce([
-      { from: 'cid', to: 'cid1', timestamp: numberToDate(333) },
-    ]);
+    // (fetchCyberlinksIterable as jest.Mock).mockResolvedValueOnce([
+    //   { from: 'cid', to: 'cid1', timestamp: numberToDate(333) },
+    // ]);
+
+    (fetchCyberlinksIterable as jest.Mock).mockReturnValueOnce(
+      createAsyncIterable([
+        [{ from: 'cid', to: 'cid1', timestamp: numberToDate(333) }],
+      ])
+    );
 
     mockFindSyncStatus.mockResolvedValueOnce([
       {

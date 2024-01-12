@@ -26,8 +26,8 @@ describe('DeferredDbSaver', () => {
       source: 'node',
       meta: { size: 123, mime: 'text/plain', type: 'file' },
     };
-    deferredDbProcessor.enuqueIpfsContent(content);
-    deferredDbProcessor.enuqueIpfsContent({ ...content, cid: 'Qm1111' });
+    deferredDbProcessor.enqueueIpfsContent(content);
+    deferredDbProcessor.enqueueIpfsContent({ ...content, cid: 'Qm1111' });
 
     const queue = deferredDbProcessor['queue$'].getValue();
     expect(queue.size).toBe(2);

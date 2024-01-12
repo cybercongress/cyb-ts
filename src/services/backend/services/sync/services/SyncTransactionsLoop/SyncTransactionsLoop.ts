@@ -12,18 +12,19 @@ import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
-import { getUniqueParticlesFromLinks } from '../utils/links';
+import { fetchCyberlinksAndResolveParticles } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-import { BLOCKCHAIN_SYNC_INTERVAL } from '../consts';
+import {
+  BLOCKCHAIN_SYNC_INTERVAL,
+  MAX_PARRALEL_TRANSACTIONS,
+  SENSE_TRANSACTIONS,
+} from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { updateSyncState } from '../../utils';
+import { changeSyncStatus } from '../../utils';
 import { extractParticlesResults } from './utils';
 import { SyncServiceParams } from '../../types';
 
-import {
-  fetchAllCyberlinks,
-  fetchTransactionsIterable,
-} from '../../../dataSource/blockchain/requests';
+import { fetchTransactionsIterable } from '../../../dataSource/blockchain/requests';
 import { Transaction } from '../../../dataSource/blockchain/types';
 
 class SyncTransactionsLoop {
@@ -35,7 +36,7 @@ class SyncTransactionsLoop {
 
   private _loop$: Observable<any> | undefined;
 
-  public get loop$(): Observable<any> {
+  public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 
@@ -57,7 +58,6 @@ class SyncTransactionsLoop {
     this.particlesResolver = particlesResolver;
 
     deps.dbInstance$.subscribe((db) => {
-      console.log('---subscribe dbInstance', this.db);
       this.db = db;
     });
 
@@ -74,7 +74,10 @@ class SyncTransactionsLoop {
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
-          !!dbInstance && !!syncQueueInitialized && !!params.cyberIndexUrl
+          !!dbInstance &&
+          !!syncQueueInitialized &&
+          !!params.cyberIndexUrl &&
+          !!params.myAddress
       )
     );
   }
@@ -100,9 +103,10 @@ class SyncTransactionsLoop {
       this.params.myAddress &&
         (await this.syncTransactions(this.params.myAddress, true));
 
-      await Promise.all(
-        this.params.followings.map((addr) => this.syncTransactions(addr))
-      );
+      // TODO: Enable to full sync of transactions
+      // await Promise.all(
+      //   this.params.followings.map((addr) => this.syncTransactions(addr))
+      // );
     } catch (err) {
       console.error('>>> syncAllTransactions', err);
       throw err;
@@ -118,13 +122,7 @@ class SyncTransactionsLoop {
 
     const { timestampRead, unreadCount, timestampUpdate } =
       await this.db!.getSyncStatus(address);
-    console.log(
-      '--------syncTransactions start',
-      address,
-      timestampRead,
-      unreadCount,
-      timestampUpdate
-    );
+
     const transactionsAsyncIterable = fetchTransactionsIterable(
       this.params.cyberIndexUrl!,
       address,
@@ -137,14 +135,15 @@ class SyncTransactionsLoop {
     // eslint-disable-next-line no-restricted-syntax
     for await (const batch of transactionsAsyncIterable) {
       // filter only supported transactions
-      const items = batch.filter((t) =>
-        [
-          'cyber.graph.v1beta1.MsgCyberlink',
-          'cosmos.bank.v1beta1.MsgSend',
-          'cosmos.bank.v1beta1.MsgMultiSend',
-        ].includes(t.type)
-      );
 
+      const items = batch.filter((t) => SENSE_TRANSACTIONS.includes(t.type));
+
+      console.log(
+        '--------syncTransactions start',
+        address,
+        items.length,
+        items.at(0)?.transaction.block.timestamp
+      );
       if (items.length > 0) {
         // pick last transaction = first item based on request orderby
         if (!lastTransaction) {
@@ -165,9 +164,11 @@ class SyncTransactionsLoop {
         const { tweets, particlesFound, links } =
           extractParticlesResults(items);
 
+        const tweetCids = Object.keys(tweets);
+
         // resolve 'tweets' particles
         await this.particlesResolver!.enqueue(
-          Object.keys(tweets).map((cid) => ({
+          tweetCids.map((cid) => ({
             id: cid /* from is tweet */,
             priority: QueuePriority.HIGH,
           }))
@@ -178,52 +179,6 @@ class SyncTransactionsLoop {
           await this.db!.putCyberlinks(
             links.map((link) => ({ ...link, neuron: '' }))
           );
-          // console.log(
-          //   '------syncTransactions extractParticlesResults',
-          //   tweets,
-          //   particlesFound,
-          //   links
-          // );
-
-          const syncStatusEntities = await Promise.all(
-            Object.keys(tweets).map(async (cid) => {
-              const { timestamp, direction, from, to } = tweets[cid];
-
-              // Initial state
-              let syncStatus = {
-                id: cid as string,
-                entryType: EntryType.particle,
-                timestampUpdate: timestamp,
-                timestampRead: timestamp,
-                unreadCount: 0,
-                lastId: direction === 'from' ? from : to,
-                disabled: false,
-                meta: { direction },
-              } as SyncStatusDto;
-
-              // await this.resolveAndSaveParticle(cid);
-              const links = await fetchAllCyberlinks(
-                this.params.cyberIndexUrl!,
-                cid,
-                timestamp
-              );
-
-              if (links.length > 0) {
-                const allLinks = getUniqueParticlesFromLinks(links);
-
-                await this.particlesResolver!.enqueue(
-                  allLinks.map((link) => ({
-                    id: link,
-                    priority: QueuePriority.HIGH,
-                  }))
-                );
-
-                syncStatus = updateSyncState(syncStatus, links);
-              }
-
-              return syncStatus;
-            })
-          );
 
           if (particlesFound.length > 0) {
             await this.particlesResolver!.enqueue(
@@ -233,10 +188,98 @@ class SyncTransactionsLoop {
               }))
             );
           }
+          const batchSize = MAX_PARRALEL_TRANSACTIONS;
+          for (let i = 0; i < tweetCids.length; i += batchSize) {
+            const batch = tweetCids.slice(i, i + batchSize);
+            // eslint-disable-next-line no-await-in-loop
+            const syncStatusEntities = await Promise.all(
+              batch.map(async (cid) => {
+                const { timestamp, direction, from, to } = tweets[cid];
 
-          if (syncStatusEntities.length > 0) {
-            this.db!.putSyncStatus(syncStatusEntities);
+                // Initial state
+                const syncStatus = {
+                  id: cid as string,
+                  entryType: EntryType.particle,
+                  timestampUpdate: timestamp,
+                  timestampRead: timestamp,
+                  unreadCount: 0,
+                  lastId: direction === 'from' ? from : to,
+                  disabled: false,
+                  meta: { direction },
+                } as SyncStatusDto;
+
+                const links = await fetchCyberlinksAndResolveParticles(
+                  this.params!.cyberIndexUrl!,
+                  cid,
+                  timestamp,
+                  this.particlesResolver!,
+                  QueuePriority.HIGH
+                );
+
+                return links.length > 0
+                  ? changeSyncStatus(syncStatus, links)
+                  : syncStatus;
+              })
+            );
+            if (syncStatusEntities.length > 0) {
+              this.db!.putSyncStatus(syncStatusEntities);
+            }
           }
+
+          // TODO:  Exclude Object.keys(tweets)
+          // const syncStatusEntities = await Promise.all(
+          //   tweetCids.map(async (cid) => {
+          //     const { timestamp, direction, from, to } = tweets[cid];
+
+          //     // Initial state
+          //     const syncStatus = {
+          //       id: cid as string,
+          //       entryType: EntryType.particle,
+          //       timestampUpdate: timestamp,
+          //       timestampRead: timestamp,
+          //       unreadCount: 0,
+          //       lastId: direction === 'from' ? from : to,
+          //       disabled: false,
+          //       meta: { direction },
+          //     } as SyncStatusDto;
+
+          //     const links = await fetchCyberlinksAndResolveParticles(
+          //       this.params!.cyberIndexUrl!,
+          //       cid,
+          //       timestamp,
+          //       this.particlesResolver!,
+          //       QueuePriority.HIGH
+          //     );
+
+          //     // // await this.resolveAndSaveParticle(cid);
+          //     // const links = await fetchAllCyberlinks(
+          //     //   this.params.cyberIndexUrl!,
+          //     //   cid,
+          //     //   timestamp
+          //     // );
+
+          //     // if (links.length > 0) {
+          //     //   const allLinks = getUniqueParticlesFromLinks(links);
+
+          //     //   await this.particlesResolver!.enqueue(
+          //     //     allLinks.map((link) => ({
+          //     //       id: link,
+          //     //       priority: QueuePriority.HIGH,
+          //     //     }))
+          //     //   );
+
+          //     //   syncStatus = changeSyncStatus(syncStatus, links);
+          //     // }
+
+          //     return links.length > 0
+          //       ? changeSyncStatus(syncStatus, links)
+          //       : syncStatus;
+          //   })
+          // );
+
+          // if (syncStatusEntities.length > 0) {
+          //   this.db!.putSyncStatus(syncStatusEntities);
+          // }
         }
       }
     }

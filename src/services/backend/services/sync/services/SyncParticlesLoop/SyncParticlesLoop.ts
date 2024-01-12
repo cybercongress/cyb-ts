@@ -8,13 +8,12 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
-import { getUniqueParticlesFromLinks } from '../utils/links';
+import { fetchCyberlinksAndResolveParticles } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
 import { PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { updateSyncState } from '../../utils';
+import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
-import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -59,7 +58,8 @@ class SyncParticlesLoop {
           !!ipfsInstance &&
           !!dbInstance &&
           !!syncQueueInitialized &&
-          !!params.cyberIndexUrl
+          !!params.cyberIndexUrl &&
+          !!params.myAddress
       )
     );
   }
@@ -71,34 +71,22 @@ class SyncParticlesLoop {
         entryType: EntryType.particle,
       });
 
+      // TODO: Sync one-by-one | batch
       const syncStatusEntities = (
         await Promise.all(
           result.map(async (syncStatus) => {
             const { id, timestampUpdate } = syncStatus;
-            const links = await fetchAllCyberlinks(
+            const links = await fetchCyberlinksAndResolveParticles(
               this.params!.cyberIndexUrl!,
               id as string,
-              timestampUpdate as number
+              timestampUpdate as number,
+              this.particlesResolver!,
+              QueuePriority.MEDIUM
             );
-            try {
-              if (links.length === 0) {
-                return undefined;
-              }
 
-              const allLinks = getUniqueParticlesFromLinks(links);
-
-              await this.particlesResolver!.enqueue(
-                allLinks.map((cid) => ({
-                  id: cid,
-                  priority: QueuePriority.MEDIUM,
-                }))
-              );
-
-              return updateSyncState(syncStatus, links);
-            } catch (e) {
-              console.log('---------syncStatusEntities', e, links, syncStatus);
-              throw e;
-            }
+            return links.length > 0
+              ? changeSyncStatus(syncStatus, links)
+              : undefined;
           })
         )
       ).filter((i) => !!i) as SyncStatusDto[];

@@ -11,21 +11,21 @@ type Props = {
 };
 
 function InputMemo({ onChangeValue, value }: Props) {
-  const { ipfsNode } = useBackend();
+  const { ipfsApi, isIpfsInitialized } = useBackend();
   const inputOpenFileRef = useRef<HTMLInputElement>(null);
 
   const calculationIpfsTo = useCallback(
     async (file) => {
-      if (!ipfsNode) {
+      if (!ipfsApi || !isIpfsInitialized) {
         return;
       }
-      const toCid = await ipfsNode.addContent(file);
+      const toCid = await ipfsApi.addContent(file);
 
       if (toCid) {
         onChangeValue(toCid);
       }
     },
-    [ipfsNode, onChangeValue]
+    [ipfsApi, onChangeValue]
   );
 
   const onClickClear = () => {

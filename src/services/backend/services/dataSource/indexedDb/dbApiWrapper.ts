@@ -146,7 +146,7 @@ class DbApiWrapper {
     return result;
   }
 
-  public async getSenseList(myAddress: string) {
+  public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
     ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
 
@@ -173,7 +173,7 @@ class DbApiWrapper {
     ) as SenseListItem[];
   }
 
-  public async getSenseSummary(myAddress: NeuronAddress) {
+  public async getSenseSummary(myAddress?: NeuronAddress = '') {
     const command = `?[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'`;
 
     const result = await this.db!.runCommand(command);

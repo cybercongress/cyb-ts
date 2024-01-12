@@ -1,6 +1,6 @@
 import { CID_TWEET } from 'src/utils/consts';
 
-import { extractLinkData, updateSyncState } from '../utils';
+import { extractLinkData, changeSyncStatus } from '../utils';
 import { extractParticlesResults } from '../services/SyncTransactionsLoop/utils';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../dataSource/blockchain/types';
 
@@ -150,8 +150,8 @@ test('extractLinkData should return the expected result', () => {
   expect(result.direction).toEqual('from');
   expect(result.lastLinkCid).toEqual('to_cid_1');
   expect(result.count).toEqual(2);
-  expect(result.lastTimestamp).toEqual(1640975400000);
-  expect(result.firstTimestamp).toEqual(1641753000000);
+  expect(result.lastTimestamp).toEqual(1640995200000);
+  expect(result.firstTimestamp).toEqual(1641772800000);
   // Add more specific assertions as needed
 });
 
@@ -162,13 +162,13 @@ test('updateSyncState should return the expected result', () => {
     unreadCount: 5,
     timestampRead: 1641753000000,
   };
-  const result = updateSyncState(mockStatusEntity, mockCyberlinks.cyberlinks);
+  const result = changeSyncStatus(mockStatusEntity, mockCyberlinks.cyberlinks);
   console.log(result);
 
   expect(result.lastId).toEqual('from_cid_1');
   expect(result.unreadCount).toEqual(7);
   expect(result.meta).toBeDefined();
-  expect(result.timestampUpdate).toEqual(1640975400000);
+  expect(result.timestampUpdate).toEqual(1640995200000);
   expect(result.timestampRead).toEqual(1641753000000);
   // Add more specific assertions as needed
 });
