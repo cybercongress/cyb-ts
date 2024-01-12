@@ -6,6 +6,7 @@ import Loader2 from 'src/components/ui/Loader2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Dots, NoItems, SearchSnippet } from '../../../../../components';
 import useGetLog from '../hooks/useGetLog';
+import { RegistryTypes } from 'src/soft.js/types';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
@@ -35,7 +36,23 @@ function FeedsTab() {
 
   const logRows = useMemo(() => {
     return data.map((item, i) => {
-      const cid = item.tx.body.messages[0].links[0].to;
+      // add txs types
+      let cyberLinkMessage = item.tx.body.messages[0];
+
+      if (!cyberLinkMessage) {
+        return null;
+      }
+
+      if (cyberLinkMessage['@type'] === RegistryTypes.MsgExec) {
+        [cyberLinkMessage] = cyberLinkMessage.msgs;
+      }
+
+      const cid = cyberLinkMessage.links[0].to;
+
+      if (!cid) {
+        return null;
+      }
+
       return (
         <SearchSnippet
           key={i}
