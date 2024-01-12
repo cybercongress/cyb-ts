@@ -60,6 +60,9 @@ export type LinkDbEntity = {
   to: ParticleCid;
   neuron: NeuronAddress;
   timestamp: number;
+  text: string;
+  mime: string;
+  direction: 'from' | 'to';
 };
 
 export type ConfigDbEntity = {

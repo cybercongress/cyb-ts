@@ -300,7 +300,7 @@ class DbApiWrapper {
     ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
     :order -timestamp`;
     const result = await this.db!.runCommand(command);
-    return dbResultToDtoList(result);
+    return dbResultToDtoList(result) as LinkDto[];
   }
 }
 
