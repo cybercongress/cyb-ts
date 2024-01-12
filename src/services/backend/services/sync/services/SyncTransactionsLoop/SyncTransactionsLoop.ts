@@ -74,7 +74,10 @@ class SyncTransactionsLoop {
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
-          !!dbInstance && !!syncQueueInitialized && !!params.cyberIndexUrl
+          !!dbInstance &&
+          !!syncQueueInitialized &&
+          !!params.cyberIndexUrl &&
+          !!params.myAddress
       )
     );
   }
@@ -100,9 +103,10 @@ class SyncTransactionsLoop {
       this.params.myAddress &&
         (await this.syncTransactions(this.params.myAddress, true));
 
-      await Promise.all(
-        this.params.followings.map((addr) => this.syncTransactions(addr))
-      );
+      // TODO: Enable to full sync of transactions
+      // await Promise.all(
+      //   this.params.followings.map((addr) => this.syncTransactions(addr))
+      // );
     } catch (err) {
       console.error('>>> syncAllTransactions', err);
       throw err;

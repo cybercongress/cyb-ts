@@ -59,7 +59,8 @@ class SyncParticlesLoop {
           !!ipfsInstance &&
           !!dbInstance &&
           !!syncQueueInitialized &&
-          !!params.cyberIndexUrl
+          !!params.cyberIndexUrl &&
+          !!params.myAddress
       )
     );
   }
