@@ -88,18 +88,23 @@ const fetchTransactions = async (
   timestampFrom: number,
   offset = 0
 ) => {
-  const res = await request<TransactionsByAddressResponse>(
-    cyberIndexUrl,
-    messagesByAddress,
-    {
-      address: `{${address}}`,
-      limit: TRANSACTIONS_BATCH_LIMIT,
-      timestamp_from: numberToDate(timestampFrom),
-      offset,
-    }
-  );
+  try {
+    const res = await request<TransactionsByAddressResponse>(
+      cyberIndexUrl,
+      messagesByAddress,
+      {
+        address: `{${address}}`,
+        limit: TRANSACTIONS_BATCH_LIMIT,
+        timestamp_from: numberToDate(timestampFrom),
+        offset,
+      }
+    );
 
-  return res?.messages_by_address;
+    return res?.messages_by_address;
+  } catch (e) {
+    console.log('--- fetchTransactions:', e);
+    return [];
+  }
 };
 
 const fetchCyberlinks = async (
@@ -108,37 +113,42 @@ const fetchCyberlinks = async (
   timestampFrom: number,
   offset = 0
 ) => {
-  const res = await request<CyberlinksByParticleResponse>(
-    cyberIndexUrl,
-    cyberlinksByParticle,
-    {
-      limit: CYBERLINKS_BATCH_LIMIT,
-      offset,
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-      where: {
-        _or: [
+  try {
+    const res = await request<CyberlinksByParticleResponse>(
+      cyberIndexUrl,
+      cyberlinksByParticle,
+      {
+        limit: CYBERLINKS_BATCH_LIMIT,
+        offset,
+        orderBy: [
           {
-            particle_to: {
-              _eq: particleCid,
-            },
-          },
-          {
-            particle_from: {
-              _eq: particleCid,
-            },
+            timestamp: 'desc',
           },
         ],
-        timestamp: {
-          _gt: numberToDate(timestampFrom),
+        where: {
+          _or: [
+            {
+              particle_to: {
+                _eq: particleCid,
+              },
+            },
+            {
+              particle_from: {
+                _eq: particleCid,
+              },
+            },
+          ],
+          timestamp: {
+            _gt: numberToDate(timestampFrom),
+          },
         },
-      },
-    }
-  );
-  return res.cyberlinks;
+      }
+    );
+    return res.cyberlinks;
+  } catch (e) {
+    console.log('--- fetchCyberlinks:', e);
+    return [];
+  }
 };
 
 export async function fetchAllCyberlinks(

@@ -6,7 +6,7 @@ import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/requests';
 import { LinkDirection } from './types';
 
-function extractLinkData(
+export function extractLinkData(
   cid: ParticleCid,
   links: CyberlinksByParticleResponse['cyberlinks']
 ) {
@@ -21,7 +21,7 @@ function extractLinkData(
   };
 }
 
-export function updateSyncState(
+export function changeSyncStatus(
   statusEntity: Partial<SyncStatusDto>,
   links: CyberlinksByParticleResponse['cyberlinks']
 ) {
@@ -30,14 +30,7 @@ export function updateSyncState(
 
   const unreadCount = (statusEntity.unreadCount || 0) + count;
   const timestampRead = count ? statusEntity.timestampRead : firstTimestamp;
-  console.log('-------aaaaaaa updateSyncState', {
-    ...statusEntity,
-    lastId: lastLinkCid,
-    unreadCount,
-    meta: { direction },
-    timestampUpdate: lastTimestamp,
-    timestampRead,
-  });
+
   return {
     ...statusEntity,
     lastId: lastLinkCid,

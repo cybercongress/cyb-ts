@@ -1,6 +1,9 @@
 import { of } from 'rxjs';
 
-import { fetchTransactionsIterable } from 'src/services/backend/services/dataSource/blockchain/requests';
+import {
+  fetchCyberlinksIterable,
+  fetchTransactionsIterable,
+} from 'src/services/backend/services/dataSource/blockchain/requests';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import DbApi, {
@@ -11,7 +14,6 @@ import { createAsyncIterable } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/utils/consts';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { dateToNumber } from 'src/utils/date';
-import { fetchAllCyberlinks } from '../../../dataSource/blockchain/requests';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
@@ -83,15 +85,20 @@ describe('SyncTransactionsLoop', () => {
       ],
     ];
 
-    const mockCyberlinksData = [
-      { from: particleTest, to: 'mockTo2', timestamp: '2022-01-10' },
-      { from: 'mockFrom1', to: particleTest, timestamp: '2022-01-01' },
+    const mockCyberlinksDataBatched = [
+      [
+        { from: particleTest, to: 'mockTo2', timestamp: '2022-01-10' },
+        { from: 'mockFrom1', to: particleTest, timestamp: '2022-01-01' },
+      ],
     ];
 
     (fetchTransactionsIterable as jest.Mock).mockReturnValueOnce(
       createAsyncIterable(mockTransactionsBatched)
     );
-    (fetchAllCyberlinks as jest.Mock).mockResolvedValue(mockCyberlinksData);
+
+    (fetchCyberlinksIterable as jest.Mock).mockReturnValueOnce(
+      createAsyncIterable(mockCyberlinksDataBatched)
+    );
 
     syncTransactionsLoop.start().loop$.subscribe({
       next: () => {
