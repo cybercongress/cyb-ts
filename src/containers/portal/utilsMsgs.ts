@@ -16,7 +16,7 @@ const mssgsClaim = async (
   onlyDelegate?: boolean
 ) => {
   const msgsBroadcast = [];
-  const { sender, isNanoLedger } = signerInfo;
+  const { sender } = signerInfo;
   const soft3js = new Soft3MessageFactory(sender, queryClient);
 
   const amountStake = new BigNumber(availableRelease);
@@ -31,7 +31,7 @@ const mssgsClaim = async (
 
   msgsBroadcast.push(resultMsgDelegate);
 
-  if (isNanoLedger || onlyDelegate) {
+  if (onlyDelegate) {
     return msgsBroadcast;
   }
 
