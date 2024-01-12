@@ -55,7 +55,7 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const queryClient = useQueryClient();
 
@@ -143,12 +143,12 @@ function Learn() {
       setLoading(true);
       let fromCid = ask;
       if (!ask.match(PATTERN_IPFS_HASH)) {
-        fromCid = await ipfsNode?.addContent(ask);
+        fromCid = await ipfsApi?.addContent(ask);
       }
 
       let toCid = answer;
       if (!answer.match(PATTERN_IPFS_HASH)) {
-        toCid = await ipfsNode?.addContent(answer);
+        toCid = await ipfsApi?.addContent(answer);
       }
 
       const result = await signingClient.cyberlink(

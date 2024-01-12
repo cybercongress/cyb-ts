@@ -16,7 +16,7 @@ const gasPrice = GasPrice.fromString('0.001boot');
 
 function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { signingClient, signer } = useSigningClient();
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const inputOpenFileRef = useRef();
   const [avatarIpfs, setAvatarIpfs] = useState<Nullable<string>>(null);
@@ -34,13 +34,13 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   useEffect(() => {
     const getPinAvatar = async () => {
       if (isIpfsInitialized && avatarImg !== null) {
-        const toCid = await ipfsNode?.addContent(avatarImg);
+        const toCid = await ipfsApi?.addContent(avatarImg);
         console.log('toCid', toCid);
         setAvatarIpfs(toCid);
       }
     };
     getPinAvatar();
-  }, [isIpfsInitialized, ipfsNode, avatarImg]);
+  }, [isIpfsInitialized, ipfsApi, avatarImg]);
 
   const uploadAvatarImg = useCallback(async () => {
     if (signer && signingClient) {
