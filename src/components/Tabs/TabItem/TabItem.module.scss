@@ -49,6 +49,14 @@
   }
 }
 
+.disable {
+  cursor: default;
+
+  &:hover {
+    text-shadow: unset;
+  }
+}
+
 .left {
   @include saber('blue', right, 'color');
   @include changeWidth('after');

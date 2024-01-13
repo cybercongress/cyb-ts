@@ -3,12 +3,6 @@
   overflow: hidden;
   height: 40px;
 
-  &.disableMode {
-    .slide {
-      cursor: unset !important;
-    }
-  }
-
   .slidesContainer {
     height: 100%;
     // overflow: hidden;

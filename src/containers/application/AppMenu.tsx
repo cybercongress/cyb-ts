@@ -70,15 +70,15 @@ const itemsMenu = () => {
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
-    {
-      name: 'Hub',
-      to: '/search/hub',
-      icon: hub,
-      subItems: [
-        { name: 'Networks', to: '/networks' },
-        { name: 'Add network', to: '/networks/add' },
-      ],
-    },
+    // {
+    //   name: 'Hub',
+    //   to: '/search/hub',
+    //   icon: hub,
+    //   subItems: [
+    //     { name: 'Networks', to: '/networks' },
+    //     { name: 'Add network', to: '/networks/add' },
+    //   ],
+    // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
