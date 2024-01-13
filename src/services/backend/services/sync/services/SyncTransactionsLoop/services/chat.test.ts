@@ -2,12 +2,11 @@ import { of } from 'rxjs';
 
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { dateToNumber } from 'src/utils/date';
-import SyncMyChatsLoop from './SyncMyChatsLoop';
-import { ServiceDeps } from '../types';
+import { ServiceDeps } from '../../types';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
-} from '../../../dataSource/blockchain/types';
+} from '../../../../dataSource/blockchain/types';
 
 import DbApi, {
   mockFindSyncStatus,
@@ -15,29 +14,24 @@ import DbApi, {
   mockGetSyncStatus,
   mockUpdateSyncStatus,
   mockGetTransactions,
-} from '../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
+} from '../../../../dataSource/indexedDb/__mocks__/dbApiWrapperMock';
+
+import { syncMyChats } from './chat';
 
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
 
 describe('SyncMyChatsLoop', () => {
-  let syncMyChatsLoop: SyncMyChatsLoop;
   const myAddress = 'my-address';
+  const db = new DbApi();
+
   beforeEach(() => {
     mockPutSyncStatus.mockClear();
     mockGetSyncStatus.mockClear();
     mockFindSyncStatus.mockClear();
     mockUpdateSyncStatus.mockClear();
-
-    const db = new DbApi();
-    const mockServiceDeps: ServiceDeps = {
-      params$: of({ myAddress, followings: [] }),
-      dbInstance$: of(db),
-      ipfsInstance$: of({} as any),
-    };
-    syncMyChatsLoop = new SyncMyChatsLoop(mockServiceDeps);
   });
 
-  it('should sync my chats', (done) => {
+  it('should sync my chats', async () => {
     const mockTransactions = [
       {
         type: MSG_SEND_TRANSACTION_TYPE,
@@ -89,30 +83,27 @@ describe('SyncMyChatsLoop', () => {
 
     mockGetTransactions.mockResolvedValueOnce(mockTransactions);
 
-    syncMyChatsLoop.start().loop$!.subscribe(() => {
-      expect(mockFindSyncStatus).toHaveBeenCalledWith({
-        entryType: EntryType.chat,
-      });
+    await syncMyChats(db, myAddress);
+    expect(mockFindSyncStatus).toHaveBeenCalledWith({
+      entryType: EntryType.chat,
+    });
 
-      expect(mockPutSyncStatus).toHaveBeenCalledWith({
-        entryType: EntryType.chat,
-        id: 'receiver1',
-        timestampUpdate: dateToNumber('2022-01-10'),
-        unreadCount: 2,
-        timestampRead: 0,
-        disabled: false,
-        lastId: 'hash321',
-        meta: { amount: [{ denom: 'ATOM', amount: '10' }], memo: 'hello test' },
-      });
+    expect(mockPutSyncStatus).toHaveBeenCalledWith({
+      entryType: EntryType.chat,
+      id: 'receiver1',
+      timestampUpdate: dateToNumber('2022-01-10'),
+      unreadCount: 2,
+      timestampRead: 0,
+      disabled: false,
+      lastId: 'hash321',
+      meta: { amount: [{ denom: 'ATOM', amount: '10' }], memo: 'hello test' },
+    });
 
-      expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
-        id: 'sender2',
-        timestampUpdate: dateToNumber('2022-01-02'),
-        unreadCount: 1,
-        meta: { amount: [{ denom: 'ATOM', amount: '50' }], memo: undefined },
-      });
-
-      done();
+    expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
+      id: 'sender2',
+      timestampUpdate: dateToNumber('2022-01-02'),
+      unreadCount: 1,
+      meta: { amount: [{ denom: 'ATOM', amount: '50' }], memo: undefined },
     });
   });
 });

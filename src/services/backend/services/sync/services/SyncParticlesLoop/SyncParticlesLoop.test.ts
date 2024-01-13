@@ -30,7 +30,7 @@ describe('SyncParticlesLoop', () => {
       dbInstance$: of(db),
       ipfsInstance$: of({} as CybIpfsNode),
       params$: of({
-        myAddress: null,
+        myAddress: 'r',
         followings: [],
         cyberIndexUrl: 'test-index-url',
       }),
@@ -42,10 +42,6 @@ describe('SyncParticlesLoop', () => {
   });
 
   it('should call updateSyncState and putSyncStatus correctly', (done) => {
-    // (fetchCyberlinksIterable as jest.Mock).mockResolvedValueOnce([
-    //   { from: 'cid', to: 'cid1', timestamp: numberToDate(333) },
-    // ]);
-
     (fetchCyberlinksIterable as jest.Mock).mockReturnValueOnce(
       createAsyncIterable([
         [{ from: 'cid', to: 'cid1', timestamp: numberToDate(333) }],

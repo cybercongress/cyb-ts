@@ -23,6 +23,7 @@ import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/type
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
+jest.mock('./services/chat');
 
 describe('SyncTransactionsLoop', () => {
   let syncTransactionsLoop: SyncTransactionsLoop;

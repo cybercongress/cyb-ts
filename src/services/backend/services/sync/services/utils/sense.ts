@@ -1,16 +1,14 @@
-import { updateSenseChat } from './sense';
-
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import { SenseChat } from 'src/services/backend/types/sense';
 import { NeuronAddress } from 'src/types/base';
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
+
 import {
   MSG_SEND_TRANSACTION_TYPE,
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MsgSendTransaction,
 } from '../../../dataSource/blockchain/types';
-import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 
-// eslint-disable-next-line import/no-unused-modules
 export const extractSenseChats = (
   myAddress: NeuronAddress,
   transactions: TransactionDto[]

@@ -1,10 +1,22 @@
-import { CyberLinkSimple, ParticleCid } from 'src/types/base';
+import {
+  CyberLinkSimple,
+  CyberLinkTimestamp,
+  ParticleCid,
+} from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
+import { CID_TWEET } from 'src/utils/consts';
+import { dateToNumber } from 'src/utils/date';
 
 import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/requests';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { MAX_PARRALEL_LINKS } from '../consts';
+import {
+  CYBER_LINK_TRANSACTION_TYPE,
+  CyberLinkTransaction,
+  Transaction,
+} from '../../../dataSource/blockchain/types';
+import { ParticleResult } from '../../types';
 
 export const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [
@@ -49,3 +61,47 @@ export const fetchCyberlinksAndResolveParticles = async (
 
   return links;
 };
+export function extractCybelinksFromTransaction(batch: Transaction[]) {
+  const cyberlinks = batch.filter(
+    (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
+  ) as CyberLinkTransaction[];
+  const particlesFound = new Set<string>();
+  const links: CyberLinkTimestamp[] = [];
+  // Get links: only from TWEETS
+  const tweets: Record<ParticleCid, ParticleResult> = cyberlinks.reduce<
+    Record<ParticleCid, ParticleResult>
+  >(
+    (
+      acc,
+      {
+        value,
+        transaction: {
+          block: { timestamp },
+        },
+      }: CyberLinkTransaction
+    ) => {
+      value.links.forEach((link) => {
+        particlesFound.add(link.to);
+        particlesFound.add(link.from);
+
+        links.push({ ...link, timestamp: dateToNumber(timestamp) });
+        if (link.from === CID_TWEET) {
+          acc[link.to] = {
+            timestamp: dateToNumber(timestamp),
+            direction: 'from',
+            from: CID_TWEET,
+            to: link.to,
+          };
+        }
+      });
+      return acc;
+    },
+    {}
+  );
+
+  return {
+    tweets,
+    particlesFound: [...particlesFound],
+    links,
+  };
+}
