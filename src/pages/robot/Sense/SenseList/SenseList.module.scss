@@ -2,6 +2,7 @@
 
 .wrapper {
   max-width: 300px;
+  min-width: 200px;
 
   .center {
     margin: auto;
@@ -38,6 +39,8 @@
         width: 30px;
         label {
           font-size: 20px;
+          display: block;
+          width: 100%;
         }
       }
     }

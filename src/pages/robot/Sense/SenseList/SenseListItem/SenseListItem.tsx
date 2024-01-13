@@ -6,16 +6,26 @@ import Date from '../../_refactor/Date/Date';
 import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
+import { isParticle as isParticleFunc } from 'src/features/particles/utils';
 
 type Props = {
   unreadCount: number;
   address: string;
   timestamp: number;
   value: string;
+
+  // temp
+  withAmount?: boolean;
 };
 
-function SenseListItem({ unreadCount, address, timestamp, value }: Props) {
-  const isParticle = address?.startsWith('Qm');
+function SenseListItem({
+  unreadCount,
+  address,
+  timestamp,
+  value,
+  withAmount,
+}: Props) {
+  const isParticle = address && isParticleFunc(address);
 
   return (
     <div
@@ -41,7 +51,13 @@ function SenseListItem({ unreadCount, address, timestamp, value }: Props) {
           {isParticle && cutSenseItem(address)}
         </h5>
       )}
-      <p className={styles.text}>{value}</p>
+      <p
+        className={cx(styles.text, {
+          [styles.withAmount]: withAmount,
+        })}
+      >
+        {value}
+      </p>
 
       {timestamp && <Date timestamp={timestamp} className={styles.date} />}
 

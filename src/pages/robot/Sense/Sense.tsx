@@ -23,7 +23,7 @@ function Sense() {
   const senseBackendIsLoading = useAppSelector((state) => {
     const { entryStatus } = state.backend.syncState;
 
-    return (['my-chats', 'particle'] as SyncEntryName[]).some((entry) => {
+    return (['transaction', 'particle'] as SyncEntryName[]).some((entry) => {
       return entryStatus[entry]?.status !== 'idle';
     });
   });
@@ -39,7 +39,7 @@ function Sense() {
       text = error;
     } else if (loading || senseBackendIsLoading) {
       color = 'yellow';
-      text = loading ? 'loading...' : 'database syncing...';
+      text = loading ? 'loading...' : 'collecting data...';
     } else {
       text = 'welcome to sense 🧬';
     }

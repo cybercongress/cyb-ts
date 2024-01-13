@@ -85,8 +85,6 @@ function SenseViewer({ selected, adviser }: Props) {
     adviser.setLoading(loading);
   }, [loading, adviser]);
 
-  console.log(loading, 'loading');
-
   useEffect(() => {
     adviser.setError(error?.message || '');
   }, [error, adviser]);
@@ -94,6 +92,7 @@ function SenseViewer({ selected, adviser }: Props) {
   // useMemo
   const items = [...(data || [])].reverse();
 
+  console.log(loading, 'loading');
   console.log(data);
   console.log(showItemsLength);
   console.log('items', items);

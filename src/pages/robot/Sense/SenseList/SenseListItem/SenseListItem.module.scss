@@ -77,3 +77,13 @@
 .unread {
   justify-self: flex-end;
 }
+
+.withAmount {
+  // 1 line
+  > span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+  }
+}

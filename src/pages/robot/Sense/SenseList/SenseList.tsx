@@ -97,10 +97,10 @@ function SenseList({ select, selected, adviser }: Props) {
           </div>
         ) : items.length ? (
           <aside>
-            <SenseListItem
+            {/* <SenseListItem
               value="all"
               unreadCount={getSummaryQuery.data?.[0]?.unread || 0}
-            />
+            /> */}
 
             <div className={styles.filters}>
               <SenseListFilters
@@ -145,7 +145,7 @@ function SenseList({ select, selected, adviser }: Props) {
 
                   const content = (
                     <>
-                      {text}
+                      <span>{text}</span>
                       {amount?.map((a) => {
                         return (
                           <CoinAmount
@@ -161,6 +161,8 @@ function SenseList({ select, selected, adviser }: Props) {
                       })}
                     </>
                   );
+
+                  const withAmount = Boolean(amount?.length);
 
                   return (
                     <li
@@ -180,6 +182,7 @@ function SenseList({ select, selected, adviser }: Props) {
                           timestamp={timestampUpdate}
                           unreadCount={unreadCount}
                           value={content}
+                          withAmount
                         />
                       </button>
                     </li>

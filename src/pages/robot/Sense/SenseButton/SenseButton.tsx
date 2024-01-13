@@ -16,12 +16,12 @@ function SenseButton({ className }) {
   const { data } = useQuery({
     queryKey: ['senseApi', 'getSummary', address],
     queryFn: async () => {
-      return senseApi!.getSummary(address!);
+      return senseApi!.getSummary();
     },
     enabled: Boolean(senseApi && address),
   });
 
-  const unread = data?.[0]?.unread || 0;
+  const unread = data?.map((item) => item['sum(unreadCount)']).reduce((a, b) => a + b, 0);
 
   return (
     <Link

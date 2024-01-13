@@ -66,6 +66,7 @@ function useSenseItem({ id }: Props) {
     refetchInterval: REFETCH_INTERVAL,
   });
 
+  console.log('entryType', entryType);
   console.log('isParticle', isParticle);
   console.log('isChat', isChatEntry);
   console.log('----getTxsQuery', getTxsQuery);
@@ -78,9 +79,9 @@ function useSenseItem({ id }: Props) {
       | LinkDbEntity[],
     loading:
       !!id &&
-      (getTxsQuery.isLoading ||
-        getLinksQuery.isLoading ||
-        getChatQuery.isLoading),
+      (getTxsQuery.isFetching ||
+        getLinksQuery.isFetching ||
+        getChatQuery.isFetching),
     error: (getTxsQuery.error || getLinksQuery.error) as Error | undefined,
   };
 }
