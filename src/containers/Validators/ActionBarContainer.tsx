@@ -502,7 +502,7 @@ function ActionBarContainer({
         }
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
-        available={txType === TXTYPE_DELEGATE ? balance.available : staked}
+        available={txType === TXTYPE_DELEGATE ? balance?.available : staked}
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
