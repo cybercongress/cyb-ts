@@ -38,6 +38,7 @@
 
 {
     :create sync_status {
+        owner_id: String,
         id: String =>
         entry_type: Int,
         disabled: Bool,

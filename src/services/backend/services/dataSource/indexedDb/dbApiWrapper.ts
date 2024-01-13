@@ -40,12 +40,15 @@ class DbApiWrapper {
     this.db = dbApi;
   }
 
-  public async getSyncStatus(id: NeuronAddress | ParticleCid) {
+  public async getSyncStatus(
+    ownerId: NeuronAddress,
+    id: NeuronAddress | ParticleCid
+  ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update', 'unread_count', 'timestamp_read'],
-      [`id = '${id}'`],
-      ['id']
+      [`id = '${id}'`, `owner_id = '${ownerId}'`],
+      ['id', 'owner_id']
     );
 
     if (!result.ok) {
@@ -73,24 +76,27 @@ class DbApiWrapper {
     return result;
   }
 
-  public async updateSyncStatus(entity: Partial<SyncStatusDto>) {
+  public async updateSyncStatus(
+    entity: Partial<SyncStatusDto> & {
+      id: NeuronAddress | ParticleCid;
+      ownerId: NeuronAddress;
+    }
+  ) {
     return this.db!.executeUpdateCommand('sync_status', [
       transformToDbEntity(removeUndefinedFields(entity)),
     ]);
   }
 
-  public async putTransactions(transactions: TransactionDbEntity[]) {
-    return this.db!.executePutCommand('transaction', transactions);
-  }
-
   public async findSyncStatus({
+    ownerId,
     entryType,
     id,
   }: {
+    ownerId: NeuronAddress;
     entryType?: EntryType;
     id?: NeuronAddress | ParticleCid;
   }) {
-    const conditions = [];
+    const conditions = [`owner_id = '${ownerId}'`];
 
     entryType && conditions.push(`entry_type = ${entryType}`);
 
@@ -104,6 +110,10 @@ class DbApiWrapper {
     );
 
     return dbResultToDtoList(result) as Partial<SyncStatusDto>[];
+  }
+
+  public async putTransactions(transactions: TransactionDbEntity[]) {
+    return this.db!.executePutCommand('transaction', transactions);
   }
 
   public async putPins(pins: PinDbEntity[] | PinDbEntity) {
@@ -148,7 +158,7 @@ class DbApiWrapper {
 
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
+    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2, owner_id = '${myAddress}'
 
     p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
     p_last[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
@@ -160,8 +170,8 @@ class DbApiWrapper {
 
     p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
 
-    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}'
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3
+    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}', owner_id = '${myAddress}'
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3, owner_id = '${myAddress}'
     ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta]
     :order -timestamp_update
     `;
@@ -173,23 +183,28 @@ class DbApiWrapper {
     ) as SenseListItem[];
   }
 
-  public async getSenseSummary(myAddress?: NeuronAddress = '') {
+  public async getSenseSummary(myAddress: NeuronAddress = '') {
     const command = `?[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'`;
 
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result) as SenseUnread[];
   }
 
-  public async senseMarkAsRead(id: NeuronAddress | ParticleCid) {
+  public async senseMarkAsRead(
+    ownerId: NeuronAddress,
+    id: NeuronAddress | ParticleCid
+  ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update'],
-      [`id = '${id}'`],
-      ['id']
+      [`id = '${id}'`, `owner_id = '${ownerId}'`],
+      ['id', 'owner_id']
     );
+
     const timestampUpdate = result.rows[0];
     this.updateSyncStatus({
       id,
+      ownerId,
       timestampUpdate,
       timestampRead: timestampUpdate,
       unreadCount: 0,

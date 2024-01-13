@@ -9,7 +9,6 @@ import ParticlesResolverQueue from './services/ParticlesResolverQueue/ParticlesR
 import SyncIpfsLoop from './services/SyncIpfsLoop/SyncIpfsLoop';
 import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactionsLoop';
 import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
-import SyncMyChatsLoop from './services/SyncMyChatsLoop/SyncMyChatsLoop';
 
 import { ServiceDeps } from './services/types';
 
@@ -40,7 +39,5 @@ export class SyncService {
     new SyncTransactionsLoop(deps, particlesResolver).start();
 
     new SyncParticlesLoop(deps, particlesResolver).start();
-
-    new SyncMyChatsLoop(deps).start();
   }
 }

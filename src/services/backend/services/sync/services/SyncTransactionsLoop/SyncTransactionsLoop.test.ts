@@ -23,6 +23,7 @@ import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/type
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('src/services/backend/channels/BroadcastChannelSender');
+jest.mock('./services/chat');
 
 describe('SyncTransactionsLoop', () => {
   let syncTransactionsLoop: SyncTransactionsLoop;
@@ -34,6 +35,7 @@ describe('SyncTransactionsLoop', () => {
 
     DbApi.mockClear();
     mockGetSyncStatus.mockResolvedValueOnce({
+      ownerId: myAddress,
       id: myAddress,
       unreadCount: 0,
       timestampUpdate: 333,
@@ -105,6 +107,7 @@ describe('SyncTransactionsLoop', () => {
         expect(mockPutSyncStatus).toHaveBeenCalledWith([
           {
             id: particleTest,
+            ownerId: 'user-address',
             entryType: EntryType.particle,
             timestampUpdate: dateToNumber('2022-01-10'),
             timestampRead: dateToNumber('2021-01-01'),

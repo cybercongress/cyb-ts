@@ -1,7 +1,7 @@
 import { CID_TWEET } from 'src/utils/consts';
 
 import { extractLinkData, changeSyncStatus } from '../utils';
-import { extractParticlesResults } from '../services/SyncTransactionsLoop/utils';
+import { extractCybelinksFromTransaction } from '../services/utils/links';
 import { CYBER_LINK_TRANSACTION_TYPE } from '../../dataSource/blockchain/types';
 
 jest.mock('../../dataSource/blockchain/requests', () => ({
@@ -54,7 +54,7 @@ test('extractParticlesResults should return correct results', () => {
   ];
 
   // Call the function
-  const result = extractParticlesResults(batch);
+  const result = extractCybelinksFromTransaction(batch);
   console.log(result);
   // Assert the expected output
   expect(result.tweets).toEqual({
@@ -137,7 +137,7 @@ const mockCyberlinks = {
 
 // Test for extractParticlesResults function
 test('extractParticlesResults should return the expected result', () => {
-  const result = extractParticlesResults(mockTransaction);
+  const result = extractCybelinksFromTransaction(mockTransaction);
   expect(result.tweets).toBeDefined();
   expect(result.particlesFound).toBeDefined();
   expect(result.links).toBeDefined();
