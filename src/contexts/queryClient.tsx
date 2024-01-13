@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
 import { Option } from 'src/types';
+import { useQuery } from '@tanstack/react-query';
 
 const QueryClientContext = React.createContext<Option<CyberClient>>(undefined);
 
@@ -10,29 +11,23 @@ export function useQueryClient() {
 }
 
 function QueryClientProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient, setQueryClient] = useState<Option<CyberClient>>();
+  const { data, error, isFetching } = useQuery({
+    queryKey: ['cyberClient', 'connect'],
+    queryFn: async () => {
+      return CyberClient.connect(CYBER.CYBER_NODE_URL_API);
+    },
+  });
 
-  useEffect(() => {
-    async function createQueryClient() {
-      try {
-        const queryClient = await CyberClient.connect(CYBER.CYBER_NODE_URL_API);
-        setQueryClient(queryClient);
-      } catch (error) {
-        console.error(error);
-        // need handle?
-      }
-    }
-
-    createQueryClient();
-  }, []);
-
-  // TODO: need handle somehow
-  if (!queryClient) {
+  if (isFetching) {
     return null;
   }
 
+  if (error) {
+    return <span>Error queryClient connect: {error.message}</span>;
+  }
+
   return (
-    <QueryClientContext.Provider value={queryClient}>
+    <QueryClientContext.Provider value={data}>
       {children}
     </QueryClientContext.Provider>
   );

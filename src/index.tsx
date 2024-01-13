@@ -96,9 +96,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <NetworksProvider>
-        <SdkQueryClientProvider>
-          <SigningClientProvider>
-            <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <SdkQueryClientProvider>
+            <SigningClientProvider>
               <IbcDenomProvider>
                 <WebsocketsProvider>
                   <DataProvider>
@@ -114,9 +114,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   </DataProvider>
                 </WebsocketsProvider>
               </IbcDenomProvider>
-            </QueryClientProvider>
-          </SigningClientProvider>
-        </SdkQueryClientProvider>
+            </SigningClientProvider>
+          </SdkQueryClientProvider>
+        </QueryClientProvider>
       </NetworksProvider>
     </Provider>
   );
