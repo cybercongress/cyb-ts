@@ -86,24 +86,35 @@ describe('SyncMyChatsLoop', () => {
     await syncMyChats(db, myAddress);
     expect(mockFindSyncStatus).toHaveBeenCalledWith({
       entryType: EntryType.chat,
+      ownerId: 'my-address',
     });
 
     expect(mockPutSyncStatus).toHaveBeenCalledWith({
       entryType: EntryType.chat,
       id: 'receiver1',
+      ownerId: 'my-address',
       timestampUpdate: dateToNumber('2022-01-10'),
       unreadCount: 2,
       timestampRead: 0,
       disabled: false,
       lastId: 'hash321',
-      meta: { amount: [{ denom: 'ATOM', amount: '10' }], memo: 'hello test' },
+      meta: {
+        amount: [{ denom: 'ATOM', amount: '10' }],
+        memo: 'hello test',
+        direction: 'to',
+      },
     });
 
     expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
       id: 'sender2',
       timestampUpdate: dateToNumber('2022-01-02'),
       unreadCount: 1,
-      meta: { amount: [{ denom: 'ATOM', amount: '50' }], memo: undefined },
+      ownerId: 'my-address',
+      meta: {
+        amount: [{ denom: 'ATOM', amount: '50' }],
+        direction: 'from',
+        memo: undefined,
+      },
     });
   });
 });

@@ -35,6 +35,7 @@ describe('SyncTransactionsLoop', () => {
 
     DbApi.mockClear();
     mockGetSyncStatus.mockResolvedValueOnce({
+      ownerId: myAddress,
       id: myAddress,
       unreadCount: 0,
       timestampUpdate: 333,
@@ -106,6 +107,7 @@ describe('SyncTransactionsLoop', () => {
         expect(mockPutSyncStatus).toHaveBeenCalledWith([
           {
             id: particleTest,
+            ownerId: 'user-address',
             entryType: EntryType.particle,
             timestampUpdate: dateToNumber('2022-01-10'),
             timestampRead: dateToNumber('2021-01-01'),

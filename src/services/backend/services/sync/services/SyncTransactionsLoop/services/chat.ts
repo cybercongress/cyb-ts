@@ -8,6 +8,7 @@ export const syncMyChats = async (
   myAddress: NeuronAddress
 ) => {
   const syncItems = await db.findSyncStatus({
+    ownerId: myAddress,
     entryType: EntryType.chat,
   });
 
@@ -26,6 +27,7 @@ export const syncMyChats = async (
 
     if (!syncItem) {
       db.putSyncStatus({
+        ownerId: myAddress,
         entryType: EntryType.chat,
         id: chat.userAddress,
         timestampUpdate: lastChatTimestamp,
@@ -43,6 +45,7 @@ export const syncMyChats = async (
       ).length;
       if (timestampUpdate! < lastChatTimestamp) {
         db.updateSyncStatus({
+          ownerId: myAddress,
           id,
           timestampUpdate: lastChatTimestamp,
           unreadCount,

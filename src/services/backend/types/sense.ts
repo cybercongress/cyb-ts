@@ -33,13 +33,21 @@ type SenseUserMeta = {
   type: string;
 };
 
+type SenseTransactionMeta = {
+  memo?: string;
+};
+
 export type SenseChatMessage = {
   amount: Coin[];
   memo?: string;
   direction: 'from' | 'to';
 };
 
-export type SenseMeta = SenseParticleMeta | SenseUserMeta | SenseChatMessage;
+export type SenseMeta =
+  | SenseParticleMeta
+  | SenseUserMeta
+  | SenseChatMessage
+  | SenseTransactionMeta;
 
 export type SenseListItem = {
   entryType: EntryType;
