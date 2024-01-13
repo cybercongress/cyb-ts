@@ -36,6 +36,7 @@ type SenseUserMeta = {
 export type SenseChatMessage = {
   amount: Coin[];
   memo?: string;
+  direction: 'from' | 'to';
 };
 
 export type SenseMeta = SenseParticleMeta | SenseUserMeta | SenseChatMessage;

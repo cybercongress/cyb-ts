@@ -58,11 +58,6 @@ class DeferredDbSaver implements IDeferredDbSaver {
     const { cid } = content;
 
     this.queue$.next(new Map(this.queue$.value).set(cid, { content }));
-    console.log(
-      '----q',
-      this.queue$.value,
-      new Map(this.queue$.getValue()).set(cid, { content })
-    );
   }
 
   public enqueueLinks(links: LinkDto[]) {
@@ -76,7 +71,6 @@ class DeferredDbSaver implements IDeferredDbSaver {
   private async processQueue(queue: QueueMap) {
     // const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
     this.queue$.next(new Map());
-    console.log('-----process', queue);
     // eslint-disable-next-line no-restricted-syntax
     for (const [cid, item] of queue) {
       // eslint-disable-next-line no-await-in-loop

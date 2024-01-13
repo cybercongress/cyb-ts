@@ -29,17 +29,17 @@ export const extractSenseChats = (
     if (t.type === MSG_MULTI_SEND_TRANSACTION_TYPE) {
       // TODO: How to deal many outputs vs many inputs??
       const { inputs, outputs } = t.value;
-      const userMessages = inputs.find((i) => i.address === myAddress)
-        ? outputs
-        : inputs;
+      const isSender = inputs.find((i) => i.address === myAddress);
+      const userMessages = isSender ? outputs : inputs;
       userMessages.forEach((msg) =>
-        updateSenseChat(chats, msg.address, t, msg.coins)
+        updateSenseChat(chats, msg.address, t, msg.coins, isSender)
       );
     } else if (t.type === MSG_SEND_TRANSACTION_TYPE) {
       const { from_address, to_address, amount } =
         t.value as MsgSendTransaction['value'];
-      userAddress = from_address === myAddress ? to_address : from_address;
-      updateSenseChat(chats, userAddress, t, amount);
+      const isSender = from_address === myAddress;
+      userAddress = isSender ? to_address : from_address;
+      updateSenseChat(chats, userAddress, t, amount, isSender);
     }
   });
 
@@ -50,7 +50,8 @@ const updateSenseChat = (
   chats: Map<NeuronAddress, SenseChat>,
   addr: string,
   t: TransactionDto,
-  amount: Coin[]
+  amount: Coin[],
+  isSender: boolean
 ): Map<string, SenseChat> => {
   const transactions = chats.has(addr)
     ? chats.get(addr)?.transactions || []
@@ -59,7 +60,7 @@ const updateSenseChat = (
   transactions.push(t);
   chats.set(addr, {
     userAddress: addr,
-    last: { amount, memo: t.memo },
+    last: { amount, memo: t.memo, direction: isSender ? 'to' : 'from' },
     transactions,
   });
   return chats;

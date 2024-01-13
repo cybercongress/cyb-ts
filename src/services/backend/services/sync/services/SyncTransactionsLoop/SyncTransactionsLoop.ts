@@ -161,15 +161,14 @@ class SyncTransactionsLoop {
         count += items.length;
         await this.db!.putTransactions(transactions);
 
-        this.statusApi.sendStatus(
-          'in-progress',
-          `sync ${address} batch processing...`
-        );
         const { tweets, particlesFound, links } =
           extractCybelinksFromTransaction(items);
 
         const tweetCids = Object.keys(tweets);
-
+        this.statusApi.sendStatus(
+          'in-progress',
+          `sync ${address} batch processing - links: ${links.length}, tweets: ${tweets.length}, particles: ${particlesFound.length}...`
+        );
         // resolve 'tweets' particles
         await this.particlesResolver!.enqueue(
           tweetCids.map((cid) => ({
