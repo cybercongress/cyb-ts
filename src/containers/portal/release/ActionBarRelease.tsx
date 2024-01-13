@@ -38,13 +38,7 @@ type Props = {
   currentRelease: Nullable<CurrentRelease[]>;
   redirectFunc: (steps: 'claim' | 'prove') => void;
   callback?: (error: string) => void;
-  useReleasedStage: {
-    alreadyClaimed: number;
-    availableRelease: number;
-    gift: number;
-    leftRelease: number;
-    released: number;
-  };
+  availableRelease: (isLedger: boolean) => number;
 };
 
 function ActionBarRelease({
@@ -57,7 +51,7 @@ function ActionBarRelease({
   totalRelease,
   loadingRelease,
   callback,
-  useReleasedStage,
+  availableRelease,
   addressActive,
   redirectFunc,
 }: Props) {
@@ -94,7 +88,7 @@ function ActionBarRelease({
             isNanoLedger,
           },
           msgs,
-          useReleasedStage.availableRelease,
+          availableRelease(isNanoLedger),
           queryClient
         );
 
@@ -135,7 +129,7 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, signingClient, currentRelease, queryClient]);
+  }, [signer, signingClient, currentRelease, queryClient, availableRelease]);
 
   useEffect(() => {
     const checkAddress = async () => {

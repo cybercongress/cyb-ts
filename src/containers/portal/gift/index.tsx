@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
 import portalAmbient from 'sounds/portalAmbient112.mp3';
@@ -482,6 +482,51 @@ function PortalGift() {
     addressActive,
   ]);
 
+  const availableRelease = useCallback(
+    (isNanoLedger: boolean) => {
+      if (!totalGift || !currentRelease || !addressActive) {
+        return 0;
+      }
+
+      const sliceArrayRelease = currentRelease.slice(
+        0,
+        isNanoLedger ? 1 : currentRelease.length
+      );
+
+      const claimedAmount = sliceArrayRelease.reduce((sum, item) => {
+        if (
+          item.addressOwner === addressActive.bech32 &&
+          totalGift[item.address]?.claim
+        ) {
+          return sum + totalGift[item.address].claim;
+        }
+        return sum;
+      }, 0);
+
+      const alreadyClaimed = sliceArrayRelease.reduce((sum, item) => {
+        if (item.addressOwner === addressActive.bech32) {
+          return sum + item.balanceClaim;
+        }
+        return sum;
+      }, 0);
+
+      const currentStageProcent = new BigNumber(currentStage)
+        .dividedBy(100)
+        .toNumber();
+
+      const released = new BigNumber(claimedAmount).minus(alreadyClaimed);
+
+      const availableRelease = new BigNumber(claimedAmount)
+        .multipliedBy(currentStageProcent)
+        .minus(released)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber();
+
+      return availableRelease > 0 ? availableRelease : 0;
+    },
+    [currentRelease, totalGift, addressActive, currentStage]
+  );
+
   const useNextRelease = useMemo(() => {
     if (currentStage < AMOUNT_ALL_STAGE && claimStat) {
       const nextTarget = new BigNumber(1)
@@ -632,7 +677,7 @@ function PortalGift() {
           totalRelease={totalRelease}
           loadingRelease={loadingRelease}
           redirectFunc={redirectFunc}
-          useReleasedStage={useReleasedStage}
+          availableRelease={availableRelease}
         />
       )}
     </>
