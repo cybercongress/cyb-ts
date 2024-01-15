@@ -20,7 +20,8 @@ import { BackgroundWorker } from 'src/services/backend/workers/background/worker
 const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
   getList: () => dbApi.getSenseList(myAddress),
-  markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
+  markAsRead: (id: NeuronAddress | ParticleCid) =>
+    dbApi.senseMarkAsRead(myAddress, id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
