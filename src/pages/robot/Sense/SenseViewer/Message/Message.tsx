@@ -1,5 +1,5 @@
 import React from 'react';
-import { Account, DenomArr, Tooltip } from 'src/components';
+import { Account, AmountDenom, DenomArr, Tooltip } from 'src/components';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import styles from './Message.module.scss';
 import dateFormat from 'dateformat';
@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import Date from '../../_refactor/Date/Date';
 import { formatNumber } from 'src/utils/utils';
 import cx from 'classnames';
+import useGetCreator from 'src/containers/ipfs/hooks/useGetCreator';
 
 type Props = {
   address: string;
@@ -38,20 +39,27 @@ export function CoinAmount({
   type?: CoinAction;
 }) {
   return (
-    <div className={styles.coinAmount}>
-      <span
-        className={cx({
-          [styles.send]: type === CoinAction.send,
-        })}
-      >
-        {formatNumber(amount)}
-      </span>
-      <DenomArr denomValue={denom} onlyImg size={13} />
+    <div
+      className={cx(styles.coinAmount, {
+        [styles.send]: type === CoinAction.send,
+      })}
+    >
+      <AmountDenom
+        amountValue={amount}
+        denom={denom}
+        styleValue={{
+          flexDirection: 'unset',
+        }}
+      />
     </div>
   );
 }
 
 function Message({ address, text, date, amountData, txHash }: Props) {
+  // const isP = address && address.startsWith('Qm');
+
+  // const creator = useGetCreator();
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.avatar}>

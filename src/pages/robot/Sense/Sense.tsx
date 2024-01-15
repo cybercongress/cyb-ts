@@ -39,7 +39,14 @@ function Sense() {
       text = error;
     } else if (loading || senseBackendIsLoading) {
       color = 'yellow';
-      text = loading ? 'loading...' : 'collecting data...';
+      text = loading ? (
+        'loading...'
+      ) : (
+        <p>
+          syncing txs data... <br />
+          (may take some time, but you can use Sense)
+        </p>
+      );
     } else {
       text = 'welcome to sense 🧬';
     }

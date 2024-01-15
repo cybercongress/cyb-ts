@@ -27,7 +27,7 @@ const mapFilterWithEntryType = {
   [EntryType.particle]: Filters.Particle,
 };
 
-const REFETCH_INTERVAL = 1000 * 20;
+export const REFETCH_INTERVAL = 1000 * 20;
 
 function SenseList({ select, selected, adviser }: Props) {
   const [filter, setFilter] = useState(Filters.All);
@@ -35,18 +35,9 @@ function SenseList({ select, selected, adviser }: Props) {
 
   const { senseApi } = useBackend();
 
-  const enabled = !!(senseApi && address);
+  const enabled = Boolean(senseApi && address);
 
-  const getSummaryQuery = useQuery({
-    queryKey: ['senseApi', 'getSummary', address],
-    queryFn: async () => {
-      return senseApi!.getSummary();
-    },
-    enabled,
-    refetchInterval: REFETCH_INTERVAL,
-  });
-
-  const getListQuery = useQuery({
+  const { error, data, isLoading, refetch } = useQuery({
     queryKey: ['senseApi', 'getList', address],
     queryFn: async () => {
       return senseApi!.getList();
@@ -54,11 +45,6 @@ function SenseList({ select, selected, adviser }: Props) {
     enabled,
     refetchInterval: REFETCH_INTERVAL,
   });
-
-  const isLoading = getListQuery.isLoading || getSummaryQuery.isLoading;
-  const error = (getListQuery.error || getSummaryQuery.error) as
-    | Error
-    | undefined;
 
   useEffect(() => {
     adviser.setLoading(isLoading);
@@ -73,14 +59,14 @@ function SenseList({ select, selected, adviser }: Props) {
       return;
     }
 
-    getListQuery.refetch();
-    getSummaryQuery.refetch();
-  }, [getListQuery, getSummaryQuery, selected]);
+    setTimeout(() => {
+      refetch();
+    }, 300);
+  }, [refetch, selected]);
 
-  console.log('----getListQuery', getListQuery.data);
-  console.log('----getSummaryQuery', getSummaryQuery.data);
+  console.log('----getListQuery', data);
 
-  let items = getListQuery.data || [];
+  let items = data || [];
 
   if (filter !== Filters.All) {
     items = items.filter((item) => {
@@ -97,11 +83,6 @@ function SenseList({ select, selected, adviser }: Props) {
           </div>
         ) : items.length ? (
           <aside>
-            {/* <SenseListItem
-              value="all"
-              unreadCount={getSummaryQuery.data?.[0]?.unread || 0}
-            /> */}
-
             <div className={styles.filters}>
               <SenseListFilters
                 selected={filter}
@@ -123,6 +104,7 @@ function SenseList({ select, selected, adviser }: Props) {
                     case EntryType.chat:
                       text = meta.memo;
                       amount = meta.amount;
+                      isAmountSend = meta.direction === 'to';
                       break;
 
                     case EntryType.transactions:

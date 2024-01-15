@@ -1,36 +1,47 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './SenseButton.module.scss';
 import { routes } from 'src/routes';
-import { useBackend } from 'src/contexts/backend';
-import { useQuery } from '@tanstack/react-query';
 import cx from 'classnames';
-import { useAppSelector } from 'src/redux/hooks';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
+import useSenseSummary from '../useSenseSummary';
+import { EntryType } from 'src/services/CozoDb/types/entities';
+import { Tooltip } from 'src/components';
 
 function SenseButton({ className }) {
-  const { senseApi } = useBackend();
+  const { data } = useSenseSummary();
 
-  const address = useAppSelector(selectCurrentAddress);
+  console.log('-senseSummary-', data);
 
-  const { data } = useQuery({
-    queryKey: ['senseApi', 'getSummary', address],
-    queryFn: async () => {
-      return senseApi!.getSummary();
-    },
-    enabled: Boolean(senseApi && address),
+  let unreadParticleCount;
+  let unreadChatsCount;
+
+  data?.map(({ entryType, unreadCount }) => {
+    switch (entryType) {
+      case EntryType.particle:
+        unreadParticleCount = unreadCount;
+        break;
+
+      case EntryType.chat:
+        unreadChatsCount = unreadCount;
+        break;
+
+      default:
+        break;
+    }
   });
-
-  const unread = data?.map((item) => item['sum(unreadCount)']).reduce((a, b) => a + b, 0);
 
   return (
     <Link
       className={cx(styles.senseBtn, className)}
       to={routes.robot.routes.sense.path}
     >
-      <span>⚪️</span>
-      <span>⚪️</span>
-      <span>{unread}</span>
+      <Tooltip tooltip="unread chats">
+        <span>{unreadChatsCount}</span>
+      </Tooltip>
+      <Tooltip tooltip="cyberlinks' notifications">
+        <span>{unreadParticleCount}</span>
+      </Tooltip>
+
+      <span>all</span>
     </Link>
   );
 }

@@ -64,7 +64,14 @@
   gap: 0 4px;
   color: var(--green-light);
 
-  .send {
-    color: #ff5c00;
+  img {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  &.send {
+    span {
+      color: #ff5c00;
+    }
   }
 }

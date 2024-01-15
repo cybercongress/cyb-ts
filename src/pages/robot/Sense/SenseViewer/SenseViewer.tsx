@@ -90,7 +90,7 @@ function SenseViewer({ selected, adviser }: Props) {
   }, [error, adviser]);
 
   // useMemo
-  const items = [...(data || [])].reverse();
+  const items = [...(data || [])].reverse().slice(0, 50);
 
   console.log(loading, 'loading');
   console.log(data);
