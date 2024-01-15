@@ -3,12 +3,6 @@ import DbApi from '../dataSource/indexedDb/dbApiWrapper';
 import { IPFSContent } from 'src/services/ipfs/ipfs';
 import { BehaviorSubject, of } from 'rxjs';
 
-const nextTick = () => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
-};
-
 describe('DeferredDbSaver', () => {
   const dbApiMock$: BehaviorSubject<DbApi | undefined> = new BehaviorSubject(
     undefined
