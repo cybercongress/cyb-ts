@@ -18,7 +18,7 @@ export type SenseChat = {
 
 export type SenseUnread = {
   entryType: EntryType;
-  unread: number;
+  unreadCount: number;
 };
 
 type SenseParticleMeta = {
