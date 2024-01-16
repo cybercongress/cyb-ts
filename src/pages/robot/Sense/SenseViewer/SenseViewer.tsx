@@ -90,7 +90,7 @@ function SenseViewer({ selected, adviser }: Props) {
   }, [error, adviser]);
 
   // useMemo
-  const items = [...(data || [])].reverse().slice(0, 50);
+  const items = [...(data || [])].reverse().slice(0, 100);
 
   console.log(loading, 'loading');
   console.log(data);
@@ -133,18 +133,21 @@ function SenseViewer({ selected, adviser }: Props) {
               hasMore={data && data.length > showItemsLength}
             > */}
             {items.map((senseItem, i) => {
-              const { timestamp, hash } = senseItem;
+              const { timestamp, hash: h } = senseItem;
 
               let text;
               let from;
               let amount: Coin[] | undefined;
               let isAmountSend = false;
+              let hash = h;
 
               if (isParticle) {
                 const item = senseItem as LinkDbEntity;
 
                 from = item.from;
                 text = item.text;
+                hash = item.transactionHash;
+                from = item.neuron;
               } else {
                 const item = senseItem as TransactionDbEntity;
                 const { type, value, memo } = item;
