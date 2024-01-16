@@ -43,7 +43,7 @@ function createCozoDb() {
     await initCozoDb();
     await loadCozoDb();
 
-    // await migrate();
+    await migrate();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -115,7 +115,7 @@ function createCozoDb() {
   };
 
   const migrate = async () => {
-    if (!dbSchema.config || !dbSchema.sync_status.keys.includes('owner_id')) {
+    if (!dbSchema.link.values.includes('transaction_hash')) {
       console.log('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);

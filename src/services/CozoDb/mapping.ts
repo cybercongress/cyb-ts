@@ -2,9 +2,10 @@ import { LsResult } from 'ipfs-core-types/src/pin';
 import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { IPFSContent } from '../ipfs/ipfs';
-import { PinTypeMap } from './types/entities';
+import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/dataSource/blockchain/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
+import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/requests';
 
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;
@@ -80,9 +81,23 @@ export const mapLinkToEntity = (
   to: ParticleCid,
   neuron: NeuronAddress = '',
   timestamp: number = 0
-): LinkDto => ({
+): LinkDbEntity => ({
   from,
   to,
   neuron,
   timestamp,
+});
+
+export const mapLinkFromIndexerToDbEntity = ({
+  from,
+  to,
+  neuron,
+  timestamp,
+  transaction_hash,
+}: CyberlinksByParticleResponse['cyberlinks'][0]): LinkDbEntity => ({
+  from,
+  to,
+  neuron,
+  timestamp: dateToNumber(timestamp),
+  transaction_hash,
 });

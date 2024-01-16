@@ -1,6 +1,7 @@
 import {
   CyberLinkSimple,
   CyberLinkTimestamp,
+  CyberlinkTxHash,
   ParticleCid,
 } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -66,7 +67,7 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
   ) as CyberLinkTransaction[];
   const particlesFound = new Set<string>();
-  const links: CyberLinkTimestamp[] = [];
+  const links: CyberlinkTxHash[] = [];
   // Get links: only from TWEETS
   const tweets: Record<ParticleCid, ParticleResult> = cyberlinks.reduce<
     Record<ParticleCid, ParticleResult>
@@ -75,6 +76,7 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
       acc,
       {
         value,
+        transaction_hash,
         transaction: {
           block: { timestamp },
         },
@@ -84,7 +86,13 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
         particlesFound.add(link.to);
         particlesFound.add(link.from);
 
-        links.push({ ...link, timestamp: dateToNumber(timestamp) });
+        links.push({
+          ...link,
+          timestamp: dateToNumber(timestamp),
+          neuron: value.neuron,
+          transaction_hash,
+        });
+
         if (link.from === CID_TWEET) {
           acc[link.to] = {
             timestamp: dateToNumber(timestamp),

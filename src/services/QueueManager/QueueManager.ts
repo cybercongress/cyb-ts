@@ -147,18 +147,18 @@ class QueueManager {
   }
 
   private fetchData$(item: QueueItem) {
-    const { cid, source, controller, callbacks } = item;
+    const { cid, source, callbacks } = item;
+    const controller = new AbortController();
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
     this.postSummary();
-
     const queueItem = this.queue$.value.get(cid);
     // Mutate item without next
     this.queue$.value.set(cid, {
       ...queueItem,
       status: 'executing',
       executionTime: Date.now(),
-      controller: new AbortController(),
+      controller,
     } as QueueItem);
     // debugCid(cid, 'fetchData', cid, source);
     callbacks.map((callback) => callback(cid, 'executing', source));
@@ -167,7 +167,7 @@ class QueueManager {
       fetchIpfsContent(cid, source, {
         controller,
         node: this.node,
-      }).then((content: T) => {
+      }).then((content) => {
         // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
 
         this.defferedDbSaver?.enqueueIpfsContent(content);
@@ -192,7 +192,7 @@ class QueueManager {
         };
       }),
       catchError((error): Observable<QueueItemResult> => {
-        debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
+        // debugCid(cid, 'fetchData - fetchIpfsContent catchErr', error);
         if (error instanceof QueueItemTimeoutError) {
           return of({
             item,
@@ -300,6 +300,7 @@ class QueueManager {
 
     this.queue$
       .pipe(
+        // tap(() => console.log('----QUEUE')),
         debounceTime(this.queueDebounceMs),
         map((queue) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {
@@ -409,6 +410,7 @@ class QueueManager {
   public cancel(cid: string): void {
     const queue = this.queue$.value;
     const item = queue.get(cid);
+    // console.log('-----cancel item', item, item?.controller);
     if (item) {
       // If item has no abortController we can just remove it,
       // otherwise abort&keep-to-finalize

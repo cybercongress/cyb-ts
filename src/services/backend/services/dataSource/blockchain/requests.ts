@@ -28,7 +28,11 @@ type CyberlinksSyncStatsResponse = {
 };
 
 export type CyberlinksByParticleResponse = {
-  cyberlinks: (Omit<Cyberlink, 'timestamp'> & { timestamp: string })[];
+  cyberlinks: (Omit<Cyberlink, 'timestamp'> & {
+    timestamp: string;
+    neuron: NeuronAddress;
+    transaction_hash: string;
+  })[];
 };
 
 const messagesByAddress = gql(`
@@ -60,6 +64,7 @@ query Cyberlinks($limit: Int, $offset: Int, $orderBy: [cyberlinks_order_by!], $w
     to: particle_to
     timestamp
     neuron
+    transaction_hash
   }
 }
 `);

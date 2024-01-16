@@ -46,6 +46,7 @@ export type SyncStatusDbEntity = {
   last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
   meta: SenseMeta;
 };
+
 export type ParticleDbEntity = {
   id: ParticleCid;
   size: number;
@@ -61,9 +62,10 @@ export type LinkDbEntity = {
   to: ParticleCid;
   neuron: NeuronAddress;
   timestamp: number;
-  text: string;
-  mime: string;
-  direction: 'from' | 'to';
+  // text: string;
+  // mime: string;
+  // direction: 'from' | 'to';
+  transaction_hash: string;
 };
 
 export type ConfigDbEntity = {

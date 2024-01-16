@@ -114,7 +114,7 @@ class ParticlesResolverQueue {
       tap((q) => console.log(`sync queue isInitialized - ${q}`)),
       filter((isInitialized) => isInitialized === true),
       mergeMap(() => this._syncQueue$), // Merge the queue$ stream here.
-      tap((q) => console.log(`sync queue - ${q.size}`)),
+      // tap((q) => console.log(`sync queue - ${q.size}`)),
       filter((q) => q.size > 0),
       mergeMap((queue) => {
         const list = [...queue.values()];

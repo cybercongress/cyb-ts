@@ -14,6 +14,9 @@ import { PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
+import { snakeToCamel, transformToDto } from 'src/services/CozoDb/utils';
+import { dateToNumber } from 'src/utils/date';
+import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -68,6 +71,7 @@ class SyncParticlesLoop {
     try {
       // fetch observable particles from db
       const result = await this.db!.findSyncStatus({
+        ownerId: this.params!.myAddress!,
         entryType: EntryType.particle,
       });
 
@@ -84,9 +88,15 @@ class SyncParticlesLoop {
               QueuePriority.MEDIUM
             );
 
-            return links.length > 0
-              ? changeSyncStatus(syncStatus, links)
-              : undefined;
+            if (links.length > 0) {
+              const entities = links.map(mapLinkFromIndexerToDbEntity);
+
+              await this.db!.putCyberlinks(entities);
+
+              return changeSyncStatus(syncStatus, links);
+            }
+
+            return undefined;
           })
         )
       ).filter((i) => !!i) as SyncStatusDto[];
