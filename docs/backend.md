@@ -32,7 +32,7 @@ graph TD;
         sync--oipfsApi;
         sync--odbProxyWorker[/"dbApi(proxy)"/];
         defferedDbApi[["defferedDbApi"]]-->dbProxyWorker;
-
+        queue-->defferedDbApi;
         ipfsApi--oqueue[["queue"]];
         ipfsApi--onode["node"];
         queue--balancer-->node;

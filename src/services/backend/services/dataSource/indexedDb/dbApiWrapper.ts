@@ -3,6 +3,7 @@ import {
   PinDbEntity,
   TransactionDbEntity,
   SyncQueueStatus,
+  LinkDbEntity,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
@@ -255,7 +256,7 @@ class DbApiWrapper {
     return userChats ? userChats.transactions : [];
   }
 
-  public async putCyberlinks(links: LinkDto[] | LinkDto) {
+  public async putCyberlinks(links: LinkDbEntity[] | LinkDbEntity) {
     const entitites = Array.isArray(links) ? links : [links];
     return this.db!.executePutCommand('link', entitites);
   }
@@ -310,11 +311,13 @@ class DbApiWrapper {
       'to',
       'direction',
       'timestamp',
+      'neuron',
+      'transaction_hash',
     ].join(', ');
 
     const command = `
-    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
-    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: to, text, mime}, direction='to'
+    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: from, text, mime}, direction='from'
+    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: to, text, mime}, direction='to'
     ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
     :order -timestamp`;
     const result = await this.db!.runCommand(command);

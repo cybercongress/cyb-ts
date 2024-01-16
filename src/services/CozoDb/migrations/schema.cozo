@@ -21,7 +21,8 @@
         from: String,
         to: String,
         neuron: String =>
-        timestamp: Int
+        timestamp: Int,
+        transaction_hash: String default ''
     }
 }
 {

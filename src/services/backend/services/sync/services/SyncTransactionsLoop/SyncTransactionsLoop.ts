@@ -1,9 +1,12 @@
 /* eslint-disable camelcase */
-import { Observable, defer, from, map, combineLatest } from 'rxjs';
+import { Observable, defer, from, map, combineLatest, timestamp } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
+import {
+  mapLinkFromIndexerToDbEntity,
+  mapTransactionToEntity,
+} from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -29,6 +32,7 @@ import { SyncServiceParams } from '../../types';
 import { fetchTransactionsIterable } from '../../../dataSource/blockchain/requests';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
+import { transformToDto } from 'src/services/CozoDb/utils';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -153,7 +157,8 @@ class SyncTransactionsLoop {
         '--------syncTransactions start',
         address,
         items.length,
-        items.at(0)?.transaction.block.timestamp
+        items.at(0)?.transaction.block.timestamp,
+        items
       );
       if (items.length > 0) {
         // pick last transaction = first item based on request orderby
@@ -186,9 +191,7 @@ class SyncTransactionsLoop {
 
         // Add cyberlink to sync observables
         if (addCyberlinksToSync && links.length > 0) {
-          await this.db!.putCyberlinks(
-            links.map((link) => ({ ...link, neuron: '' }))
-          );
+          await this.db!.putCyberlinks(links);
 
           if (particlesFound.length > 0) {
             await this.particlesResolver!.enqueue(
@@ -198,6 +201,7 @@ class SyncTransactionsLoop {
               }))
             );
           }
+
           const batchSize = MAX_PARRALEL_TRANSACTIONS;
           for (let i = 0; i < tweetCids.length; i += batchSize) {
             const batch = tweetCids.slice(i, i + batchSize);
@@ -227,9 +231,14 @@ class SyncTransactionsLoop {
                   QueuePriority.HIGH
                 );
 
-                return links.length > 0
-                  ? changeSyncStatus(syncStatus, links)
-                  : syncStatus;
+                if (links.length > 0) {
+                  const entities = links.map(mapLinkFromIndexerToDbEntity);
+                  await this.db!.putCyberlinks(entities);
+
+                  return changeSyncStatus(syncStatus, links);
+                }
+
+                return syncStatus;
               })
             );
 
