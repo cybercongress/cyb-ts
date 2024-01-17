@@ -9,7 +9,7 @@ import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/utils/consts';
 import { dateToNumber } from 'src/utils/date';
 
-import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/requests';
+import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { MAX_PARRALEL_LINKS } from '../consts';
 import {

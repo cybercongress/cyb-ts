@@ -5,7 +5,7 @@ import { IPFSContent } from '../ipfs/ipfs';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/dataSource/blockchain/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
-import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/requests';
+import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/indexer';
 
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;

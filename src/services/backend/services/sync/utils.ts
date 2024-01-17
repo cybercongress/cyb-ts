@@ -3,7 +3,7 @@ import { dateToNumber } from 'src/utils/date';
 import { ParticleCid } from 'src/types/base';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 
-import { CyberlinksByParticleResponse } from '../dataSource/blockchain/requests';
+import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 import { LinkDirection } from './types';
 
 export function extractLinkData(

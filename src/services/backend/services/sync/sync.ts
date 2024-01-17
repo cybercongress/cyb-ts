@@ -37,19 +37,7 @@ export class SyncService {
 
     new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop(
-      deps,
-      particlesResolver,
-      'my',
-      MY_SYNC_INTERVAL
-    ).start();
-
-    new SyncTransactionsLoop(
-      deps,
-      particlesResolver,
-      'friends',
-      FRIENDS_SYNC_INTERVAL
-    ).start();
+    new SyncTransactionsLoop(deps, particlesResolver, MY_SYNC_INTERVAL).start();
 
     new SyncParticlesLoop(deps, particlesResolver).start();
   }

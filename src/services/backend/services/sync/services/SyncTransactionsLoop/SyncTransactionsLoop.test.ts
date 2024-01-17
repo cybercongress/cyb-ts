@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import {
   fetchCyberlinksIterable,
   fetchTransactionsIterable,
-} from 'src/services/backend/services/dataSource/blockchain/requests';
+} from 'src/services/backend/services/dataSource/blockchain/indexer';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import DbApi, {

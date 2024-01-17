@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
-import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/requests';
+import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/indexer';
 import { numberToDate } from 'src/utils/date';
 import { createAsyncIterable } from 'src/utils/async/iterable';
 

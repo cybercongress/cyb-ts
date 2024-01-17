@@ -124,6 +124,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
     backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
+      cyberLcdUrl: CYBER.CYBER_NODE_URL_LCD,
     });
 
     (async () => {
