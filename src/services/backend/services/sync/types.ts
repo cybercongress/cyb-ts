@@ -17,7 +17,7 @@ export type FetchIpfsFunc = (
 
 export type LinkDirection = 'from' | 'to';
 
-export type ParticleResult = {
+export type LinkResult = {
   timestamp: number;
   direction: LinkDirection;
   from: ParticleCid;

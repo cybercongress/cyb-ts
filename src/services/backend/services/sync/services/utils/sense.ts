@@ -27,7 +27,6 @@ export const extractSenseChats = (
   transactions.forEach((t) => {
     let userAddress = '';
     if (t.type === MSG_MULTI_SEND_TRANSACTION_TYPE) {
-      // TODO: How to deal many outputs vs many inputs??
       const { inputs, outputs } = t.value;
       const isSender = inputs.find((i) => i.address === myAddress);
       const userMessages = isSender ? outputs : inputs;

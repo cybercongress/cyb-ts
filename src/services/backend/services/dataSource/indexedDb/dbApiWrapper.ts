@@ -94,12 +94,17 @@ class DbApiWrapper {
     id,
   }: {
     ownerId: NeuronAddress;
-    entryType?: EntryType;
+    entryType?: EntryType[] | EntryType;
     id?: NeuronAddress | ParticleCid;
   }) {
     const conditions = [`owner_id = '${ownerId}'`];
 
-    entryType && conditions.push(`entry_type = ${entryType}`);
+    entryType &&
+      conditions.push(
+        `entry_type in [${
+          Array.isArray(entryType) ? entryType.join(', ') : entryType
+        }]`
+      );
 
     id && conditions.push(`id = '${id}'`);
 
