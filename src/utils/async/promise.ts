@@ -1,4 +1,4 @@
-async function waitUntil(cond: () => boolean, timeoutDuration = 60000) {
+export async function waitUntil(cond: () => boolean, timeoutDuration = 60000) {
   if (cond()) {
     return true;
   }
@@ -21,4 +21,15 @@ async function waitUntil(cond: () => boolean, timeoutDuration = 60000) {
   return Promise.race([waitPromise, timeoutPromise]);
 }
 
-export { waitUntil };
+export function executeSequentially<T>(
+  promiseFunctions: (() => Promise<T>)[]
+): Promise<T[]> {
+  return promiseFunctions.reduce((promiseChain, currentFunction) => {
+    return promiseChain.then((chainResults) =>
+      currentFunction().then((currentResult) => [
+        ...chainResults,
+        currentResult,
+      ])
+    );
+  }, Promise.resolve([] as T[]));
+}

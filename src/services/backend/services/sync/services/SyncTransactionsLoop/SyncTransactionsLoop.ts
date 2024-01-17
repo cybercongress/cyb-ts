@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { Observable, defer, from, map, combineLatest, timestamp } from 'rxjs';
+import { Observable, defer, from, map, combineLatest } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
@@ -11,6 +11,8 @@ import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { CID_TWEET } from 'src/utils/consts';
+import { executeSequentially } from 'src/utils/async/promise';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
@@ -20,26 +22,36 @@ import {
   extractCybelinksFromTransaction,
 } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-import {
-  BLOCKCHAIN_SYNC_INTERVAL,
-  MAX_PARRALEL_TRANSACTIONS,
-  SENSE_TRANSACTIONS,
-} from '../consts';
+import { MAX_PARRALEL_TRANSACTIONS, SENSE_TRANSACTIONS } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
-import { SyncServiceParams } from '../../types';
+import { LinkResult, SyncServiceParams } from '../../types';
 
 import { fetchTransactionsIterable } from '../../../dataSource/blockchain/requests';
-import { Transaction } from '../../../dataSource/blockchain/types';
+import {
+  CYBER_LINK_TRANSACTION_TYPE,
+  MSG_MULTI_SEND_TRANSACTION_TYPE,
+  MSG_SEND_TRANSACTION_TYPE,
+  Transaction,
+} from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
-import { transformToDto } from 'src/services/CozoDb/utils';
+
+type SyncTransactionMode = 'my' | 'friends';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
 
+  private isInitialized = false;
+
   private db: DbApi | undefined;
 
   private particlesResolver: ParticlesResolverQueue | undefined;
+
+  private mode: SyncTransactionMode;
+
+  private intervalMs: number;
+
+  private inProgress: NeuronAddress[] = [];
 
   private _loop$: Observable<any> | undefined;
 
@@ -57,10 +69,19 @@ class SyncTransactionsLoop {
     followings: [],
   };
 
-  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
+  constructor(
+    deps: ServiceDeps,
+    particlesResolver: ParticlesResolverQueue,
+    mode: SyncTransactionMode,
+    intervalMs: number
+  ) {
     if (!deps.params$) {
       throw new Error('params$ is not defined');
     }
+
+    this.mode = mode;
+
+    this.intervalMs = intervalMs;
 
     this.particlesResolver = particlesResolver;
 
@@ -70,6 +91,22 @@ class SyncTransactionsLoop {
 
     deps.params$.subscribe((params) => {
       this.params = params;
+      if (this.isInitialized) {
+        // executeSequentially
+        const newFriends = params.followings
+          .map((addr) =>
+            this.params.followings.includes(addr) ? addr : undefined
+          )
+          .filter((addr) => !!addr) as NeuronAddress[];
+
+        this.isInitialized &&
+          executeSequentially(
+            newFriends.map(
+              (addr) => () =>
+                this.syncTransactions(this.params.myAddress!, addr, true)
+            )
+          );
+      }
     });
 
     // this.isInitialized$ = isInitialized$;
@@ -84,14 +121,20 @@ class SyncTransactionsLoop {
           !!dbInstance &&
           !!syncQueueInitialized &&
           !!params.cyberIndexUrl &&
-          !!params.myAddress
+          !!params.myAddress &&
+          (mode === 'my' ||
+            (mode === 'friends' && params.followings.length > 0))
       )
     );
+
+    this.isInitialized$.subscribe((isInitialized) => {
+      this.isInitialized = isInitialized;
+    });
   }
 
   start() {
     this._loop$ = createLoopObservable(
-      BLOCKCHAIN_SYNC_INTERVAL,
+      this.intervalMs,
       this.isInitialized$,
       defer(() => from(this.syncAllTransactions())),
       () => this.statusApi.sendStatus('in-progress')
@@ -106,22 +149,28 @@ class SyncTransactionsLoop {
   }
 
   private async syncAllTransactions() {
+    console.log('----syncAllTransactions', this.mode, this.params);
     try {
       if (this.params.myAddress) {
-        await this.syncTransactions(
-          this.params.myAddress,
-          this.params.myAddress,
-          true
-        );
-        this.statusApi.sendStatus('in-progress', `sync my chats`);
-        await syncMyChats(this.db!, this.params.myAddress);
-        this.statusApi.sendStatus('idle');
-      }
+        if (this.mode === 'my') {
+          await this.syncTransactions(
+            this.params.myAddress,
+            this.params.myAddress,
+            false
+          );
+          this.statusApi.sendStatus('in-progress', `sync my chats`);
+          await syncMyChats(this.db!, this.params.myAddress);
+          this.statusApi.sendStatus('idle');
+        }
 
-      // TODO: Enable to full sync of transactions
-      // await Promise.all(
-      //   this.params.followings.map((addr) => this.syncTransactions(this.params.myAddress, addr))
-      // );
+        if (this.mode === 'friends') {
+          // eslint-disable-next-line no-restricted-syntax
+          for await (const addr of this.params.followings) {
+            console.log('----sync friend', addr);
+            await this.syncTransactions(this.params.myAddress, addr, true);
+          }
+        }
+      }
     } catch (err) {
       console.error('>>> syncAllTransactions', err);
       throw err;
@@ -131,142 +180,186 @@ class SyncTransactionsLoop {
   public async syncTransactions(
     myAddress: NeuronAddress,
     address: NeuronAddress,
-    addCyberlinksToSync = false
+    lightMode: boolean
   ) {
-    this.statusApi.sendStatus('in-progress', `sync ${address}...`);
+    try {
+      if (this.inProgress.includes(address)) {
+        console.log(`>> ${address} sync already in progress`);
+        return;
+      }
+      // add to in-progress list
+      this.inProgress.push(address);
 
-    const { timestampRead, unreadCount, timestampUpdate } =
-      await this.db!.getSyncStatus(myAddress, address);
+      this.statusApi.sendStatus('in-progress', `sync ${address}...`);
 
-    const transactionsAsyncIterable = fetchTransactionsIterable(
-      this.params.cyberIndexUrl!,
-      address,
-      timestampUpdate + 1 // ofsset + 1 to fix milliseconds precision bug
-    );
+      const { timestampRead, unreadCount, timestampUpdate } =
+        await this.db!.getSyncStatus(myAddress, address);
 
-    let count = 0;
-
-    let lastTransaction: Transaction | undefined;
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const batch of transactionsAsyncIterable) {
-      // filter only supported transactions
-
-      const items = batch.filter((t) => SENSE_TRANSACTIONS.includes(t.type));
-
-      console.log(
-        '--------syncTransactions start',
+      const transactionsAsyncIterable = fetchTransactionsIterable(
+        this.params.cyberIndexUrl!,
         address,
-        items.length,
-        items.at(0)?.transaction.block.timestamp,
-        items
+        timestampUpdate + 1, // ofsset + 1 to fix milliseconds precision bug
+        SENSE_TRANSACTIONS
       );
-      if (items.length > 0) {
-        // pick last transaction = first item based on request orderby
-        if (!lastTransaction) {
-          lastTransaction = items.at(0)!;
+
+      let count = 0;
+
+      let lastTransaction: Transaction | undefined;
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const batch of transactionsAsyncIterable) {
+        let items = batch;
+
+        // filter messages to/from me and twitter links
+        if (lightMode) {
+          const { myAddress } = this.params;
+          items = batch.filter(
+            (t) =>
+              (t.type === MSG_SEND_TRANSACTION_TYPE &&
+                (t.value.from_address === myAddress ||
+                  t.value.to_address === myAddress)) ||
+              (t.type === MSG_MULTI_SEND_TRANSACTION_TYPE &&
+                (t.value.inputs.find((i) => i.address === myAddress) ||
+                  t.value.outputs.find((o) => o.address === myAddress))) ||
+              (t.type === CYBER_LINK_TRANSACTION_TYPE &&
+                t.value.links.some((l) => l.from === CID_TWEET))
+          );
+
+          if (address === 'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t') {
+            console.log('------light trans', address, items, batch);
+            // debugger;
+          }
         }
-
-        const transactions = items.map((i) =>
-          mapTransactionToEntity(address, i)
+        console.log(
+          '--------syncTransactions start',
+          new Date().toLocaleDateString(),
+          address,
+          batch.length,
+          items.length,
+          items.at(0)?.transaction.block.timestamp,
+          items
         );
-        // console.log('---syncTransactions putTransactions ', transactions);
-        count += items.length;
-        await this.db!.putTransactions(transactions);
-
-        const { tweets, particlesFound, links } =
-          extractCybelinksFromTransaction(items);
-
-        const tweetCids = Object.keys(tweets);
-        this.statusApi.sendStatus(
-          'in-progress',
-          `sync ${address} batch processing - links: ${links.length}, tweets: ${tweetCids.length}, particles: ${particlesFound.length}...`
-        );
-        // resolve 'tweets' particles
-        await this.particlesResolver!.enqueue(
-          tweetCids.map((cid) => ({
-            id: cid /* from is tweet */,
-            priority: QueuePriority.HIGH,
-          }))
-        );
-
-        // Add cyberlink to sync observables
-        if (addCyberlinksToSync && links.length > 0) {
-          await this.db!.putCyberlinks(links);
-
-          if (particlesFound.length > 0) {
-            await this.particlesResolver!.enqueue(
-              particlesFound.map((cid) => ({
-                id: cid,
-                priority: QueuePriority.LOW,
-              }))
-            );
+        if (items.length > 0) {
+          // pick last transaction = first item based on request orderby
+          if (!lastTransaction) {
+            lastTransaction = items.at(0)!;
           }
 
-          const batchSize = MAX_PARRALEL_TRANSACTIONS;
-          for (let i = 0; i < tweetCids.length; i += batchSize) {
-            const batch = tweetCids.slice(i, i + batchSize);
-            // eslint-disable-next-line no-await-in-loop
-            const syncStatusEntities = await Promise.all(
-              batch.map(async (cid) => {
-                const { timestamp, direction, from, to } = tweets[cid];
+          const transactions = items.map((i) =>
+            mapTransactionToEntity(address, i)
+          );
+          // console.log('---syncTransactions putTransactions ', transactions);
+          count += items.length;
+          await this.db!.putTransactions(transactions);
 
-                // Initial state
-                const syncStatus = {
-                  ownerId: myAddress,
-                  id: cid as string,
-                  entryType: EntryType.particle,
-                  timestampUpdate: timestamp,
-                  timestampRead: timestamp,
-                  unreadCount: 0,
-                  lastId: direction === 'from' ? from : to,
-                  disabled: false,
-                  meta: { direction },
-                } as SyncStatusDto;
+          const { tweets, particlesFound, links } =
+            extractCybelinksFromTransaction(items);
 
-                const links = await fetchCyberlinksAndResolveParticles(
-                  this.params!.cyberIndexUrl!,
-                  cid,
-                  timestamp,
-                  this.particlesResolver!,
-                  QueuePriority.HIGH
-                );
+          const tweetParticles = Object.keys(tweets);
+          this.statusApi.sendStatus(
+            'in-progress',
+            `sync ${address} batch processing - links: ${links.length}, tweets: ${tweetParticles.length}, particles: ${particlesFound.length}...`
+          );
 
-                if (links.length > 0) {
-                  const entities = links.map(mapLinkFromIndexerToDbEntity);
-                  await this.db!.putCyberlinks(entities);
+          // resolve 'tweets' particles
+          await this.particlesResolver!.enqueueBatch(
+            tweetParticles,
+            QueuePriority.HIGH
+          );
 
-                  return changeSyncStatus(syncStatus, links);
-                }
-
-                return syncStatus;
-              })
+          // Add cyberlink to sync observables
+          if (links.length > 0) {
+            await this.db!.putCyberlinks(links);
+          }
+          if (!lightMode) {
+            const nonTweetParticles = particlesFound.filter(
+              (cid) => !tweetParticles.includes(cid)
             );
 
-            if (syncStatusEntities.length > 0) {
-              this.db!.putSyncStatus(syncStatusEntities);
+            if (nonTweetParticles.length > 0) {
+              await this.particlesResolver!.enqueueBatch(
+                nonTweetParticles,
+                QueuePriority.LOW
+              );
             }
+
+            // add all tweets to sync status
+            await this.addTweetsToSync(tweets, myAddress);
           }
         }
       }
+
+      const unreadTransactionsCount = unreadCount + count;
+
+      if (lastTransaction) {
+        // Update transaction
+        this.db!.putSyncStatus({
+          ownerId: myAddress,
+          entryType: EntryType.transactions,
+          id: address,
+          timestampUpdate: dateToNumber(
+            lastTransaction.transaction.block.timestamp
+          ),
+          unreadCount: unreadTransactionsCount,
+          timestampRead,
+          disabled: false,
+          lastId: lastTransaction.transaction_hash,
+          meta: { memo: lastTransaction?.transaction?.memo || '' },
+        });
+      }
+    } finally {
+      // remove from in-progress list
+      this.inProgress = this.inProgress.filter((addr) => addr !== address);
     }
+  }
 
-    const unreadTransactionsCount = unreadCount + count;
+  private async addTweetsToSync(
+    tweets: Record<string, LinkResult>,
+    myAddress: string
+  ) {
+    const tweetCids = Object.keys(tweets);
+    const batchSize = MAX_PARRALEL_TRANSACTIONS;
+    for (let i = 0; i < tweetCids.length; i += batchSize) {
+      const batch = tweetCids.slice(i, i + batchSize);
+      // eslint-disable-next-line no-await-in-loop
+      const syncStatusEntities = await Promise.all(
+        batch.map(async (cid) => {
+          const { timestamp, direction, from, to } = tweets[cid];
 
-    if (lastTransaction) {
-      // Update transaction
-      this.db!.putSyncStatus({
-        ownerId: myAddress,
-        entryType: EntryType.transactions,
-        id: address,
-        timestampUpdate: dateToNumber(
-          lastTransaction.transaction.block.timestamp
-        ),
-        unreadCount: unreadTransactionsCount,
-        timestampRead,
-        disabled: false,
-        lastId: lastTransaction.transaction_hash,
-        meta: { memo: lastTransaction?.transaction?.memo || '' },
-      });
+          // Initial state
+          const syncStatus = {
+            ownerId: myAddress,
+            id: cid as string,
+            entryType: EntryType.particle,
+            timestampUpdate: timestamp,
+            timestampRead: timestamp,
+            unreadCount: 0,
+            lastId: direction === 'from' ? from : to,
+            disabled: false,
+            meta: { direction },
+          } as SyncStatusDto;
+
+          const links = await fetchCyberlinksAndResolveParticles(
+            this.params!.cyberIndexUrl!,
+            cid,
+            timestamp,
+            this.particlesResolver!,
+            QueuePriority.HIGH
+          );
+
+          if (links.length > 0) {
+            const entities = links.map(mapLinkFromIndexerToDbEntity);
+            await this.db!.putCyberlinks(entities);
+
+            return changeSyncStatus(syncStatus, links);
+          }
+
+          return syncStatus;
+        })
+      );
+
+      if (syncStatusEntities.length > 0) {
+        this.db!.putSyncStatus(syncStatusEntities);
+      }
     }
   }
 }

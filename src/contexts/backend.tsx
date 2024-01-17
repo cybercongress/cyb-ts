@@ -16,6 +16,7 @@ import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbA
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
+import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 
 const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
@@ -107,15 +108,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return Array.from(new Set([...friends, ...following]));
   });
 
-  // const passport = useAppSelector(selectCurrentPassport);
-  // const passports = useCommunityPassports();
-  // const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
-
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
   }, [myAddress]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ followings });
   }, [followings]);
 

@@ -216,6 +216,7 @@
     "kubo-rpc-client": "^3.0.1",
     "ledger-cosmos-js": "2.1.7",
     "libp2p": "^0.46.12",
+    "lodash": "^4.17.21",
     "long": "^5.2.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "process": "^0.11.10",

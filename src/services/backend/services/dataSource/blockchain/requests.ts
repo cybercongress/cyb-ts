@@ -36,21 +36,21 @@ export type CyberlinksByParticleResponse = {
 };
 
 const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp) {
+query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp, $types: _text) {
   messages_by_address(
-    args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
+    args: {addresses: $address, limit: $limit, offset: $offset, types: $types},
     order_by: {transaction: {block: {timestamp: desc}}},
     where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
     ) {
     transaction_hash
     value
     transaction {
-      memo
       success
       block {
         timestamp,
         height
       }
+      memo
     }
     type
   }
@@ -91,7 +91,8 @@ const fetchTransactions = async (
   cyberIndexUrl: string,
   address: NeuronAddress,
   timestampFrom: number,
-  offset = 0
+  offset = 0,
+  types: Transaction['type'][] = []
 ) => {
   try {
     const res = await request<TransactionsByAddressResponse>(
@@ -102,6 +103,7 @@ const fetchTransactions = async (
         limit: TRANSACTIONS_BATCH_LIMIT,
         timestamp_from: numberToDate(timestampFrom),
         offset,
+        types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
       }
     );
 
@@ -177,8 +179,16 @@ export async function fetchAllCyberlinks(
 const fetchTransactionsIterable = (
   cyberIndexUrl: string,
   neuronAddress: NeuronAddress,
-  timestamp: number
-) => fetchIterable(fetchTransactions, cyberIndexUrl, neuronAddress, timestamp);
+  timestamp: number,
+  types: Transaction['type'][] = []
+) =>
+  fetchIterable(
+    fetchTransactions,
+    cyberIndexUrl,
+    neuronAddress,
+    timestamp,
+    types
+  );
 
 const fetchCyberlinksIterable = (
   cyberIndexUrl: string,
@@ -242,6 +252,19 @@ const fetchCyberlinkSyncStats = async (
     count,
   };
 };
+
+// export const getTweet = async (address) => {
+//   try {
+//     const response = await axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.log(error);
+//     return null;
+//   }
+// };
 
 export {
   fetchTransactionsIterable,

@@ -17,7 +17,7 @@ import {
   CyberLinkTransaction,
   Transaction,
 } from '../../../dataSource/blockchain/types';
-import { ParticleResult } from '../../types';
+import { LinkResult } from '../../types';
 
 export const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [
@@ -49,12 +49,7 @@ export const fetchCyberlinksAndResolveParticles = async (
       await asyncIterableBatchProcessor(
         particles,
         (cids: ParticleCid[]) =>
-          particlesResolver!.enqueue(
-            cids.map((cid) => ({
-              id: cid,
-              priority: queuePriority,
-            }))
-          ),
+          particlesResolver!.enqueueBatch(cids, queuePriority),
         MAX_PARRALEL_LINKS
       );
     }
@@ -69,8 +64,8 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
   const particlesFound = new Set<string>();
   const links: CyberlinkTxHash[] = [];
   // Get links: only from TWEETS
-  const tweets: Record<ParticleCid, ParticleResult> = cyberlinks.reduce<
-    Record<ParticleCid, ParticleResult>
+  const tweets: Record<ParticleCid, LinkResult> = cyberlinks.reduce<
+    Record<ParticleCid, LinkResult>
   >(
     (
       acc,

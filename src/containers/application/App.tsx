@@ -41,22 +41,27 @@ function App() {
       if (isReady && senseApi && myAddress) {
         console.log('----sense ', isReady, senseApi);
 
-        const list = await senseApi.getList(myAddress);
+        const list = await senseApi.getList();
         console.log('----sense list', list);
-        const summary = await senseApi.getSummary(myAddress);
+        const summary = await senseApi.getSummary();
         console.log('----sense summary', summary);
         const links = await senseApi.getLinks(
           'QmVrZci1LVijze8ZwFQQWLMBDwC3qUUZw16j7uWopV2Krb'
         );
         console.log('----sense links', links);
-        const transactions = await senseApi.getTransactions(
+        const transactionsMy = await senseApi.getTransactions(
           'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
         );
-        console.log('----sense transactions', transactions);
+        console.log('----sense transactionsMy', transactionsMy);
+
+        const transactionsFriend = await senseApi.getTransactions(
+          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
+        );
+        console.log('----sense transactionsFriend master', transactionsFriend);
 
         const chats = await senseApi.getMyChats(
           myAddress,
-          'bostrom1g07gj9ph0r2hjx6ffqn8vl38u4agd5mpqx9m7f'
+          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
         );
         console.log('----sense chats', chats);
         // MARK AS READ

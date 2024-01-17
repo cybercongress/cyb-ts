@@ -164,6 +164,15 @@ class ParticlesResolverQueue {
     return this;
   }
 
+  public async enqueueBatch(cids: ParticleCid[], priority: QueuePriority) {
+    this.enqueue(
+      cids.map((cid) => ({
+        id: cid /* from is tweet */,
+        priority,
+      }))
+    );
+  }
+
   public async enqueue(items: SyncQueueItem[]) {
     if (items.length === 0) {
       return;

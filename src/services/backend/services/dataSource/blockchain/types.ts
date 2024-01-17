@@ -75,7 +75,5 @@ export interface MsgSendTransaction extends GenericTransaction<MsgSendValue> {
 }
 
 export type Transaction =
-  | DelegateTransaction
-  | CyberLinkTransaction
-  | MsgMultiSendTransaction
-  | MsgSendTransaction;
+  // | DelegateTransaction
+  CyberLinkTransaction | MsgMultiSendTransaction | MsgSendTransaction;

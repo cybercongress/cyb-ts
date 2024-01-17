@@ -3,13 +3,14 @@ import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbA
 import { NeuronAddress } from 'src/types/base';
 import { extractSenseChats } from '../../utils/sense';
 
+// eslint-disable-next-line import/prefer-default-export
 export const syncMyChats = async (
   db: DbApiWrapper,
   myAddress: NeuronAddress
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
-    entryType: EntryType.chat,
+    entryType: [EntryType.chat, EntryType.transactions],
   });
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
@@ -45,8 +46,9 @@ export const syncMyChats = async (
       ).length;
       if (timestampUpdate! < lastChatTimestamp) {
         db.updateSyncStatus({
+          entryType: EntryType.transactions,
           ownerId: myAddress,
-          id,
+          id: id!,
           timestampUpdate: lastChatTimestamp,
           unreadCount,
           meta: chat.last,
