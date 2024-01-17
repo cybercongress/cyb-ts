@@ -42,7 +42,7 @@ function useSenseItem({ id }: Props) {
   const getTxsQuery = useQuery({
     queryKey: ['senseApi', 'getTransactions', address, id],
     queryFn: async () => {
-      return await senseApi!.getTransactions(id!);
+      return senseApi!.getTransactions(id!);
     },
     enabled: enabled && !isParticle && !isChatEntry && !!address,
     refetchInterval: REFETCH_INTERVAL,
@@ -83,6 +83,8 @@ function useSenseItem({ id }: Props) {
         getLinksQuery.isFetching ||
         getChatQuery.isFetching),
     error: (getTxsQuery.error || getLinksQuery.error) as Error | undefined,
+    refetch:
+      getTxsQuery.refetch || getLinksQuery.refetch || getChatQuery.refetch,
   };
 }
 

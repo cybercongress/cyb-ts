@@ -40,7 +40,7 @@ type Props = {
 const DEFAULT_ITEMS_LENGTH = 20;
 const LOAD_MORE_ITEMS_LENGTH = 20;
 
-function SenseViewer({ selected, adviser }: Props) {
+function SenseViewer({ selected, adviser, senseById }: Props) {
   const { senseApi } = useBackend();
 
   const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
@@ -53,7 +53,7 @@ function SenseViewer({ selected, adviser }: Props) {
     skip: !isParticle && !selected,
   });
 
-  const { data, loading, error } = useSenseItem({ id: selected });
+  const { error, loading, data } = senseById;
 
   const text = particleData?.text;
 

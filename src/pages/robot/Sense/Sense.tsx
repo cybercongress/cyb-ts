@@ -6,11 +6,13 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
+import useSenseItem from './_refactor/useSenseItem';
 
 export type AdviserProps = {
   adviser: {
     setLoading: (isLoading: boolean) => void;
     setError: (error: string) => void;
+    setAdviserText: (text: string) => void;
   };
 };
 
@@ -19,6 +21,11 @@ function Sense() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const [adviserText, setAdviserText] = useState('');
+
+  const senseById = useSenseItem({ id: selected });
+
+  console.log(senseById);
 
   const senseBackendIsLoading = useAppSelector((state) => {
     const { entryStatus } = state.backend.syncState;
@@ -50,14 +57,19 @@ function Sense() {
     } else {
       text = 'welcome to sense 🧬';
     }
-    setAdviser(text, color);
-  }, [setAdviser, loading, senseBackendIsLoading]);
+    setAdviser(adviserText || text, error ? 'red' : color);
+  }, [setAdviser, loading, senseBackendIsLoading, error, adviserText]);
 
   // maybe use context
   const adviserProps = {
     setLoading: (isLoading: boolean) => setLoading(isLoading),
     setError: (error: string) => setError(error),
+    setAdviserText: (text: string) => setAdviserText(text),
   };
+
+  function update() {
+    senseById.refetch();
+  }
 
   return (
     <>
@@ -67,10 +79,14 @@ function Sense() {
           selected={selected}
           adviser={adviserProps}
         />
-        <SenseViewer selected={selected} adviser={adviserProps} />
+        <SenseViewer
+          selected={selected}
+          adviser={adviserProps}
+          senseById={senseById}
+        />
       </div>
 
-      <ActionBar id={selected} />
+      <ActionBar id={selected} adviser={adviserProps} update={update} />
     </>
   );
 }
