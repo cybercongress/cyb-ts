@@ -10,7 +10,7 @@ function useParticleDetails(cid: string, { skip = false } = {}) {
       return fetchWithDetails!(cid);
     },
     {
-      enabled: Boolean(cid) && !skip,
+      enabled: Boolean(cid && fetchWithDetails) && !skip,
     }
   );
 

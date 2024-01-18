@@ -58,7 +58,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
         <DownloadableItem search={search} cid={cid} />
       )}
 
-      {contentType === 'audio' && <Audio content={content} />}
+      {contentType === 'audio' && content && <Audio content={content} />}
 
       {contentType === 'video' && content && (
         <VideoPlayerGatewayOnly content={content} />

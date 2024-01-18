@@ -59,6 +59,8 @@ function SenseListItemContainer({ senseListItem }: Props) {
     skip: !cidText,
   });
 
+  console.log('----data', data);
+
   let content;
 
   if (cidText) {
@@ -68,10 +70,11 @@ function SenseListItemContainer({ senseListItem }: Props) {
           <span>
             resolving particle <Dots />
           </span>
-        ) : data ? (
-          data.text || contentTypeConfig[data.type]?.label || ''
         ) : (
-          'unsuported type'
+          data &&
+          (data.text ||
+            contentTypeConfig[data.type]?.label ||
+            'unsuported type')
         )}
       </>
     );

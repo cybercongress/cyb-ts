@@ -56,27 +56,29 @@ function SenseList({ select, selected, senseList }: Props) {
             </div>
 
             <ul>
-              {items.map((senseListItem) => {
-                const { id } = senseListItem;
+              {items
+                // .slice(0, 1)
+                .map((senseListItem) => {
+                  const { id } = senseListItem;
 
-                return (
-                  <li
-                    key={id}
-                    className={cx(styles.item, {
-                      [styles.selected]: id === selected,
-                    })}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        select(id);
-                      }}
+                  return (
+                    <li
+                      key={id}
+                      className={cx(styles.item, {
+                        [styles.selected]: id === selected,
+                      })}
                     >
-                      <SenseListItemContainer senseListItem={senseListItem} />
-                    </button>
-                  </li>
-                );
-              })}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          select(id);
+                        }}
+                      >
+                        <SenseListItemContainer senseListItem={senseListItem} />
+                      </button>
+                    </li>
+                  );
+                })}
             </ul>
           </aside>
         ) : (

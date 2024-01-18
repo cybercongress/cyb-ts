@@ -15,6 +15,8 @@ import useParticleDetails from '../../_refactor/useParticleDetails';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import Loader2 from 'src/components/ui/Loader2';
 import { Dots } from 'src/components';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
 
 type Props = {
   senseItem: LinkDbEntity | TransactionDbEntity;
@@ -99,15 +101,26 @@ function MessageContainer({ senseItem, isParticle }: Props) {
               <span>
                 resolving particle <Dots />
               </span>
-            ) : data ? (
-              <ContentIpfs
-                details={data}
-                cid={data.cid}
-                content={data.content}
-                search
-              />
             ) : (
-              ''
+              data && (
+                <>
+                  <ContentIpfs
+                    details={data}
+                    cid={data.cid}
+                    content={data.content}
+                    search
+                  />
+
+                  {data.type === 'text' && data.text?.endsWith('...') && (
+                    <>
+                      <br />
+                      <Link to={routes.oracle.ask.getLink(resolveCid)}>
+                        full content
+                      </Link>
+                    </>
+                  )}
+                </>
+              )
             )}
           </>
         )) ||
