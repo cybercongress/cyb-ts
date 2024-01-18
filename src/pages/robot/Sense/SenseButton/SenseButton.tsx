@@ -34,10 +34,10 @@ function SenseButton({ className }) {
       className={cx(styles.senseBtn, className)}
       to={routes.robot.routes.sense.path}
     >
-      <Tooltip tooltip="unread chats">
+      <Tooltip tooltip="unread chats" placement="right">
         <span>{unreadChatsCount}</span>
       </Tooltip>
-      <Tooltip tooltip="cyberlinks' notifications">
+      <Tooltip tooltip="cyberlinks' notifications" placement="right">
         <span>{unreadParticleCount}</span>
       </Tooltip>
 

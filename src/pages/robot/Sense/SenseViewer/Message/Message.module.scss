@@ -16,6 +16,10 @@
       text-transform: none;
     }
   }
+
+  &.myMessage {
+    justify-self: flex-end;
+  }
 }
 
 .avatar {

@@ -11,6 +11,7 @@
 
   > :first-child {
     > div {
+      // don't understand this scroll
       overflow-x: hidden;
     }
   }

@@ -1,24 +1,23 @@
-import { useEffect, useState } from 'react';
-import { useBackend } from 'src/contexts/backend';
+import { useState } from 'react';
 
 import styles from './SenseList.module.scss';
 import Display from 'src/components/containerGradient/Display/Display';
-import SenseListItem from './SenseListItem/SenseListItem';
-import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
-import { CoinAction, CoinAmount } from '../SenseViewer/Message/Message';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { useAppSelector } from 'src/redux/hooks';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { AdviserProps } from '../Sense';
+import SenseListItemContainer from './SenseListItem/SenseListItem.container.tsx';
+import { SenseListItem } from 'src/services/backend/types/sense';
 
 type Props = {
   select: (id: string) => void;
   selected?: string;
-  setLoading: (isLoading: boolean) => void;
+  senseList: {
+    data: SenseListItem[] | undefined;
+    isLoading: boolean;
+  };
 } & AdviserProps;
 
 const mapFilterWithEntryType = {
@@ -27,46 +26,10 @@ const mapFilterWithEntryType = {
   [EntryType.particle]: Filters.Particle,
 };
 
-export const REFETCH_INTERVAL = 1000 * 20;
-
-function SenseList({ select, selected, adviser }: Props) {
+function SenseList({ select, selected, senseList }: Props) {
   const [filter, setFilter] = useState(Filters.All);
-  const address = useAppSelector(selectCurrentAddress);
 
-  const { senseApi } = useBackend();
-
-  const enabled = Boolean(senseApi && address);
-
-  const { error, data, isLoading, refetch } = useQuery({
-    queryKey: ['senseApi', 'getList', address],
-    queryFn: async () => {
-      return senseApi!.getList();
-    },
-    enabled,
-    refetchInterval: REFETCH_INTERVAL,
-  });
-
-  useEffect(() => {
-    adviser.setLoading(isLoading);
-  }, [isLoading, adviser]);
-
-  useEffect(() => {
-    adviser.setError(error?.message || '');
-  }, [error, adviser]);
-
-  useEffect(() => {
-    if (!selected) {
-      return;
-    }
-
-    setTimeout(() => {
-      refetch();
-    }, 300);
-  }, [refetch, selected]);
-
-  console.log('----getListQuery', data);
-
-  let items = data || [];
+  let items = senseList.data || [];
 
   if (filter !== Filters.All) {
     items = items.filter((item) => {
@@ -74,10 +37,12 @@ function SenseList({ select, selected, adviser }: Props) {
     });
   }
 
+  console.log('----senseListItems', items);
+
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
-        {isLoading ? (
+        {senseList.isLoading ? (
           <div className={styles.center}>
             <Loader2 />
           </div>
@@ -91,86 +56,27 @@ function SenseList({ select, selected, adviser }: Props) {
             </div>
 
             <ul>
-              {items.map(
-                ({ id, entryType, meta, timestampUpdate, unreadCount }) => {
-                  let text;
-                  let amount;
-                  let isAmountSend = false;
+              {items.map((senseListItem) => {
+                const { id } = senseListItem;
 
-                  switch (entryType) {
-                    case EntryType.particle:
-                      text = meta.id?.text;
-                      break;
-                    case EntryType.chat:
-                      text = meta.memo;
-                      amount = meta.amount;
-                      isAmountSend = meta.direction === 'to';
-                      break;
-
-                    case EntryType.transactions:
-                      text = meta.memo;
-
-                      if (meta.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-                        amount = meta.value.outputs.find(
-                          (output) => output.address === id
-                        )?.coins;
-                        break;
-                      }
-
-                      amount = meta.value.amount;
-                      isAmountSend = meta.value.from_address === address;
-                      break;
-
-                    default:
-                      break;
-                  }
-
-                  const content = (
-                    <>
-                      <span>{text}</span>
-                      {amount?.map((a) => {
-                        return (
-                          <CoinAmount
-                            amount={a.amount}
-                            denom={a.denom}
-                            type={
-                              isAmountSend
-                                ? CoinAction.send
-                                : CoinAction.receive
-                            }
-                          />
-                        );
-                      })}
-                    </>
-                  );
-
-                  const withAmount = Boolean(amount?.length);
-
-                  return (
-                    <li
-                      key={id}
-                      className={cx(styles.item, {
-                        [styles.selected]: id === selected,
-                      })}
+                return (
+                  <li
+                    key={id}
+                    className={cx(styles.item, {
+                      [styles.selected]: id === selected,
+                    })}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        select(id);
+                      }}
                     >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          select(id);
-                        }}
-                      >
-                        <SenseListItem
-                          address={id}
-                          timestamp={timestampUpdate}
-                          unreadCount={unreadCount}
-                          value={content}
-                          withAmount
-                        />
-                      </button>
-                    </li>
-                  );
-                }
-              )}
+                      <SenseListItemContainer senseListItem={senseListItem} />
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </aside>
         ) : (

@@ -1,21 +1,14 @@
-import React from 'react';
-import { Account, AmountDenom, DenomArr, Tooltip } from 'src/components';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import { Account, AmountDenom, Tooltip } from 'src/components';
 import styles from './Message.module.scss';
-import dateFormat from 'dateformat';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
-import Denom from 'src/components/denom';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import Date from '../../_refactor/Date/Date';
-import { formatNumber } from 'src/utils/utils';
 import cx from 'classnames';
-import useGetCreator from 'src/containers/ipfs/hooks/useGetCreator';
 
 type Props = {
   address: string;
   text: string;
-  // type: string;
   date: number;
   amountData?: {
     amount: MsgSend['amount'] | undefined;
@@ -56,12 +49,15 @@ export function CoinAmount({
 }
 
 function Message({ address, text, date, amountData, txHash }: Props) {
-  // const isP = address && address.startsWith('Qm');
-
-  // const creator = useGetCreator();
+  // const myAddress = useAppSelector(selectCurrentAddress);
+  // const myMessage = address === myAddress;
 
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={cx(styles.wrapper, {
+        // [styles.myMessage]: myMessage,
+      })}
+    >
       <div className={styles.avatar}>
         <Account address={address} onlyAvatar avatar sizeAvatar={40} />
       </div>
@@ -72,7 +68,11 @@ function Message({ address, text, date, amountData, txHash }: Props) {
       <div className={styles.timestampBlock}>
         {txHash && (
           <Tooltip tooltip="View tx">
-            <Link className={styles.tx} to={routes.txExplorer.getLink(txHash)}>
+            <Link
+              className={styles.tx}
+              target="_blank"
+              to={routes.txExplorer.getLink(txHash)}
+            >
               ✔
             </Link>
           </Tooltip>

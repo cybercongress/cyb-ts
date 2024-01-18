@@ -7,6 +7,8 @@ import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import { isParticle as isParticleFunc } from 'src/features/particles/utils';
+import useParticleDetails from '../../_refactor/useParticleDetails';
+import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 
 type Props = {
   unreadCount: number;
@@ -62,7 +64,10 @@ function SenseListItem({
       {timestamp && <Date timestamp={timestamp} className={styles.date} />}
 
       {unreadCount > 0 && (
-        <Pill className={styles.unread} text={unreadCount}></Pill>
+        <Pill
+          className={styles.unread}
+          text={unreadCount > 99 ? '99+' : unreadCount.toString()}
+        />
       )}
     </div>
   );

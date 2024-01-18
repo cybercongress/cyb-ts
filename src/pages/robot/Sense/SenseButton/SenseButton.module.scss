@@ -12,17 +12,14 @@
   border-radius: 50px;
 
   > span {
-    // & {
-    //   font-size: 5px;
-    // }
-
     font-size: 14px;
     margin-top: 5px;
     color: white;
     // filter: drop-shadow(0px 0px 5px #00c4ff);
 
-    &:nth-child(3) {
-      margin-top: 3px;
+    &:last-of-type {
+      margin-top: 4px;
+      font-size: 16px;
     }
   }
 

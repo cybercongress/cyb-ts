@@ -7,6 +7,9 @@ import { useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import useSenseItem from './_refactor/useSenseItem';
+import { useQuery } from '@tanstack/react-query';
+import { useBackend } from 'src/contexts/backend';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 export type AdviserProps = {
   adviser: {
@@ -16,6 +19,8 @@ export type AdviserProps = {
   };
 };
 
+export const REFETCH_INTERVAL = 1000 * 20;
+
 function Sense() {
   const [selected, setSelected] = useState<string>();
 
@@ -23,9 +28,19 @@ function Sense() {
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
 
+  const address = useAppSelector(selectCurrentAddress);
+  const { senseApi } = useBackend();
+
   const senseById = useSenseItem({ id: selected });
 
-  console.log(senseById);
+  const senseList = useQuery({
+    queryKey: ['senseApi', 'getList', address],
+    queryFn: async () => {
+      return senseApi!.getList();
+    },
+    enabled: Boolean(senseApi && address),
+    refetchInterval: REFETCH_INTERVAL,
+  });
 
   const senseBackendIsLoading = useAppSelector((state) => {
     const { entryStatus } = state.backend.syncState;
@@ -60,14 +75,25 @@ function Sense() {
     setAdviser(adviserText || text, error ? 'red' : color);
   }, [setAdviser, loading, senseBackendIsLoading, error, adviserText]);
 
-  // maybe use context
+  //  seems use context
   const adviserProps = {
     setLoading: (isLoading: boolean) => setLoading(isLoading),
     setError: (error: string) => setError(error),
     setAdviserText: (text: string) => setAdviserText(text),
   };
 
+  useEffect(() => {
+    if (!selected) {
+      return;
+    }
+
+    setTimeout(() => {
+      senseList.refetch();
+    }, 300);
+  }, [senseList, selected]);
+
   function update() {
+    senseList.refetch();
     senseById.refetch();
   }
 
@@ -78,6 +104,10 @@ function Sense() {
           select={(id: string) => setSelected(id)}
           selected={selected}
           adviser={adviserProps}
+          senseList={{
+            data: senseList.data,
+            isLoading: senseList.isLoading,
+          }}
         />
         <SenseViewer
           selected={selected}

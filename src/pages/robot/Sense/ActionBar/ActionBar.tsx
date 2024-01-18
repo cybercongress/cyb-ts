@@ -12,7 +12,7 @@ import { CYBER } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 
 type Props = {
-  id: string;
+  id: string | undefined;
   update: () => void;
 } & AdviserProps;
 

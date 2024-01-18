@@ -32,9 +32,11 @@ import {
   MsgSendTransaction,
 } from 'src/services/backend/services/dataSource/blockchain/types';
 import { AdviserProps } from '../Sense';
+import MessageContainer from './Message/Message.container';
 
 type Props = {
   selected: string | undefined;
+  senseById: ReturnType<typeof useSenseItem>;
 } & AdviserProps;
 
 const DEFAULT_ITEMS_LENGTH = 20;
@@ -44,8 +46,6 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
   const { senseApi } = useBackend();
 
   const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
-
-  const address = useAppSelector(selectCurrentAddress);
 
   const isParticle = isParticleFunc(selected || '');
 
@@ -133,77 +133,11 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
               hasMore={data && data.length > showItemsLength}
             > */}
             {items.map((senseItem, i) => {
-              const { timestamp, hash: h } = senseItem;
-
-              let text;
-              let from;
-              let amount: Coin[] | undefined;
-              let isAmountSend = false;
-              let hash = h;
-
-              if (isParticle) {
-                const item = senseItem as LinkDbEntity;
-
-                from = item.from;
-                text = item.text;
-                hash = item.transactionHash;
-                from = item.neuron;
-              } else {
-                const item = senseItem as TransactionDbEntity;
-                const { type, value, memo } = item;
-
-                switch (type) {
-                  case 'cosmos.bank.v1beta1.MsgSend': {
-                    const v = value as MsgSendTransaction['value'];
-
-                    from = v.from_address;
-                    amount = v.amount;
-                    text = memo;
-                    isAmountSend = v.from_address === address;
-
-                    break;
-                  }
-
-                  case 'cosmos.bank.v1beta1.MsgMultiSend': {
-                    const v = value as MsgMultiSendTransaction['value'];
-
-                    from = v.inputs[0].address;
-                    amount = v.outputs.find(
-                      (output) => output.address === address
-                    )?.coins;
-
-                    break;
-                  }
-
-                  case 'cyber.graph.v1beta1.MsgCyberlink': {
-                    const v = value as CyberLinkTransaction['value'];
-
-                    from = v.links[0].from;
-                    text = 'todo: cyberlink text';
-
-                    break;
-                  }
-
-                  default: {
-                    if (!isParticle) {
-                      console.error('unknown type', type);
-                      return null;
-                    }
-                  }
-                }
-              }
-
               return (
-                <Message
+                <MessageContainer
                   key={i}
-                  address={from!}
-                  text={text || ''}
-                  txHash={hash}
-                  amountData={{
-                    amount,
-                    isAmountSend,
-                  }}
-                  date={timestamp}
+                  senseItem={senseItem}
+                  isParticle={isParticle}
                 />
               );
             })}

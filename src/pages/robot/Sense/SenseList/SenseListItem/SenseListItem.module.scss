@@ -10,8 +10,6 @@
     'avatar title date'
     'avatar text  unread';
 
-  // grid-template-columns: 50px minmax(auto, 150px) 50px;
-
   gap: 3px 15px;
 
   &::before {
@@ -71,6 +69,8 @@
 
 .unread {
   grid-area: unread;
+  overflow-x: hidden;
+  margin-right: 0 !important;
 }
 
 .date,

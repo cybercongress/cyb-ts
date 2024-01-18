@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useBackend } from 'src/contexts/backend';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { REFETCH_INTERVAL } from './SenseList/SenseList';
+import { REFETCH_INTERVAL } from './Sense';
 
 function useSenseSummary() {
   const { senseApi } = useBackend();
