@@ -114,7 +114,10 @@ function MessageContainer({ senseItem, isParticle }: Props) {
                   {data.type === 'text' && data.text?.endsWith('...') && (
                     <>
                       <br />
-                      <Link to={routes.oracle.ask.getLink(resolveCid)}>
+                      <Link
+                        to={routes.oracle.ask.getLink(resolveCid)}
+                        target="_blank"
+                      >
                         full content
                       </Link>
                     </>
