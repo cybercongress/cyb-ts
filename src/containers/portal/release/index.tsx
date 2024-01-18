@@ -59,7 +59,7 @@ function Release() {
   const [error, setError] = useState<string>();
 
   const { citizenship, loading: loadingCitizenship } =
-    useGetActivePassport(defaultAccount);
+    useGetActivePassport(addressActive);
   const { totalGift, totalGiftClaimed, giftData, loadingGift } = useCheckGift(
     citizenship,
     addressActive
@@ -344,7 +344,7 @@ function Release() {
   const useUnClaimedGiftData = useMemo(() => {
     if (
       giftData !== null &&
-      citizenship !== null &&
+      citizenship &&
       Object.keys(giftData.unClaimed.addresses).length > 0
     ) {
       if (currentBonus?.current) {
