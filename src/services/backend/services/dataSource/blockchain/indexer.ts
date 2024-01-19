@@ -184,11 +184,16 @@ const fetchTransactionsIterable = (
   types: Transaction['type'][] = []
 ) =>
   fetchIterable(
-    fetchTransactions,
+    (
+      cyberIndexUrl: string,
+      neuronAddress: NeuronAddress,
+      timestamp: number,
+      offset: number
+    ) =>
+      fetchTransactions(cyberIndexUrl, neuronAddress, timestamp, offset, types),
     cyberIndexUrl,
     neuronAddress,
-    timestamp,
-    types
+    timestamp
   );
 
 const fetchCyberlinksIterable = (

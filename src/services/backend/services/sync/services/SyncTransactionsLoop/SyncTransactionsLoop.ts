@@ -11,8 +11,6 @@ import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
-import { CID_TWEET } from 'src/utils/consts';
-import { executeSequentially } from 'src/utils/async/promise';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
@@ -28,15 +26,8 @@ import { changeSyncStatus } from '../../utils';
 import { LinkResult, SyncServiceParams } from '../../types';
 
 import { fetchTransactionsIterable } from '../../../dataSource/blockchain/indexer';
-import {
-  CYBER_LINK_TRANSACTION_TYPE,
-  MSG_MULTI_SEND_TRANSACTION_TYPE,
-  MSG_SEND_TRANSACTION_TYPE,
-  Transaction,
-} from '../../../dataSource/blockchain/types';
+import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
-
-type SyncTransactionMode = 'my' | 'friends';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -46,8 +37,6 @@ class SyncTransactionsLoop {
   private db: DbApi | undefined;
 
   private particlesResolver: ParticlesResolverQueue | undefined;
-
-  private mode: SyncTransactionMode;
 
   private intervalMs: number;
 
@@ -173,7 +162,11 @@ class SyncTransactionsLoop {
       this.statusApi.sendStatus('in-progress', `sync ${address}...`);
 
       const { timestampRead, unreadCount, timestampUpdate } =
-        await this.db!.getSyncStatus(myAddress, address);
+        await this.db!.getSyncStatus(
+          myAddress,
+          address,
+          EntryType.transactions
+        );
 
       const transactionsAsyncIterable = fetchTransactionsIterable(
         this.params.cyberIndexUrl!,
@@ -223,7 +216,6 @@ class SyncTransactionsLoop {
             QueuePriority.HIGH
           );
 
-          // Add cyberlink to sync observables
           if (links.length > 0) {
             await this.db!.putCyberlinks(links);
           }

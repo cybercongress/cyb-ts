@@ -57,10 +57,9 @@ function App() {
         const transactionsFriend = await senseApi.getTransactions(
           'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
         );
-        console.log('----sense transactionsFriend master', transactionsFriend);
+        console.log('----sense Friend master', transactionsFriend);
 
-        const chats = await senseApi.getMyChats(
-          myAddress,
+        const chats = await senseApi.getFriendItems(
           'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
         );
         console.log('----sense chats', chats);

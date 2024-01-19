@@ -10,6 +10,11 @@ import {
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { LinkDirection } from '../services/sync/types';
 
+export type SenseTransaction =
+  | MsgSendTransaction
+  | MsgMultiSendTransaction
+  | CyberLinkTransaction;
+
 export type SenseChat = {
   userAddress: NeuronAddress;
   last: SenseChatMessage;
@@ -21,17 +26,26 @@ export type SenseUnread = {
   unread: number;
 };
 
+type ParticlePreResolved = { cid?: ParticleCid; text: string; mime: string };
+
+type SenseTweetMeta = {
+  lastId: ParticlePreResolved;
+};
+
 type SenseParticleMeta = {
-  id: { text: string; mime: string };
-  lastId: { text: string; mime: string };
   direction: LinkDirection;
 };
 
-type SenseUserMeta = {
-  value: SenseTransaction['value'];
-  memo?: string;
-  type: string;
-};
+type SenseParticleResultMeta = {
+  id: ParticlePreResolved;
+  lastId: ParticlePreResolved;
+} & SenseParticleMeta;
+
+// type SenseUserMeta = {
+//   value: SenseTransaction['value'];
+//   memo?: string;
+//   type: string;
+// };
 
 type SenseTransactionMeta = {
   memo?: string;
@@ -40,14 +54,15 @@ type SenseTransactionMeta = {
 export type SenseChatMessage = {
   amount: Coin[];
   memo?: string;
-  direction: 'from' | 'to';
+  direction: LinkDirection;
 };
 
 export type SenseMeta =
   | SenseParticleMeta
-  | SenseUserMeta
+  // | SenseUserMeta
   | SenseChatMessage
-  | SenseTransactionMeta;
+  | SenseTransactionMeta
+  | SenseTweetMeta;
 
 export type SenseListItem = {
   entryType: EntryType;
@@ -56,10 +71,5 @@ export type SenseListItem = {
   timestampUpdate: number;
   timestampRead: number;
   lastId: NeuronAddress | ParticleCid;
-  meta: { direction: 'from' | 'to' } | SenseChatMessage;
+  meta: SenseMeta;
 };
-
-export type SenseTransaction =
-  | MsgSendTransaction
-  | MsgMultiSendTransaction
-  | CyberLinkTransaction;
