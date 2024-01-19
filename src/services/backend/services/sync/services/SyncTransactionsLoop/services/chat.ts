@@ -10,7 +10,7 @@ export const syncMyChats = async (
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
-    entryType: [EntryType.chat, EntryType.transactions],
+    entryType: [EntryType.chat, EntryType.transactions, EntryType.tweets],
   });
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
@@ -46,7 +46,7 @@ export const syncMyChats = async (
       ).length;
       if (timestampUpdate! < lastChatTimestamp) {
         db.updateSyncStatus({
-          entryType: EntryType.transactions,
+          entryType: syncItem.entryType,
           ownerId: myAddress,
           id: id!,
           timestampUpdate: lastChatTimestamp,
