@@ -1,7 +1,4 @@
-import {
-  fetchTransactionsIterable,
-  fetchCyberlinksIterable,
-} from '../requests';
+import { fetchTransactionsIterable, fetchCyberlinksIterable } from '../indexer';
 import { request } from 'graphql-request';
 
 jest.mock('graphql-request');

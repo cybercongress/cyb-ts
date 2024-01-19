@@ -16,14 +16,15 @@ export const createLoopObservable = (
   intervalMs: number,
   isInitialized$: Observable<boolean>,
   actionObservable$: Observable<any>,
-  beforeCallback?: () => void
+  beforeCallback?: () => void,
+  warmupMs = 0 // Start immediately
 ) => {
   const source$ = isInitialized$.pipe(
     distinctUntilChanged(),
     filter((initialized) => initialized),
     switchMap(() => {
       return interval(intervalMs).pipe(
-        startWith(0), // Start immediately
+        startWith(warmupMs),
         tap(() => beforeCallback && beforeCallback()),
         concatMap(() =>
           actionObservable$.pipe(

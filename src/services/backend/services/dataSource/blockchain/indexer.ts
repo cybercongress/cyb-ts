@@ -106,6 +106,7 @@ const fetchTransactions = async (
         types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
       }
     );
+    console.log('--- fetchTransactions:', res?.messages_by_address);
 
     return res?.messages_by_address;
   } catch (e) {
@@ -183,11 +184,16 @@ const fetchTransactionsIterable = (
   types: Transaction['type'][] = []
 ) =>
   fetchIterable(
-    fetchTransactions,
+    (
+      cyberIndexUrl: string,
+      neuronAddress: NeuronAddress,
+      timestamp: number,
+      offset: number
+    ) =>
+      fetchTransactions(cyberIndexUrl, neuronAddress, timestamp, offset, types),
     cyberIndexUrl,
     neuronAddress,
-    timestamp,
-    types
+    timestamp
   );
 
 const fetchCyberlinksIterable = (
@@ -252,19 +258,6 @@ const fetchCyberlinkSyncStats = async (
     count,
   };
 };
-
-// export const getTweet = async (address) => {
-//   try {
-//     const response = await axios({
-//       method: 'get',
-//       url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.log(error);
-//     return null;
-//   }
-// };
 
 export {
   fetchTransactionsIterable,
