@@ -28,6 +28,10 @@ class DeferredDbSaver implements IDeferredDbSaver {
 
   private dbApi: DbApi | undefined;
 
+  public get queue(): QueueMap {
+    return this.queue$.getValue();
+  }
+
   constructor(dbInstance$: Observable<DbApi | undefined>) {
     dbInstance$.subscribe((db) => {
       this.dbApi = db;
@@ -47,14 +51,12 @@ class DeferredDbSaver implements IDeferredDbSaver {
       });
   }
 
-  public enuqueIpfsContent(content: IPFSContentMaybe) {
+  public enqueueIpfsContent(content: IPFSContentMaybe) {
     if (!content) {
       return;
     }
     const { cid } = content;
-    if (cid === 'QmX7XZ5VDLDaBhzx54fkE2rz1u52TCeD7aFpyTYGv763Mv') {
-      console.log('-----defferedDBSaver', cid, content);
-    }
+
     this.queue$.next(new Map(this.queue$.value).set(cid, { content }));
   }
 
@@ -69,7 +71,6 @@ class DeferredDbSaver implements IDeferredDbSaver {
   private async processQueue(queue: QueueMap) {
     // const processingQueue = new Map(this.queue$.value); // Snapshot of the current queue
     this.queue$.next(new Map());
-
     // eslint-disable-next-line no-restricted-syntax
     for (const [cid, item] of queue) {
       // eslint-disable-next-line no-await-in-loop

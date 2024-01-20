@@ -13,3 +13,4 @@ export type Cyberlink = CyberLinkSimple & {
 
 export type CyberLinkNeuron = Omit<Cyberlink, 'timestamp'>;
 export type CyberLinkTimestamp = Omit<Cyberlink, 'neuron'>;
+export type CyberlinkTxHash = Cyberlink & { transaction_hash: string };

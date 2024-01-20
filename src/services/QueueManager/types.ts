@@ -1,9 +1,8 @@
 import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
 import { LinkDbEntity } from '../CozoDb/types/entities';
-import { ZERO } from 'long';
 
 /* eslint-disable import/no-unused-modules */
-type QueueItemStatus =
+export type QueueItemStatus =
   | 'pending'
   | 'executing'
   | 'timeout'
@@ -47,30 +46,30 @@ export type QueueItemOptions = {
   postProcessing?: boolean;
 };
 
-export type QueueItemCallback<T> = (
+export type QueueItemCallback = (
   cid: string,
   status: QueueItemStatus,
   source: QueueSource,
-  result?: T
+  result?: IPFSContentMaybe
 ) => void;
 
-export type QueueItem<T> = {
+export type QueueItem = {
   cid: string;
   source: QueueSource;
   status: QueueItemStatus;
-  callbacks: QueueItemCallback<T>[];
+  callbacks: QueueItemCallback[];
   controller?: AbortController;
   executionTime?: number;
 } & Omit<QueueItemOptions, 'initialSource'>;
 
-export type QueueItemResult<T> = {
-  item: QueueItem<T>;
+export type QueueItemResult = {
+  item: QueueItem;
   status: QueueItemStatus;
   source: QueueSource;
-  result?: T;
+  result?: IPFSContentMaybe;
 };
 
-export type QueueItemAsyncResult<T> = Omit<QueueItemResult<T>, 'item'>;
+export type QueueItemAsyncResult = Omit<QueueItemResult, 'item'>;
 
 export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
@@ -78,8 +77,8 @@ export type QueueItemPostProcessor = (
 
 export interface IDeferredDbSaver {
   // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
-  enuqueIpfsContent: (content: IPFSContentMaybe) => void;
+  enqueueIpfsContent: (content: IPFSContentMaybe) => void;
   enqueueLinks: (links: LinkDbEntity[]) => void;
 }
 
-export type EnqueuedIpfsResult = QueueItemAsyncResult<IPFSContentMaybe>;
+export type EnqueuedIpfsResult = QueueItemAsyncResult;

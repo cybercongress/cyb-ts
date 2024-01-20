@@ -1,13 +1,19 @@
 .wrapper {
   display: flex;
-  justify-content: stretch;
   align-content: stretch;
 
   max-height: 80vh;
 
-  > div,
+  // Display
   > div > div {
     height: 100%;
+  }
+
+  > :first-child {
+    > div {
+      // don't understand this scroll
+      overflow-x: hidden;
+    }
   }
 
   > :nth-child(2) {

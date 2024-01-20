@@ -1,5 +1,7 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { QueuePriority } from 'src/services/QueueManager/types';
+import { SenseMeta } from 'src/services/backend/types/sense';
+import { SenseTransaction } from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -15,6 +17,7 @@ export const PinTypeMap: Record<PinEntryType, number> = {
 export enum EntryType {
   transactions = 1,
   particle = 2,
+  chat = 3,
 }
 
 export type PinDbEntity = {
@@ -26,21 +29,24 @@ export type TransactionDbEntity = {
   hash: string;
   type: string;
   timestamp: number;
-  value: Object; // Transaction;
+  value: SenseTransaction['value'];
   success: boolean;
+  memo: string;
   neuron: NeuronAddress;
 };
 
 export type SyncStatusDbEntity = {
   entry_type: EntryType;
   id: NeuronAddress | ParticleCid;
+  owner_id: NeuronAddress | ParticleCid;
   timestamp_update: number;
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
   last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
-  meta: { direction: 'from' | 'to' } | { memo: string };
+  meta: SenseMeta;
 };
+
 export type ParticleDbEntity = {
   id: ParticleCid;
   size: number;
@@ -51,23 +57,21 @@ export type ParticleDbEntity = {
   text: string;
 };
 
-export type ConfigDbEntity = {
-  key: string;
-  group_key: string;
-  value: Object;
-};
-
 export type LinkDbEntity = {
   from: ParticleCid;
   to: ParticleCid;
   neuron: NeuronAddress;
   timestamp: number;
+  // text: string;
+  // mime: string;
+  // direction: 'from' | 'to';
+  transaction_hash: string;
 };
 
 export type ConfigDbEntity = {
   key: string;
   group_key: string;
-  value: Object;
+  value: NonNullable<unknown>;
 };
 
 export enum SyncQueueStatus {

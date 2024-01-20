@@ -1,0 +1,161 @@
+import Display from 'src/components/containerGradient/Display/Display';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import styles from './SenseViewer.module.scss';
+import { useBackend } from 'src/contexts/backend';
+import { Account } from 'src/components';
+import { useQuery } from '@tanstack/react-query';
+import Message from './Message/Message';
+import { MsgMultiSend, MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
+import { SupportedTypes } from '../types';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
+import useSenseItem from '../_refactor/useSenseItem';
+import { routes } from 'src/routes';
+import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import Loader2 from 'src/components/ui/Loader2';
+import { cutSenseItem } from '../utils';
+import ParticleAvatar from '../components/ParticleAvatar/ParticleAvatar';
+import useParticleDetails from '../_refactor/useParticleDetails';
+import { isParticle as isParticleFunc } from 'src/features/particles/utils';
+import {
+  EntryType,
+  LinkDbEntity,
+  TransactionDbEntity,
+} from 'src/services/CozoDb/types/entities';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { log } from 'tone/build/esm/core/util/Debug';
+import {
+  CyberLinkTransaction,
+  MsgMultiSendTransaction,
+  MsgSendTransaction,
+} from 'src/services/backend/services/dataSource/blockchain/types';
+import { AdviserProps } from '../Sense';
+import MessageContainer from './Message/Message.container';
+
+type Props = {
+  selected: string | undefined;
+  senseById: ReturnType<typeof useSenseItem>;
+} & AdviserProps;
+
+const DEFAULT_ITEMS_LENGTH = 20;
+const LOAD_MORE_ITEMS_LENGTH = 20;
+
+function SenseViewer({ selected, adviser, senseById }: Props) {
+  const { senseApi } = useBackend();
+
+  const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
+
+  const isParticle = isParticleFunc(selected || '');
+
+  const { data: particleData } = useParticleDetails(selected!, {
+    skip: !isParticle && !selected,
+  });
+
+  const { error, loading, data } = senseById;
+
+  const text = particleData?.text;
+
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    ref.current.scrollTop = ref.current.scrollHeight + 100;
+  }, [ref, data]);
+
+  useEffect(() => {
+    selected && senseApi?.markAsRead(selected);
+  }, [selected, senseApi]);
+
+  useEffect(() => {
+    setShowItemsLength(DEFAULT_ITEMS_LENGTH);
+  }, [selected]);
+
+  function setMore() {
+    setShowItemsLength(
+      (showItemsLength) => showItemsLength + LOAD_MORE_ITEMS_LENGTH
+    );
+  }
+
+  useEffect(() => {
+    adviser.setLoading(loading);
+  }, [loading, adviser]);
+
+  useEffect(() => {
+    adviser.setError(error?.message || '');
+  }, [error, adviser]);
+
+  // useMemo
+  const items = [...(data || [])].reverse().slice(0, 100);
+
+  console.log(loading, 'loading');
+  console.log(data);
+  console.log(showItemsLength);
+  console.log('items', items);
+
+  return (
+    <div className={styles.wrapper}>
+      <Display
+        title={
+          selected && (
+            <DisplayTitle
+              title={
+                isParticle ? (
+                  <header className={styles.header}>
+                    <ParticleAvatar particleId={selected} />
+                    <Link
+                      className={styles.title}
+                      to={routes.oracle.ask.getLink(selected)}
+                    >
+                      {cutSenseItem(selected)}
+                    </Link>
+                    {text && <p>{text}</p>}
+                  </header>
+                ) : (
+                  <Account address={selected} avatar />
+                )
+              }
+            />
+          )
+        }
+      >
+        {selected && items ? (
+          <div className={styles.messages} ref={ref}>
+            {/* <InfiniteScroll
+              inverse
+              loader={<h4>Loading...</h4>}
+              dataLength={items.length}
+              next={setMore}
+              hasMore={data && data.length > showItemsLength}
+            > */}
+            {items.map((senseItem, i) => {
+              return (
+                <MessageContainer
+                  key={i}
+                  senseItem={senseItem}
+                  isParticle={isParticle}
+                />
+              );
+            })}
+            {/* </InfiniteScroll> */}
+          </div>
+        ) : loading ? (
+          <div className={styles.noData}>
+            <Loader2 />
+          </div>
+        ) : (
+          <p className={styles.noData}>
+            post to your log, <br />
+            or select chat to start messaging
+          </p>
+        )}
+      </Display>
+    </div>
+  );
+}
+
+export default SenseViewer;

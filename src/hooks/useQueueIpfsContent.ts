@@ -36,8 +36,8 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
 
   const {
     // backgroundWorker: backendApi,
-    ipfsNode,
     ipfsApi,
+    isIpfsInitialized,
   } = useBackend();
 
   const fetchParticle = useCallback(
@@ -83,7 +83,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   }, [parentId, ipfsApi]);
 
   return {
-    isReady: !!ipfsApi,
+    isReady: !!ipfsApi && isIpfsInitialized,
     status,
     source,
     content,

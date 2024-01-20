@@ -1,0 +1,81 @@
+.wrapper {
+  display: grid;
+  grid-template-areas:
+    'avatar title date'
+    'avatar content content'
+    'avatar amount .';
+
+  grid-template-columns: 40px auto 80px;
+  gap: 12px 15px;
+
+  > h6 {
+    grid-area: title;
+    font-size: 16px;
+
+    a {
+      text-transform: none;
+    }
+  }
+
+  &.myMessage {
+    justify-self: flex-end;
+  }
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  // margin-right: 10px;
+
+  grid-area: avatar;
+}
+
+.timestampBlock {
+  grid-area: date;
+  justify-self: flex-end;
+  display: flex;
+  align-items: center;
+
+  .tx {
+    color: var(--green-light);
+    margin-right: 6px;
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.content {
+  grid-area: content;
+}
+
+.amount {
+  > div {
+    grid-area: amount;
+  }
+}
+
+.content,
+.amount {
+  font-size: 14px;
+}
+
+.coinAmount {
+  display: flex;
+  align-items: center;
+  gap: 0 4px;
+  color: var(--green-light);
+
+  img {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  &.send {
+    span {
+      color: #ff5c00;
+    }
+  }
+}

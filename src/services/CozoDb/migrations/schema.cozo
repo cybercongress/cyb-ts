@@ -21,7 +21,8 @@
         from: String,
         to: String,
         neuron: String =>
-        timestamp: Int
+        timestamp: Int,
+        transaction_hash: String default ''
     }
 }
 {
@@ -38,6 +39,7 @@
 
 {
     :create sync_status {
+        owner_id: String,
         id: String =>
         entry_type: Int,
         disabled: Bool,

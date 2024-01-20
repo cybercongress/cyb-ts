@@ -5,7 +5,7 @@ import { dateToNumber, numberToDate } from 'src/utils/date';
 import { Transaction } from './types';
 
 import { TRANSACTIONS_BATCH_LIMIT, CYBERLINKS_BATCH_LIMIT } from './consts';
-import { fetchIterable } from './utils';
+import { fetchIterable } from './utils/fetch';
 
 type TransactionsByAddressResponse = {
   messages_by_address: Transaction[];
@@ -28,25 +28,29 @@ type CyberlinksSyncStatsResponse = {
 };
 
 export type CyberlinksByParticleResponse = {
-  cyberlinks: (Omit<Cyberlink, 'timestamp'> & { timestamp: string })[];
+  cyberlinks: (Omit<Cyberlink, 'timestamp'> & {
+    timestamp: string;
+    neuron: NeuronAddress;
+    transaction_hash: string;
+  })[];
 };
 
 const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp) {
+query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp, $types: _text) {
   messages_by_address(
-    args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
+    args: {addresses: $address, limit: $limit, offset: $offset, types: $types},
     order_by: {transaction: {block: {timestamp: desc}}},
     where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
     ) {
     transaction_hash
     value
     transaction {
-      memo
       success
       block {
         timestamp,
         height
       }
+      memo
     }
     type
   }
@@ -60,6 +64,7 @@ query Cyberlinks($limit: Int, $offset: Int, $orderBy: [cyberlinks_order_by!], $w
     to: particle_to
     timestamp
     neuron
+    transaction_hash
   }
 }
 `);
@@ -86,20 +91,27 @@ const fetchTransactions = async (
   cyberIndexUrl: string,
   address: NeuronAddress,
   timestampFrom: number,
-  offset = 0
+  offset = 0,
+  types: Transaction['type'][] = []
 ) => {
-  const res = await request<TransactionsByAddressResponse>(
-    cyberIndexUrl,
-    messagesByAddress,
-    {
-      address: `{${address}}`,
-      limit: TRANSACTIONS_BATCH_LIMIT,
-      timestamp_from: numberToDate(timestampFrom),
-      offset,
-    }
-  );
+  try {
+    const res = await request<TransactionsByAddressResponse>(
+      cyberIndexUrl,
+      messagesByAddress,
+      {
+        address: `{${address}}`,
+        limit: TRANSACTIONS_BATCH_LIMIT,
+        timestamp_from: numberToDate(timestampFrom),
+        offset,
+        types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
+      }
+    );
 
-  return res?.messages_by_address;
+    return res?.messages_by_address;
+  } catch (e) {
+    console.log('--- fetchTransactions:', e);
+    return [];
+  }
 };
 
 const fetchCyberlinks = async (
@@ -108,37 +120,42 @@ const fetchCyberlinks = async (
   timestampFrom: number,
   offset = 0
 ) => {
-  const res = await request<CyberlinksByParticleResponse>(
-    cyberIndexUrl,
-    cyberlinksByParticle,
-    {
-      limit: CYBERLINKS_BATCH_LIMIT,
-      offset,
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-      where: {
-        _or: [
+  try {
+    const res = await request<CyberlinksByParticleResponse>(
+      cyberIndexUrl,
+      cyberlinksByParticle,
+      {
+        limit: CYBERLINKS_BATCH_LIMIT,
+        offset,
+        orderBy: [
           {
-            particle_to: {
-              _eq: particleCid,
-            },
-          },
-          {
-            particle_from: {
-              _eq: particleCid,
-            },
+            timestamp: 'desc',
           },
         ],
-        timestamp: {
-          _gt: numberToDate(timestampFrom),
+        where: {
+          _or: [
+            {
+              particle_to: {
+                _eq: particleCid,
+              },
+            },
+            {
+              particle_from: {
+                _eq: particleCid,
+              },
+            },
+          ],
+          timestamp: {
+            _gt: numberToDate(timestampFrom),
+          },
         },
-      },
-    }
-  );
-  return res.cyberlinks;
+      }
+    );
+    return res.cyberlinks;
+  } catch (e) {
+    console.log('--- fetchCyberlinks:', e);
+    return [];
+  }
 };
 
 export async function fetchAllCyberlinks(
@@ -162,8 +179,16 @@ export async function fetchAllCyberlinks(
 const fetchTransactionsIterable = (
   cyberIndexUrl: string,
   neuronAddress: NeuronAddress,
-  timestamp: number
-) => fetchIterable(fetchTransactions, cyberIndexUrl, neuronAddress, timestamp);
+  timestamp: number,
+  types: Transaction['type'][] = []
+) =>
+  fetchIterable(
+    fetchTransactions,
+    cyberIndexUrl,
+    neuronAddress,
+    timestamp,
+    types
+  );
 
 const fetchCyberlinksIterable = (
   cyberIndexUrl: string,
@@ -227,6 +252,19 @@ const fetchCyberlinkSyncStats = async (
     count,
   };
 };
+
+// export const getTweet = async (address) => {
+//   try {
+//     const response = await axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.log(error);
+//     return null;
+//   }
+// };
 
 export {
   fetchTransactionsIterable,

@@ -6,7 +6,7 @@ async function* arrayToAsyncIterable<T>(array: T[]): AsyncIterable<T> {
 }
 
 async function asyncIterableBatchProcessor<T, K>(
-  items: AsyncIterable<T>,
+  items: AsyncIterable<T> | Iterable<T>,
   batchProcess: (arg: T[]) => Promise<K>,
   batchSize = 10
 ): Promise<void> {

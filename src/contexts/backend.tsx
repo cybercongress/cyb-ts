@@ -9,7 +9,6 @@ import { CYBER } from 'src/utils/config';
 
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
-import { selectFollowings } from 'src/redux/features/currentAccount';
 // import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 // import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -17,14 +16,22 @@ import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbA
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
+import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 
-const createSenseApi = (dbApi: DbApiWrapper) => ({
-  getSummary: () => dbApi.getSenseSummary(),
-  getList: () => dbApi.getSenseList(),
-  markAsRead: (id: NeuronAddress | ParticleCid) => dbApi.senseMarkAsRead(id),
+const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
+  getSummary: () => dbApi.getSenseSummary(myAddress),
+  getList: () => dbApi.getSenseList(myAddress),
+  markAsRead: (id: NeuronAddress | ParticleCid) =>
+    dbApi.senseMarkAsRead(myAddress, id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
+  getMyChats: (userAddress: NeuronAddress) => {
+    if (!myAddress) {
+      throw new Error('myAddress is not defined');
+    }
+    return dbApi.getMyChats(myAddress, userAddress);
+  },
 });
 
 const setupStoragePersistence = async () => {
@@ -94,16 +101,18 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
-  const followings = useAppSelector(selectFollowings);
-  // const passport = useAppSelector(selectCurrentPassport);
-  // const passports = useCommunityPassports();
-  // const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
-  useEffect(() => {
+  const followings = useAppSelector(({ currentAccount }) => {
+    const { friends, following } = currentAccount.community;
+
+    return Array.from(new Set([...friends, ...following]));
+  });
+
+  useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
   }, [myAddress]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ followings });
   }, [followings]);
 
@@ -184,6 +193,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
+  const senseApi = useMemo(
+    () => (isDbInitialized ? createSenseApi(dbApi, myAddress) : null),
+    [isDbInitialized, myAddress]
+  );
+
   const valueMemo = useMemo(
     () =>
       ({
@@ -194,7 +208,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
-        senseApi: isDbInitialized ? createSenseApi(dbApi) : null,
+        senseApi,
         loadIpfs,
         ipfsError,
         isIpfsInitialized,
@@ -202,7 +216,14 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isSyncInitialized,
         isReady,
       } as BackendProviderContextType),
-    [isReady, isIpfsInitialized, isDbInitialized, isSyncInitialized, ipfsError]
+    [
+      isReady,
+      isIpfsInitialized,
+      isDbInitialized,
+      isSyncInitialized,
+      ipfsError,
+      myAddress,
+    ]
   );
 
   return (

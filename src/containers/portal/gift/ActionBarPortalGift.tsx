@@ -103,7 +103,7 @@ function ActionBarPortalGift({
   setLoadingGift,
   loadingGift,
 }: Props) {
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const navigate = useNavigate();
   const { signer, signingClient, initSigner } = useSigningClient();
@@ -311,7 +311,7 @@ function ActionBarPortalGift({
           });
         }
         if (isIpfsInitialized) {
-          ipfsNode?.addContent(signedMessageKeplr.address);
+          ipfsApi?.addContent(signedMessageKeplr.address);
         }
       } catch (error) {
         console.log('error', error);
@@ -325,7 +325,7 @@ function ActionBarPortalGift({
     signedMessageKeplr,
     setLoading,
     isIpfsInitialized,
-    ipfsNode,
+    ipfsApi,
   ]);
 
   const claim = useCallback(async () => {

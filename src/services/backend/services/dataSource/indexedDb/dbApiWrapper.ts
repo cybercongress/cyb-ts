@@ -3,6 +3,7 @@ import {
   PinDbEntity,
   TransactionDbEntity,
   SyncQueueStatus,
+  LinkDbEntity,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
@@ -20,10 +21,16 @@ import {
   ParticleDto,
   SyncQueueDto,
   SyncStatusDto,
+  TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
-import { SenseResult, SenseUnread } from './type';
-import { SyncQueueItem } from '../../sync/types';
+import { SenseListItem, SenseUnread } from 'src/services/backend/types/sense';
+import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
+import { extractSenseChats } from '../../sync/services/utils/sense';
+import {
+  MSG_MULTI_SEND_TRANSACTION_TYPE,
+  MSG_SEND_TRANSACTION_TYPE,
+} from '../blockchain/types';
 
 const TIMESTAMP_INTITAL = 0;
 
@@ -34,12 +41,15 @@ class DbApiWrapper {
     this.db = dbApi;
   }
 
-  public async getSyncStatus(id: NeuronAddress | ParticleCid) {
+  public async getSyncStatus(
+    ownerId: NeuronAddress,
+    id: NeuronAddress | ParticleCid
+  ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update', 'unread_count', 'timestamp_read'],
-      [`id = '${id}'`],
-      ['id']
+      [`id = '${id}'`, `owner_id = '${ownerId}'`],
+      ['id', 'owner_id']
     );
 
     if (!result.ok) {
@@ -67,26 +77,34 @@ class DbApiWrapper {
     return result;
   }
 
-  public async updateSyncStatus(entity: Partial<SyncStatusDto>) {
+  public async updateSyncStatus(
+    entity: Partial<SyncStatusDto> & {
+      id: NeuronAddress | ParticleCid;
+      ownerId: NeuronAddress;
+    }
+  ) {
     return this.db!.executeUpdateCommand('sync_status', [
       transformToDbEntity(removeUndefinedFields(entity)),
     ]);
   }
 
-  public async putTransactions(transactions: TransactionDbEntity[]) {
-    return this.db!.executePutCommand('transaction', transactions);
-  }
-
   public async findSyncStatus({
+    ownerId,
     entryType,
     id,
   }: {
-    entryType?: EntryType;
+    ownerId: NeuronAddress;
+    entryType?: EntryType[] | EntryType;
     id?: NeuronAddress | ParticleCid;
   }) {
-    const conditions = [];
+    const conditions = [`owner_id = '${ownerId}'`];
 
-    entryType && conditions.push(`entry_type = ${entryType}`);
+    entryType &&
+      conditions.push(
+        `entry_type in [${
+          Array.isArray(entryType) ? entryType.join(', ') : entryType
+        }]`
+      );
 
     id && conditions.push(`id = '${id}'`);
 
@@ -98,6 +116,10 @@ class DbApiWrapper {
     );
 
     return dbResultToDtoList(result) as Partial<SyncStatusDto>[];
+  }
+
+  public async putTransactions(transactions: TransactionDbEntity[]) {
+    return this.db!.executePutCommand('transaction', transactions);
   }
 
   public async putPins(pins: PinDbEntity[] | PinDbEntity) {
@@ -140,9 +162,9 @@ class DbApiWrapper {
     return result;
   }
 
-  public async getSenseList() {
+  public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2
+    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2, owner_id = '${myAddress}'
 
     p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
     p_last[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
@@ -154,8 +176,8 @@ class DbApiWrapper {
 
     p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
 
-    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type))
-
+    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}', owner_id = '${myAddress}'
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3, owner_id = '${myAddress}'
     ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta]
     :order -timestamp_update
     `;
@@ -164,47 +186,82 @@ class DbApiWrapper {
 
     return dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
-    ) as SenseResult[];
+    ) as SenseListItem[];
   }
 
-  public async getSenseSummary() {
+  public async getSenseSummary(myAddress: NeuronAddress = '') {
     const command = `
-    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=1
-    dt[entry_type, sum(unread_count)] := *sync_status{entry_type, unread_count}, entry_type=2
-    ?[entry_type, unread] := dt[entry_type, unread]`;
+    r[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'
+    ?[entry_type, unread_count] :=r[entry_type, unread_count]
+    `;
 
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result) as SenseUnread[];
   }
 
-  public async senseMarkAsRead(id: NeuronAddress | ParticleCid) {
+  public async senseMarkAsRead(
+    ownerId: NeuronAddress,
+    id: NeuronAddress | ParticleCid
+  ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update'],
-      [`id = '${id}'`],
-      ['id']
+      [`id = '${id}'`, `owner_id = '${ownerId}'`],
+      ['id', 'owner_id']
     );
+
     const timestampUpdate = result.rows[0];
     this.updateSyncStatus({
       id,
+      ownerId,
       timestampUpdate,
       timestampRead: timestampUpdate,
       unreadCount: 0,
     });
   }
 
-  public async getTransactions(neuron: NeuronAddress) {
+  public async getTransactions(
+    neuron: NeuronAddress,
+    order: 'desc' | 'asc' = 'desc'
+  ) {
     const result = await this.db!.executeGetCommand(
       'transaction',
       ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
       [`neuron = '${neuron}'`],
       ['neuron'],
-      { orderBy: ['-timestamp'] }
+      { orderBy: [order === 'desc' ? '-timestamp' : 'timestamp'] }
     );
-    return dbResultToDtoList(result).map((i) => jsonifyFields(i, ['value']));
+    return dbResultToDtoList(result).map((i) =>
+      jsonifyFields(i, ['value'])
+    ) as TransactionDto[];
   }
 
-  public async putCyberlinks(links: LinkDto[] | LinkDto) {
+  public async getMyChats(
+    myAddress: NeuronAddress,
+    userAddress: NeuronAddress
+  ) {
+    const result = await this.db!.executeGetCommand(
+      'transaction',
+      ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
+      [
+        `neuron = '${myAddress}', type='${MSG_SEND_TRANSACTION_TYPE}' or type='${MSG_MULTI_SEND_TRANSACTION_TYPE}'`,
+      ],
+      ['neuron'],
+      { orderBy: ['-timestamp'] }
+    );
+    const sendTransactions = dbResultToDtoList(result).map((i) =>
+      jsonifyFields(i, ['value'])
+    ) as TransactionDto[];
+
+    const chats = extractSenseChats(myAddress, sendTransactions);
+    const userChats = [...chats.values()].find(
+      (c) => c.userAddress === userAddress
+    );
+
+    return userChats ? userChats.transactions : [];
+  }
+
+  public async putCyberlinks(links: LinkDbEntity[] | LinkDbEntity) {
     const entitites = Array.isArray(links) ? links : [links];
     return this.db!.executePutCommand('link', entitites);
   }
@@ -259,15 +316,17 @@ class DbApiWrapper {
       'to',
       'direction',
       'timestamp',
+      'neuron',
+      'transaction_hash',
     ].join(', ');
 
     const command = `
-    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: from, text, mime}, direction='from'
-    pf[${fields}] := *link{from, to,timestamp}, *particle{cid: to, text, mime}, direction='to'
+    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: from, text, mime}, direction='from'
+    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: to, text, mime}, direction='to'
     ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
     :order -timestamp`;
     const result = await this.db!.runCommand(command);
-    return dbResultToDtoList(result);
+    return dbResultToDtoList(result) as LinkDto[];
   }
 }
 

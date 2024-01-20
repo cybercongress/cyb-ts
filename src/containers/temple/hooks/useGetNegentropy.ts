@@ -19,7 +19,7 @@ const getNegentropy = async () => {
 
 const keyQuery = 'negentropy';
 
-function useGetNegentropy(refetchInterval: number | undefined = 1000 * 60 * 3) {
+function useGetNegentropy(refetchInterval: number | undefined) {
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     amount: 0,
     time: 0,

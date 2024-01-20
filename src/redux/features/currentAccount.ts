@@ -1,11 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
+type CommunityEntryType = string[];
+
 type SliceState = {
   community: {
-    following: any[];
-    followers: any[];
-    friends: any[];
+    following: CommunityEntryType;
+    followers: CommunityEntryType;
+    friends: CommunityEntryType;
   };
 };
 
@@ -21,7 +23,6 @@ const slice = createSlice({
   name: 'currentAccount',
   initialState,
   reducers: {
-    // fix type
     setCommunity: (
       state,
       { payload }: PayloadAction<SliceState['community']>

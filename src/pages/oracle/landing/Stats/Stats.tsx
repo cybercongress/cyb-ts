@@ -4,12 +4,11 @@ import {
 } from 'src/containers/temple/hooks';
 import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 import cx from 'classnames';
-import styles from './Stats.module.scss';
-import { TitleType } from '../OracleLanding';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
-import { useQuery } from 'react-apollo';
+import { formatNumber, timeSince } from 'src/utils/utils';
+import styles from './Stats.module.scss';
+import { TitleType } from '../type';
 
 type Props = {
   type: TitleType;
@@ -17,39 +16,20 @@ type Props = {
 
 const REFETCH_INTERVAL = 1000 * 7;
 
-const twentyFourHoursAgo = new Date(
-  new Date().getTime() - 24 * 60 * 60 * 1000
-).toISOString();
-
-function generateQuery(type: string) {
-  return gql`
-    query Query {
-      ${type}(where: {timestamp: {_gte: "${twentyFourHoursAgo}"}}) {
-        aggregate {
-          count
-        }
-      }
-    }
-  `;
-}
-
 function Stats({ type }: Props) {
   const dataGetGraphStats = useGetGraphStats(REFETCH_INTERVAL);
   const negentropy = useGetNegentropy(REFETCH_INTERVAL);
-
-  const cyberlinksQuery = useQuery(generateQuery('cyberlinks_aggregate'));
-  const particlesQuery = useQuery(generateQuery('particles_aggregate'));
-
   let value: number | undefined;
   let text: string | JSX.Element;
   let change: number | undefined;
+  let time = timeSince(dataGetGraphStats.changeTimeAmount.time);
 
   switch (type) {
     case TitleType.search:
       value = dataGetGraphStats.data?.particles;
       text = <Link to={routes.oracle.ask.getLink('particle')}>particles</Link>;
-      if (!(particlesQuery.loading || particlesQuery.error)) {
-        change = particlesQuery.data?.particles_aggregate.aggregate.count;
+      if (dataGetGraphStats.changeTimeAmount.particles) {
+        change = dataGetGraphStats.changeTimeAmount.particles;
       }
       break;
 
@@ -58,8 +38,8 @@ function Stats({ type }: Props) {
       text = (
         <Link to={routes.oracle.ask.getLink('cyberlink')}>cyberlinks</Link>
       );
-      if (!(cyberlinksQuery.loading || cyberlinksQuery.error)) {
-        change = cyberlinksQuery.data?.cyberlinks_aggregate.aggregate.count;
+      if (dataGetGraphStats.changeTimeAmount.cyberlinks) {
+        change = dataGetGraphStats.changeTimeAmount.cyberlinks;
       }
       break;
 
@@ -68,6 +48,10 @@ function Stats({ type }: Props) {
       text = (
         <Link to={routes.oracle.ask.getLink('negentropy')}>syntropy bits</Link>
       );
+      if (negentropy.changeTimeAmount.amount) {
+        change = negentropy.changeTimeAmount.amount;
+        time = timeSince(negentropy.changeTimeAmount.time);
+      }
       break;
 
     default:
@@ -84,7 +68,7 @@ function Stats({ type }: Props) {
           <strong>{text}</strong>{' '}
           {change ? (
             <p className={styles.change}>
-              | <strong>+{change}</strong> in 24 hours
+              | <strong>+{formatNumber(change)}</strong> in {time}
             </p>
           ) : (
             <>

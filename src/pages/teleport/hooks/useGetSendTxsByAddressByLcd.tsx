@@ -9,11 +9,11 @@ import { PATTERN_CYBER } from '../../../utils/config';
 
 const limit = 5;
 
-const concatResponse = (arr: InfiniteData<{ data: any }>) => {
-  return [].concat(
-    ...arr.pages.map((item) => {
-      return item.data;
-    })
+const concatResponse = (arr: undefined | InfiniteData<{ data: any }>) => {
+  return (
+    arr?.pages?.reduce((acc, page) => {
+      return acc.concat(page.data.tx_responses);
+    }, []) || []
   );
 };
 
@@ -39,7 +39,7 @@ function useGetSendBySenderRecipient(
       }
 
       return {
-        data: response ? response.tx_responses : [],
+        data: response,
         page: pageParam,
       };
     },
@@ -50,17 +50,28 @@ function useGetSendBySenderRecipient(
         Boolean(addressRecipient) &&
         Boolean(addressRecipient?.match(PATTERN_CYBER)),
       getNextPageParam: (lastPage) => {
-        if (lastPage.data && lastPage.data.length === 0) {
+        const {
+          page,
+          data: {
+            pagination: { total },
+          },
+        } = lastPage;
+
+        if (!total || (page + 1) * limit >= total) {
           return undefined;
         }
 
-        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-        return nextPage;
+        return page + 1;
       },
     }
   );
 
-  return { ...data };
+  return {
+    data: data.data,
+    fetchNextPage: data.fetchNextPage,
+    refetch: data.refetch,
+    hasNextPage: data.hasNextPage,
+  };
 }
 
 function useGetSendTxsByAddressByLcd(
@@ -68,43 +79,25 @@ function useGetSendTxsByAddressByLcd(
   addressRecipient: Option<string>
 ) {
   const [addressSender, setAddressSender] = useState<Option<string>>();
-  const [data, setData] = useState<Option<TxsResponse[]>>(undefined);
-  const [totalSend, setTotalSend] = useState(0);
-  const [totalReceive, setTotalReceive] = useState(0);
-  const [hasNextPage, setHasNextPage] = useState(true);
+  const [dataTsx, setDataTxs] = useState<Option<TxsResponse[]>>(undefined);
 
-  const dataSend = useGetSendBySenderRecipient(
-    addressSender,
-    addressRecipient,
-    setTotalSend
-  );
-
+  const dataSend = useGetSendBySenderRecipient(addressSender, addressRecipient);
   const dataReceive = useGetSendBySenderRecipient(
     addressRecipient,
-    addressSender,
-    setTotalReceive
+    addressSender
   );
 
   useEffect(() => {
-    setHasNextPage(true);
     let firstSendItem = '0';
     let lastSendItem = '0';
-    let dataSendArr: TxsResponse[] = [];
-    let dataReceiveArr: TxsResponse[] = [];
+    const dataSendArr: TxsResponse[] = concatResponse(dataSend.data);
+    const dataReceiveArr: TxsResponse[] = concatResponse(dataReceive.data);
 
     let dataTxs: TxsResponse[] = [];
 
-    if (dataSend.data && dataSend.data.pages.length) {
-      dataSendArr = concatResponse(dataSend.data);
-      if (dataSendArr.length) {
-        lastSendItem = dataSendArr[dataSendArr.length - 1].height;
-        firstSendItem = dataSendArr[0].height;
-      }
-    }
-
-    if (dataReceive.data && dataReceive.data.pages.length) {
-      dataReceiveArr = concatResponse(dataReceive.data);
-      // firstReceiveItem = dataReceiveArr[0].height;
+    if (dataSendArr.length) {
+      lastSendItem = dataSendArr[dataSendArr.length - 1].height;
+      firstSendItem = dataSendArr[0].height;
     }
 
     if (dataSendArr.length && dataReceiveArr.length) {
@@ -121,10 +114,7 @@ function useGetSendTxsByAddressByLcd(
           dataTxs.push(item);
         }
 
-        if (
-          height < parseFloat(lastSendItem) &&
-          totalSend === dataSendArr.length
-        ) {
+        if (height < parseFloat(lastSendItem)) {
           dataTxs.push(item);
         }
       });
@@ -136,14 +126,8 @@ function useGetSendTxsByAddressByLcd(
       dataTxs = [...dataSendArr, ...dataReceiveArr];
     }
 
-    setData(dataTxs);
-
-    const total = new BigNumber(totalReceive).plus(totalSend).toNumber();
-
-    if (total === dataTxs.length) {
-      setHasNextPage(false);
-    }
-  }, [dataSend.data, dataReceive.data, totalSend, totalReceive]);
+    setDataTxs(dataTxs);
+  }, [dataSend.data, dataReceive.data]);
 
   useEffect(() => {
     if (sender) {
@@ -152,16 +136,21 @@ function useGetSendTxsByAddressByLcd(
   }, [sender]);
 
   const fetchNextPage = useCallback(() => {
-    dataSend.fetchNextPage();
     dataReceive.fetchNextPage();
-  }, [dataSend, dataReceive]);
+    dataSend.fetchNextPage();
+  }, [dataReceive, dataSend]);
 
   const refetch = useCallback(() => {
-    dataSend.refetch();
     dataReceive.refetch();
-  }, [dataSend, dataReceive]);
+    dataSend.refetch();
+  }, [dataReceive, dataSend]);
 
-  return { data, fetchNextPage, refetch, hasNextPage };
+  return {
+    data: dataTsx,
+    fetchNextPage,
+    refetch,
+    hasNextPage: Boolean(dataReceive.hasNextPage || dataSend.hasNextPage),
+  };
 }
 
 export default useGetSendTxsByAddressByLcd;

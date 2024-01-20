@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { AppDispatch, RootState } from 'src/redux/store';
-import { initPocket } from 'src/redux/features/pocket';
+import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
 import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
@@ -17,6 +17,7 @@ import { useBackend } from 'src/contexts/backend';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 
 import styles from './styles.scss';
+import { useAppSelector } from 'src/redux/hooks';
 
 export const PORTAL_ID = 'portal';
 
@@ -30,13 +31,14 @@ function App() {
   const { community } = useGetCommunity(address || null);
   const location = useLocation();
   const adviserContext = useAdviser();
+  const myAddress = useAppSelector(selectCurrentAddress);
 
   const { ipfsError, isReady, senseApi } = useBackend();
 
   // TODO: TMP Example of how to use SENSE
   useEffect(() => {
     (async () => {
-      if (isReady && senseApi) {
+      if (isReady && senseApi && myAddress) {
         console.log('----sense ', isReady, senseApi);
 
         const list = await senseApi.getList();
@@ -47,16 +49,27 @@ function App() {
           'QmVrZci1LVijze8ZwFQQWLMBDwC3qUUZw16j7uWopV2Krb'
         );
         console.log('----sense links', links);
-        const transactions = await senseApi.getTransactions(
+        const transactionsMy = await senseApi.getTransactions(
           'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
         );
-        console.log('----sense transactions', transactions);
+        console.log('----sense transactionsMy', transactionsMy);
+
+        const transactionsFriend = await senseApi.getTransactions(
+          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
+        );
+        console.log('----sense transactionsFriend master', transactionsFriend);
+
+        const chats = await senseApi.getMyChats(
+          myAddress,
+          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
+        );
+        console.log('----sense chats', chats);
         // MARK AS READ
         // await senseApi.markAsRead('<CID/ADDRESS');
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, senseApi]);
+  }, [isReady, senseApi, myAddress]);
 
   /// ------------
 

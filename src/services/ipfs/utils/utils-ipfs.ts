@@ -140,7 +140,7 @@ const fetchIPFSContentFromNode = async (
         const textPreview = createTextPreview(firstChunk, mime);
 
         if (fullyDownloaded) {
-          const res = await ipfsCacheDb.add(cid, uint8ArrayConcat(firstChunk));
+          await ipfsCacheDb.add(cid, uint8ArrayConcat(firstChunk));
         }
 
         // If all content fits in first chunk return byte-array instead iterable
@@ -242,21 +242,21 @@ type fetchContentOptions = {
   node?: IpfsNode;
 };
 
-async function fetchIpfsContent<T>(
+async function fetchIpfsContent(
   cid: string,
   source: IpfsContentSource,
   options: fetchContentOptions
-): Promise<T | undefined> {
+): Promise<IPFSContentMaybe> {
   const { node, controller } = options;
 
   try {
     switch (source) {
       case 'db':
-        return loadIPFSContentFromDb(cid) as T;
+        return loadIPFSContentFromDb(cid);
       case 'node':
-        return fetchIPFSContentFromNode(cid, node, controller) as T;
+        return fetchIPFSContentFromNode(cid, node, controller);
       case 'gateway':
-        return fetchIPFSContentFromGateway(cid, node, controller) as T;
+        return fetchIPFSContentFromGateway(cid, node, controller);
       default:
         return undefined;
     }

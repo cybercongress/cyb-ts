@@ -1,0 +1,54 @@
+.wrapper {
+  // Display
+  > div {
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.header {
+  display: grid;
+  grid-template-areas:
+    'avatar title'
+    'avatar text';
+
+  gap: 0 10px;
+
+  & > :nth-child(1) {
+    grid-area: avatar;
+  }
+
+  .title {
+    font-size: 16px;
+    text-transform: none;
+    grid-area: title;
+  }
+
+  > p {
+    grid-area: text;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.messages {
+  // height: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px 0;
+  padding-right: 10px;
+  margin-top: auto;
+
+  overflow-y: auto;
+
+  p {
+    word-break: break-all;
+  }
+}
+
+.noData {
+  margin: auto;
+  color: #616161;
+  text-align: center;
+}
