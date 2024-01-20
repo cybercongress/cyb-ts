@@ -38,7 +38,7 @@ function useSenseItem({ id }: Props) {
     ? getListQuery?.data?.find((item) => item.id === id)?.entryType
     : undefined;
   // Tweets is same as chat but combined with tweet particles from meta
-  const isChatEntry = [EntryType.chat, EntryType.tweets].includes(entryType);
+  const isChatEntry = entryType === EntryType.chat;
 
   const getTxsQuery = useQuery({
     queryKey: ['senseApi', 'getTransactions', address, id],

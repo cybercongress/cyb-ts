@@ -28,12 +28,6 @@ function SenseListItemContainer({ senseListItem }: Props) {
       text = meta.id?.text;
       break;
     case EntryType.chat:
-      text = meta.memo;
-      // amount automapped to Map instead of array :/ some hack to handle
-      amount = meta.amount ? Object.values(meta.amount) : undefined;
-      isAmountSend = meta.direction === 'to';
-      break;
-    case EntryType.tweets:
       text = meta.memo || meta.lastId?.text;
       amount = meta.amount ? Object.values(meta.amount) : undefined;
       isAmountSend = meta.direction === 'to';
