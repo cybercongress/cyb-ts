@@ -134,6 +134,8 @@ class QueueManager {
         )
         .slice(0, executeCount);
 
+      // console.log('---itemsByPriority', itemsByPriority);
+
       itemsToExecute.push(...itemsByPriority);
     }
 
@@ -147,8 +149,8 @@ class QueueManager {
   }
 
   private fetchData$(item: QueueItem) {
-    const { cid, source, callbacks } = item;
-    const controller = new AbortController();
+    const { cid, source, callbacks, controller } = item;
+    // const abortController = controller || new AbortController();
     const settings = this.strategy.settings[source];
     this.executing[source].add(cid);
     this.postSummary();
@@ -158,23 +160,38 @@ class QueueManager {
       ...queueItem,
       status: 'executing',
       executionTime: Date.now(),
-      controller,
+      controller: new AbortController(),
     } as QueueItem);
     // debugCid(cid, 'fetchData', cid, source);
     callbacks.map((callback) => callback(cid, 'executing', source));
 
-    return promiseToObservable(async () =>
-      fetchIpfsContent(cid, source, {
-        controller,
-        node: this.node,
-      }).then((content) => {
-        // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
+    return promiseToObservable(async () => {
+      try {
+        // console.log(
+        //   '---vef fetchIpfsContent',
+        //   fetchIpfsContent,
+        //   cid,
+        //   source,
+        //   controller?.signal.aborted
+        // );
 
-        this.defferedDbSaver?.enqueueIpfsContent(content);
+        const res = await fetchIpfsContent(cid, source, {
+          controller,
+          node: this.node,
+        }).then((content) => {
+          // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
 
-        return content;
-      })
-    ).pipe(
+          this.defferedDbSaver?.enqueueIpfsContent(content);
+
+          return content;
+        });
+        // console.log('---prom fetchIpfsContent', res);
+        return res;
+      } catch (e) {
+        console.log('---promtoo', e);
+        throw e;
+      }
+    }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
@@ -226,9 +243,6 @@ class QueueManager {
   }
 
   private removeAndNext(cid: string): void {
-    // if (cid === 'QmX7XZ5VDLDaBhzx54fkE2rz1u52TCeD7aFpyTYGv763Mv') {
-    // debugCid(cid, '------removeAndNext 4', cid);
-    // }
     const queue = this.queue$.value;
     queue.delete(cid);
     this.queue$.next(queue);
@@ -245,7 +259,6 @@ class QueueManager {
     (['node', 'gateway'] as IpfsContentSource[]).forEach((source) => {
       Array.from(this.executing[source]).forEach((cid) => {
         const item = queue.get(cid);
-
         if (item && getQueueItemTotalPriority(item) < 0 && item.controller) {
           // abort request and move to pending
           item.controller.abort('cancelled');
@@ -254,6 +267,7 @@ class QueueManager {
           );
 
           queue.set(cid, { ...item, status: 'pending' });
+          // console.log('-----cancel item', item, queue);
 
           this.executing[source].delete(cid);
         }
@@ -362,7 +376,7 @@ class QueueManager {
   ): void {
     const queue = this.queue$.value;
     const existingItem = queue.get(cid);
-    // debugCid(cid, '------enqueue ', cid, existingItem);
+    // debugCid(cid, '----/--enqueue ', cid, existingItem);
 
     // In case if item already in queue,
     // just attach one more callback to quieued item

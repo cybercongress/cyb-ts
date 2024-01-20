@@ -11,7 +11,8 @@ import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactio
 import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
 
 import { ServiceDeps } from './services/types';
-import { FRIENDS_SYNC_INTERVAL, MY_SYNC_INTERVAL } from './services/consts';
+import { MY_SYNC_INTERVAL } from './services/consts';
+import SyncTweetsLoop from './services/SyncTweetsLoop/SyncTweetsLoop';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
@@ -37,20 +38,10 @@ export class SyncService {
 
     new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop(
-      deps,
-      particlesResolver,
-      'my',
-      MY_SYNC_INTERVAL
-    ).start();
-
-    new SyncTransactionsLoop(
-      deps,
-      particlesResolver,
-      'friends',
-      FRIENDS_SYNC_INTERVAL
-    ).start();
+    new SyncTransactionsLoop(deps, particlesResolver, MY_SYNC_INTERVAL).start();
 
     new SyncParticlesLoop(deps, particlesResolver).start();
+
+    new SyncTweetsLoop(deps, particlesResolver).start();
   }
 }

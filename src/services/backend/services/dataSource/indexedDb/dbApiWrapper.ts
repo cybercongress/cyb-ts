@@ -43,13 +43,20 @@ class DbApiWrapper {
 
   public async getSyncStatus(
     ownerId: NeuronAddress,
-    id: NeuronAddress | ParticleCid
+    id: NeuronAddress | ParticleCid,
+    entryType: EntryType | EntryType[]
   ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update', 'unread_count', 'timestamp_read'],
-      [`id = '${id}'`, `owner_id = '${ownerId}'`],
-      ['id', 'owner_id']
+      [
+        `id = '${id}'`,
+        `owner_id = '${ownerId}'`,
+        `entry_type in [${
+          Array.isArray(entryType) ? entryType.join(', ') : entryType
+        }]`,
+      ],
+      ['id', 'owner_id', 'entry_type']
     );
 
     if (!result.ok) {
@@ -165,6 +172,7 @@ class DbApiWrapper {
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
     ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2, owner_id = '${myAddress}'
+    ss_tweets[last_id, id, meta, last_cid] := *sync_status{entry_type,id, last_id, meta}, last_cid =get(get(meta, 'last_id', json('{}')),'cid', ''), entry_type=4
 
     p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
     p_last[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
@@ -172,13 +180,18 @@ class DbApiWrapper {
     p_id[last_id, id, meta, text, mime] :=  ss_p[last_id, id, meta], *particle{cid: id, text, mime}
     p_id[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: id, text, mime}, empty=''
 
+    p_tweets[last_id, id, meta, text, mime] :=  ss_tweets[last_id, id, meta, last_cid], *particle{cid: last_cid, text, mime}
+    p_tweets[last_id, id, meta, empty, empty] := ss_tweets[last_id, id, meta, last_cid],  not *particle{cid: last_cid, text, mime}, empty=''
+
     p_last_m[last_id, id, m] :=  p_last[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
+
+    p_tweets_m[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
 
     p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
 
     ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}', owner_id = '${myAddress}'
     ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3, owner_id = '${myAddress}'
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta]
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta] or p_tweets_m[last_id, id, meta]
     :order -timestamp_update
     `;
 
@@ -308,7 +321,16 @@ class DbApiWrapper {
     }));
   }
 
-  public async getLinks(cid: ParticleCid) {
+  public async getLinks({
+    cid,
+    neuron,
+  }: {
+    cid?: ParticleCid;
+    neuron?: NeuronAddress;
+  }) {
+    const conditions = ['true'];
+    cid && conditions.push(`from='${cid}' or to='${cid}'`);
+    neuron && conditions.push(`neuron='${neuron}'`);
     const fields = [
       'mime',
       'text',
@@ -323,7 +345,7 @@ class DbApiWrapper {
     const command = `
     pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: from, text, mime}, direction='from'
     pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: to, text, mime}, direction='to'
-    ?[${fields}] := pf[${fields}], from='${cid}' or to='${cid}'
+    ?[${fields}] := pf[${fields}], ${conditions.join(', ')}
     :order -timestamp`;
     const result = await this.db!.runCommand(command);
     return dbResultToDtoList(result) as LinkDto[];

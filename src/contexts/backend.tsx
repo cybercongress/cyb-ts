@@ -24,13 +24,24 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   markAsRead: (id: NeuronAddress | ParticleCid) =>
     dbApi.senseMarkAsRead(myAddress, id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
-  getLinks: (cid: ParticleCid) => dbApi.getLinks(cid),
+  getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getMyChats: (userAddress: NeuronAddress) => {
     if (!myAddress) {
       throw new Error('myAddress is not defined');
     }
     return dbApi.getMyChats(myAddress, userAddress);
+  },
+  getFriendItems: async (userAddress: NeuronAddress) => {
+    if (!myAddress) {
+      throw new Error('myAddress is not defined');
+    }
+    const chats = await dbApi.getMyChats(myAddress, userAddress);
+    const links = await dbApi.getLinks({ neuron: userAddress });
+
+    return [...chats, ...links].sort((a, b) =>
+      a.timestamp > b.timestamp ? 1 : -1
+    );
   },
 });
 
@@ -125,6 +136,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
     backgroundWorkerInstance.setParams({
       cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
+      cyberLcdUrl: CYBER.CYBER_NODE_URL_LCD,
     });
 
     (async () => {

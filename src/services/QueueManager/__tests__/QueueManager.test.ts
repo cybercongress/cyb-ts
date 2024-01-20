@@ -70,8 +70,11 @@ function wrapPromiseWithSignal(
     promise.then((result) => {
       resolve(result);
     });
+    console.log('------sssss', signal?.aborted);
     signal?.addEventListener('abort', (e) => {
       // @ts-ignore
+      console.log('------abort', e, e?.target, e?.target?.reason);
+
       if (e?.target?.reason !== 'timeout') {
         reject(new DOMException('canceled', 'AbortError'));
       }
@@ -305,34 +308,34 @@ describe('QueueManager without timers', () => {
   test('should execute queue items and deprioritize based on viewPortPriority', (done) => {
     (fetchIpfsContent as jest.Mock).mockImplementation(
       (cid: string, source: string, { controller }) =>
-        getPromise('result', 1000, controller?.signal)
+        getPromise('result', 5000, controller?.signal)
     );
-    ['1', '2', '3'].map((cid) =>
+    [cid1, cid2, cid3].map((cid) =>
       queueManager.enqueue(cid, jest.fn, { initialSource: 'node' })
     );
 
     onNextTick(() => {
       const queue = queueManager.getQueueList();
-      console.log('---qm 11', queue);
+      console.log('---qm 1', queueManager.getQueueMap());
 
       expect(queue[0].status).toBe('executing');
       expect(queue[1].status).toBe('executing');
       expect(queue[2].status).toBe('pending');
-      queueManager.enqueue('4', jest.fn, { initialSource: 'node' });
 
       // Update priorities by viewport
-      queueManager.updateViewPortPriority('1', -1);
+      queueManager.updateViewPortPriority(cid1, -1);
+      console.log('---qm 11', queueManager.getQueueMap());
+      queueManager.enqueue(cid4, jest.fn, { initialSource: 'node' });
+      console.log('---qm 2', queueManager.getQueueMap());
 
       onNextTick(() => {
-        onNextTick(() => {
-          const queueMap = queueManager.getQueueMap();
-          console.log('---qm', queueMap);
-          expect(queueMap.get('1').status).toBe('pending');
-          expect(queueMap.get('2').status).toBe('executing');
-          expect(queueMap.get('3').status).toBe('executing');
-          expect(queueMap.get('4').status).toBe('pending');
-          done();
-        });
+        console.log('---qm 3', queueManager.getQueueMap());
+        const queueMap = queueManager.getQueueMap();
+        expect(queueMap.get(cid1).status).toBe('pending');
+        expect(queueMap.get(cid2).status).toBe('executing');
+        expect(queueMap.get(cid3).status).toBe('executing');
+        expect(queueMap.get(cid4).status).toBe('pending');
+        done();
       });
     });
   });

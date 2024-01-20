@@ -76,7 +76,9 @@ export function transformToDbEntity<T extends Record<string, any>>(
   const dbEntity: any = {};
   for (const key in dto) {
     const snakeCaseKey = camelToSnake(key);
-    dbEntity[snakeCaseKey] = dto[key];
+    const value =
+      typeof dto[key] === 'object' ? transformToDbEntity(dto[key]) : dto[key];
+    dbEntity[snakeCaseKey] = value;
   }
   return dbEntity as Partial<T>; // Replace T with the appropriate DB Entity type if known
 }
