@@ -10,7 +10,7 @@ export const syncMyChats = async (
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
-    entryType: [EntryType.chat, EntryType.transactions, EntryType.tweets],
+    entryType: [EntryType.chat, EntryType.transactions],
   });
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));

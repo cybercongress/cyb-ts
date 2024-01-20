@@ -250,7 +250,10 @@ class SyncTransactionsLoop {
           timestampRead,
           disabled: false,
           lastId: lastTransaction.transaction_hash,
-          meta: { memo: lastTransaction?.transaction?.memo || '' },
+          meta: {
+            type: 'transaction',
+            memo: lastTransaction?.transaction?.memo || '',
+          },
         });
       }
     } finally {
