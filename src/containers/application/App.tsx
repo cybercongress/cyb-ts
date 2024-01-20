@@ -34,7 +34,8 @@ function App() {
   const myAddress = useAppSelector(selectCurrentAddress);
 
   const { ipfsError, isReady, senseApi } = useBackend();
-
+  const senseList = useAppSelector((state) => state.sense.list);
+  console.log('----senseList(redux) ', senseList);
   // TODO: TMP Example of how to use SENSE
   useEffect(() => {
     (async () => {

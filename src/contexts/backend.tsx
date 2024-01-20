@@ -18,6 +18,7 @@ import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { SenseMetaType } from 'src/services/backend/types/sense';
+import { SenseListUpdate } from 'src/services/backend/types/services';
 
 const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
@@ -38,7 +39,7 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
       throw new Error('myAddress is not defined');
     }
     const chats = (await dbApi.getMyChats(myAddress, userAddress)).map(
-      (item) => ({ ...item, itemType: SenseMetaType.sendMessage })
+      (item) => ({ ...item, itemType: SenseMetaType.send })
     );
     const links = (await dbApi.getLinks({ neuron: userAddress })).map(
       (item) => ({ ...item, itemType: SenseMetaType.tweet })
@@ -213,6 +214,15 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     () => (isDbInitialized ? createSenseApi(dbApi, myAddress) : null),
     [isDbInitialized, myAddress]
   );
+
+  useEffect(() => {
+    if (senseApi) {
+      (async () => {
+        const list = await senseApi.getList();
+        dispatch({ type: 'sense_list_update', list } as SenseListUpdate);
+      })();
+    }
+  }, [senseApi, dispatch]);
 
   const valueMemo = useMemo(
     () =>

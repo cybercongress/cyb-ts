@@ -31,37 +31,39 @@ type ParticlePreResolved = { cid?: ParticleCid; text: string; mime: string };
 
 export const enum SenseMetaType {
   tweet = 3.2,
-  sendMessage = 3.1,
+  send = 3.1,
   particle = 2,
   transaction = 1,
 }
 
 type SenseTweetMeta = {
-  metaType: SenseMetaType.tweet;
   lastId: ParticlePreResolved;
 };
 
 type SenseParticleMeta = {
-  metaType: SenseMetaType.particle;
   direction: LinkDirection;
 };
 
 type SenseTransactionMeta = {
-  metaType: SenseMetaType.transaction;
   memo?: string;
 };
 
+export type SenseTransactionResultMeta = {
+  metaType: SenseMetaType.transaction;
+} & SenseTransactionMeta;
+
 export type SenseParticleResultMeta = {
+  metaType: SenseMetaType.particle;
   id: ParticlePreResolved;
   lastId: ParticlePreResolved;
 } & SenseParticleMeta;
 
 export type SenseTweetResultMeta = {
-  lastId: ParticlePreResolved;
+  metaType: SenseMetaType.tweet;
 } & SenseTweetMeta;
 
-type SenseMessageResultMeta = {
-  metaType: SenseMetaType.sendMessage;
+export type SenseMessageResultMeta = {
+  metaType: SenseMetaType.send;
   amount: Coin[];
   memo?: string;
   direction: LinkDirection;
@@ -81,7 +83,7 @@ export type SenseResultMeta =
 export type SenseListItem = {
   entryType: EntryType;
   id: NeuronAddress | ParticleCid;
-  unreadCont: number;
+  unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
   lastId: NeuronAddress | ParticleCid;

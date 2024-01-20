@@ -17,6 +17,10 @@ import { SyncServiceParams } from '../../types';
 import { snakeToCamel, transformToDto } from 'src/services/CozoDb/utils';
 import { dateToNumber } from 'src/utils/date';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import {
+  SenseMetaType,
+  SenseParticleResultMeta,
+} from 'src/services/backend/types/sense';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -25,9 +29,11 @@ class SyncParticlesLoop {
 
   private particlesResolver: ParticlesResolverQueue | undefined;
 
+  private channelApi = new BroadcastChannelSender();
+
   private params: SyncServiceParams | undefined;
 
-  private statusApi = broadcastStatus('particle', new BroadcastChannelSender());
+  private statusApi = broadcastStatus('particle', this.channelApi);
 
   private _loop$: Observable<any> | undefined;
 
@@ -68,6 +74,7 @@ class SyncParticlesLoop {
   }
 
   private async syncParticles() {
+    const syncUpdates = [];
     try {
       // fetch observable particles from db
       const result = await this.db!.findSyncStatus({
@@ -101,11 +108,44 @@ class SyncParticlesLoop {
         )
       ).filter((i) => !!i) as SyncStatusDto[];
 
-      syncStatusEntities.length > 0 &&
-        (await this.db!.putSyncStatus(syncStatusEntities));
+      if (syncStatusEntities.length > 0) {
+        const result = await this.db!.putSyncStatus(syncStatusEntities);
+        if (result.ok) {
+          syncUpdates.push(...syncStatusEntities);
+        }
+      }
     } catch (e) {
       console.log('>>> SyncParticlesLoop error:', e);
       throw e;
+    } finally {
+      // eslint-disable-next-line no-await-in-loop
+      const syncStatusItems = await Promise.all(
+        syncUpdates.map(async (item) => {
+          const { result: particle } =
+            await this.particlesResolver!.fetchDirect(item.id);
+          const { result: lastParticle } =
+            await this.particlesResolver!.fetchDirect(item.lastId);
+
+          return {
+            ...item,
+            meta: {
+              metaType: SenseMetaType.particle,
+              ...item.meta,
+              id: {
+                cid: particle?.cid,
+                text: particle?.textPreview,
+                mime: particle?.meta.mime,
+              },
+              lastId: {
+                cid: lastParticle?.cid,
+                text: lastParticle?.textPreview,
+                mime: lastParticle?.meta.mime,
+              },
+            } as SenseParticleResultMeta,
+          };
+        })
+      );
+      this.channelApi.postSenseUpdate(syncStatusItems);
     }
   }
 

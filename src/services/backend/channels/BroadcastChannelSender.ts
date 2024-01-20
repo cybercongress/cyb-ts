@@ -1,5 +1,8 @@
+import { SenseListItem } from '../types/sense';
 import {
   BroadcastChannelMessage,
+  SenseListRemove,
+  SenseListUpdate,
   ServiceName,
   ServiceStatus,
   SyncEntryName,
@@ -41,6 +44,24 @@ class BroadcastChannelSender {
   public postSyncEntryProgress(entry: SyncEntryName, state: SyncProgress) {
     // console.log('postSyncEntryProgress', entry, state);
     this.channel.postMessage({ type: 'sync_entry', value: { entry, state } });
+  }
+
+  public postSenseUpdate(senseList: SenseListItem[]) {
+    // console.log('postSyncEntryProgress', entry, state);
+    if (senseList.length > 0) {
+      this.channel.postMessage({
+        type: 'sense_list_update',
+        list: senseList,
+      } as SenseListUpdate);
+    }
+  }
+
+  public postSenseRemove(senseList: SenseListItem[]) {
+    // console.log('postSyncEntryProgress', entry, state);
+    this.channel.postMessage({
+      type: 'sense_list_remove',
+      list: senseList,
+    } as SenseListRemove);
   }
 
   post(msg: BroadcastChannelMessage) {

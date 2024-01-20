@@ -182,7 +182,7 @@ class DbApiWrapper {
 
     p_tweets_meta[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime, 'meta_type', ${SenseMetaType.tweet})))
 
-    p_tweets_meta[last_id, id, m] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, m= concat(meta, json_object( 'meta_type', ${SenseMetaType.sendMessage})), not starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
+    p_tweets_meta[last_id, id, m] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, m= concat(meta, json_object( 'meta_type', ${SenseMetaType.send})), not starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
 
     ss_particles[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=${EntryType.particle}, owner_id = '${myAddress}'
 

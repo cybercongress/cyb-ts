@@ -16,6 +16,11 @@ import { createLoopObservable } from '../utils/rxjs';
 import { TWEETS_SYNC_INTERVAL, TWEETS_SYNC_WARMUP } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { fetchTweetsByNeuronTimestamp } from '../../../dataSource/blockchain/lcd';
+import { SyncServiceParams } from '../../types';
+import {
+  SenseMetaType,
+  SenseTweetResultMeta,
+} from 'src/services/backend/types/sense';
 
 class SyncTweetsLoop {
   private isInitialized$: Observable<boolean>;
@@ -30,11 +35,13 @@ class SyncTweetsLoop {
 
   private _loop$: Observable<any> | undefined;
 
+  private channelApi = new BroadcastChannelSender();
+
   public get loop$(): Observable<any> | undefined {
     return this._loop$;
   }
 
-  private statusApi = broadcastStatus('tweets', new BroadcastChannelSender());
+  private statusApi = broadcastStatus('tweets', this.channelApi);
 
   private params: SyncServiceParams = {
     myAddress: null,
@@ -122,6 +129,7 @@ class SyncTweetsLoop {
   }
 
   public async syncTweets(myAddress: NeuronAddress, address: NeuronAddress) {
+    const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
         console.log(`>> ${address} tweets sync already in progress`);
@@ -153,8 +161,7 @@ class SyncTweetsLoop {
           QueuePriority.HIGH
         );
 
-        // Update transaction
-        const res = await this.db!.putSyncStatus({
+        const newSyncItem = {
           ownerId: myAddress,
           entryType: EntryType.chat,
           id: address,
@@ -164,12 +171,19 @@ class SyncTweetsLoop {
           disabled: false,
           lastId: lastTweet.transaction_hash,
           meta: {
-            lastId: { cid: lastTweet.to },
-          },
-        });
+            metaType: SenseMetaType.tweet,
+            lastId: { cid: lastTweet.to, text: '', mime: '' },
+          } as SenseTweetResultMeta,
+        };
+        // Update transaction
+        const result = await this.db!.putSyncStatus(newSyncItem);
+
+        if (result.ok) {
+          syncUpdates.push(newSyncItem);
+        }
       }
     } finally {
-      // remove from in-progress list
+      this.channelApi.postSenseUpdate(syncUpdates);
       this.inProgress = this.inProgress.filter((addr) => addr !== address);
     }
   }
