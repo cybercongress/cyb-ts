@@ -11,7 +11,7 @@ import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactio
 import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
 
 import { ServiceDeps } from './services/types';
-import { FRIENDS_SYNC_INTERVAL, MY_SYNC_INTERVAL } from './services/consts';
+import { MY_SYNC_INTERVAL } from './services/consts';
 import SyncTweetsLoop from './services/SyncTweetsLoop/SyncTweetsLoop';
 
 // eslint-disable-next-line import/prefer-default-export

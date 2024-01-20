@@ -5,7 +5,6 @@ import {
   Transaction,
 } from '../../dataSource/blockchain/types';
 
-export const FRIENDS_SYNC_INTERVAL = 2 * 60 * 1000; // 60 sec
 export const PARTICLES_SYNC_INTERVAL = 60 * 1000; // 60 sec
 export const MY_SYNC_INTERVAL = 60 * 1000; // 60 sec
 export const TWEETS_SYNC_INTERVAL = 60 * 1000; // 60 sec

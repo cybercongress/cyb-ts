@@ -10,6 +10,7 @@ import {
   share,
   distinctUntilChanged,
   filter,
+  retry,
 } from 'rxjs';
 
 export const createLoopObservable = (
@@ -33,7 +34,8 @@ export const createLoopObservable = (
               throw error;
             })
           )
-        )
+        ),
+        retry()
       );
     })
   );
