@@ -17,12 +17,13 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
+import { SenseMetaType } from 'src/services/backend/types/sense';
 
 const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
   getList: () => dbApi.getSenseList(myAddress),
   markAsRead: (id: NeuronAddress | ParticleCid) =>
-    dbApi.senseMarkAsRead(myAddress, id),
+    dbApi.senseMarkAsRead(myAddress!, id),
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
@@ -36,8 +37,12 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
     if (!myAddress) {
       throw new Error('myAddress is not defined');
     }
-    const chats = await dbApi.getMyChats(myAddress, userAddress);
-    const links = await dbApi.getLinks({ neuron: userAddress });
+    const chats = (await dbApi.getMyChats(myAddress, userAddress)).map(
+      (item) => ({ ...item, itemType: SenseMetaType.sendMessage })
+    );
+    const links = (await dbApi.getLinks({ neuron: userAddress })).map(
+      (item) => ({ ...item, itemType: SenseMetaType.tweet })
+    );
 
     return [...chats, ...links].sort((a, b) =>
       a.timestamp > b.timestamp ? 1 : -1

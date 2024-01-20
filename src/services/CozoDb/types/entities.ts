@@ -18,7 +18,6 @@ export enum EntryType {
   transactions = 1,
   particle = 2,
   chat = 3,
-  tweets = 4,
 }
 
 export type PinDbEntity = {

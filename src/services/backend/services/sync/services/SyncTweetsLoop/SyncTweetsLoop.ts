@@ -132,10 +132,7 @@ class SyncTweetsLoop {
 
       this.statusApi.sendStatus('in-progress', `sync ${address}...`);
       const { timestampRead, unreadCount, timestampUpdate } =
-        await this.db!.getSyncStatus(myAddress, address, [
-          EntryType.tweets,
-          EntryType.chat,
-        ]);
+        await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
 
       const tweets = await fetchTweetsByNeuronTimestamp(
         this.params.cyberLcdUrl!,
@@ -159,14 +156,16 @@ class SyncTweetsLoop {
         // Update transaction
         const res = await this.db!.putSyncStatus({
           ownerId: myAddress,
-          entryType: EntryType.tweets,
+          entryType: EntryType.chat,
           id: address,
           timestampUpdate: lastTweet.timestamp,
           unreadCount: unreadItemsCount,
           timestampRead,
           disabled: false,
           lastId: lastTweet.transaction_hash,
-          meta: { lastId: { cid: lastTweet.to, text: '', mime: '' } },
+          meta: {
+            lastId: { cid: lastTweet.to },
+          },
         });
       }
     } finally {
