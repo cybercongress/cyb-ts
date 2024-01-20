@@ -29,10 +29,17 @@ function SenseListItemContainer({ senseListItem }: Props) {
       break;
     case EntryType.chat:
       text = meta.memo;
-      amount = meta.amount;
+      // amount automapped to Map instead of array :/ some hack to handle
+      amount = meta.amount ? Object.values(meta.amount) : undefined;
       isAmountSend = meta.direction === 'to';
       break;
-
+    case EntryType.tweets:
+      text = meta.memo || meta.lastId?.text;
+      amount = meta.amount ? Object.values(meta.amount) : undefined;
+      isAmountSend = meta.direction === 'to';
+      // amount = meta.amount;
+      // isAmountSend = meta.direction === 'to';
+      break;
     case EntryType.transactions:
       text = meta.memo;
 
@@ -58,8 +65,6 @@ function SenseListItemContainer({ senseListItem }: Props) {
   const { data, loading } = useParticleDetails(cidText, {
     skip: !cidText,
   });
-
-  console.log('----data', data);
 
   let content;
 

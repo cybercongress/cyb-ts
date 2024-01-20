@@ -37,7 +37,8 @@ function useSenseItem({ id }: Props) {
   const entryType = id
     ? getListQuery?.data?.find((item) => item.id === id)?.entryType
     : undefined;
-  const isChatEntry = entryType === EntryType.chat;
+  // Tweets is same as chat but combined with tweet particles from meta
+  const isChatEntry = [EntryType.chat, EntryType.tweets].includes(entryType);
 
   const getTxsQuery = useQuery({
     queryKey: ['senseApi', 'getTransactions', address, id],
@@ -58,9 +59,10 @@ function useSenseItem({ id }: Props) {
   });
 
   const getChatQuery = useQuery({
-    queryKey: ['senseApi', 'getMyChats', address, id],
+    // getFriendItems method to retrive chats and tweets
+    queryKey: ['senseApi', 'getFriendItems', address, id],
     queryFn: async () => {
-      return senseApi!.getMyChats(id!);
+      return senseApi!.getFriendItems(id!);
     },
     enabled: enabled && isChatEntry && !!address,
     refetchInterval: REFETCH_INTERVAL,
