@@ -30,6 +30,7 @@ export type SenseUnread = {
 type ParticlePreResolved = { cid?: ParticleCid; text: string; mime: string };
 
 export const enum SenseMetaType {
+  follow = 3.3,
   tweet = 3.2,
   send = 3.1,
   particle = 2,
@@ -37,7 +38,8 @@ export const enum SenseMetaType {
 }
 
 type SenseTweetMeta = {
-  lastId: ParticlePreResolved;
+  from: Partial<ParticlePreResolved>;
+  to: ParticlePreResolved;
 };
 
 type SenseParticleMeta = {

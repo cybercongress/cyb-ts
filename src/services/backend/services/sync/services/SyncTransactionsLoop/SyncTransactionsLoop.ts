@@ -311,33 +311,35 @@ class SyncTransactionsLoop {
 
         if (result.ok) {
           // eslint-disable-next-line no-await-in-loop
-          const syncStatusItems = await Promise.all(
-            syncStatusEntities.map(async (item) => {
-              const { result: particle } =
-                await this.particlesResolver!.fetchDirect(item.id);
-              const { result: lastParticle } =
-                await this.particlesResolver!.fetchDirect(item.lastId);
+          (async () => {
+            const syncStatusItems = await Promise.all(
+              syncStatusEntities.map(async (item) => {
+                const { result: particle } =
+                  await this.particlesResolver!.fetchDirect(item.id);
+                const { result: lastParticle } =
+                  await this.particlesResolver!.fetchDirect(item.lastId);
 
-              return {
-                ...item,
-                meta: {
-                  metaType: SenseMetaType.particle,
-                  ...item.meta,
-                  id: {
-                    cid: particle?.cid,
-                    text: particle?.textPreview,
-                    mime: particle?.meta.mime,
-                  },
-                  lastId: {
-                    cid: lastParticle?.cid,
-                    text: lastParticle?.textPreview,
-                    mime: lastParticle?.meta.mime,
-                  },
-                } as SenseParticleResultMeta,
-              };
-            })
-          );
-          this.channelApi.postSenseUpdate(syncStatusItems);
+                return {
+                  ...item,
+                  meta: {
+                    metaType: SenseMetaType.particle,
+                    ...item.meta,
+                    id: {
+                      cid: particle?.cid,
+                      text: particle?.textPreview,
+                      mime: particle?.meta.mime,
+                    },
+                    lastId: {
+                      cid: lastParticle?.cid,
+                      text: lastParticle?.textPreview,
+                      mime: lastParticle?.meta.mime,
+                    },
+                  } as SenseParticleResultMeta,
+                };
+              })
+            );
+            this.channelApi.postSenseUpdate(syncStatusItems);
+          })();
         }
       }
     }

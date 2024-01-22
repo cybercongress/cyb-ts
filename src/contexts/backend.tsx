@@ -28,12 +28,12 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
-  getMyChats: (userAddress: NeuronAddress) => {
-    if (!myAddress) {
-      throw new Error('myAddress is not defined');
-    }
-    return dbApi.getMyChats(myAddress, userAddress);
-  },
+  // getMyChats: (userAddress: NeuronAddress) => {
+  //   if (!myAddress) {
+  //     throw new Error('myAddress is not defined');
+  //   }
+  //   return dbApi.getMyChats(myAddress, userAddress);
+  // },
   getFriendItems: async (userAddress: NeuronAddress) => {
     if (!myAddress) {
       throw new Error('myAddress is not defined');
