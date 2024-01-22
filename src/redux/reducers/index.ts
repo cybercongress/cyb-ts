@@ -7,6 +7,7 @@ import pocketReducer from '../features/pocket';
 import currentAccountReducer from '../features/currentAccount';
 import passportsReducer from '../../features/passport/passports.redux';
 import backendReducer from './backend';
+import senseReducer from './sense';
 
 const rootReducer = {
   gol: golReducer,
@@ -16,6 +17,7 @@ const rootReducer = {
   currentAccount: currentAccountReducer,
   backend: backendReducer,
   commander: commanderReducer,
+  sense: senseReducer,
 };
 
 export default rootReducer;

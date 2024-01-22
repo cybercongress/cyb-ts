@@ -34,7 +34,8 @@ function App() {
   const myAddress = useAppSelector(selectCurrentAddress);
 
   const { ipfsError, isReady, senseApi } = useBackend();
-
+  const senseList = useAppSelector((state) => state.sense.list);
+  console.log('----senseList(redux) ', senseList);
   // TODO: TMP Example of how to use SENSE
   useEffect(() => {
     (async () => {
@@ -53,11 +54,6 @@ function App() {
           'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
         );
         console.log('----sense transactionsMy', transactionsMy);
-
-        const transactionsFriend = await senseApi.getTransactions(
-          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
-        );
-        console.log('----sense Friend master', transactionsFriend);
 
         const chats = await senseApi.getFriendItems(
           'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'

@@ -164,6 +164,10 @@ class ParticlesResolverQueue {
     return this;
   }
 
+  public async fetchDirect(cid: ParticleCid) {
+    return this.waitForParticleResolve(cid, QueuePriority.URGENT);
+  }
+
   public async enqueueBatch(cids: ParticleCid[], priority: QueuePriority) {
     this.enqueue(
       cids.map((cid) => ({

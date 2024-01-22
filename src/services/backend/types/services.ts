@@ -1,4 +1,5 @@
 import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
+import { SenseListItem } from './sense';
 
 export type SyncEntryName =
   | 'pin'
@@ -45,8 +46,20 @@ export type ServiceStatusMessage = {
   value: { name: ServiceName; status: ServiceStatus; message?: string };
 };
 
+export type SenseListRemove = {
+  type: 'sense_list_remove';
+  list: SenseListItem[];
+};
+
+export type SenseListUpdate = {
+  type: 'sense_list_update';
+  list: SenseListItem[];
+};
+
 export type BroadcastChannelMessage =
   | SyncStatusMessage
   | SyncEntryMessage
   | IndexedDbWriteMessage
-  | ServiceStatusMessage;
+  | ServiceStatusMessage
+  | SenseListUpdate
+  | SenseListRemove;

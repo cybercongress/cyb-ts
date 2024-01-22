@@ -28,11 +28,16 @@ import { LinkResult, SyncServiceParams } from '../../types';
 import { fetchTransactionsIterable } from '../../../dataSource/blockchain/indexer';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
+import {
+  SenseMetaType,
+  SenseParticleResultMeta,
+  SenseTransactionResultMeta,
+} from 'src/services/backend/types/sense';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
 
-  private isInitialized = false;
+  private channelApi = new BroadcastChannelSender();
 
   private db: DbApi | undefined;
 
@@ -48,10 +53,7 @@ class SyncTransactionsLoop {
     return this._loop$;
   }
 
-  private statusApi = broadcastStatus(
-    'transaction',
-    new BroadcastChannelSender()
-  );
+  private statusApi = broadcastStatus('transaction', this.channelApi);
 
   private params: SyncServiceParams = {
     myAddress: null,
@@ -77,25 +79,7 @@ class SyncTransactionsLoop {
 
     deps.params$.subscribe((params) => {
       this.params = params;
-      // if (this.isInitialized) {
-      //   // executeSequentially
-      //   const newFriends = params.followings
-      //     .map((addr) =>
-      //       this.params.followings.includes(addr) ? addr : undefined
-      //     )
-      //     .filter((addr) => !!addr) as NeuronAddress[];
-
-      //   this.isInitialized &&
-      //     executeSequentially(
-      //       newFriends.map(
-      //         (addr) => () =>
-      //           this.syncTransactions(this.params.myAddress!, addr, true)
-      //       )
-      //     );
-      // }
     });
-
-    // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
@@ -110,10 +94,6 @@ class SyncTransactionsLoop {
           !!params.myAddress
       )
     );
-
-    this.isInitialized$.subscribe((isInitialized) => {
-      this.isInitialized = isInitialized;
-    });
   }
 
   start() {
@@ -139,7 +119,13 @@ class SyncTransactionsLoop {
         this.params.myAddress!
       );
       this.statusApi.sendStatus('in-progress', `sync my chats`);
-      await syncMyChats(this.db!, this.params.myAddress!);
+
+      const syncStatusItems = await syncMyChats(
+        this.db!,
+        this.params.myAddress!
+      );
+      this.channelApi.postSenseUpdate(syncStatusItems);
+
       this.statusApi.sendStatus('idle');
     } catch (err) {
       console.error('>>> syncAllTransactions', err);
@@ -239,7 +225,7 @@ class SyncTransactionsLoop {
 
       if (lastTransaction) {
         // Update transaction
-        this.db!.putSyncStatus({
+        const syncItem = {
           ownerId: myAddress,
           entryType: EntryType.transactions,
           id: address,
@@ -250,8 +236,23 @@ class SyncTransactionsLoop {
           timestampRead,
           disabled: false,
           lastId: lastTransaction.transaction_hash,
-          meta: { memo: lastTransaction?.transaction?.memo || '' },
-        });
+          meta: {
+            memo: lastTransaction?.transaction?.memo || '',
+          },
+        };
+        const result = await this.db!.putSyncStatus(syncItem);
+        if (result.ok) {
+          this.channelApi.postSenseUpdate([
+            {
+              ...syncItem,
+              meta: {
+                metaType: SenseMetaType.transaction,
+                ...syncItem.meta,
+                value: lastTransaction.value,
+              } as SenseTransactionResultMeta,
+            },
+          ]);
+        }
       }
     } finally {
       // remove from in-progress list
@@ -305,7 +306,39 @@ class SyncTransactionsLoop {
       );
 
       if (syncStatusEntities.length > 0) {
-        this.db!.putSyncStatus(syncStatusEntities);
+        // eslint-disable-next-line no-await-in-loop
+        const result = await this.db!.putSyncStatus(syncStatusEntities);
+
+        if (result.ok) {
+          // eslint-disable-next-line no-await-in-loop
+          const syncStatusItems = await Promise.all(
+            syncStatusEntities.map(async (item) => {
+              const { result: particle } =
+                await this.particlesResolver!.fetchDirect(item.id);
+              const { result: lastParticle } =
+                await this.particlesResolver!.fetchDirect(item.lastId);
+
+              return {
+                ...item,
+                meta: {
+                  metaType: SenseMetaType.particle,
+                  ...item.meta,
+                  id: {
+                    cid: particle?.cid,
+                    text: particle?.textPreview,
+                    mime: particle?.meta.mime,
+                  },
+                  lastId: {
+                    cid: lastParticle?.cid,
+                    text: lastParticle?.textPreview,
+                    mime: lastParticle?.meta.mime,
+                  },
+                } as SenseParticleResultMeta,
+              };
+            })
+          );
+          this.channelApi.postSenseUpdate(syncStatusItems);
+        }
       }
     }
   }

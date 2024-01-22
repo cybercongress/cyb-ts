@@ -24,7 +24,12 @@ import {
   TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
-import { SenseListItem, SenseUnread } from 'src/services/backend/types/sense';
+import {
+  SenseListItem,
+  SenseUnread,
+  SenseTweetMeta,
+  SenseMetaType,
+} from 'src/services/backend/types/sense';
 import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
 import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
@@ -171,27 +176,27 @@ class DbApiWrapper {
 
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_p[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=2, owner_id = '${myAddress}'
-    ss_tweets[last_id, id, meta, last_cid] := *sync_status{entry_type,id, last_id, meta}, last_cid =get(get(meta, 'last_id', json('{}')),'cid', ''), entry_type=4
-
-    p_last[last_id, id, meta, text, mime] := ss_p[last_id, id, meta], *particle{cid: last_id, text, mime}
-    p_last[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
-
-    p_id[last_id, id, meta, text, mime] :=  ss_p[last_id, id, meta], *particle{cid: id, text, mime}
-    p_id[last_id, id, meta, empty, empty] := ss_p[last_id, id, meta], not *particle{cid: id, text, mime}, empty=''
-
+    ss_tweets[last_id, id, meta, last_cid] := *sync_status{entry_type,id, last_id, meta}, last_cid =get(get(meta, 'last_id', json('{}')),'cid', ''), starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
     p_tweets[last_id, id, meta, text, mime] :=  ss_tweets[last_id, id, meta, last_cid], *particle{cid: last_cid, text, mime}
     p_tweets[last_id, id, meta, empty, empty] := ss_tweets[last_id, id, meta, last_cid],  not *particle{cid: last_cid, text, mime}, empty=''
 
-    p_last_m[last_id, id, m] :=  p_last[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
+    p_tweets_meta[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime, 'meta_type', ${SenseMetaType.tweet})))
 
-    p_tweets_m[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
+    p_tweets_meta[last_id, id, m] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, m= concat(meta, json_object( 'meta_type', ${SenseMetaType.send})), not starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
 
-    p_join[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_m[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime)))
+    ss_particles[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=${EntryType.particle}, owner_id = '${myAddress}'
 
-    ss_t[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=1, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type)), id!='${myAddress}', owner_id = '${myAddress}'
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, entry_type=3, owner_id = '${myAddress}'
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_join[last_id, id, meta] or ss_t[last_id, id, meta] or p_tweets_m[last_id, id, meta]
+    p_last[last_id, id, meta, text, mime] := ss_particles[last_id, id, meta], *particle{cid: last_id, text, mime}
+    p_last[last_id, id, meta, empty, empty] := ss_particles[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
+
+    p_id[last_id, id, meta, text, mime] :=  ss_particles[last_id, id, meta], *particle{cid: id, text, mime}
+    p_id[last_id, id, meta, empty, empty] := ss_particles[last_id, id, meta], not *particle{cid: id, text, mime}, empty=''
+
+    p_last_meta[last_id, id, m] :=  p_last[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
+    p_all[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_meta[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime), 'meta_type', ${SenseMetaType.particle}))
+
+    ss_trans[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=${EntryType.transactions}, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type, 'meta_type', ${SenseMetaType.transaction})), id!='${myAddress}', owner_id = '${myAddress}'
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_all[last_id, id, meta] or ss_trans[last_id, id, meta] or p_tweets_meta[last_id, id, meta]
     :order -timestamp_update
     `;
 
