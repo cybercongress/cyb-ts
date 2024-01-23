@@ -19,7 +19,7 @@ type Props = {
 enum STEPS {
   INITIAL,
   MESSAGE,
-  AMOUNT,
+  // AMOUNT,
 }
 
 function ActionBarWrapper({ id, adviser, update }: Props) {
@@ -64,7 +64,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
       const response = await signingClient!.sendTokens(
         address,
         id,
-        [coin(amount, CYBER.DENOM_CYBER)],
+        [coin(amount || 1, CYBER.DENOM_CYBER)],
         'auto',
         message
       );
@@ -125,9 +125,10 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           setStep(STEPS.INITIAL);
         }}
         button={{
-          text: 'Next',
+          text: 'Confirm',
           onClick: () => {
-            setStep(STEPS.AMOUNT);
+            send();
+            // setStep(STEPS.AMOUNT);
           },
         }}
       >

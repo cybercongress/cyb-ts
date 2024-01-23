@@ -3,14 +3,7 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import styles from './SenseViewer.module.scss';
 import { useBackend } from 'src/contexts/backend';
 import { Account } from 'src/components';
-import { useQuery } from '@tanstack/react-query';
-import Message from './Message/Message';
-import { MsgMultiSend, MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
-import { SupportedTypes } from '../types';
-import { useAppSelector } from 'src/redux/hooks';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import useSenseItem from '../_refactor/useSenseItem';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
@@ -19,30 +12,18 @@ import { cutSenseItem } from '../utils';
 import ParticleAvatar from '../components/ParticleAvatar/ParticleAvatar';
 import useParticleDetails from '../_refactor/useParticleDetails';
 import { isParticle as isParticleFunc } from 'src/features/particles/utils';
-import {
-  EntryType,
-  LinkDbEntity,
-  TransactionDbEntity,
-} from 'src/services/CozoDb/types/entities';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { log } from 'tone/build/esm/core/util/Debug';
-import {
-  CyberLinkTransaction,
-  MsgMultiSendTransaction,
-  MsgSendTransaction,
-} from 'src/services/backend/services/dataSource/blockchain/types';
 import { AdviserProps } from '../Sense';
 import MessageContainer from './Message/Message.container';
+import { markAsRead } from 'src/features/sense/sense.redux';
 
 type Props = {
   selected: string | undefined;
-  senseById: ReturnType<typeof useSenseItem>;
 } & AdviserProps;
 
 const DEFAULT_ITEMS_LENGTH = 20;
 const LOAD_MORE_ITEMS_LENGTH = 20;
 
-function SenseViewer({ selected, adviser, senseById }: Props) {
+function SenseViewer({ selected, adviser }: Props) {
   const { senseApi } = useBackend();
 
   const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
@@ -56,6 +37,8 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
   const { data: particleData } = useParticleDetails(selected!, {
     skip: !isParticle && !selected,
   });
+
+  const dispatch = useAppDispatch();
 
   const { error, isLoading: loading, data } = chat || {};
 
@@ -72,8 +55,14 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
   }, [ref, data]);
 
   useEffect(() => {
-    selected && senseApi?.markAsRead(selected);
-  }, [selected, senseApi]);
+    selected &&
+      dispatch(
+        markAsRead({
+          id: selected,
+          senseApi,
+        })
+      );
+  }, [selected, senseApi, dispatch]);
 
   useEffect(() => {
     setShowItemsLength(DEFAULT_ITEMS_LENGTH);

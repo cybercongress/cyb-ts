@@ -6,23 +6,16 @@ import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
-import { EntryType } from 'src/services/CozoDb/types/entities';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container.tsx';
-import { SenseListItem } from 'src/services/backend/types/sense';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppSelector } from 'src/redux/hooks';
 import { useBackend } from 'src/contexts/backend';
+import { isParticle } from 'src/features/particles/utils';
 
 type Props = {
   select: (id: string) => void;
   selected?: string;
 } & AdviserProps;
-
-const mapFilterWithEntryType = {
-  [EntryType.transactions]: Filters.Neuron,
-  [EntryType.chat]: Filters.Neuron,
-  [EntryType.particle]: Filters.Particle,
-};
 
 function SenseList({ select, selected }: Props) {
   const [filter, setFilter] = useState(Filters.All);
@@ -36,7 +29,12 @@ function SenseList({ select, selected }: Props) {
 
   if (filter !== Filters.All) {
     items = items.filter((item) => {
-      return mapFilterWithEntryType[item.entryType] === filter;
+      const particle = isParticle(item);
+
+      return (
+        particle === (filter === Filters.Particle) ||
+        !particle === (filter === Filters.Neuron)
+      );
     });
   }
 

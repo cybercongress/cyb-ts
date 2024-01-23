@@ -1,19 +1,14 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
+import { LinkDbEntity } from 'src/services/CozoDb/types/entities';
 import {
-  LinkDbEntity,
-  TransactionDbEntity,
-} from 'src/services/CozoDb/types/entities';
-import {
-  CyberLinkTransaction,
   MsgMultiSendTransaction,
   MsgSendTransaction,
 } from 'src/services/backend/services/dataSource/blockchain/types';
 import Message from './Message';
 import useParticleDetails from '../../_refactor/useParticleDetails';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
-import Loader2 from 'src/components/ui/Loader2';
 import { Dots } from 'src/components';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
@@ -22,85 +17,85 @@ import { SenseMetaType } from 'src/services/backend/types/sense';
 
 type Props = {
   senseItem: SenseItem;
-  isParticle?: boolean;
 };
 
-function MessageContainer({ senseItem, isParticle }: Props) {
+function MessageContainer({ senseItem }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, hash: h } = senseItem;
+  const { timestamp, itemType, id, value, memo } = senseItem;
 
-  console.log(senseItem);
-
-  let text;
   let from;
+  let text;
   let amount: Coin[] | undefined;
+  let hash = senseItem.hash;
+
+  // FIXME:
   let isAmountSend = false;
-  let hash = h;
   let resolveCid;
 
-  if (isParticle && false) {
-  } else {
-    const item = senseItem;
+  switch (itemType) {
+    case SenseMetaType.send: {
+      const v = value as MsgSendTransaction['value'];
 
-    const { itemType, value, id, memo } = item;
+      from = v.from_address || id;
 
-    switch (itemType) {
-      case SenseMetaType.send: {
-        const v = value as MsgSendTransaction['value'];
-
-        from = v.from_address || id;
-        // amount = v.amount ? Array.isArray(v.amount) ? v.amount : Object.values(v.amount);
-
-        text = memo;
-        isAmountSend = v.from_address === address;
-
-        break;
+      if (v.amount) {
+        amount = Array.isArray(v.amount) ? v.amount : Object.values(v.amount);
       }
 
-      case SenseMetaType.particle: {
-        // debugger;
+      text = memo;
+      isAmountSend = v.from_address === address;
 
-        const item = senseItem as LinkDbEntity;
+      if (senseItem.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
+        const v = value as MsgMultiSendTransaction['value'];
 
-        from = item.from;
-        text = item.text;
-        hash = item.transactionHash;
-        from = item.neuron;
+        from = v.inputs[0].address;
+        amount = v.outputs.find((output) => output.address === address)?.coins;
       }
 
-      // case 'cosmos.bank.v1beta1.MsgMultiSend': {
-      //   const v = value as MsgMultiSendTransaction['value'];
+      break;
+    }
 
-      //   from = v.inputs[0].address;
-      //   amount = v.outputs.find((output) => output.address === address)?.coins;
+    case SenseMetaType.particle: {
+      // const item = senseItem as LinkDbEntity;
 
-      //   break;
-      // }
+      from = senseItem.from;
+      text = senseItem.id?.text;
+      hash = senseItem.transactionHash;
 
-      // case 'cyber.graph.v1beta1.MsgCyberlink': {
-      //   const v = value as CyberLinkTransaction['value'];
+      break;
+    }
 
-      //   from = v.neuron;
-      //   resolveCid = v.links[0].to;
+    case SenseMetaType.follow: {
+      debugger;
 
-      //   break;
-      // }
+      break;
+    }
+    case SenseMetaType.tweet: {
+      text = senseItem.text;
+      from = senseItem.neuron;
+      resolveCid = senseItem.to;
 
-      default: {
-        if (!isParticle) {
-          console.error('unknown type');
-          // return null;
-        }
-      }
+      break;
+    }
+
+    case SenseMetaType.transaction: {
+      text = senseItem.text;
+      from = senseItem.neuron;
+      resolveCid = senseItem.to;
+
+      break;
+    }
+
+    default: {
+      console.error('unknown type');
+      debugger;
     }
   }
 
   const { data, loading } = useParticleDetails(resolveCid, {
     skip: !resolveCid,
   });
-
-  console.log('data', data);
 
   return (
     <Message

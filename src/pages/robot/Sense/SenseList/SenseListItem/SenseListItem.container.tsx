@@ -17,8 +17,6 @@ function SenseListItemContainer({ id: senseId }: Props) {
   const { senseData, unreadCount } = useAppSelector((store) => {
     const chat = store.sense.chats[senseId]!;
 
-    console.error(senseId, chat);
-
     const lastMsg = chat.data[chat.data.length - 1];
 
     return {
@@ -26,12 +24,12 @@ function SenseListItemContainer({ id: senseId }: Props) {
       unreadCount: chat.unreadCount,
     };
   });
-  const { entryType, meta, timestamp } = senseData;
+  const { entryType, meta, memo, timestamp } = senseData;
   const id = senseId;
 
   const address = useAppSelector(selectCurrentAddress);
 
-  let text;
+  let text = memo;
   let amount;
   let isAmountSend = false;
   let cidText;

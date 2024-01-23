@@ -114,9 +114,13 @@ function Sense() {
   }, [dispatch, selected, senseApi]);
 
   function update() {
-    // senseList.refetch();
-    return;
-    // senseById.refetch();
+    dispatch(getSenseList(senseApi));
+    dispatch(
+      getSenseChat({
+        id: selected,
+        senseApi,
+      })
+    );
   }
 
   return (

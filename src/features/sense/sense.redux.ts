@@ -31,7 +31,7 @@ type SliceState = {
   chats: {
     [key in SenseChatId]?: Chat;
   };
-  summary: {};
+  // summary: {};
 };
 
 const initialState: SliceState = {
@@ -41,26 +41,22 @@ const initialState: SliceState = {
     error: undefined,
   },
   chats: {},
-  summary: {},
+  // summary: {},
 };
-
-// export function getCommunityPassports(queryClient: CyberClient): AppThunk {
-//   return (dispatch, getState) => {
-//     const { currentAccount, passports } = getState();
-//     const { following, followers, friends } = currentAccount.community;
-//     [...friends, ...following, ...followers].forEach((address) => {
-//       const passport = passports[address];
-//       if (!passport?.data && !passport?.loading) {
-//         dispatch(getPassport({ address, queryClient }));
-//       }
-//     });
-//   };
-// }
 
 const getSenseList = createAsyncThunk(
   'sense/getSenseList',
   async (senseApi: SenseApi) => {
-    return senseApi!.getList();
+    return (await senseApi!.getList()).map((item) => {
+      return {
+        ...item,
+        timestamp: item.timestampUpdate,
+        hash: item.lastId || item.transactionHash,
+        itemType: item.meta.meta_type,
+        value: item.meta,
+        memo: item.meta.memo || '',
+      };
+    });
   }
 );
 
@@ -70,40 +66,39 @@ const getSenseChat = createAsyncThunk(
     const particle = isParticle(id);
 
     if (particle) {
-      return senseApi!.getLinks(id);
+      return (await senseApi!.getLinks(id)).map((item) => {
+        return {
+          ...item,
+          itemType: item.itemType || SenseMetaType.particle,
+          memo: item.text,
+          hash: item.hash || item.transactionHash,
+          id: {
+            text: item.text,
+          },
+        };
+      });
     }
 
-    return senseApi!.getFriendItems(id);
+    return (await senseApi!.getFriendItems(id)).map((item) => {
+      return {
+        ...item,
+        hash: item.hash || item.transactionHash,
+      };
+    });
+  }
+);
+
+const markAsRead = createAsyncThunk(
+  'sense/markAsRead',
+  async ({ id, senseApi }: { id: SenseChatId; senseApi: SenseApi }) => {
+    return senseApi!.markAsRead(id);
   }
 );
 
 const slice = createSlice({
   name: 'sense',
   initialState,
-  reducers: {
-    // addAddress: (
-    //   state,
-    //   {
-    //     payload: { address, currentAddress },
-    //   }: PayloadAction<{
-    //     address: string;
-    //     currentAddress: string;
-    //   }>
-    // ) => {
-    //   if (
-    //     !(
-    //       state[currentAddress]?.data &&
-    //       state[currentAddress].data.extension.addresses
-    //     )
-    //   ) {
-    //     return;
-    //   }
-    //   state[currentAddress].data.extension.addresses.push({
-    //     label: null,
-    //     address,
-    //   });
-    // },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getSenseList.pending, (state) => {
       state.list.isLoading = true;
@@ -123,17 +118,7 @@ const slice = createSlice({
           id,
           isLoading: false,
           error: undefined,
-          data: [
-            {
-              ...item,
-              // TODO: fix
-              timestamp: item.timestampUpdate,
-              hash: item.lastId,
-              itemType: item.meta.meta_type,
-              value: item.meta,
-              memo: item.meta.memo || '',
-            },
-          ],
+          data: [item],
           unreadCount: item.unreadCount,
         };
 
@@ -167,11 +152,19 @@ const slice = createSlice({
       chat.isLoading = false;
       chat.error = action.error.message;
     });
+
+    // maybe add .pending, .rejected
+    builder.addCase(markAsRead.fulfilled, (state, action) => {
+      const { id } = action.meta.arg;
+      const chat = state.chats[id]!;
+
+      chat.unreadCount = 0;
+    });
   },
 });
 
-export const {} = slice.actions;
+// export const {} = slice.actions;
 
-export { getSenseList, getSenseChat };
+export { getSenseList, getSenseChat, markAsRead };
 
 export default slice.reducer;
