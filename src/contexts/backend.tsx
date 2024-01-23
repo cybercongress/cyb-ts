@@ -66,9 +66,11 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
+export type SenseApi = ReturnType<typeof createSenseApi> | null;
+
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
-  senseApi: ReturnType<typeof createSenseApi> | null;
+  senseApi: SenseApi;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
@@ -121,6 +123,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const followings = useAppSelector(({ currentAccount }) => {
     const { friends, following } = currentAccount.community;
+
     return Array.from(new Set([...friends, ...following]));
   });
 

@@ -39,6 +39,9 @@ export const routes = {
       drive: {
         path: '/robot/drive',
       },
+      sense: {
+        path: '/robot/sense',
+      },
     },
   },
   robotPassport: {
@@ -89,5 +92,9 @@ export const routes = {
   },
   brain: {
     path: '/brain',
+  },
+  txExplorer: {
+    path: '/tx/:hash',
+    getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
   },
 };

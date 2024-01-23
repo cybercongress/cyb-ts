@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  align-content: stretch;
+
+  max-height: 80vh;
+
+  // Display
+  > div > div {
+    height: 100%;
+  }
+
+  > :first-child {
+    > div {
+      // don't understand this scroll
+      overflow-x: hidden;
+    }
+  }
+
+  > :nth-child(2) {
+    flex: 1;
+    position: relative;
+    left: -2px;
+  }
+}

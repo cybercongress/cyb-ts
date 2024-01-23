@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import cx from 'classnames';
 
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
@@ -44,7 +45,7 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   return (
     <img
       {...props}
-      className={styles.imgAvatar}
+      className={cx(styles.imgAvatar, props.className)}
       alt="img-avatar"
       src={avatarImage}
     />
