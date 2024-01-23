@@ -4,7 +4,7 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
-import { NeuronAddress } from 'src/types/base';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { executeSequentially } from 'src/utils/async/promise';
 
@@ -15,12 +15,13 @@ import { ServiceDeps } from '../types';
 import { createLoopObservable } from '../utils/rxjs';
 import { TWEETS_SYNC_INTERVAL, TWEETS_SYNC_WARMUP } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { fetchTweetsByNeuronTimestamp } from '../../../dataSource/blockchain/lcd';
+import { fetchLinksByNeuronTimestamp } from '../../../dataSource/blockchain/lcd';
 import { SyncServiceParams } from '../../types';
 import {
   SenseMetaType,
   SenseTweetResultMeta,
 } from 'src/services/backend/types/sense';
+import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
 
 class SyncTweetsLoop {
   private isInitialized$: Observable<boolean>;
@@ -71,7 +72,7 @@ class SyncTweetsLoop {
 
         executeSequentially(
           newFriends.map(
-            (addr) => () => this.syncTweets(this.params.myAddress!, addr)
+            (addr) => () => this.syncParticlesFrom(this.params.myAddress!, addr)
           )
         );
       }
@@ -102,7 +103,7 @@ class SyncTweetsLoop {
     this._loop$ = createLoopObservable(
       TWEETS_SYNC_INTERVAL,
       this.isInitialized$,
-      defer(() => from(this.syncAllTweets())),
+      defer(() => from(this.syncAll())),
       () => this.statusApi.sendStatus('in-progress'),
       TWEETS_SYNC_WARMUP
     );
@@ -115,11 +116,18 @@ class SyncTweetsLoop {
     return this;
   }
 
-  private async syncAllTweets() {
+  private async syncAll() {
     try {
       await executeSequentially(
         this.params.followings.map(
-          (addr) => () => this.syncTweets(this.params.myAddress!, addr)
+          (addr) => () =>
+            this.syncParticlesFrom(this.params.myAddress!, addr, CID_TWEET)
+        )
+      );
+      await executeSequentially(
+        this.params.followings.map(
+          (addr) => () =>
+            this.syncParticlesFrom(this.params.myAddress!, addr, CID_FOLLOW)
         )
       );
     } catch (err) {
@@ -128,7 +136,11 @@ class SyncTweetsLoop {
     }
   }
 
-  public async syncTweets(myAddress: NeuronAddress, address: NeuronAddress) {
+  public async syncParticlesFrom(
+    myAddress: NeuronAddress,
+    address: NeuronAddress,
+    cid: ParticleCid // CID_TWEET, CID_FOLLOW
+  ) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
@@ -142,22 +154,23 @@ class SyncTweetsLoop {
       const { timestampRead, unreadCount, timestampUpdate } =
         await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
 
-      const tweets = await fetchTweetsByNeuronTimestamp(
+      const links = await fetchLinksByNeuronTimestamp(
         this.params.cyberLcdUrl!,
         address,
+        cid,
         timestampUpdate + 1 // ofsset + 1 to fix milliseconds precision bug
       );
 
-      const lastTweet = tweets.at(0);
-      const unreadItemsCount = unreadCount + tweets.length;
+      const lastParticle = links.at(0);
+      const unreadItemsCount = unreadCount + links.length;
 
-      if (lastTweet) {
-        await this.db!.putCyberlinks(tweets);
+      if (lastParticle) {
+        await this.db!.putCyberlinks(links);
 
-        const tweetParticles = tweets.map((t) => t.to);
+        const particles = links.map((t) => t.to);
 
         await this.particlesResolver!.enqueueBatch(
-          tweetParticles,
+          particles,
           QueuePriority.HIGH
         );
 
@@ -165,14 +178,15 @@ class SyncTweetsLoop {
           ownerId: myAddress,
           entryType: EntryType.chat,
           id: address,
-          timestampUpdate: lastTweet.timestamp,
+          timestampUpdate: lastParticle.timestamp,
           unreadCount: unreadItemsCount,
           timestampRead,
           disabled: false,
-          lastId: lastTweet.transaction_hash,
+          lastId: lastParticle.transaction_hash,
           meta: {
             metaType: SenseMetaType.tweet,
-            lastId: { cid: lastTweet.to, text: '', mime: '' },
+            from: { cid },
+            to: { cid: lastParticle.to, text: '', mime: '' },
           } as SenseTweetResultMeta,
         };
         // Update transaction

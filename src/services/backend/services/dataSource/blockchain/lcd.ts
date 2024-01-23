@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import axios from 'axios';
 import { T } from 'ramda';
-import { CyberlinkTxHash, NeuronAddress } from 'src/types/base';
+import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_TWEET } from 'src/utils/consts';
 import { dateToNumber } from 'src/utils/date';
 
@@ -28,15 +28,16 @@ async function getTransactions(
   return response;
 }
 
-const fetchTweetsByNeuron = async (
+const fetchLinkByNeuron = async (
   cyberLcdUrl: string,
   address: NeuronAddress,
+  from: ParticleCid,
   offset = 0
 ) => {
   const events = [
     {
       key: 'cyberlink.particleFrom',
-      value: CID_TWEET,
+      value: from,
     },
     {
       key: 'cyberlink.neuron',
@@ -78,30 +79,36 @@ const fetchTweetsByNeuron = async (
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export const fetchTweetsByNeuronTimestamp = async (
+export const fetchLinksByNeuronTimestamp = async (
   cyberLcdUrl: string,
   address: NeuronAddress,
+  from: ParticleCid,
   timestamp: number
 ) => {
   const result = [];
   while (true) {
-    const items = await fetchTweetsByNeuron(
-      cyberLcdUrl,
-      address,
-      result.length
-    );
+    try {
+      const items = await fetchLinkByNeuron(
+        cyberLcdUrl,
+        address,
+        from,
+        result.length
+      );
 
-    const partialItems = items.filter((i) => timestamp <= i.timestamp);
-    result.push(...partialItems);
+      const partialItems = items.filter((i) => timestamp <= i.timestamp);
+      result.push(...partialItems);
 
-    if (
-      items.length === 0 ||
-      timestamp >= items[0].timestamp ||
-      items.length < PAGINATION_LIMIT
-    ) {
+      if (
+        items.length === 0 ||
+        timestamp >= items[0].timestamp ||
+        items.length < PAGINATION_LIMIT
+      ) {
+        break;
+      }
+    } catch (e) {
+      console.log(`>>x ${address} from: ${from} ts: ${timestamp}`);
       break;
     }
   }
-
   return result;
 };

@@ -27,7 +27,6 @@ import {
 import {
   SenseListItem,
   SenseUnread,
-  SenseTweetMeta,
   SenseMetaType,
 } from 'src/services/backend/types/sense';
 import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
@@ -176,11 +175,11 @@ class DbApiWrapper {
 
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_tweets[last_id, id, meta, last_cid] := *sync_status{entry_type,id, last_id, meta}, last_cid =get(get(meta, 'last_id', json('{}')),'cid', ''), starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
+    ss_tweets[last_id, id, meta, to] := *sync_status{entry_type,id, last_id, meta}, to =get(get(meta, 'to', json('{}')),'cid', ''), starts_with(to, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
     p_tweets[last_id, id, meta, text, mime] :=  ss_tweets[last_id, id, meta, last_cid], *particle{cid: last_cid, text, mime}
     p_tweets[last_id, id, meta, empty, empty] := ss_tweets[last_id, id, meta, last_cid],  not *particle{cid: last_cid, text, mime}, empty=''
 
-    p_tweets_meta[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime, 'meta_type', ${SenseMetaType.tweet})))
+    p_tweets_meta[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('to', json_object('text', text, 'mime', mime, 'meta_type', ${SenseMetaType.tweet})))
 
     p_tweets_meta[last_id, id, m] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, m= concat(meta, json_object( 'meta_type', ${SenseMetaType.send})), not starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
 
