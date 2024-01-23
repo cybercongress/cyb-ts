@@ -17,9 +17,11 @@ import Loader2 from 'src/components/ui/Loader2';
 import { Dots } from 'src/components';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
+import { SenseItem } from 'src/features/sense/sense.redux';
+import { SenseMetaType } from 'src/services/backend/types/sense';
 
 type Props = {
-  senseItem: LinkDbEntity | TransactionDbEntity;
+  senseItem: SenseItem;
   isParticle?: boolean;
 };
 
@@ -28,6 +30,8 @@ function MessageContainer({ senseItem, isParticle }: Props) {
 
   const { timestamp, hash: h } = senseItem;
 
+  console.log(senseItem);
+
   let text;
   let from;
   let amount: Coin[] | undefined;
@@ -35,51 +39,58 @@ function MessageContainer({ senseItem, isParticle }: Props) {
   let hash = h;
   let resolveCid;
 
-  if (isParticle) {
-    const item = senseItem as LinkDbEntity;
-
-    from = item.from;
-    text = item.text;
-    hash = item.transactionHash;
-    from = item.neuron;
+  if (isParticle && false) {
   } else {
-    const item = senseItem as TransactionDbEntity;
-    const { type, value, memo } = item;
+    const item = senseItem;
 
-    switch (type) {
-      case 'cosmos.bank.v1beta1.MsgSend': {
+    const { itemType, value, id, memo } = item;
+
+    switch (itemType) {
+      case SenseMetaType.send: {
         const v = value as MsgSendTransaction['value'];
 
-        from = v.from_address;
-        amount = v.amount;
+        from = v.from_address || id;
+        // amount = v.amount ? Array.isArray(v.amount) ? v.amount : Object.values(v.amount);
+
         text = memo;
         isAmountSend = v.from_address === address;
 
         break;
       }
 
-      case 'cosmos.bank.v1beta1.MsgMultiSend': {
-        const v = value as MsgMultiSendTransaction['value'];
+      case SenseMetaType.particle: {
+        // debugger;
 
-        from = v.inputs[0].address;
-        amount = v.outputs.find((output) => output.address === address)?.coins;
+        const item = senseItem as LinkDbEntity;
 
-        break;
+        from = item.from;
+        text = item.text;
+        hash = item.transactionHash;
+        from = item.neuron;
       }
 
-      case 'cyber.graph.v1beta1.MsgCyberlink': {
-        const v = value as CyberLinkTransaction['value'];
+      // case 'cosmos.bank.v1beta1.MsgMultiSend': {
+      //   const v = value as MsgMultiSendTransaction['value'];
 
-        from = v.neuron;
-        resolveCid = v.links[0].to;
+      //   from = v.inputs[0].address;
+      //   amount = v.outputs.find((output) => output.address === address)?.coins;
 
-        break;
-      }
+      //   break;
+      // }
+
+      // case 'cyber.graph.v1beta1.MsgCyberlink': {
+      //   const v = value as CyberLinkTransaction['value'];
+
+      //   from = v.neuron;
+      //   resolveCid = v.links[0].to;
+
+      //   break;
+      // }
 
       default: {
         if (!isParticle) {
-          console.error('unknown type', type);
-          //   return null;
+          console.error('unknown type');
+          // return null;
         }
       }
     }

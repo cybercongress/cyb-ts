@@ -13,8 +13,21 @@ type Props = {
   senseListItem: SenseListItemType;
 };
 
-function SenseListItemContainer({ senseListItem }: Props) {
-  const { id, entryType, meta, timestampUpdate, unreadCount } = senseListItem;
+function SenseListItemContainer({ id: senseId }: Props) {
+  const { senseData, unreadCount } = useAppSelector((store) => {
+    const chat = store.sense.chats[senseId]!;
+
+    console.error(senseId, chat);
+
+    const lastMsg = chat.data[chat.data.length - 1];
+
+    return {
+      senseData: lastMsg,
+      unreadCount: chat.unreadCount,
+    };
+  });
+  const { entryType, meta, timestamp } = senseData;
+  const id = senseId;
 
   const address = useAppSelector(selectCurrentAddress);
 
@@ -81,11 +94,15 @@ function SenseListItemContainer({ senseListItem }: Props) {
     content = (
       <>
         <span>{text}</span>
-        {amount?.map((a) => {
+        {amount?.map(({ amount, denom }) => {
+          if (denom === 'boot' && amount === '1') {
+            return null;
+          }
+
           return (
             <CoinAmount
-              amount={a.amount}
-              denom={a.denom}
+              amount={amount}
+              denom={denom}
               type={isAmountSend ? CoinAction.send : CoinAction.receive}
             />
           );
@@ -99,7 +116,7 @@ function SenseListItemContainer({ senseListItem }: Props) {
   return (
     <SenseListItem
       address={id}
-      timestamp={timestampUpdate}
+      timestamp={timestamp}
       unreadCount={unreadCount}
       value={content}
       cidText={cidText}

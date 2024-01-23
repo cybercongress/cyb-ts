@@ -3,7 +3,7 @@ import { useBackend } from 'src/contexts/backend';
 import { isParticle as isParticleFunc } from 'src/features/particles/utils';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { TransactionDto } from 'src/services/CozoDb/types/dto';
+// import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import {
   EntryType,
   LinkDbEntity,
@@ -40,14 +40,14 @@ function useSenseItem({ id }: Props) {
   // Tweets is same as chat but combined with tweet particles from meta
   const isChatEntry = entryType === EntryType.chat;
 
-  const getTxsQuery = useQuery({
-    queryKey: ['senseApi', 'getTransactions', address, id],
-    queryFn: async () => {
-      return senseApi!.getTransactions(id!);
-    },
-    enabled: enabled && !isParticle && !isChatEntry && !!address,
-    refetchInterval: REFETCH_INTERVAL,
-  });
+  // const getTxsQuery = useQuery({
+  //   queryKey: ['senseApi', 'getTransactions', address, id],
+  //   queryFn: async () => {
+  //     return senseApi!.getTransactions(id!);
+  //   },
+  //   enabled: enabled && !isParticle && !isChatEntry && !!address,
+  //   refetchInterval: REFETCH_INTERVAL,
+  // });
 
   const getLinksQuery = useQuery({
     queryKey: ['senseApi', 'getLinks', address, id],
@@ -59,7 +59,6 @@ function useSenseItem({ id }: Props) {
   });
 
   const getChatQuery = useQuery({
-    // getFriendItems method to retrive chats and tweets
     queryKey: ['senseApi', 'getFriendItems', address, id],
     queryFn: async () => {
       return senseApi!.getFriendItems(id!);
@@ -71,22 +70,17 @@ function useSenseItem({ id }: Props) {
   console.log('entryType', entryType);
   console.log('isParticle', isParticle);
   console.log('isChat', isChatEntry);
-  console.log('----getTxsQuery', getTxsQuery);
+  // console.log('----getTxsQuery', getTxsQuery);
   console.log('----getLinks', getLinksQuery);
   console.log('----getChatQuery', getChatQuery);
 
   return {
-    data: (getTxsQuery.data || getLinksQuery.data || getChatQuery.data) as
+    data: (getLinksQuery.data || getChatQuery.data) as
       | TransactionDbEntity[]
       | LinkDbEntity[],
-    loading:
-      !!id &&
-      (getTxsQuery.isFetching ||
-        getLinksQuery.isFetching ||
-        getChatQuery.isFetching),
-    error: (getTxsQuery.error || getLinksQuery.error) as Error | undefined,
-    refetch:
-      getTxsQuery.refetch || getLinksQuery.refetch || getChatQuery.refetch,
+    loading: !!id && (getLinksQuery.isFetching || getChatQuery.isFetching),
+    error: getLinksQuery.error as Error | undefined,
+    refetch: getLinksQuery.refetch || getChatQuery.refetch,
   };
 }
 

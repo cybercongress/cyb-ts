@@ -3,13 +3,15 @@ import SenseViewer from 'src/pages/robot/Sense/SenseViewer/SenseViewer';
 import SenseList from 'src/pages/robot/Sense/SenseList/SenseList';
 import styles from './Sense.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
-import { useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import useSenseItem from './_refactor/useSenseItem';
 import { useQuery } from '@tanstack/react-query';
 import { useBackend } from 'src/contexts/backend';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { getSenseChat, getSenseList } from 'src/features/sense/sense.redux';
+import { useDispatch } from 'react-redux';
 
 export type AdviserProps = {
   adviser: {
@@ -28,19 +30,33 @@ function Sense() {
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
 
-  const address = useAppSelector(selectCurrentAddress);
+  // const address = useAppSelector(selectCurrentAddress);
+  // const senseList = useAppSelector((store) => {
+  //   return store.sense2.list;
+  // });
   const { senseApi } = useBackend();
+
+  // console.log(senseList);
 
   const senseById = useSenseItem({ id: selected });
 
-  const senseList = useQuery({
-    queryKey: ['senseApi', 'getList', address],
-    queryFn: async () => {
-      return senseApi!.getList();
-    },
-    enabled: Boolean(senseApi && address),
-    refetchInterval: REFETCH_INTERVAL,
-  });
+  // const senseList = useQuery({
+  //   queryKey: ['senseApi', 'getList', address],
+  //   queryFn: async () => {
+  //     return senseApi!.getList();
+  //   },
+  //   enabled: Boolean(senseApi && address),
+  //   refetchInterval: REFETCH_INTERVAL,
+  // });
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (!senseApi) {
+      return;
+    }
+
+    dispatch(getSenseList(senseApi));
+  }, [senseApi, dispatch]);
 
   const senseBackendIsLoading = useAppSelector((state) => {
     const { entryStatus } = state.backend.syncState;
@@ -88,13 +104,19 @@ function Sense() {
     }
 
     setTimeout(() => {
-      senseList.refetch();
+      dispatch(
+        getSenseChat({
+          id: selected,
+          senseApi,
+        })
+      );
     }, 300);
-  }, [senseList, selected]);
+  }, [dispatch, selected, senseApi]);
 
   function update() {
-    senseList.refetch();
-    senseById.refetch();
+    // senseList.refetch();
+    return;
+    // senseById.refetch();
   }
 
   return (
@@ -104,16 +126,8 @@ function Sense() {
           select={(id: string) => setSelected(id)}
           selected={selected}
           adviser={adviserProps}
-          senseList={{
-            data: senseList.data,
-            isLoading: senseList.isLoading,
-          }}
         />
-        <SenseViewer
-          selected={selected}
-          adviser={adviserProps}
-          senseById={senseById}
-        />
+        <SenseViewer selected={selected} adviser={adviserProps} />
       </div>
 
       <ActionBar id={selected} adviser={adviserProps} update={update} />

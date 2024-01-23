@@ -10,14 +10,12 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container.tsx';
 import { SenseListItem } from 'src/services/backend/types/sense';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useBackend } from 'src/contexts/backend';
 
 type Props = {
   select: (id: string) => void;
   selected?: string;
-  senseList: {
-    data: SenseListItem[] | undefined;
-    isLoading: boolean;
-  };
 } & AdviserProps;
 
 const mapFilterWithEntryType = {
@@ -26,8 +24,13 @@ const mapFilterWithEntryType = {
   [EntryType.particle]: Filters.Particle,
 };
 
-function SenseList({ select, selected, senseList }: Props) {
+function SenseList({ select, selected }: Props) {
   const [filter, setFilter] = useState(Filters.All);
+
+  const senseList = useAppSelector((store) => store.sense.list);
+  const { senseApi } = useBackend();
+
+  const apiLoading = !senseApi;
 
   let items = senseList.data || [];
 
@@ -37,12 +40,10 @@ function SenseList({ select, selected, senseList }: Props) {
     });
   }
 
-  console.log('----senseListItems', items);
-
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
-        {senseList.isLoading ? (
+        {senseList.isLoading || apiLoading ? (
           <div className={styles.center}>
             <Loader2 />
           </div>
@@ -58,9 +59,7 @@ function SenseList({ select, selected, senseList }: Props) {
             <ul>
               {items
                 // .slice(0, 1)
-                .map((senseListItem) => {
-                  const { id } = senseListItem;
-
+                .map((id) => {
                   return (
                     <li
                       key={id}
@@ -74,7 +73,7 @@ function SenseList({ select, selected, senseList }: Props) {
                           select(id);
                         }}
                       >
-                        <SenseListItemContainer senseListItem={senseListItem} />
+                        <SenseListItemContainer id={id} />
                       </button>
                     </li>
                   );

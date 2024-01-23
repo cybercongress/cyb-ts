@@ -49,11 +49,15 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
 
   const isParticle = isParticleFunc(selected || '');
 
+  const chat = useAppSelector((store) => {
+    return selected && store.sense.chats[selected];
+  });
+
   const { data: particleData } = useParticleDetails(selected!, {
     skip: !isParticle && !selected,
   });
 
-  const { error, loading, data } = senseById;
+  const { error, isLoading: loading, data } = chat || {};
 
   const text = particleData?.text;
 
@@ -86,11 +90,11 @@ function SenseViewer({ selected, adviser, senseById }: Props) {
   }, [loading, adviser]);
 
   useEffect(() => {
-    adviser.setError(error?.message || '');
+    adviser.setError(error || '');
   }, [error, adviser]);
 
   // useMemo
-  const items = [...(data || [])].reverse().slice(0, 100);
+  const items = [...(data || [])].slice(0, 100);
 
   console.log(loading, 'loading');
   console.log(data);

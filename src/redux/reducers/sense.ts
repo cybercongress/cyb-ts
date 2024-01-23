@@ -5,10 +5,13 @@ import { SenseListItem } from 'src/services/backend/types/sense';
 
 type SenseState = {
   list: { [key in ParticleCid | NeuronAddress]?: SenseListItem };
+  // isLoading: boolean;
 };
 
 const initialState: SenseState = {
   list: {},
+  // list,
+  // isLoading: false,
 };
 
 function senseReducer(state = initialState, action: BroadcastChannelMessage) {
@@ -18,6 +21,7 @@ function senseReducer(state = initialState, action: BroadcastChannelMessage) {
       action.list.forEach((item) => {
         newList[item.id] = item;
       });
+      //  TODO: isLoading
       return { ...state, list: newList };
     }
     case 'sense_list_remove': {
