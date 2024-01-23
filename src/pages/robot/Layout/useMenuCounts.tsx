@@ -17,7 +17,7 @@ import {
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 import { useRobotContext } from '../robot.context';
-import useSenseSummary from '../Sense/useSenseSummary';
+import useSenseSummary from '../../../features/sense/ui/useSenseSummary';
 
 function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();

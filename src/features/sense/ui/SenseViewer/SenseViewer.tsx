@@ -14,7 +14,7 @@ import useParticleDetails from '../_refactor/useParticleDetails';
 import { isParticle as isParticleFunc } from 'src/features/particles/utils';
 import { AdviserProps } from '../Sense';
 import MessageContainer from './Message/Message.container';
-import { markAsRead } from 'src/features/sense/sense.redux';
+import { markAsRead } from 'src/features/sense/redux/sense.redux';
 
 type Props = {
   selected: string | undefined;

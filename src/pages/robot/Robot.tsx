@@ -12,9 +12,9 @@ import RoutedEnergy from '../../containers/energy/index';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 import ZeroUser from './ZeroUser/ZeroUser';
 import RobotContextProvider, { useRobotContext } from './robot.context';
-import Sense from './Sense/Sense';
 import Brain from './Brain/Brain';
 import Karma from './Karma/Karma';
+import SensePage from './SensePage';
 
 function RobotRoutes() {
   const { isOwner, isLoading, address } = useRobotContext();
@@ -33,7 +33,7 @@ function RobotRoutes() {
         <Route path="rights" element={<UnderConstruction />} />
 
         <Route path="sense-old" element={<Taverna />} />
-        <Route path="sense" element={<Sense />} />
+        <Route path="sense" element={<SensePage />} />
         <Route
           path="drive"
           element={isOwner ? <IpfsSettings /> : <UnderConstruction />}

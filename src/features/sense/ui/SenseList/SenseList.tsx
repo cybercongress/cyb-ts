@@ -7,7 +7,7 @@ import cx from 'classnames';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { AdviserProps } from '../Sense';
-import SenseListItemContainer from './SenseListItem/SenseListItem.container.tsx';
+import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 import { useAppSelector } from 'src/redux/hooks';
 import { useBackend } from 'src/contexts/backend';
 import { isParticle } from 'src/features/particles/utils';

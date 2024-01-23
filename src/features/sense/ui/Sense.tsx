@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import SenseViewer from 'src/pages/robot/Sense/SenseViewer/SenseViewer';
-import SenseList from 'src/pages/robot/Sense/SenseList/SenseList';
+import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
+import SenseList from 'src/features/sense/ui/SenseList/SenseList';
 import styles from './Sense.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import useSenseItem from './_refactor/useSenseItem';
-import { useQuery } from '@tanstack/react-query';
 import { useBackend } from 'src/contexts/backend';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { getSenseChat, getSenseList } from 'src/features/sense/sense.redux';
-import { useDispatch } from 'react-redux';
+import {
+  getSenseChat,
+  getSenseList,
+} from 'src/features/sense/redux/sense.redux';
 
 export type AdviserProps = {
   adviser: {

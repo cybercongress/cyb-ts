@@ -12,7 +12,7 @@ import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import { Dots } from 'src/components';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import { SenseItem } from 'src/features/sense/sense.redux';
+import { SenseItem } from 'src/features/sense/redux/sense.redux';
 import { SenseMetaType } from 'src/services/backend/types/sense';
 
 type Props = {

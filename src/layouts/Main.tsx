@@ -9,7 +9,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import styles from './Main.module.scss';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import SenseButton from '../pages/robot/Sense/SenseButton/SenseButton';
+import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);

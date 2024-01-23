@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { NeuronAddress } from 'src/types/base';
 import { SenseApi } from 'src/contexts/backend';
 import { SenseListItem, SenseMetaType } from 'src/services/backend/types/sense';
-import { isParticle } from '../particles/utils';
+import { isParticle } from '../../particles/utils';
 
 type SenseChatId = NeuronAddress | string;
 
