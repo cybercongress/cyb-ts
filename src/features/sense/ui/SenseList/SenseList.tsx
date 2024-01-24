@@ -10,7 +10,7 @@ import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 import { useAppSelector } from 'src/redux/hooks';
 import { useBackend } from 'src/contexts/backend';
-import { isParticle } from 'src/features/particles/utils';
+import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
   select: (id: string) => void;

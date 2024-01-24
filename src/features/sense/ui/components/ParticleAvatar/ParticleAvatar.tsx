@@ -1,5 +1,5 @@
 import styles from './ParticleAvatar.module.scss';
-import useParticleDetails from '../../_refactor/useParticleDetails';
+import useParticleDetails from '../../../../particle/useParticleDetails';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 import { Dots } from 'src/components';
 

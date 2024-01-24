@@ -38,7 +38,7 @@ function Sense() {
 
   // console.log(senseList);
 
-  const senseById = useSenseItem({ id: selected });
+  // const senseById = useSenseItem({ id: selected });
 
   // const senseList = useQuery({
   //   queryKey: ['senseApi', 'getList', address],

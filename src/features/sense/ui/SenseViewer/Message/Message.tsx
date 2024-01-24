@@ -3,7 +3,7 @@ import styles from './Message.module.scss';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import Date from '../../_refactor/Date/Date';
+import Date from '../../components/Date/Date';
 import cx from 'classnames';
 
 type Props = {

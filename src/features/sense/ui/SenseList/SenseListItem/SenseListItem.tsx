@@ -1,20 +1,20 @@
-import { Account } from 'src/components';
+import { Account, Tooltip } from 'src/components';
 import styles from './SenseListItem.module.scss';
 
 import Pill from 'src/components/Pill/Pill';
-import Date from '../../_refactor/Date/Date';
+import Date from '../../components/Date/Date';
 import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
-import { isParticle as isParticleFunc } from 'src/features/particles/utils';
-import useParticleDetails from '../../_refactor/useParticleDetails';
+import { isParticle as isParticleFunc } from 'src/features/particle/utils';
+import useParticleDetails from '../../../../particle/useParticleDetails';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 
 type Props = {
   unreadCount: number;
   address: string;
   timestamp: number;
-  value: string;
+  value: string | Element;
 
   // temp
   withAmount?: boolean;

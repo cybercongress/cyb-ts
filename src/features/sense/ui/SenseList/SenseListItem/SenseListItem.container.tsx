@@ -2,12 +2,13 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import { CoinAmount, CoinAction } from '../../SenseViewer/Message/Message';
 
 import { SenseListItem as SenseListItemType } from 'src/services/backend/types/sense';
-import useParticleDetails from '../../_refactor/useParticleDetails';
+import useParticleDetails from '../../../../particle/useParticleDetails';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 import { Dots } from 'src/components';
 import SenseListItem from './SenseListItem';
+import { formatSenseItemDataToUI } from '../../utils/format';
 
 type Props = {
   senseListItem: SenseListItemType;
@@ -24,56 +25,29 @@ function SenseListItemContainer({ id: senseId }: Props) {
       unreadCount: chat.unreadCount,
     };
   });
-  const { entryType, meta, memo, timestamp } = senseData;
-  const id = senseId;
-
   const address = useAppSelector(selectCurrentAddress);
 
-  let text = memo;
-  let amount;
-  let isAmountSend = false;
-  let cidText;
+  const { timestamp, amount, cid, text, amountSendDirection } =
+    formatSenseItemDataToUI(senseData, address);
 
-  switch (entryType) {
-    case EntryType.particle:
-      text = meta.id?.text;
-      break;
-    case EntryType.chat:
-      text = meta.memo || meta.lastId?.text;
-      amount = meta.amount ? Object.values(meta.amount) : undefined;
-      isAmountSend = meta.direction === 'to';
-      // amount = meta.amount;
-      // isAmountSend = meta.direction === 'to';
-      break;
-    case EntryType.transactions:
-      text = meta.memo;
+  console.log(
+    'SenseListItemContainer',
+    senseData,
+    senseId,
+    timestamp,
+    amount,
+    cid,
+    text,
+    amountSendDirection
+  );
 
-      if (meta.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-        amount = meta.value.outputs.find(
-          (output) => output.address === id
-        )?.coins;
-        break;
-      }
-
-      if (meta.type === 'cyber.graph.v1beta1.MsgCyberlink') {
-        cidText = meta.value.links[0].to;
-      }
-
-      amount = meta.value.amount;
-      isAmountSend = meta.value.from_address === address;
-      break;
-
-    default:
-      break;
-  }
-
-  const { data, loading } = useParticleDetails(cidText, {
-    skip: !cidText,
+  const { data, loading } = useParticleDetails(cid!, {
+    skip: Boolean(text && !cid),
   });
 
   let content;
 
-  if (cidText) {
+  if (cid) {
     content = (
       <>
         {loading ? (
@@ -101,7 +75,11 @@ function SenseListItemContainer({ id: senseId }: Props) {
             <CoinAmount
               amount={amount}
               denom={denom}
-              type={isAmountSend ? CoinAction.send : CoinAction.receive}
+              type={
+                amountSendDirection === 'from'
+                  ? CoinAction.send
+                  : CoinAction.receive
+              }
             />
           );
         })}
@@ -113,11 +91,10 @@ function SenseListItemContainer({ id: senseId }: Props) {
 
   return (
     <SenseListItem
-      address={id}
+      address={senseId}
       timestamp={timestamp}
       unreadCount={unreadCount}
       value={content}
-      cidText={cidText}
       withAmount={withAmount}
     />
   );
