@@ -64,6 +64,7 @@ function MessageContainer({ senseItem }: Props) {
         amount,
         isAmountSend: amountSendDirection === 'from',
       }}
+      status={senseItem.status}
       date={timestamp}
     />
   );

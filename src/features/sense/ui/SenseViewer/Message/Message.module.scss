@@ -41,6 +41,12 @@
     color: var(--green-light);
     margin-right: 6px;
 
+    &.status_ {
+      &pending {
+        color: yellow;
+      }
+    }
+
     &:hover {
       color: var(--primary-color);
     }

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NeuronAddress } from 'src/types/base';
 import { SenseApi } from 'src/contexts/backend';
 import { SenseListItem, SenseMetaType } from 'src/services/backend/types/sense';
@@ -12,6 +12,8 @@ export type SenseItem = {
   meta: SenseListItem['meta'];
   timestamp: string;
   itemType: SenseMetaType;
+  memo: string | undefined;
+  status?: 'pending' | 'error';
 };
 
 type Chat = {
@@ -98,7 +100,46 @@ const markAsRead = createAsyncThunk(
 const slice = createSlice({
   name: 'sense',
   initialState,
-  reducers: {},
+  reducers: {
+    addSenseItem(
+      state,
+      action: PayloadAction<{ id: SenseChatId; item: SenseItem }>
+    ) {
+      const { id, item } = action.payload;
+      const chat = state.chats[id]!;
+
+      chat.data.push({
+        ...item,
+        value: item.meta,
+        status: 'pending',
+      });
+
+      const newList = state.list.data.filter((item) => item !== id);
+      newList.unshift(id);
+      state.list.data = newList;
+    },
+
+    updateSenseItem(
+      state,
+      action: PayloadAction<{
+        chatId: SenseChatId;
+        txHash: string;
+        isSuccess: boolean;
+      }>
+    ) {
+      const { chatId, txHash, isSuccess } = action.payload;
+      const chat = state.chats[chatId]!;
+
+      const item = chat.data.find((item) => item.hash === txHash);
+      if (item) {
+        if (isSuccess) {
+          delete item.status;
+        } else {
+          item.status = 'error';
+        }
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getSenseList.pending, (state) => {
       state.list.isLoading = true;
@@ -107,12 +148,13 @@ const slice = createSlice({
     builder.addCase(getSenseList.fulfilled, (state, action) => {
       state.list.isLoading = false;
 
+      const newList: SliceState['list']['data'] = [];
       action.payload.forEach((item) => {
         const { id } = item;
 
-        if (state.list.data.includes(id)) {
-          return;
-        }
+        // if (state.list.data.includes(id)) {
+        //   return;
+        // }
 
         state.chats[id] = {
           id,
@@ -122,8 +164,10 @@ const slice = createSlice({
           unreadCount: item.unreadCount,
         };
 
-        state.list.data.push(id);
+        newList.push(id);
       });
+
+      state.list.data = newList;
     });
     builder.addCase(getSenseList.rejected, (state, action) => {
       console.error(action);
@@ -163,7 +207,7 @@ const slice = createSlice({
   },
 });
 
-// export const {} = slice.actions;
+export const { addSenseItem, updateSenseItem } = slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
 

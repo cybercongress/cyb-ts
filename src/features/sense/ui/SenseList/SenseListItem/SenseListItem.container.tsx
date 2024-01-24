@@ -96,6 +96,7 @@ function SenseListItemContainer({ id: senseId }: Props) {
       unreadCount={unreadCount}
       value={content}
       withAmount={withAmount}
+      status={senseData.status}
     />
   );
 }

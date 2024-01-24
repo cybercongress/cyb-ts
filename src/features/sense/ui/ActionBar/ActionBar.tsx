@@ -1,15 +1,17 @@
-import { ActionBar, Input, InputNumber } from 'src/components';
+import { ActionBar, Button, Input, InputNumber } from 'src/components';
 import { routes } from 'src/routes';
 import { isBostromAddress } from '../utils';
 import { log } from 'tone/build/esm/core/util/Debug';
 import { useEffect, useState } from 'react';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { AdviserProps } from '../Sense';
 import { CYBER } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
+import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
+import { SenseMetaType } from 'src/services/backend/types/sense';
 
 type Props = {
   id: string | undefined;
@@ -29,6 +31,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   const [amount, setAmount] = useState<number>(0);
 
   const address = useAppSelector(selectCurrentAddress);
+  const dispatch = useAppDispatch();
 
   const [tx, setTx] = useState({
     hash: '',
@@ -37,20 +40,37 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
   const waitForTransaction = useWaitForTransaction(tx);
 
-  // useEffect(() => {
-  //   const {error, isLoading } = waitForTransaction;
+  useEffect(() => {
+    const { error, isLoading } = waitForTransaction;
 
-  //   adviser.setLoading(isLoading);
+    adviser.setLoading(isLoading);
 
-  //   if (error) {
-  //     adviser.setError(error);
-  //   }
+    if (error) {
+      adviser.setError(error);
 
-  // }, [waitForTransaction]);
+      if (!id || !tx.hash) {
+        return;
+      }
+
+      dispatch(
+        updateSenseItem({
+          chatId: id!,
+          txHash: tx.hash,
+          isSuccess: false,
+        })
+      );
+    }
+  }, [waitForTransaction, dispatch, adviser, id, tx.hash]);
 
   const { signingClient, signer } = useSigningClient();
 
   const signerIsReady = Boolean(signer && signingClient);
+
+  useEffect(() => {
+    setStep(STEPS.INITIAL);
+    setMessage('');
+    setAmount(0);
+  }, [id]);
 
   async function send() {
     if (!signerIsReady || !address) {
@@ -58,13 +78,15 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
     }
 
     try {
+      const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
       adviser.setLoading(true);
+
       adviser.setAdviserText('Preparing transaction...');
 
       const response = await signingClient!.sendTokens(
         address,
-        id,
-        [coin(amount || 1, CYBER.DENOM_CYBER)],
+        id!,
+        formattedAmount,
         'auto',
         message
       );
@@ -73,12 +95,42 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
         throw new Error(response.rawLog);
       }
 
+      const txHash = response.transactionHash;
+
+      dispatch(
+        addSenseItem({
+          id: id!,
+          item: {
+            memo: message,
+            meta: {
+              amount: formattedAmount,
+            },
+            itemType: SenseMetaType.send,
+            id: address,
+            address,
+            hash: txHash,
+            timestamp: Date.now(),
+          },
+        })
+      );
+
       adviser.setAdviserText('Confirming transaction...');
       setTx({
-        hash: response.transactionHash,
+        hash: txHash,
         onSuccess: () => {
-          update();
+          // update();
+
+          dispatch(
+            updateSenseItem({
+              chatId: id!,
+              txHash,
+              isSuccess: true,
+            })
+          );
+
           setStep(STEPS.INITIAL);
+          setMessage('');
+          setAmount(0);
 
           adviser.setLoading(false);
           adviser.setAdviserText('Message sent!');
@@ -132,12 +184,17 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           },
         }}
       >
-        <Input
-          isTextarea
-          onChange={(e) => setMessage(e.target.value)}
-          value={message}
-          placeholder="Message"
-        />
+        <>
+          <Input
+            isTextarea
+            autoFocus
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            placeholder="Message"
+          />
+          {/* <span>or</span> */}
+          {/* <Button link={routes.teleport.send.path}>Send tokens</Button> */}
+        </>
       </ActionBar>
     );
   }

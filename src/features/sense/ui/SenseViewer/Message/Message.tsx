@@ -5,6 +5,8 @@ import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import Date from '../../components/Date/Date';
 import cx from 'classnames';
+import { useMemo } from 'react';
+import { SenseItem } from 'src/features/sense/redux/sense.redux';
 
 type Props = {
   address: string;
@@ -15,6 +17,8 @@ type Props = {
     isAmountSend: boolean;
   };
   txHash?: string;
+  // fix
+  status: SenseItem['status'];
 };
 
 export enum CoinAction {
@@ -48,9 +52,22 @@ export function CoinAmount({
   );
 }
 
-function Message({ address, text, date, amountData, txHash }: Props) {
+function Message({ address, text, date, amountData, txHash, status }: Props) {
   // const myAddress = useAppSelector(selectCurrentAddress);
   // const myMessage = address === myAddress;
+
+  const statusText = useMemo(() => {
+    switch (status) {
+      case 'pending':
+        return '⏳';
+
+      case 'error':
+        return '❌';
+
+      default:
+        return '✔';
+    }
+  }, [status]);
 
   return (
     <div
@@ -67,13 +84,25 @@ function Message({ address, text, date, amountData, txHash }: Props) {
 
       <div className={styles.timestampBlock}>
         {txHash && (
-          <Tooltip tooltip="View tx">
+          <Tooltip
+            tooltip={(() => {
+              if (status === 'pending') {
+                return 'Tx pending - view';
+              }
+              if (status === 'error') {
+                return 'Tx error - view';
+              }
+              return 'View tx';
+            })()}
+          >
             <Link
-              className={styles.tx}
+              className={cx(styles.tx, {
+                [styles[`status_${status}`]]: status,
+              })}
               target="_blank"
               to={routes.txExplorer.getLink(txHash)}
             >
-              ✔
+              {statusText}
             </Link>
           </Tooltip>
         )}

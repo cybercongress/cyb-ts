@@ -1,7 +1,10 @@
+@import '../../../../style/mixins.scss';
+
 .wrapper {
   // Display
   > div {
-    padding-right: 5px;
+    // padding-right: 5px;
+    padding-right: 0;
     display: flex;
     flex-direction: column;
   }
@@ -39,8 +42,9 @@
   gap: 20px 0;
   padding-right: 10px;
   margin-top: auto;
-
   overflow-y: auto;
+
+  @include blueScroll;
 
   p {
     word-break: break-all;

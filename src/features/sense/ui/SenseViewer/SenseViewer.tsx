@@ -83,7 +83,7 @@ function SenseViewer({ selected, adviser }: Props) {
   }, [error, adviser]);
 
   // useMemo
-  const items = [...(data || [])].slice(0, 100);
+  const items = [...(data || [])].slice(0, 75);
 
   console.log(loading, 'loading');
   console.log(data);

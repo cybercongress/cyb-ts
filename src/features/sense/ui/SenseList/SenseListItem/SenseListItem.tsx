@@ -9,6 +9,7 @@ import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import { isParticle as isParticleFunc } from 'src/features/particle/utils';
 import useParticleDetails from '../../../../particle/useParticleDetails';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
+import { SenseItem } from 'src/features/sense/redux/sense.redux';
 
 type Props = {
   unreadCount: number;
@@ -18,6 +19,7 @@ type Props = {
 
   // temp
   withAmount?: boolean;
+  status?: SenseItem['status'];
 };
 
 function SenseListItem({
@@ -25,6 +27,7 @@ function SenseListItem({
   address,
   timestamp,
   value,
+  status,
   withAmount,
 }: Props) {
   const isParticle = address && isParticleFunc(address);
@@ -69,6 +72,19 @@ function SenseListItem({
           text={unreadCount > 99 ? '99+' : unreadCount.toString()}
         />
       )}
+      {status &&
+        (() => {
+          switch (status) {
+            case 'pending':
+              return '⏳';
+
+            case 'error':
+              return '❌';
+
+            default:
+              return null;
+          }
+        })()}
     </div>
   );
 }

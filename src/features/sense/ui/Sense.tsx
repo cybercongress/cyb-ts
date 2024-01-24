@@ -99,28 +99,26 @@ function Sense() {
   };
 
   useEffect(() => {
-    if (!selected) {
+    if (!selected || !senseApi) {
       return;
     }
 
-    setTimeout(() => {
-      dispatch(
-        getSenseChat({
-          id: selected,
-          senseApi,
-        })
-      );
-    }, 300);
-  }, [dispatch, selected, senseApi]);
-
-  function update() {
-    dispatch(getSenseList(senseApi));
     dispatch(
       getSenseChat({
         id: selected,
         senseApi,
       })
     );
+  }, [dispatch, selected, senseApi]);
+
+  function update() {
+    // dispatch(getSenseList(senseApi));
+    // dispatch(
+    //   getSenseChat({
+    //     id: selected,
+    //     senseApi,
+    //   })
+    // );
   }
 
   return (
