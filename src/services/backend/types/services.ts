@@ -8,13 +8,20 @@ export type SyncEntryName =
   | 'resolver'
   | 'tweets';
 
-export type SyncProgress = {
-  status?: 'idle' | 'in-progress' | 'error';
-  progress?: number;
-  done?: boolean;
-  error?: string;
-  message?: string;
+export type ProgressTracking = {
+  totalCount: number;
+  completeCount: number;
+  estimatedTime: number;
 };
+
+export type SyncProgress = Partial<{
+  status: 'idle' | 'in-progress' | 'error';
+  progress: ProgressTracking;
+
+  done: boolean;
+  error: string;
+  message: string;
+}>;
 
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 

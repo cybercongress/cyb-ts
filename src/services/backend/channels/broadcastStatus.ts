@@ -1,4 +1,8 @@
-import { SyncEntryName, SyncProgress } from '../types/services';
+import {
+  ProgressTracking,
+  SyncEntryName,
+  SyncProgress,
+} from '../types/services';
 import { BroadcastChannelSender } from './BroadcastChannelSender';
 
 export const broadcastStatus = (
@@ -6,10 +10,15 @@ export const broadcastStatus = (
   channelApi: BroadcastChannelSender
 ) => {
   return {
-    sendStatus: (status: SyncProgress['status'], message?: string) => {
+    sendStatus: (
+      status: SyncProgress['status'],
+      message?: string,
+      progress?: ProgressTracking
+    ) => {
       channelApi.postSyncEntryProgress(name, {
         status,
         message,
+        progress,
         done: status === 'idle' || status === 'error',
       });
     },

@@ -22,6 +22,9 @@ import {
   SenseTweetResultMeta,
 } from 'src/services/backend/types/sense';
 import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
+import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { fetchTweetsCount } from '../../../dataSource/blockchain/indexer';
 
 class SyncTweetsLoop {
   private isInitialized$: Observable<boolean>;
@@ -37,6 +40,8 @@ class SyncTweetsLoop {
   private _loop$: Observable<any> | undefined;
 
   private channelApi = new BroadcastChannelSender();
+
+  private progressTracker = new ProgressTracker();
 
   public get loop$(): Observable<any> | undefined {
     return this._loop$;
@@ -72,7 +77,7 @@ class SyncTweetsLoop {
 
         executeSequentially(
           newFriends.map(
-            (addr) => () => this.syncParticlesFrom(this.params.myAddress!, addr)
+            (addr) => () => this.syncParticles(this.params.myAddress!, addr)
           )
         );
       }
@@ -90,6 +95,7 @@ class SyncTweetsLoop {
           !!dbInstance &&
           !!syncQueueInitialized &&
           !!params.cyberLcdUrl &&
+          !!params.cyberIndexUrl &&
           !!params.myAddress
       )
     );
@@ -118,16 +124,10 @@ class SyncTweetsLoop {
 
   private async syncAll() {
     try {
+      // this.progressTracker.start();
       await executeSequentially(
         this.params.followings.map(
-          (addr) => () =>
-            this.syncParticlesFrom(this.params.myAddress!, addr, CID_TWEET)
-        )
-      );
-      await executeSequentially(
-        this.params.followings.map(
-          (addr) => () =>
-            this.syncParticlesFrom(this.params.myAddress!, addr, CID_FOLLOW)
+          (addr) => () => this.syncParticles(this.params.myAddress!, addr)
         )
       );
     } catch (err) {
@@ -136,17 +136,14 @@ class SyncTweetsLoop {
     }
   }
 
-  public async syncParticlesFrom(
-    myAddress: NeuronAddress,
-    address: NeuronAddress,
-    cid: ParticleCid // CID_TWEET, CID_FOLLOW
-  ) {
+  public async syncParticles(myAddress: NeuronAddress, address: NeuronAddress) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
         console.log(`>> ${address} tweets sync already in progress`);
         return;
       }
+
       // add to in-progress list
       this.inProgress.push(address);
 
@@ -154,17 +151,36 @@ class SyncTweetsLoop {
       const { timestampRead, unreadCount, timestampUpdate } =
         await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
 
-      const links = await fetchLinksByNeuronTimestamp(
+      const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
+
+      // const linksCount = await fetchTweetsCount(
+      //   this.params.cyberIndexUrl!,
+      //   address,
+      //   [CID_FOLLOW, CID_TWEET],
+      //   timestampFrom
+      // );
+      // if (linksCount > 0) {
+      const linksTweet = await fetchLinksByNeuronTimestamp(
         this.params.cyberLcdUrl!,
         address,
-        cid,
-        timestampUpdate + 1 // ofsset + 1 to fix milliseconds precision bug
+        CID_TWEET,
+        timestampFrom
+      );
+      const linksFollow = await fetchLinksByNeuronTimestamp(
+        this.params.cyberLcdUrl!,
+        address,
+        CID_FOLLOW,
+        timestampFrom
       );
 
-      const lastParticle = links.at(0);
+      const links = [...linksFollow, ...linksTweet].sort(
+        (a, b) => a.timestamp - b.timestamp
+      );
+
+      const lastLink = links.at(0);
       const unreadItemsCount = unreadCount + links.length;
 
-      if (lastParticle) {
+      if (lastLink) {
         await this.db!.putCyberlinks(links);
 
         const particles = links.map((t) => t.to);
@@ -178,15 +194,18 @@ class SyncTweetsLoop {
           ownerId: myAddress,
           entryType: EntryType.chat,
           id: address,
-          timestampUpdate: lastParticle.timestamp,
+          timestampUpdate: lastLink.timestamp,
           unreadCount: unreadItemsCount,
           timestampRead,
           disabled: false,
-          lastId: lastParticle.transaction_hash,
+          lastId: lastLink.transaction_hash,
           meta: {
-            metaType: SenseMetaType.tweet,
-            from: { cid },
-            to: { cid: lastParticle.to, text: '', mime: '' },
+            metaType:
+              lastLink.from === CID_TWEET
+                ? SenseMetaType.tweet
+                : SenseMetaType.follow,
+            from: { cid: lastLink.from },
+            to: { cid: lastLink.to },
           } as SenseTweetResultMeta,
         };
         // Update transaction
@@ -196,6 +215,7 @@ class SyncTweetsLoop {
           syncUpdates.push(newSyncItem);
         }
       }
+      // }
     } finally {
       this.channelApi.postSenseUpdate(syncUpdates);
       this.inProgress = this.inProgress.filter((addr) => addr !== address);

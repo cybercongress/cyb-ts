@@ -11,6 +11,14 @@ type TransactionsByAddressResponse = {
   messages_by_address: Transaction[];
 };
 
+type CyberlinksCountResponse = {
+  cyberlinks_aggregate: {
+    aggregate: {
+      count: number;
+    };
+  };
+};
+
 type CyberlinksSyncStatsResponse = {
   cyberlinks_aggregate: {
     aggregate: {
@@ -86,6 +94,22 @@ const cyberlinksSyncStats = gql(`
     }
   }
 `);
+
+const cyberlinksCountByNeuron = gql(`
+  query MyQuery($address: String, $particles_from: [String!], $timestamp: timestamp) {
+    cyberlinks_aggregate(where: {
+        _and: [
+          { neuron: {_eq: $address}},
+          { particle_from: {_in: $particles_from}},
+          { timestamp: {_gt: $timestamp}}
+        ]
+      }) {
+      aggregate {
+        count
+      }
+    }
+  }
+  `);
 
 const fetchTransactions = async (
   cyberIndexUrl: string,
@@ -259,9 +283,38 @@ const fetchCyberlinkSyncStats = async (
   };
 };
 
+const fetchTweetsCount = async (
+  cyberIndexUrl: string,
+  address: NeuronAddress,
+  particlesFrom: ParticleCid[],
+  timestampFrom: number
+) => {
+  try {
+    const res = await request<CyberlinksCountResponse>(
+      cyberIndexUrl,
+      cyberlinksCountByNeuron,
+      {
+        address,
+        particles_from: particlesFrom,
+        timestamp: numberToDate(timestampFrom),
+      }
+    );
+    console.log(
+      '--- fetchTweetsCount:',
+      res?.cyberlinks_aggregate.aggregate.count
+    );
+
+    return res?.cyberlinks_aggregate.aggregate.count;
+  } catch (e) {
+    console.log('--- fetfetchTweetsCountchTransactions:', e);
+    return -1;
+  }
+};
+
 export {
   fetchTransactionsIterable,
   fetchTransactions,
   fetchCyberlinksIterable,
   fetchCyberlinkSyncStats,
+  fetchTweetsCount,
 };
