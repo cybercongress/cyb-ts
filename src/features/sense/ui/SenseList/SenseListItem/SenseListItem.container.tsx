@@ -1,7 +1,3 @@
-import { EntryType } from 'src/services/CozoDb/types/entities';
-import { CoinAmount, CoinAction } from '../../SenseViewer/Message/Message';
-
-import { SenseListItem as SenseListItemType } from 'src/services/backend/types/sense';
 import useParticleDetails from '../../../../particle/useParticleDetails';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
@@ -9,14 +5,18 @@ import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 import { Dots } from 'src/components';
 import SenseListItem from './SenseListItem';
 import { formatSenseItemDataToUI } from '../../utils/format';
+import { SenseItemId } from 'src/features/sense/types/sense';
+import CoinsAmount, {
+  CoinAction,
+} from '../../components/CoinAmount/CoinAmount';
 
 type Props = {
-  senseListItem: SenseListItemType;
+  senseItemId: SenseItemId;
 };
 
-function SenseListItemContainer({ id: senseId }: Props) {
+function SenseListItemContainer({ senseItemId }: Props) {
   const { senseData, unreadCount } = useAppSelector((store) => {
-    const chat = store.sense.chats[senseId]!;
+    const chat = store.sense.chats[senseItemId]!;
 
     const lastMsg = chat.data[chat.data.length - 1];
 
@@ -29,17 +29,6 @@ function SenseListItemContainer({ id: senseId }: Props) {
 
   const { timestamp, amount, cid, text, amountSendDirection } =
     formatSenseItemDataToUI(senseData, address);
-
-  console.log(
-    'SenseListItemContainer',
-    senseData,
-    senseId,
-    timestamp,
-    amount,
-    cid,
-    text,
-    amountSendDirection
-  );
 
   const { data, loading } = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
@@ -66,23 +55,17 @@ function SenseListItemContainer({ id: senseId }: Props) {
     content = (
       <>
         <span>{text}</span>
-        {amount?.map(({ amount, denom }) => {
-          if (denom === 'boot' && amount === '1') {
-            return null;
-          }
 
-          return (
-            <CoinAmount
-              amount={amount}
-              denom={denom}
-              type={
-                amountSendDirection === 'from'
-                  ? CoinAction.send
-                  : CoinAction.receive
-              }
-            />
-          );
-        })}
+        {amount && (
+          <CoinsAmount
+            amount={amount}
+            type={
+              amountSendDirection === 'from'
+                ? CoinAction.send
+                : CoinAction.receive
+            }
+          />
+        )}
       </>
     );
   }
@@ -91,7 +74,7 @@ function SenseListItemContainer({ id: senseId }: Props) {
 
   return (
     <SenseListItem
-      address={senseId}
+      address={senseItemId}
       timestamp={timestamp}
       unreadCount={unreadCount}
       value={content}

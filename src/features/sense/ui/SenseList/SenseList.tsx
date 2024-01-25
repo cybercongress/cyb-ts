@@ -38,10 +38,12 @@ function SenseList({ select, selected }: Props) {
     });
   }
 
+  console.log(items);
+
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
-        {senseList.isLoading || apiLoading ? (
+        {apiLoading || senseList.isLoading ? (
           <div className={styles.center}>
             <Loader2 />
           </div>
@@ -56,7 +58,7 @@ function SenseList({ select, selected }: Props) {
 
             <ul>
               {items
-                // .slice(0, 1)
+                // .slice(0, 4)
                 .map((id) => {
                   return (
                     <li
@@ -71,7 +73,7 @@ function SenseList({ select, selected }: Props) {
                           select(id);
                         }}
                       >
-                        <SenseListItemContainer id={id} />
+                        <SenseListItemContainer senseItemId={id} />
                       </button>
                     </li>
                   );

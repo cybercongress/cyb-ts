@@ -38,24 +38,24 @@ function SenseListItem({
         [styles.particle]: isParticle,
       })}
     >
-      {address && (
-        <div className={styles.avatar}>
-          {!isParticle ? (
-            <Account address={address} onlyAvatar avatar sizeAvatar={50} />
-          ) : (
-            <ParticleAvatar particleId={address} />
-          )}
-        </div>
-      )}
+      <div className={styles.avatar}>
+        {!isParticle ? (
+          <Account address={address} onlyAvatar avatar sizeAvatar={50} />
+        ) : (
+          <ParticleAvatar particleId={address} />
+        )}
+      </div>
 
-      {address && (
-        <h5 className={styles.title} onClickCapture={(e) => e.preventDefault()}>
-          {isParticle ? '#' : '@'}
+      <h5 className={styles.title} onClickCapture={(e) => e.preventDefault()}>
+        {!isParticle ? (
+          <>
+            @<Account address={address} />
+          </>
+        ) : (
+          <>#{cutSenseItem(address)}</>
+        )}
+      </h5>
 
-          {!isParticle && <Account address={address} />}
-          {isParticle && cutSenseItem(address)}
-        </h5>
-      )}
       <p
         className={cx(styles.text, {
           [styles.withAmount]: withAmount,

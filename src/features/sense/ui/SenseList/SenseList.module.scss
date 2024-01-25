@@ -48,6 +48,10 @@
 }
 
 .item {
+  > button {
+    width: 100%;
+  }
+
   &.selected,
   &:hover {
     @include tableHover;
