@@ -21,7 +21,7 @@ export function formatSenseItemDataToUI(
   cid: string | undefined;
   hash: string;
 } {
-  const { timestamp, itemType, id, value, memo, meta } = senseItem;
+  const { timestamp, itemType, id, memo, meta } = senseItem;
 
   let from;
   let text = memo;
@@ -32,7 +32,7 @@ export function formatSenseItemDataToUI(
 
   switch (itemType) {
     case SenseMetaType.send: {
-      const v = value as MsgSendTransaction['value'];
+      const v = meta as MsgSendTransaction['value'];
 
       from = v?.from_address || id;
 
@@ -45,7 +45,7 @@ export function formatSenseItemDataToUI(
       isAmountSend = from === currentAddress;
 
       if (senseItem.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-        const v = value as MsgMultiSendTransaction['value'];
+        const v = meta as MsgMultiSendTransaction['value'];
 
         from = v.inputs[0].address;
         amount = v.outputs.find(
@@ -89,7 +89,6 @@ export function formatSenseItemDataToUI(
 
     default: {
       console.error('unknown type');
-      // debugger;
       console.log(senseItem);
     }
   }

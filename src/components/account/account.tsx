@@ -42,7 +42,7 @@ type Props = {
   onlyAvatar?: boolean;
   avatar?: boolean;
   margin?: string;
-  sizeAvatar?: string;
+  sizeAvatar?: string | number;
   styleUser?: object;
   trimAddressParam?: [number, number];
   disabled?: boolean;

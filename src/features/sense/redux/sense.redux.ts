@@ -1,23 +1,24 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NeuronAddress } from 'src/types/base';
 import { SenseApi } from 'src/contexts/backend';
 import { SenseListItem, SenseMetaType } from 'src/services/backend/types/sense';
 import { isParticle } from '../../particle/utils';
-
-type SenseChatId = NeuronAddress | string;
+import { SenseItemId } from '../types/sense';
 
 export type SenseItem = {
-  id: string;
+  id: SenseItemId;
   hash: string;
+  itemType: SenseMetaType;
   meta: SenseListItem['meta'];
   timestamp: string;
-  itemType: SenseMetaType;
   memo: string | undefined;
+  from: string;
+
+  // for optimistic update
   status?: 'pending' | 'error';
 };
 
 type Chat = {
-  id: SenseChatId;
+  id: SenseItemId;
   isLoading: boolean;
   error: string | undefined;
   data: SenseItem[];
@@ -31,7 +32,7 @@ type SliceState = {
     error: string | undefined;
   };
   chats: {
-    [key in SenseChatId]?: Chat;
+    [key in SenseItemId]?: Chat;
   };
   // summary: {};
 };
@@ -43,48 +44,54 @@ const initialState: SliceState = {
     error: undefined,
   },
   chats: {},
-  // summary: {},
 };
+
+function formatAPIChatListData(item: SenseListItem): SenseItem {
+  return {
+    ...item,
+    timestamp: item.timestampUpdate,
+    hash: item.transactionHash || item.hash || item.lastId,
+    itemType: item.meta.meta_type,
+    entryType: item.entryType,
+    meta: item.meta || item.value,
+    memo: item.meta.memo || '',
+  };
+}
 
 const getSenseList = createAsyncThunk(
   'sense/getSenseList',
   async (senseApi: SenseApi) => {
-    return (await senseApi!.getList()).map((item) => {
-      return {
-        ...item,
-        timestamp: item.timestampUpdate,
-        hash: item.lastId || item.transactionHash,
-        itemType: item.meta.meta_type,
-        value: item.meta,
-        memo: item.meta.memo || '',
-      };
-    });
+    return (await senseApi!.getList()).map(formatAPIChatListData);
   }
 );
 
 const getSenseChat = createAsyncThunk(
   'sense/getSenseChat',
-  async ({ id, senseApi }: { id: SenseChatId; senseApi: SenseApi }) => {
+  async ({ id, senseApi }: { id: SenseItemId; senseApi: SenseApi }) => {
     const particle = isParticle(id);
 
     if (particle) {
-      return (await senseApi!.getLinks(id)).map((item) => {
-        return {
-          ...item,
-          itemType: item.itemType || SenseMetaType.particle,
-          memo: item.text,
-          hash: item.hash || item.transactionHash,
-          id: {
-            text: item.text,
-          },
-        };
-      });
+      return (await senseApi!.getLinks(id))
+        .map((item) => {
+          return {
+            ...item,
+            from: item.neuron,
+            id: {
+              text: item.text,
+            },
+            hash: item.hash || item.transactionHash,
+            itemType: item.itemType || SenseMetaType.particle,
+            memo: item.text,
+          };
+        })
+        .reverse();
     }
 
     return (await senseApi!.getFriendItems(id)).map((item) => {
       return {
         ...item,
         hash: item.hash || item.transactionHash,
+        meta: item.meta || item.value,
       };
     });
   }
@@ -92,25 +99,64 @@ const getSenseChat = createAsyncThunk(
 
 const markAsRead = createAsyncThunk(
   'sense/markAsRead',
-  async ({ id, senseApi }: { id: SenseChatId; senseApi: SenseApi }) => {
+  async ({ id, senseApi }: { id: SenseItemId; senseApi: SenseApi }) => {
     return senseApi!.markAsRead(id);
   }
 );
+
+const newChatStructure: Chat = {
+  id: '',
+  isLoading: false,
+  data: [],
+  error: undefined,
+  unreadCount: 0,
+};
 
 const slice = createSlice({
   name: 'sense',
   initialState,
   reducers: {
+    updateSenseList(state, action: PayloadAction<SenseListItem[]>) {
+      const data = action.payload;
+
+      const newList: SliceState['list']['data'] = [];
+
+      data.forEach((item) => {
+        const { id } = item;
+
+        // TODO: remove
+        if (newList.includes(id)) {
+          return;
+        }
+
+        if (!state.chats[id]) {
+          state.chats[id] = newChatStructure;
+        }
+
+        const chat = state.chats[id]!;
+
+        chat.id = id;
+        chat.unreadCount = item.unreadCount;
+
+        // TODO: check if message already exists
+        chat.data = [...chat.data, formatAPIChatListData(item)];
+
+        newList.push(id);
+      });
+
+      state.list.data = newList;
+    },
+
     addSenseItem(
       state,
-      action: PayloadAction<{ id: SenseChatId; item: SenseItem }>
+      action: PayloadAction<{ id: SenseItemId; item: SenseItem }>
     ) {
       const { id, item } = action.payload;
       const chat = state.chats[id]!;
 
       chat.data.push({
         ...item,
-        value: item.meta,
+        meta: item.meta,
         status: 'pending',
       });
 
@@ -122,7 +168,7 @@ const slice = createSlice({
     updateSenseItem(
       state,
       action: PayloadAction<{
-        chatId: SenseChatId;
+        chatId: SenseItemId;
         txHash: string;
         isSuccess: boolean;
       }>
@@ -152,9 +198,10 @@ const slice = createSlice({
       action.payload.forEach((item) => {
         const { id } = item;
 
-        // if (state.list.data.includes(id)) {
-        //   return;
-        // }
+        // TODO: remove
+        if (newList.includes(id)) {
+          return;
+        }
 
         state.chats[id] = {
           id,
@@ -207,7 +254,7 @@ const slice = createSlice({
   },
 });
 
-export const { addSenseItem, updateSenseItem } = slice.actions;
+export const { addSenseItem, updateSenseItem, updateSenseList } = slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
 

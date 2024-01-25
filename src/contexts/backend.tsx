@@ -19,6 +19,7 @@ import { BackgroundWorker } from 'src/services/backend/workers/background/worker
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { SenseMetaType } from 'src/services/backend/types/sense';
 import { SenseListUpdate } from 'src/services/backend/types/services';
+import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 
 const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
@@ -216,7 +217,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     if (senseApi) {
       (async () => {
         const list = await senseApi.getList();
-        dispatch({ type: 'sense_list_update', list } as SenseListUpdate);
+        dispatch(updateSenseList(list));
       })();
     }
   }, [senseApi, dispatch]);

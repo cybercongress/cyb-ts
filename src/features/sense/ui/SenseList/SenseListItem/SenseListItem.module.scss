@@ -3,12 +3,13 @@
   padding: 10px;
   padding-left: 20px;
   min-height: 62px;
-
   color: #fff;
 
   grid-template-areas:
     'avatar title date'
     'avatar text  unread';
+
+  grid-template-columns: 50px auto 1fr;
 
   gap: 3px 15px;
 
@@ -45,8 +46,7 @@
     color: white;
   }
   align-items: center;
-  overflow-x: auto;
-  width: 150px;
+  overflow-x: hidden;
 }
 
 .text {
