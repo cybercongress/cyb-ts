@@ -46,19 +46,21 @@ const initialState: SliceState = {
   // summary: {},
 };
 
+function formatAPIChatListData(item: SenseListItem): SenseItem {
+  return {
+    ...item,
+    timestamp: item.timestampUpdate,
+    hash: item.transactionHash || item.hash || item.lastId,
+    itemType: item.meta.meta_type,
+    value: item.meta,
+    memo: item.meta.memo || '',
+  };
+}
+
 const getSenseList = createAsyncThunk(
   'sense/getSenseList',
   async (senseApi: SenseApi) => {
-    return (await senseApi!.getList()).map((item) => {
-      return {
-        ...item,
-        timestamp: item.timestampUpdate,
-        hash: item.lastId || item.transactionHash,
-        itemType: item.meta.meta_type,
-        value: item.meta,
-        memo: item.meta.memo || '',
-      };
-    });
+    return (await senseApi!.getList()).map(formatAPIChatListData);
   }
 );
 
@@ -97,10 +99,44 @@ const markAsRead = createAsyncThunk(
   }
 );
 
+const newChatStructure: Chat = {
+  id: '',
+  isLoading: false,
+  error: undefined,
+  data: [],
+  unreadCount: 0,
+};
+
 const slice = createSlice({
   name: 'sense',
   initialState,
   reducers: {
+    updateSenseList(state, action: PayloadAction<SenseListItem[]>) {
+      const data = action.payload;
+
+      const newList: SliceState['list']['data'] = [];
+
+      data.forEach((item) => {
+        const { id } = item;
+
+        if (!state.chats[id]) {
+          state.chats[id] = newChatStructure;
+        }
+
+        const chat = state.chats[id]!;
+
+        chat.id = id;
+        chat.unreadCount = item.unreadCount;
+
+        // TODO: check if message already exists
+        chat.data = [...chat.data, formatAPIChatListData(item)];
+
+        newList.push(id);
+      });
+
+      state.list.data = newList;
+    },
+
     addSenseItem(
       state,
       action: PayloadAction<{ id: SenseChatId; item: SenseItem }>
@@ -151,10 +187,6 @@ const slice = createSlice({
       const newList: SliceState['list']['data'] = [];
       action.payload.forEach((item) => {
         const { id } = item;
-
-        // if (state.list.data.includes(id)) {
-        //   return;
-        // }
 
         state.chats[id] = {
           id,
@@ -207,7 +239,7 @@ const slice = createSlice({
   },
 });
 
-export const { addSenseItem, updateSenseItem } = slice.actions;
+export const { addSenseItem, updateSenseItem, updateSenseList } = slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
 

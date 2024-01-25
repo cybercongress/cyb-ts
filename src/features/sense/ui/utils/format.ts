@@ -89,7 +89,6 @@ export function formatSenseItemDataToUI(
 
     default: {
       console.error('unknown type');
-      // debugger;
       console.log(senseItem);
     }
   }
