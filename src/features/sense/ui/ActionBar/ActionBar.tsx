@@ -12,6 +12,7 @@ import { CYBER } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import { SenseMetaType } from 'src/services/backend/types/sense';
+import styles from './ActionBar.module.scss';
 
 type Props = {
   id: string | undefined;
@@ -21,7 +22,7 @@ type Props = {
 enum STEPS {
   INITIAL,
   MESSAGE,
-  // AMOUNT,
+  AMOUNT,
 }
 
 function ActionBarWrapper({ id, adviser, update }: Props) {
@@ -74,6 +75,12 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
   async function send() {
     if (!signerIsReady || !address) {
+      return;
+    }
+
+    if (!(message || amount)) {
+      adviser.setError('Message or amount is empty');
+      adviser.setAdviserText('Message or amount is empty');
       return;
     }
 
@@ -176,25 +183,18 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
         onClickBack={() => {
           setStep(STEPS.INITIAL);
         }}
-        button={{
-          text: 'Confirm',
-          onClick: () => {
-            send();
-            // setStep(STEPS.AMOUNT);
-          },
-        }}
       >
-        <>
-          <Input
-            isTextarea
-            autoFocus
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-            placeholder="Message"
-          />
-          {/* <span>or</span> */}
-          {/* <Button link={routes.teleport.send.path}>Send tokens</Button> */}
-        </>
+        <Input
+          classNameTextbox={styles.messageInput}
+          isTextarea
+          autoFocus
+          onChange={(e) => setMessage(e.target.value)}
+          value={message}
+          placeholder="Message"
+        />
+        <Button onClick={send}>Confirm</Button>
+        <span>or</span>
+        <Button onClick={() => setStep(STEPS.AMOUNT)}>Send tokens</Button>
       </ActionBar>
     );
   }
@@ -208,15 +208,16 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
         button={{
           text: 'Confirm',
           onClick: send,
-          disabled: !signerIsReady || !address,
+          disabled: !signerIsReady || !address || !(message || amount),
         }}
       >
         <InputNumber
           min={1}
-          onChange={(value) => setAmount(value || 1)}
+          onChange={(value) => setAmount(+value)}
           value={amount}
           placeholder="Amount"
         />
+        <span>🟢</span>
       </ActionBar>
     );
   }

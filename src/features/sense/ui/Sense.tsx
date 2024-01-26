@@ -6,11 +6,11 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
-import useSenseItem from './_refactor/useSenseItem';
 import { useBackend } from 'src/contexts/backend';
 import {
   getSenseChat,
   getSenseList,
+  getSenseSummary,
 } from 'src/features/sense/redux/sense.redux';
 
 export type AdviserProps = {
@@ -31,23 +31,8 @@ function Sense() {
   const [adviserText, setAdviserText] = useState('');
 
   // const address = useAppSelector(selectCurrentAddress);
-  // const senseList = useAppSelector((store) => {
-  //   return store.sense2.list;
-  // });
+
   const { senseApi } = useBackend();
-
-  // console.log(senseList);
-
-  // const senseById = useSenseItem({ id: selected });
-
-  // const senseList = useQuery({
-  //   queryKey: ['senseApi', 'getList', address],
-  //   queryFn: async () => {
-  //     return senseApi!.getList();
-  //   },
-  //   enabled: Boolean(senseApi && address),
-  //   refetchInterval: REFETCH_INTERVAL,
-  // });
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -56,6 +41,7 @@ function Sense() {
     }
 
     dispatch(getSenseList(senseApi));
+    dispatch(getSenseSummary(senseApi));
   }, [senseApi, dispatch]);
 
   const senseBackendIsLoading = useAppSelector((state) => {

@@ -2,32 +2,11 @@ import { Link } from 'react-router-dom';
 import styles from './SenseButton.module.scss';
 import { routes } from 'src/routes';
 import cx from 'classnames';
-import useSenseSummary from '../useSenseSummary';
-import { EntryType } from 'src/services/CozoDb/types/entities';
 import { Tooltip } from 'src/components';
+import { useAppSelector } from 'src/redux/hooks';
 
 function SenseButton({ className }) {
-  const { data } = useSenseSummary();
-
-  console.log('-senseSummary-', data);
-
-  let unreadParticleCount;
-  let unreadChatsCount;
-
-  data?.map(({ entryType, unreadCount }) => {
-    switch (entryType) {
-      case EntryType.particle:
-        unreadParticleCount = unreadCount;
-        break;
-
-      case EntryType.chat:
-        unreadChatsCount = unreadCount;
-        break;
-
-      default:
-        break;
-    }
-  });
+  const summary = useAppSelector((store) => store.sense.summary);
 
   return (
     <Link
@@ -35,10 +14,10 @@ function SenseButton({ className }) {
       to={routes.robot.routes.sense.path}
     >
       <Tooltip tooltip="unread chats" placement="right">
-        <span>{unreadChatsCount}</span>
+        <span>{summary.unreadCount.neurons}</span>
       </Tooltip>
       <Tooltip tooltip="cyberlinks' notifications" placement="right">
-        <span>{unreadParticleCount}</span>
+        <span>{summary.unreadCount.particles}</span>
       </Tooltip>
 
       <span>all</span>

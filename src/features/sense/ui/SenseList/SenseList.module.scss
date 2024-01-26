@@ -1,8 +1,7 @@
 @import 'src/style/mixins';
 
 .wrapper {
-  max-width: 300px;
-  min-width: 200px;
+  width: 300px;
 
   .center {
     margin: auto;
