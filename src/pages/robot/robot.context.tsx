@@ -157,9 +157,11 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       newUser &&
       location.pathname.includes(routes.robot.path) &&
       // allowed routes
-      ![routes.robot.path, routes.robot.routes.drive.path].includes(
-        location.pathname
-      )
+      ![
+        routes.robot.path,
+        routes.robot.routes.drive.path,
+        routes.robot.routes.sense.path,
+      ].includes(location.pathname)
     ) {
       navigate(routes.robot.path);
     }

@@ -3,10 +3,33 @@ import styles from './SenseButton.module.scss';
 import { routes } from 'src/routes';
 import cx from 'classnames';
 import { Tooltip } from 'src/components';
-import { useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useEffect } from 'react';
+import { getSenseSummary } from '../../redux/sense.redux';
+import { useBackend } from 'src/contexts/backend';
 
 function SenseButton({ className }) {
   const summary = useAppSelector((store) => store.sense.summary);
+
+  const dispatch = useAppDispatch();
+
+  const { senseApi } = useBackend();
+
+  useEffect(() => {
+    if (!senseApi) {
+      return;
+    }
+
+    function getSummary() {
+      dispatch(getSenseSummary(senseApi));
+    }
+
+    getSummary();
+
+    setInterval(() => {
+      getSummary();
+    }, 1000 * 30);
+  }, [dispatch, senseApi]);
 
   return (
     <Link
