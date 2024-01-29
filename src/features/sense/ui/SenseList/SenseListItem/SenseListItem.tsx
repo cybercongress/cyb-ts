@@ -1,4 +1,4 @@
-import { Account, Tooltip } from 'src/components';
+import { Account } from 'src/components';
 import styles from './SenseListItem.module.scss';
 
 import Pill from 'src/components/Pill/Pill';
@@ -7,9 +7,8 @@ import cx from 'classnames';
 import { cutSenseItem } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import { isParticle as isParticleFunc } from 'src/features/particle/utils';
-import useParticleDetails from '../../../../particle/useParticleDetails';
-import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
+import { getStatusText } from '../../utils/getStatusText';
 
 type Props = {
   unreadCount: number;
@@ -72,19 +71,7 @@ function SenseListItem({
           text={unreadCount > 99 ? '99+' : unreadCount.toString()}
         />
       )}
-      {status &&
-        (() => {
-          switch (status) {
-            case 'pending':
-              return '⏳';
-
-            case 'error':
-              return '❌';
-
-            default:
-              return null;
-          }
-        })()}
+      {status && getStatusText(status)}
     </div>
   );
 }

@@ -5,11 +5,11 @@ import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import Date from '../../components/Date/Date';
 import cx from 'classnames';
-import { useMemo } from 'react';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
 import CoinsAmount, {
   CoinAction,
 } from '../../components/CoinAmount/CoinAmount';
+import { getStatusText } from '../../utils/getStatusText';
 
 type Props = {
   address: string;
@@ -27,19 +27,6 @@ type Props = {
 function Message({ address, text, date, amountData, txHash, status }: Props) {
   // const myAddress = useAppSelector(selectCurrentAddress);
   // const myMessage = address === myAddress;
-
-  const statusText = useMemo(() => {
-    switch (status) {
-      case 'pending':
-        return '⏳';
-
-      case 'error':
-        return '❌';
-
-      default:
-        return '✔';
-    }
-  }, [status]);
 
   return (
     <div
@@ -74,7 +61,7 @@ function Message({ address, text, date, amountData, txHash, status }: Props) {
               target="_blank"
               to={routes.txExplorer.getLink(txHash)}
             >
-              {statusText}
+              {getStatusText(status) || '✔'}
             </Link>
           </Tooltip>
         )}
