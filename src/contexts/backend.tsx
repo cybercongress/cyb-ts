@@ -57,7 +57,7 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
-type SenseApi = ReturnType<typeof createSenseApi> | null;
+export type SenseApi = ReturnType<typeof createSenseApi> | null;
 
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;

@@ -38,8 +38,6 @@ function SenseList({ select, selected }: Props) {
     });
   }
 
-  console.log(items);
-
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
