@@ -19,7 +19,7 @@ describe('ProgressTracker', () => {
     for (let i = 0; i < totalRequests; i++) {
       // eslint-disable-next-line no-await-in-loop
       await sleep(100); // simulate a delay
-      progressTracker.trackProgress();
+      progressTracker.trackProgress(1);
     }
 
     expect(mockCallback).toHaveBeenCalledTimes(totalRequests);

@@ -19,6 +19,14 @@ type CyberlinksCountResponse = {
   };
 };
 
+type MessagesCountResponse = {
+  messages_by_address_aggregate: {
+    aggregate: {
+      count: number;
+    };
+  };
+};
+
 type CyberlinksSyncStatsResponse = {
   cyberlinks_aggregate: {
     aggregate: {
@@ -51,6 +59,7 @@ query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from:
     where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
     ) {
     transaction_hash
+    index
     value
     transaction {
       success
@@ -108,6 +117,18 @@ const cyberlinksCountByNeuron = gql(`
         count
       }
     }
+  }
+  `);
+
+const transactionsCountByNeuron = gql(`
+  query MyQuery($address: _text, $timestamp: timestamp) {
+    messages_by_address_aggregate(
+      args: {addresses: $address, limit: "100000000", offset: "0", types: "{}"},
+      where: {transaction: {block: {timestamp: {_gt: $timestamp}}}}) {
+        aggregate {
+          count
+        }
+      }
   }
   `);
 
@@ -283,7 +304,7 @@ const fetchCyberlinkSyncStats = async (
   };
 };
 
-const fetchTweetsCount = async (
+const fetchLinksCount = async (
   cyberIndexUrl: string,
   address: NeuronAddress,
   particlesFrom: ParticleCid[],
@@ -299,14 +320,38 @@ const fetchTweetsCount = async (
         timestamp: numberToDate(timestampFrom),
       }
     );
-    console.log(
-      '--- fetchTweetsCount:',
-      res?.cyberlinks_aggregate.aggregate.count
-    );
 
     return res?.cyberlinks_aggregate.aggregate.count;
   } catch (e) {
-    console.log('--- fetfetchTweetsCountchTransactions:', e);
+    console.log('--- fetchTweetsCount:', e);
+    return -1;
+  }
+};
+
+const fetchTransactionMessagesCount = async (
+  cyberIndexUrl: string,
+  address: NeuronAddress,
+  timestampFrom: number
+) => {
+  try {
+    const res = await request<MessagesCountResponse>(
+      cyberIndexUrl,
+      transactionsCountByNeuron,
+      {
+        address: `{${address}}`,
+        timestamp: numberToDate(timestampFrom),
+      }
+    );
+    console.log(
+      '--- fetchTransactionMessagesCount:',
+      address,
+      numberToDate(timestampFrom),
+      res?.messages_by_address_aggregate.aggregate.count
+    );
+
+    return res?.messages_by_address_aggregate.aggregate.count;
+  } catch (e) {
+    console.log('--- fetchTransactionMessagesCount:', e);
     return -1;
   }
 };
@@ -316,5 +361,6 @@ export {
   fetchTransactions,
   fetchCyberlinksIterable,
   fetchCyberlinkSyncStats,
-  fetchTweetsCount,
+  fetchLinksCount,
+  fetchTransactionMessagesCount,
 };

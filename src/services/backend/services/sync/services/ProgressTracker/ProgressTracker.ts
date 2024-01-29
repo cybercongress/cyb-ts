@@ -4,9 +4,14 @@ const ROLLING_WINDOW = 10;
 
 type onProgressUpdateFunc = (progress: ProgressTracking) => void;
 
+type RequestRecord = {
+  timestamp: number;
+  itemCount: number;
+};
+
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export class ProgressTracker {
-  private timestamps: number[] = [];
+  private requestRecords: RequestRecord[] = [];
 
   private totalRequests = 0;
 
@@ -20,60 +25,54 @@ export class ProgressTracker {
 
   public start(totalRequests: number) {
     this.totalRequests = totalRequests;
-    this.timestamps = [];
+    this.requestRecords = [];
     this.completedRequests = 0;
-
-    // add inital timestamp
-    this.addTimestamp();
   }
 
-  private addTimestamp() {
-    const now = Date.now();
-    this.timestamps.push(now);
-  }
+  public trackProgress(processedCount: number) {
+    this.addRequestRecord(processedCount);
 
-  public trackProgress() {
-    this.addTimestamp();
-
-    if (this.timestamps.length > ROLLING_WINDOW) {
-      this.timestamps.shift();
+    if (this.requestRecords.length > ROLLING_WINDOW) {
+      this.requestRecords.shift();
     }
-
-    // if (this.timestamps.length > 1) {
-    const averageTime = this.calculateAverageTime();
-    const remainingRequests = this.totalRequests - this.completedRequests;
-    const estimatedRemainingTime = averageTime * remainingRequests;
-
-    const progress = {
+    const progress: ProgressTracking = {
       totalCount: this.totalRequests,
-      completeCount: this.completedRequests + 1,
-      estimatedTime: estimatedRemainingTime,
+      completeCount: this.completedRequests,
+      estimatedTime: -1,
     };
-    // Call the callback function with the estimated remaining time
-    this.onProgressUpdate && this.onProgressUpdate(progress);
-    // }
 
-    this.completedRequests++;
+    if (this.requestRecords.length > 1) {
+      const averageTimePerItem = this.calculateAverageTimePerItem();
+      const remainingRequests = this.totalRequests - this.completedRequests;
+      const estimatedRemainingItems = remainingRequests * processedCount; // Assuming remaining requests will process the same number of items
+      const estimatedRemainingTime =
+        averageTimePerItem * estimatedRemainingItems;
+
+      this.completedRequests += processedCount;
+      progress.estimatedTime = Math.round(estimatedRemainingTime / 1000); // Convert to seconds;
+      this.onProgressUpdate && this.onProgressUpdate(progress);
+    }
 
     return progress;
   }
 
-  private calculateAverageTime(): number {
+  private addRequestRecord(itemCount: number) {
+    this.requestRecords.push({ timestamp: Date.now(), itemCount });
+  }
+
+  private calculateAverageTimePerItem(): number {
     let totalDiff = 0;
-    for (let i = 1; i < this.timestamps.length; i++) {
-      totalDiff += this.timestamps[i] - this.timestamps[i - 1];
+    let totalItems = 0;
+
+    for (let i = 1; i < this.requestRecords.length; i++) {
+      const timeDiff =
+        this.requestRecords[i].timestamp - this.requestRecords[i - 1].timestamp;
+      const { itemCount } = this.requestRecords[i];
+
+      totalDiff += timeDiff * itemCount;
+      totalItems += itemCount;
     }
-    return totalDiff / (this.timestamps.length - 1);
+
+    return totalItems === 0 ? 0 : totalDiff / totalItems;
   }
 }
-
-// Usage example (in another file)
-// import { ProgressTracker } from './progressTracker';
-
-// const onProgressUpdate = (estimatedTime: number) => {
-//     console.log(`Estimated remaining time: ${estimatedTime} seconds`);
-// };
-
-// const tracker = new ProgressTracker(1000, onProgressUpdate);
-// const requestHandler = () => tracker.handleRequest(requestHandler);
-// requestHandler();

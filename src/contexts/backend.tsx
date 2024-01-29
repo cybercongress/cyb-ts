@@ -33,12 +33,8 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
     if (!myAddress) {
       throw new Error('myAddress is not defined');
     }
-    const chats = (await dbApi.getMyChats(myAddress, userAddress)).map(
-      (item) => ({ ...item, itemType: SenseMetaType.send })
-    );
-    const links = (await dbApi.getLinks({ neuron: userAddress })).map(
-      (item) => ({ ...item, itemType: SenseMetaType.tweet })
-    );
+    const chats = await dbApi.getMyChats(myAddress, userAddress);
+    const links = await dbApi.getLinks({ neuron: userAddress });
 
     return [...chats, ...links].sort((a, b) =>
       a.timestamp > b.timestamp ? 1 : -1
@@ -61,7 +57,7 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
-export type SenseApi = ReturnType<typeof createSenseApi> | null;
+type SenseApi = ReturnType<typeof createSenseApi> | null;
 
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
@@ -247,6 +243,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       isSyncInitialized,
       ipfsError,
       myAddress,
+      senseApi,
     ]
   );
 

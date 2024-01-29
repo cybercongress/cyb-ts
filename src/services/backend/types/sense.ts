@@ -1,7 +1,5 @@
-import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-
-import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+/* eslint-disable import/no-unused-modules */
+import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
 import {
@@ -9,78 +7,48 @@ import {
   CyberLinkTransaction,
   MsgMultiSendTransaction,
 } from '../services/dataSource/blockchain/types';
-import { LinkDirection } from '../services/sync/types';
 
 export type SenseTransaction =
   | MsgSendTransaction
   | MsgMultiSendTransaction
   | CyberLinkTransaction;
 
-export type SenseChat = {
-  userAddress: NeuronAddress;
-  last: SenseMessageResultMeta;
-  transactions: TransactionDto[];
-};
-
 export type SenseUnread = {
   entryType: EntryType;
   unreadCount: number;
 };
 
-type ParticlePreResolved = { cid?: ParticleCid; text: string; mime: string };
-
 export const enum SenseMetaType {
-  follow = 3.3,
-  tweet = 3.2,
-  send = 3.1,
-  particle = 2,
+  link = 2,
   transaction = 1,
 }
 
-type SenseTweetMeta = {
-  from: Partial<ParticlePreResolved>;
-  to: ParticlePreResolved;
+export type SenseLinkMeta = {
+  from: ParticleCid;
+  to: ParticleCid;
+  neuron: NeuronAddress;
+  timestamp: number;
 };
 
-type SenseParticleMeta = {
-  direction: LinkDirection;
-};
-
-type SenseTransactionMeta = {
-  memo?: string;
+export type SenseTransactionMeta = {
+  transaction_hash: TransactionHash;
+  index: number;
 };
 
 export type SenseTransactionResultMeta = {
-  metaType: SenseMetaType.transaction;
+  timestamp: number;
+  success: boolean;
+  value: Object;
+  memo?: string;
 } & SenseTransactionMeta;
 
-export type SenseParticleResultMeta = {
-  metaType: SenseMetaType.particle;
-  id: ParticlePreResolved;
-  lastId: ParticlePreResolved;
-} & SenseParticleMeta;
+export type SenseLinkResultMeta = {
+  timestamp: number;
+} & SenseLinkMeta;
 
-export type SenseTweetResultMeta = {
-  metaType: SenseMetaType.tweet;
-} & SenseTweetMeta;
+export type SenseMeta = SenseLinkMeta | SenseTransactionMeta;
 
-export type SenseMessageResultMeta = {
-  metaType: SenseMetaType.send;
-  amount: Coin[];
-  memo?: string;
-  direction: LinkDirection;
-};
-
-export type SenseMeta =
-  | SenseParticleMeta
-  | SenseTransactionMeta
-  | SenseTweetMeta;
-
-export type SenseResultMeta =
-  | SenseParticleResultMeta
-  | SenseMessageResultMeta
-  | SenseTransactionResultMeta
-  | SenseTweetResultMeta;
+export type SenseResultMeta = SenseLinkResultMeta | SenseTransactionResultMeta;
 
 export type SenseListItem = {
   entryType: EntryType;
@@ -88,6 +56,5 @@ export type SenseListItem = {
   unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
-  lastId: NeuronAddress | ParticleCid;
   meta: SenseResultMeta;
 };

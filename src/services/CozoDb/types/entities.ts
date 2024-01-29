@@ -27,6 +27,7 @@ export type PinDbEntity = {
 
 export type TransactionDbEntity = {
   hash: string;
+  index: number;
   type: string;
   timestamp: number;
   value: SenseTransaction['value'];
@@ -43,7 +44,6 @@ export type SyncStatusDbEntity = {
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
-  last_id: TransactionHash | ParticleCid; // Transaction HASH or Particle CID
   meta: SenseMeta;
 };
 

@@ -4,29 +4,25 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { executeSequentially } from 'src/utils/async/promise';
+import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
 
 import { createLoopObservable } from '../utils/rxjs';
-import { TWEETS_SYNC_INTERVAL, TWEETS_SYNC_WARMUP } from '../consts';
+import { MY_FRIENDS_SYNC_INTERVAL, MY_FRIENDS_SYNC_WARMUP } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { fetchLinksByNeuronTimestamp } from '../../../dataSource/blockchain/lcd';
 import { SyncServiceParams } from '../../types';
-import {
-  SenseMetaType,
-  SenseTweetResultMeta,
-} from 'src/services/backend/types/sense';
-import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
-import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
-import { fetchTweetsCount } from '../../../dataSource/blockchain/indexer';
 
-class SyncTweetsLoop {
+import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
+import { fetchLinksCount } from '../../../dataSource/blockchain/indexer';
+
+class SyncMyFriendsLoop {
   private isInitialized$: Observable<boolean>;
 
   private isInitialized = false;
@@ -68,22 +64,19 @@ class SyncTweetsLoop {
     deps.params$.subscribe((params) => {
       this.params = params;
       if (this.isInitialized) {
-        // executeSequentially
-        const newFriends = params.followings
-          .map((addr) =>
-            this.params.followings.includes(addr) ? addr : undefined
-          )
-          .filter((addr) => !!addr) as NeuronAddress[];
-
-        executeSequentially(
-          newFriends.map(
-            (addr) => () => this.syncParticles(this.params.myAddress!, addr)
-          )
-        );
+        console.log('------- subscribe', params.followings);
+        // const newFriends = params.followings
+        //   .map((addr) =>
+        //     this.params.followings.includes(addr) ? addr : undefined
+        //   )
+        //   .filter((addr) => !!addr) as NeuronAddress[];
+        // executeSequentially(
+        //   newFriends.map(
+        //     (addr) => () => this.syncLinks(this.params.myAddress!, addr)
+        //   )
+        // );
       }
     });
-
-    // this.isInitialized$ = isInitialized$;
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
@@ -107,11 +100,11 @@ class SyncTweetsLoop {
 
   start() {
     this._loop$ = createLoopObservable(
-      TWEETS_SYNC_INTERVAL,
+      MY_FRIENDS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncAll())),
       () => this.statusApi.sendStatus('in-progress'),
-      TWEETS_SYNC_WARMUP
+      MY_FRIENDS_SYNC_WARMUP
     );
 
     this._loop$.subscribe({
@@ -124,10 +117,49 @@ class SyncTweetsLoop {
 
   private async syncAll() {
     try {
-      // this.progressTracker.start();
+      this.statusApi.sendStatus('in-progress', `preparing...`);
+
+      const syncItemMap = new Map(
+        (
+          await this.db?.findSyncStatus({
+            ownerId: this.params.myAddress!,
+            entryType: EntryType.chat,
+          })
+        )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
+      );
+
+      await Promise.all(
+        this.params.followings.map(async (addr) => {
+          const syncItem = syncItemMap.get(addr);
+          const newLinkCount = await fetchLinksCount(
+            this.params.cyberIndexUrl!,
+            addr,
+            [CID_FOLLOW, CID_TWEET],
+            syncItem?.timestampUpdate || 0
+          );
+
+          syncItemMap.set(addr, {
+            ...(syncItem || { id: addr }),
+            newLinkCount,
+          });
+        })
+      );
+      const itemsToSync = [...syncItemMap.values()].filter(
+        (i) => i.newLinkCount > 0
+      );
+
+      const totalCount = itemsToSync.reduce(
+        (acc, item) => acc + item.newLinkCount,
+        0
+      ); // this.progressTracker.start();
+
+      console.log('--------myfriends itemsToSync', itemsToSync, totalCount);
+
+      this.progressTracker.start(totalCount);
+
       await executeSequentially(
-        this.params.followings.map(
-          (addr) => () => this.syncParticles(this.params.myAddress!, addr)
+        itemsToSync.map(
+          (i) => () => this.syncLinks(this.params.myAddress!, i.id!)
         )
       );
     } catch (err) {
@@ -136,7 +168,7 @@ class SyncTweetsLoop {
     }
   }
 
-  public async syncParticles(myAddress: NeuronAddress, address: NeuronAddress) {
+  public async syncLinks(myAddress: NeuronAddress, address: NeuronAddress) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
@@ -147,7 +179,7 @@ class SyncTweetsLoop {
       // add to in-progress list
       this.inProgress.push(address);
 
-      this.statusApi.sendStatus('in-progress', `sync ${address}...`);
+      this.statusApi.sendStatus('in-progress', `starting sync ${address}...`);
       const { timestampRead, unreadCount, timestampUpdate } =
         await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
 
@@ -166,6 +198,7 @@ class SyncTweetsLoop {
         CID_TWEET,
         timestampFrom
       );
+
       const linksFollow = await fetchLinksByNeuronTimestamp(
         this.params.cyberLcdUrl!,
         address,
@@ -176,6 +209,15 @@ class SyncTweetsLoop {
       const links = [...linksFollow, ...linksTweet].sort(
         (a, b) => a.timestamp - b.timestamp
       );
+
+      const progress = this.progressTracker.trackProgress(links.length);
+      console.log(
+        `------- myfriends ${address} progress `,
+        progress,
+        Math.round(progress.estimatedTime / 1000)
+      );
+
+      this.statusApi.sendStatus('in-progress', `sync ${address}...`, progress);
 
       const lastLink = links.at(0);
       const unreadItemsCount = unreadCount + links.length;
@@ -189,24 +231,16 @@ class SyncTweetsLoop {
           particles,
           QueuePriority.HIGH
         );
-
+        const { timestamp } = lastLink;
         const newSyncItem = {
           ownerId: myAddress,
           entryType: EntryType.chat,
           id: address,
-          timestampUpdate: lastLink.timestamp,
+          timestampUpdate: timestamp,
           unreadCount: unreadItemsCount,
           timestampRead,
           disabled: false,
-          lastId: lastLink.transaction_hash,
-          meta: {
-            metaType:
-              lastLink.from === CID_TWEET
-                ? SenseMetaType.tweet
-                : SenseMetaType.follow,
-            from: { cid: lastLink.from },
-            to: { cid: lastLink.to },
-          } as SenseTweetResultMeta,
+          meta: lastLink,
         };
         // Update transaction
         const result = await this.db!.putSyncStatus(newSyncItem);
@@ -223,4 +257,4 @@ class SyncTweetsLoop {
   }
 }
 
-export default SyncTweetsLoop;
+export default SyncMyFriendsLoop;

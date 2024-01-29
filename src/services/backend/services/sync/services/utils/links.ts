@@ -57,6 +57,7 @@ export const fetchCyberlinksAndResolveParticles = async (
 
   return links;
 };
+
 export function extractCybelinksFromTransaction(batch: Transaction[]) {
   const cyberlinks = batch.filter(
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
@@ -64,8 +65,8 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
   const particlesFound = new Set<string>();
   const links: CyberlinkTxHash[] = [];
   // Get links: only from TWEETS
-  const tweets: Record<ParticleCid, LinkResult> = cyberlinks.reduce<
-    Record<ParticleCid, LinkResult>
+  const tweets: Record<ParticleCid, CyberlinkTxHash> = cyberlinks.reduce<
+    Record<ParticleCid, CyberlinkTxHash>
   >(
     (
       acc,
@@ -80,21 +81,16 @@ export function extractCybelinksFromTransaction(batch: Transaction[]) {
       value.links.forEach((link) => {
         particlesFound.add(link.to);
         particlesFound.add(link.from);
-
-        links.push({
+        const txLink = {
           ...link,
           timestamp: dateToNumber(timestamp),
           neuron: value.neuron,
           transaction_hash,
-        });
+        };
+        links.push(txLink);
 
         if (link.from === CID_TWEET) {
-          acc[link.to] = {
-            timestamp: dateToNumber(timestamp),
-            direction: 'from',
-            from: CID_TWEET,
-            to: link.to,
-          };
+          acc[txLink.to] = txLink;
         }
       });
       return acc;

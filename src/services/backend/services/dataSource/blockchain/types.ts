@@ -1,11 +1,11 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import { Delegation } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CyberLinkSimple, NeuronAddress } from 'src/types/base';
 
-interface GenericTransaction<T> {
+interface GenericIndexerTransaction<T> {
   value: T;
   type: string;
   transaction_hash: string;
+  index: number;
   transaction: {
     memo?: string;
     success: boolean;
@@ -56,21 +56,22 @@ export interface CyberLinkValue {
 }
 
 export interface DelegateTransaction
-  extends GenericTransaction<MsgDelegateValue> {
+  extends GenericIndexerTransaction<MsgDelegateValue> {
   type: typeof DELEGATION_TRANSACTION_TYPE;
 }
 
 export interface CyberLinkTransaction
-  extends GenericTransaction<CyberLinkValue> {
+  extends GenericIndexerTransaction<CyberLinkValue> {
   type: typeof CYBER_LINK_TRANSACTION_TYPE;
 }
 
 export interface MsgMultiSendTransaction
-  extends GenericTransaction<MsgMultiSendValue> {
+  extends GenericIndexerTransaction<MsgMultiSendValue> {
   type: typeof MSG_MULTI_SEND_TRANSACTION_TYPE;
 }
 
-export interface MsgSendTransaction extends GenericTransaction<MsgSendValue> {
+export interface MsgSendTransaction
+  extends GenericIndexerTransaction<MsgSendValue> {
   type: typeof MSG_SEND_TRANSACTION_TYPE;
 }
 

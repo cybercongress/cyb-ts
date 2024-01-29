@@ -35,6 +35,7 @@ export const mapTransactionToEntity = (
 ): TransactionDto => {
   const {
     transaction_hash,
+    index,
     transaction: {
       memo,
       block: { timestamp },
@@ -45,6 +46,7 @@ export const mapTransactionToEntity = (
   } = tx;
   return {
     hash: transaction_hash,
+    index,
     type,
     timestamp: dateToNumber(timestamp),
     // value: JSON.stringify(value),

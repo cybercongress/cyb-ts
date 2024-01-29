@@ -175,32 +175,18 @@ class DbApiWrapper {
 
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_tweets[last_id, id, meta, to] := *sync_status{entry_type,id, last_id, meta}, to =get(get(meta, 'to', json('{}')),'cid', ''), starts_with(to, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
-    p_tweets[last_id, id, meta, text, mime] :=  ss_tweets[last_id, id, meta, last_cid], *particle{cid: last_cid, text, mime}
-    p_tweets[last_id, id, meta, empty, empty] := ss_tweets[last_id, id, meta, last_cid],  not *particle{cid: last_cid, text, mime}, empty=''
+    ss_particles[id, meta] := *sync_status{entry_type,id, meta}, entry_type=${EntryType.particle}
 
-    p_tweets_meta[last_id, id, m] :=  p_tweets[last_id, id, meta, text, mime], m= concat(meta, json_object('to', json_object('text', text, 'mime', mime, 'meta_type', ${SenseMetaType.tweet})))
+    ss_chat_all[id, meta, hash, is_link] := *sync_status{entry_type, id, meta}, entry_type=${EntryType.chat}, hash=maybe_get(meta, 'transaction_hash'), is_link=!is_null(maybe_get(meta, 'to'))
+    ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link], is_link
+    ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link], !is_link, *transaction{hash, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success))
 
-    p_tweets_meta[last_id, id, m] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta}, m= concat(meta, json_object( 'meta_type', ${SenseMetaType.send})), not starts_with(last_id, 'Qm'), entry_type=${EntryType.chat}, owner_id = '${myAddress}'
-
-    ss_particles[last_id, id, meta] := *sync_status{entry_type,id, last_id, meta}, entry_type=${EntryType.particle}, owner_id = '${myAddress}'
-
-    p_last[last_id, id, meta, text, mime] := ss_particles[last_id, id, meta], *particle{cid: last_id, text, mime}
-    p_last[last_id, id, meta, empty, empty] := ss_particles[last_id, id, meta], not *particle{cid: last_id, text, mime}, empty=''
-
-    p_id[last_id, id, meta, text, mime] :=  ss_particles[last_id, id, meta], *particle{cid: id, text, mime}
-    p_id[last_id, id, meta, empty, empty] := ss_particles[last_id, id, meta], not *particle{cid: id, text, mime}, empty=''
-
-    p_last_meta[last_id, id, m] :=  p_last[last_id, id, meta, text, mime], m= concat(meta, json_object('last_id', json_object('text', text, 'mime', mime)))
-    p_all[last_id, id, m] :=  p_id[last_id, id, meta, text, mime], p_last_meta[last_id, id, meta_prev], m= concat(meta, meta_prev, json_object('id', json_object('text', text, 'mime', mime), 'meta_type', ${SenseMetaType.particle}))
-
-    ss_trans[last_id, id, m] := *sync_status{entry_type,id, last_id, meta}, entry_type=${EntryType.transactions}, *transaction{hash: last_id, value, type}, m= concat(meta, json_object('value', value, 'type', type, 'meta_type', ${SenseMetaType.transaction})), id!='${myAddress}', owner_id = '${myAddress}'
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, last_id, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, last_id}, p_all[last_id, id, meta] or ss_trans[last_id, id, meta] or p_tweets_meta[last_id, id, meta]
+    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}'
     :order -timestamp_update
     `;
 
     const result = await this.db!.runCommand(command);
-
+    // console.log('-------cmd', command, result);
     return dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
     ) as SenseListItem[];

@@ -4,6 +4,9 @@ import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
+import { CyberlinkTxHash, ParticleCid } from 'src/types/base';
+
+import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
@@ -14,13 +17,6 @@ import { PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
-import { snakeToCamel, transformToDto } from 'src/services/CozoDb/utils';
-import { dateToNumber } from 'src/utils/date';
-import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
-import {
-  SenseMetaType,
-  SenseParticleResultMeta,
-} from 'src/services/backend/types/sense';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -74,6 +70,7 @@ class SyncParticlesLoop {
   }
 
   private async syncParticles() {
+    const lastLinkTimestamps = new Map<ParticleCid, CyberlinkTxHash>();
     const syncUpdates = [];
     try {
       // fetch observable particles from db
@@ -97,7 +94,7 @@ class SyncParticlesLoop {
 
             if (links.length > 0) {
               const entities = links.map(mapLinkFromIndexerToDbEntity);
-
+              lastLinkTimestamps.set(id!, entities.at(-1)!);
               await this.db!.putCyberlinks(entities);
 
               return changeSyncStatus(syncStatus, links);
@@ -122,28 +119,33 @@ class SyncParticlesLoop {
         // eslint-disable-next-line no-await-in-loop
         const syncStatusItems = await Promise.all(
           syncUpdates.map(async (item) => {
-            const { result: particle } =
-              await this.particlesResolver!.fetchDirect(item.id);
-            const { result: lastParticle } =
-              await this.particlesResolver!.fetchDirect(item.lastId);
-
+            // const { result: particle } =
+            //   await this.particlesResolver!.fetchDirect(item.id);
+            // const { result: lastParticle } =
+            //   await this.particlesResolver!.fetchDirect(
+            //     (item.meta as SenseLinkMeta).to
+            //   );
             return {
               ...item,
-              meta: {
-                metaType: SenseMetaType.particle,
-                ...item.meta,
-                id: {
-                  cid: particle?.cid,
-                  text: particle?.textPreview,
-                  mime: particle?.meta.mime,
-                },
-                lastId: {
-                  cid: lastParticle?.cid,
-                  text: lastParticle?.textPreview,
-                  mime: lastParticle?.meta.mime,
-                },
-              } as SenseParticleResultMeta,
+              meta: { ...item.meta, ...lastLinkTimestamps.get(item.id) },
             };
+            // return {
+            //   ...item,
+            //   meta: {
+            //     metaType: SenseMetaType.particle,
+            //     ...item.meta,
+            //     id: {
+            //       cid: particle?.cid,
+            //       text: particle?.textPreview,
+            //       mime: particle?.meta.mime,
+            //     },
+            //     lastId: {
+            //       cid: lastParticle?.cid,
+            //       text: lastParticle?.textPreview,
+            //       mime: lastParticle?.meta.mime,
+            //     },
+            //   } as SenseParticleResultMeta,
+            // };
           })
         );
         this.channelApi.postSenseUpdate(syncStatusItems);

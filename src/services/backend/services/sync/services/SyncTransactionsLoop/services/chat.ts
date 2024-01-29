@@ -1,12 +1,9 @@
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { NeuronAddress } from 'src/types/base';
+import { SenseListItem } from 'src/services/backend/types/sense';
+
 import { extractSenseChats } from '../../utils/sense';
-import {
-  SenseListItem,
-  SenseMessageResultMeta,
-  SenseMetaType,
-} from 'src/services/backend/types/sense';
 
 // eslint-disable-next-line import/prefer-default-export
 export const syncMyChats = async (
@@ -21,28 +18,30 @@ export const syncMyChats = async (
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
 
   const myTransactions = await db.getTransactions(myAddress, 'asc');
-
   const myChats = extractSenseChats(myAddress, myTransactions!);
+
   const results: SenseListItem[] = [];
   myChats.forEach(async (chat) => {
     const syncItem = syncItemsMap.get(chat.userAddress);
+    const lastTransaction = chat.transactions.at(-1)!;
+    const { timestamp: lastChatTimestamp, hash } = lastTransaction;
 
-    const { hash, timestamp } = chat.transactions.at(-1)!;
-
-    const lastChatTimestamp = timestamp;
+    const syncItemHeader = {
+      entryType: EntryType.chat,
+      ownerId: myAddress,
+      meta: { transaction_hash: hash },
+      timestampUpdate: lastChatTimestamp,
+    };
 
     if (!syncItem) {
       const newItem = {
-        ownerId: myAddress,
-        entryType: EntryType.chat,
+        ...syncItemHeader,
         id: chat.userAddress,
-        timestampUpdate: lastChatTimestamp,
         unreadCount: chat.transactions.length,
         timestampRead: 0,
         disabled: false,
-        lastId: hash,
-        meta: chat.last,
       };
+
       const result = await db.putSyncStatus(newItem);
       if (result.ok) {
         results.push(newItem);
@@ -55,14 +54,9 @@ export const syncMyChats = async (
       ).length;
       if (timestampUpdate! < lastChatTimestamp) {
         const syncStatusChanges = {
-          entryType: syncItem.entryType,
-          ownerId: myAddress,
+          ...syncItemHeader,
           id: id!,
-          timestampUpdate: lastChatTimestamp,
           unreadCount,
-          meta: {
-            ...chat.last,
-          } as SenseMessageResultMeta,
         };
         const result = await db.updateSyncStatus(syncStatusChanges);
         if (result.ok) {

@@ -8,9 +8,10 @@ import {
   mapTransactionToEntity,
 } from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
-import { NeuronAddress } from 'src/types/base';
+import { CyberlinkTxHash, NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { SenseLinkResultMeta } from 'src/services/backend/types/sense';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
@@ -23,16 +24,15 @@ import { createLoopObservable } from '../utils/rxjs';
 import { MAX_PARRALEL_TRANSACTIONS, SENSE_TRANSACTIONS } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
-import { LinkResult, SyncServiceParams } from '../../types';
+import { SyncServiceParams } from '../../types';
 
-import { fetchTransactionsIterable } from '../../../dataSource/blockchain/indexer';
+import {
+  fetchTransactionMessagesCount,
+  fetchTransactionsIterable,
+} from '../../../dataSource/blockchain/indexer';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
-import {
-  SenseMetaType,
-  SenseParticleResultMeta,
-  SenseTransactionResultMeta,
-} from 'src/services/backend/types/sense';
+import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -48,6 +48,8 @@ class SyncTransactionsLoop {
   private inProgress: NeuronAddress[] = [];
 
   private _loop$: Observable<any> | undefined;
+
+  private progressTracker = new ProgressTracker();
 
   public get loop$(): Observable<any> | undefined {
     return this._loop$;
@@ -119,7 +121,7 @@ class SyncTransactionsLoop {
         this.params.myAddress!
       );
       this.statusApi.sendStatus('in-progress', `sync my chats`);
-
+      console.log('----sync chats');
       const syncStatusItems = await syncMyChats(
         this.db!,
         this.params.myAddress!
@@ -142,10 +144,9 @@ class SyncTransactionsLoop {
         console.log(`>> ${address} sync already in progress`);
         return;
       }
+
       // add to in-progress list
       this.inProgress.push(address);
-
-      this.statusApi.sendStatus('in-progress', `sync ${address}...`);
 
       const { timestampRead, unreadCount, timestampUpdate } =
         await this.db!.getSyncStatus(
@@ -154,104 +155,149 @@ class SyncTransactionsLoop {
           EntryType.transactions
         );
 
-      const transactionsAsyncIterable = fetchTransactionsIterable(
+      const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
+
+      const totalMessageCount = await fetchTransactionMessagesCount(
         this.params.cyberIndexUrl!,
-        address,
-        timestampUpdate + 1, // ofsset + 1 to fix milliseconds precision bug
-        SENSE_TRANSACTIONS
+        this.params.myAddress!,
+        timestampFrom
       );
 
-      let count = 0;
-
-      let lastTransaction: Transaction | undefined;
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const batch of transactionsAsyncIterable) {
-        console.log(
-          '--------syncTransactions start',
-          new Date().toLocaleDateString(),
-          address,
-          batch.length,
-          batch.at(0)?.transaction.block.timestamp,
-          batch
+      if (totalMessageCount > 0) {
+        this.progressTracker.start(
+          totalMessageCount // Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
         );
-        if (batch.length > 0) {
-          // pick last transaction = first item based on request orderby
-          if (!lastTransaction) {
-            lastTransaction = batch.at(0)!;
-          }
 
-          const transactions = batch.map((i) =>
-            mapTransactionToEntity(address, i)
+        this.statusApi.sendStatus(
+          'in-progress',
+          `sync ${address}...`,
+          this.progressTracker.trackProgress(0)
+        );
+
+        const transactionsAsyncIterable = fetchTransactionsIterable(
+          this.params.cyberIndexUrl!,
+          address,
+          timestampFrom,
+          [] // SENSE_TRANSACTIONS
+        );
+
+        let count = 0;
+
+        let lastTransaction: Transaction | undefined;
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const batch of transactionsAsyncIterable) {
+          console.log(
+            '--------syncTransactions start',
+            new Date().toLocaleDateString(),
+            address,
+            batch.length,
+            batch.at(0)?.transaction.block.timestamp,
+            batch
           );
-          // console.log('---syncTransactions putTransactions ', transactions);
-          count += batch.length;
-          await this.db!.putTransactions(transactions);
+          if (batch.length > 0) {
+            const progress = this.progressTracker.trackProgress(batch.length);
 
-          const { tweets, particlesFound, links } =
-            extractCybelinksFromTransaction(batch);
-
-          const tweetParticles = Object.keys(tweets);
-          this.statusApi.sendStatus(
-            'in-progress',
-            `sync ${address} batch processing - links: ${links.length}, tweets: ${tweetParticles.length}, particles: ${particlesFound.length}...`
-          );
-
-          // resolve 'tweets' particles
-          await this.particlesResolver!.enqueueBatch(
-            tweetParticles,
-            QueuePriority.HIGH
-          );
-
-          if (links.length > 0) {
-            await this.db!.putCyberlinks(links);
-          }
-          const nonTweetParticles = particlesFound.filter(
-            (cid) => !tweetParticles.includes(cid)
-          );
-
-          if (nonTweetParticles.length > 0) {
-            await this.particlesResolver!.enqueueBatch(
-              nonTweetParticles,
-              QueuePriority.LOW
+            console.log(
+              `------- ${address} trans progress `,
+              progress,
+              Math.round(progress.estimatedTime / 1000)
             );
+
+            // pick last transaction = first item based on request orderby
+            if (!lastTransaction) {
+              lastTransaction = batch.at(0)!;
+            }
+
+            const transactions = batch.map((i) =>
+              mapTransactionToEntity(address, i)
+            );
+
+            count += batch.length;
+            await this.db!.putTransactions(transactions);
+
+            const { tweets, particlesFound, links } =
+              extractCybelinksFromTransaction(batch);
+
+            if (links.length > 0) {
+              await this.db!.putCyberlinks(links);
+            }
+
+            const tweetParticles = Object.keys(tweets);
+
+            this.statusApi.sendStatus(
+              'in-progress',
+              `sync ${address} batch processing - links: ${links.length}, tweets: ${tweetParticles.length}, particles: ${particlesFound.length}...`,
+              progress
+            );
+
+            // resolve 'tweets' particles
+            await this.particlesResolver!.enqueueBatch(
+              tweetParticles,
+              QueuePriority.HIGH
+            );
+
+            const nonTweetParticles = particlesFound.filter(
+              (cid) => !tweetParticles.includes(cid)
+            );
+
+            if (nonTweetParticles.length > 0) {
+              await this.particlesResolver!.enqueueBatch(
+                nonTweetParticles,
+                QueuePriority.LOW
+              );
+            }
+
+            // add all tweets to sync status
+            await this.addTweetsToSync(tweets, myAddress);
           }
-
-          // add all tweets to sync status
-          await this.addTweetsToSync(tweets, myAddress);
         }
-      }
 
-      const unreadTransactionsCount = unreadCount + count;
+        const unreadTransactionsCount = unreadCount + count;
 
-      if (lastTransaction) {
-        // Update transaction
-        const syncItem = {
-          ownerId: myAddress,
-          entryType: EntryType.transactions,
-          id: address,
-          timestampUpdate: dateToNumber(
-            lastTransaction.transaction.block.timestamp
-          ),
-          unreadCount: unreadTransactionsCount,
-          timestampRead,
-          disabled: false,
-          lastId: lastTransaction.transaction_hash,
-          meta: {
-            memo: lastTransaction?.transaction?.memo || '',
-          },
-        };
-        const result = await this.db!.putSyncStatus(syncItem);
-        if (result.ok) {
-          this.channelApi.postSenseUpdate([
-            {
-              ...syncItem,
-              meta: {
-                metaType: SenseMetaType.transaction,
-                ...syncItem.meta,
-                value: lastTransaction.value,
-              } as SenseTransactionResultMeta,
+        if (lastTransaction) {
+          const {
+            transaction_hash,
+            index,
+            value,
+            transaction: {
+              success,
+              memo,
+              block: { timestamp },
             },
-          ]);
+          } = lastTransaction;
+
+          // Update transaction
+          const syncItem = {
+            ownerId: myAddress,
+            entryType: EntryType.transactions,
+            id: address,
+            timestampUpdate: dateToNumber(
+              lastTransaction.transaction.block.timestamp
+            ),
+            unreadCount: unreadTransactionsCount,
+            timestampRead,
+            disabled: false,
+            meta: {
+              transaction_hash,
+              index,
+            },
+          };
+
+          const result = await this.db!.putSyncStatus(syncItem);
+          if (result.ok) {
+            this.channelApi.postSenseUpdate([
+              {
+                ...syncItem,
+                meta: {
+                  ...syncItem.meta,
+                  memo: memo || '',
+                  value,
+                  timestamp: dateToNumber(timestamp),
+                  success,
+                },
+              },
+            ]);
+          }
         }
       }
     } finally {
@@ -261,7 +307,7 @@ class SyncTransactionsLoop {
   }
 
   private async addTweetsToSync(
-    tweets: Record<string, LinkResult>,
+    tweets: Record<string, CyberlinkTxHash>,
     myAddress: string
   ) {
     const tweetCids = Object.keys(tweets);
@@ -271,7 +317,7 @@ class SyncTransactionsLoop {
       // eslint-disable-next-line no-await-in-loop
       const syncStatusEntities = await Promise.all(
         batch.map(async (cid) => {
-          const { timestamp, direction, from, to } = tweets[cid];
+          const { timestamp } = tweets[cid];
 
           // Initial state
           const syncStatus = {
@@ -281,9 +327,8 @@ class SyncTransactionsLoop {
             timestampUpdate: timestamp,
             timestampRead: timestamp,
             unreadCount: 0,
-            lastId: direction === 'from' ? from : to,
             disabled: false,
-            meta: { direction },
+            meta: tweets[cid] as SenseLinkResultMeta,
           } as SyncStatusDto;
 
           const links = await fetchCyberlinksAndResolveParticles(
@@ -310,36 +355,39 @@ class SyncTransactionsLoop {
         const result = await this.db!.putSyncStatus(syncStatusEntities);
 
         if (result.ok) {
-          // eslint-disable-next-line no-await-in-loop
-          (async () => {
-            const syncStatusItems = await Promise.all(
-              syncStatusEntities.map(async (item) => {
-                const { result: particle } =
-                  await this.particlesResolver!.fetchDirect(item.id);
-                const { result: lastParticle } =
-                  await this.particlesResolver!.fetchDirect(item.lastId);
+          this.channelApi.postSenseUpdate(syncStatusEntities);
 
-                return {
-                  ...item,
-                  meta: {
-                    metaType: SenseMetaType.particle,
-                    ...item.meta,
-                    id: {
-                      cid: particle?.cid,
-                      text: particle?.textPreview,
-                      mime: particle?.meta.mime,
-                    },
-                    lastId: {
-                      cid: lastParticle?.cid,
-                      text: lastParticle?.textPreview,
-                      mime: lastParticle?.meta.mime,
-                    },
-                  } as SenseParticleResultMeta,
-                };
-              })
-            );
-            this.channelApi.postSenseUpdate(syncStatusItems);
-          })();
+          // eslint-disable-next-line no-await-in-loop, no-loop-func
+          // (async () => {
+          //   const syncStatusItems = await Promise.all(
+          //     syncStatusEntities.map(async (item) => {
+          //       // const { result: particle } =
+          //       //   await this.particlesResolver!.fetchDirect(item.id);
+          //       // const { result: lastParticle } =
+          //       //   await this.particlesResolver!.fetchDirect(
+          //       //     (item.meta as SenseLinkMeta).to
+          //       //   );
+          //       // return {
+          //       //   ...item,
+          //       //   meta: {
+          //       //     metaType: SenseMetaType.particle,
+          //       //     ...item.meta,
+          //       //     id: {
+          //       //       cid: particle?.cid,
+          //       //       text: particle?.textPreview,
+          //       //       mime: particle?.meta.mime,
+          //       //     },
+          //       //     lastId: {
+          //       //       cid: lastParticle?.cid,
+          //       //       text: lastParticle?.textPreview,
+          //       //       mime: lastParticle?.meta.mime,
+          //       //     },
+          //       //   } as SenseParticleResultMeta,
+          //       // };
+          //     })
+          //   );
+          //   this.channelApi.postSenseUpdate(syncStatusEntities);
+          // })();
         }
       }
     }

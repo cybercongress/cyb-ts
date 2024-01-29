@@ -28,6 +28,7 @@
 {
     :create transaction {
         hash: String,
+        index: Int,
         type: String =>
         success: Bool,
         timestamp: Int,
@@ -46,7 +47,6 @@
         timestamp_update: Int,
         timestamp_read: Int,
         unread_count: Int,
-        last_id: String,
         meta: Json
     }
 }

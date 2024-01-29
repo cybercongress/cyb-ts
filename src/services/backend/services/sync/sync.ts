@@ -6,13 +6,13 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 
 import ParticlesResolverQueue from './services/ParticlesResolverQueue/ParticlesResolverQueue';
 
-import SyncIpfsLoop from './services/SyncIpfsLoop/SyncIpfsLoop';
+// import SyncIpfsLoop from './services/SyncIpfsLoop/SyncIpfsLoop';
 import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactionsLoop';
 import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
 
 import { ServiceDeps } from './services/types';
 import { MY_SYNC_INTERVAL } from './services/consts';
-import SyncTweetsLoop from './services/SyncTweetsLoop/SyncTweetsLoop';
+import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
@@ -36,12 +36,12 @@ export class SyncService {
 
     const particlesResolver = new ParticlesResolverQueue(deps).start();
 
-    new SyncIpfsLoop(deps, particlesResolver).start();
+    // new SyncIpfsLoop(deps, particlesResolver).start();
 
     new SyncTransactionsLoop(deps, particlesResolver, MY_SYNC_INTERVAL).start();
 
     new SyncParticlesLoop(deps, particlesResolver).start();
 
-    new SyncTweetsLoop(deps, particlesResolver).start();
+    new SyncMyFriendsLoop(deps, particlesResolver).start();
   }
 }
