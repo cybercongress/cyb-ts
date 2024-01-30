@@ -34,8 +34,9 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
       throw new Error('myAddress is not defined');
     }
     const chats = await dbApi.getMyChats(myAddress, userAddress);
+    console.log('----getFriendItems---chats', chats);
     const links = await dbApi.getLinks({ neuron: userAddress });
-
+    console.log('-----getFriendItems--links', chats);
     return [...chats, ...links].sort((a, b) =>
       a.timestamp > b.timestamp ? 1 : -1
     );
@@ -111,6 +112,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
+
+  console.log('_------myAddress', myAddress);
 
   const followings = useAppSelector(({ currentAccount }) => {
     const { friends, following } = currentAccount.community;

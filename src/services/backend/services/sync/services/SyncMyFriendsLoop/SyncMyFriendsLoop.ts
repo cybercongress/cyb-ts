@@ -65,13 +65,16 @@ class SyncMyFriendsLoop {
       this.params = params;
       if (this.isInitialized) {
         console.log('------- subscribe', params.followings);
+
+        // start immideatelly
         const newFriends = params.followings.filter(
           (addr) => !this.params.followings.includes(addr)
         );
 
         executeSequentially(
           newFriends.map(
-            (addr) => () => this.syncLinks(this.params.myAddress!, addr)
+            (addr) => () =>
+              this.syncLinks(params.myAddress!, addr, params.cyberLcdUrl!)
           )
         );
       }
@@ -116,10 +119,11 @@ class SyncMyFriendsLoop {
 
   private async syncAll() {
     try {
+      const { myAddress, cyberIndexUrl, followings } = this.params;
       const syncItemMap = new Map(
         (
           await this.db?.findSyncStatus({
-            ownerId: this.params.myAddress!,
+            ownerId: myAddress!,
             entryType: EntryType.chat,
           })
         )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
@@ -128,10 +132,10 @@ class SyncMyFriendsLoop {
       this.statusApi.sendStatus('in-progress', `estimating...`);
 
       await Promise.all(
-        this.params.followings.map(async (addr) => {
+        followings.map(async (addr) => {
           const syncItem = syncItemMap.get(addr);
           const newLinkCount = await fetchLinksCount(
-            this.params.cyberIndexUrl!,
+            cyberIndexUrl!,
             addr,
             [CID_FOLLOW, CID_TWEET],
             syncItem?.timestampUpdate || 0
@@ -157,9 +161,7 @@ class SyncMyFriendsLoop {
       this.progressTracker.start(totalCount);
 
       await executeSequentially(
-        itemsToSync.map(
-          (i) => () => this.syncLinks(this.params.myAddress!, i.id!)
-        )
+        itemsToSync.map((i) => () => this.syncLinks(myAddress!, i.id!))
       );
     } catch (err) {
       console.error('>>> syncAllTweets', err);
@@ -167,7 +169,11 @@ class SyncMyFriendsLoop {
     }
   }
 
-  public async syncLinks(myAddress: NeuronAddress, address: NeuronAddress) {
+  public async syncLinks(
+    myAddress: NeuronAddress,
+    address: NeuronAddress,
+    cyberLcdUrl: string
+  ) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
@@ -189,14 +195,14 @@ class SyncMyFriendsLoop {
       const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
       const linksTweet = await fetchLinksByNeuronTimestamp(
-        this.params.cyberLcdUrl!,
+        cyberLcdUrl,
         address,
         CID_TWEET,
         timestampFrom
       );
 
       const linksFollow = await fetchLinksByNeuronTimestamp(
-        this.params.cyberLcdUrl!,
+        cyberLcdUrl,
         address,
         CID_FOLLOW,
         timestampFrom

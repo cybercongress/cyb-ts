@@ -73,9 +73,10 @@ class SyncParticlesLoop {
     const lastLinkTimestamps = new Map<ParticleCid, CyberlinkTxHash>();
     const syncUpdates = [];
     try {
+      const { myAddress, cyberIndexUrl } = this.params!;
       // fetch observable particles from db
       const result = await this.db!.findSyncStatus({
-        ownerId: this.params!.myAddress!,
+        ownerId: myAddress!,
         entryType: EntryType.particle,
       });
 
@@ -85,7 +86,7 @@ class SyncParticlesLoop {
           result.map(async (syncStatus) => {
             const { id, timestampUpdate } = syncStatus;
             const links = await fetchCyberlinksAndResolveParticles(
-              this.params!.cyberIndexUrl!,
+              cyberIndexUrl!,
               id as string,
               timestampUpdate as number,
               this.particlesResolver!,

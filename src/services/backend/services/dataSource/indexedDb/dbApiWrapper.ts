@@ -123,7 +123,7 @@ class DbApiWrapper {
       'sync_status',
       ['id', 'unread_count', 'timestamp_update', 'timestamp_read'],
       conditions,
-      ['entry_type']
+      ['entry_type', 'owner_id']
     );
 
     return dbResultToDtoList(result) as Partial<SyncStatusDto>[];

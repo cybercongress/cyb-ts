@@ -118,16 +118,13 @@ class SyncTransactionsLoop {
 
   private async syncAllTransactions() {
     try {
-      await this.syncTransactions(
-        this.params.myAddress!,
-        this.params.myAddress!
-      );
+      const { myAddress, cyberIndexUrl } = this.params;
+
+      await this.syncTransactions(myAddress!, myAddress!, cyberIndexUrl!);
       this.statusApi.sendStatus('in-progress', `sync my chats`);
-      console.log('----sync chats');
-      const syncStatusItems = await syncMyChats(
-        this.db!,
-        this.params.myAddress!
-      );
+      const syncStatusItems = await syncMyChats(this.db!, myAddress!);
+      console.log('----sync chats', syncStatusItems);
+
       this.channelApi.postSenseUpdate(syncStatusItems);
 
       this.statusApi.sendStatus('idle');
@@ -139,7 +136,8 @@ class SyncTransactionsLoop {
 
   public async syncTransactions(
     myAddress: NeuronAddress,
-    address: NeuronAddress
+    address: NeuronAddress,
+    cyberIndexUrl: string
   ) {
     try {
       if (this.inProgress.includes(address)) {
@@ -160,14 +158,14 @@ class SyncTransactionsLoop {
       const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
       const totalMessageCount = await fetchTransactionMessagesCount(
-        this.params.cyberIndexUrl!,
-        this.params.myAddress!,
+        cyberIndexUrl,
+        address,
         timestampFrom
       );
 
       const totalTweetsCount = await fetchLinksCount(
-        this.params.cyberIndexUrl!,
-        this.params.myAddress!,
+        cyberIndexUrl,
+        address,
         [CID_TWEET],
         timestampFrom
       );
@@ -184,7 +182,7 @@ class SyncTransactionsLoop {
         );
 
         const transactionsAsyncIterable = fetchTransactionsIterable(
-          this.params.cyberIndexUrl!,
+          cyberIndexUrl,
           address,
           timestampFrom,
           [] // SENSE_TRANSACTIONS
@@ -257,7 +255,7 @@ class SyncTransactionsLoop {
             }
 
             // add all tweets to sync status
-            await this.addTweetsToSync(tweets, myAddress);
+            await this.addTweetsToSync(tweets, myAddress, cyberIndexUrl);
           }
         }
 
@@ -317,7 +315,8 @@ class SyncTransactionsLoop {
 
   private async addTweetsToSync(
     tweets: Record<string, CyberlinkTxHash>,
-    myAddress: string
+    myAddress: string,
+    cyberIndexUrl: string
   ) {
     const tweetCids = Object.keys(tweets);
     const batchSize = MAX_PARRALEL_TRANSACTIONS;
@@ -345,7 +344,7 @@ class SyncTransactionsLoop {
           } as SyncStatusDto;
 
           const links = await fetchCyberlinksAndResolveParticles(
-            this.params!.cyberIndexUrl!,
+            cyberIndexUrl,
             cid,
             timestamp,
             this.particlesResolver!,
