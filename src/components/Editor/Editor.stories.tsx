@@ -1,11 +1,9 @@
 /* eslint-disable import/no-unused-modules */
 
 import { Meta, StoryObj } from '@storybook/react';
-import { MilkdownProvider } from '@milkdown/react';
-
+import { useCallback, useRef } from 'react';
 import Editor from './Editor';
-import ControlPanel from './ControlPanel/ControlPanel';
-import { useState } from 'react';
+import { MilkdownRef } from './components/MilkdownEditor/MilkdownEditor';
 
 const meta: Meta<typeof Editor> = {
   component: Editor,
@@ -15,16 +13,33 @@ export default meta;
 
 type Story = StoryObj<typeof Editor>;
 
+const markdown = `# Milkdown React Commonmark
+
+[cyber](skdfn)
+
+~(cyber) Commonmark demo @(cyb)  
+`;
+
 function Wrapper() {
-  const [onsave, onSave] = useState('');
+  const milkdownRef = useRef<MilkdownRef>(null);
+
+  // const onCodemirrorChange = useCallback((getCode: () => string) => {
+  //   const { current } = milkdownRef;
+  //   if (!current) return;
+  //   const value = getCode();
+  //   current.update(value);
+  // }, []);
+
+  const onMilkdownChange = useCallback((markdown: string) => {
+    console.log('markdown', markdown);
+  }, []);
+
   return (
-    <>
-      <MilkdownProvider>
-        <ControlPanel />
-        <Editor onSave={onSave} />
-      </MilkdownProvider>
-      <div>{onsave}</div>
-    </>
+    <Editor
+      milkdownRef={milkdownRef}
+      content={markdown}
+      onChange={onMilkdownChange}
+    />
   );
 }
 

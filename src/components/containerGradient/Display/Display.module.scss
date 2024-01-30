@@ -31,7 +31,12 @@
       content: '';
       display: none;
     }
+
     border-right: unset !important;
+
+    &.vertical {
+      border-bottom: unset !important;
+    }
   }
 
   &.right {
@@ -39,7 +44,12 @@
       content: '';
       display: none;
     }
+
     border-left: unset !important;
+
+    &.vertical {
+      border-top: unset !important;
+    }
   }
 
   &.noPaddingX {
