@@ -12,8 +12,8 @@ export function formatSenseItemDataToUI(
   senseItem: SenseItem,
   currentAddress: string
 ): {
-  timestamp: string;
   text: string;
+  timestamp: string;
   amount: Coin[] | undefined;
   amountSendDirection: 'to' | 'from' | undefined;
   from: string;
@@ -21,85 +21,102 @@ export function formatSenseItemDataToUI(
   cid: string | undefined;
   hash: string;
 } {
-  const { timestamp, itemType, id, memo, meta } = senseItem;
+  const { timestamp, type, memo, meta } = senseItem;
 
   let from;
-  let text = memo;
   let amount: Coin[] | undefined;
   let isAmountSend = false;
-  let hash = senseItem.hash;
   let cid;
 
-  switch (itemType) {
-    case SenseMetaType.send: {
-      const v = meta as MsgSendTransaction['value'];
+  switch (type) {
+    case 'cosmos.bank.v1beta1.MsgSend': {
+      const { amount: a } = meta as MsgSendTransaction['value'];
 
-      from = v?.from_address || id;
-
-      if (v.amount) {
-        // FIXME: move to redux
-        amount = Array.isArray(v.amount) ? v.amount : Object.values(v.amount);
+      if (a && !Array.isArray(a)) {
+        debugger;
+        break;
       }
 
-      text = memo;
-      isAmountSend = from === currentAddress;
-
-      if (senseItem.type === 'cosmos.bank.v1beta1.MsgMultiSend') {
-        const v = meta as MsgMultiSendTransaction['value'];
-
-        from = v.inputs[0].address;
-        amount = v.outputs.find(
-          (output) => output.address === currentAddress
-        )?.coins;
-      }
+      amount = a;
 
       break;
     }
 
-    case SenseMetaType.particle: {
-      // const item = senseItem as LinkDbEntity;
+    case 'cosmos.bank.v1beta1.MsgMultiSend': {
+      const v = meta as MsgMultiSendTransaction['value'];
 
-      from = senseItem.from;
-      hash = senseItem.transactionHash;
-      cid = senseItem.lastId;
-
-      break;
-    }
-
-    case SenseMetaType.follow: {
-      debugger;
-
-      break;
-    }
-    case SenseMetaType.tweet: {
-      text = senseItem.text;
-      from = senseItem.neuron;
-      cid = senseItem.to;
+      // from = v.inputs[0].address;
+      amount = v.outputs.find(
+        (output) => output.address === currentAddress
+      )?.coins;
 
       break;
     }
 
-    case SenseMetaType.transaction: {
-      text = senseItem.text;
-      from = senseItem.neuron;
-      cid = senseItem.to;
+    case 'cyber.graph.v1beta1.MsgCyberlink': {
+      cid = meta.to;
 
       break;
     }
 
     default: {
-      console.error('unknown type');
-      console.log(senseItem);
+      break;
     }
   }
 
   return {
-    timestamp,
-    text,
+    ...senseItem,
+    text: memo,
     amount,
-    from,
-    hash,
     cid,
-    amountSendDirection: isAmountSend ? 'to' : 'from',
   };
+
+  // switch (type) {
+
+  //   case SenseMetaType.particle: {
+  //     // const item = senseItem as LinkDbEntity;
+
+  //     from = senseItem.from;
+  //     hash = senseItem.transactionHash;
+  //     cid = senseItem.lastId;
+
+  //     break;
+  //   }
+
+  //   case SenseMetaType.follow: {
+  //     debugger;
+
+  //     break;
+  //   }
+  //   case SenseMetaType.tweet: {
+  //     text = senseItem.text;
+  //     from = senseItem.neuron;
+  //     cid = senseItem.to;
+
+  //     break;
+  //   }
+
+  //   case SenseMetaType.transaction: {
+  //     text = senseItem.text;
+  //     from = senseItem.neuron;
+  //     cid = senseItem.to;
+
+  //     break;
+  //   }
+
+  //   default: {
+  //     console.error('unknown type');
+  //     console.log(senseItem);
+  //   }
+  // }
+
+  // return {
+  //   timestamp,
+  //   text,
+  //   amount,
+  //   from,
+  //   hash,
+  //   cid,
+  //   amountSendDirection: isAmountSend ? 'from' : 'to',
+  // };
 }

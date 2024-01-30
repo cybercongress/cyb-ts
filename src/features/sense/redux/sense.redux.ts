@@ -1,18 +1,27 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SenseApi } from 'src/contexts/backend';
 import {
+  SenseLinkResultMeta,
   SenseListItem,
-  SenseMetaType,
+  SenseTransactionResultMeta,
   SenseUnread,
 } from 'src/services/backend/types/sense';
 import { isParticle } from '../../particle/utils';
 import { SenseItemId } from '../types/sense';
 import { EntryType } from 'src/services/CozoDb/types/entities';
+import {
+  MsgMultiSendValue,
+  MsgSendValue,
+} from 'src/services/backend/services/dataSource/blockchain/types';
 
+// similar to blockchain/tx/message type
 export type SenseItem = {
   id: SenseItemId;
-  hash: string;
-  itemType: SenseMetaType;
+  transactionHash: string;
+
+  // add normal type
+  type: string;
+
   meta: SenseListItem['meta'];
   timestamp: string;
   memo: string | undefined;
@@ -64,22 +73,63 @@ const initialState: SliceState = {
   },
 };
 
-function formatAPIChatListData(item: SenseListItem): SenseItem {
-  return {
-    ...item,
-    timestamp: item.timestampUpdate,
-    hash: item.transactionHash || item.hash || item.lastId,
-    itemType: item.meta.meta_type,
-    entryType: item.entryType,
-    meta: item.meta || item.value,
-    memo: item.meta.memo || '',
-  };
+function formatApiData(item: SenseListItem): SenseItem {
+  switch (item.entryType) {
+    case EntryType.chat: {
+      const meta = item.meta as SenseTransactionResultMeta;
+      const { type } = meta;
+
+      let from;
+
+      if (type === 'cosmos.bank.v1beta1.MsgSend') {
+        const value = meta.value as MsgSendValue;
+        from = value.from_address;
+      } else if (type === 'cosmos.bank.v1beta1.MsgMultiSend') {
+        const value = meta.value as MsgMultiSendValue;
+
+        from = value.inputs[0].address;
+      }
+
+      return {
+        id: item.id || from,
+        timestamp: item.meta.timestamp,
+        transactionHash:
+          item.transactionHash || item.hash || item.meta.transaction_hash,
+        type,
+        from,
+        meta: item.meta.value,
+        memo: item.memo || meta.memo,
+      };
+    }
+
+    case EntryType.particle: {
+      const meta = item.meta as SenseLinkResultMeta;
+
+      return {
+        id: item.id || meta.neuron,
+        timestamp: Date.parse(new Date(item.meta.timestamp)),
+        transactionHash: meta.transactionHash || meta.transaction_hash,
+        type: 'cyber.graph.v1beta1.MsgCyberlink',
+        from: meta.neuron,
+        meta: item.meta,
+        memo: '',
+      };
+    }
+
+    default:
+      debugger;
+      return {};
+  }
 }
 
 const getSenseList = createAsyncThunk(
   'sense/getSenseList',
   async (senseApi: SenseApi) => {
-    return (await senseApi!.getList()).map(formatAPIChatListData);
+    const data = await senseApi!.getList();
+    console.log(data);
+    // debugger;
+
+    return data.map(formatApiData);
   }
 );
 
@@ -89,28 +139,22 @@ const getSenseChat = createAsyncThunk(
     const particle = isParticle(id);
 
     if (particle) {
-      return (await senseApi!.getLinks(id))
-        .map((item) => {
-          return {
-            ...item,
-            from: item.neuron,
-            id: {
-              text: item.text,
-            },
-            hash: item.hash || item.transactionHash,
-            itemType: item.itemType || SenseMetaType.particle,
-            memo: item.text,
-          };
-        })
-        .reverse();
+      return (await senseApi!.getLinks(id)).map((item) => {
+        return formatApiData({
+          ...item,
+          entryType: EntryType.particle,
+          meta: item,
+        });
+      });
     }
 
     return (await senseApi!.getFriendItems(id)).map((item) => {
-      return {
+      const entryType = item.to ? EntryType.particle : EntryType.chat;
+      return formatApiData({
         ...item,
-        hash: item.hash || item.transactionHash,
-        meta: item.meta || item.value,
-      };
+        entryType,
+        meta: item,
+      });
     });
   }
 );
@@ -164,7 +208,7 @@ const slice = createSlice({
         chat.unreadCount = item.unreadCount;
 
         // TODO: check if message already exists
-        chat.data = [...chat.data, formatAPIChatListData(item)];
+        chat.data = [...chat.data, formatApiData(item)];
 
         newList.push(id);
       });

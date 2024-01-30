@@ -60,7 +60,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
           <CoinsAmount
             amount={amount}
             type={
-              amountSendDirection === 'from'
+              amountSendDirection === 'to'
                 ? CoinAction.send
                 : CoinAction.receive
             }
