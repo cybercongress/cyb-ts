@@ -1,4 +1,4 @@
-$actionBarSpace: 130px;
+// $actionBarSpace: 130px;
 
 .wrapper {
   display: grid;
@@ -7,7 +7,7 @@ $actionBarSpace: 130px;
   grid-template-columns: 1fr minmax(200px, 62%) 1fr;
 
   > main {
-    padding-bottom: $actionBarSpace;
+    padding-bottom: 60px;
 
     // stretch children
     display: grid;
@@ -19,5 +19,6 @@ $actionBarSpace: 130px;
 
     // same with menu
     min-height: 100%;
+    box-sizing: content-box;
   }
 }

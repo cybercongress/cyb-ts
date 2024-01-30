@@ -74,6 +74,10 @@ const initialState: SliceState = {
 };
 
 function formatApiData(item: SenseListItem): SenseItem {
+  if (item.entryType === EntryType.chat && item.meta.to) {
+    item.entryType = EntryType.particle;
+  }
+
   switch (item.entryType) {
     case EntryType.chat: {
       const meta = item.meta as SenseTransactionResultMeta;
@@ -127,7 +131,6 @@ const getSenseList = createAsyncThunk(
   async (senseApi: SenseApi) => {
     const data = await senseApi!.getList();
     console.log(data);
-    // debugger;
 
     return data.map(formatApiData);
   }

@@ -10,6 +10,8 @@ import CoinsAmount, {
   CoinAction,
 } from '../../components/CoinAmount/CoinAmount';
 import { getStatusText } from '../../utils/getStatusText';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 type Props = {
   address: string;
@@ -25,21 +27,19 @@ type Props = {
 };
 
 function Message({ address, text, date, amountData, txHash, status }: Props) {
-  // const myAddress = useAppSelector(selectCurrentAddress);
-  // const myMessage = address === myAddress;
+  const myAddress = useAppSelector(selectCurrentAddress);
+  const myMessage = address === myAddress;
 
   return (
     <div
       className={cx(styles.wrapper, {
-        // [styles.myMessage]: myMessage,
+        [styles.myMessage]: myMessage,
       })}
     >
-      <div className={styles.avatar}>
+      {/* <div className={styles.avatar}>
         <Account address={address} onlyAvatar avatar sizeAvatar={40} />
-      </div>
-      <h6>
-        <Account address={address} />
-      </h6>
+      </div> */}
+      {/* <h6><Account address={address} /></h6> */}
 
       <div className={styles.timestampBlock}>
         {txHash && (
@@ -68,18 +68,20 @@ function Message({ address, text, date, amountData, txHash, status }: Props) {
         <Date timestamp={+date} />
       </div>
 
-      <p className={styles.content}>{text}</p>
+      <div className={styles.body}>
+        {text && <p className={styles.content}>{text}</p>}
 
-      {amountData?.amount && (
-        <div className={styles.amount}>
-          <CoinsAmount
-            amount={amountData.amount}
-            type={
-              amountData.isAmountSend ? CoinAction.send : CoinAction.receive
-            }
-          />
-        </div>
-      )}
+        {amountData?.amount && (
+          <div className={styles.amount}>
+            <CoinsAmount
+              amount={amountData.amount}
+              type={
+                amountData.isAmountSend ? CoinAction.send : CoinAction.receive
+              }
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
