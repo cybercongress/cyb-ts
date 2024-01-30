@@ -188,7 +188,7 @@ class QueueManager {
         // console.log('---prom fetchIpfsContent', res);
         return res;
       } catch (e) {
-        console.log('---promtoo', e);
+        // console.log('---promtoo', e);
         throw e;
       }
     }).pipe(

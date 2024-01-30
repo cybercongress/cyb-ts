@@ -43,7 +43,7 @@ class SyncMyFriendsLoop {
     return this._loop$;
   }
 
-  private statusApi = broadcastStatus('tweets', this.channelApi);
+  private statusApi = broadcastStatus('my-friends', this.channelApi);
 
   private params: SyncServiceParams = {
     myAddress: null,
@@ -65,16 +65,15 @@ class SyncMyFriendsLoop {
       this.params = params;
       if (this.isInitialized) {
         console.log('------- subscribe', params.followings);
-        // const newFriends = params.followings
-        //   .map((addr) =>
-        //     this.params.followings.includes(addr) ? addr : undefined
-        //   )
-        //   .filter((addr) => !!addr) as NeuronAddress[];
-        // executeSequentially(
-        //   newFriends.map(
-        //     (addr) => () => this.syncLinks(this.params.myAddress!, addr)
-        //   )
-        // );
+        const newFriends = params.followings.filter(
+          (addr) => !this.params.followings.includes(addr)
+        );
+
+        executeSequentially(
+          newFriends.map(
+            (addr) => () => this.syncLinks(this.params.myAddress!, addr)
+          )
+        );
       }
     });
 
@@ -103,7 +102,7 @@ class SyncMyFriendsLoop {
       MY_FRIENDS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncAll())),
-      () => this.statusApi.sendStatus('in-progress'),
+      () => this.statusApi.sendStatus('in-progress', 'warm up...'),
       MY_FRIENDS_SYNC_WARMUP
     );
 
@@ -117,8 +116,6 @@ class SyncMyFriendsLoop {
 
   private async syncAll() {
     try {
-      this.statusApi.sendStatus('in-progress', `preparing...`);
-
       const syncItemMap = new Map(
         (
           await this.db?.findSyncStatus({
@@ -127,6 +124,8 @@ class SyncMyFriendsLoop {
           })
         )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
       );
+
+      this.statusApi.sendStatus('in-progress', `estimating...`);
 
       await Promise.all(
         this.params.followings.map(async (addr) => {
@@ -172,26 +171,23 @@ class SyncMyFriendsLoop {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
-        console.log(`>> ${address} tweets sync already in progress`);
+        console.log(`>>> my-friends ${address} sync already in progress`);
         return;
       }
 
       // add to in-progress list
       this.inProgress.push(address);
 
-      this.statusApi.sendStatus('in-progress', `starting sync ${address}...`);
+      this.statusApi.sendStatus(
+        'in-progress',
+        `starting sync ${address}...`,
+        this.progressTracker.progress
+      );
       const { timestampRead, unreadCount, timestampUpdate } =
         await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
 
       const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
-      // const linksCount = await fetchTweetsCount(
-      //   this.params.cyberIndexUrl!,
-      //   address,
-      //   [CID_FOLLOW, CID_TWEET],
-      //   timestampFrom
-      // );
-      // if (linksCount > 0) {
       const linksTweet = await fetchLinksByNeuronTimestamp(
         this.params.cyberLcdUrl!,
         address,
@@ -249,7 +245,8 @@ class SyncMyFriendsLoop {
           syncUpdates.push(newSyncItem);
         }
       }
-      // }
+    } catch (err) {
+      this.statusApi.sendStatus('error', err.toString());
     } finally {
       this.channelApi.postSenseUpdate(syncUpdates);
       this.inProgress = this.inProgress.filter((addr) => addr !== address);

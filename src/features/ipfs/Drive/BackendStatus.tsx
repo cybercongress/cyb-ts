@@ -4,11 +4,22 @@ import { Colors } from 'src/components/containerGradient/types';
 
 import Display from 'src/components/containerGradient/Display/Display';
 // import { ServiceStatus, SyncEntryStatus } from 'src/services/backend/types';
-import styles from './drive.scss';
 import {
+  ProgressTracking,
   ServiceStatus,
   SyncProgress,
 } from 'src/services/backend/types/services';
+import styles from './drive.scss';
+
+const getProgressTrackingInfo = (progress?: ProgressTracking) => {
+  if (!progress) {
+    return '';
+  }
+  const { totalCount, completeCount, estimatedTime } = progress;
+  const estimatedTimeStr = estimatedTime <= 0 ? '' : ` (${estimatedTime}s)`;
+
+  return ` ${completeCount}/${totalCount} ${estimatedTimeStr}`;
+};
 
 function ServiceStatus({
   name,
@@ -32,11 +43,12 @@ function EntrySatus({
   progress: SyncProgress;
 }) {
   const msg = progress.error || progress.message ? `- ${progress.message}` : '';
-  const text = `${name}: ${progress.status} ${msg}`;
+  const text = `${name}: ${progress.status} ${msg}
+  ${getProgressTrackingInfo(progress.progress)}`;
   return <div className={styles.tabbed}>{text}</div>;
 }
 
-const BackendStatus = () => {
+function BackendStatus() {
   const { syncState, dbPendingWrites, services } = useAppSelector(
     (store) => store.backend
   );
@@ -70,6 +82,6 @@ const BackendStatus = () => {
       </div>
     </Display>
   );
-};
+}
 
 export default BackendStatus;

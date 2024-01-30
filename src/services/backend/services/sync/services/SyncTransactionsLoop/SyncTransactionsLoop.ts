@@ -27,12 +27,14 @@ import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
 
 import {
+  fetchLinksCount,
   fetchTransactionMessagesCount,
   fetchTransactionsIterable,
 } from '../../../dataSource/blockchain/indexer';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
+import { CID_TWEET } from 'src/utils/consts';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -163,9 +165,16 @@ class SyncTransactionsLoop {
         timestampFrom
       );
 
+      const totalTweetsCount = await fetchLinksCount(
+        this.params.cyberIndexUrl!,
+        this.params.myAddress!,
+        [CID_TWEET],
+        timestampFrom
+      );
+
       if (totalMessageCount > 0) {
         this.progressTracker.start(
-          totalMessageCount // Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
+          totalTweetsCount // totalMessageCount // Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
         );
 
         this.statusApi.sendStatus(
@@ -195,13 +204,13 @@ class SyncTransactionsLoop {
             batch
           );
           if (batch.length > 0) {
-            const progress = this.progressTracker.trackProgress(batch.length);
+            // const progress = this.progressTracker.trackProgress(batch.length);
 
-            console.log(
-              `------- ${address} trans progress `,
-              progress,
-              Math.round(progress.estimatedTime / 1000)
-            );
+            // console.log(
+            //   `------- ${address} trans progress `,
+            //   progress,
+            //   Math.round(progress.estimatedTime / 1000)
+            // );
 
             // pick last transaction = first item based on request orderby
             if (!lastTransaction) {
@@ -227,7 +236,7 @@ class SyncTransactionsLoop {
             this.statusApi.sendStatus(
               'in-progress',
               `sync ${address} batch processing - links: ${links.length}, tweets: ${tweetParticles.length}, particles: ${particlesFound.length}...`,
-              progress
+              this.progressTracker.progress
             );
 
             // resolve 'tweets' particles
@@ -314,6 +323,10 @@ class SyncTransactionsLoop {
     const batchSize = MAX_PARRALEL_TRANSACTIONS;
     for (let i = 0; i < tweetCids.length; i += batchSize) {
       const batch = tweetCids.slice(i, i + batchSize);
+      const progress = this.progressTracker.trackProgress(batch.length);
+      this.statusApi.sendStatus('in-progress', `sync my tweets...`, progress);
+      console.log('-------my tweets', progress);
+
       // eslint-disable-next-line no-await-in-loop
       const syncStatusEntities = await Promise.all(
         batch.map(async (cid) => {

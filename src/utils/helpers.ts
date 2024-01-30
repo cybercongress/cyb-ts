@@ -38,7 +38,7 @@ export function promiseToObservable<T>(promiseFactory: () => Promise<T>) {
         observer.complete();
       })
       .catch((error) => {
-        console.log('----promiseToObservable error', error); //, error
+        console.debug('----promiseToObservable error', error); //, error
         observer.error(error);
       });
   });

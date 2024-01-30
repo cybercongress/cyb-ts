@@ -17,7 +17,17 @@ export class ProgressTracker {
 
   private completedRequests = 0;
 
+  private estimatedTime = -1;
+
   private onProgressUpdate?: onProgressUpdateFunc;
+
+  public get progress(): ProgressTracking {
+    return {
+      totalCount: this.totalRequests,
+      completeCount: this.completedRequests,
+      estimatedTime: this.estimatedTime,
+    };
+  }
 
   constructor(onProgressUpdate?: onProgressUpdateFunc) {
     this.onProgressUpdate = onProgressUpdate;
@@ -27,6 +37,7 @@ export class ProgressTracker {
     this.totalRequests = totalRequests;
     this.requestRecords = [];
     this.completedRequests = 0;
+    this.estimatedTime = -1;
   }
 
   public trackProgress(processedCount: number) {
@@ -35,11 +46,6 @@ export class ProgressTracker {
     if (this.requestRecords.length > ROLLING_WINDOW) {
       this.requestRecords.shift();
     }
-    const progress: ProgressTracking = {
-      totalCount: this.totalRequests,
-      completeCount: this.completedRequests,
-      estimatedTime: -1,
-    };
 
     if (this.requestRecords.length > 1) {
       const averageTimePerItem = this.calculateAverageTimePerItem();
@@ -49,11 +55,11 @@ export class ProgressTracker {
         averageTimePerItem * estimatedRemainingItems;
 
       this.completedRequests += processedCount;
-      progress.estimatedTime = Math.round(estimatedRemainingTime / 1000); // Convert to seconds;
-      this.onProgressUpdate && this.onProgressUpdate(progress);
+      this.estimatedTime = Math.round(estimatedRemainingTime / 1000); // Convert to seconds;
+      this.onProgressUpdate && this.onProgressUpdate(this.progress);
     }
 
-    return progress;
+    return this.progress;
   }
 
   private addRequestRecord(itemCount: number) {

@@ -6,7 +6,7 @@ export type SyncEntryName =
   | 'particle'
   | 'transaction'
   | 'resolver'
-  | 'tweets';
+  | 'my-friends';
 
 export type ProgressTracking = {
   totalCount: number;

@@ -173,7 +173,7 @@ const fetchIPFSContentFromNode = async (
       }
     }
   } catch (error) {
-    console.log('error fetchIPFSContentFromNode', error);
+    console.debug('error fetchIPFSContentFromNode', error);
     return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
   }
 };
