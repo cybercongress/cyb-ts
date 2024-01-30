@@ -2,7 +2,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import styles from './SenseViewer.module.scss';
 import { useBackend } from 'src/contexts/backend';
-import { Account } from 'src/components';
+import { Account, DenomArr } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
@@ -15,6 +15,8 @@ import { isParticle as isParticleFunc } from 'src/features/particle/utils';
 import { AdviserProps } from '../Sense';
 import MessageContainer from './Message/Message.container';
 import { markAsRead } from 'src/features/sense/redux/sense.redux';
+import Karma from 'src/containers/application/Karma/Karma';
+import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 
 type Props = {
   selected: string | undefined;
@@ -109,7 +111,11 @@ function SenseViewer({ selected, adviser }: Props) {
                     {text && <p>{text}</p>}
                   </header>
                 ) : (
-                  <Account address={selected} avatar />
+                  <header className={styles.header_Neuron}>
+                    <Karma address={selected} />
+                    <Account address={selected} avatar />
+                    <HydrogenBalance address={selected} />
+                  </header>
                 )
               }
             />
