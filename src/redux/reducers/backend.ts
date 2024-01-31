@@ -3,6 +3,7 @@ import {
   SyncState,
   ServiceStatus,
   BroadcastChannelMessage,
+  SyncEntryStatus,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 
@@ -16,6 +17,7 @@ type BackendState = {
       message?: string;
     };
   };
+  syncEstimatedTime: number;
 };
 
 const initialState: BackendState = {
@@ -29,7 +31,21 @@ const initialState: BackendState = {
     ipfs: { status: 'inactive' },
     sync: { status: 'inactive' },
   },
+  syncEstimatedTime: 0,
 };
+
+function calculateAverageSyncTime(entryStatus: SyncEntryStatus): number {
+  let totalEstimatedTime = 0;
+  let count = 0;
+  Object.values(entryStatus).forEach((entry) => {
+    if (entry?.progress?.estimatedTime !== undefined) {
+      totalEstimatedTime += entry.progress.estimatedTime;
+      count++;
+    }
+  });
+  console.log('--------calculateAverageSyncTime', totalEstimatedTime, count);
+  return count > 0 ? totalEstimatedTime / count : 0;
+}
 
 // Backend state
 function backendReducer(state = initialState, action: BroadcastChannelMessage) {
@@ -51,11 +67,17 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
         done: false,
         ...entryState,
       };
-      return assocPath(
+      const newState = assocPath(
         ['syncState', 'entryStatus', entry],
         updatedEntry,
         state
       );
+
+      newState.syncEstimatedTime = calculateAverageSyncTime(
+        newState.syncState.entryStatus
+      );
+
+      return newState;
     }
 
     case 'service_status': {

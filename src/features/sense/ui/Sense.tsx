@@ -52,6 +52,10 @@ function Sense() {
     });
   });
 
+  const senseSyncEstimatedTime = useAppSelector(
+    (state) => state.backend.syncEstimatedTime
+  );
+
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
@@ -67,15 +71,25 @@ function Sense() {
         'loading...'
       ) : (
         <p>
-          syncing txs data... <br />
-          (may take some time, but you can use Sense)
+          syncing txs data{' '}
+          {senseSyncEstimatedTime > 0
+            ? `(remaining: ${senseSyncEstimatedTime}s)`
+            : '(estimating time to complete)'}
+          ...
         </p>
       );
     } else {
       text = 'welcome to sense 🧬';
     }
     setAdviser(adviserText || text, error ? 'red' : color);
-  }, [setAdviser, loading, senseBackendIsLoading, error, adviserText]);
+  }, [
+    setAdviser,
+    loading,
+    senseBackendIsLoading,
+    error,
+    adviserText,
+    senseSyncEstimatedTime,
+  ]);
 
   //  seems use context
   const adviserProps = {
