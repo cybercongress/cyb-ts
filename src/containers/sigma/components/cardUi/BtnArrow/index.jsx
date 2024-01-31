@@ -3,12 +3,13 @@ import line22 from '../../../../../image/Line22.svg';
 
 const cx = require('classnames');
 
+// TODO: remove component
 function BtnArrow({ disabled, onClick, open }) {
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
+    <div
+      // type="button"
+      // disabled={disabled}
+      // onClick={onClick}
       className={styles.btnContainerBtnArrow}
     >
       <img
@@ -18,7 +19,7 @@ function BtnArrow({ disabled, onClick, open }) {
           [styles.btnContainerBtnArrowImgOpen]: open,
         })}
       />
-    </button>
+    </div>
   );
 }
 

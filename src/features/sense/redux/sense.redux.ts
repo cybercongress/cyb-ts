@@ -143,8 +143,6 @@ const getSenseList = createAsyncThunk(
   'sense/getSenseList',
   async (senseApi: SenseApi) => {
     const data = await senseApi!.getList();
-    console.log(data);
-
     return data.map(formatApiData);
   }
 );
@@ -202,10 +200,10 @@ const slice = createSlice({
       data.forEach((item) => {
         const { id } = item;
 
-        // TODO: remove
-        if (newList.includes(id)) {
-          return;
-        }
+        // // TODO: remove
+        // if (newList.includes(id)) {
+        //   return;
+        // }
 
         if (!state.chats[id]) {
           state.chats[id] = newChatStructure;
@@ -276,11 +274,6 @@ const slice = createSlice({
       const newList: SliceState['list']['data'] = [];
       action.payload.forEach((item) => {
         const { id } = item;
-
-        // // TODO: remove
-        // if (newList.includes(id)) {
-        //   return;
-        // }
 
         state.chats[id] = {
           id,
