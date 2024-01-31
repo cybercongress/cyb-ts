@@ -13,6 +13,7 @@ import {
   TransactionError,
   Dots,
   ActionBarContentText,
+  ActionBar as ActionBarComp,
 } from '../../../../components';
 import {
   LEDGER,
@@ -258,11 +259,9 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_INIT && type === 'log' && follow) {
       return (
-        <ActionBar>
-          <Pane>
-            <Button onClick={(e) => this.onClickSend(e)}>Follow</Button>
-          </Pane>
-        </ActionBar>
+        <ActionBarComp
+          button={{ text: 'Follow', onClick: (e) => this.onClickSend(e) }}
+        />
       );
     }
 
@@ -294,16 +293,13 @@ class ActionBarContainer extends Component {
       addressSend === defaultAccount.bech32
     ) {
       return (
-        <ActionBar>
-          <Pane>
-            <Button
-              disabled={addressSend !== defaultAccount.bech32}
-              onClick={(e) => this.onClickSend(e)}
-            >
-              Claim rewards
-            </Button>
-          </Pane>
-        </ActionBar>
+        <ActionBarComp
+          button={{
+            disabled: addressSend !== defaultAccount.bech32,
+            text: 'Claim rewards',
+            onClick: (e) => this.onClickSend(e),
+          }}
+        />
       );
     }
 

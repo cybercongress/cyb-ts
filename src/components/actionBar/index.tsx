@@ -64,7 +64,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const exception =
     (location.pathname !== routes.keys.path &&
       !location.pathname.includes('/drive') &&
-      !location.pathname.includes('/oracle') &&
+      // !location.pathname.includes('/oracle') &&
       location.pathname !== '/') ||
     location.pathname === '/oracle/learn';
   // TODO: not show while loading passport
