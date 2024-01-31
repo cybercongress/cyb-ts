@@ -1,4 +1,9 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { SenseApi } from 'src/contexts/backend';
 import {
   SenseLinkResultMeta,
@@ -13,6 +18,7 @@ import {
   MsgMultiSendValue,
   MsgSendValue,
 } from 'src/services/backend/services/dataSource/blockchain/types';
+import { RootState } from 'src/redux/store';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -103,6 +109,9 @@ function formatApiData(item: SenseListItem): SenseItem {
         from,
         meta: item.meta.value,
         memo: item.memo || meta.memo,
+
+        // not good
+        unreadCount: item.unreadCount || 0,
       };
     }
 
@@ -117,6 +126,9 @@ function formatApiData(item: SenseListItem): SenseItem {
         from: meta.neuron,
         meta: item.meta,
         memo: '',
+
+        // not good
+        unreadCount: item.unreadCount || 0,
       };
     }
 
@@ -169,13 +181,6 @@ const markAsRead = createAsyncThunk(
   }
 );
 
-export function getSenseSummary(senseApi: SenseApi) {
-  return async (dispatch) => {
-    const summary = await senseApi!.getSummary();
-    dispatch(updateSummary(summary));
-  };
-}
-
 const newChatStructure: Chat = {
   id: '',
   isLoading: false,
@@ -217,27 +222,6 @@ const slice = createSlice({
       });
 
       state.list.data = newList;
-    },
-
-    updateSummary(state, action: PayloadAction<SenseUnread[]>) {
-      let unreadCountParticle = 0;
-      let unreadCountNeuron = 0;
-
-      action.payload.forEach(({ entryType, unreadCount }) => {
-        if (entryType === EntryType.particle) {
-          unreadCountParticle = unreadCount;
-        } else if (entryType === EntryType.chat) {
-          unreadCountNeuron = unreadCount;
-        }
-      });
-
-      const total = unreadCountParticle + unreadCountNeuron;
-
-      state.summary.unreadCount = {
-        total,
-        particles: unreadCountParticle,
-        neurons: unreadCountNeuron,
-      };
     },
 
     addSenseItem(
@@ -291,17 +275,17 @@ const slice = createSlice({
       action.payload.forEach((item) => {
         const { id } = item;
 
-        // TODO: remove
-        if (newList.includes(id)) {
-          return;
-        }
+        // // TODO: remove
+        // if (newList.includes(id)) {
+        //   return;
+        // }
 
         state.chats[id] = {
           id,
           isLoading: false,
           error: undefined,
           data: [item],
-          unreadCount: item.unreadCount,
+          unreadCount: item.unreadCount || 0,
         };
 
         newList.push(id);
@@ -359,9 +343,37 @@ const slice = createSlice({
   },
 });
 
-const { updateSummary } = slice.actions;
+const selectUnreadCounts = createSelector(
+  (state: RootState) => state.sense.chats,
+  (chats) => {
+    let unreadCountParticle = 0;
+    let unreadCountNeuron = 0;
+
+    Object.values(chats).forEach(({ id, unreadCount }) => {
+      const particle = isParticle(id);
+
+      if (particle) {
+        unreadCountParticle += unreadCount;
+      } else {
+        unreadCountNeuron += unreadCount;
+      }
+    });
+
+    const total = unreadCountParticle + unreadCountNeuron;
+
+    return {
+      total,
+      particles: unreadCountParticle,
+      neurons: unreadCountNeuron,
+    };
+  }
+);
+
 export const { addSenseItem, updateSenseItem, updateSenseList } = slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
+
+// selectors
+export { selectUnreadCounts };
 
 export default slice.reducer;

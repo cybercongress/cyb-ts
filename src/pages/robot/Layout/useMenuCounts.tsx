@@ -18,6 +18,7 @@ import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 import { useRobotContext } from '../robot.context';
 import { useAppSelector } from 'src/redux/hooks';
+import { selectUnreadCounts } from 'src/features/sense/redux/sense.redux';
 
 function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();
@@ -29,9 +30,7 @@ function useMenuCounts(address: string | null) {
   const location = useLocation();
   const { addRefetch, isOwner } = useRobotContext();
 
-  const unreadSenseTotal = useAppSelector(
-    (store) => store.sense.summary.unreadCount.total
-  );
+  const { total: unreadSenseTotal } = useAppSelector(selectUnreadCounts);
 
   async function getTweetCount() {
     try {
