@@ -115,7 +115,7 @@ function createCozoDb() {
   };
 
   const migrate = async () => {
-    if (!dbSchema.transaction.keys.includes('index')) {
+    if (!dbSchema.transaction.keys.includes('neuron')) {
       console.log('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);

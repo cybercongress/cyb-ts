@@ -31,40 +31,41 @@ function App() {
   const { community } = useGetCommunity(address || null);
   const location = useLocation();
   const adviserContext = useAdviser();
-  const myAddress = useAppSelector(selectCurrentAddress);
 
   const { ipfsError, isReady, senseApi } = useBackend();
-  const senseList = useAppSelector((state) => state.sense.list);
+  // const myAddress = useAppSelector(selectCurrentAddress);
+
+  // const senseList = useAppSelector((state) => state.sense.list);
   // console.log('----senseList(redux) ', senseList);
   // TODO: TMP Example of how to use SENSE
-  useEffect(() => {
-    (async () => {
-      if (isReady && senseApi && myAddress) {
-        console.log('----sense ', isReady, senseApi);
+  // useEffect(() => {
+  //   (async () => {
+  //     if (isReady && senseApi && myAddress) {
+  //       console.log('----sense ', isReady, senseApi);
 
-        const list = await senseApi.getList();
-        console.log('----sense list', list);
-        const summary = await senseApi.getSummary();
-        console.log('----sense summary', summary);
-        const links = await senseApi.getLinks(
-          'QmVrZci1LVijze8ZwFQQWLMBDwC3qUUZw16j7uWopV2Krb'
-        );
-        console.log('----sense links', links);
-        const transactionsMy = await senseApi.getTransactions(
-          'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
-        );
-        console.log('----sense transactionsMy', transactionsMy);
+  //       const list = await senseApi.getList();
+  //       console.log('----sense list', list);
+  //       const summary = await senseApi.getSummary();
+  //       console.log('----sense summary', summary);
+  //       const links = await senseApi.getLinks(
+  //         'QmVrZci1LVijze8ZwFQQWLMBDwC3qUUZw16j7uWopV2Krb'
+  //       );
+  //       console.log('----sense links', links);
+  //       const transactionsMy = await senseApi.getTransactions(
+  //         'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3'
+  //       );
+  //       console.log('----sense transactionsMy', transactionsMy);
 
-        const chats = await senseApi.getFriendItems(
-          'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
-        );
-        console.log('----sense chats', chats);
-        // MARK AS READ
-        // await senseApi.markAsRead('<CID/ADDRESS');
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, senseApi, myAddress]);
+  //       const chats = await senseApi.getFriendItems(
+  //         'bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t'
+  //       );
+  //       console.log('----sense chats', chats);
+  //       // MARK AS READ
+  //       // await senseApi.markAsRead('<CID/ADDRESS');
+  //     }
+  //   })();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isReady, senseApi, myAddress]);
 
   /// ------------
 

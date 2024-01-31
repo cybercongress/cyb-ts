@@ -29,11 +29,11 @@
     :create transaction {
         hash: String,
         index: Int,
+        neuron: String,
         type: String =>
         success: Bool,
         timestamp: Int,
         value: Json,
-        neuron: String,
         memo: String
     }
 }

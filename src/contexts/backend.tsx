@@ -20,8 +20,13 @@ import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { SenseMetaType } from 'src/services/backend/types/sense';
 import { SenseListUpdate } from 'src/services/backend/types/services';
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
+import { CID_TWEET } from 'src/utils/consts';
 
-const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
+const createSenseApi = (
+  dbApi: DbApiWrapper,
+  myAddress?: NeuronAddress,
+  followingAddresses = [] as NeuronAddress[]
+) => ({
   getSummary: () => dbApi.getSenseSummary(myAddress),
   getList: () => dbApi.getSenseList(myAddress),
   markAsRead: (id: NeuronAddress | ParticleCid) =>
@@ -34,9 +39,10 @@ const createSenseApi = (dbApi: DbApiWrapper, myAddress?: string) => ({
       throw new Error('myAddress is not defined');
     }
     const chats = await dbApi.getMyChats(myAddress, userAddress);
-    console.log('----getFriendItems---chats', chats);
-    const links = await dbApi.getLinks({ neuron: userAddress });
-    console.log('-----getFriendItems--links', chats);
+    const links = followingAddresses.includes(userAddress)
+      ? await dbApi.getLinks({ neuron: userAddress, cid: CID_TWEET })
+      : [];
+
     return [...chats, ...links].sort((a, b) =>
       a.timestamp > b.timestamp ? 1 : -1
     );
@@ -109,17 +115,17 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (state) => state.backend.services.sync.status === 'started'
   );
 
+  const { friends, following } = useAppSelector(
+    (state) => state.currentAccount.community
+  );
+
+  const followings = useMemo(() => {
+    return Array.from(new Set([...friends, ...following]));
+  }, [friends, following]);
+
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
-
-  console.log('_------myAddress', myAddress);
-
-  const followings = useAppSelector(({ currentAccount }) => {
-    const { friends, following } = currentAccount.community;
-
-    return Array.from(new Set([...friends, ...following]));
-  });
 
   useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
@@ -208,8 +214,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   };
 
   const senseApi = useMemo(
-    () => (isDbInitialized ? createSenseApi(dbApi, myAddress) : null),
-    [isDbInitialized, myAddress]
+    () =>
+      isDbInitialized ? createSenseApi(dbApi, myAddress, followings) : null,
+    [isDbInitialized, myAddress, followings]
   );
 
   useEffect(() => {
