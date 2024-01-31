@@ -3,7 +3,6 @@ import {
   MsgMultiSendTransaction,
   MsgSendTransaction,
 } from 'src/services/backend/services/dataSource/blockchain/types';
-import { SenseMetaType } from 'src/services/backend/types/sense';
 
 import { SenseItem } from '../../redux/sense.redux';
 
@@ -11,26 +10,22 @@ import { SenseItem } from '../../redux/sense.redux';
 export function formatSenseItemDataToUI(
   senseItem: SenseItem,
   currentAddress: string
-): {
+): SenseItem & {
   text: string;
-  timestamp: string;
-  amount: Coin[] | undefined;
-  amountSendDirection: 'to' | 'from' | undefined;
-  from: string;
-  // isAmountSend: boolean;
   cid: string | undefined;
-  hash: string;
+  amount: Coin[] | undefined;
+  isAmountSendToMyAddress: boolean;
 } {
-  const { timestamp, type, memo, meta } = senseItem;
+  const { type, memo, meta } = senseItem;
 
-  let from;
   let amount: Coin[] | undefined;
-  let isAmountSend = false;
+  let isAmountSendToMyAddress = false;
   let cid;
 
   switch (type) {
     case 'cosmos.bank.v1beta1.MsgSend': {
-      const { amount: a } = meta as MsgSendTransaction['value'];
+      const { amount: a, to_address: toAddress } =
+        meta as MsgSendTransaction['value'];
 
       if (a && !Array.isArray(a)) {
         debugger;
@@ -38,6 +33,7 @@ export function formatSenseItemDataToUI(
       }
 
       amount = a;
+      isAmountSendToMyAddress = toAddress === currentAddress;
 
       break;
     }
@@ -45,10 +41,14 @@ export function formatSenseItemDataToUI(
     case 'cosmos.bank.v1beta1.MsgMultiSend': {
       const v = meta as MsgMultiSendTransaction['value'];
 
-      // from = v.inputs[0].address;
-      amount = v.outputs.find(
+      const a = v.outputs.find(
         (output) => output.address === currentAddress
       )?.coins;
+
+      if (a) {
+        amount = a;
+        isAmountSendToMyAddress = true;
+      }
 
       break;
     }
@@ -66,57 +66,9 @@ export function formatSenseItemDataToUI(
 
   return {
     ...senseItem,
-    text: memo,
-    amount,
+    text: memo || '',
     cid,
+    amount,
+    isAmountSendToMyAddress,
   };
-
-  // switch (type) {
-
-  //   case SenseMetaType.particle: {
-  //     // const item = senseItem as LinkDbEntity;
-
-  //     from = senseItem.from;
-  //     hash = senseItem.transactionHash;
-  //     cid = senseItem.lastId;
-
-  //     break;
-  //   }
-
-  //   case SenseMetaType.follow: {
-  //     debugger;
-
-  //     break;
-  //   }
-  //   case SenseMetaType.tweet: {
-  //     text = senseItem.text;
-  //     from = senseItem.neuron;
-  //     cid = senseItem.to;
-
-  //     break;
-  //   }
-
-  //   case SenseMetaType.transaction: {
-  //     text = senseItem.text;
-  //     from = senseItem.neuron;
-  //     cid = senseItem.to;
-
-  //     break;
-  //   }
-
-  //   default: {
-  //     console.error('unknown type');
-  //     console.log(senseItem);
-  //   }
-  // }
-
-  // return {
-  //   timestamp,
-  //   text,
-  //   amount,
-  //   from,
-  //   hash,
-  //   cid,
-  //   amountSendDirection: isAmountSend ? 'from' : 'to',
-  // };
 }
