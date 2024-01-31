@@ -17,8 +17,15 @@ type Props = {
 function MessageContainer({ senseItem }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, hash, amount, from, cid, text, isAmountSendToMyAddress } =
-    formatSenseItemDataToUI(senseItem, address);
+  const {
+    timestamp,
+    transactionHash,
+    amount,
+    from,
+    cid,
+    text,
+    isAmountSendToMyAddress,
+  } = formatSenseItemDataToUI(senseItem, address);
 
   const { data, loading } = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
@@ -60,7 +67,7 @@ function MessageContainer({ senseItem }: Props) {
   return (
     <Message
       address={from}
-      txHash={hash}
+      txHash={transactionHash}
       date={timestamp}
       content={cid ? renderCidContent() : text}
       amountData={{

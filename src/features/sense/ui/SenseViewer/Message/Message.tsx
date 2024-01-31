@@ -72,11 +72,11 @@ function Message({
             </Link>
           </Tooltip>
         )}
-        <Date timestamp={+date} />
+        <Date timestamp={+date} timeOnly />
       </div>
 
       <div className={styles.body}>
-        {content && <p className={styles.content}>{content}</p>}
+        {content && <div className={styles.content}>{content}</div>}
 
         {amountData?.amount && (
           <div className={styles.amount}>

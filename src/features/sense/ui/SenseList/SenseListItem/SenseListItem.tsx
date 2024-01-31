@@ -55,13 +55,13 @@ function SenseListItem({
         )}
       </h5>
 
-      <p
+      <div
         className={cx(styles.text, {
           [styles.withAmount]: withAmount,
         })}
       >
         {value}
-      </p>
+      </div>
 
       {timestamp && <Date timestamp={timestamp} className={styles.date} />}
 

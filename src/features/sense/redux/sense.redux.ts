@@ -19,6 +19,7 @@ import {
   MsgSendValue,
 } from 'src/services/backend/services/dataSource/blockchain/types';
 import { RootState } from 'src/redux/store';
+import { numberToDateWithTimezone } from 'src/utils/date';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -253,7 +254,8 @@ const slice = createSlice({
       const { chatId, txHash, isSuccess } = action.payload;
       const chat = state.chats[chatId]!;
 
-      const item = chat.data.find((item) => item.hash === txHash);
+      const item = chat.data.find((item) => item.transactionHash === txHash);
+
       if (item) {
         if (isSuccess) {
           delete item.status;

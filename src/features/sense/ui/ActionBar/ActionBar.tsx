@@ -20,13 +20,13 @@ type Props = {
 } & AdviserProps;
 
 enum STEPS {
-  INITIAL,
+  // INITIAL,
   MESSAGE,
   AMOUNT,
 }
 
 function ActionBarWrapper({ id, adviser, update }: Props) {
-  const [step, setStep] = useState(STEPS.INITIAL);
+  const [step, setStep] = useState(STEPS.MESSAGE);
 
   const [message, setMessage] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
@@ -68,7 +68,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   const signerIsReady = Boolean(signer && signingClient);
 
   useEffect(() => {
-    setStep(STEPS.INITIAL);
+    setStep(STEPS.MESSAGE);
     setMessage('');
     setAmount(0);
   }, [id]);
@@ -108,14 +108,14 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
         addSenseItem({
           id: id!,
           item: {
+            type: 'cosmos.bank.v1beta1.MsgSend',
             memo: message,
             meta: {
               amount: formattedAmount,
             },
-            itemType: SenseMetaType.send,
             id: address,
             address,
-            hash: txHash,
+            transactionHash: txHash,
             timestamp: Date.now(),
           },
         })
@@ -135,7 +135,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
             })
           );
 
-          setStep(STEPS.INITIAL);
+          setStep(STEPS.MESSAGE);
           setMessage('');
           setAmount(0);
 
@@ -192,7 +192,9 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           value={message}
           placeholder="Message"
         />
-        <Button onClick={send}>Confirm</Button>
+        <Button className={styles.sendBtn} onClick={send}>
+          🔼
+        </Button>
         <span>or</span>
         <Button onClick={() => setStep(STEPS.AMOUNT)}>Send tokens</Button>
       </ActionBar>
