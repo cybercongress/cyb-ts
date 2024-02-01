@@ -86,11 +86,12 @@ function formatApiData(item: SenseListItem): SenseItem {
   }
 
   switch (item.entryType) {
-    case EntryType.chat: {
+    case EntryType.chat:
+    case EntryType.transactions: {
       const meta = item.meta as SenseTransactionResultMeta;
       const { type } = meta;
 
-      let from;
+      let from = item.ownerId;
 
       if (type === 'cosmos.bank.v1beta1.MsgSend') {
         const value = meta.value as MsgSendValue;
@@ -199,11 +200,6 @@ const slice = createSlice({
 
       data.forEach((item) => {
         const { id } = item;
-
-        // // TODO: remove
-        // if (newList.includes(id)) {
-        //   return;
-        // }
 
         if (!state.chats[id]) {
           state.chats[id] = newChatStructure;
