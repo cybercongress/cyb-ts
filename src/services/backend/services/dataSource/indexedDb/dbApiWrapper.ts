@@ -213,7 +213,8 @@ class DbApiWrapper {
       ['id', 'owner_id']
     );
 
-    const timestampUpdate = result.rows[0];
+    const timestampUpdate = result.rows[0][0];
+
     this.updateSyncStatus({
       id,
       ownerId,
