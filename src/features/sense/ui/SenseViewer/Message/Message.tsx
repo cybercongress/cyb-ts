@@ -15,18 +15,25 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 type Props = {
   address: string;
-  text: string;
+  content: string | JSX.Element;
   date: number;
   amountData?: {
     amount: MsgSend['amount'] | undefined;
-    isAmountSend: boolean;
+    isAmountSendToMyAddress: boolean;
   };
   txHash?: string;
   // fix
   status: SenseItem['status'];
 };
 
-function Message({ address, text, date, amountData, txHash, status }: Props) {
+function Message({
+  address,
+  content,
+  date,
+  amountData,
+  txHash,
+  status,
+}: Props) {
   const myAddress = useAppSelector(selectCurrentAddress);
   const myMessage = address === myAddress;
 
@@ -65,18 +72,20 @@ function Message({ address, text, date, amountData, txHash, status }: Props) {
             </Link>
           </Tooltip>
         )}
-        <Date timestamp={+date} />
+        <Date timestamp={+date} timeOnly />
       </div>
 
       <div className={styles.body}>
-        {text && <p className={styles.content}>{text}</p>}
+        {content && <div className={styles.content}>{content}</div>}
 
         {amountData?.amount && (
           <div className={styles.amount}>
             <CoinsAmount
               amount={amountData.amount}
               type={
-                amountData.isAmountSend ? CoinAction.send : CoinAction.receive
+                !amountData.isAmountSendToMyAddress
+                  ? CoinAction.send
+                  : CoinAction.receive
               }
             />
           </div>

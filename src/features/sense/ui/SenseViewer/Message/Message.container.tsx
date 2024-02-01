@@ -17,55 +17,64 @@ type Props = {
 function MessageContainer({ senseItem }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, hash, amount, from, cid, text, amountSendDirection } =
-    formatSenseItemDataToUI(senseItem, address);
+  const {
+    timestamp,
+    transactionHash,
+    amount,
+    from,
+    cid,
+    text,
+    isAmountSendToMyAddress,
+  } = formatSenseItemDataToUI(senseItem, address);
 
   const { data, loading } = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
   });
 
-  return (
-    <Message
-      address={from!}
-      text={
-        (cid && (
+  function renderCidContent() {
+    if (cid) {
+      if (loading) {
+        return (
+          <span>
+            resolving particle <Dots />
+          </span>
+        );
+        // eslint-disable-next-line no-else-return
+      } else if (data) {
+        return (
           <>
-            {loading ? (
-              <span>
-                resolving particle <Dots />
-              </span>
-            ) : (
-              data && (
-                <>
-                  <ContentIpfs
-                    details={data}
-                    cid={data.cid}
-                    content={data.content}
-                    search
-                  />
+            <ContentIpfs
+              details={data}
+              cid={data.cid}
+              content={data.content}
+              search
+            />
 
-                  {data.type === 'text' && data.text?.endsWith('...') && (
-                    <>
-                      <br />
-                      <Link to={routes.oracle.ask.getLink(cid)} target="_blank">
-                        full content
-                      </Link>
-                    </>
-                  )}
-                </>
-              )
+            {data.type === 'text' && data.text?.endsWith('...') && (
+              <>
+                <br />
+                <Link to={routes.oracle.ask.getLink(cid)} target="_blank">
+                  full content
+                </Link>
+              </>
             )}
           </>
-        )) ||
-        text
+        );
       }
-      txHash={hash}
+    }
+  }
+
+  return (
+    <Message
+      address={from}
+      txHash={transactionHash}
+      date={timestamp}
+      content={cid ? renderCidContent() : text}
       amountData={{
         amount,
-        isAmountSend: amountSendDirection === 'from',
+        isAmountSendToMyAddress,
       }}
       status={senseItem.status}
-      date={timestamp}
     />
   );
 }

@@ -10,7 +10,6 @@ import { useBackend } from 'src/contexts/backend';
 import {
   getSenseChat,
   getSenseList,
-  getSenseSummary,
 } from 'src/features/sense/redux/sense.redux';
 
 export type AdviserProps = {
@@ -20,8 +19,6 @@ export type AdviserProps = {
     setAdviserText: (text: string) => void;
   };
 };
-
-export const REFETCH_INTERVAL = 1000 * 20;
 
 function Sense() {
   const [selected, setSelected] = useState<string>();
@@ -41,7 +38,6 @@ function Sense() {
     }
 
     dispatch(getSenseList(senseApi));
-    dispatch(getSenseSummary(senseApi));
   }, [senseApi, dispatch]);
 
   const senseBackendIsLoading = useAppSelector((state) => {

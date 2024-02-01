@@ -27,7 +27,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
   });
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, amount, cid, text, amountSendDirection } =
+  const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
     formatSenseItemDataToUI(senseData, address);
 
   const { data, loading } = useParticleDetails(cid!, {
@@ -38,6 +38,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
 
   if (cid) {
     content = (
+      // eslint-disable-next-line react/jsx-no-useless-fragment
       <>
         {loading ? (
           <span>
@@ -47,7 +48,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
           data &&
           (data.text ||
             contentTypeConfig[data.type]?.label ||
-            'unsuported type')
+            'unsupported type')
         )}
       </>
     );
@@ -60,9 +61,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
           <CoinsAmount
             amount={amount}
             type={
-              amountSendDirection === 'to'
-                ? CoinAction.send
-                : CoinAction.receive
+              !isAmountSendToMyAddress ? CoinAction.send : CoinAction.receive
             }
           />
         )}

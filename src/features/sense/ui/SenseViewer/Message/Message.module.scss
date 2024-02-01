@@ -12,12 +12,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  max-width: 50%;
+  max-width: 62%;
 
   // border: 2px solid #085c36;
   // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
 
-  padding: 3px 5px;
+  padding: 3px 0px;
 
   > h6 {
     grid-area: title;
@@ -54,6 +54,7 @@
   // max-width: 50px;
   // border: 1px solid green;
   border-right: transparent;
+  border-left: transparent;
   z-index: 1;
   // align-items: center;
   padding: 5px;
@@ -92,7 +93,7 @@
 .body {
   // border: 1px solid blue;
   display: flex;
-  padding: 5px;
+  padding: 10px;
   min-height: 100px;
   min-width: 100px;
   justify-content: center;

@@ -12,6 +12,7 @@ import { AppThunk } from 'src/redux/types';
 import { selectFollowings } from 'src/redux/features/currentAccount';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
+import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
 
 export type SliceState = {
   // address
@@ -143,7 +144,9 @@ const slice = createSlice({
     });
 
     builder.addCase(getPassport.rejected, (state, action) => {
-      console.error(action);
+      if (action.error.message !== PASSPORT_NOT_EXISTS_ERROR) {
+        console.error(action);
+      }
 
       state[action.meta.arg.address] = {
         loading: false,

@@ -35,12 +35,21 @@ export function CoinAmount({
   );
 }
 
-export default function CoinsAmount({ amount, type }: { amount: Coin[] }) {
-  return amount.map(({ amount, denom }, i) => {
-    // if (denom === 'boot' && amount === '1') {
-    //   return null;
-    // }
+type Props = {
+  amount: Coin[];
+  type?: CoinAction;
+};
 
-    return <CoinAmount key={i} amount={amount} denom={denom} type={type} />;
-  });
+export default function CoinsAmount({ amount, type }: Props) {
+  return (
+    <>
+      {amount.map(({ amount, denom }, i) => {
+        // if (denom === 'boot' && amount === '1') {
+        //   return null;
+        // }
+
+        return <CoinAmount key={i} amount={amount} denom={denom} type={type} />;
+      })}
+    </>
+  );
 }

@@ -7,9 +7,12 @@ import { Tooltip } from 'src/components';
 type Props = {
   timestamp: number;
   className?: string;
+
+  // temp prop, refactor
+  timeOnly?: boolean;
 };
 
-function Date2({ timestamp, className }: Props) {
+function Date2({ timestamp, className, timeOnly }: Props) {
   const date = new Date(timestamp);
   const today = new Date();
 
@@ -25,7 +28,7 @@ function Date2({ timestamp, className }: Props) {
 
   let schema = 'dd/mm';
 
-  if (isToday) {
+  if (isToday || timeOnly) {
     schema = 'HH:MM';
   } else if (!isCurrentYear && isHalfYearAgo) {
     schema = 'mm/yyyy';

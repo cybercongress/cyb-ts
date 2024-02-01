@@ -12,11 +12,12 @@ function Karma({ address }: { address: string }) {
   }
 
   return (
-    <Link to={routes.robot.routes.karma.path} className={styles.containerKarma}>
+    // to={routes.robot.routes.karma.path}
+    <span className={styles.containerKarma}>
       {/* <Tooltip tooltip="Karma measure the brightness of cyberlinks and particles created by you"> */}
       <IconsNumber value={data} type="karma" />
       {/* </Tooltip> */}
-    </Link>
+    </span>
   );
 }
 

@@ -7,7 +7,8 @@ function useParticleDetails(cid: string, { skip = false } = {}) {
   const { data, isLoading, error } = useQuery(
     ['particleDetails', cid],
     async () => {
-      return fetchWithDetails!(cid);
+      // FIXME: temporary solution
+      return fetchWithDetails!(cid) || null;
     },
     {
       enabled: Boolean(cid && fetchWithDetails) && !skip,
