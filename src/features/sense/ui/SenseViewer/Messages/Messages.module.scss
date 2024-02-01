@@ -6,7 +6,7 @@
   //   max-height: 50vh;
   display: flex;
   flex-direction: column-reverse;
-  gap: 20px 0;
+
   // padding-right: 10px;
   padding-bottom: 10px;
   //   margin-top: auto;
@@ -17,6 +17,12 @@
   p {
     word-break: break-word;
   }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 5px 0;
 }
 
 .date {

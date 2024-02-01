@@ -35,7 +35,7 @@ function Messages({ messages }: Props) {
   }
 
   const renderedMessages = useMemo(() => {
-    return messages.slice(0, showItemsLength).reverse();
+    return [...messages].reverse().slice(0, showItemsLength);
   }, [messages, showItemsLength]);
 
   const dates: string[] = [];
@@ -51,13 +51,28 @@ function Messages({ messages }: Props) {
         inverse
         loader={null}
         scrollThreshold={0.9}
-        style={{ display: 'flex', flexDirection: 'column-reverse' }}
+        className={styles.inner}
         dataLength={renderedMessages.length}
         hasMore={showItemsLength < messages.length}
         next={setMore}
       >
         {renderedMessages.map((senseItem, i, messages) => {
           const date = dateFormat(senseItem.timestamp, 'dd-mm-yyyy');
+
+          // refactor this bullshit
+          const lastItem = dates[dates.length - 1];
+
+          let render;
+          if (lastItem && date !== lastItem) {
+            let parts = lastItem.split('-');
+            let day = parseInt(parts[0], 10);
+            let month = parseInt(parts[1], 10) - 1;
+            let year = parseInt(parts[2], 10);
+
+            let date = new Date(year, month, day);
+
+            render = date;
+          }
 
           const noDate = !dates.includes(date);
           if (noDate) {
@@ -66,13 +81,18 @@ function Messages({ messages }: Props) {
 
           const isLastMessage = i === messages.length - 1;
 
+          if (isLastMessage) {
+            render = new Date(senseItem.timestamp);
+          }
+
           return (
             <Fragment key={i}>
+              {render && !isLastMessage && (
+                <p className={styles.date}>{dateFormat(render, 'mmmm dd')}</p>
+              )}
               <MessageContainer key={i} senseItem={senseItem} />
-              {(noDate || isLastMessage) && (
-                <p className={styles.date}>
-                  {dateFormat(senseItem.timestamp, 'mmmm dd')}
-                </p>
+              {isLastMessage && (
+                <p className={styles.date}>{dateFormat(render, 'mmmm dd')}</p>
               )}
             </Fragment>
           );
