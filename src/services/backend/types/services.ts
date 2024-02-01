@@ -58,15 +58,15 @@ export type SenseListRemove = {
   list: SenseListItem[];
 };
 
-export type SenseListUpdate = {
-  type: 'sense_list_update';
-  list: SenseListItem[];
-};
+// export type SenseListUpdate = {
+//   type: 'sense_list_update';
+//   list: SenseListItem[];
+// };
 
 export type BroadcastChannelMessage =
   | SyncStatusMessage
   | SyncEntryMessage
   | IndexedDbWriteMessage
   | ServiceStatusMessage
-  | SenseListUpdate
+  // | SenseListUpdate
   | SenseListRemove;

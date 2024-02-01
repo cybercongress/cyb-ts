@@ -1,8 +1,8 @@
+import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseListItem } from '../types/sense';
 import {
   BroadcastChannelMessage,
   SenseListRemove,
-  SenseListUpdate,
   ServiceName,
   ServiceStatus,
   SyncEntryName,
@@ -49,10 +49,7 @@ class BroadcastChannelSender {
   public postSenseUpdate(senseList: SenseListItem[]) {
     // console.log('postSyncEntryProgress', entry, state);
     if (senseList.length > 0) {
-      this.channel.postMessage({
-        type: 'sense_list_update',
-        list: senseList,
-      } as SenseListUpdate);
+      this.channel.postMessage(updateSenseList(senseList));
     }
   }
 

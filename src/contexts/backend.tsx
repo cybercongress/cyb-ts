@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
@@ -17,8 +17,6 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
-import { SenseMetaType } from 'src/services/backend/types/sense';
-import { SenseListUpdate } from 'src/services/backend/types/services';
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { CID_TWEET } from 'src/utils/consts';
 
