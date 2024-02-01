@@ -1,9 +1,9 @@
-##General
+## General
 
 - every process is RxJs async loop with N-second interval
 - all CID from's from any links in any process goes to separate _particle resolver queue(non-blocking)_
 
-##My transactions
+## My transactions process
 
 Process current neuron transactions: extract tweets, and chat(any interractions with other neurons).
 _Transactions can be heavy, for ex. there can be MultiSend/broadcast transactions of 150-200Kb_
@@ -32,7 +32,7 @@ flowchart TD
     E -->|Cyberlink 'tweet'| T2(add tweet to 'sync')
 ```
 
-##My particles(tweets)
+## My particles(tweets) process
 Process current user tweets
 
 > **request count** = user_links_from='tweet' \* [links_count/batch]
@@ -48,7 +48,7 @@ flowchart TD
     F <-..->|Cyberlinks| I[(Indexer)]
 ```
 
-##My friends
+## My friends process
 Process current user friend tweets+follows
 
 > **request count** = following*users * (1(indexer) + [2(lcd)])
