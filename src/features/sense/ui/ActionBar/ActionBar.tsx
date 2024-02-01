@@ -107,7 +107,9 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
       dispatch(
         addSenseItem({
           id: id!,
+
           item: {
+            from: address,
             type: 'cosmos.bank.v1beta1.MsgSend',
             memo: message,
             meta: {
@@ -180,49 +182,50 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   if (step === STEPS.MESSAGE) {
     return (
       <ActionBar
-        onClickBack={() => {
-          setStep(STEPS.INITIAL);
-        }}
+      // onClickBack={() => {
+      //   setStep(STEPS.INITIAL);
+      // }}
       >
         <Input
+          width={480}
           classNameTextbox={styles.messageInput}
           isTextarea
           autoFocus
           onChange={(e) => setMessage(e.target.value)}
           value={message}
-          placeholder="Message"
+          placeholder="Send message"
         />
         <Button className={styles.sendBtn} onClick={send}>
-          🔼
+          ▲
         </Button>
-        <span>or</span>
-        <Button onClick={() => setStep(STEPS.AMOUNT)}>Send tokens</Button>
+        {/* <span>or</span> */}
+        {/* <Button onClick={() => setStep(STEPS.AMOUNT)}>Send tokens</Button> */}
       </ActionBar>
     );
   }
 
-  if (step === STEPS.AMOUNT) {
-    return (
-      <ActionBar
-        onClickBack={() => {
-          setStep(STEPS.MESSAGE);
-        }}
-        button={{
-          text: 'Confirm',
-          onClick: send,
-          disabled: !signerIsReady || !address || !(message || amount),
-        }}
-      >
-        <InputNumber
-          min={1}
-          onChange={(value) => setAmount(+value)}
-          value={amount}
-          placeholder="Amount"
-        />
-        <span>🟢</span>
-      </ActionBar>
-    );
-  }
+  // if (step === STEPS.AMOUNT) {
+  //   return (
+  //     <ActionBar
+  //       onClickBack={() => {
+  //         setStep(STEPS.MESSAGE);
+  //       }}
+  //       button={{
+  //         text: 'Confirm',
+  //         onClick: send,
+  //         disabled: !signerIsReady || !address || !(message || amount),
+  //       }}
+  //     >
+  //       <InputNumber
+  //         min={1}
+  //         onChange={(value) => setAmount(+value)}
+  //         value={amount}
+  //         placeholder="Amount"
+  //       />
+  //       <span>🟢</span>
+  //     </ActionBar>
+  //   );
+  // }
 
   return null;
 }
