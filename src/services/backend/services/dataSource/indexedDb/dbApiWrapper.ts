@@ -318,26 +318,18 @@ class DbApiWrapper {
     cid?: ParticleCid;
     neuron?: NeuronAddress;
   }) {
-    const conditions = ['true'];
+    const conditions = [];
     cid && conditions.push(`from='${cid}' or to='${cid}'`);
     neuron && conditions.push(`neuron='${neuron}'`);
-    const fields = [
-      'mime',
-      'text',
-      'from',
-      'to',
-      'direction',
-      'timestamp',
-      'neuron',
-      'transaction_hash',
-    ].join(', ');
 
-    const command = `
-    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: from, text, mime}, direction='from'
-    pf[${fields}] := *link{from, to, timestamp, neuron, transaction_hash}, *particle{cid: to, text, mime}, direction='to'
-    ?[${fields}] := pf[${fields}], ${conditions.join(', ')}
-    :order -timestamp`;
-    const result = await this.db!.runCommand(command);
+    const result = await this.db!.executeGetCommand(
+      'links',
+      ['from', 'to', 'direction', 'timestamp', 'neuron', 'transaction_hash'],
+      conditions,
+      [],
+      { orderBy: ['-timestamp'] }
+    );
+
     return dbResultToDtoList(result) as LinkDto[];
   }
 }
