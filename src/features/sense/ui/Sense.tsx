@@ -11,6 +11,12 @@ import {
   getSenseChat,
   getSenseList,
 } from 'src/features/sense/redux/sense.redux';
+import {
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from 'react-router-dom';
 
 export type AdviserProps = {
   adviser: {
@@ -21,13 +27,22 @@ export type AdviserProps = {
 };
 
 function Sense() {
-  const [selected, setSelected] = useState<string>();
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
+  const [selected, setSelected] = useState<string>(params.senseId);
 
   // const address = useAppSelector(selectCurrentAddress);
+
+  useEffect(() => {
+    if (!params.senseId) {
+      setSelected(undefined);
+    }
+  }, [params]);
 
   const { senseApi } = useBackend();
 
@@ -121,7 +136,17 @@ function Sense() {
     <>
       <div className={styles.wrapper}>
         <SenseList
-          select={(id: string) => setSelected(id)}
+          select={(id: string) => {
+            setSelected(id);
+
+            if (!params.senseId) {
+              navigate(`./${id}`);
+            } else {
+              navigate(`../${id}`, {
+                relative: 'path',
+              });
+            }
+          }}
           selected={selected}
           adviser={adviserProps}
         />
