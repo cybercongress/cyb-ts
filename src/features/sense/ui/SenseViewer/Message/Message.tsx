@@ -49,30 +49,30 @@ function Message({
       {/* <h6><Account address={address} /></h6> */}
 
       <div className={styles.timestampBlock}>
-        {txHash && (
-          <Tooltip
-            tooltip={(() => {
-              if (status === 'pending') {
-                return 'Tx pending - view';
-              }
-              if (status === 'error') {
-                return 'Tx error - view';
-              }
-              return 'View tx';
-            })()}
-          >
-            <Link
-              className={cx(styles.tx, {
-                [styles[`status_${status}`]]: status,
-              })}
-              target="_blank"
-              to={routes.txExplorer.getLink(txHash)}
-            >
-              {getStatusText(status) || '✔'}
-            </Link>
-          </Tooltip>
-        )}
-        <Date timestamp={+date} timeOnly />
+        {/* {txHash && (
+          // <Tooltip
+          //   tooltip={(() => {
+          //     if (status === 'pending') {
+          //       return 'Tx pending - view';
+          //     }
+          //     if (status === 'error') {
+          //       return 'Tx error - view';
+          //     }
+          //     return 'View tx';
+          //   })()}
+          // ></Tooltip>
+        // )} */}
+
+        <Link
+          className={cx(styles.tx, {
+            [styles[`status_${status}`]]: status,
+          })}
+          // target="_blank"
+          to={routes.txExplorer.getLink(txHash)}
+        >
+          {/* {getStatusText(status) || '✔'} */}
+          <Date timestamp={+date} timeOnly />
+        </Link>
       </div>
 
       <div className={styles.body}>

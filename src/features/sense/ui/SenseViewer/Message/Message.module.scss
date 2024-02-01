@@ -31,7 +31,7 @@
   &.myMessage {
     // justify-self: flex-end;
     align-self: flex-end;
-    border-left: transparent;
+    // border-left: transparent;
     flex-direction: row-reverse;
   }
 }
@@ -50,13 +50,16 @@
   // justify-self: flex-end;
   // display: flex;
   border: 2px solid #085c36;
-  box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
+  // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
   // max-width: 50px;
   // border: 1px solid green;
   border-right: transparent;
   border-left: transparent;
+  align-items: center;
+  display: flex;
   z-index: 1;
   // align-items: center;
+  min-height: 40px;
   padding: 5px;
 
   .tx {
@@ -101,7 +104,14 @@
   border: 2px solid #085c36;
   gap: 10px 0;
   border-radius: 20px;
-  box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
+  // border-right: transparent;
+  border-left: transparent;
+  // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
+
+  .myMessage & {
+    border-right: transparent;
+    border-left: 2px solid #085c36;
+  }
 
   p {
     // margin-bottom: 20px;

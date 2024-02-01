@@ -82,7 +82,9 @@ function SenseViewer({ selected, adviser }: Props) {
                   <header className={styles.header_Neuron}>
                     <Karma address={selected} />
                     <Account address={selected} avatar />
-                    <HydrogenBalance address={selected} />
+                    <Link to={routes.neuron.getLink(selected)}>
+                      <HydrogenBalance address={selected} />
+                    </Link>
                   </header>
                 )
               }
@@ -98,8 +100,9 @@ function SenseViewer({ selected, adviser }: Props) {
           </div>
         ) : (
           <p className={styles.noData}>
-            post to your log, <br />
-            or select chat to start messaging
+            {/* post to your log, <br /> */}
+            {/* or  */}
+            select chat to start messaging
           </p>
         )}
       </Display>
