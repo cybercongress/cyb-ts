@@ -5,16 +5,19 @@
 
 ## My transactions process
 
-Process current neuron transactions: extract tweets, and chat(any interractions with other neurons).
-_Transactions can be heavy, for ex. there can be MultiSend/broadcast transactions of 150-200Kb_
+Sync all current neuron transactions: extract tweets, and chat(any interractions with other neurons).
 
+_transactions can be heavy, for ex. there can be MultiSend/broadcast transactions of 150-200Kb_
+
+- save all transactions to DB
+- create sense chats for all unique neurons from MsgSend/MsgMultisend
+- extract 'tweet' links and add it to sync items(SyncParticlesLoop)
+- 
 > **request count** = 1 aggregate req. + [user_transactions_count/batch].
 > example - 1000 trans., batch is 200, requests = 1 + 1000/200 = 6
 > every 60 sec.
 
-- save all transactions to DB
-- create sense chat for all unique neuron with in/out MsgSend/MsgMultisend
-- extract 'tweet' links and add it to sync items(SyncParticlesLoop)
+
 
 ```mermaid
 flowchart TD
@@ -33,7 +36,7 @@ flowchart TD
 ```
 
 ## My particles(tweets) process
-Process current user tweets
+Sync current user particle updates(new links)
 
 > **request count** = user_links_from='tweet' \* [links_count/batch]
 > example - 100 tweets. requests = \* [???/10] = [100...???]
@@ -49,7 +52,7 @@ flowchart TD
 ```
 
 ## My friends process
-Process current user friend tweets+follows
+Sync current user updates from friends(tweets&follows)
 
 > **request count** = following*users * (1(indexer) + [2(lcd)])
 > example - following is 10, requests = 10 \* (1 + [2]) = [10...30]
