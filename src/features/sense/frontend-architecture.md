@@ -13,14 +13,13 @@ frontend formats backend data to items similar to blockchain `Tx.message type`
 type SenseItem = {
   id: SenseItemId;
   transactionHash: string;
-
-  // cosmos.bank.v1beta1.MsgSend
-  type: string;
-
-  value: {};
   timestamp: string;
-  memo: string | undefined;
+  memo: string;
   from: string;
+  type: string; // ex. cosmos.bank.v1beta1.MsgSend
+
+  // additional information of tx, link
+  value: {};
 
   // for optimistic update
   status?: 'pending' | 'error';
@@ -33,5 +32,6 @@ type SenseItem = {
 
 TODO: 
 - optimistic update
-- 
+- ui format
+- list
 
