@@ -291,20 +291,28 @@ class SyncTransactionsLoop {
           };
 
           const result = await this.db!.putSyncStatus(syncItem);
-          if (result.ok) {
-            this.channelApi.postSenseUpdate([
-              {
-                ...syncItem,
-                meta: {
-                  ...syncItem.meta,
-                  memo: memo || '',
-                  value,
-                  timestamp: dateToNumber(timestamp),
-                  success,
-                },
-              },
-            ]);
-          }
+          console.log(
+            '---------syncTransactions end',
+            result,
+            syncItem,
+            lastTransaction
+          );
+
+          // Ignore sense update for transaction, should be handled inside 'syncMyChats()'
+          // if (result.ok) {
+          //   this.channelApi.postSenseUpdate([
+          //     {
+          //       ...syncItem,
+          //       meta: {
+          //         ...syncItem.meta,
+          //         memo: memo || '',
+          //         value,
+          //         timestamp: dateToNumber(timestamp),
+          //         success,
+          //       },
+          //     },
+          //   ]);
+          // }
         }
       }
     } finally {
@@ -368,38 +376,6 @@ class SyncTransactionsLoop {
 
         if (result.ok) {
           this.channelApi.postSenseUpdate(syncStatusEntities);
-
-          // eslint-disable-next-line no-await-in-loop, no-loop-func
-          // (async () => {
-          //   const syncStatusItems = await Promise.all(
-          //     syncStatusEntities.map(async (item) => {
-          //       // const { result: particle } =
-          //       //   await this.particlesResolver!.fetchDirect(item.id);
-          //       // const { result: lastParticle } =
-          //       //   await this.particlesResolver!.fetchDirect(
-          //       //     (item.meta as SenseLinkMeta).to
-          //       //   );
-          //       // return {
-          //       //   ...item,
-          //       //   meta: {
-          //       //     metaType: SenseMetaType.particle,
-          //       //     ...item.meta,
-          //       //     id: {
-          //       //       cid: particle?.cid,
-          //       //       text: particle?.textPreview,
-          //       //       mime: particle?.meta.mime,
-          //       //     },
-          //       //     lastId: {
-          //       //       cid: lastParticle?.cid,
-          //       //       text: lastParticle?.textPreview,
-          //       //       mime: lastParticle?.meta.mime,
-          //       //     },
-          //       //   } as SenseParticleResultMeta,
-          //       // };
-          //     })
-          //   );
-          //   this.channelApi.postSenseUpdate(syncStatusEntities);
-          // })();
         }
       }
     }
