@@ -12,6 +12,7 @@ import CoinsAmount, {
 import { getStatusText } from '../../utils/getStatusText';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
   address: string;
@@ -36,11 +37,13 @@ function Message({
 }: Props) {
   const myAddress = useAppSelector(selectCurrentAddress);
   const myMessage = address === myAddress;
+  const particle = isParticle(address);
 
   return (
     <div
       className={cx(styles.wrapper, {
         [styles.myMessage]: myMessage,
+        [styles.pending]: status === 'pending',
       })}
     >
       {/* <div className={styles.avatar}>

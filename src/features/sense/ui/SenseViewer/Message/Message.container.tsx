@@ -50,26 +50,38 @@ function MessageContainer({ senseItem }: Props) {
               search
             />
 
-            {data.type === 'text' && data.text?.endsWith('...') && (
+            {/* {data.type === 'text' && data.text?.endsWith('...') && (
               <>
                 <br />
                 <Link to={routes.oracle.ask.getLink(cid)} target="_blank">
                   full content
                 </Link>
               </>
-            )}
+            )} */}
           </>
         );
       }
     }
   }
 
+  const contentWithLink = (
+    <Link
+      to={
+        cid
+          ? routes.oracle.ask.getLink(cid)
+          : routes.txExplorer.getLink(transactionHash)
+      }
+    >
+      {cid ? renderCidContent() : text}
+    </Link>
+  );
+
   return (
     <Message
       address={from}
       txHash={transactionHash}
       date={timestamp}
-      content={cid ? renderCidContent() : text}
+      content={contentWithLink}
       amountData={{
         amount,
         isAmountSendToMyAddress,
