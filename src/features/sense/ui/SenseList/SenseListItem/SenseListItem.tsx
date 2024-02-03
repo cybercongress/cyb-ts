@@ -18,6 +18,8 @@ type Props = {
 
   // temp
   withAmount?: boolean;
+  title?: string;
+
   status?: SenseItem['status'];
 };
 
@@ -28,6 +30,7 @@ function SenseListItem({
   value,
   status,
   withAmount,
+  title,
 }: Props) {
   const isParticle = address && isParticleFunc(address);
 
@@ -45,13 +48,18 @@ function SenseListItem({
         )}
       </div>
 
-      <h5 className={styles.title} onClickCapture={(e) => e.preventDefault()}>
+      <h5
+        className={cx(styles.title, {
+          [styles.particleTitle]: isParticle,
+        })}
+        onClickCapture={(e) => e.preventDefault()}
+      >
         {!isParticle ? (
           <>
             @<Account address={address} />
           </>
         ) : (
-          <>#{cutSenseItem(address)}</>
+          <>{title || `#${cutSenseItem(address)}`}</>
         )}
       </h5>
 

@@ -9,6 +9,7 @@ import { SenseItemId } from 'src/features/sense/types/sense';
 import CoinsAmount, {
   CoinAction,
 } from '../../components/CoinAmount/CoinAmount';
+import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
   senseItemId: SenseItemId;
@@ -29,6 +30,12 @@ function SenseListItemContainer({ senseItemId }: Props) {
 
   const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
     formatSenseItemDataToUI(senseData, address);
+
+  const particle = isParticle(senseItemId);
+
+  const details = useParticleDetails(senseItemId, {
+    skip: !particle,
+  });
 
   const { data, loading } = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
@@ -71,10 +78,20 @@ function SenseListItemContainer({ senseItemId }: Props) {
 
   const withAmount = Boolean(amount?.length);
 
+  function formatParticleTitle(text: string) {
+    return text.trim().substring(0, 20).replaceAll('#', '');
+  }
+
+  const { type, text: particleText } = details.data || {};
+
+  const icon =
+    type && contentTypeConfig[type as keyof typeof contentTypeConfig]?.label;
+
   return (
     <SenseListItem
       address={senseItemId}
       timestamp={timestamp}
+      title={particleText ? formatParticleTitle(particleText) : icon}
       unreadCount={unreadCount}
       value={content}
       withAmount={withAmount}
