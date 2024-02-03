@@ -8,11 +8,13 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { AdviserProps } from '../Sense';
-import { CYBER } from 'src/utils/config';
+import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import { SenseMetaType } from 'src/services/backend/types/sense';
 import styles from './ActionBar.module.scss';
+import { isParticle } from 'src/features/particle/utils';
+import { useBackend } from 'src/contexts/backend';
 
 type Props = {
   id: string | undefined;
@@ -34,12 +36,16 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   const address = useAppSelector(selectCurrentAddress);
   const dispatch = useAppDispatch();
 
+  const { isIpfsInitialized, ipfsApi } = useBackend();
+
   const [tx, setTx] = useState({
     hash: '',
     onSuccess: null,
   });
 
   const waitForTransaction = useWaitForTransaction(tx);
+
+  const particle = id && isParticle(id);
 
   useEffect(() => {
     const { error, isLoading } = waitForTransaction;
@@ -85,18 +91,39 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
     }
 
     try {
-      const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
       adviser.setLoading(true);
 
       adviser.setAdviserText('Preparing transaction...');
 
-      const response = await signingClient!.sendTokens(
-        address,
-        id!,
-        formattedAmount,
-        'auto',
-        message
-      );
+      const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
+
+      let response;
+      let fromCid = message;
+      if (particle) {
+        if (!message.match(PATTERN_IPFS_HASH)) {
+          fromCid = await ipfsApi?.addContent(message);
+        }
+
+        const toCid = id;
+        // if (!answer.match(PATTERN_IPFS_HASH)) {
+        //   toCid = await ipfsApi?.addContent(answer);
+        // }
+
+        const fee = {
+          amount: [],
+          gas: DEFAULT_GAS_LIMITS.toString(),
+        };
+
+        response = await signingClient!.cyberlink(address, fromCid, toCid, fee);
+      } else {
+        response = await signingClient!.sendTokens(
+          address,
+          id!,
+          formattedAmount,
+          'auto',
+          message
+        );
+      }
 
       if (response.code !== 0) {
         throw new Error(response.rawLog);
@@ -104,24 +131,34 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
       const txHash = response.transactionHash;
 
-      dispatch(
-        addSenseItem({
-          id: id!,
+      const optimisticMessage = {
+        id: id!,
 
-          item: {
-            from: address,
-            type: 'cosmos.bank.v1beta1.MsgSend',
-            memo: message,
-            meta: {
-              amount: formattedAmount,
-            },
-            id: address,
-            address,
-            transactionHash: txHash,
-            timestamp: Date.now(),
-          },
-        })
-      );
+        item: {
+          from: address,
+          type: undefined,
+          memo: message,
+          meta: {},
+          id: address,
+          address,
+          transactionHash: txHash,
+          timestamp: Date.now(),
+        },
+      };
+
+      if (particle) {
+        optimisticMessage.item.meta = {
+          from: fromCid,
+        };
+        optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgCyberlink';
+      } else {
+        optimisticMessage.item.meta = {
+          amount: formattedAmount,
+        };
+        optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgSend';
+      }
+
+      dispatch(addSenseItem(optimisticMessage));
 
       adviser.setAdviserText('Confirming transaction...');
       setTx({
@@ -162,21 +199,8 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
     }
   }
 
-  if (!(id && isBostromAddress(id))) {
+  if (!id) {
     return null;
-  }
-
-  if (step === STEPS.INITIAL) {
-    return (
-      <ActionBar
-        button={{
-          text: 'Send message',
-          onClick: () => {
-            setStep(STEPS.MESSAGE);
-          },
-        }}
-      />
-    );
   }
 
   if (step === STEPS.MESSAGE) {
