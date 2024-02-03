@@ -32,6 +32,17 @@ function Social() {
           <div className={styles.code}>
             <GitHub />
           </div>
+
+          <br />
+          <DisplayTitle inDisplay title="other" />
+          <a
+            href="mailto:info.cyb.ai@protonmail.com"
+            target="_blank"
+            rel="noreferrer noopener"
+            className={styles.email}
+          >
+            info.cyb.ai@protonmail.com
+          </a>
         </div>
       </Display>
     </MainContainer>

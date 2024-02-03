@@ -38,9 +38,15 @@
 }
 
 .main,
-.code {
+.code,
+.email {
   &,
   > div {
     gap: 0 20px;
   }
+}
+
+.email {
+  display: inline-block !important;
+  margin-top: 20px;
 }
