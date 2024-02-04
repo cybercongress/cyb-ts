@@ -9,8 +9,6 @@ import { useEffect } from 'react';
 import Twitter from './Twitter/Twitter';
 import styles from './Social.module.scss';
 
-const HUB_LINK = 'https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ';
-
 export const HUB_LINK = 'https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ';
 
 // TODO: folder is dirty, can be refactored
