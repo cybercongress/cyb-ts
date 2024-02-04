@@ -49,11 +49,6 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   async function initSigner() {
     const windowKeplr = await getKeplr();
     if (windowKeplr && windowKeplr.experimentalSuggestChain) {
-      windowKeplr.defaultOptions = {
-        sign: {
-          preferNoSetFee: true,
-        },
-      };
       await windowKeplr.experimentalSuggestChain(
         configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
       );

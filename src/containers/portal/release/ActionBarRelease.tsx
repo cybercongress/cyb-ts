@@ -23,6 +23,14 @@ const releaseMsg = (giftAddress: string) => {
   };
 };
 
+const toggleFeeKeplr = (signer, value: boolean) => {
+  signer.keplr.defaultOptions = {
+    sign: {
+      preferNoSetFee: value,
+    },
+  };
+};
+
 const STEP_INIT = 0;
 const STEP_CHECK_ACC = 1;
 const STATE_CHANGE_ACCOUNT = 1.1;
@@ -65,6 +73,8 @@ function ActionBarRelease({
       if (signer && signingClient && currentRelease) {
         const { isNanoLedger, bech32Address: addressKeplr } =
           await signer.keplr.getKey(CYBER.CHAIN_ID);
+
+        toggleFeeKeplr(signer, true);
 
         const msgs = [];
 
@@ -127,6 +137,8 @@ function ActionBarRelease({
       // FIXME: not clear how to handle error codes
       callback?.('contract call error');
       setStep(STEP_INIT);
+    } finally {
+      toggleFeeKeplr(signer, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, signingClient, currentRelease, queryClient, availableRelease]);
