@@ -11,6 +11,8 @@ import styles from './Social.module.scss';
 
 const HUB_LINK = 'https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ';
 
+export const HUB_LINK = 'https://hackmd.io/J2P6k7ANT5GIXI3D1mPzrQ';
+
 // TODO: folder is dirty, can be refactored
 function Social() {
   const { setAdviser } = useAdviser();
@@ -34,7 +36,6 @@ function Social() {
           <div className={styles.code}>
             <GitHub />
           </div>
-
           <br />
           <DisplayTitle inDisplay title="More links" />
 
