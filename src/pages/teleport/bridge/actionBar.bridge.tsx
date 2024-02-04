@@ -40,6 +40,14 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
+const toggleFeeKeplr = (signer, value: boolean) => {
+  signer.keplr.defaultOptions = {
+    sign: {
+      preferNoSetFee: value,
+    },
+  };
+};
+
 const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
@@ -120,6 +128,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         gas: Math.round(gasEstimation * 1.5).toString(),
       };
       try {
+        toggleFeeKeplr(signer, false);
         const response = await ibcClient.signAndBroadcast(
           address,
           [msg],
@@ -169,6 +178,8 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         setTxHashIbc(null);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
+      } finally {
+        toggleFeeKeplr(signer, true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -202,6 +213,8 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         },
       };
       try {
+        toggleFeeKeplr(signer, false);
+
         const response = await signingClient.signAndBroadcast(
           address,
           [msg],
@@ -232,6 +245,8 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         setTxHash(undefined);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
+      } finally {
+        toggleFeeKeplr(signer, true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
