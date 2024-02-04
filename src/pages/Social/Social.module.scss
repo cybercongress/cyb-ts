@@ -50,3 +50,25 @@
   display: inline-block !important;
   margin-top: 20px;
 }
+
+.hubLinks {
+  display: inline-flex !important;
+  flex-direction: column;
+  margin: 10px 0;
+  text-align: center;
+
+  div {
+    margin-bottom: -5px;
+    font-size: 30px;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  span {
+    display: block;
+  }
+
+  margin-left: 0;
+}
