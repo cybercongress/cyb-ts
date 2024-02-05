@@ -82,9 +82,10 @@ function Sense() {
         <p>
           syncing txs data <br />
           {syncState.inProgress
-            ? `${syncState.message} (remaining: ${syncState.totalEstimatedTime}s)`
-            : '(estimating time to complete)'}
-          ...
+            ? `${syncState.message} (remaining: ${syncState.totalEstimatedTime}s)...`
+            : syncState.status === 'started'
+            ? 'estimating time to complete...'
+            : ''}
         </p>
       );
     } else {

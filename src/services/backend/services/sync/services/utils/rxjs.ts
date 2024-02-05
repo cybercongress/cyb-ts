@@ -12,6 +12,7 @@ import {
   filter,
   retry,
   delay,
+  exhaustMap,
 } from 'rxjs';
 
 export const createLoopObservable = (
@@ -30,7 +31,7 @@ export const createLoopObservable = (
         startWith(0),
         delay(warmupMs),
         tap(() => beforeCallback && beforeCallback()),
-        concatMap(() =>
+        exhaustMap(() =>
           actionObservable$.pipe(
             catchError((error) => {
               console.error('>>> createLoopObservable error:', error);

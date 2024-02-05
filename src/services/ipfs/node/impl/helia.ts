@@ -14,6 +14,7 @@ import { webSockets } from '@libp2p/websockets';
 import { webTransport } from '@libp2p/webtransport';
 import { identifyService } from 'libp2p/identify';
 import { multiaddr, protocols } from '@multiformats/multiaddr';
+import { LsResult } from 'ipfs-core-types/src/pin';
 
 import {
   AbortOptions,
@@ -21,12 +22,20 @@ import {
   IpfsNodeType,
   IpfsFileStats,
   IpfsNode,
-  IpfsNodePrperties,
 } from '../../ipfs';
 // import { all } from '@libp2p/websockets/filters';
 import { stringToCid } from '../../utils/cid';
-import { LsResult } from 'ipfs-core-types/src/pin';
 import { CYBER_GATEWAY_URL } from '../../config';
+
+async function* mapToLsResult(
+  iterable: AsyncIterable<Pin>
+): AsyncIterable<LsResult> {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const item of iterable) {
+    const { cid, metadata } = item;
+    yield { cid: cid.toV0(), metadata, type: 'recursive' };
+  }
+}
 
 const libp2pFactory = async (
   datastore: IDBDatastore,
@@ -103,7 +112,7 @@ class HeliaNode implements IpfsNode {
     return { gatewayUrl: CYBER_GATEWAY_URL };
   }
 
-  private _isStarted: boolean = false;
+  private _isStarted = false;
 
   get isStarted() {
     return this._isStarted;
@@ -256,16 +265,8 @@ class HeliaNode implements IpfsNode {
     return true;
   }
 
-  private async *mapToLsResult(
-    iterable: AsyncIterable<Pin>
-  ): AsyncIterable<LsResult> {
-    for await (const item of iterable) {
-      const { cid, metadata } = item;
-      yield { cid: cid.toV0(), metadata, type: 'recursive' };
-    }
-  }
   ls() {
-    const result = this.mapToLsResult(this.node!.pins.ls());
+    const result = mapToLsResult(this.node!.pins.ls());
     return result;
   }
 

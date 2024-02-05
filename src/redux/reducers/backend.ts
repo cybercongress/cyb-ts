@@ -66,9 +66,9 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
       let totalEstimatedTime = 0;
       (Object.keys(newState.syncState.entryStatus) as SyncEntryName[]).forEach(
         (name) => {
-          const { progress } = newState.syncState.entryStatus[name];
+          const { progress, status } = newState.syncState.entryStatus[name]!;
 
-          if (progress && progress.estimatedTime > -1) {
+          if (progress && status === 'in-progress') {
             totalEstimatedTime += progress.estimatedTime;
             messages.push(
               `${name}: ${progress.completeCount}/${progress.totalCount}`
