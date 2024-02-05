@@ -4,6 +4,7 @@ import { T } from 'ramda';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_TWEET } from 'src/utils/consts';
 import { dateToNumber } from 'src/utils/date';
+import { fetchIterable } from './utils/fetch';
 
 const PAGINATION_LIMIT = 10;
 
@@ -30,9 +31,11 @@ async function getTransactions(
 
 const fetchLinkByNeuron = async (
   cyberLcdUrl: string,
-  address: NeuronAddress,
-  from: ParticleCid,
-  offset = 0
+  {
+    address,
+    from,
+    offset = 0,
+  }: { address: NeuronAddress; from: ParticleCid; offset: number }
 ) => {
   const events = [
     {
@@ -78,6 +81,18 @@ const fetchLinkByNeuron = async (
   return links;
 };
 
+const fetchLinksByNeuronTimestampIterable = (
+  cyberLcdUrl: string,
+  address: NeuronAddress,
+  fromParticle: ParticleCid,
+  timestamp: number
+) =>
+  fetchIterable(fetchLinkByNeuron, cyberLcdUrl, {
+    address,
+    timestamp,
+    from: fromParticle,
+  });
+
 // eslint-disable-next-line import/prefer-default-export
 export const fetchLinksByNeuronTimestamp = async (
   cyberLcdUrl: string,
@@ -88,12 +103,11 @@ export const fetchLinksByNeuronTimestamp = async (
   const result = [];
   while (true) {
     try {
-      const items = await fetchLinkByNeuron(
-        cyberLcdUrl,
+      const items = await fetchLinkByNeuron(cyberLcdUrl, {
         address,
         from,
-        result.length
-      );
+        offset: result.length,
+      });
 
       const partialItems = items.filter((i) => timestamp <= i.timestamp);
       result.push(...partialItems);

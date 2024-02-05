@@ -84,7 +84,7 @@ class DbApiWrapper {
     );
 
     const result = await this.db!.executePutCommand('sync_status', entitites);
-    // console.log('putSyncStatus', result);
+
     return result;
   }
 
@@ -123,10 +123,11 @@ class DbApiWrapper {
       'sync_status',
       ['id', 'unread_count', 'timestamp_update', 'timestamp_read'],
       conditions,
-      ['entry_type', 'owner_id']
+      ['entry_type', 'owner_id'],
+      { orderBy: ['-timestamp_update'] }
     );
 
-    return dbResultToDtoList(result) as Partial<SyncStatusDto>[];
+    return dbResultToDtoList(result) as SyncStatusDto[];
   }
 
   public async putTransactions(transactions: TransactionDbEntity[]) {
@@ -324,8 +325,8 @@ class DbApiWrapper {
     neuron && conditions.push(`neuron='${neuron}'`);
 
     const result = await this.db!.executeGetCommand(
-      'links',
-      ['from', 'to', 'direction', 'timestamp', 'neuron', 'transaction_hash'],
+      'link',
+      ['from', 'to', 'timestamp', 'neuron', 'transaction_hash'],
       conditions,
       [],
       { orderBy: ['-timestamp'] }

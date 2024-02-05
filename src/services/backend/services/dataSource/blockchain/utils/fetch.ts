@@ -1,20 +1,13 @@
-import { Transaction } from '../types';
-
-export async function* fetchIterable<T>(
-  fetchFunction: (
-    url: string,
-    id: string,
-    timestamp: number,
-    offset: number
-  ) => Promise<T[]>,
+// eslint-disable-next-line import/prefer-default-export
+export async function* fetchIterable<T, P>(
+  fetchFunction: (url: string, params: P & { offset: number }) => Promise<T[]>,
   cyberServiceUrl: string,
-  id: string,
-  timestamp: number,
-  types: Transaction['type'][] = []
+  params: P
 ): AsyncGenerator<T[], void, undefined> {
   let offset = 0;
   while (true) {
-    const items = await fetchFunction(cyberServiceUrl, id, timestamp, offset);
+    // eslint-disable-next-line no-await-in-loop
+    const items = await fetchFunction(cyberServiceUrl, { ...params, offset });
 
     if (items.length === 0) {
       break;

@@ -1,4 +1,6 @@
+/* eslint-disable import/no-unused-modules */
 import { request } from 'graphql-request';
+
 import gql from 'graphql-tag';
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
 import { dateToNumber, numberToDate } from 'src/utils/date';
@@ -6,6 +8,8 @@ import { Transaction } from './types';
 
 import { TRANSACTIONS_BATCH_LIMIT, CYBERLINKS_BATCH_LIMIT } from './consts';
 import { fetchIterable } from './utils/fetch';
+
+type OrderDirection = 'desc' | 'asc';
 
 type TransactionsByAddressResponse = {
   messages_by_address: Transaction[];
@@ -52,10 +56,10 @@ export type CyberlinksByParticleResponse = {
 };
 
 const messagesByAddress = gql(`
-query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp, $types: _text) {
+query MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp, $types: _text, $order_direction: order_by) {
   messages_by_address(
     args: {addresses: $address, limit: $limit, offset: $offset, types: $types},
-    order_by: {transaction: {block: {timestamp: desc}}},
+    order_by: {transaction: {block: {timestamp: $order_direction}}},
     where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
     ) {
     transaction_hash
@@ -134,21 +138,31 @@ const transactionsCountByNeuron = gql(`
 
 const fetchTransactions = async (
   cyberIndexUrl: string,
-  address: NeuronAddress,
-  timestampFrom: number,
-  offset = 0,
-  types: Transaction['type'][] = []
+  {
+    neuron,
+    timestampFrom,
+    offset = 0,
+    types = [],
+    orderDirection = 'desc',
+  }: {
+    neuron: NeuronAddress;
+    timestampFrom: number;
+    offset: number;
+    types: Transaction['type'][];
+    orderDirection: OrderDirection;
+  }
 ) => {
   try {
     const res = await request<TransactionsByAddressResponse>(
       cyberIndexUrl,
       messagesByAddress,
       {
-        address: `{${address}}`,
+        address: `{${neuron}}`,
         limit: TRANSACTIONS_BATCH_LIMIT,
         timestamp_from: numberToDate(timestampFrom),
         offset,
         types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
+        order_direction: orderDirection,
       }
     );
     console.log('--- fetchTransactions:', res?.messages_by_address);
@@ -162,9 +176,11 @@ const fetchTransactions = async (
 
 const fetchCyberlinks = async (
   cyberIndexUrl: string,
-  particleCid: ParticleCid,
-  timestampFrom: number,
-  offset = 0
+  {
+    particleCid,
+    timestampFrom,
+    offset = 0,
+  }: { particleCid: ParticleCid; timestampFrom: number; offset?: number }
 ) => {
   try {
     const res = await request<CyberlinksByParticleResponse>(
@@ -204,6 +220,71 @@ const fetchCyberlinks = async (
   }
 };
 
+const fetchCyberlinksByNeroun = async (
+  cyberIndexUrl: string,
+  {
+    neuron,
+    particlesFrom,
+    timestampFrom,
+    offset = 0,
+  }: {
+    neuron: NeuronAddress;
+    particlesFrom: ParticleCid[];
+    timestampFrom: number;
+    offset?: number;
+  }
+) => {
+  try {
+    const where = {
+      _and: [
+        {
+          timestamp: {
+            _gt: numberToDate(timestampFrom),
+          },
+        },
+        {
+          neuron: {
+            _eq: neuron,
+          },
+        },
+        { particle_from: { _in: particlesFrom } },
+      ],
+    };
+
+    const res = await request<CyberlinksByParticleResponse>(
+      cyberIndexUrl,
+      cyberlinksByParticle,
+      {
+        limit: CYBERLINKS_BATCH_LIMIT,
+        offset,
+        orderBy: [
+          {
+            timestamp: 'asc',
+          },
+        ],
+        where,
+      }
+    );
+
+    return res.cyberlinks;
+  } catch (e) {
+    console.log('--- fetchCyberlinks:', e);
+    return [];
+  }
+};
+
+export const fetchCyberlinksByNerounIterable = async (
+  cyberIndexUrl: string,
+  neuron: NeuronAddress,
+  particlesFrom: ParticleCid[],
+  timestampFrom: number
+) =>
+  fetchIterable(fetchCyberlinksByNeroun, cyberIndexUrl, {
+    neuron,
+    particlesFrom,
+    timestampFrom,
+  });
+
 export async function fetchAllCyberlinks(
   cyberIndexUrl: string,
   cid: ParticleCid,
@@ -224,28 +305,24 @@ export async function fetchAllCyberlinks(
 
 const fetchTransactionsIterable = (
   cyberIndexUrl: string,
-  neuronAddress: NeuronAddress,
-  timestamp: number,
-  types: Transaction['type'][] = []
+  neuron: NeuronAddress,
+  timestampFrom: number,
+  types: Transaction['type'][] = [],
+  orderDirection: OrderDirection
 ) =>
-  fetchIterable(
-    (
-      cyberIndexUrl: string,
-      neuronAddress: NeuronAddress,
-      timestamp: number,
-      offset: number
-    ) =>
-      fetchTransactions(cyberIndexUrl, neuronAddress, timestamp, offset, types),
-    cyberIndexUrl,
-    neuronAddress,
-    timestamp
-  );
+  fetchIterable(fetchTransactions, cyberIndexUrl, {
+    neuron,
+    timestampFrom,
+    types,
+    orderDirection,
+  });
 
 const fetchCyberlinksIterable = (
   cyberIndexUrl: string,
   particleCid: ParticleCid,
-  timestamp: number
-) => fetchIterable(fetchCyberlinks, cyberIndexUrl, particleCid, timestamp);
+  timestampFrom: number
+) =>
+  fetchIterable(fetchCyberlinks, cyberIndexUrl, { particleCid, timestampFrom });
 
 const fetchCyberlinkSyncStats = async (
   cyberIndexUrl: string,
@@ -323,7 +400,7 @@ const fetchLinksCount = async (
 
     return res?.cyberlinks_aggregate.aggregate.count;
   } catch (e) {
-    console.log('--- fetchTweetsCount:', e);
+    console.log('--- fetchLinksCount:', e);
     return -1;
   }
 };
@@ -341,12 +418,6 @@ const fetchTransactionMessagesCount = async (
         address: `{${address}}`,
         timestamp: numberToDate(timestampFrom),
       }
-    );
-    console.log(
-      '--- fetchTransactionMessagesCount:',
-      address,
-      numberToDate(timestampFrom),
-      res?.messages_by_address_aggregate.aggregate.count
     );
 
     return res?.messages_by_address_aggregate.aggregate.count;

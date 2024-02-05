@@ -63,9 +63,7 @@ function Sense() {
     });
   });
 
-  const senseSyncEstimatedTime = useAppSelector(
-    (state) => state.backend.syncEstimatedTime
-  );
+  const syncState = useAppSelector((state) => state.backend.syncState);
 
   const { setAdviser } = useAdviser();
 
@@ -82,9 +80,9 @@ function Sense() {
         'loading...'
       ) : (
         <p>
-          syncing txs data{' '}
-          {senseSyncEstimatedTime > 0
-            ? `(remaining: ${senseSyncEstimatedTime}s)`
+          syncing txs data <br />
+          {syncState.inProgress
+            ? `${syncState.message} (remaining: ${syncState.totalEstimatedTime}s)`
             : '(estimating time to complete)'}
           ...
         </p>
@@ -99,7 +97,7 @@ function Sense() {
     senseBackendIsLoading,
     error,
     adviserText,
-    senseSyncEstimatedTime,
+    syncState,
   ]);
 
   //  seems use context

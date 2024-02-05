@@ -21,16 +21,17 @@ export const syncMyChats = async (
   const myChats = extractSenseChats(myAddress, myTransactions!);
 
   const results: SenseListItem[] = [];
+
   myChats.forEach(async (chat) => {
     const syncItem = syncItemsMap.get(chat.userAddress);
     const lastTransaction = chat.transactions.at(-1)!;
-    const { timestamp: lastChatTimestamp, hash } = lastTransaction;
+    const { timestamp: lastChatTimestamp, hash, index } = lastTransaction;
 
     const syncItemHeader = {
       entryType: EntryType.chat,
       ownerId: myAddress,
-      meta: { transaction_hash: hash },
       timestampUpdate: lastChatTimestamp,
+      meta: { transaction_hash: hash, index },
     };
 
     if (!syncItem) {
@@ -44,7 +45,7 @@ export const syncMyChats = async (
 
       const result = await db.putSyncStatus(newItem);
       if (result.ok) {
-        results.push(newItem);
+        results.push({ ...newItem, meta: lastTransaction });
       }
     } else {
       const { id, timestampRead, timestampUpdate } = syncItem;
@@ -60,7 +61,11 @@ export const syncMyChats = async (
         };
         const result = await db.updateSyncStatus(syncStatusChanges);
         if (result.ok) {
-          results.push({ ...syncItem, ...syncStatusChanges } as SenseListItem);
+          results.push({
+            ...syncItem,
+            ...syncStatusChanges,
+            meta: lastTransaction,
+          } as SenseListItem);
         }
       }
     }

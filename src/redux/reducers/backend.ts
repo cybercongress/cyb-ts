@@ -4,6 +4,7 @@ import {
   ServiceStatus,
   BroadcastChannelMessage,
   SyncEntryStatus,
+  SyncEntryName,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 
@@ -17,7 +18,6 @@ type BackendState = {
       message?: string;
     };
   };
-  syncEstimatedTime: number;
 };
 
 const initialState: BackendState = {
@@ -25,27 +25,16 @@ const initialState: BackendState = {
   syncState: {
     status: 'inactive',
     entryStatus: {},
+    totalEstimatedTime: 0,
+    message: '',
+    inProgress: false,
   },
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
     sync: { status: 'inactive' },
   },
-  syncEstimatedTime: 0,
 };
-
-function calculateAverageSyncTime(entryStatus: SyncEntryStatus): number {
-  let totalEstimatedTime = 0;
-  let count = 0;
-  Object.values(entryStatus).forEach((entry) => {
-    if (entry?.progress?.estimatedTime !== undefined) {
-      totalEstimatedTime += entry.progress.estimatedTime;
-      count++;
-    }
-  });
-  console.log('--------calculateAverageSyncTime', totalEstimatedTime, count);
-  return count > 0 ? totalEstimatedTime / count : 0;
-}
 
 // Backend state
 function backendReducer(state = initialState, action: BroadcastChannelMessage) {
@@ -73,9 +62,27 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
         state
       );
 
-      newState.syncEstimatedTime = calculateAverageSyncTime(
-        newState.syncState.entryStatus
+      const messages: string[] = [];
+      let totalEstimatedTime = 0;
+      (Object.keys(newState.syncState.entryStatus) as SyncEntryName[]).forEach(
+        (name) => {
+          const { progress } = newState.syncState.entryStatus[name];
+
+          if (progress && progress.estimatedTime > -1) {
+            totalEstimatedTime += progress.estimatedTime;
+            messages.push(
+              `${name}: ${progress.completeCount}/${progress.totalCount}`
+            );
+          }
+        }
       );
+
+      newState.syncState = {
+        ...newState.syncState,
+        message: messages.join(', '),
+        totalEstimatedTime,
+        inProgress: messages.length > 0,
+      };
 
       return newState;
     }

@@ -11,6 +11,7 @@ import {
   distinctUntilChanged,
   filter,
   retry,
+  delay,
 } from 'rxjs';
 
 export const createLoopObservable = (
@@ -20,17 +21,19 @@ export const createLoopObservable = (
   beforeCallback?: () => void,
   warmupMs = 0 // Start immediately
 ) => {
+  console.log('---create loop', warmupMs, intervalMs);
   const source$ = isInitialized$.pipe(
     distinctUntilChanged(),
     filter((initialized) => initialized),
     switchMap(() => {
       return interval(intervalMs).pipe(
-        startWith(warmupMs),
+        startWith(0),
+        delay(warmupMs),
         tap(() => beforeCallback && beforeCallback()),
         concatMap(() =>
           actionObservable$.pipe(
             catchError((error) => {
-              console.log('Error:', error);
+              console.error('>>> createLoopObservable error:', error);
               throw error;
             })
           )

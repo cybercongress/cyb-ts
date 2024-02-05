@@ -4,7 +4,7 @@ import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import { CyberlinkTxHash, ParticleCid } from 'src/types/base';
+import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
@@ -13,10 +13,21 @@ import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-import { PARTICLES_SYNC_INTERVAL } from '../consts';
+import {
+  MAX_PARRALEL_TRANSACTIONS,
+  MY_PARTICLES_SYNC_INTERVAL,
+} from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
+import {
+  fetchCyberlinksByNerounIterable,
+  fetchLinksCount as fetchCyberlinksCount,
+} from '../../../dataSource/blockchain/indexer';
+import { CID_TWEET } from 'src/utils/consts';
+import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
+import { dateToNumber, numberToDate } from 'src/utils/date';
+import { SenseListItem } from 'src/services/backend/types/sense';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -30,6 +41,8 @@ class SyncParticlesLoop {
   private params: SyncServiceParams | undefined;
 
   private statusApi = broadcastStatus('particle', this.channelApi);
+
+  private progressTracker = new ProgressTracker();
 
   private _loop$: Observable<any> | undefined;
 
@@ -59,107 +72,178 @@ class SyncParticlesLoop {
       particlesResolver.isInitialized$,
     ]).pipe(
       map(
-        ([dbInstance, ipfsInstance, params, syncQueueInitialized]) =>
+        ([dbInstance, ipfsInstance, params, particleResolverInitialized]) =>
           !!ipfsInstance &&
           !!dbInstance &&
-          !!syncQueueInitialized &&
+          !!particleResolverInitialized &&
           !!params.cyberIndexUrl &&
           !!params.myAddress
       )
     );
   }
 
-  private async syncParticles() {
-    const lastLinkTimestamps = new Map<ParticleCid, CyberlinkTxHash>();
-    const syncUpdates = [];
-    try {
-      const { myAddress, cyberIndexUrl } = this.params!;
-      // fetch observable particles from db
-      const result = await this.db!.findSyncStatus({
-        ownerId: myAddress!,
-        entryType: EntryType.particle,
+  private async fetchNewTweets(
+    cyberIndexUrl: string,
+    myAddress: NeuronAddress,
+    timestampUpdate: number
+  ) {
+    const tweetsAsyncIterable = await fetchCyberlinksByNerounIterable(
+      cyberIndexUrl,
+      myAddress,
+      [CID_TWEET],
+      timestampUpdate
+    );
+
+    const newTweets: SyncStatusDto[] = [];
+    // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
+    for await (const tweetsBatch of tweetsAsyncIterable) {
+      console.log(`-----sync fetchNewTweets ${timestampUpdate}`, tweetsBatch);
+
+      const syncStatusEntities = tweetsBatch.map((item) => {
+        const { timestamp, to } = item;
+        const timestampUpdate = dateToNumber(timestamp);
+
+        // Initial state
+        return {
+          ownerId: myAddress,
+          id: to,
+          entryType: EntryType.particle,
+          timestampUpdate,
+          timestampRead: timestampUpdate,
+          unreadCount: 0,
+          disabled: false,
+          meta: { ...item, timestamp: timestampUpdate },
+        } as SyncStatusDto;
       });
-
-      // TODO: Sync one-by-one | batch
-      const syncStatusEntities = (
-        await Promise.all(
-          result.map(async (syncStatus) => {
-            const { id, timestampUpdate } = syncStatus;
-            const links = await fetchCyberlinksAndResolveParticles(
-              cyberIndexUrl!,
-              id as string,
-              timestampUpdate as number,
-              this.particlesResolver!,
-              QueuePriority.MEDIUM
-            );
-
-            if (links.length > 0) {
-              const entities = links.map(mapLinkFromIndexerToDbEntity);
-              lastLinkTimestamps.set(id!, entities.at(-1)!);
-              await this.db!.putCyberlinks(entities);
-
-              return changeSyncStatus(syncStatus, links);
-            }
-
-            return undefined;
-          })
-        )
-      ).filter((i) => !!i) as SyncStatusDto[];
 
       if (syncStatusEntities.length > 0) {
         const result = await this.db!.putSyncStatus(syncStatusEntities);
-        if (result.ok) {
-          syncUpdates.push(...syncStatusEntities);
+        newTweets.push(...syncStatusEntities);
+
+        if (!result.ok) {
+          console.log('NOT OK fetchMyTweets', result);
+          //   this.channelApi.postSenseUpdate(syncStatusEntities);
+        }
+      }
+
+      this.statusApi.sendStatus(
+        'in-progress',
+        `fetching new tweets...`,
+        this.progressTracker.trackProgress(tweetsBatch.length)
+      );
+    }
+
+    return newTweets;
+  }
+
+  private async syncParticles(
+    cyberIndexUrl: string,
+    myAddress: NeuronAddress,
+    syncItems: SyncStatusDto[]
+  ) {
+    const updatedSyncItems: SyncStatusDto[] = [];
+
+    try {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const syncItem of syncItems) {
+        const { id, timestampUpdate } = syncItem;
+        // eslint-disable-next-line no-await-in-loop
+        const links = await fetchCyberlinksAndResolveParticles(
+          cyberIndexUrl,
+          id,
+          timestampUpdate,
+          this.particlesResolver!,
+          QueuePriority.MEDIUM
+        );
+
+        if (links.length > 0) {
+          // save links
+          // eslint-disable-next-line no-await-in-loop
+          const result = await this.db!.putCyberlinks(
+            links.map(mapLinkFromIndexerToDbEntity)
+          );
+
+          const newItem = changeSyncStatus(syncItem, links, myAddress);
+
+          updatedSyncItems.push(newItem);
+        }
+
+        this.statusApi.sendStatus(
+          'in-progress',
+          `fetching tweet updates...`,
+          this.progressTracker.trackProgress(1)
+        );
+      }
+
+      if (updatedSyncItems.length > 0) {
+        const result = await this.db!.putSyncStatus(updatedSyncItems);
+        if (!result.ok) {
+          console.log('>>> syncParticles batch ERR:', result);
         }
       }
     } catch (e) {
       console.log('>>> SyncParticlesLoop error:', e);
       throw e;
     } finally {
-      (async () => {
-        // eslint-disable-next-line no-await-in-loop
-        const syncStatusItems = await Promise.all(
-          syncUpdates.map(async (item) => {
-            // const { result: particle } =
-            //   await this.particlesResolver!.fetchDirect(item.id);
-            // const { result: lastParticle } =
-            //   await this.particlesResolver!.fetchDirect(
-            //     (item.meta as SenseLinkMeta).to
-            //   );
-            return {
-              ...item,
-              meta: { ...item.meta, ...lastLinkTimestamps.get(item.id) },
-            };
-            // return {
-            //   ...item,
-            //   meta: {
-            //     metaType: SenseMetaType.particle,
-            //     ...item.meta,
-            //     id: {
-            //       cid: particle?.cid,
-            //       text: particle?.textPreview,
-            //       mime: particle?.meta.mime,
-            //     },
-            //     lastId: {
-            //       cid: lastParticle?.cid,
-            //       text: lastParticle?.textPreview,
-            //       mime: lastParticle?.meta.mime,
-            //     },
-            //   } as SenseParticleResultMeta,
-            // };
-          })
-        );
-        this.channelApi.postSenseUpdate(syncStatusItems);
-      })();
+      this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
     }
+  }
+
+  private async syncMain() {
+    const { myAddress, cyberIndexUrl } = this.params!;
+
+    this.statusApi.sendStatus('estimating');
+
+    const syncItemParticles = await this.db!.findSyncStatus({
+      ownerId: myAddress!,
+      entryType: EntryType.particle,
+    });
+
+    const timestampUpdate = syncItemParticles.at(0)?.timestampUpdate || 0;
+
+    // // Get last update timestamp by last my transaction
+    // const { timestampUpdate = 0 } = await this.db!.getSyncStatus(
+    //   myAddress!,
+    //   myAddress!,
+    //   EntryType.transactions
+    // );
+
+    // Get count of new links after last update
+    const newLinkCount = await fetchCyberlinksCount(
+      cyberIndexUrl!,
+      myAddress!,
+      [CID_TWEET],
+      timestampUpdate
+    );
+
+    this.progressTracker.start(newLinkCount + syncItemParticles.length);
+    this.statusApi.sendStatus(
+      'in-progress',
+      'preparing...',
+      this.progressTracker.progress
+    );
+
+    if (newLinkCount > 0) {
+      // fetch and save new particles
+      const newSyncItemParticles = await this.fetchNewTweets(
+        cyberIndexUrl!,
+        myAddress!,
+        timestampUpdate
+      );
+
+      // add to fetch-sync linked particles
+      syncItemParticles.push(...newSyncItemParticles);
+    }
+    // console.log(`-----sync syncParticles before`, syncItemParticles);
+
+    await this.syncParticles(cyberIndexUrl!, myAddress!, syncItemParticles);
   }
 
   start() {
     this._loop$ = createLoopObservable(
-      PARTICLES_SYNC_INTERVAL,
+      MY_PARTICLES_SYNC_INTERVAL,
       this.isInitialized$,
-      defer(() => from(this.syncParticles())),
-      () => this.statusApi.sendStatus('in-progress')
+      defer(() => from(this.syncMain()))
     );
 
     this._loop$.subscribe({

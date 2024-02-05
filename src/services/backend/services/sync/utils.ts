@@ -1,7 +1,8 @@
 import { dateToNumber } from 'src/utils/date';
 
-import { ParticleCid } from 'src/types/base';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { EntryType } from 'src/services/CozoDb/types/entities';
 
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 
@@ -19,21 +20,20 @@ export function extractLinkData(
 
 export function changeSyncStatus(
   statusEntity: Partial<SyncStatusDto>,
-  links: CyberlinksByParticleResponse['cyberlinks']
+  links: CyberlinksByParticleResponse['cyberlinks'],
+  ownerId: NeuronAddress
 ) {
-  const { lastLink, count, lastTimestamp, firstTimestamp } = extractLinkData(
-    statusEntity.id as ParticleCid,
-    links
-  );
-
-  const unreadCount = (statusEntity.unreadCount || 0) + count;
-  const timestampRead = count ? statusEntity.timestampRead : firstTimestamp;
+  const unreadCount = (statusEntity.unreadCount || 0) + links.length;
+  const lastLink = links[0];
+  const timestampUpdate = dateToNumber(links[0].timestamp);
 
   return {
     ...statusEntity,
+    ownerId,
+    entryType: EntryType.particle,
+    disabled: false,
     unreadCount,
-    meta: lastLink,
-    timestampUpdate: lastTimestamp,
-    timestampRead,
+    meta: { ...lastLink, timestamp: timestampUpdate },
+    timestampUpdate,
   } as SyncStatusDto;
 }

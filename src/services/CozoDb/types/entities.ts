@@ -39,7 +39,7 @@ export type TransactionDbEntity = {
 export type SyncStatusDbEntity = {
   entry_type: EntryType;
   id: NeuronAddress | ParticleCid;
-  owner_id: NeuronAddress | ParticleCid;
+  owner_id: NeuronAddress;
   timestamp_update: number;
   timestamp_read: number;
   disabled: boolean;

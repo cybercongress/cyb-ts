@@ -15,7 +15,7 @@ export type ProgressTracking = {
 };
 
 export type SyncProgress = Partial<{
-  status: 'idle' | 'in-progress' | 'error';
+  status: 'idle' | 'estimating' | 'in-progress' | 'error';
   progress: ProgressTracking;
 
   done: boolean;
@@ -25,12 +25,15 @@ export type SyncProgress = Partial<{
 
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 
-export type SyncEntryStatus = Partial<Record<SyncEntryName, SyncProgress>>;
+export type SyncEntryStatus = Record<SyncEntryName, SyncProgress>;
 
 export type SyncState = {
   status: ServiceStatus;
-  entryStatus: SyncEntryStatus;
+  entryStatus: Partial<SyncEntryStatus>;
   lastError?: string;
+  totalEstimatedTime: number;
+  message: string;
+  inProgress: boolean;
 };
 
 export type SyncStatusMessage = {
