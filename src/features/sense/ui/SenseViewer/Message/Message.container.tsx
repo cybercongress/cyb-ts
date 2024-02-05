@@ -64,24 +64,13 @@ function MessageContainer({ senseItem }: Props) {
     }
   }
 
-  const contentWithLink = (
-    <Link
-      to={
-        cid
-          ? routes.oracle.ask.getLink(cid)
-          : routes.txExplorer.getLink(transactionHash)
-      }
-    >
-      {cid ? renderCidContent() : text}
-    </Link>
-  );
-
   return (
     <Message
       address={from}
       txHash={transactionHash}
       date={timestamp}
-      content={contentWithLink}
+      cid={cid}
+      content={cid ? renderCidContent() : text}
       amountData={{
         amount,
         isAmountSendToMyAddress,

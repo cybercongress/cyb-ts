@@ -101,7 +101,6 @@
 }
 
 .body {
-  // border: 1px solid blue;
   display: flex;
   padding: 10px;
   min-height: 100px;
@@ -110,13 +109,10 @@
   flex-direction: column;
   border: 2px solid #085c36;
 
-  a {
-    color: white !important;
-  }
+  color: white !important;
 
   gap: 10px 0;
   border-radius: 20px;
-  // border-right: transparent;
   border-left: transparent;
   // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
 
@@ -128,14 +124,7 @@
   &:hover {
     opacity: 0.8;
 
-    a {
-      // color:
-    }
     background-color: rgba($color: #085c36, $alpha: 0.5);
     // border-color: var(--green-light);
-  }
-
-  p {
-    // margin-bottom: 20px;
   }
 }

@@ -24,6 +24,7 @@ type Props = {
   };
   txHash?: string;
   // fix
+  cid: string;
   status: SenseItem['status'];
 };
 
@@ -32,7 +33,8 @@ function Message({
   content,
   date,
   amountData,
-  txHash,
+  txHash: transactionHash,
+  cid,
   status,
 }: Props) {
   const myAddress = useAppSelector(selectCurrentAddress);
@@ -71,14 +73,21 @@ function Message({
             [styles[`status_${status}`]]: status,
           })}
           // target="_blank"
-          to={routes.txExplorer.getLink(txHash)}
+          to={routes.txExplorer.getLink(transactionHash)}
         >
           {/* {getStatusText(status) || '✔'} */}
           <Date timestamp={+date} timeOnly />
         </Link>
       </div>
 
-      <div className={styles.body}>
+      <Link
+        className={styles.body}
+        to={
+          particle
+            ? routes.oracle.ask.getLink(cid)
+            : routes.txExplorer.getLink(transactionHash)
+        }
+      >
         {content && <div className={styles.content}>{content}</div>}
 
         {amountData?.amount && (
@@ -93,7 +102,7 @@ function Message({
             />
           </div>
         )}
-      </div>
+      </Link>
     </div>
   );
 }
