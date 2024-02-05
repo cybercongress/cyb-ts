@@ -11,25 +11,18 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
-import {
-  // fetchCyberlinksAndResolveParticles,
-  extractCybelinksFromTransaction as extractLinksDataFromTransaction,
-} from '../utils/links';
+import { extractCybelinksFromTransaction } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-// import { MAX_PARRALEL_TRANSACTIONS, SENSE_TRANSACTIONS } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-// import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
 
 import {
-  // fetchLinksCount,
   fetchTransactionMessagesCount,
   fetchTransactionsIterable,
 } from '../../../dataSource/blockchain/indexer';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
-// import { CID_TWEET } from 'src/utils/consts';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -157,7 +150,12 @@ class SyncTransactionsLoop {
         address,
         timestampFrom
       );
-
+      console.log(
+        '--------syncTransactions  start',
+        new Date().toLocaleDateString(),
+        totalMessageCount,
+        timestampFrom
+      );
       if (totalMessageCount > 0) {
         this.progressTracker.start(totalMessageCount);
 
@@ -180,7 +178,7 @@ class SyncTransactionsLoop {
         // eslint-disable-next-line no-restricted-syntax
         for await (const batch of transactionsAsyncIterable) {
           console.log(
-            '--------syncTransactions start',
+            '--------syncTransactions batch ',
             new Date().toLocaleDateString(),
             address,
             batch.length,
@@ -244,7 +242,7 @@ class SyncTransactionsLoop {
 
   private async syncLinks(batch: Transaction[]) {
     const { tweets, particlesFound, links } =
-      extractLinksDataFromTransaction(batch);
+      extractCybelinksFromTransaction(batch);
     let result;
     if (links.length > 0) {
       result = await this.db!.putCyberlinks(links);

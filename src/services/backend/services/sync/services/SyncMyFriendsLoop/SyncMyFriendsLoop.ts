@@ -8,15 +8,15 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { executeSequentially } from 'src/utils/async/promise';
 import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
-
-import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
+import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
 import { ServiceDeps } from '../types';
 
 import { createLoopObservable } from '../utils/rxjs';
 import { MY_FRIENDS_SYNC_INTERVAL, MY_FRIENDS_SYNC_WARMUP } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { fetchLinksByNeuronTimestamp } from '../../../dataSource/blockchain/lcd';
+
 import { SyncServiceParams } from '../../types';
 
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
@@ -24,9 +24,7 @@ import {
   fetchCyberlinksByNerounIterable,
   fetchLinksCount,
 } from '../../../dataSource/blockchain/indexer';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
-import { dateToNumber } from 'src/utils/date';
-import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 class SyncMyFriendsLoop {
   private isInitialized$: Observable<boolean>;
@@ -138,7 +136,7 @@ class SyncMyFriendsLoop {
         )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
       );
 
-      this.statusApi.sendStatus('estimating', `estimating...`);
+      this.statusApi.sendStatus('estimating');
 
       await Promise.all(
         followings.map(async (addr) => {
