@@ -5,7 +5,6 @@ import cx from 'classnames';
 import { Tooltip } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectUnreadCounts } from '../../redux/sense.redux';
-import { Tooltip } from 'src/components';
 
 type Props = {
   className?: string;
