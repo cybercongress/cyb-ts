@@ -64,19 +64,15 @@ function TxsDetails() {
       }
     };
     getTxsResponse();
-
-    // return () => {
-
-    // };
   }, [txHash]);
 
-  console.log('msgs', msgs);
+  console.debug('msgs', msgs);
 
   return (
     <>
       <MainContainer width="82%">
         <InformationTxs data={information} messageError={messageError} />
-        {msgs !== null && <Msgs data={msgs} />}
+        {msgs?.length > 0 && <Msgs data={msgs} />}
       </MainContainer>
       {!mobile && (
         <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />

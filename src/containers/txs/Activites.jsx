@@ -570,7 +570,10 @@ function Activites({ msg }) {
   if (type.includes('MsgUnjail')) {
     return (
       <ContainerMsgsType type={msg['@type']}>
-        <Row title="address" value={<Account address={msg.address} />} />
+        <Row
+          title="address"
+          value={<Account address={msg.validator_addr || msg.address} />}
+        />
       </ContainerMsgsType>
     );
   }
