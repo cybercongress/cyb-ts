@@ -1,9 +1,11 @@
+@import '../../../layouts/variables.module.scss';
+
 .wrapper {
   display: flex;
   align-content: stretch;
 
   height: 100%;
-  max-height: 69vh;
+  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   // Display
   > div > div {
