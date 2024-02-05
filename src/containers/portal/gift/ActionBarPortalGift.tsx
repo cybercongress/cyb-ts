@@ -4,10 +4,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice } from '@cosmjs/launchpad';
+import { GasPrice, coins } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import { useDispatch, useSelector } from 'react-redux';
+import { Citizenship } from 'src/types/citizenship';
+import { RootState } from 'src/redux/store';
+import { useBackend } from 'src/contexts/backend';
 import txs from '../../../utils/txs';
 import {
   Dots,
@@ -15,13 +20,17 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import { CYBER, PATTERN_CYBER } from '../../../utils/config';
+import {
+  CYBER,
+  DEFAULT_GAS_LIMITS,
+  PATTERN_CYBER,
+} from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
-  CONTRACT_ADDRESS_GIFT,
   BOOT_ICON,
+  CONTRACT_ADDRESS_GIFT,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import STEP_INFO from './utils';
@@ -32,15 +41,14 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import { Citizenship } from 'src/types/citizenship';
-import { RootState } from 'src/redux/store';
-import { useBackend } from 'src/contexts/backend';
+import mssgsClaim from '../utilsMsgs';
+import { ClaimMsg } from './type';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import BigNumber from 'bignumber.js';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -63,7 +71,12 @@ const deleteAddressMsg = (address, nickname) => {
   };
 };
 
-const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
+const claimMsg = (
+  nickname: string,
+  giftClaimingAddress: string,
+  giftAmount: number,
+  proof: string[]
+): ClaimMsg => {
   return {
     claim: {
       proof,
@@ -88,6 +101,8 @@ type Props = {
   setLoading: any;
   setLoadingGift: any;
   loadingGift: any;
+  progressClaim: number;
+  currentBonus: number;
 };
 
 function ActionBarPortalGift({
@@ -102,6 +117,8 @@ function ActionBarPortalGift({
   setLoading,
   setLoadingGift,
   loadingGift,
+  progressClaim,
+  currentBonus,
 }: Props) {
   const { isIpfsInitialized, ipfsApi } = useBackend();
 
@@ -271,7 +288,7 @@ function ActionBarPortalGift({
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          txs.calculateFee(400000, gasPrice),
+          Soft3MessageFactory.fee(2),
           'cyber'
         );
 
@@ -290,7 +307,6 @@ function ActionBarPortalGift({
                   currentAddress,
                 })
               );
-              setStepApp(STEP_INFO.STATE_PROVE_DONE);
             },
           });
 
@@ -345,58 +361,58 @@ function ActionBarPortalGift({
       ) {
         const { nickname } = citizenship.extension;
         if (Object.keys(currentGift).length > 0) {
-          const msgs = [];
+          const msgs: ClaimMsg[] = [];
           Object.keys(currentGift).forEach((key) => {
             const { address, proof, amount } = currentGift[key];
             const msgObject = claimMsg(nickname, address, amount, proof);
             msgs.push(msgObject);
           });
-          const gasLimits = 500000 * Object.keys(currentGift).length;
-          const { isNanoLedger, bech32Address } = await signer.keplr.getKey(
+          const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
             CYBER.CHAIN_ID
           );
-          if (msgs.length > 0) {
-            let executeResponseResult;
-            if (isNanoLedger && msgs.length > 1) {
-              const groupMsgData = groupMsg(msgs, 1);
-              const elementMsg = groupMsgData[0];
-              executeResponseResult = await signingClient.executeArray(
-                bech32Address,
-                CONTRACT_ADDRESS_GIFT,
-                elementMsg,
-                txs.calculateFee(gasLimits, gasPrice),
-                'cyber'
-              );
-            } else {
-              executeResponseResult = await signingClient.executeArray(
-                bech32Address,
-                CONTRACT_ADDRESS_GIFT,
-                msgs,
-                txs.calculateFee(gasLimits, gasPrice),
-                'cyber'
-              );
-            }
 
-            console.log('executeResponseResult', executeResponseResult);
-            if (executeResponseResult.code === 0) {
-              updateTxHash({
-                status: 'pending',
-                txHash: executeResponseResult.transactionHash,
-              });
-              // setStep(STEP_INIT);
-              if (setLoadingGift) {
-                setLoadingGift(true);
-              }
-              setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
-            }
+          if (!msgs.length) {
+            return;
+          }
 
-            if (executeResponseResult.code) {
-              updateTxHash({
-                txHash: executeResponseResult?.transactionHash,
-                status: 'error',
-                rawLog: executeResponseResult?.rawLog.toString(),
-              });
+          let elementMsg = msgs;
+
+          if (isNanoLedger) {
+            elementMsg = groupMsg(msgs, 1)[0] as ClaimMsg[];
+          }
+
+          const multiplier = new BigNumber(2.5)
+            .multipliedBy(Object.keys(elementMsg).length)
+            .toNumber();
+
+          const executeResponseResult = await signingClient.executeArray(
+            bech32Address,
+            CONTRACT_ADDRESS_GIFT,
+            elementMsg,
+            Soft3MessageFactory.fee(multiplier),
+            'cyber'
+          );
+
+          console.log('executeResponseResult', executeResponseResult);
+          if (executeResponseResult.code === 0) {
+            updateTxHash({
+              status: 'pending',
+              txHash: executeResponseResult.transactionHash,
+            });
+
+            if (setLoadingGift) {
+              setLoadingGift(true);
             }
+            setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
+            // setStep(STEP_INIT);
+          }
+
+          if (executeResponseResult.code) {
+            updateTxHash({
+              txHash: executeResponseResult?.transactionHash,
+              status: 'error',
+              rawLog: executeResponseResult?.rawLog.toString(),
+            });
           }
         }
       }
@@ -412,6 +428,8 @@ function ActionBarPortalGift({
     currentGift,
     citizenship,
     initSigner,
+    progressClaim,
+    currentBonus,
   ]);
 
   const isProve = useMemo(() => {
@@ -454,7 +472,7 @@ function ActionBarPortalGift({
         address,
         CONTRACT_ADDRESS_PASSPORT,
         msgObject,
-        txs.calculateFee(400000, gasPrice),
+        Soft3MessageFactory.fee(2),
         'cyber'
       );
 

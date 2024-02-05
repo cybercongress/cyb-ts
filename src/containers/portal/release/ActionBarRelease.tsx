@@ -4,12 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
-import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import BigNumber from 'bignumber.js';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
+import mssgsClaim from '../utilsMsgs';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -34,6 +38,7 @@ type Props = {
   currentRelease: Nullable<CurrentRelease[]>;
   redirectFunc: (steps: 'claim' | 'prove') => void;
   callback?: (error: string) => void;
+  availableRelease: (isLedger: boolean) => number;
 };
 
 function ActionBarRelease({
@@ -46,12 +51,14 @@ function ActionBarRelease({
   totalRelease,
   loadingRelease,
   callback,
+  availableRelease,
   addressActive,
   redirectFunc,
 }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
+  const queryClient = useQueryClient();
 
   const getRelease = useCallback(async () => {
     try {
@@ -63,7 +70,7 @@ function ActionBarRelease({
 
         if (currentRelease.length > 0) {
           currentRelease
-            .slice(0, isNanoLedger ? 4 : currentRelease.length)
+            .slice(0, isNanoLedger ? 1 : currentRelease.length)
             .forEach((item) => {
               const { address } = item;
               const msgObject = releaseMsg(address);
@@ -71,31 +78,48 @@ function ActionBarRelease({
             });
         }
 
-        if (msgs.length > 0) {
-          const executeResponseResult = await signingClient.executeArray(
-            addressKeplr,
-            CONTRACT_ADDRESS_GIFT,
-            msgs,
-            'auto',
-            CYBER.MEMO_KEPLR
-          );
-
-          console.log('executeResponseResult', executeResponseResult);
-          if (executeResponseResult.code === 0) {
-            updateTxHash({
-              status: 'pending',
-              txHash: executeResponseResult.transactionHash,
-            });
-          }
-
-          if (executeResponseResult.code) {
-            updateTxHash({
-              txHash: executeResponseResult?.transactionHash,
-              status: 'error',
-              rawLog: executeResponseResult?.rawLog.toString(),
-            });
-          }
+        if (msgs.length === 0) {
+          return;
         }
+
+        const msgsBroadcast = await mssgsClaim(
+          {
+            sender: addressKeplr,
+            isNanoLedger,
+          },
+          msgs,
+          availableRelease(isNanoLedger),
+          queryClient
+        );
+
+        if (!msgsBroadcast.length) {
+          return;
+        }
+
+        const multiplier = new BigNumber(2).multipliedBy(msgsBroadcast.length);
+
+        const executeResponseResult = await signingClient.signAndBroadcast(
+          addressKeplr,
+          [...msgsBroadcast],
+          Soft3MessageFactory.fee(multiplier.toNumber()),
+          'cyber'
+        );
+
+        if (executeResponseResult.code === 0) {
+          updateTxHash({
+            status: 'pending',
+            txHash: executeResponseResult.transactionHash,
+          });
+        }
+
+        if (executeResponseResult.code) {
+          updateTxHash({
+            txHash: executeResponseResult?.transactionHash,
+            status: 'error',
+            rawLog: executeResponseResult?.rawLog.toString(),
+          });
+        }
+
         setStep(STEP_INIT);
       }
     } catch (error) {
@@ -105,7 +129,7 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, signingClient, currentRelease]);
+  }, [signer, signingClient, currentRelease, queryClient, availableRelease]);
 
   useEffect(() => {
     const checkAddress = async () => {

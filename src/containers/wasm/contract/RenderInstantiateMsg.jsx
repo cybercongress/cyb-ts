@@ -4,6 +4,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -78,7 +79,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
         parseFloat(codeId),
         formData,
         label,
-        txs.calculateFee(600000, gasPrice),
+        Soft3MessageFactory.fee(3),
         {
           memo,
         }

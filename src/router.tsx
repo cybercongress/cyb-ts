@@ -42,11 +42,6 @@ import {
 } from './containers/wasm';
 import Help from './containers/help';
 import MainPartal from './containers/portal/mainPortal';
-import {
-  ListNetwork,
-  CustomNetwork,
-  DetailsNetwork,
-} from './containers/network';
 
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
@@ -214,9 +209,9 @@ function AppRouter() {
             element={<ContractPage />}
           />
           {/* network */}
-          <Route path="/networks" element={<ListNetwork />} />
+          {/* <Route path="/networks" element={<ListNetwork />} />
           <Route path="/networks/add" element={<CustomNetwork />} />
-          <Route path="/networks/:networkId" element={<DetailsNetwork />} />
+          <Route path="/networks/:networkId" element={<DetailsNetwork />} /> */}
           <Route path="/help" element={<Help />} />
 
           <Route path="/sigma" element={<SigmaWrapper />} />
