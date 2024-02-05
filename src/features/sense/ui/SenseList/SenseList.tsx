@@ -38,48 +38,59 @@ function SenseList({ select, selected }: Props) {
     });
   }
 
+  function getFilterText(filter: Filters) {
+    switch (filter) {
+      case Filters.Neuron:
+        return 'neuron';
+
+      case Filters.Particle:
+        return 'particle';
+
+      default:
+        return '';
+    }
+  }
+
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
+        <div className={styles.filters}>
+          <SenseListFilters
+            selected={filter}
+            onChangeFilter={(filter: Filters) => setFilter(filter)}
+          />
+        </div>
+
         {apiLoading || senseList.isLoading ? (
           <div className={styles.center}>
             <Loader2 />
           </div>
         ) : items.length ? (
-          <aside>
-            <div className={styles.filters}>
-              <SenseListFilters
-                selected={filter}
-                onChangeFilter={(filter: Filters) => setFilter(filter)}
-              />
-            </div>
-
-            <ul>
-              {items
-                // .slice(0, 4)
-                .map((id) => {
-                  return (
-                    <li
-                      key={id}
-                      className={cx(styles.item, {
-                        [styles.selected]: id === selected,
-                      })}
+          <ul>
+            {items
+              // .slice(0, 4)
+              .map((id) => {
+                return (
+                  <li
+                    key={id}
+                    className={cx(styles.item, {
+                      [styles.selected]: id === selected,
+                    })}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        select(id);
+                      }}
                     >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          select(id);
-                        }}
-                      >
-                        <SenseListItemContainer senseItemId={id} />
-                      </button>
-                    </li>
-                  );
-                })}
-            </ul>
-          </aside>
+                      <SenseListItemContainer senseItemId={id} />
+                    </button>
+                  </li>
+                );
+              })}
+          </ul>
         ) : (
-          <div className={styles.center}>no data</div>
+          <p className={styles.center}>no {getFilterText(filter)} chats</p>
         )}
       </Display>
     </div>
