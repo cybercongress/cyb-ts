@@ -4,7 +4,7 @@
 
   img {
     width: 135px;
-    margin-top: 30%;
+    margin-top: 10%;
     margin-bottom: 25px;
   }
 
@@ -14,13 +14,16 @@
     margin-bottom: 18px;
   }
 
-  pre {
-    &:first-of-type {
-      margin-top: 40px;
-    }
+  .errorDetails {
+    margin-top: 40px;
 
-    line-height: 20px;
-    display: inline-block;
+    pre {
+      line-height: 20px;
+
+      &:nth-of-type(2) {
+        display: inline-block;
+      }
+    }
   }
 
   .stack {
