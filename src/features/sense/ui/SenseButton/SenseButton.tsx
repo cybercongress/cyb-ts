@@ -14,6 +14,10 @@ function SenseButton({ className }: Props) {
   const { particles, neurons } = useAppSelector(selectUnreadCounts);
   const total = particles + neurons;
 
+  if (!total) {
+    return null;
+  }
+
   return (
     <Link
       className={cx(styles.senseBtn, className)}
@@ -29,7 +33,7 @@ function SenseButton({ className }: Props) {
       <Tooltip tooltip="sense notifications">
         <span>{total}</span>
       </Tooltip>
-      <span>all</span>
+      {/* <span>all</span> */}
     </Link>
   );
 }
