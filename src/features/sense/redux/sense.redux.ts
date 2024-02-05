@@ -196,27 +196,30 @@ const slice = createSlice({
     updateSenseList(state, action: PayloadAction<SenseListItem[]>) {
       const data = action.payload;
 
-      const newList: SliceState['list']['data'] = [];
+      const newList: SliceState['list']['data'] = [...state.list.data];
 
       data.forEach((item) => {
         const { id } = item;
 
         if (!state.chats[id]) {
-          state.chats[id] = newChatStructure;
+          state.chats[id] = { ...newChatStructure };
         }
 
-        const chat = state.chats[id]!;
+        // const descriptor = Object.getOwnPropertyDescriptor(chat, 'id');
+        // if (!descriptor?.writable) {
+        //   debugger;
+        // }
 
-        chat.id = id;
-        chat.unreadCount = item.unreadCount;
+        state.chats[id]!.id = id;
+        state.chats[id]!.unreadCount = item.unreadCount;
 
         // TODO: check if message already exists
-        chat.data = [...chat.data, formatApiData(item)];
+        state.chats[id]!.data = [...state.chats[id]!.data, formatApiData(item)];
 
         newList.push(id);
       });
 
-      state.list.data = newList;
+      state.list.data = Array.from(new Set(newList));
     },
 
     addSenseItem(
