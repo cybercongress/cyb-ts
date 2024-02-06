@@ -117,6 +117,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (state) => state.currentAccount.community
   );
 
+  // TODO: preload from DB
   const followings = useMemo(() => {
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
@@ -176,7 +177,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     })();
 
     window.q = backgroundWorkerInstance.ipfsQueue;
-    // return () => channel.close();
+    return () => channel.close();
   }, [dispatch]);
 
   const loadCozoDb = async () => {
@@ -250,7 +251,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       isDbInitialized,
       isSyncInitialized,
       ipfsError,
-      myAddress,
       senseApi,
     ]
   );

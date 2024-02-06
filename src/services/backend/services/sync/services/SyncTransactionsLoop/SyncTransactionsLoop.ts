@@ -23,6 +23,7 @@ import {
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
+import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -92,8 +93,8 @@ class SyncTransactionsLoop {
     this._loop$ = createLoopObservable(
       this.intervalMs,
       this.isInitialized$,
-      defer(() => from(this.syncAllTransactions())),
-      () => this.statusApi.sendStatus('estimating')
+      defer(() => from(this.syncAllTransactions()))
+      // () => this.statusApi.sendStatus('estimating')
     );
 
     this._loop$.subscribe({
@@ -152,17 +153,16 @@ class SyncTransactionsLoop {
       );
       console.log(
         '--------syncTransactions  start',
-        new Date().toLocaleDateString(),
         totalMessageCount,
         timestampFrom
       );
       if (totalMessageCount > 0) {
-        this.progressTracker.start(totalMessageCount);
-
         this.statusApi.sendStatus(
           'in-progress',
           `sync ${address}...`,
-          this.progressTracker.progress
+          this.progressTracker.start(
+            Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
+          )
         );
 
         const transactionsAsyncIterable = fetchTransactionsIterable(
@@ -170,68 +170,69 @@ class SyncTransactionsLoop {
           address,
           timestampFrom,
           [], // SENSE_TRANSACTIONS,
-          'asc'
+          'asc',
+          TRANSACTIONS_BATCH_LIMIT
         );
 
         let transactionCount = 0;
 
         // eslint-disable-next-line no-restricted-syntax
         for await (const batch of transactionsAsyncIterable) {
+          this.statusApi.sendStatus(
+            'in-progress',
+            `sync ${address}...`,
+            this.progressTracker.trackProgress(1) //batch.length
+          );
+          const lastTransaction = batch.at(-1)!;
+
           console.log(
             '--------syncTransactions batch ',
-            new Date().toLocaleDateString(),
+            timestampFrom,
+            dateToNumber(lastTransaction.transaction.block.timestamp),
+            myAddress,
             address,
             batch.length,
             batch.at(0)?.transaction.block.timestamp,
             batch.at(-1)?.transaction.block.timestamp,
             batch
           );
-          if (batch.length > 0) {
-            // pick last transaction = first item based on request orderby
-            const lastTransaction = batch.at(-1)!;
+          // pick last transaction = first item based on request orderby
 
-            const transactions = batch.map((i) =>
-              mapTransactionToEntity(address, i)
-            );
+          const transactions = batch.map((i) =>
+            mapTransactionToEntity(address, i)
+          );
 
-            transactionCount += batch.length;
+          transactionCount += batch.length;
 
-            // save transaction
-            await this.db!.putTransactions(transactions);
+          // save transaction
+          await this.db!.putTransactions(transactions);
 
-            // save links
-            this.syncLinks(batch);
+          // save links
+          this.syncLinks(batch);
 
-            const {
+          const {
+            transaction_hash,
+            index,
+            transaction: {
+              block: { timestamp },
+            },
+          } = lastTransaction;
+
+          // Update transaction sync items
+          const syncItem = {
+            ownerId: myAddress,
+            entryType: EntryType.transactions,
+            id: address,
+            timestampUpdate: dateToNumber(timestamp),
+            unreadCount: unreadCount + transactionCount,
+            timestampRead,
+            disabled: false,
+            meta: {
               transaction_hash,
               index,
-              transaction: {
-                block: { timestamp },
-              },
-            } = lastTransaction;
-
-            // Update transaction sync items
-            const syncItem = {
-              ownerId: myAddress,
-              entryType: EntryType.transactions,
-              id: address,
-              timestampUpdate: dateToNumber(timestamp),
-              unreadCount: unreadCount + transactionCount,
-              timestampRead,
-              disabled: false,
-              meta: {
-                transaction_hash,
-                index,
-              },
-            };
-            const result = await this.db!.putSyncStatus(syncItem);
-
-            this.statusApi.sendStatus(
-              'in-progress',
-              `sync ${address}...`,
-              this.progressTracker.trackProgress(batch.length)
-            );
-          }
+            },
+          };
+          const result = await this.db!.putSyncStatus(syncItem);
         }
       }
     } finally {

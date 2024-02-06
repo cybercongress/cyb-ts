@@ -144,12 +144,14 @@ const fetchTransactions = async (
     offset = 0,
     types = [],
     orderDirection = 'desc',
+    batchSize,
   }: {
     neuron: NeuronAddress;
     timestampFrom: number;
     offset: number;
     types: Transaction['type'][];
     orderDirection: OrderDirection;
+    batchSize: number;
   }
 ) => {
   try {
@@ -158,14 +160,13 @@ const fetchTransactions = async (
       messagesByAddress,
       {
         address: `{${neuron}}`,
-        limit: TRANSACTIONS_BATCH_LIMIT,
+        limit: batchSize,
         timestamp_from: numberToDate(timestampFrom),
         offset,
         types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
         order_direction: orderDirection,
       }
     );
-    console.log('--- fetchTransactions:', res?.messages_by_address);
 
     return res?.messages_by_address;
   } catch (e) {
@@ -226,11 +227,13 @@ const fetchCyberlinksByNeroun = async (
     neuron,
     particlesFrom,
     timestampFrom,
+    batchSize,
     offset = 0,
   }: {
     neuron: NeuronAddress;
     particlesFrom: ParticleCid[];
     timestampFrom: number;
+    batchSize: number;
     offset?: number;
   }
 ) => {
@@ -255,7 +258,7 @@ const fetchCyberlinksByNeroun = async (
       cyberIndexUrl,
       cyberlinksByParticle,
       {
-        limit: CYBERLINKS_BATCH_LIMIT,
+        limit: batchSize,
         offset,
         orderBy: [
           {
@@ -277,12 +280,14 @@ export const fetchCyberlinksByNerounIterable = async (
   cyberIndexUrl: string,
   neuron: NeuronAddress,
   particlesFrom: ParticleCid[],
-  timestampFrom: number
+  timestampFrom: number,
+  batchSize: number
 ) =>
   fetchIterable(fetchCyberlinksByNeroun, cyberIndexUrl, {
     neuron,
     particlesFrom,
     timestampFrom,
+    batchSize,
   });
 
 export async function fetchAllCyberlinks(
@@ -308,13 +313,15 @@ const fetchTransactionsIterable = (
   neuron: NeuronAddress,
   timestampFrom: number,
   types: Transaction['type'][] = [],
-  orderDirection: OrderDirection
+  orderDirection: OrderDirection,
+  batchSize: number
 ) =>
   fetchIterable(fetchTransactions, cyberIndexUrl, {
     neuron,
     timestampFrom,
     types,
     orderDirection,
+    batchSize,
   });
 
 const fetchCyberlinksIterable = (

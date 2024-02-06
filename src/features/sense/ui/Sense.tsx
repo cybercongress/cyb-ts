@@ -17,6 +17,7 @@ import {
   useNavigation,
   useParams,
 } from 'react-router-dom';
+import { convertTimestampToString } from 'src/utils/date';
 
 export type AdviserProps = {
   adviser: {
@@ -47,13 +48,13 @@ function Sense() {
   const { senseApi } = useBackend();
 
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    if (!senseApi) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!senseApi) {
+  //     return;
+  //   }
 
-    dispatch(getSenseList(senseApi));
-  }, [senseApi, dispatch]);
+  //   dispatch(getSenseList(senseApi));
+  // }, [senseApi, dispatch]);
 
   const senseBackendIsLoading = useAppSelector((state) => {
     const { entryStatus } = state.backend.syncState;
@@ -82,7 +83,11 @@ function Sense() {
         <p>
           syncing txs data <br />
           {syncState.inProgress
-            ? `${syncState.message} (remaining: ${syncState.totalEstimatedTime}s)...`
+            ? `${syncState.message} (remaining: ${
+                syncState.totalEstimatedTime > -1
+                  ? convertTimestampToString(syncState.totalEstimatedTime)
+                  : '???'
+              })...`
             : syncState.status === 'started'
             ? 'estimating time to complete...'
             : ''}

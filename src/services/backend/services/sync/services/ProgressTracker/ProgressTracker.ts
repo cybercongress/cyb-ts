@@ -19,6 +19,8 @@ export class ProgressTracker {
 
   private estimatedTime = -1;
 
+  private batchSize = 1;
+
   private onProgressUpdate?: onProgressUpdateFunc;
 
   public get progress(): ProgressTracking {
@@ -33,11 +35,20 @@ export class ProgressTracker {
     this.onProgressUpdate = onProgressUpdate;
   }
 
-  public start(totalRequests: number) {
+  public start(totalRequests: number, batchSize = 1) {
     this.totalRequests = totalRequests;
     this.requestRecords = [];
     this.completedRequests = 0;
     this.estimatedTime = -1;
+    this.batchSize = batchSize;
+
+    return this.progress;
+  }
+
+  public add(extraRequests: number) {
+    this.totalRequests += extraRequests;
+
+    return this.progress;
   }
 
   public trackProgress(processedCount: number) {
@@ -55,7 +66,7 @@ export class ProgressTracker {
         averageTimePerItem * estimatedRemainingItems;
 
       this.completedRequests += processedCount;
-      this.estimatedTime = Math.round(estimatedRemainingTime / 1000); // Convert to seconds;
+      this.estimatedTime = Math.round(estimatedRemainingTime); // Convert to seconds;
       this.onProgressUpdate && this.onProgressUpdate(this.progress);
     }
 

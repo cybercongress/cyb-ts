@@ -1,5 +1,13 @@
 /* eslint-disable camelcase */
-import { Observable, defer, from, map, combineLatest } from 'rxjs';
+import {
+  Observable,
+  defer,
+  from,
+  map,
+  combineLatest,
+  throttleTime,
+  auditTime,
+} from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { EntryType } from 'src/services/CozoDb/types/entities';
@@ -25,6 +33,7 @@ import {
   fetchLinksCount,
 } from '../../../dataSource/blockchain/indexer';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
+import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 
 class SyncMyFriendsLoop {
   private isInitialized$: Observable<boolean>;
@@ -67,21 +76,21 @@ class SyncMyFriendsLoop {
 
     deps.params$.subscribe((params) => {
       this.params = params;
-      if (this.isInitialized) {
-        // console.log('------- subscribe', params.followings);
+      // if (this.isInitialized) {
+      //   console.log('------- subscribe', params.followings);
 
-        // start immideatelly
-        const newFriends = params.followings.filter(
-          (addr) => !this.params.followings.includes(addr)
-        );
+      //   // start immideatelly
+      //   const newFriends = params.followings.filter(
+      //     (addr) => !this.params.followings.includes(addr)
+      //   );
 
-        executeSequentially(
-          newFriends.map(
-            (addr) => () =>
-              this.syncLinks(params.myAddress!, addr, params.cyberLcdUrl!)
-          )
-        );
-      }
+      //   executeSequentially(
+      //     newFriends.map(
+      //       (addr) => () =>
+      //         this.syncLinks(params.myAddress!, addr, params.cyberLcdUrl!)
+      //     )
+      //   );
+      // }
     });
 
     this.isInitialized$ = combineLatest([
@@ -89,13 +98,16 @@ class SyncMyFriendsLoop {
       deps.params$,
       particlesResolver.isInitialized$,
     ]).pipe(
+      auditTime(MY_FRIENDS_SYNC_WARMUP),
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
           !!dbInstance &&
           !!syncQueueInitialized &&
           !!params.cyberLcdUrl &&
           !!params.cyberIndexUrl &&
-          !!params.myAddress
+          !!params.myAddress &&
+          !!params.followings &&
+          params.followings.length > 0
       )
     );
 
@@ -109,8 +121,8 @@ class SyncMyFriendsLoop {
       MY_FRIENDS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncAll())),
-      () => this.statusApi.sendStatus('in-progress', 'preparing...'),
-      MY_FRIENDS_SYNC_WARMUP
+      () => this.statusApi.sendStatus('in-progress', 'preparing...')
+      // MY_FRIENDS_SYNC_WARMUP
     );
 
     this._loop$.subscribe({
@@ -124,46 +136,55 @@ class SyncMyFriendsLoop {
   private async syncAll() {
     try {
       const { myAddress, cyberIndexUrl, followings } = this.params;
-      const syncItemMap = new Map<
-        NeuronAddress,
-        Partial<SyncStatusDto> & { newLinkCount: number }
-      >(
-        (
-          await this.db?.findSyncStatus({
-            ownerId: myAddress!,
-            entryType: EntryType.chat,
-          })
-        )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
-      );
+      // const syncItemMap = new Map<
+      //   NeuronAddress,
+      //   Partial<SyncStatusDto> & { newLinkCount: number }
+      // >(
+      //   (
+      //     await this.db?.findSyncStatus({
+      //       ownerId: myAddress!,
+      //       entryType: EntryType.chat,
+      //     })
+      //   )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
+      // );
 
       this.statusApi.sendStatus('estimating');
+      console.log('------- syncAll', myAddress, followings);
+      // for (const addr in followings) {
+      //   const syncItem = syncItemMap.get(addr);
+      //   // eslint-disable-next-line no-await-in-loop
+      //   const newLinkCount = await fetchLinksCount(
+      //     cyberIndexUrl!,
+      //     addr,
+      //     [CID_FOLLOW, CID_TWEET],
+      //     (syncItem?.timestampUpdate || 0) + 1
+      //   );
+      //   if (newLinkCount > 0) {
+      //     syncItemMap.set(addr, {
+      //       ...(syncItem || { id: addr }),
+      //       // calc num of batches
+      //       newLinkCount: Math.ceil(newLinkCount / CYBERLINKS_BATCH_LIMIT),
+      //     });
+      //   }
+      // }
 
-      await Promise.all(
-        followings.map(async (addr) => {
-          const syncItem = syncItemMap.get(addr);
-          const newLinkCount = await fetchLinksCount(
-            cyberIndexUrl!,
-            addr,
-            [CID_FOLLOW, CID_TWEET],
-            (syncItem?.timestampUpdate || 0) + 1
-          );
+      // const friendsToSync = [...syncItemMap.values()].filter(
+      //   (i) => i.newLinkCount > 0
+      // );
 
-          syncItemMap.set(addr, {
-            ...(syncItem || { id: addr }),
-            newLinkCount,
-          });
-        })
-      );
-      const friendsToSync = [...syncItemMap.values()].filter(
-        (i) => i.newLinkCount > 0
-      );
+      // const totalCount = friendsToSync.reduce(
+      //   (acc, item) => acc + item.newLinkCount,
+      //   0
+      // ); // this.progressTracker.start();
+      // console.log(
+      //   '------- syncAll friendsToSync',
+      //   syncItemMap,
+      //   friendsToSync,
+      //   totalCount
+      // );
 
-      const totalCount = friendsToSync.reduce(
-        (acc, item) => acc + item.newLinkCount,
-        0
-      ); // this.progressTracker.start();
-
-      this.progressTracker.start(totalCount);
+      // this.progressTracker.start(totalCount);
+      this.progressTracker.start(followings.length);
       this.statusApi.sendStatus(
         'in-progress',
         `sync...`,
@@ -171,8 +192,8 @@ class SyncMyFriendsLoop {
       );
 
       await executeSequentially(
-        friendsToSync.map(
-          (i) => () => this.syncLinks(cyberIndexUrl!, myAddress!, i.id!)
+        followings.map(
+          (addr) => () => this.syncLinks(cyberIndexUrl!, myAddress!, addr)
         )
       );
     } catch (err) {
@@ -227,11 +248,18 @@ class SyncMyFriendsLoop {
         cyberIndexUrl,
         address,
         [CID_TWEET, CID_FOLLOW],
-        timestampFrom
+        timestampFrom,
+        CYBERLINKS_BATCH_LIMIT
       );
 
       // eslint-disable-next-line no-restricted-syntax
       for await (const linksBatch of linksAsyncIterable) {
+        this.statusApi.sendStatus(
+          'in-progress',
+          `sync ${address}...`,
+          this.progressTracker.trackProgress(1)
+        );
+
         const links = linksBatch.map(mapLinkFromIndexerToDbEntity);
 
         const unreadItemsCount = unreadCount + links.length;
@@ -263,12 +291,6 @@ class SyncMyFriendsLoop {
           if (result.ok) {
             syncUpdates.push(newSyncItem);
           }
-
-          this.statusApi.sendStatus(
-            'in-progress',
-            `sync ${address}...`,
-            this.progressTracker.trackProgress(links.length)
-          );
         }
       }
     } catch (err) {

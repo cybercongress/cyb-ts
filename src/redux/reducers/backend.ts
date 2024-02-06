@@ -64,18 +64,28 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
 
       const messages: string[] = [];
       let totalEstimatedTime = 0;
-      (Object.keys(newState.syncState.entryStatus) as SyncEntryName[]).forEach(
+      const { entryStatus } = newState.syncState;
+      (['my-friends', 'particle', 'transaction'] as SyncEntryName[]).forEach(
         (name) => {
-          const { progress, status } = newState.syncState.entryStatus[name]!;
+          if (entryStatus[name]) {
+            const { progress, status } = newState.syncState.entryStatus[name]!;
 
-          if (progress && status === 'in-progress') {
-            totalEstimatedTime += progress.estimatedTime;
-            messages.push(
-              `${name}: ${progress.completeCount}/${progress.totalCount}`
-            );
+            if (progress && status === 'in-progress') {
+              totalEstimatedTime += progress.estimatedTime;
+              messages.push(
+                `${name}: ${progress.completeCount}/${progress.totalCount}`
+              );
+            }
           }
         }
       );
+
+      // if (
+      //   messages.length === 0 &&
+      //   state.syncState.entryStatus['transaction']?.status === 'in-progress'
+      // ) {
+      //   debugger;
+      // }
 
       newState.syncState = {
         ...newState.syncState,

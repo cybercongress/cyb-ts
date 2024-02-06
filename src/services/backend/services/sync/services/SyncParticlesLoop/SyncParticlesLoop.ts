@@ -7,16 +7,16 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import { CID_TWEET } from 'src/utils/consts';
+import { dateToNumber } from 'src/utils/date';
+import { SenseListItem } from 'src/services/backend/types/sense';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
 import { createLoopObservable } from '../utils/rxjs';
-import {
-  MAX_PARRALEL_TRANSACTIONS,
-  MY_PARTICLES_SYNC_INTERVAL,
-} from '../consts';
+import { MY_PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
@@ -24,10 +24,8 @@ import {
   fetchCyberlinksByNerounIterable,
   fetchLinksCount as fetchCyberlinksCount,
 } from '../../../dataSource/blockchain/indexer';
-import { CID_TWEET } from 'src/utils/consts';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
-import { dateToNumber, numberToDate } from 'src/utils/date';
-import { SenseListItem } from 'src/services/backend/types/sense';
+import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 
 class SyncParticlesLoop {
   private isInitialized$: Observable<boolean>;
@@ -91,14 +89,19 @@ class SyncParticlesLoop {
       cyberIndexUrl,
       myAddress,
       [CID_TWEET],
-      timestampUpdate
+      timestampUpdate,
+      CYBERLINKS_BATCH_LIMIT
     );
 
     const newTweets: SyncStatusDto[] = [];
     // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
     for await (const tweetsBatch of tweetsAsyncIterable) {
       console.log(`-----sync fetchNewTweets ${timestampUpdate}`, tweetsBatch);
-
+      this.statusApi.sendStatus(
+        'in-progress',
+        `fetching new tweets...`,
+        this.progressTracker.trackProgress(1)
+      );
       const syncStatusEntities = tweetsBatch.map((item) => {
         const { timestamp, to } = item;
         const timestampUpdate = dateToNumber(timestamp);
@@ -125,12 +128,6 @@ class SyncParticlesLoop {
           //   this.channelApi.postSenseUpdate(syncStatusEntities);
         }
       }
-
-      this.statusApi.sendStatus(
-        'in-progress',
-        `fetching new tweets...`,
-        this.progressTracker.trackProgress(tweetsBatch.length)
-      );
     }
 
     return newTweets;
@@ -147,6 +144,13 @@ class SyncParticlesLoop {
       // eslint-disable-next-line no-restricted-syntax
       for (const syncItem of syncItems) {
         const { id, timestampUpdate } = syncItem;
+
+        this.statusApi.sendStatus(
+          'in-progress',
+          `fetching tweet updates...`,
+          this.progressTracker.trackProgress(1)
+        );
+
         // eslint-disable-next-line no-await-in-loop
         const links = await fetchCyberlinksAndResolveParticles(
           cyberIndexUrl,
@@ -167,12 +171,6 @@ class SyncParticlesLoop {
 
           updatedSyncItems.push(newItem);
         }
-
-        this.statusApi.sendStatus(
-          'in-progress',
-          `fetching tweet updates...`,
-          this.progressTracker.trackProgress(1)
-        );
       }
 
       if (updatedSyncItems.length > 0) {
