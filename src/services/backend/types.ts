@@ -6,6 +6,7 @@ export type SyncProgress = {
 };
 
 export type WorkerStatus = 'inactive' | 'idle' | 'syncing' | 'error';
+export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 
 export type SyncBroadcastType = 'sender' | 'reciever';
 
@@ -32,4 +33,11 @@ export type WorkerStatusMessage = {
 export type SyncEntryMessage = {
   type: 'sync_entry';
   value: SyncEntryUpdate;
+};
+
+export type ServiceName = 'db' | 'ipfs';
+
+export type ServiceStatusMessage = {
+  type: 'service_status';
+  value: { name: ServiceName; status: ServiceStatus; error?: string };
 };

@@ -3,8 +3,7 @@ import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
-import { DenomArr } from '../../../components';
-import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
+import { DenomArr, FormatNumberTokens } from 'src/components';
 import { CYBER } from '../../../utils/config';
 import { replaceSlash } from '../../../utils/utils';
 

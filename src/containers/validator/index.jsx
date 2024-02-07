@@ -1,6 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 
@@ -13,36 +12,23 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy } from '../../components';
+import { Loading, Copy, Tabs } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
+import { MusicalAddress } from '../portal/components';
+import Loader2 from 'src/components/ui/Loader2';
 
-function TabBtn({ text, isSelected, onSelect, to }) {
-  return (
-    <Link to={to}>
-      <Tab
-        key={text}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        paddingX={20}
-        paddingY={20}
-        marginX={3}
-        borderRadius={4}
-        color="#36d6ae"
-        boxShadow="0px 0px 5px #36d6ae"
-        fontSize="16px"
-        whiteSpace="nowrap"
-        width="100%"
-      >
-        {text}
-      </Tab>
-    </Link>
-  );
-}
+const mapTabs = [
+  { key: 'fans', to: 'fans' },
+  { key: 'main', to: '' },
+  { key: 'rumors', to: 'rumors' },
+  { key: 'leadership', to: 'leadership' },
+];
+
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -236,7 +222,6 @@ class ValidatorsDetails extends React.PureComponent {
       unStake,
     } = this.state;
     const {
-      mobile,
       router: { params },
     } = this.props;
 
@@ -249,7 +234,7 @@ class ValidatorsDetails extends React.PureComponent {
             height: '50vh',
           }}
         >
-          <Loading />
+          <Loader2 />
         </div>
       );
     }
@@ -267,42 +252,16 @@ class ValidatorsDetails extends React.PureComponent {
             justifyContent="center"
             alignItems="center"
           >
-            <Text color="#fff" fontSize="18px">
-              {/* seems better use viewport width or css */}
-              {mobile
-                ? trimString(validatorInfo.operator_address, 16, 5)
-                : validatorInfo.operator_address}{' '}
-              <Copy text={validatorInfo.operator_address} />
-            </Text>
+            <MusicalAddress address={validatorInfo.operator_address} />
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
-            gridGap="10px"
-          >
-            <TabBtn
-              text="Fans"
-              isSelected={tab === 'fans'}
-              to={`/network/bostrom/hero/${address}/fans`}
-            />
-            <TabBtn
-              text="Main"
-              isSelected={!tab}
-              to={`/network/bostrom/hero/${address}`}
-            />
-            <TabBtn
-              text="Rumors"
-              isSelected={tab === 'rumors'}
-              to={`/network/bostrom/hero/${address}/rumors`}
-            />
-
-            <TabBtn
-              text="Leadership"
-              isSelected={tab === 'leadership'}
-              to={`/network/bostrom/hero/${address}/leadership`}
-            />
-          </Tablist>
+          <Tabs
+            selected={tab || 'main'}
+            options={mapTabs.map((item) => ({
+              key: item.key,
+              to: `/network/bostrom/hero/${address}/${item.to}`,
+            }))}
+          />
           <Pane
             display="flex"
             marginTop={20}

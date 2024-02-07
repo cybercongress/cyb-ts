@@ -12,8 +12,8 @@ import {
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-
-const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
+import { CID_TWEET } from 'src/utils/config';
+import { useAdviser } from 'src/features/adviser/context';
 
 const LOAD_COUNT = 10;
 
@@ -26,6 +26,16 @@ function Taverna() {
   const [update, setUpdate] = useState(1);
 
   const [itemsToShow, setItemsToShow] = useState(20);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        real feed. <br /> no ad, no spam, no scam.
+      </>
+    );
+  }, [setAdviser]);
 
   useEffect(() => {
     setRankLink(null);
@@ -156,7 +166,7 @@ function Taverna() {
         {isOwner && (
           <ActionBarCont
             addressActive={addressActive}
-            keywordHash={keywordHash}
+            keywordHash={CID_TWEET}
             updateFunc={() => setUpdate(update + 1)}
             rankLink={rankLink}
             textBtn="Tweet"

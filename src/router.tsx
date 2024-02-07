@@ -27,15 +27,13 @@ import Mint from './containers/mint';
 import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
-import TeleportTs from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
-import Temple from './containers/temple';
+import Temple from './containers/temple/Temple';
 // import IpfsSettings from './features/ipfs/ipfsSettings';
-import Ibc from './containers/ibc';
 import {
   Codes,
   CodePage,
@@ -44,11 +42,6 @@ import {
 } from './containers/wasm';
 import Help from './containers/help';
 import MainPartal from './containers/portal/mainPortal';
-import {
-  ListNetwork,
-  CustomNetwork,
-  DetailsNetwork,
-} from './containers/network';
 
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
@@ -56,10 +49,12 @@ import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
-import Search from './pages/Search/Search';
-import Learn from './pages/Learn/Learn';
-import CyberlinksGraphContainer from './features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import Teleport from './pages/teleport/Teleport';
+import OracleLanding from './pages/oracle/landing/OracleLanding';
+import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
+import Social from './pages/Social/Social';
+import Brain from './pages/Brain/Brain';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -117,7 +112,7 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<Search />} />
+          <Route index element={<OracleLanding />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
@@ -162,11 +157,7 @@ function AppRouter() {
           <Route path="/quitter" element={<ForceQuitter />} />
 
           {['/graph', '/brain'].map((path) => (
-            <Route
-              key={path}
-              path={path}
-              element={<CyberlinksGraphContainer toPortal />}
-            />
+            <Route key={path} path={path} element={<Brain />} />
           ))}
 
           <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
@@ -194,7 +185,14 @@ function AppRouter() {
           <Route path="/token" element={<Market />} />
           <Route path="/token/:tab" element={<Market />} />
           <Route path="/particles" element={<Objects />} />
-          <Route path="/teleport" element={<TeleportTs />} />
+
+          <Route path="/teleport/*" element={<Teleport />} />
+
+          {/* <Route path="/teleport" element={<TeleportMainScreen />} />
+          <Route path="/teleport/swap" element={<Swap />} />
+          <Route path="/teleport/send" element={<Send />} />
+          <Route path="/teleport/bridge" element={<Bridge />} /> */}
+
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
@@ -202,7 +200,6 @@ function AppRouter() {
           <Route path="/gift" element={<PortalGift />} />
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
-          <Route path="/ibc" element={<Ibc />} />
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />
@@ -212,9 +209,9 @@ function AppRouter() {
             element={<ContractPage />}
           />
           {/* network */}
-          <Route path="/networks" element={<ListNetwork />} />
+          {/* <Route path="/networks" element={<ListNetwork />} />
           <Route path="/networks/add" element={<CustomNetwork />} />
-          <Route path="/networks/:networkId" element={<DetailsNetwork />} />
+          <Route path="/networks/:networkId" element={<DetailsNetwork />} /> */}
           <Route path="/help" element={<Help />} />
 
           <Route path="/sigma" element={<SigmaWrapper />} />
@@ -222,6 +219,8 @@ function AppRouter() {
           <Route path="/nebula" element={<Nebula />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path={routes.social.path} element={<Social />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

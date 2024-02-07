@@ -5,16 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
-import { DenomArr, ContainerGradient, MainContainer } from '../../components';
-import {
-  formatNumber,
-  replaceSlash,
-  getDisplayAmount,
-} from '../../utils/utils';
-// import { getMarketData } from './getMarketData';
-import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
-import { CYBER } from '../../utils/config';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import {
+  DenomArr,
+  ContainerGradient,
+  MainContainer,
+  FormatNumberTokens,
+} from '../../components';
+import { replaceSlash, getDisplayAmount } from '../../utils/utils';
+// import { getMarketData } from './getMarketData';
+import { ColItem, RowItem, NebulaImg } from './components';
+import { CYBER } from '../../utils/config';
+import { useAdviser } from 'src/features/adviser/context';
 
 function Title({
   capData,
@@ -43,6 +45,12 @@ function Nebula() {
   const { traseDenom } = useIbcDenom();
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('nebula');
+  }, [setAdviser]);
 
   useEffect(() => {
     if (Object.keys(dataTotalSupply).length > 0) {

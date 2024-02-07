@@ -119,7 +119,7 @@ function ActionBar({
     }
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setStage(STAGE_INIT);
     setTxHash(null);
     setTxHeight(null);
@@ -159,7 +159,7 @@ function ActionBar({
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -168,7 +168,7 @@ function ActionBar({
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

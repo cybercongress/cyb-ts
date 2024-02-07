@@ -202,7 +202,7 @@ class ActionBarContainer extends Component {
     }
   };
 
-  cleatState = () => {
+  clearState = () => {
     this.setState({
       stage: STAGE_INIT,
       address: null,
@@ -312,7 +312,7 @@ class ActionBarContainer extends Component {
         return (
           <RewardsDelegators
             data={rewards}
-            onClickBtnCloce={this.cleatState}
+            onClickBtnClose={this.clearState}
             onClickBtn={this.generateTx}
           />
         );
@@ -320,7 +320,7 @@ class ActionBarContainer extends Component {
       if (type === 'mentions') {
         return (
           <Cyberlink
-            onClickBtnCloce={this.cleatState}
+            onClickBtnClose={this.clearState}
             query={addressSend}
             onClickBtn={this.generateTx}
             bandwidth={bandwidth}
@@ -343,12 +343,12 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_WAIT) {
       return (
-        <JsonTransaction txMsg={txMsg} onClickBtnCloce={this.cleatState} />
+        <JsonTransaction txMsg={txMsg} onClickBtnClose={this.clearState} />
       );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
+      return <TransactionSubmitted onClickBtnClose={this.clearState} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
@@ -356,8 +356,8 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
-          onClickBtn={this.cleatState}
-          onClickBtnCloce={this.cleatState}
+          onClickBtn={this.clearState}
+          onClickBtnClose={this.clearState}
         />
       );
     }
@@ -366,8 +366,8 @@ class ActionBarContainer extends Component {
       return (
         <TransactionError
           errorMessage={errorMessage}
-          onClickBtn={this.cleatState}
-          onClickBtnCloce={this.cleatState}
+          onClickBtn={this.clearState}
+          onClickBtnClose={this.clearState}
         />
       );
     }

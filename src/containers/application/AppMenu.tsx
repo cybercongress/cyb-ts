@@ -13,6 +13,8 @@ import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
+import congress from './images/congress.png';
+
 import { routes } from '../../routes';
 
 const itemsMenu = () => {
@@ -43,7 +45,12 @@ const itemsMenu = () => {
       name: 'Teleport',
       to: '/teleport',
       icon: teleport,
-      subItems: [],
+      active: false,
+      subItems: [
+        { name: 'Send', to: routes.teleport.send.path },
+        { name: 'Bridge', to: routes.teleport.bridge.path },
+        { name: 'Swap', to: routes.teleport.swap.path },
+      ],
     },
     {
       name: 'Warp',
@@ -63,16 +70,17 @@ const itemsMenu = () => {
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
-    {
-      name: 'Hub',
-      to: '/search/hub',
-      icon: hub,
-      subItems: [
-        { name: 'Networks', to: '/networks' },
-        { name: 'Add network', to: '/networks/add' },
-      ],
-    },
+    // {
+    //   name: 'Hub',
+    //   to: '/search/hub',
+    //   icon: hub,
+    //   subItems: [
+    //     { name: 'Networks', to: '/networks' },
+    //     { name: 'Add network', to: '/networks/add' },
+    //   ],
+    // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
     //   icon: zhdun,

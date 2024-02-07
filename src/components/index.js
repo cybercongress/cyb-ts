@@ -26,7 +26,6 @@ import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
 import Vitalik from './vitalik';
 import BandwidthBar from './BandwidthBar';
-import TabBtn from './tabBtn';
 import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
 import NoItems from './ui/noItems';
@@ -48,6 +47,13 @@ import MainContainer from './MainContainer';
 import ButtonIcon from './buttons/ButtonIcon';
 import Loading from './ui/Loading';
 import DonutChart from './DonutChart';
+import AvailableAmount from './AvailableAmount/AvailableAmount';
+import FormatNumberTokens from './FormatNumberTokens/FormatNumberTokens';
+import AmountDenom from './AmountDenom/AmountDenom';
+import ButtonSwap from './ButtonSwap';
+import Slider from './Slider/Slider';
+import CreatedAt from './CreatedAt/CreatedAt';
+import Tabs from './Tabs/Tabs';
 
 const BtnGrd = Button;
 
@@ -77,7 +83,6 @@ export {
   BandwidthBar,
   ActionBarContentText,
   CheckAddressInfo,
-  TabBtn,
   GovernanceSoftwareUpgrade,
   ConnectAddress,
   ButtonImgText,
@@ -102,6 +107,13 @@ export {
   ContainerGradientText,
   MainContainer,
   DonutChart,
+  AvailableAmount,
+  FormatNumberTokens,
+  AmountDenom,
+  ButtonSwap,
+  Slider,
+  CreatedAt,
+  Tabs,
 };
 
 export { Dots } from './ui/Dots';

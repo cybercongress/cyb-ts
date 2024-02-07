@@ -58,7 +58,10 @@ function Commander() {
         e.relatedTarget.click();
       }
 
-      dispatch(setFocus(false));
+      // timeout for mobile focus, working different
+      setTimeout(() => {
+        dispatch(setFocus(false));
+      }, 1);
     }
 
     commanderRef.current.addEventListener('focus', onFocus);

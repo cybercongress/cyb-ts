@@ -16,7 +16,11 @@ if (process.env.IPFS_DEPLOY) {
 
 const config = {
   devtool: 'cheap-module-source-map',
-  entry: [path.join(__dirname, 'src', 'index.tsx')],
+  entry: {
+    main: [path.join(__dirname, 'src', 'index.tsx')],
+    // helia: 'helia',
+    // cozodb: 'cyb-cozo-lib-wasm',
+  },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
@@ -94,6 +98,21 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
+      'process.env.CHAIN_ID': JSON.stringify(process.env.CHAIN_ID),
+
+      'process.env.CYBER_NODE_URL_API': JSON.stringify(
+        process.env.CYBER_NODE_URL_API
+      ),
+      'process.env.CYBER_NODE_URL_WS': JSON.stringify(
+        process.env.CYBER_NODE_URL_WS
+      ),
+      'process.env.CYBER_INDEX_HTTPS': JSON.stringify(
+        process.env.CYBER_INDEX_HTTPS
+      ),
+      'process.env.CYBER_INDEX_WEBSOCKET': JSON.stringify(
+        process.env.CYBER_INDEX_WEBSOCKET
+      ),
+      'process.env.CYBER_GATEWAY': JSON.stringify(process.env.CYBER_GATEWAY),
     }),
   ],
   module: {

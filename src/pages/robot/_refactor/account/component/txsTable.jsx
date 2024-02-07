@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Link } from 'react-router-dom';
@@ -16,10 +16,23 @@ import {
 import RenderValue from './RenderValue';
 
 import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
+import { useAdviser } from 'src/features/adviser/context';
 
 function TxsTable() {
   const { address: accountUser } = useRobotContext();
   const dataGetTsxByAddress = useGetTsxByAddress(accountUser);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(
+      <>
+        the life history of one neuron, which cannot be removed or destroyed{' '}
+        <br />
+        what is written in the blockchain cannot be cut out with an axe
+      </>
+    );
+  }, [setAdviser]);
 
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
     dataGetTsxByAddress;
@@ -135,12 +148,7 @@ function TxsTable() {
   );
 
   return (
-    <Display
-      noPaddingX
-      userStyleContent={{
-        minHeight: '70vh',
-      }}
-    >
+    <Display noPaddingX>
       <InfiniteScroll
         dataLength={Object.keys(validatorRows).length}
         next={fetchNextPageFnc}

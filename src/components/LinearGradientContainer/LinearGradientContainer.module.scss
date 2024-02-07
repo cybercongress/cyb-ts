@@ -1,31 +1,24 @@
-$linear-gradient-blue: linear-gradient(
-  180deg,
-  rgba(0, 237, 235, 0) -3.3%,
-  rgba(0, 237, 235, 0.35) 100%
-);
+$linear-gradient-blue: linear-gradient(180deg,
+    rgba(0, 237, 235, 0) -3.3%,
+    rgba(0, 237, 235, 0.35) 100%);
 
-$linear-gradient-pink: linear-gradient(
-  180deg,
-  rgba(246, 43, 253, 0) -3.3%,
-  rgba(246, 43, 253, 0.3) 100%
-);
+$linear-gradient-pink: linear-gradient(180deg,
+    rgba(246, 43, 253, 0) -3.3%,
+    rgba(246, 43, 253, 0.3) 100%);
 
-$linear-gradient-yellow: linear-gradient(
-  180deg,
-  rgba(252, 240, 0, 0) -3.3%,
-  rgba(252, 240, 0, 0.25) 100%
-);
+$linear-gradient-yellow: linear-gradient(180deg,
+    rgba(252, 240, 0, 0) -3.3%,
+    rgba(252, 240, 0, 0.25) 100%);
 
-$linear-gradient-red: linear-gradient(
-  180deg,
-  rgba(255, 0, 0, 0.033) -3.3%,
-  rgba(255, 0, 0, 0.3) 100%
-);
-$linear-gradient-black: linear-gradient(
-  180deg,
-  rgba(0, 0, 0, 0) -3.3%,
-  rgba(255, 255, 255, 0.32) 100%
-);
+$linear-gradient-red: linear-gradient(180deg,
+    rgba(255, 0, 0, 0.033) -3.3%,
+    rgba(255, 0, 0, 0.3) 100%);
+$linear-gradient-black: linear-gradient(180deg,
+    rgba(0, 0, 0, 0) -3.3%,
+    rgba(255, 255, 255, 0.32) 100%);
+$linear-gradient-green: linear-gradient(180deg,
+    rgba(33, 71, 62, 0.3) -3.3%,
+    rgba(54, 214, 174, 0.3) 100%);
 // $color-border-bottom-blue: #00edeb;
 // $color-border-bottom-pink: #f62bfd;
 // $color-border-bottom-yellow: #fcf000;
@@ -35,6 +28,7 @@ $box-shadow-blue: rgba(31, 203, 255, 0.53);
 $box-shadow-pink: rgba(246, 43, 253, 0.65);
 $box-shadow-red: rgba(255, 0, 0, 0.53);
 $box-shadow-black: rgba(0, 0, 0, 0.53);
+$box-shadow-green: rgba(54, 214, 174, 0.53);
 
 .wrapper {
   height: 100%;
@@ -113,6 +107,12 @@ $box-shadow-black: rgba(0, 0, 0, 0.53);
       .textboxBottomLine {
         box-shadow: 0px 0px 6px 2px $box-shadow-black;
       }
+
+      &.green {
+        .textboxBottomLine {
+          box-shadow: 0px 0px 6px 2px $box-shadow-green;
+        }
+      }
     }
   }
 
@@ -137,6 +137,12 @@ $box-shadow-black: rgba(0, 0, 0, 0.53);
   &.black {
     .textboxFace {
       background: $linear-gradient-black;
+    }
+  }
+
+  &.green {
+    .textboxFace {
+      background: $linear-gradient-green;
     }
   }
 }

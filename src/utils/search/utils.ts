@@ -6,6 +6,9 @@ import { backendApi } from 'src/services/backend/workers/background/service';
 import * as config from '../config';
 
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
+import { CyberClient } from '@cybercongress/cyber-js';
+import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
+import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -658,6 +661,24 @@ export const getToLink = async (cid, offset, limit) => {
   return getLink(cid, LinkType.to, { offset, limit });
 };
 
+export const getSendBySenderRecipient = async (
+  address,
+  offset = 0,
+  limit = 5
+) => {
+  try {
+    const { recipient, sender } = address;
+    const response = await axios({
+      method: 'get',
+      url: `https://lcd.bostrom.cybernode.ai/cosmos/tx/v1beta1/txs?pagination.offset=${offset}&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=message.action%3D%27%2Fcosmos.bank.v1beta1.MsgSend%27&events=transfer.sender%3D%27${sender}%27&events=transfer.recipient%3D%27${recipient}%27`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return undefined;
+  }
+};
+
 export const getFollows = async (address) => {
   try {
     const response = await axios({
@@ -675,7 +696,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${config.CID_TWEET}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -697,21 +718,34 @@ export const chekFollow = async (address, addressFollowHash) => {
   }
 };
 
+type PropsTx = {
+  events: ReadonlyArray<{ key: string; value: string }>;
+  pagination?: {
+    limit: number;
+    offset: number;
+  };
+  orderBy?: 'ORDER_BY_UNSPECIFIED' | 'ORDER_BY_ASC' | 'ORDER_BY_DESC';
+};
+
 // // TODO: add types
-// async function getTransactions({ events, ...params }) {
-//   try {
-//     axios.get(`${CYBER_NODE_URL_LCD}/txs`, {
-//       params: {
-//         limit: 1000,
-//         events
-//         ...params,
-//       },
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     throw Error(error);
-//   }
-// }
+export async function getTransactions({
+  events,
+  pagination = { limit: 20, offset: 0 },
+  orderBy = 'ORDER_BY_UNSPECIFIED',
+}: PropsTx) {
+  const { offset, limit } = pagination;
+  return axios.get(`${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`, {
+    params: {
+      'pagination.offset': offset,
+      'pagination.limit': limit,
+      orderBy,
+      events: events.map((evn) => `${evn.key}='${evn.value}'`),
+    },
+    paramsSerializer: {
+      indexes: null,
+    },
+  });
+}
 
 // export async function getCyberlinks(address) {
 //   getTransactions({
@@ -901,4 +935,33 @@ export const searchByHash = async (
     console.error(error);
     return [];
   }
+};
+
+export const getDelegatorDelegations = async (
+  client: CyberClient,
+  addressBech32: string
+): Promise<DelegationResponse[]> => {
+  let nextKey;
+  const delegationData: DelegationResponse[] = [];
+
+  let done = false;
+  while (!done) {
+    // eslint-disable-next-line no-await-in-loop
+    const responsedelegatorDelegations = (await client.delegatorDelegations(
+      addressBech32,
+      nextKey
+    )) as QueryDelegatorDelegationsResponse;
+
+    delegationData.push(...responsedelegatorDelegations.delegationResponses);
+
+    const key = responsedelegatorDelegations?.pagination?.nextKey;
+
+    if (key) {
+      nextKey = key;
+    } else {
+      done = true;
+    }
+  }
+
+  return delegationData;
 };

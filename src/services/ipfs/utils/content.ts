@@ -1,11 +1,6 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import {
-  IPFSContentDetails,
-  IPFSContentMaybe,
-  IpfsContentType,
-  Uint8ArrayLike,
-} from '../ipfs';
+import { IPFSContentDetails, IPFSContentMaybe, IpfsContentType } from '../ipfs';
 import { getResponseResult, onProgressCallback } from './stream';
 
 // TODO: fix to get working inside web worker, REFACTOR
@@ -45,6 +40,10 @@ const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 function isHtml(string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
+}
+
+function shortenString(string: string, length = 300) {
+  return string.length > length ? `${string.slice(0, length)}...` : string;
 }
 
 // eslint-disable-next-line import/no-unused-modules
@@ -114,10 +113,7 @@ export const parseArrayLikeToDetails = async (
         } else {
           response.type = 'text';
           response.content = dataBase64;
-          response.text =
-            dataBase64.length > 300
-              ? `${dataBase64.slice(0, 300)}...`
-              : dataBase64;
+          response.text = shortenString(dataBase64);
         }
       }
     } else if (mime.indexOf('image') !== -1) {

@@ -31,7 +31,7 @@ function LogoLedger() {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function ContainetLedger({ logo, children, onClickBtnCloce, styles }) {
+export function ContainetLedger({ logo, children, onClickBtnClose, styles }) {
   return (
     <div
       style={{ ...styles }}
@@ -41,7 +41,7 @@ export function ContainetLedger({ logo, children, onClickBtnCloce, styles }) {
         <span>
           [
           <button
-            onClick={onClickBtnCloce}
+            onClick={onClickBtnClose}
             type="button"
             style={{
               color: 'rgb(225, 225, 225)',

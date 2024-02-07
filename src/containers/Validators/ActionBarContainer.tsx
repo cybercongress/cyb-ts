@@ -19,7 +19,9 @@ import {
 
 import { trimString } from '../../utils/utils';
 
-import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { LEDGER, CYBER } from '../../utils/config';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
+import useGetHeroes from './getHeroesHook';
 
 const {
   STAGE_INIT,
@@ -31,16 +33,13 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-const fee = {
-  amount: [],
-  gas: (DEFAULT_GAS_LIMITS * 2).toString(),
-};
+const fee = 'auto';
 const TXTYPE_DELEGATE = 0;
 const TXTYPE_UNDELEGATE = 1;
 const TXTYPE_REDELEGATE = 2;
 const LEDGER_GENERATION = 23;
 
-function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
+function StatusTx({ stage, clearState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
     return (
       <ActionBar>
@@ -69,14 +68,14 @@ function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={cleatState}
+        onClickBtnClose={clearState}
       />
     );
   }
 
   if (stage === STAGE_ERROR && errorMessage !== null) {
     return (
-      <TransactionError errorMessage={errorMessage} onClickBtn={cleatState} />
+      <TransactionError errorMessage={errorMessage} onClickBtn={clearState} />
     );
   }
 
@@ -160,7 +159,6 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
 function ActionBarContainer({
   addressPocket,
   validators,
-  validatorsAll,
   balance,
   loadingBalanceInfo,
   balanceToken,
@@ -168,6 +166,7 @@ function ActionBarContainer({
   updateFnc,
 }) {
   const { signer, signingClient } = useSigningClient();
+  const { validators: validatorsAll } = useGetHeroes();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -183,11 +182,21 @@ function ActionBarContainer({
     updateFnc
   );
 
+  const validatorSelected =
+    validators.operator_address || validators.operatorAddress;
+
+  const { data } = useDelegation(validatorSelected);
+  const staked = data?.balance?.amount || 0;
+
   const errorState = (error) => {
     setTxHash(null);
     setStage(STAGE_ERROR);
     setErrorMessage(error.toString());
   };
+
+  useEffect(() => {
+    clearFunc();
+  }, [validatorSelected]);
 
   const clearFunc = () => {
     setTxHash(null);
@@ -285,7 +294,7 @@ function ActionBarContainer({
     if (signer && signingClient && queryClient) {
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
-        const validatorAddress = [];
+        const validatorAddress: string[] = [];
         if (
           checkAddress(addressPocket, addressKeplr, {
             setErrorMessage,
@@ -305,17 +314,12 @@ function ActionBarContainer({
                 validatorAddress.push(rewards[key].validatorAddress);
               }
             });
-            const gasLimitsRewards =
-              150000 * Object.keys(validatorAddress).length;
-            const feeRewards = {
-              amount: [],
-              gas: gasLimitsRewards.toString(),
-            };
+
             setStage(STAGE_WAIT);
             const response = await signingClient.withdrawAllRewards(
               addressKeplr,
               validatorAddress,
-              feeRewards
+              fee
             );
             checkTxs(response, { setTxHash, setErrorMessage, setStage });
           }
@@ -367,6 +371,7 @@ function ActionBarContainer({
   const onClickBackToChoseHandler = () => {
     setStage(STAGE_INIT);
     setTxType(null);
+    amountChangeHandler('');
   };
 
   // loadingBalanceInfo
@@ -497,7 +502,7 @@ function ActionBarContainer({
         }
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
-        // disabledBtn={amount.length === 0}
+        available={txType === TXTYPE_DELEGATE ? balance?.available : staked}
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }
@@ -517,6 +522,7 @@ function ActionBarContainer({
         disabledBtn={!validRestakeBtn}
         validatorsAll={validatorsAll}
         validators={validators}
+        available={staked}
         onChangeReDelegate={(e) => setValueSelect(e.target.value)}
         valueSelect={valueSelect}
         onClickBack={onClickBackToChoseHandler}
@@ -528,7 +534,7 @@ function ActionBarContainer({
     return (
       <StatusTx
         stage={stage}
-        cleatState={clearFunc}
+        clearState={clearFunc}
         errorMessage={errorMessage}
         txHash={txHash}
         txHeight={txHeight}

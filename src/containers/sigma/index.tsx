@@ -15,6 +15,7 @@ import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
 import styles from './Sigma.module.scss';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import { useAdviser } from 'src/features/adviser/context';
 
 const valueContext = {
   totalCap: 0,
@@ -43,6 +44,12 @@ function Sigma() {
   const { passport: defaultPassport } = usePassportByAddress(
     defaultAccount?.account?.cyber?.bech32 || null
   );
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser('current neurons capital valuation');
+  }, [setAdviser]);
 
   const superSigma = location.pathname === routes.sigma.path;
 
@@ -102,7 +109,7 @@ function Sigma() {
   const updateDataCap = (newData) => {
     setValue((item) => ({
       ...item,
-      dataCap: { ...item.dataCap, ...newData },
+      dataCap: superSigma ? { ...item.dataCap, ...newData } : { ...newData },
     }));
   };
 

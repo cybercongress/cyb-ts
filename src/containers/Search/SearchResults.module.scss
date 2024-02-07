@@ -4,6 +4,14 @@
 
   .infiniteScroll {
     margin-top: 12px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > * {
+      width: 100%;
+    }
   }
 
   @media (width < 768px) {
@@ -14,4 +22,5 @@
 .actionBar {
   position: fixed;
   left: 0;
+  z-index: 1;
 }

@@ -16,6 +16,7 @@ import {
 import { getTxs } from '../../../utils/search/utils';
 import Button from 'src/components/btnGrd';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -76,7 +77,7 @@ function ActionBar({ updateFnc, addressActive }) {
           const response = await signingClient.upload(
             address,
             wasmBytes,
-            txs.calculateFee(4000000, gasPrice),
+            Soft3MessageFactory.fee(2),
             CYBER.MEMO_KEPLR
           );
           if (response.code === 0) {
@@ -116,7 +117,7 @@ function ActionBar({ updateFnc, addressActive }) {
     setWasm(file);
   };
 
-  const cleatState = () => {
+  const clearState = () => {
     setWasm(null);
     setStage(STAGE_INIT);
     setTxHash(null);
@@ -174,7 +175,7 @@ function ActionBar({ updateFnc, addressActive }) {
       <Confirmed
         txHash={txHash}
         txHeight={txHeight}
-        onClickBtnCloce={() => cleatState()}
+        onClickBtnClose={() => clearState()}
       />
     );
   }
@@ -183,7 +184,7 @@ function ActionBar({ updateFnc, addressActive }) {
     return (
       <TransactionError
         errorMessage={errorMessage}
-        onClickBtn={() => cleatState()}
+        onClickBtn={() => clearState()}
       />
     );
   }

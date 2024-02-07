@@ -19,15 +19,16 @@ import {
   getDenomHash,
   isNative,
 } from 'src/utils/utils';
+// import { useTokens } from 'src/hooks/useHub';
 
 type IbcDenomContextContextType = {
   ibcDenoms: Option<IbcDenomsArr>;
-  traseDenom: TraseDenomFuncType | undefined;
+  traseDenom: TraseDenomFuncType;
 };
 
 const valueContext = {
   ibcDenoms: undefined,
-  traseDenom: undefined,
+  traseDenom: () => [],
 };
 
 const IbcDenomContext =
@@ -40,6 +41,7 @@ export function useIbcDenom() {
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const poolsData = usePoolListInterval();
+  // const { tokens } = useTokens();
   const [ibcDenoms, setIbcDenoms] = useState<IbcDenomsArr>();
 
   useEffect(() => {
@@ -76,7 +78,7 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   }, [queryClient]);
 
   const traseDenom = useCallback<TraseDenomFuncType>(
-    (denomTrase: string) => {
+    (denomTrase: string): TraseDenomFuncResponse[] => {
       const infoDenomTemp: TraseDenomFuncResponse = {
         denom: denomTrase,
         coinDecimals: 0,
@@ -84,8 +86,6 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         coinImageCid: '',
         native: true,
       };
-      let findDenom = '';
-      // console.log('poolsData', poolsData)
 
       if (denomTrase.includes('pool') && poolsData) {
         const findPool = findPoolDenomInArr(denomTrase, poolsData);
@@ -102,11 +102,9 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         ) {
           const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
             ibcDenoms[denomTrase];
-          findDenom = baseDenom;
-
           infoDenomTemp.native = false;
 
-          const denomInfoFromList = findDenomInTokenList(findDenom);
+          const denomInfoFromList = findDenomInTokenList(baseDenom);
           if (denomInfoFromList !== null) {
             const { denom, coinDecimals, coinImageCid, counterpartyChainId } =
               denomInfoFromList;
@@ -120,7 +118,6 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } else {
-        findDenom = denomTrase;
         const denomInfoFromList = findDenomInTokenList(denomTrase);
         if (denomInfoFromList !== null) {
           const { denom, coinDecimals } = denomInfoFromList;
@@ -142,7 +139,8 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
     [ibcDenoms, traseDenom]
   );
 
-  if (!poolsData) {
+  // TODO refactor
+  if (!poolsData || !ibcDenoms) {
     return null;
   }
 

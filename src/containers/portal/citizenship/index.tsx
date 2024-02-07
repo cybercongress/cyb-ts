@@ -32,9 +32,12 @@ import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
-import Carousel from '../gift/carousel1/Carousel';
+import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { useAppDispatch } from 'src/redux/hooks';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -137,6 +140,7 @@ const calculatePriceNicname = (valueNickname) => {
 function GetCitizenship({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { isIpfsInitialized, ipfsNode } = useBackend();
+  const dispatch = useAppDispatch();
 
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
@@ -160,7 +164,6 @@ function GetCitizenship({ defaultAccount }) {
     };
   }, []);
 
-  // console.log('avatarImg', avatarImg);
   useEffect(() => {
     const localStorageNickname = localStorage.getItem('nickname');
     if (localStorageNickname !== null) {
@@ -193,19 +196,18 @@ function GetCitizenship({ defaultAccount }) {
   }, [queryClient]);
 
   useEffect(() => {
-    const getPinAvatar = async () => {
+    if (!avatarImg || !ipfsNode || !isIpfsInitialized) {
+      return;
+    }
+
+    (async () => {
       try {
-        if (isIpfsInitialized && avatarImg) {
-          ipfsNode?.addContent(avatarImg).then((cid) => {
-            console.log('pin cid avatar', cid);
-            setAvatarIpfs(cid);
-          });
-        }
+        const cid = await ipfsNode.addContent(avatarImg);
+        setAvatarIpfs(cid);
       } catch (error) {
-        console.log('error', error);
+        console.error(error);
       }
-    };
-    getPinAvatar();
+    })();
   }, [isIpfsInitialized, ipfsNode, avatarImg]);
 
   useEffect(() => {
@@ -236,6 +238,14 @@ function GetCitizenship({ defaultAccount }) {
     getKeplrSetup();
   }, [step, addressActive]);
 
+  const dispatchGetPassport = useCallback(() => {
+    if (step === STEP_DONE) {
+      queryClient &&
+        addressActive?.bech32 &&
+        dispatch(getPassport({ address: addressActive.bech32, queryClient }));
+    }
+  }, [step, queryClient, dispatch, addressActive]);
+
   useEffect(() => {
     const confirmTx = async () => {
       if (queryClient && txHash !== null && txHash.status === 'pending') {
@@ -247,6 +257,9 @@ function GetCitizenship({ defaultAccount }) {
               ...item,
               status: 'confirmed',
             }));
+
+            dispatchGetPassport();
+
             try {
               playPortalConfirmed();
             } catch (error) {
@@ -272,7 +285,7 @@ function GetCitizenship({ defaultAccount }) {
       }
     };
     confirmTx();
-  }, [queryClient, txHash]);
+  }, [queryClient, txHash, dispatchGetPassport]);
 
   const usePriceNickname = useMemo(() => {
     if (valueNickname.length < 8) {
@@ -437,7 +450,7 @@ function GetCitizenship({ defaultAccount }) {
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          txs.calculateFee(500000, gasPrice),
+          Soft3MessageFactory.fee(2.5),
           'cyber',
           funds
         );

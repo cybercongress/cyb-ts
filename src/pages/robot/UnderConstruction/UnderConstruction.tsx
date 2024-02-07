@@ -1,12 +1,17 @@
-import { ContainerGradientText, ActionBar } from 'src/components';
+import { ActionBar } from 'src/components';
+import cx from 'classnames';
+import Display from 'src/components/containerGradient/Display/Display';
 import styles from './UnderConstruction.module.scss';
 import layoutStyles from '../Layout/Layout.module.scss';
 
 function UnderConstruction() {
   return (
-    <ContainerGradientText className={layoutStyles.container}>
-      <div className={styles.wrapper}>
-        <img src={require('./image.png')} alt="" />
+    <Display>
+      <div className={cx(layoutStyles.container, styles.wrapper)}>
+        <img
+          src={require('./under-construction.png')}
+          alt="Under construction"
+        />
 
         <h5>
           the page is <br /> under construction
@@ -19,7 +24,7 @@ function UnderConstruction() {
           onClick: () => window.history.back(),
         }}
       />
-    </ContainerGradientText>
+    </Display>
   );
 }
 

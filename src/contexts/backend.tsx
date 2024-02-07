@@ -50,15 +50,35 @@ export function useBackend() {
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const { defaultAccount } = useAppSelector((state) => state.pocket);
-  const [isBackgroundInitialized, setBackgroundIsInitialized] = useState(false);
   const [isIpfsInitialized, setIsIpfsInitialized] = useState(false);
   const [isDbInitialized, setIsDbItialized] = useState(false);
   const [ipfsError, setIpfsError] = useState(null);
   const ipfsNode = useRef<Remote<CybIpfsNode> | null>(null);
+  const dbStatus = useAppSelector((state) => state.backend.services.db);
+  const ipfsStatus = useAppSelector((state) => state.backend.services.ipfs);
 
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   const channelRef = useRef<BcChannel>();
+
+  useEffect(() => {
+    setIsDbItialized(dbStatus.status === 'started');
+    (async () => {
+      await backendApi.installDbApi(proxy(dbApiService));
+    })();
+  }, [dbStatus]);
+
+  // useEffect(() => {
+  //   // setIsIpfsInitialized(ipfsStatus.status === 'started');
+  //   // attach db api to backend api
+
+  // }, [ipfsStatus]);
+
+  useEffect(() => {
+    if (isDbInitialized && isIpfsInitialized) {
+      console.log('🟢 Backend started.');
+    }
+  }, [isIpfsInitialized, isDbInitialized]);
 
   useEffect(() => {
     (async () => {
@@ -67,46 +87,42 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
-
       await setupStoragePersistence();
 
-      const installDbApi = async () => {
-        setIsDbItialized(false);
-        dbApiService
-          .init()
-          .then(() => console.log('🔋 CozoDb worker started.', dbApiService));
-        setIsDbItialized(true);
-      };
-      await Promise.all([loadIpfs(), installDbApi()]);
-
-      await backendApi
-        .installDbApi(proxy(dbApiService))
-        .then(() => console.log('🔋 Background worker started.'));
-
-      setBackgroundIsInitialized(true);
+      // Loading non-blocking, when ready  state.backend.services.* should be changef
+      loadIpfs();
+      initDbApi();
     })();
 
     // Channel to sync worker's state with redux store
     channelRef.current = new BcChannel((msg) => dispatch(msg.data));
   }, [dispatch]);
 
-  const loadIpfs = async () => {
-    setIsIpfsInitialized(false);
+  const initDbApi = async () => {
+    console.time('🔋 CozoDb worker started.');
+    await dbApiService
+      .init()
+      .then(() => console.timeEnd('🔋 CozoDb worker started.'));
+  };
 
+  const loadIpfs = async () => {
     const ipfsOpts = getIpfsOpts();
+    setIsIpfsInitialized(false);
     await backendApi.ipfsApi.stop();
+    console.time('🔋 Ipfs started.');
     await backendApi.ipfsApi
       .start(ipfsOpts)
       .then((ipfsNodeRemote) => {
         ipfsNode.current = ipfsNodeRemote;
-        setIsIpfsInitialized(true);
         setIpfsError(null);
-        console.log('🔋 Ipfs started.');
+        console.timeEnd('🔋 Ipfs started.');
+        setIsIpfsInitialized(true);
       })
       .catch((err) => {
         ipfsNode.current = null;
         setIpfsError(err);
         console.log(`☠️ Ipfs error: ${err}`);
+        setIsIpfsInitialized(false);
       });
   };
 

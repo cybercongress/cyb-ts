@@ -1,5 +1,7 @@
 // TODO: component is need be removed (use Display)
 
+@import './saber/index.module.scss';
+
 @mixin linear-gradient($route) {
   background: linear-gradient(
     $route,
@@ -13,7 +15,8 @@
   position: absolute;
   height: 100%;
   width: 100px;
-  z-index: -1;
+  z-index: 1;
+  pointer-events: none;
   top: 0;
   bottom: 0;
 }
@@ -24,17 +27,25 @@
   position: relative;
   padding: 0px;
 
+  @include saber-horizontal('blue');
+
   &::after {
     @include styleGradientPseudoEl;
     @include linear-gradient(90deg);
     right: 0;
   }
 
+  &::before {
+    left: 0;
+    @include styleGradientPseudoEl;
+    @include linear-gradient(-90deg);
+  }
+
   &Content {
     position: relative;
     margin: 0px;
     padding: 17px 15px;
-    min-height: 170px;
+    min-height: 200px;
     height: 1px;
     transition: 1s ease-in-out;
 
@@ -44,9 +55,7 @@
 
     &entered {
       opacity: 1;
-      padding: 17px 15px;
       height: 1px;
-      min-height: 170px;
     }
 
     &exiting {
@@ -61,13 +70,6 @@
       min-height: 0px;
       visibility: hidden;
     }
-
-    &::before {
-      left: 0;
-      @include styleGradientPseudoEl;
-      @include linear-gradient(-90deg);
-      z-index: -1;
-    }
   }
 }
 
@@ -81,9 +83,7 @@
   bottom: 0;
 }
 
-.wrapContainerLamp,
-.wrapContainerLampAfter,
-.wrapContainerLampBefore {
+.wrapContainerLamp {
   position: relative;
 
   --color-r: 0;
@@ -102,16 +102,19 @@
     --color-g: 0;
     --color-b: 0;
   }
+
   &Green {
     --color-r: 54;
     --color-g: 214;
     --color-b: 174;
   }
+
   &Blue {
     --color-r: 31;
     --color-g: 203;
     --color-b: 255;
   }
+
   &Yellow {
     --color-r: 255;
     --color-g: 217;
@@ -137,25 +140,6 @@
   &::before,
   &::after {
     @include ion-lamp;
-  }
-}
-
-.wrapContainerLampAfter::after,
-.wrapContainerLampBefore::before {
-  @include ion-lamp;
-}
-
-.wrapContainerLampBefore {
-  &::before {
-    left: 0;
-    border-radius: 2px 0px 0px 0px;
-  }
-}
-
-.wrapContainerLampAfter {
-  &::after {
-    right: 0;
-    border-radius: 0px 2px 2px 0px;
   }
 }
 
@@ -244,6 +228,7 @@
       opacity: 11%;
     }
   }
+
   &Pending {
     position: relative;
 

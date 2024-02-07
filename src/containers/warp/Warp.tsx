@@ -14,23 +14,24 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { Option } from 'src/types';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { RootState } from 'src/redux/store';
+import useGetBalances from 'src/hooks/getBalances';
 import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
-import { TabList } from '../teleport/components';
-import { getBalances, useGetSwapPrice } from '../teleport/hooks';
-import {
-  calculateCounterPairAmount,
-  getMyTokenBalanceNumber,
-  getPoolToken,
-  sortReserveCoinDenoms,
-} from '../teleport/utils';
-import { MyPoolsT } from '../teleport/type';
+import TabList from './components/tabList';
+import { useGetSwapPrice } from '../../pages/teleport/hooks';
+import { sortReserveCoinDenoms } from '../../pages/teleport/swap/utils';
 import DepositCreatePool from './components/DepositCreatePool';
 import Withdraw from './components/withdraw';
 import ActionBar from './ActionBar';
-import { TypeTab } from './type';
-import { RootState } from 'src/redux/store';
+import { TypeTab, MyPoolsT } from './type';
+import {
+  getPoolToken,
+  getMyTokenBalanceNumber,
+  calculateCounterPairAmount,
+} from './utils';
+import { useAdviser } from 'src/features/adviser/context';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -43,10 +44,8 @@ function Warp() {
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const { liquidBalances: accountBalances } = getBalances(
-    addressActive,
-    update
-  );
+  const { liquidBalances: accountBalances, refresh } =
+    useGetBalances(addressActive);
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 
@@ -70,6 +69,35 @@ function Warp() {
     tokenBPoolAmount
   );
   const firstEffectOccured = useRef(false);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    let text;
+
+    switch (tab) {
+      case 'add-liquidity':
+        text = 'play with pools earn more values';
+        break;
+      case 'create-pool':
+        text = (
+          <>
+            the unlimited number of variations. combine your favorite tokens{' '}
+            <br /> cultivate your values. place of cyber alchemists
+          </>
+        );
+
+        break;
+      case 'sub-liquidity':
+        text = 'manage your liquidity';
+        break;
+
+      default:
+        break;
+    }
+
+    setAdviser(text);
+  }, [setAdviser, tab]);
 
   useEffect(() => {
     if (firstEffectOccured.current) {
@@ -269,9 +297,10 @@ function Warp() {
     setTokenBPoolAmount(BP);
   }
 
-  const updateFunc = () => {
+  const updateFunc = useCallback(() => {
     setUpdate((item) => item + 1);
-  };
+    refresh();
+  }, [refresh]);
 
   const stateProps = {
     accountBalances,

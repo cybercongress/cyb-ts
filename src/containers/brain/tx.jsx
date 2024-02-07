@@ -21,9 +21,11 @@ function Txs() {
       return <Dots />;
     }
 
-    return formatNumber(data.transaction_aggregate.aggregate.count);
+    return (
+      <span>{formatNumber(data.transaction_aggregate.aggregate.count)}</span>
+    );
   } catch (error) {
-    return '∞';
+    return <span>∞</span>;
   }
 }
 

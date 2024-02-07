@@ -8,14 +8,16 @@ $actionBarSpace: 130px;
 
   > main {
     padding-bottom: $actionBarSpace;
-    // overflow-x: auto;
-  }
-}
 
-.container {
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+    // stretch children
+    display: grid;
+
+    > header {
+      // because of grid
+      align-self: flex-start;
+    }
+
+    // same with menu
+    min-height: 100%;
+  }
 }

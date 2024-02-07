@@ -1,0 +1,9 @@
+
+.containerAccount {
+  max-width: 200px;
+
+  &Moniker {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

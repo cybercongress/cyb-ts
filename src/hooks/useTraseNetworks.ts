@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import networkList from '../utils/networksList';
 import { Networks } from 'src/types/networks';
+import { ObjectKey } from 'src/types/data';
+import { Network } from 'src/types/hub';
+import { useNetworks } from './useHub';
 
 export function isNativeChainId(chain: string) {
   // temp
@@ -10,19 +12,19 @@ export function isNativeChainId(chain: string) {
   return false;
 }
 
-const findChainIdInNetworkList = (chainId) => {
-  let chainInfo = null;
-
-  const findObj = networkList.find((item) => item.chainId === chainId);
-
-  if (findObj) {
-    chainInfo = { ...findObj };
+const findChainIdInNetworkList = (
+  chainId: string,
+  networks: ObjectKey<Network>
+) => {
+  if (Object.prototype.hasOwnProperty.call(networks, chainId)) {
+    return networks[chainId];
   }
 
-  return chainInfo;
+  return undefined;
 };
 
-export const useTraseNetworks = (chainIdTrase) => {
+export const useTraseNetworks = (chainIdTrase: string) => {
+  const { networks } = useNetworks();
   const [chainInfo, setChainInfo] = useState({
     chainId: chainIdTrase,
     chainName: chainIdTrase,
@@ -30,12 +32,19 @@ export const useTraseNetworks = (chainIdTrase) => {
   });
 
   useEffect(() => {
-    if (!isNativeChainId(chainIdTrase)) {
+    if (networks) {
       let infoTemp = {};
-      const chainInfoFromList = findChainIdInNetworkList(chainIdTrase);
+      const chainInfoFromList = findChainIdInNetworkList(
+        chainIdTrase,
+        networks
+      );
 
-      if (chainInfoFromList !== null) {
-        const { chainId, chainName, chainIdImageCid } = chainInfoFromList;
+      if (chainInfoFromList) {
+        const {
+          chain_id: chainId,
+          name: chainName,
+          logo: chainIdImageCid,
+        } = chainInfoFromList;
         infoTemp = {
           chainId,
           chainName,
@@ -54,7 +63,7 @@ export const useTraseNetworks = (chainIdTrase) => {
       };
       setChainInfo((item) => ({ ...item, ...infoTemp }));
     }
-  }, [chainIdTrase]);
+  }, [chainIdTrase, networks]);
 
   return { chainInfo };
 };

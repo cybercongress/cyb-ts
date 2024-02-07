@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
 import portalAmbient from 'sounds/portalAmbient112.mp3';
@@ -18,7 +18,7 @@ import {
 } from '../components';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
-import Carousel from './carousel1/Carousel';
+import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import STEP_INFO from './utils';
 import Info from './Info';
 import useGetStatGift from '../hook/useGetStatGift';
@@ -98,6 +98,7 @@ function PortalGift() {
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
+  const [error, setError] = useState<string>();
 
   const [isRelease, setIsRelease] = useState(false);
   const [currentRelease, setCurrentRelease] =
@@ -481,6 +482,51 @@ function PortalGift() {
     addressActive,
   ]);
 
+  const availableRelease = useCallback(
+    (isNanoLedger: boolean) => {
+      if (!totalGift || !currentRelease || !addressActive) {
+        return 0;
+      }
+
+      const sliceArrayRelease = currentRelease.slice(
+        0,
+        isNanoLedger ? 1 : currentRelease.length
+      );
+
+      const claimedAmount = sliceArrayRelease.reduce((sum, item) => {
+        if (
+          item.addressOwner === addressActive.bech32 &&
+          totalGift[item.address]?.claim
+        ) {
+          return sum + totalGift[item.address].claim;
+        }
+        return sum;
+      }, 0);
+
+      const alreadyClaimed = sliceArrayRelease.reduce((sum, item) => {
+        if (item.addressOwner === addressActive.bech32) {
+          return sum + item.balanceClaim;
+        }
+        return sum;
+      }, 0);
+
+      const currentStageProcent = new BigNumber(currentStage)
+        .dividedBy(100)
+        .toNumber();
+
+      const released = new BigNumber(claimedAmount).minus(alreadyClaimed);
+
+      const availableRelease = new BigNumber(claimedAmount)
+        .multipliedBy(currentStageProcent)
+        .minus(released)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber();
+
+      return availableRelease > 0 ? availableRelease : 0;
+    },
+    [currentRelease, totalGift, addressActive, currentStage]
+  );
+
   const useNextRelease = useMemo(() => {
     if (currentStage < AMOUNT_ALL_STAGE && claimStat) {
       const nextTarget = new BigNumber(1)
@@ -493,6 +539,26 @@ function PortalGift() {
 
     return 0;
   }, [currentStage, claimStat]);
+
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    if (!appStep) {
+      return;
+    }
+
+    if (error) {
+      setAdviser(error, 'red');
+    } else {
+      setAdviser(
+        <Info
+          stepCurrent={appStep}
+          nextRelease={useNextRelease}
+          useReleasedStage={useReleasedStage}
+        />
+      );
+    }
+  }, [appStep, useReleasedStage, useNextRelease, setAdviser, error]);
 
   const redirectFunc = (key: 'claim' | 'prove') => {
     if (key === 'claim') {
@@ -565,22 +631,6 @@ function PortalGift() {
     );
   }
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    if (!appStep) {
-      return;
-    }
-
-    setAdviser(
-      <Info
-        stepCurrent={appStep}
-        nextRelease={useNextRelease}
-        useReleasedStage={useReleasedStage}
-      />
-    );
-  }, [appStep, useReleasedStage, useNextRelease, setAdviser]);
-
   return (
     <>
       <MainContainer>
@@ -597,6 +647,8 @@ function PortalGift() {
       </MainContainer>
       {Math.floor(appStep) !== STEP_RELEASE && (
         <ActionBarPortalGift
+          currentBonus={currentBonus.current}
+          progressClaim={progressClaim}
           addressActive={addressActive}
           citizenship={citizenship}
           updateTxHash={updateTxHash}
@@ -618,10 +670,14 @@ function PortalGift() {
           txHash={txHash}
           currentRelease={currentRelease}
           totalGift={totalGift}
+          callback={(err) => {
+            setError(err);
+          }}
           isRelease={isRelease}
           totalRelease={totalRelease}
           loadingRelease={loadingRelease}
           redirectFunc={redirectFunc}
+          availableRelease={availableRelease}
         />
       )}
     </>

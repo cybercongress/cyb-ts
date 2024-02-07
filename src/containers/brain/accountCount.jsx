@@ -21,9 +21,9 @@ function AccountCount() {
       return <Dots />;
     }
 
-    return formatNumber(data.account_aggregate.aggregate.count);
+    return <span>{formatNumber(data.account_aggregate.aggregate.count)}</span>;
   } catch (error) {
-    return '∞';
+    return <span>∞</span>;
   }
 }
 

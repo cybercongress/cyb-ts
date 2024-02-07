@@ -1,7 +1,6 @@
 import { trimString } from '../../utils/utils';
+import styles from './ValueImg.module.scss';
 
-const voltImg = require('../../image/lightning2.png');
-const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
 const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
@@ -19,7 +18,6 @@ const customNetwork = require('../../image/large-orange-circle.png');
 function ValueImg({
   text,
   onlyImg,
-  onlyText,
   marginImg,
   marginContainer,
   justifyContent,
@@ -34,12 +32,12 @@ function ValueImg({
 
   switch (text) {
     case 'millivolt':
-      img = voltImg;
+      img = '⚡️';
       textCurency = 'V';
       break;
 
     case 'milliampere':
-      img = amperImg;
+      img = '💡';
       textCurency = 'A';
       break;
 
@@ -143,6 +141,9 @@ function ValueImg({
     img = ibc;
   }
 
+  // maybe check different
+  const emojiIcon = img.length < 3;
+
   return (
     <div
       style={{
@@ -155,30 +156,38 @@ function ValueImg({
       {...props}
     >
       {!onlyImg && (
-        <span
-          style={{
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-          }}
-        >
-          {textCurency}
-        </span>
-      )}
-      {!onlyText && img !== null && (
-        // <Tooltip placement="top" tooltip={<div>{textCurency}</div>}>
-        <img
-          style={{
-            margin: marginImg || 0,
-            width: size || 20,
-            height: size || 20,
-            // objectFit: 'cover',
-            zIndex: zIndexImg || 0,
-          }}
-          src={img}
-          alt="text"
-        />
-        // </Tooltip>
+        <>
+          <span
+            style={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textTransform: 'uppercase',
+            }}
+          >
+            {textCurency}
+          </span>
+          &nbsp;
+          {img && (
+            <>
+              {emojiIcon ? (
+                <span className={styles.emojiIcon}>{img}</span>
+              ) : (
+                <img
+                  style={{
+                    margin: marginImg || 0,
+                    width: size || 20,
+                    height: size || 20,
+                    // objectFit: 'cover',
+                    zIndex: zIndexImg || 0,
+                  }}
+                  src={img}
+                  alt="text"
+                />
+              )}
+            </>
+          )}
+        </>
       )}
     </div>
   );

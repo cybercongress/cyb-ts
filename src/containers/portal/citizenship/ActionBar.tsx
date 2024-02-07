@@ -8,6 +8,8 @@ import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
 import { ActionBarSteps } from '../components';
+import { useBackend } from 'src/contexts/backend';
+import NodeIsLoadingButton from 'src/components/btnGrd/NodeIsLoadingButton/NodeIsLoadingButton';
 
 const {
   STEP_INIT,
@@ -50,6 +52,8 @@ function ActionBar({
   const navigate = useNavigate();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
+
+  const { isIpfsInitialized } = useBackend();
 
   const checkAddress = (obj, network, address) =>
     Object.keys(obj).filter(
@@ -198,7 +202,9 @@ function ActionBar({
   if (step === STEP_AVATAR_UPLOAD) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
-        {avatarIpfs === null ? (
+        {!isIpfsInitialized ? (
+          <NodeIsLoadingButton />
+        ) : avatarIpfs === null ? (
           <BtnGrd onClick={showOpenFileDlg} text="upload avatar" />
         ) : (
           <BtnGrd

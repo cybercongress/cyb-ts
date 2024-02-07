@@ -1,7 +1,6 @@
 import imgSwap from 'images/exchange-arrows.svg';
-import { InputNumber } from 'src/components';
-import { TokenSetter } from '../../teleport/components';
-import { ButtonIcon } from '../../teleport/components/slider';
+import { ButtonSwap, InputNumber } from 'src/components';
+import TokenSetter from './tokenSetter.new';
 
 function DepositCreatePool({ stateProps, amountChangeHandler }) {
   const {
@@ -34,9 +33,8 @@ function DepositCreatePool({ stateProps, amountChangeHandler }) {
       />
 
       <>
-        <ButtonIcon
+        <ButtonSwap
           onClick={() => tokenChange()}
-          img={imgSwap}
           style={{
             position: 'relative',
             top: 0,

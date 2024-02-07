@@ -1,23 +1,29 @@
 import cx from 'classnames';
+import TextareaAutosize from 'react-textarea-autosize';
 import React, { useEffect, useState } from 'react';
 import styles from './Input.module.scss';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
-import TextareaAutosize from 'react-textarea-autosize';
 
 export type Props = {
   color?: Color;
   width?: string;
   title?: string;
   className?: string;
+  classNameTextbox?: string;
   focusedProps?: boolean;
   isTextarea?: boolean;
   type?: 'text' | 'password';
   error?: string;
   value: string;
+  maxValue?: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlurFnc?: () => void;
+  onFocusFnc?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
+
+const dataPercentAttribute = 'data-percent';
 
 const Input = React.forwardRef<HTMLInputElement, Props>(
   (
@@ -31,8 +37,12 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       value,
       autoFocus,
       className,
+      classNameTextbox,
       focusedProps,
+      maxValue,
       isTextarea,
+      onBlurFnc,
+      onFocusFnc,
       error,
       ...props
     },
@@ -60,21 +70,71 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
 
     const Tag = isTextarea ? TextareaAutosize : 'input';
 
+    const handlerOnFocused = () => {
+      setFocused(true);
+
+      if (onFocusFnc) {
+        onFocusFnc();
+      }
+    };
+
+    const handlerOnBlur = () => {
+      setFocused(false);
+
+      if (onBlurFnc) {
+        onBlurFnc();
+      }
+    };
+
+    function handleMax(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+      const target = e.target as HTMLButtonElement;
+      const percent = target.getAttribute(dataPercentAttribute);
+      const newValue = ((maxValue! * Number(percent)) / 100).toFixed(0);
+
+      // FIXME: need refactor other components
+      onChange({
+        target: {
+          value: String(newValue),
+          // issue with number input
+          focus() {},
+        },
+      });
+    }
+
     return (
       <div
         className={cx(
           styles.textbox,
           color && styles[color],
           focused && styles.focused,
-          isTextarea && styles.textarea
+          isTextarea && styles.textarea,
+          classNameTextbox
         )}
         style={{ width }}
       >
         <LinearGradientContainer
           active={focusedProps || focused}
           color={color}
-          title={!(focused || value) ? title : undefined}
+          title={title}
         >
+          {focused && !!maxValue && (
+            <div className={styles.amount}>
+              {[25, 50, 75, 100].map((percent) => {
+                return (
+                  <button
+                    key={percent}
+                    type="button"
+                    // onMouseDown be called before onBlur
+                    onMouseDown={handleMax}
+                    {...{ [dataPercentAttribute]: percent }}
+                  >
+                    {percent === 100 ? 'max' : `${percent}%`}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           <Tag
             type={type}
             ref={ref}
@@ -83,9 +143,10 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             onChange={onChange}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={autoFocus}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            onFocus={handlerOnFocused}
+            onBlur={handlerOnBlur}
             placeholder={placeholder}
+            autoComplete="off"
             {...props}
           />
         </LinearGradientContainer>

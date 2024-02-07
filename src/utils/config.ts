@@ -22,6 +22,16 @@ const AUCTION = {
   TOKEN_ALOCATION: 15 * 10 ** 3,
 };
 
+const HUB_CONTRACTS = {
+  TOKENS: 'bostrom15phze6xnvfnpuvvgs2tw58xnnuf872wlz72sv0j2yauh6zwm7cmqqpmc42',
+  NETWORKS:
+    'bostrom1lpn69a74ftv04upfej8f9ay56pe2zyk48vzlk49kp3grysc7u56qq363nr',
+  CHANNELS:
+    'bostrom15tx5z779rdks07sg774ufn8q0a9x993c9uwmr6ycec78z6lfrmkqyjnfge',
+  PROTOCOLS:
+    'bostrom12yqsxh82qy3dz6alnmjhupyk85skgeqznzxv92q99hqtyu7vvdsqgwjgv',
+};
+
 const ADD_ARAGON_FINANCE = '0xa0a55e68dc52b47f8a9d5d05329fab5bdabffb14';
 
 const NETWORKSIDS = {
@@ -70,15 +80,23 @@ const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
 
 let CHAIN_PARAMS = {
-  CHAIN_ID: Networks.BOSTROM,
+  CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
   DENOM_CYBER_G: `GBOOT`,
-  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
-  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_NODE_URL_API:
+    process.env.CYBER_NODE_URL_API || 'https://rpc.bostrom.cybernode.ai',
+  CYBER_WEBSOCKET_URL:
+    process.env.CYBER_WEBSOCKET_URL ||
+    'wss://rpc.bostrom.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD:
+    process.env.CYBER_NODE_URL_LCD || 'https://lcd.bostrom.cybernode.ai',
+  CYBER_INDEX_HTTPS:
+    process.env.CYBER_INDEX_HTTPS ||
+    'https://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET:
+    process.env.CYBER_INDEX_WEBSOCKET ||
+    'wss://index.bostrom.cybernode.ai/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
@@ -121,7 +139,8 @@ const CYBER = {
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
 
-  CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
+  CYBER_GATEWAY:
+    process.env.CYBER_GATEWAY || 'https://gateway.ipfs.cybernode.ai',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
@@ -244,6 +263,7 @@ const BOND_STATUS = {
 };
 
 const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
+const CID_TWEET = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
 const PATTERN = new RegExp(
   `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
@@ -306,5 +326,7 @@ export {
   VOTE_OPTION,
   BOND_STATUS,
   CID_AVATAR,
+  CID_TWEET,
   PATTERN_HTML,
+  HUB_CONTRACTS,
 };

@@ -9,7 +9,7 @@ import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddre
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import ButtonIcon from '../buttons/ButtonIcon';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import Button from '../btnGrd';
 
 const back = require('../../image/arrow-left-img.svg');
@@ -60,10 +60,15 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   // TODO: not show while loading passport
 
-  if (commander.isFocused && commander.value.length > 0) {
+  if (commander.isFocused) {
     return (
       <ActionBarContainer>
-        <Button link={routes.search.getLink(commander.value)}>Ask</Button>
+        <Button
+          link={routes.search.getLink(commander.value)}
+          disabled={!commander.value.length}
+        >
+          Ask
+        </Button>
       </ActionBarContainer>
     );
   }

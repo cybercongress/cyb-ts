@@ -7,3 +7,11 @@
     rgba(54, 214, 174, 0.15) 100%
   );
 }
+
+@mixin withShareIcon {
+  background-image: url('images/share.svg');
+  background-repeat: no-repeat;
+  background-position: right 1.5px;
+  background-size: 20px;
+  padding-right: 20px;
+}
