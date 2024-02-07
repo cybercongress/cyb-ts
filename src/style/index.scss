@@ -11,11 +11,11 @@
 
   --yellow: #fcf000;
 
-  --red: #FF5C00;
+  --red: #ff5c00;
 
   --grayscale-disabled: #616161;
   --grayscale-dark: #808080;
-  --grayscale-secondary: #C7C7C7;
+  --grayscale-secondary: #c7c7c7;
   --grayscale-primary: #fff;
 
   --text-opacity-2: 0.7;
@@ -23,6 +23,7 @@
   --text-opacity-4: 0.38;
 }
 
+/* stylelint-disable */
 :export {
   primaryColor: var(--primary-color);
   greenLightColor: var(--green-light);
