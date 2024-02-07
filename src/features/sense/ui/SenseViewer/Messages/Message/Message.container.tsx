@@ -2,13 +2,13 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 
 import Message from './Message';
-import useParticleDetails from '../../../../particle/useParticleDetails';
+import useParticleDetails from '../../../../../particle/useParticleDetails';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import { Dots } from 'src/components';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
-import { formatSenseItemDataToUI } from '../../utils/format';
+import { formatSenseItemDataToUI } from '../../../utils/format';
 
 type Props = {
   senseItem: SenseItem;

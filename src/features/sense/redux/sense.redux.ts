@@ -261,7 +261,11 @@ const slice = createSlice({
         }
       }
     },
+    reset() {
+      return initialState;
+    },
   },
+
   extraReducers: (builder) => {
     builder.addCase(getSenseList.pending, (state) => {
       state.list.isLoading = true;
@@ -363,7 +367,8 @@ const selectUnreadCounts = createSelector(
   }
 );
 
-export const { addSenseItem, updateSenseItem, updateSenseList } = slice.actions;
+export const { addSenseItem, updateSenseItem, updateSenseList, reset } =
+  slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
 

@@ -1,24 +1,15 @@
 @import '../../../../layouts/variables.module.scss';
 
 $activeLineWidth: 2px;
-$reservedTopHeight: $headerHeight + $adviserHeight - 15px;
 
 .links {
-  // &::before {
-  //   content: '';
-  //   filter: blur(15px);
-  // }
-  // overflow-y: auto;
-  // overflow-x: hidden;
-
   list-style-type: none;
   position: sticky;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: calc(100vh - $reservedTopHeight - $actionBarHeight - 50px);
+  height: calc(100vh - $reservedTopHeight - $actionBarHeight);
   max-height: 900px;
-
   direction: rtl;
 
   top: $reservedTopHeight;

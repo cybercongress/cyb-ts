@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
-import { AppDispatch, RootState } from 'src/redux/store';
+import { AppDispatch } from 'src/redux/store';
 import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
@@ -17,13 +16,14 @@ import { useBackend } from 'src/contexts/backend';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 
 import styles from './styles.scss';
-import { useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 export const PORTAL_ID = 'portal';
 
 function App() {
-  const dispatch: AppDispatch = useDispatch();
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const dispatch: AppDispatch = useAppDispatch();
+  const { defaultAccount } = useAppSelector((state) => state.pocket);
   const queryClient = useQueryClient();
 
   const address = defaultAccount.account?.cyber?.bech32;
@@ -31,6 +31,7 @@ function App() {
   const { community } = useGetCommunity(address || null);
   const location = useLocation();
   const adviserContext = useAdviser();
+  useSenseManager();
 
   const { ipfsError, isReady, senseApi } = useBackend();
   // const myAddress = useAppSelector(selectCurrentAddress);

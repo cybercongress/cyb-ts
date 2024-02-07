@@ -1,4 +1,8 @@
 $headerHeight: 105px;
-$adviserHeight: 60px;
 
-$actionBarHeight: 62px;
+$adviserHeight: 60px;
+$adviserOffset: 15px;
+
+$reservedTopHeight: $headerHeight + $adviserHeight - $adviserOffset;
+
+$actionBarHeight: 72px;

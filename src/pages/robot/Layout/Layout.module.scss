@@ -1,4 +1,4 @@
-// $actionBarSpace: 130px;
+@import '../../../layouts//variables.module.scss';
 
 .wrapper {
   display: grid;
@@ -6,19 +6,19 @@
   align-items: flex-start;
   grid-template-columns: 1fr minmax(200px, 62%) 1fr;
 
-  > main {
-    padding-bottom: 45px;
+  // padding for action bar, if scroll bottom
+  padding-bottom: $actionBarHeight;
 
-    // stretch children
+  > main {
+    // same with menu
+    min-height: 100%;
+
+    // stretch children by height
     display: grid;
 
     > header {
       // because of grid
       align-self: flex-start;
     }
-
-    // same with menu
-    min-height: 100%;
-    box-sizing: content-box;
   }
 }
