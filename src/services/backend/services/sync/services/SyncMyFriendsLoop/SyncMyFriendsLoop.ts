@@ -152,10 +152,16 @@ class SyncMyFriendsLoop {
         `starting sync ${address}...`,
         this.progressTracker.progress
       );
-      const { timestampRead, unreadCount, timestampUpdate } =
-        await this.db!.getSyncStatus(myAddress, address, EntryType.chat);
+      const { timestampRead, unreadCount, meta } = await this.db!.getSyncStatus(
+        myAddress,
+        address,
+        EntryType.chat
+      );
 
-      const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
+      const { timestampUpdateChat = 0, timestampUpdateContent = 0 } =
+        meta || {};
+
+      const timestampFrom = timestampUpdateContent + 1; // ofsset + 1 to fix milliseconds precision bug
 
       const linksAsyncIterable = await fetchCyberlinksByNerounIterable(
         address,
@@ -191,11 +197,15 @@ class SyncMyFriendsLoop {
             ownerId: myAddress,
             entryType: EntryType.chat,
             id: address,
-            timestampUpdate: lastLink!.timestamp,
+            timestampUpdate: Math.max(lastLink!.timestamp, timestampUpdateChat),
             unreadCount: unreadItemsCount,
             timestampRead,
             disabled: false,
-            meta: { ...lastLink! },
+            meta: {
+              ...lastLink!,
+              timestampUpdateContent: lastLink!.timestamp,
+              timestampUpdateChat,
+            },
           };
           // Update transaction
           const result = await this.db!.putSyncStatus(newSyncItem);
@@ -206,6 +216,7 @@ class SyncMyFriendsLoop {
         }
       }
     } catch (err) {
+      console.log('>>> SyncMyFriends error', address, err);
       this.statusApi.sendStatus('error', err.toString());
     } finally {
       console.log('-----syncUpdates with redux', syncUpdates);

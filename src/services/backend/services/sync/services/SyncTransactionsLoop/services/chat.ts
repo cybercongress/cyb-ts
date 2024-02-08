@@ -17,7 +17,7 @@ export const syncMyChats = async (
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
 
-  const myTransactions = await db.getTransactions(myAddress, 'asc');
+  const myTransactions = await db.getTransactions(myAddress, { order: 'asc' });
   const myChats = extractSenseChats(myAddress, myTransactions!);
 
   const results: SenseListItem[] = [];
@@ -25,13 +25,17 @@ export const syncMyChats = async (
   myChats.forEach(async (chat) => {
     const syncItem = syncItemsMap.get(chat.userAddress);
     const lastTransaction = chat.transactions.at(-1)!;
-    const { timestamp: lastChatTimestamp, hash, index } = lastTransaction;
+
+    const { timestamp: transactionTimestamp, hash, index } = lastTransaction;
 
     const syncItemHeader = {
       entryType: EntryType.chat,
       ownerId: myAddress,
-      timestampUpdate: lastChatTimestamp,
-      meta: { transaction_hash: hash, index },
+      timestampUpdate: transactionTimestamp,
+      meta: {
+        transaction_hash: hash,
+        index,
+      },
     };
 
     if (!syncItem) {
@@ -48,16 +52,24 @@ export const syncMyChats = async (
         results.push({ ...newItem, meta: lastTransaction });
       }
     } else {
-      const { id, timestampRead, timestampUpdate } = syncItem;
-
+      const { id, timestampRead, timestampUpdate, meta } = syncItem;
+      const { timestampUpdateContent = 0 } = meta || {};
       const unreadCount = chat.transactions.filter(
         (t) => t.timestamp > timestampRead!
       ).length;
-      if (timestampUpdate! < lastChatTimestamp) {
+
+      if (timestampUpdate < transactionTimestamp) {
         const syncStatusChanges = {
           ...syncItemHeader,
           id: id!,
           unreadCount,
+          timestampUpdate: Math.max(timestampUpdateContent, timestampUpdate),
+
+          meta: {
+            ...syncItemHeader.meta,
+            timestampUpdateChat: transactionTimestamp,
+            timestampUpdateContent,
+          },
         };
         const result = await db.updateSyncStatus(syncStatusChanges);
         if (result.ok) {

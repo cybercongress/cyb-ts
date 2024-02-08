@@ -46,15 +46,33 @@ export type SenseLinkResultMeta = {
   timestamp: number;
 } & SenseLinkMeta;
 
-export type SenseMeta = SenseLinkMeta | SenseTransactionMeta;
+// Extension for Chat item to separate chat sync from tweet sync
+export type SenseChatExtesnsion = {
+  timestampUpdateChat?: number;
+  timestampUpdateContent?: number;
+};
+
+export type SenseMeta = (SenseLinkMeta | SenseTransactionMeta) &
+  SenseChatExtesnsion;
 
 export type SenseResultMeta = SenseLinkResultMeta | SenseTransactionResultMeta;
 
-export type SenseListItem = {
+export type SenseListChatItem = {
   entryType: EntryType;
-  id: NeuronAddress | ParticleCid;
+  id: NeuronAddress;
   unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
-  meta: SenseResultMeta;
+  meta: SenseResultMeta & SenseChatExtesnsion;
 };
+
+export type SenseListParticleItem = {
+  entryType: EntryType;
+  id: ParticleCid;
+  unreadCount: number;
+  timestampUpdate: number;
+  timestampRead: number;
+  meta: SenseLinkResultMeta;
+};
+
+export type SenseListItem = SenseListParticleItem | SenseListChatItem;

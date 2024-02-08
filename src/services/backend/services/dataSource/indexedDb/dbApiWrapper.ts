@@ -123,7 +123,7 @@ class DbApiWrapper {
 
     const result = await this.db!.executeGetCommand(
       'sync_status',
-      ['id', 'unread_count', 'timestamp_update', 'timestamp_read'],
+      ['id', 'unread_count', 'timestamp_update', 'timestamp_read', 'meta'],
       conditions,
       ['entry_type', 'owner_id'],
       { orderBy: ['-timestamp_update'] }
@@ -250,12 +250,19 @@ class DbApiWrapper {
 
   public async getTransactions(
     neuron: NeuronAddress,
-    order: 'desc' | 'asc' = 'desc'
+    {
+      timestampFrom = 0,
+      order = 'desc',
+    }: { order?: 'desc' | 'asc'; timestampFrom?: number }
   ) {
+    const conditions = [
+      `neuron = '${neuron}'`,
+      `timestamp >= ${timestampFrom}`,
+    ];
     const result = await this.db!.executeGetCommand(
       'transaction',
       ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
-      [`neuron = '${neuron}'`],
+      conditions,
       ['neuron'],
       { orderBy: [order === 'desc' ? '-timestamp' : 'timestamp'] }
     );
