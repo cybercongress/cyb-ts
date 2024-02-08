@@ -9,6 +9,9 @@ import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import Pill from 'src/components/Pill/Pill';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { useBackend } from 'src/contexts/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
@@ -16,7 +19,6 @@ import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend';
 
 // should be refactored
 function AccountItem({
@@ -57,7 +59,7 @@ function AccountItem({
         networkStyles.btnContainerText
       )}
     >
-      <div className={cx(networkStyles.containerKrmaName, styles.content)}>
+      <div className={cx(networkStyles.containerInfoSwitch, styles.content)}>
         {name && (
           <span
             className={cx(networkStyles.btnContainerText, {
@@ -87,6 +89,7 @@ function AccountItem({
 }
 
 function SwitchAccount() {
+  const { signerReady } = useSigningClient();
   const { isIpfsInitialized } = useBackend();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
@@ -115,6 +118,7 @@ function SwitchAccount() {
 
   const useGetCidAvatar = passport?.extension.avatar;
   const useGetName = passport?.extension.nickname || defaultAccount?.name;
+  const isReadOnly = defaultAccount.account?.cyber.keys === 'read-only';
 
   const onClickChangeActiveAcc = async (key: string) => {
     dispatch(
@@ -159,7 +163,14 @@ function SwitchAccount() {
         }}
       >
         {mediaQuery && useGetAddress && (
-          <div className={networkStyles.containerKrmaName}>
+          <div
+            className={cx(
+              networkStyles.containerInfoSwitch,
+              isReadOnly || !signerReady
+                ? networkStyles.containerInfoSwitchGapUnSet
+                : undefined
+            )}
+          >
             {useGetName && (
               <button
                 onClick={() => setControlledVisible((item) => !item)}
@@ -170,6 +181,10 @@ function SwitchAccount() {
                 {useGetName}
                 {/* {multipleAccounts && '>'} */}
               </button>
+            )}
+            {isReadOnly && <Pill color="yellow" text="read only" />}
+            {!isReadOnly && !signerReady && (
+              <Pill color="red" text="switch keplr" />
             )}
             <Karma address={useGetAddress} />
           </div>

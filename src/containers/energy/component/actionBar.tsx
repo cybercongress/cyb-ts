@@ -244,7 +244,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
       <ActionBarCenter
         button={{
           text: 'Investmint',
-          onClick: () => navigate(routes.hfr.path),
+          link: routes.hfr.path,
         }}
       />
     );

@@ -297,7 +297,7 @@ class ActionBarContainer extends Component {
           button={{
             disabled: addressSend !== defaultAccount.bech32,
             text: 'Claim rewards',
-            onClick: (e) => this.onClickSend(e),
+            onClick: this.onClickSend,
           }}
         />
       );
