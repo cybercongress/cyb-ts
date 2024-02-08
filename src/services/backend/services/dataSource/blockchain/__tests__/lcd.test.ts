@@ -1,4 +1,4 @@
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from "src/constants/app";
 import { fetchLinksByNeuronTimestamp } from '../lcd';
 
 describe('fetchLinksByNeuronTimestamp with real LCD', () => {

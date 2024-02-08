@@ -81,10 +81,7 @@ class SyncTransactionsLoop {
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
-          !!dbInstance &&
-          !!syncQueueInitialized &&
-          !!params.cyberIndexUrl &&
-          !!params.myAddress
+          !!dbInstance && !!syncQueueInitialized && !!params.myAddress
       )
     );
   }
@@ -107,8 +104,8 @@ class SyncTransactionsLoop {
 
   private async syncAllTransactions() {
     try {
-      const { myAddress, cyberIndexUrl } = this.params;
-      await this.syncTransactions(myAddress!, myAddress!, cyberIndexUrl!);
+      const { myAddress } = this.params;
+      await this.syncTransactions(myAddress!, myAddress!);
 
       this.statusApi.sendStatus('in-progress', `sync my chats`);
       const syncStatusItems = await syncMyChats(this.db!, myAddress!);
@@ -123,8 +120,7 @@ class SyncTransactionsLoop {
 
   public async syncTransactions(
     myAddress: NeuronAddress,
-    address: NeuronAddress,
-    cyberIndexUrl: string
+    address: NeuronAddress
   ) {
     try {
       if (this.inProgress.includes(address)) {
@@ -147,7 +143,6 @@ class SyncTransactionsLoop {
       this.statusApi.sendStatus('estimating');
 
       const totalMessageCount = await fetchTransactionMessagesCount(
-        cyberIndexUrl,
         address,
         timestampFrom
       );
@@ -166,7 +161,6 @@ class SyncTransactionsLoop {
         );
 
         const transactionsAsyncIterable = fetchTransactionsIterable(
-          cyberIndexUrl,
           address,
           timestampFrom,
           [], // SENSE_TRANSACTIONS,

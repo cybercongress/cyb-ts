@@ -6,7 +6,7 @@ import {
 } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 
 import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
@@ -29,17 +29,12 @@ export const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
 
 // eslint-disable-next-line import/no-unused-modules
 export const fetchCyberlinksAndResolveParticles = async (
-  cyberIndexUrl: string,
   cid: ParticleCid,
   timestampUpdate: number,
   particlesResolver: ParticlesResolverQueue,
   queuePriority: QueuePriority
 ) => {
-  const cyberlinksIterable = fetchCyberlinksIterable(
-    cyberIndexUrl,
-    cid,
-    timestampUpdate
-  );
+  const cyberlinksIterable = fetchCyberlinksIterable(cid, timestampUpdate);
   const links = [];
   // eslint-disable-next-line no-restricted-syntax
   for await (const batch of cyberlinksIterable) {

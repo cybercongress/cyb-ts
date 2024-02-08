@@ -14,7 +14,7 @@ import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import { SenseMetaType } from 'src/services/backend/types/sense';
 import styles from './ActionBar.module.scss';
 import { isParticle } from 'src/features/particle/utils';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 
 type Props = {
   id: string | undefined;

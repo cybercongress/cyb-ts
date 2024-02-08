@@ -30,8 +30,8 @@ import type {
   QueueItemOptions,
   QueueStats,
   QueueSource,
-  EnqueuedIpfsResult,
   IDeferredDbSaver,
+  QueueItemAsyncResult,
 } from './types';
 
 import { QueueStrategy } from './QueueStrategy';
@@ -405,7 +405,7 @@ class QueueManager {
   public enqueueAndWait(
     cid: string,
     options: QueueItemOptions = {}
-  ): Promise<EnqueuedIpfsResult> {
+  ): Promise<QueueItemAsyncResult> {
     return new Promise((resolve) => {
       const callback = ((cid, status, source, result) => {
         if (status === 'completed' || status === 'not_found') {

@@ -8,7 +8,7 @@ import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
 import { ActionBarSteps } from '../components';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import NodeIsLoadingButton from 'src/components/btnGrd/NodeIsLoadingButton/NodeIsLoadingButton';
 
 const {

@@ -3,7 +3,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useState } from 'react';
 import { reduceParticleArr } from './useGetBackLink';
 import { searchByHash } from 'src/utils/search/utils';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
 
 function useGetAnswers(hash) {

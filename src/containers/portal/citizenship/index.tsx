@@ -34,7 +34,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import { useAdviser } from 'src/features/adviser/context';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useAppDispatch } from 'src/redux/hooks';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';

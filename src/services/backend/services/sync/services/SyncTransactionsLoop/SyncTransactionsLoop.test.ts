@@ -11,7 +11,7 @@ import DbApi, {
   mockGetSyncStatus,
 } from 'src/services/backend/services/dataSource/indexedDb/__mocks__/dbApiWrapperMock';
 import { createAsyncIterable } from 'src/utils/async/iterable';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { dateToNumber } from 'src/utils/date';
 

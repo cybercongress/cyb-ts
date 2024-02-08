@@ -21,7 +21,7 @@ import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import KeywordButton from '../landing/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import TitleText from '../landing/components/TitleText/TitleText';
 
 const learningListConfig = [

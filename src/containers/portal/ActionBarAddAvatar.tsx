@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
 import { DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { ActionBarSteps, ActionBarContainer } from './components';
@@ -12,7 +12,6 @@ import { CONTRACT_ADDRESS_PASSPORT } from './utils';
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;
 const STATE_AVATAR_IN_PROCESS = 15.1;
-
 
 function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { signingClient, signer } = useSigningClient();

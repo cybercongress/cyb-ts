@@ -1,4 +1,4 @@
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 
 import { extractLinkData, changeSyncStatus } from '../utils';
 import { extractCybelinksFromTransaction } from '../services/utils/links';

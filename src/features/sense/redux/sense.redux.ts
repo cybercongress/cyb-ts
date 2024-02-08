@@ -4,7 +4,7 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { SenseApi } from 'src/contexts/backend';
+import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import {
   SenseLinkResultMeta,
   SenseListItem,

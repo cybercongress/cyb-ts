@@ -11,7 +11,7 @@ import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import {
   ServiceStatus,
   SyncProgress,

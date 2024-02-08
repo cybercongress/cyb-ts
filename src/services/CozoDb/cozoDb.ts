@@ -13,6 +13,7 @@ import { DbEntity, ConfigDbEntity } from './types/entities';
 import { toListOfObjects, clearIndexedDBStore } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
+import communityScript from './migrations/community.cozo';
 import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
 const DB_NAME = 'cyb-cozo-idb';
@@ -55,6 +56,31 @@ function createCozoDb() {
     return result.rows.map((row) => row[0] as string);
   };
 
+  const createSchema = async (tableName: string) => {
+    const columnResult = await runCommand(`::columns ${tableName}`);
+    if (!columnResult.ok) {
+      throw new Error((columnResult as IDBResultError).message);
+    }
+
+    const fields = toListOfObjects<Column>(columnResult);
+    const keys = fields.filter((c) => c.is_key).map((c) => c.column);
+    const values = fields.filter((c) => !c.is_key).map((c) => c.column);
+
+    // map -> column name: {...column props}
+    const columns = fields.reduce((obj, field) => {
+      obj[field.column] = field;
+      return obj;
+    }, {} as Record<string, Column>);
+
+    // schema of the table, with some pre-calc
+    const tableSchema: TableSchema = {
+      keys,
+      values,
+      columns,
+    };
+    return tableSchema;
+  };
+
   const initDbSchema = async (): Promise<void> => {
     let relations = await getRelations();
 
@@ -71,28 +97,7 @@ function createCozoDb() {
 
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
-        const columnResult = await runCommand(`::columns ${table}`);
-        if (!columnResult.ok) {
-          throw new Error((columnResult as IDBResultError).message);
-        }
-
-        const fields = toListOfObjects<Column>(columnResult);
-        const keys = fields.filter((c) => c.is_key).map((c) => c.column);
-        const values = fields.filter((c) => !c.is_key).map((c) => c.column);
-
-        // map -> column name: {...column props}
-        const columns = fields.reduce((obj, field) => {
-          obj[field.column] = field;
-          return obj;
-        }, {} as Record<string, Column>);
-
-        // schema of the table, with some pre-calc
-        const tableSchema: TableSchema = {
-          keys,
-          values,
-          columns,
-        };
-
+        const tableSchema = await createSchema(table);
         return [table, tableSchema];
       })
     );
@@ -115,6 +120,17 @@ function createCozoDb() {
   };
 
   const migrate = async () => {
+    if (!dbSchema.community) {
+      const result = await runCommand(communityScript);
+      console.log(
+        'CozoDb >>> migration: creating community relation....',
+        result.ok
+      );
+      if (result.ok) {
+        dbSchema.community = await createSchema('community');
+      }
+    }
+
     if (!dbSchema.transaction.keys.includes('neuron')) {
       console.log('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);

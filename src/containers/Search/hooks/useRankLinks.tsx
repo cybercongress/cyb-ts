@@ -5,7 +5,7 @@ import { getRankGrade, searchByHash } from 'src/utils/search/utils';
 import { LinksTypeFilter } from '../types';
 import { coinDecimals } from 'src/utils/utils';
 import { merge } from './shared';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
 
 const useSearch = (hash: string, { skip = false } = {}) => {

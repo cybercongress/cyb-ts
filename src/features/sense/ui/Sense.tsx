@@ -6,7 +6,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { SyncEntryName } from 'src/services/backend/types/services';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import {
   getSenseChat,
   getSenseList,

@@ -17,7 +17,7 @@ import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
 
 function ContainerGrid({ children }) {

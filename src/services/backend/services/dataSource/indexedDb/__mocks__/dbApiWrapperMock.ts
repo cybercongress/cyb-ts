@@ -9,7 +9,7 @@ export const mockDeletePins = jest.fn();
 export const mockPutParticles = jest.fn();
 export const mockGetParticles = jest.fn();
 export const mockGetSenseList = jest.fn();
-export const mockGetSenseSummary = jest.fn();
+// export const mockGetSenseSummary = jest.fn();
 export const mockSenseMarkAsRead = jest.fn();
 export const mockGetTransactions = jest.fn();
 export const mockPutCyberlinks = jest.fn();
@@ -98,10 +98,10 @@ const mock = jest.fn().mockImplementation(() => ({
     console.log('---------mockDbApi getSenseList', args);
     return mockGetSenseList(args);
   },
-  getSenseSummary: async (...args) => {
-    console.log('---------mockDbApi getSenseSummary', args);
-    return mockGetSenseSummary(args);
-  },
+  // getSenseSummary: async (...args) => {
+  //   console.log('---------mockDbApi getSenseSummary', args);
+  //   return mockGetSenseSummary(args);
+  // },
   senseMarkAsRead: async (...args) => {
     console.log('---------mockDbApi senseMarkAsRead', args);
     return mockSenseMarkAsRead(args);

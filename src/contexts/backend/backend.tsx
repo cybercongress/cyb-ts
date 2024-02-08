@@ -5,47 +5,15 @@ import { backgroundWorkerInstance } from 'src/services/backend/workers/backgroun
 import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
 import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
-import { CYBER } from 'src/utils/config';
-
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
-// import { selectCurrentPassport } from 'src/features/passport/passports.redux';
-// import useCommunityPassports from 'src/features/passport/hooks/useCommunityPassports';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
-import { CID_TWEET } from 'src/utils/consts';
-
-const createSenseApi = (
-  dbApi: DbApiWrapper,
-  myAddress?: NeuronAddress,
-  followingAddresses = [] as NeuronAddress[]
-) => ({
-  getSummary: () => dbApi.getSenseSummary(myAddress),
-  getList: () => dbApi.getSenseList(myAddress),
-  markAsRead: (id: NeuronAddress | ParticleCid) =>
-    dbApi.senseMarkAsRead(myAddress!, id),
-  getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
-  getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
-  getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
-  getFriendItems: async (userAddress: NeuronAddress) => {
-    if (!myAddress) {
-      throw new Error('myAddress is not defined');
-    }
-    const chats = await dbApi.getMyChats(myAddress, userAddress);
-    const links = followingAddresses.includes(userAddress)
-      ? await dbApi.getLinks({ neuron: userAddress, cid: CID_TWEET })
-      : [];
-
-    return [...chats, ...links].sort((a, b) =>
-      a.timestamp > b.timestamp ? 1 : -1
-    );
-  },
-});
+import { SenseApi, createSenseApi } from './services/senseApi';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -62,13 +30,12 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
-export type SenseApi = ReturnType<typeof createSenseApi> | null;
-
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: SenseApi;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
+  dbApi: DbApiWrapper;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
   loadIpfs?: () => Promise<void>;
@@ -82,6 +49,7 @@ const valueContext = {
   isIpfsInitialized: false,
   isDbInitialized: false,
   isSyncInitialized: false,
+  isSenseApiInitalized: false,
   isReady: false,
   dbApi: null,
   senseApi: null,
@@ -95,7 +63,7 @@ export function useBackend() {
   return useContext(BackendContext);
 }
 
-const dbApi = new DbApiWrapper();
+// const dbApi = new DbApiWrapper();
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
@@ -138,13 +106,32 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
+  const [senseApi, setSenseApi] = useState<SenseApi>(null);
+  const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
+  const [isSenseApiInitalized, setIsSenseApiInitialized] = useState(false);
+
+  useEffect(() => {
+    if (isDbInitialized && dbApi) {
+      setSenseApi(createSenseApi(dbApi, myAddress, followings));
+      setIsSenseApiInitialized(true);
+    } else {
+      setSenseApi(null);
+      setIsSenseApiInitialized(false);
+    }
+  }, [isDbInitialized, dbApi, myAddress, followings]);
+
+  useEffect(() => {
+    if (senseApi) {
+      (async () => {
+        const list = await senseApi.getList();
+        dispatch(updateSenseList(list));
+      })();
+    }
+  }, [senseApi, dispatch]);
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
-    backgroundWorkerInstance.setParams({
-      cyberIndexUrl: CYBER.CYBER_INDEX_HTTPS,
-      cyberLcdUrl: CYBER.CYBER_NODE_URL_LCD,
-    });
 
     (async () => {
       console.log(
@@ -184,13 +171,15 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     console.time('🔋 CozoDb worker started.');
     await cozoDbWorkerInstance
       .init()
-      .then(() => {
+      .then(async () => {
         // init dbApi
         // TODO: refactor to use simple object instead of global instance
+        const dbApi = new DbApiWrapper();
         dbApi.init(proxy(cozoDbWorkerInstance));
+        setDbApi(dbApi);
 
         // pass dbApi into background worker
-        backgroundWorkerInstance.init(proxy(dbApi));
+        await backgroundWorkerInstance.init(proxy(dbApi));
       })
       .then(() => console.timeEnd('🔋 CozoDb worker started.'));
   };
@@ -212,21 +201,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
-  const senseApi = useMemo(
-    () =>
-      isDbInitialized ? createSenseApi(dbApi, myAddress, followings) : null,
-    [isDbInitialized, myAddress, followings]
-  );
-
-  useEffect(() => {
-    if (senseApi) {
-      (async () => {
-        const list = await senseApi.getList();
-        dispatch(updateSenseList(list));
-      })();
-    }
-  }, [senseApi, dispatch]);
-
   const valueMemo = useMemo(
     () =>
       ({
@@ -237,12 +211,14 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
+        dbApi,
         senseApi,
         loadIpfs,
         ipfsError,
         isIpfsInitialized,
         isDbInitialized,
         isSyncInitialized,
+        isSenseApiInitalized,
         isReady,
       } as BackendProviderContextType),
     [
@@ -252,6 +228,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       isSyncInitialized,
       ipfsError,
       senseApi,
+      isSenseApiInitalized,
+      dbApi,
     ]
   );
 

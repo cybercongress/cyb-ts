@@ -34,7 +34,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
-import BackendProvider from './contexts/backend';
+import BackendProvider from './contexts/backend/backend';
 
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';

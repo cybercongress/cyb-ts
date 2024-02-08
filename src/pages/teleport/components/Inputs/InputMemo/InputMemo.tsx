@@ -2,7 +2,7 @@ import { Input } from 'src/components';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import { useCallback, useRef } from 'react';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import styles from './InputMemo.module.scss';
 
 type Props = {

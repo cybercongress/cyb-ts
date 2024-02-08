@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import {
+  FetchParticleAsync,
   QueueItemAsyncResult,
   QueueItemOptions,
   QueueItemStatus,
@@ -11,7 +12,7 @@ import {
   IPFSContentMaybe,
   IpfsContentSource,
 } from 'src/services/ipfs/ipfs';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { proxy } from 'comlink';
 
 type UseIpfsContentReturn = {
@@ -22,9 +23,7 @@ type UseIpfsContentReturn = {
   clear?: () => Promise<void>;
   cancel?: (cid: string) => Promise<void>;
   fetchParticle?: (cid: string, rank?: number) => Promise<void>;
-  fetchParticleAsync?: (
-    cid: string
-  ) => Promise<QueueItemAsyncResult<IPFSContentMaybe> | undefined>;
+  fetchParticleAsync?: FetchParticleAsync;
   fetchWithDetails?: FetchWithDetailsFunc;
 };
 

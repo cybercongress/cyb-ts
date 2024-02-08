@@ -7,7 +7,7 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
 
@@ -22,7 +22,7 @@ import { changeSyncStatus } from '../../utils';
 import { SyncServiceParams } from '../../types';
 import {
   fetchCyberlinksByNerounIterable,
-  fetchLinksCount as fetchCyberlinksCount,
+  fetchLinksCount,
 } from '../../../dataSource/blockchain/indexer';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
@@ -74,19 +74,16 @@ class SyncParticlesLoop {
           !!ipfsInstance &&
           !!dbInstance &&
           !!particleResolverInitialized &&
-          !!params.cyberIndexUrl &&
           !!params.myAddress
       )
     );
   }
 
   private async fetchNewTweets(
-    cyberIndexUrl: string,
     myAddress: NeuronAddress,
     timestampUpdate: number
   ) {
     const tweetsAsyncIterable = await fetchCyberlinksByNerounIterable(
-      cyberIndexUrl,
       myAddress,
       [CID_TWEET],
       timestampUpdate,
@@ -134,7 +131,6 @@ class SyncParticlesLoop {
   }
 
   private async syncParticles(
-    cyberIndexUrl: string,
     myAddress: NeuronAddress,
     syncItems: SyncStatusDto[]
   ) {
@@ -153,7 +149,6 @@ class SyncParticlesLoop {
 
         // eslint-disable-next-line no-await-in-loop
         const links = await fetchCyberlinksAndResolveParticles(
-          cyberIndexUrl,
           id,
           timestampUpdate,
           this.particlesResolver!,
@@ -188,7 +183,7 @@ class SyncParticlesLoop {
   }
 
   private async syncMain() {
-    const { myAddress, cyberIndexUrl } = this.params!;
+    const { myAddress } = this.params!;
 
     this.statusApi.sendStatus('estimating');
 
@@ -207,8 +202,7 @@ class SyncParticlesLoop {
     // );
 
     // Get count of new links after last update
-    const newLinkCount = await fetchCyberlinksCount(
-      cyberIndexUrl!,
+    const newLinkCount = await fetchLinksCount(
       myAddress!,
       [CID_TWEET],
       timestampUpdate
@@ -224,7 +218,6 @@ class SyncParticlesLoop {
     if (newLinkCount > 0) {
       // fetch and save new particles
       const newSyncItemParticles = await this.fetchNewTweets(
-        cyberIndexUrl!,
         myAddress!,
         timestampUpdate
       );
@@ -234,7 +227,7 @@ class SyncParticlesLoop {
     }
     // console.log(`-----sync syncParticles before`, syncItemParticles);
 
-    await this.syncParticles(cyberIndexUrl!, myAddress!, syncItemParticles);
+    await this.syncParticles(myAddress!, syncItemParticles);
   }
 
   start() {

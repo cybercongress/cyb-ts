@@ -2,20 +2,20 @@
 import axios from 'axios';
 import { T } from 'ramda';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 import { fetchIterable } from './utils/fetch';
+import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
 const PAGINATION_LIMIT = 10;
 
 async function getTransactions(
-  cyberLcdUrl: string,
   events: any,
   pagination = { limit: 20, offset: 0 },
   orderBy = 'ORDER_BY_UNSPECIFIED'
 ) {
   const { offset, limit } = pagination;
-  const response = axios.get(`${cyberLcdUrl}/cosmos/tx/v1beta1/txs`, {
+  const response = axios.get(`${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`, {
     params: {
       'pagination.offset': offset,
       'pagination.limit': limit,
@@ -30,7 +30,6 @@ async function getTransactions(
 }
 
 const fetchLinkByNeuron = async (
-  cyberLcdUrl: string,
   {
     address,
     from,
@@ -48,7 +47,7 @@ const fetchLinkByNeuron = async (
     },
   ];
   const response = await getTransactions(
-    cyberLcdUrl,
+    CYBER_NODE_URL_LCD
     events,
     { limit: PAGINATION_LIMIT, offset },
     'ORDER_BY_DESC'
@@ -82,12 +81,12 @@ const fetchLinkByNeuron = async (
 };
 
 const fetchLinksByNeuronTimestampIterable = (
-  cyberLcdUrl: string,
+
   address: NeuronAddress,
   fromParticle: ParticleCid,
   timestamp: number
 ) =>
-  fetchIterable(fetchLinkByNeuron, cyberLcdUrl, {
+  fetchIterable(fetchLinkByNeuron, {
     address,
     timestamp,
     from: fromParticle,
@@ -95,7 +94,7 @@ const fetchLinksByNeuronTimestampIterable = (
 
 // eslint-disable-next-line import/prefer-default-export
 export const fetchLinksByNeuronTimestamp = async (
-  cyberLcdUrl: string,
+
   address: NeuronAddress,
   from: ParticleCid,
   timestamp: number
@@ -103,7 +102,7 @@ export const fetchLinksByNeuronTimestamp = async (
   const result = [];
   while (true) {
     try {
-      const items = await fetchLinkByNeuron(cyberLcdUrl, {
+      const items = await fetchLinkByNeuron({
         address,
         from,
         offset: result.length,

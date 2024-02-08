@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getSenseList, reset } from '../redux/sense.redux';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 
 function useSenseManager() {
   const currentAddress = useAppSelector(selectCurrentAddress);

@@ -87,6 +87,15 @@ export type SyncQueueDbEntity = {
   priority: QueuePriority | number;
 };
 
+export type CommunityDbEntity = {
+  ownerId: NeuronAddress;
+  particle: ParticleCid;
+  neuron: NeuronAddress;
+  name: string;
+  following: boolean;
+  follower: boolean;
+};
+
 export type DbEntity =
   | TransactionDbEntity
   | ParticleDbEntity

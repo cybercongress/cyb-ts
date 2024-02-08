@@ -81,4 +81,7 @@ export interface IDeferredDbSaver {
   enqueueLinks: (links: LinkDbEntity[]) => void;
 }
 
-export type EnqueuedIpfsResult = QueueItemAsyncResult;
+export type FetchParticleAsync = (
+  cid: string,
+  options?: QueueItemOptions
+) => Promise<QueueItemAsyncResult>;

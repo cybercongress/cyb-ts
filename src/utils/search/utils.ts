@@ -9,7 +9,8 @@ import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
-import { CID_TWEET } from '../consts';
+import { CID_TWEET } from 'src/constants/app';
+import { ParticleCid } from 'src/types/base';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -25,7 +26,7 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
-export const getIpfsHash = (string: string) =>
+export const getIpfsHash = (string: string): Promise<ParticleCid> =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
 

@@ -8,7 +8,7 @@ import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { getIpfsHash } from 'src/utils/search/utils';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';

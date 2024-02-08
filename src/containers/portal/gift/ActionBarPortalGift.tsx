@@ -12,7 +12,7 @@ import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import txs from '../../../utils/txs';
 import {
   Dots,

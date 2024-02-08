@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { useEffect, useState } from 'react';
 import { IPFSContent } from 'src/utils/ipfs/ipfs';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
 
 interface VideoPlayerProps {

@@ -3,7 +3,7 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 
 const dateFormat = require('dateformat');
 

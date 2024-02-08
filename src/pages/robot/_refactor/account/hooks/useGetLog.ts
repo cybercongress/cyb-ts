@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
-import { CID_TWEET } from 'src/utils/consts';
+import { CID_TWEET } from 'src/constants/app';
 import { useMemo } from 'react';
 import { getTransactions } from 'src/utils/search/utils';
 

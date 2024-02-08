@@ -15,7 +15,7 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { executeSequentially } from 'src/utils/async/promise';
-import { CID_FOLLOW, CID_TWEET } from 'src/utils/consts';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
@@ -28,10 +28,7 @@ import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQ
 import { SyncServiceParams } from '../../types';
 
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
-import {
-  fetchCyberlinksByNerounIterable,
-  fetchLinksCount,
-} from '../../../dataSource/blockchain/indexer';
+import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 
@@ -76,21 +73,6 @@ class SyncMyFriendsLoop {
 
     deps.params$.subscribe((params) => {
       this.params = params;
-      // if (this.isInitialized) {
-      //   console.log('------- subscribe', params.followings);
-
-      //   // start immideatelly
-      //   const newFriends = params.followings.filter(
-      //     (addr) => !this.params.followings.includes(addr)
-      //   );
-
-      //   executeSequentially(
-      //     newFriends.map(
-      //       (addr) => () =>
-      //         this.syncLinks(params.myAddress!, addr, params.cyberLcdUrl!)
-      //     )
-      //   );
-      // }
     });
 
     this.isInitialized$ = combineLatest([
@@ -103,8 +85,6 @@ class SyncMyFriendsLoop {
         ([dbInstance, params, syncQueueInitialized]) =>
           !!dbInstance &&
           !!syncQueueInitialized &&
-          !!params.cyberLcdUrl &&
-          !!params.cyberIndexUrl &&
           !!params.myAddress &&
           !!params.followings &&
           params.followings.length > 0
@@ -135,55 +115,11 @@ class SyncMyFriendsLoop {
 
   private async syncAll() {
     try {
-      const { myAddress, cyberIndexUrl, followings } = this.params;
-      // const syncItemMap = new Map<
-      //   NeuronAddress,
-      //   Partial<SyncStatusDto> & { newLinkCount: number }
-      // >(
-      //   (
-      //     await this.db?.findSyncStatus({
-      //       ownerId: myAddress!,
-      //       entryType: EntryType.chat,
-      //     })
-      //   )?.map((i) => [i.id, { ...i, newLinkCount: 0 }])
-      // );
+      const { myAddress, followings } = this.params;
 
       this.statusApi.sendStatus('estimating');
       console.log('------- syncAll', myAddress, followings);
-      // for (const addr in followings) {
-      //   const syncItem = syncItemMap.get(addr);
-      //   // eslint-disable-next-line no-await-in-loop
-      //   const newLinkCount = await fetchLinksCount(
-      //     cyberIndexUrl!,
-      //     addr,
-      //     [CID_FOLLOW, CID_TWEET],
-      //     (syncItem?.timestampUpdate || 0) + 1
-      //   );
-      //   if (newLinkCount > 0) {
-      //     syncItemMap.set(addr, {
-      //       ...(syncItem || { id: addr }),
-      //       // calc num of batches
-      //       newLinkCount: Math.ceil(newLinkCount / CYBERLINKS_BATCH_LIMIT),
-      //     });
-      //   }
-      // }
 
-      // const friendsToSync = [...syncItemMap.values()].filter(
-      //   (i) => i.newLinkCount > 0
-      // );
-
-      // const totalCount = friendsToSync.reduce(
-      //   (acc, item) => acc + item.newLinkCount,
-      //   0
-      // ); // this.progressTracker.start();
-      // console.log(
-      //   '------- syncAll friendsToSync',
-      //   syncItemMap,
-      //   friendsToSync,
-      //   totalCount
-      // );
-
-      // this.progressTracker.start(totalCount);
       this.progressTracker.start(followings.length);
       this.statusApi.sendStatus(
         'in-progress',
@@ -192,9 +128,7 @@ class SyncMyFriendsLoop {
       );
 
       await executeSequentially(
-        followings.map(
-          (addr) => () => this.syncLinks(cyberIndexUrl!, myAddress!, addr)
-        )
+        followings.map((addr) => () => this.syncLinks(myAddress!, addr))
       );
     } catch (err) {
       console.error('>>> syncAllTweets', err);
@@ -202,11 +136,7 @@ class SyncMyFriendsLoop {
     }
   }
 
-  public async syncLinks(
-    cyberIndexUrl: string,
-    myAddress: NeuronAddress,
-    address: NeuronAddress
-  ) {
+  public async syncLinks(myAddress: NeuronAddress, address: NeuronAddress) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
@@ -227,25 +157,7 @@ class SyncMyFriendsLoop {
 
       const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
-      // const linksTweet = await fetchLinksByNeuronTimestamp(
-      //   cyberLcdUrl,
-      //   address,
-      //   CID_TWEET,
-      //   timestampFrom
-      // );
-
-      // const linksFollow = await fetchLinksByNeuronTimestamp(
-      //   cyberLcdUrl,
-      //   address,
-      //   CID_FOLLOW,
-      //   timestampFrom
-      // );
-
-      // const links = [...linksFollow, ...linksTweet].sort(
-      //   (a, b) => a.timestamp - b.timestamp
-      // );
       const linksAsyncIterable = await fetchCyberlinksByNerounIterable(
-        cyberIndexUrl,
         address,
         [CID_TWEET, CID_FOLLOW],
         timestampFrom,

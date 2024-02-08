@@ -17,6 +17,7 @@ import {
 
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import {
+  CommunityDto,
   LinkDto,
   ParticleDto,
   SyncQueueDto,
@@ -43,6 +44,7 @@ class DbApiWrapper {
 
   public init(dbApi: CozoDbWorker) {
     this.db = dbApi;
+    return this;
   }
 
   public async getSyncStatus(
@@ -150,6 +152,27 @@ class DbApiWrapper {
     return result;
   }
 
+  public async getCommunity(ownerId: NeuronAddress) {
+    const result = await this.db!.executeGetCommand('community', undefined, [
+      `owner_id = '${ownerId}'`,
+    ]);
+
+    if (!result.ok) {
+      throw new Error(result.message);
+    }
+
+    return dbResultToDtoList(result) as CommunityDto[];
+  }
+
+  public async putCommunity(community: CommunityDto[] | CommunityDto) {
+    const entitites = transformListToDbEntity(
+      Array.isArray(community) ? community : [community]
+    );
+    const res = await this.db!.executePutCommand('community', entitites);
+
+    console.log('-----putCommunity', res, entitites);
+  }
+
   public async deletePins(pins: ParticleCid[]) {
     return this.db!.executeRmCommand(
       'pin',
@@ -193,15 +216,15 @@ class DbApiWrapper {
     ) as SenseListItem[];
   }
 
-  public async getSenseSummary(myAddress: NeuronAddress = '') {
-    const command = `
-    r[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'
-    ?[entry_type, unread_count] :=r[entry_type, unread_count]
-    `;
+  // public async getSenseSummary(myAddress: NeuronAddress = '') {
+  //   const command = `
+  //   r[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'
+  //   ?[entry_type, unread_count] :=r[entry_type, unread_count]
+  //   `;
 
-    const result = await this.db!.runCommand(command);
-    return dbResultToDtoList(result) as SenseUnread[];
-  }
+  //   const result = await this.db!.runCommand(command);
+  //   return dbResultToDtoList(result) as SenseUnread[];
+  // }
 
   public async senseMarkAsRead(
     ownerId: NeuronAddress,

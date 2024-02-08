@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-apollo';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { useEffect, useState } from 'react';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 
 const valueByKeyOrSelf = (key: string, obj: Record<string, any>) =>
   obj[key] || key;

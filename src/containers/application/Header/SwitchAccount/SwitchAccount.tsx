@@ -16,7 +16,7 @@ import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 
 // should be refactored
 function AccountItem({
