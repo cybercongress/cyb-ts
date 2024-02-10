@@ -6,7 +6,7 @@ import {
 } from '../../dataSource/blockchain/types';
 
 export const MY_PARTICLES_SYNC_INTERVAL = 2 * 60 * 1000; // 60 sec
-export const MY_SYNC_INTERVAL = 30 * 1000; // 60 sec
+export const MY_TRANSACTIONS_SYNC_INTERVAL = 30 * 1000; // 60 sec
 export const MY_FRIENDS_SYNC_INTERVAL = 5 * 60 * 1000; // 60 sec
 export const MY_FRIENDS_SYNC_WARMUP = 5 * 1000; // 60 sec
 export const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 15 minutes

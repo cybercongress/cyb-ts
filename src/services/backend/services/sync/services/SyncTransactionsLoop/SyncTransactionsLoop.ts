@@ -1,20 +1,13 @@
 /* eslint-disable camelcase */
-import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
+import { map, combineLatest } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 
-import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
-
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
-import { createLoopObservable } from '../utils/rxjs/loop';
-import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { SyncServiceParams } from '../../types';
 
 import {
   fetchTransactionMessagesCount,
@@ -22,97 +15,26 @@ import {
 } from '../../../dataSource/blockchain/indexer';
 import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
-import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
-import { changeMyAddress } from '../utils/loop_XXXX';
-import { MY_SYNC_INTERVAL } from '../consts';
+import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 
-class SyncTransactionsLoop {
-  private isInitialized$: Observable<boolean>;
-
-  private channelApi = new BroadcastChannelSender();
-
-  private db: DbApi | undefined;
-
-  private particlesResolver: ParticlesResolverQueue | undefined;
-
-  private inProgress: NeuronAddress[] = [];
-
-  private _loop$: Observable<any> | undefined;
-
-  private restartLoop: (() => void) | undefined;
-
-  private abortController: AbortController | undefined;
-
-  private progressTracker = new ProgressTracker();
-
-  public get loop$(): Observable<any> | undefined {
-    return this._loop$;
-  }
-
-  private statusApi = broadcastStatus('transaction', this.channelApi);
-
-  private params: SyncServiceParams = {
-    myAddress: null,
-    followings: [],
-  };
-
-  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
-    if (!deps.params$) {
-      throw new Error('params$ is not defined');
-    }
-
-    this.particlesResolver = particlesResolver;
-
-    deps.dbInstance$.subscribe((db) => {
-      this.db = db;
-    });
-
-    deps.params$.subscribe((params) => {
-      // restart on address change
-      this.params = changeMyAddress(
-        this.params,
-        params,
-        this.restart.bind(this)
-      );
-    });
-
-    this.isInitialized$ = combineLatest([
+class SyncTransactionsLoop extends BaseSyncLoop {
+  protected getIsInitializedObserver(deps: ServiceDeps) {
+    const isInitialized$ = combineLatest([
       deps.dbInstance$,
-      deps.params$,
-      particlesResolver.isInitialized$,
+      deps.params$!,
+      this.particlesResolver!.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
           !!dbInstance && !!syncQueueInitialized && !!params.myAddress
       )
     );
+
+    return isInitialized$;
   }
 
-  private restart() {
-    this.abortController?.abort();
-    this.restartLoop?.();
-  }
-
-  start() {
-    const { loop$, restart } = createLoopObservable(
-      MY_SYNC_INTERVAL,
-      this.isInitialized$,
-      defer(() => from(this.sync())),
-      {
-        onError: (error) => {
-          this.statusApi.sendStatus('error', error.toString());
-        },
-      }
-    );
-    this._loop$ = loop$;
-    this.restartLoop = restart;
-    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
-
-    return this;
-  }
-
-  private async sync() {
+  protected async sync() {
     try {
       const { myAddress } = this.params;
       await this.syncTransactions(myAddress!, myAddress!);
@@ -132,116 +54,101 @@ class SyncTransactionsLoop {
     myAddress: NeuronAddress,
     address: NeuronAddress
   ) {
-    try {
-      if (this.inProgress.includes(address)) {
-        console.log(`>> ${address} sync already in progress`);
-        return;
-      }
+    const { timestampRead, unreadCount, timestampUpdate } =
+      await this.db!.getSyncStatus(myAddress, address, EntryType.transactions);
 
-      // add to in-progress list
-      this.inProgress.push(address);
+    const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
-      const { timestampRead, unreadCount, timestampUpdate } =
-        await this.db!.getSyncStatus(
-          myAddress,
-          address,
-          EntryType.transactions
-        );
+    this.statusApi.sendStatus('estimating');
 
-      const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
+    const totalMessageCount = await fetchTransactionMessagesCount(
+      address,
+      timestampFrom,
+      this.abortController?.signal
+    );
+    console.log(
+      '--------syncTransactions  start',
+      totalMessageCount,
+      timestampFrom
+    );
+    if (totalMessageCount > 0) {
+      this.statusApi.sendStatus(
+        'in-progress',
+        `sync ${address}...`,
+        this.progressTracker.start(
+          Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
+        )
+      );
 
-      this.statusApi.sendStatus('estimating');
-
-      const totalMessageCount = await fetchTransactionMessagesCount(
+      const transactionsAsyncIterable = fetchTransactionsIterable(
         address,
-        timestampFrom
+        timestampFrom,
+        [], // SENSE_TRANSACTIONS,
+        'asc',
+        TRANSACTIONS_BATCH_LIMIT,
+        this.abortController?.signal
       );
-      console.log(
-        '--------syncTransactions  start',
-        totalMessageCount,
-        timestampFrom
-      );
-      if (totalMessageCount > 0) {
+
+      let transactionCount = 0;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const batch of transactionsAsyncIterable) {
         this.statusApi.sendStatus(
           'in-progress',
           `sync ${address}...`,
-          this.progressTracker.start(
-            Math.ceil(totalMessageCount / TRANSACTIONS_BATCH_LIMIT)
-          )
+          this.progressTracker.trackProgress(1) //batch.length
         );
+        const lastTransaction = batch.at(-1)!;
 
-        const transactionsAsyncIterable = fetchTransactionsIterable(
-          address,
+        console.log(
+          '--------syncTransactions batch ',
           timestampFrom,
-          [], // SENSE_TRANSACTIONS,
-          'asc',
-          TRANSACTIONS_BATCH_LIMIT
+          dateToNumber(lastTransaction.transaction.block.timestamp),
+          myAddress,
+          address,
+          batch.length,
+          batch.at(0)?.transaction.block.timestamp,
+          batch.at(-1)?.transaction.block.timestamp,
+          batch
+        );
+        // pick last transaction = first item based on request orderby
+
+        const transactions = batch.map((i) =>
+          mapTransactionToEntity(address, i)
         );
 
-        let transactionCount = 0;
+        transactionCount += batch.length;
 
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const batch of transactionsAsyncIterable) {
-          this.statusApi.sendStatus(
-            'in-progress',
-            `sync ${address}...`,
-            this.progressTracker.trackProgress(1) //batch.length
-          );
-          const lastTransaction = batch.at(-1)!;
+        // save transaction
+        await this.db!.putTransactions(transactions);
 
-          console.log(
-            '--------syncTransactions batch ',
-            timestampFrom,
-            dateToNumber(lastTransaction.transaction.block.timestamp),
-            myAddress,
-            address,
-            batch.length,
-            batch.at(0)?.transaction.block.timestamp,
-            batch.at(-1)?.transaction.block.timestamp,
-            batch
-          );
-          // pick last transaction = first item based on request orderby
+        // save links
+        this.syncLinks(batch);
 
-          const transactions = batch.map((i) =>
-            mapTransactionToEntity(address, i)
-          );
+        const {
+          transaction_hash,
+          index,
+          transaction: {
+            block: { timestamp },
+          },
+        } = lastTransaction;
 
-          transactionCount += batch.length;
-
-          // save transaction
-          await this.db!.putTransactions(transactions);
-
-          // save links
-          this.syncLinks(batch);
-
-          const {
+        // Update transaction sync items
+        const syncItem = {
+          ownerId: myAddress,
+          entryType: EntryType.transactions,
+          id: address,
+          timestampUpdate: dateToNumber(timestamp),
+          unreadCount: unreadCount + transactionCount,
+          timestampRead,
+          disabled: false,
+          meta: {
             transaction_hash,
             index,
-            transaction: {
-              block: { timestamp },
-            },
-          } = lastTransaction;
-
-          // Update transaction sync items
-          const syncItem = {
-            ownerId: myAddress,
-            entryType: EntryType.transactions,
-            id: address,
-            timestampUpdate: dateToNumber(timestamp),
-            unreadCount: unreadCount + transactionCount,
-            timestampRead,
-            disabled: false,
-            meta: {
-              transaction_hash,
-              index,
-            },
-          };
-          const result = await this.db!.putSyncStatus(syncItem);
-        }
+          },
+        };
+        const result = await this.db!.putSyncStatus(syncItem);
       }
-    } finally {
-      // remove from in-progress list
-      this.inProgress = this.inProgress.filter((addr) => addr !== address);
     }
   }
 

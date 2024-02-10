@@ -11,7 +11,11 @@ import SyncTransactionsLoop from './services/SyncTransactionsLoop/SyncTransactio
 import SyncParticlesLoop from './services/SyncParticlesLoop/SyncParticlesLoop';
 
 import { ServiceDeps } from './services/types';
-import { MY_SYNC_INTERVAL } from './services/consts';
+import {
+  MY_FRIENDS_SYNC_INTERVAL,
+  MY_PARTICLES_SYNC_INTERVAL,
+  MY_TRANSACTIONS_SYNC_INTERVAL,
+} from './services/consts';
 import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -38,10 +42,25 @@ export class SyncService {
 
     // new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop(deps, particlesResolver).start();
+    new SyncTransactionsLoop(
+      'transaction',
+      MY_TRANSACTIONS_SYNC_INTERVAL,
+      deps,
+      particlesResolver
+    ).start();
 
-    new SyncParticlesLoop(deps, particlesResolver).start();
+    new SyncParticlesLoop(
+      'particle',
+      MY_PARTICLES_SYNC_INTERVAL,
+      deps,
+      particlesResolver
+    ).start();
 
-    new SyncMyFriendsLoop(deps, particlesResolver).start();
+    new SyncMyFriendsLoop(
+      'my-friends',
+      MY_FRIENDS_SYNC_INTERVAL,
+      deps,
+      particlesResolver
+    ).start();
   }
 }

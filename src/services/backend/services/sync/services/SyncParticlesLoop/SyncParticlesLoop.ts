@@ -1,112 +1,85 @@
-import { Observable, defer, from, map, combineLatest } from 'rxjs';
-import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
+import { map, combineLatest } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress } from 'src/types/base';
 
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
 
-import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
-
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
-import { createLoopObservable } from '../utils/rxjs/loop';
-import { MY_PARTICLES_SYNC_INTERVAL } from '../consts';
-import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+
 import { changeSyncStatus } from '../../utils';
-import { SyncServiceParams } from '../../types';
 import {
   fetchCyberlinksByNerounIterable,
-  fetchLinksCount,
+  fetchCyberlinksCount,
 } from '../../../dataSource/blockchain/indexer';
-import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
-import { changeMyAddress } from '../utils/loop_XXXX';
+import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 
-class SyncParticlesLoop {
-  private db: DbApi | undefined;
-
-  private particlesResolver: ParticlesResolverQueue | undefined;
-
-  private channelApi = new BroadcastChannelSender();
-
-  private params: SyncServiceParams | undefined;
-
-  private statusApi = broadcastStatus('particle', this.channelApi);
-
-  private progressTracker = new ProgressTracker();
-
-  private abortController: AbortController | undefined;
-
-  private _loop$: Observable<any> | undefined;
-
-  private restartLoop: (() => void) | undefined;
-
-  public get loop$(): Observable<any> | undefined {
-    return this._loop$;
-  }
-
-  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
-    if (!deps.params$) {
-      throw new Error('params$ is not defined');
-    }
-
-    deps.dbInstance$.subscribe((db) => {
-      this.db = db;
-    });
-
-    deps.params$.subscribe((params) => {
-      // restart on address change
-      this.params = changeMyAddress(
-        this.params,
-        params,
-        this.restart.bind(this)
-      );
-    });
-
-    this.particlesResolver = particlesResolver;
-
+class SyncParticlesLoop extends BaseSyncLoop {
+  protected getIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
-      deps.params$,
-      particlesResolver.isInitialized$,
+      deps.params$!,
+      this.particlesResolver!.isInitialized$,
     ]).pipe(
       map(
         ([dbInstance, ipfsInstance, params, particleResolverInitialized]) =>
           !!ipfsInstance &&
           !!dbInstance &&
           !!particleResolverInitialized &&
-          !!params.myAddress
+          !!params?.myAddress
       )
     );
 
-    const { loop$, restart } = createLoopObservable(
-      MY_PARTICLES_SYNC_INTERVAL,
-      isInitialized$,
-      defer(() => from(this.syncMain())),
-      {
-        onStartInterval: () => {
-          console.log('-----START PARTICLE LOOP');
-        },
-        onError: (error) => {
-          this.statusApi.sendStatus('error', error.toString());
-        },
-      }
-    );
-
-    this._loop$ = loop$;
-    this.restartLoop = restart;
+    return isInitialized$;
   }
 
-  private restart() {
-    this.abortController?.abort();
-    this.restartLoop?.();
+  protected async sync(): Promise<void> {
+    const { myAddress } = this.params!;
+
+    this.statusApi.sendStatus('estimating');
+
+    const syncItemParticles = await this.db!.findSyncStatus({
+      ownerId: myAddress!,
+      entryType: EntryType.particle,
+    });
+
+    const timestampUpdate = syncItemParticles.at(0)?.timestampUpdate || 0;
+
+    // Get count of new links after last update
+    const newLinkCount = await fetchCyberlinksCount(
+      myAddress!,
+      [CID_TWEET],
+      timestampUpdate,
+      this.abortController?.signal
+    );
+
+    this.progressTracker.start(newLinkCount + syncItemParticles.length);
+    this.statusApi.sendStatus(
+      'in-progress',
+      'preparing...',
+      this.progressTracker.progress
+    );
+
+    if (newLinkCount > 0) {
+      // fetch and save new particles
+      const newSyncItemParticles = await this.fetchNewTweets(
+        myAddress!,
+        timestampUpdate
+      );
+
+      // add to fetch-sync linked particles
+      syncItemParticles.push(...newSyncItemParticles);
+    }
+    // console.log(`-----sync syncParticles before`, syncItemParticles);
+
+    await this.syncParticles(myAddress!, syncItemParticles);
   }
 
   private async fetchNewTweets(
@@ -216,56 +189,6 @@ class SyncParticlesLoop {
     } finally {
       this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
     }
-  }
-
-  private async syncMain() {
-    // setup abort controller
-    this.abortController = new AbortController();
-
-    const { myAddress } = this.params!;
-
-    this.statusApi.sendStatus('estimating');
-
-    const syncItemParticles = await this.db!.findSyncStatus({
-      ownerId: myAddress!,
-      entryType: EntryType.particle,
-    });
-
-    const timestampUpdate = syncItemParticles.at(0)?.timestampUpdate || 0;
-
-    // Get count of new links after last update
-    const newLinkCount = await fetchLinksCount(
-      myAddress!,
-      [CID_TWEET],
-      timestampUpdate
-    );
-
-    this.progressTracker.start(newLinkCount + syncItemParticles.length);
-    this.statusApi.sendStatus(
-      'in-progress',
-      'preparing...',
-      this.progressTracker.progress
-    );
-
-    if (newLinkCount > 0) {
-      // fetch and save new particles
-      const newSyncItemParticles = await this.fetchNewTweets(
-        myAddress!,
-        timestampUpdate
-      );
-
-      // add to fetch-sync linked particles
-      syncItemParticles.push(...newSyncItemParticles);
-    }
-    // console.log(`-----sync syncParticles before`, syncItemParticles);
-
-    await this.syncParticles(myAddress!, syncItemParticles);
-  }
-
-  start() {
-    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
-
-    return this;
   }
 }
 

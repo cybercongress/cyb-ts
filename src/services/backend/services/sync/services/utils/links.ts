@@ -1,9 +1,4 @@
-import {
-  CyberLinkSimple,
-  CyberLinkTimestamp,
-  CyberlinkTxHash,
-  ParticleCid,
-} from 'src/types/base';
+import { CyberLinkSimple, CyberlinkTxHash, ParticleCid } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/constants/app';
@@ -17,9 +12,8 @@ import {
   CyberLinkTransaction,
   Transaction,
 } from '../../../dataSource/blockchain/types';
-import { LinkResult } from '../../types';
 
-export const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
+const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [
     ...new Set([
       ...links.map((link) => link.to),

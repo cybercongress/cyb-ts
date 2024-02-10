@@ -1,94 +1,29 @@
 /* eslint-disable camelcase */
-import {
-  Observable,
-  defer,
-  from,
-  map,
-  combineLatest,
-  throttleTime,
-  auditTime,
-} from 'rxjs';
-import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
+import { map, combineLatest } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { executeSequentially } from 'src/utils/async/promise';
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
 import { ServiceDeps } from '../types';
 
-import { createLoopObservable } from '../utils/rxjs/loop';
-import { MY_FRIENDS_SYNC_INTERVAL, MY_FRIENDS_SYNC_WARMUP } from '../consts';
-import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-
-import { SyncServiceParams } from '../../types';
-
-import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
-import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
-import { changeMyAddress } from '../utils/loop_XXXX';
+import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 
-class SyncMyFriendsLoop {
-  private isInitialized$: Observable<boolean>;
-
-  private db: DbApi | undefined;
-
-  private particlesResolver: ParticlesResolverQueue | undefined;
-
+class SyncMyFriendsLoop extends BaseSyncLoop {
   private inProgress: NeuronAddress[] = [];
 
-  private _loop$: Observable<any> | undefined;
-
-  private restartLoop: (() => void) | undefined;
-
-  private abortController: AbortController | undefined;
-
-  private channelApi = new BroadcastChannelSender();
-
-  private progressTracker = new ProgressTracker();
-
-  public get loop$(): Observable<any> | undefined {
-    return this._loop$;
-  }
-
-  private statusApi = broadcastStatus('my-friends', this.channelApi);
-
-  private params: SyncServiceParams = {
-    myAddress: null,
-    followings: [],
-  };
-
-  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
-    if (!deps.params$) {
-      throw new Error('params$ is not defined');
-    }
-
-    this.particlesResolver = particlesResolver;
-
-    deps.dbInstance$.subscribe((db) => {
-      this.db = db;
-    });
-
-    deps.params$.subscribe((params) => {
-      // restart on address change
-      this.params = changeMyAddress(
-        this.params,
-        params,
-        this.restart.bind(this)
-      );
-    });
-
-    this.isInitialized$ = combineLatest([
+  protected getIsInitializedObserver(deps: ServiceDeps) {
+    const isInitialized$ = combineLatest([
       deps.dbInstance$,
-      deps.params$,
-      particlesResolver.isInitialized$,
+      deps.params$!,
+      this.particlesResolver!.isInitialized$,
     ]).pipe(
-      auditTime(MY_FRIENDS_SYNC_WARMUP),
+      // auditTime(MY_FRIENDS_SYNC_WARMUP),
       map(
         ([dbInstance, params, syncQueueInitialized]) =>
           !!dbInstance &&
@@ -98,33 +33,11 @@ class SyncMyFriendsLoop {
           params.followings.length > 0
       )
     );
+
+    return isInitialized$;
   }
 
-  private restart() {
-    this.abortController?.abort();
-    this.restartLoop?.();
-  }
-
-  start() {
-    const { loop$, restart } = createLoopObservable(
-      MY_FRIENDS_SYNC_INTERVAL,
-      this.isInitialized$,
-      defer(() => from(this.syncAll())),
-      {
-        onError: (error) => {
-          this.statusApi.sendStatus('error', error.toString());
-        },
-      }
-    );
-    this._loop$ = loop$;
-    this.restartLoop = restart;
-
-    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
-
-    return this;
-  }
-
-  private async syncAll() {
+  protected async sync() {
     try {
       this.statusApi.sendStatus('in-progress', 'preparing...');
       const { myAddress, followings } = this.params;
@@ -179,7 +92,8 @@ class SyncMyFriendsLoop {
         address,
         [CID_TWEET, CID_FOLLOW],
         timestampFrom,
-        CYBERLINKS_BATCH_LIMIT
+        CYBERLINKS_BATCH_LIMIT,
+        this.abortController?.signal
       );
 
       // eslint-disable-next-line no-restricted-syntax

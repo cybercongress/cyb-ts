@@ -15,7 +15,13 @@ export type ProgressTracking = {
 };
 
 export type SyncProgress = Partial<{
-  status: 'idle' | 'estimating' | 'in-progress' | 'error';
+  status:
+    | 'idle'
+    | 'initialized'
+    | 'estimating'
+    | 'in-progress'
+    | 'error'
+    | 'inactive';
   progress: ProgressTracking;
 
   done: boolean;

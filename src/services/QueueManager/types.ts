@@ -1,5 +1,6 @@
 import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
 import { LinkDbEntity } from '../CozoDb/types/entities';
+import { LinkDto } from '../CozoDb/types/dto';
 
 /* eslint-disable import/no-unused-modules */
 export type QueueItemStatus =
@@ -78,7 +79,7 @@ export type QueueItemPostProcessor = (
 export interface IDeferredDbSaver {
   // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
   enqueueIpfsContent: (content: IPFSContentMaybe) => void;
-  enqueueLinks: (links: LinkDbEntity[]) => void;
+  enqueueLinks: (links: LinkDto[]) => void;
 }
 
 export type FetchParticleAsync = (

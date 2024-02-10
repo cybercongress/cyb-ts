@@ -1,26 +1,22 @@
-import { Observable, defer } from 'rxjs';
+import { Observable, defer, from } from 'rxjs';
 
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
+import { SyncEntryName } from 'src/services/backend/types/services';
 
 import DbApiWrapper from '../../../dataSource/indexedDb/dbApiWrapper';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { ServiceDeps } from '../types';
-import { SyncEntryName } from 'src/services/backend/types/services';
 import { createLoopObservable } from '../utils/rxjs/loop';
 import { SyncServiceParams } from '../../types';
 
 abstract class BaseSyncLoop {
-  private name: string;
-
-  private db: DbApiWrapper | undefined;
-
-  private particlesResolver: ParticlesResolverQueue | undefined;
-
-  private _loop$: Observable<any>;
-
   private restartLoop: (() => void) | undefined;
+
+  protected name: string;
+
+  protected db: DbApiWrapper | undefined;
 
   protected abortController: AbortController | undefined;
 
@@ -28,16 +24,16 @@ abstract class BaseSyncLoop {
 
   protected channelApi = new BroadcastChannelSender();
 
-  public get loop$(): Observable<any> {
-    return this._loop$;
-  }
+  protected particlesResolver: ParticlesResolverQueue | undefined;
 
-  private statusApi: ReturnType<typeof broadcastStatus>;
+  protected statusApi: ReturnType<typeof broadcastStatus>;
 
-  private params: SyncServiceParams = {
+  protected params: SyncServiceParams = {
     myAddress: null,
     followings: [],
   };
+
+  public readonly loop$: Observable<boolean>;
 
   constructor(
     name: SyncEntryName,
@@ -64,18 +60,26 @@ abstract class BaseSyncLoop {
       ) {
         restart();
       }
+      this.params = params;
     });
 
     this.particlesResolver = particlesResolver;
 
+    const isInitialized$ = this.getIsInitializedObserver(deps);
+
+    isInitialized$.subscribe((isInitialized) => {
+      console.log(`>>> ${name} initialized`, isInitialized);
+      this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
+    });
+
     const { loop$, restart } = createLoopObservable(
       intervalMs,
-      this.getIsInitializedObserver(),
+      isInitialized$,
       // defer(() => from(this.sync())),
-      defer(() => this.createSyncLoop()),
+      defer(() => from(this.doSync())),
       {
         onStartInterval: () => {
-          console.log(`>>> ${name} loop`);
+          console.log(`>>> ${name} loop start`);
         },
         onError: (error) => {
           console.log(`>>> ${name} error`, error.toString());
@@ -84,7 +88,7 @@ abstract class BaseSyncLoop {
       }
     );
 
-    this._loop$ = loop$;
+    this.loop$ = loop$;
     this.restartLoop = restart;
   }
 
@@ -94,28 +98,30 @@ abstract class BaseSyncLoop {
   }
 
   public start() {
-    this._loop$.subscribe(() => this.statusApi.sendStatus('idle'));
+    this.loop$.subscribe(() => this.statusApi.sendStatus('idle'));
     return this;
   }
 
-  private async createSyncLoop() {
-    return async () => {
-      this.abortController = new AbortController();
-      try {
-        await this.sync();
-      } catch (e) {
-        const isAborted = e instanceof DOMException && e.name === 'AbortError';
+  private async doSync() {
+    this.abortController = new AbortController();
+    try {
+      await this.sync();
+    } catch (e) {
+      const isAborted = e instanceof DOMException && e.name === 'AbortError';
 
-        console.log(`>>> ${this.name} sync error:`, e, isAborted);
+      console.log(`>>> ${this.name} sync error:`, e, isAborted);
 
-        if (!isAborted) {
-          throw e;
-        }
+      if (!isAborted) {
+        throw e;
       }
-    };
+    }
   }
 
-  public abstract sync(): Promise<void>;
+  protected abstract sync(): Promise<void>;
 
-  public abstract getIsInitializedObserver(): Observable<boolean>;
+  protected abstract getIsInitializedObserver(
+    deps: ServiceDeps
+  ): Observable<boolean>;
 }
+
+export default BaseSyncLoop;
