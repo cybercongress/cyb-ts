@@ -43,7 +43,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       const { myAddress, followings } = this.params;
 
       this.statusApi.sendStatus('estimating');
-      console.log('------- syncAll', myAddress, followings);
+      console.log(`>>> syncMyFriends ${myAddress} count ${followings.length}`);
 
       this.progressTracker.start(followings.length);
       this.statusApi.sendStatus(
@@ -145,7 +145,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       console.log('>>> SyncMyFriends error', address, err);
       this.statusApi.sendStatus('error', err.toString());
     } finally {
-      console.log('-----syncUpdates with redux', syncUpdates);
+      // console.log('-----syncUpdates with redux', syncUpdates);
       this.channelApi.postSenseUpdate(syncUpdates);
       this.inProgress = this.inProgress.filter((addr) => addr !== address);
     }

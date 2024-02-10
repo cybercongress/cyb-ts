@@ -62,7 +62,7 @@ export const createLoopObservable = (
   return {
     loop$: source$,
     restart: () => {
-      console.log('>>> createLoopObservable restart');
+      // console.log('>>> createLoopObservable restart');
       // Trigger a restart by emitting a new value
       restartTrigger$.next();
     },

@@ -159,23 +159,18 @@ const fetchTransactions = async ({
   batchSize: number;
   abortSignal?: AbortSignal;
 }) => {
-  try {
-    const res = await createIndexerClient(
-      abortSignal
-    ).request<TransactionsByAddressResponse>(messagesByAddress, {
-      address: `{${neuron}}`,
-      limit: batchSize,
-      timestamp_from: numberToDate(timestampFrom),
-      offset,
-      types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
-      order_direction: orderDirection,
-    });
+  const res = await createIndexerClient(
+    abortSignal
+  ).request<TransactionsByAddressResponse>(messagesByAddress, {
+    address: `{${neuron}}`,
+    limit: batchSize,
+    timestamp_from: numberToDate(timestampFrom),
+    offset,
+    types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
+    order_direction: orderDirection,
+  });
 
-    return res?.messages_by_address;
-  } catch (e) {
-    console.log('--- fetchTransactions:', e);
-    return [];
-  }
+  return res?.messages_by_address;
 };
 
 const fetchCyberlinks = async ({
@@ -235,41 +230,36 @@ const fetchCyberlinksByNeroun = async ({
   offset?: number;
   abortSignal?: AbortSignal;
 }) => {
-  try {
-    const where = {
-      _and: [
-        {
-          timestamp: {
-            _gt: numberToDate(timestampFrom),
-          },
+  const where = {
+    _and: [
+      {
+        timestamp: {
+          _gt: numberToDate(timestampFrom),
         },
-        {
-          neuron: {
-            _eq: neuron,
-          },
+      },
+      {
+        neuron: {
+          _eq: neuron,
         },
-        { particle_from: { _in: particlesFrom } },
-      ],
-    };
+      },
+      { particle_from: { _in: particlesFrom } },
+    ],
+  };
 
-    const res = await createIndexerClient(
-      abortSignal
-    ).request<CyberlinksByParticleResponse>(cyberlinksByParticle, {
-      limit: batchSize,
-      offset,
-      orderBy: [
-        {
-          timestamp: 'asc',
-        },
-      ],
-      where,
-    });
+  const res = await createIndexerClient(
+    abortSignal
+  ).request<CyberlinksByParticleResponse>(cyberlinksByParticle, {
+    limit: batchSize,
+    offset,
+    orderBy: [
+      {
+        timestamp: 'asc',
+      },
+    ],
+    where,
+  });
 
-    return res.cyberlinks;
-  } catch (e) {
-    console.log('--- fetchCyberlinks:', e);
-    return [];
-  }
+  return res.cyberlinks;
 };
 
 export const fetchCyberlinksByNerounIterable = async (

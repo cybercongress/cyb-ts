@@ -44,10 +44,7 @@ export const getAndSyncCommunity = async (
   );
 
   console.log(
-    '-----get community',
-    storedCommunity,
-    newFollowingNeurons,
-    newFollowerCids
+    `>>> sync community ${address}, stored ${storedCommunity.length} new followers: ${newFollowerCids.length} new following: ${newFollowingNeurons.length}`
   );
 
   await Promise.all(

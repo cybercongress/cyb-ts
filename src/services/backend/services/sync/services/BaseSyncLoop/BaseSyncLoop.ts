@@ -68,7 +68,7 @@ abstract class BaseSyncLoop {
     const isInitialized$ = this.getIsInitializedObserver(deps);
 
     isInitialized$.subscribe((isInitialized) => {
-      console.log(`>>> ${name} initialized`, isInitialized);
+      // console.log(`>>> ${name} initialized`, isInitialized);
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
 
@@ -79,7 +79,15 @@ abstract class BaseSyncLoop {
       defer(() => from(this.doSync())),
       {
         onStartInterval: () => {
-          console.log(`>>> ${name} loop start`);
+          if (!this.abortController?.signal.aborted) {
+            this.abortController?.abort();
+          }
+          this.abortController = new AbortController();
+          // this.abortController.signal.onabort = () => {
+          //   console.log('Request aborted');
+          //   // debugger;
+          // };
+          // console.log(`>>> ${name} loop start`);
         },
         onError: (error) => {
           console.log(`>>> ${name} error`, error.toString());
@@ -93,6 +101,7 @@ abstract class BaseSyncLoop {
   }
 
   public restart() {
+    debugger;
     this.abortController?.abort();
     this.restartLoop?.();
   }
@@ -103,12 +112,10 @@ abstract class BaseSyncLoop {
   }
 
   private async doSync() {
-    this.abortController = new AbortController();
     try {
       await this.sync();
     } catch (e) {
       const isAborted = e instanceof DOMException && e.name === 'AbortError';
-
       console.log(`>>> ${this.name} sync error:`, e, isAborted);
 
       if (!isAborted) {

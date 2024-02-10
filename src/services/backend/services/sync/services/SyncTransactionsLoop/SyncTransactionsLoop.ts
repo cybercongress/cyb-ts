@@ -35,19 +35,14 @@ class SyncTransactionsLoop extends BaseSyncLoop {
   }
 
   protected async sync() {
-    try {
-      const { myAddress } = this.params;
-      await this.syncTransactions(myAddress!, myAddress!);
+    const { myAddress } = this.params;
+    await this.syncTransactions(myAddress!, myAddress!);
 
-      this.statusApi.sendStatus('in-progress', `sync my chats`);
-      const syncStatusItems = await syncMyChats(this.db!, myAddress!);
+    this.statusApi.sendStatus('in-progress', `sync my chats`);
+    const syncStatusItems = await syncMyChats(this.db!, myAddress!);
 
-      this.channelApi.postSenseUpdate(syncStatusItems);
-      this.statusApi.sendStatus('idle');
-    } catch (err) {
-      console.error('>>> syncAllTransactions', err);
-      throw err;
-    }
+    this.channelApi.postSenseUpdate(syncStatusItems);
+    this.statusApi.sendStatus('idle');
   }
 
   public async syncTransactions(
@@ -64,13 +59,13 @@ class SyncTransactionsLoop extends BaseSyncLoop {
     const totalMessageCount = await fetchTransactionMessagesCount(
       address,
       timestampFrom,
-      this.abortController?.signal
+      this.abortController!.signal
     );
+
     console.log(
-      '--------syncTransactions  start',
-      totalMessageCount,
-      timestampFrom
+      `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom}`
     );
+
     if (totalMessageCount > 0) {
       this.statusApi.sendStatus(
         'in-progress',
@@ -96,12 +91,13 @@ class SyncTransactionsLoop extends BaseSyncLoop {
         this.statusApi.sendStatus(
           'in-progress',
           `sync ${address}...`,
-          this.progressTracker.trackProgress(1) //batch.length
+          this.progressTracker.trackProgress(1)
         );
         const lastTransaction = batch.at(-1)!;
 
         console.log(
           '--------syncTransactions batch ',
+          this.abortController?.signal.aborted,
           timestampFrom,
           dateToNumber(lastTransaction.transaction.block.timestamp),
           myAddress,
@@ -111,7 +107,6 @@ class SyncTransactionsLoop extends BaseSyncLoop {
           batch.at(-1)?.transaction.block.timestamp,
           batch
         );
-        // pick last transaction = first item based on request orderby
 
         const transactions = batch.map((i) =>
           mapTransactionToEntity(address, i)
@@ -155,9 +150,8 @@ class SyncTransactionsLoop extends BaseSyncLoop {
   private async syncLinks(batch: Transaction[]) {
     const { tweets, particlesFound, links } =
       extractCybelinksFromTransaction(batch);
-    let result;
     if (links.length > 0) {
-      result = await this.db!.putCyberlinks(links);
+      await this.db!.putCyberlinks(links);
     }
 
     const tweetParticles = Object.keys(tweets);

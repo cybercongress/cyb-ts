@@ -60,6 +60,8 @@ class SyncParticlesLoop extends BaseSyncLoop {
       this.abortController?.signal
     );
 
+    console.log(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
+
     this.progressTracker.start(newLinkCount + syncItemParticles.length);
     this.statusApi.sendStatus(
       'in-progress',
@@ -97,7 +99,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
     const newTweets: SyncStatusDto[] = [];
     // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
     for await (const tweetsBatch of tweetsAsyncIterable) {
-      console.log(`-----sync fetchNewTweets ${timestampUpdate}`, tweetsBatch);
+      // console.log(`-----sync fetchNewTweets ${timestampUpdate}`, tweetsBatch);
       this.statusApi.sendStatus(
         'in-progress',
         `fetching new tweets...`,

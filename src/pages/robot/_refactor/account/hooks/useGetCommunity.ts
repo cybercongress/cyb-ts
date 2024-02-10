@@ -26,6 +26,14 @@ function useGetCommunity(address: string | null, skip?: boolean) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    setCommunity({
+      following: [],
+      followers: [],
+      friends: [],
+    });
+  }, [address]);
+
+  useEffect(() => {
     if (
       !address ||
       skip ||

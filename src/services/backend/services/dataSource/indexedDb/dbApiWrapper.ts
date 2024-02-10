@@ -170,7 +170,7 @@ class DbApiWrapper {
     );
     const res = await this.db!.executePutCommand('community', entitites);
 
-    console.log('-----putCommunity', res, entitites);
+    // console.log('-----putCommunity', res, entitites);
   }
 
   public async deletePins(pins: ParticleCid[]) {
