@@ -8,7 +8,7 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
-import { createLoopObservable } from '../utils/rxjs';
+import { createLoopObservable } from '../utils/rxjs/loop';
 import { IPFS_SYNC_INTERVAL } from '../consts';
 import { fetchPins } from '../../../dataSource/ipfs/ipfsSource';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
@@ -56,13 +56,13 @@ class SyncIpfsLoop {
   }
 
   start() {
-    this._loop$ = createLoopObservable(
+    const { loop$ } = createLoopObservable(
       IPFS_SYNC_INTERVAL,
       this.isInitialized$,
-      defer(() => from(this.syncPins())),
-      () => this.statusApi.sendStatus('in-progress')
+      defer(() => from(this.syncPins()))
     );
 
+    this._loop$ = loop$;
     this._loop$.subscribe({
       next: (result) => this.statusApi.sendStatus('idle'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
@@ -73,6 +73,8 @@ class SyncIpfsLoop {
 
   private async syncPins() {
     try {
+      this.statusApi.sendStatus('in-progress');
+
       const pinsResult = await fetchPins(this.ipfsNode!);
       // console.log('---syncPins pinsResult', pinsResult);
       const dbPins = (await this.db!.getPins()).rows.map(

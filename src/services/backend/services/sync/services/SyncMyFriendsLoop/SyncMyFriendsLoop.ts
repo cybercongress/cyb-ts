@@ -21,7 +21,7 @@ import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 
 import { ServiceDeps } from '../types';
 
-import { createLoopObservable } from '../utils/rxjs';
+import { createLoopObservable } from '../utils/rxjs/loop';
 import { MY_FRIENDS_SYNC_INTERVAL, MY_FRIENDS_SYNC_WARMUP } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 
@@ -31,11 +31,10 @@ import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+import { changeMyAddress } from '../utils/loop_XXXX';
 
 class SyncMyFriendsLoop {
   private isInitialized$: Observable<boolean>;
-
-  private isInitialized = false;
 
   private db: DbApi | undefined;
 
@@ -44,6 +43,10 @@ class SyncMyFriendsLoop {
   private inProgress: NeuronAddress[] = [];
 
   private _loop$: Observable<any> | undefined;
+
+  private restartLoop: (() => void) | undefined;
+
+  private abortController: AbortController | undefined;
 
   private channelApi = new BroadcastChannelSender();
 
@@ -72,7 +75,12 @@ class SyncMyFriendsLoop {
     });
 
     deps.params$.subscribe((params) => {
-      this.params = params;
+      // restart on address change
+      this.params = changeMyAddress(
+        this.params,
+        params,
+        this.restart.bind(this)
+      );
     });
 
     this.isInitialized$ = combineLatest([
@@ -90,31 +98,35 @@ class SyncMyFriendsLoop {
           params.followings.length > 0
       )
     );
+  }
 
-    this.isInitialized$.subscribe((isInitialized) => {
-      this.isInitialized = isInitialized;
-    });
+  private restart() {
+    this.abortController?.abort();
+    this.restartLoop?.();
   }
 
   start() {
-    this._loop$ = createLoopObservable(
+    const { loop$, restart } = createLoopObservable(
       MY_FRIENDS_SYNC_INTERVAL,
       this.isInitialized$,
       defer(() => from(this.syncAll())),
-      () => this.statusApi.sendStatus('in-progress', 'preparing...')
-      // MY_FRIENDS_SYNC_WARMUP
+      {
+        onError: (error) => {
+          this.statusApi.sendStatus('error', error.toString());
+        },
+      }
     );
+    this._loop$ = loop$;
+    this.restartLoop = restart;
 
-    this._loop$.subscribe({
-      next: (result) => this.statusApi.sendStatus('idle'),
-      error: (err) => this.statusApi.sendStatus('error', err.toString()),
-    });
+    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
 
     return this;
   }
 
   private async syncAll() {
     try {
+      this.statusApi.sendStatus('in-progress', 'preparing...');
       const { myAddress, followings } = this.params;
 
       this.statusApi.sendStatus('estimating');

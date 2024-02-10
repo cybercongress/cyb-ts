@@ -1,11 +1,11 @@
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { getIpfsHash } from 'src/utils/search/utils';
+import { PATTERN_CYBER } from 'src/utils/config';
 
 import DbApiWrapper from '../backend/services/dataSource/indexedDb/dbApiWrapper';
 import { getFollowsAsCid, getFollowers } from '../backend/services/lcd/lcd';
 import { FetchParticleAsync } from '../QueueManager/types';
 import { CommunityDto } from '../CozoDb/types/dto';
-import { PATTERN_CYBER } from 'src/utils/config';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getAndSyncCommunity = async (

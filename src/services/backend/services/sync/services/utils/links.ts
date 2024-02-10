@@ -32,9 +32,14 @@ export const fetchCyberlinksAndResolveParticles = async (
   cid: ParticleCid,
   timestampUpdate: number,
   particlesResolver: ParticlesResolverQueue,
-  queuePriority: QueuePriority
+  queuePriority: QueuePriority,
+  abortSignal?: AbortSignal
 ) => {
-  const cyberlinksIterable = fetchCyberlinksIterable(cid, timestampUpdate);
+  const cyberlinksIterable = fetchCyberlinksIterable(
+    cid,
+    timestampUpdate,
+    abortSignal
+  );
   const links = [];
   // eslint-disable-next-line no-restricted-syntax
   for await (const batch of cyberlinksIterable) {

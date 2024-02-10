@@ -12,7 +12,7 @@ import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
-import { createLoopObservable } from '../utils/rxjs';
+import { createLoopObservable } from '../utils/rxjs/loop';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { SyncServiceParams } from '../../types';
 
@@ -24,6 +24,8 @@ import { Transaction } from '../../../dataSource/blockchain/types';
 import { syncMyChats } from './services/chat';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+import { changeMyAddress } from '../utils/loop_XXXX';
+import { MY_SYNC_INTERVAL } from '../consts';
 
 class SyncTransactionsLoop {
   private isInitialized$: Observable<boolean>;
@@ -34,11 +36,13 @@ class SyncTransactionsLoop {
 
   private particlesResolver: ParticlesResolverQueue | undefined;
 
-  private intervalMs: number;
-
   private inProgress: NeuronAddress[] = [];
 
   private _loop$: Observable<any> | undefined;
+
+  private restartLoop: (() => void) | undefined;
+
+  private abortController: AbortController | undefined;
 
   private progressTracker = new ProgressTracker();
 
@@ -53,16 +57,10 @@ class SyncTransactionsLoop {
     followings: [],
   };
 
-  constructor(
-    deps: ServiceDeps,
-    particlesResolver: ParticlesResolverQueue,
-    intervalMs: number
-  ) {
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     if (!deps.params$) {
       throw new Error('params$ is not defined');
     }
-
-    this.intervalMs = intervalMs;
 
     this.particlesResolver = particlesResolver;
 
@@ -71,7 +69,12 @@ class SyncTransactionsLoop {
     });
 
     deps.params$.subscribe((params) => {
-      this.params = params;
+      // restart on address change
+      this.params = changeMyAddress(
+        this.params,
+        params,
+        this.restart.bind(this)
+      );
     });
 
     this.isInitialized$ = combineLatest([
@@ -86,23 +89,30 @@ class SyncTransactionsLoop {
     );
   }
 
-  start() {
-    this._loop$ = createLoopObservable(
-      this.intervalMs,
-      this.isInitialized$,
-      defer(() => from(this.syncAllTransactions()))
-      // () => this.statusApi.sendStatus('estimating')
-    );
+  private restart() {
+    this.abortController?.abort();
+    this.restartLoop?.();
+  }
 
-    this._loop$.subscribe({
-      next: (result) => this.statusApi.sendStatus('idle'),
-      error: (err) => this.statusApi.sendStatus('error', err.toString()),
-    });
+  start() {
+    const { loop$, restart } = createLoopObservable(
+      MY_SYNC_INTERVAL,
+      this.isInitialized$,
+      defer(() => from(this.sync())),
+      {
+        onError: (error) => {
+          this.statusApi.sendStatus('error', error.toString());
+        },
+      }
+    );
+    this._loop$ = loop$;
+    this.restartLoop = restart;
+    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
 
     return this;
   }
 
-  private async syncAllTransactions() {
+  private async sync() {
     try {
       const { myAddress } = this.params;
       await this.syncTransactions(myAddress!, myAddress!);

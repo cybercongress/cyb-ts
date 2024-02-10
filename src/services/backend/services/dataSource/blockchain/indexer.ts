@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { request } from 'graphql-request';
+import { GraphQLClient, request } from 'graphql-request';
 
 import gql from 'graphql-tag';
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
@@ -177,47 +177,47 @@ const fetchCyberlinks = async ({
   particleCid,
   timestampFrom,
   offset = 0,
+  abortSignal,
 }: {
   particleCid: ParticleCid;
   timestampFrom: number;
   offset?: number;
+  abortSignal?: AbortSignal;
 }) => {
-  try {
-    const res = await request<CyberlinksByParticleResponse>(
-      CYBER_INDEX_HTTPS,
-      cyberlinksByParticle,
-      {
-        limit: CYBERLINKS_BATCH_LIMIT,
-        offset,
-        orderBy: [
+  const client = new GraphQLClient(CYBER_INDEX_HTTPS, {
+    signal: abortSignal,
+  });
+
+  const res = await client.request<CyberlinksByParticleResponse>(
+    cyberlinksByParticle,
+    {
+      limit: CYBERLINKS_BATCH_LIMIT,
+      offset,
+      orderBy: [
+        {
+          timestamp: 'desc',
+        },
+      ],
+      where: {
+        _or: [
           {
-            timestamp: 'desc',
+            particle_to: {
+              _eq: particleCid,
+            },
+          },
+          {
+            particle_from: {
+              _eq: particleCid,
+            },
           },
         ],
-        where: {
-          _or: [
-            {
-              particle_to: {
-                _eq: particleCid,
-              },
-            },
-            {
-              particle_from: {
-                _eq: particleCid,
-              },
-            },
-          ],
-          timestamp: {
-            _gt: numberToDate(timestampFrom),
-          },
+        timestamp: {
+          _gt: numberToDate(timestampFrom),
         },
-      }
-    );
-    return res.cyberlinks;
-  } catch (e) {
-    console.log('--- fetchCyberlinks:', e);
-    return [];
-  }
+      },
+    }
+  );
+  return res.cyberlinks;
 };
 
 const fetchCyberlinksByNeroun = async ({
@@ -226,12 +226,14 @@ const fetchCyberlinksByNeroun = async ({
   timestampFrom,
   batchSize,
   offset = 0,
+  abortSignal,
 }: {
   neuron: NeuronAddress;
   particlesFrom: ParticleCid[];
   timestampFrom: number;
   batchSize: number;
   offset?: number;
+  abortSignal?: AbortSignal;
 }) => {
   try {
     const where = {
@@ -250,8 +252,11 @@ const fetchCyberlinksByNeroun = async ({
       ],
     };
 
-    const res = await request<CyberlinksByParticleResponse>(
-      CYBER_INDEX_HTTPS,
+    const client = new GraphQLClient(CYBER_INDEX_HTTPS, {
+      signal: abortSignal,
+    });
+
+    const res = await client.request<CyberlinksByParticleResponse>(
       cyberlinksByParticle,
       {
         limit: batchSize,
@@ -276,13 +281,15 @@ export const fetchCyberlinksByNerounIterable = async (
   neuron: NeuronAddress,
   particlesFrom: ParticleCid[],
   timestampFrom: number,
-  batchSize: number
+  batchSize: number,
+  abortSignal?: AbortSignal
 ) =>
   fetchIterable(fetchCyberlinksByNeroun, {
     neuron,
     particlesFrom,
     timestampFrom,
     batchSize,
+    abortSignal,
   });
 
 export async function fetchAllCyberlinks(cid: ParticleCid, timestampFrom = 0) {
@@ -312,8 +319,10 @@ const fetchTransactionsIterable = (
 
 const fetchCyberlinksIterable = (
   particleCid: ParticleCid,
-  timestampFrom: number
-) => fetchIterable(fetchCyberlinks, { particleCid, timestampFrom });
+  timestampFrom: number,
+  abortSignal?: AbortSignal
+) =>
+  fetchIterable(fetchCyberlinks, { particleCid, timestampFrom, abortSignal });
 
 const fetchCyberlinkSyncStats = async (
   particleCid: ParticleCid,

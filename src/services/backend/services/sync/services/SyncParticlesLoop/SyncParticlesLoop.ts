@@ -15,7 +15,7 @@ import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
-import { createLoopObservable } from '../utils/rxjs';
+import { createLoopObservable } from '../utils/rxjs/loop';
 import { MY_PARTICLES_SYNC_INTERVAL } from '../consts';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { changeSyncStatus } from '../../utils';
@@ -26,10 +26,9 @@ import {
 } from '../../../dataSource/blockchain/indexer';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+import { changeMyAddress } from '../utils/loop_XXXX';
 
 class SyncParticlesLoop {
-  private isInitialized$: Observable<boolean>;
-
   private db: DbApi | undefined;
 
   private particlesResolver: ParticlesResolverQueue | undefined;
@@ -42,7 +41,11 @@ class SyncParticlesLoop {
 
   private progressTracker = new ProgressTracker();
 
+  private abortController: AbortController | undefined;
+
   private _loop$: Observable<any> | undefined;
+
+  private restartLoop: (() => void) | undefined;
 
   public get loop$(): Observable<any> | undefined {
     return this._loop$;
@@ -58,12 +61,17 @@ class SyncParticlesLoop {
     });
 
     deps.params$.subscribe((params) => {
-      this.params = params;
+      // restart on address change
+      this.params = changeMyAddress(
+        this.params,
+        params,
+        this.restart.bind(this)
+      );
     });
 
     this.particlesResolver = particlesResolver;
 
-    this.isInitialized$ = combineLatest([
+    const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
       deps.params$,
@@ -77,6 +85,28 @@ class SyncParticlesLoop {
           !!params.myAddress
       )
     );
+
+    const { loop$, restart } = createLoopObservable(
+      MY_PARTICLES_SYNC_INTERVAL,
+      isInitialized$,
+      defer(() => from(this.syncMain())),
+      {
+        onStartInterval: () => {
+          console.log('-----START PARTICLE LOOP');
+        },
+        onError: (error) => {
+          this.statusApi.sendStatus('error', error.toString());
+        },
+      }
+    );
+
+    this._loop$ = loop$;
+    this.restartLoop = restart;
+  }
+
+  private restart() {
+    this.abortController?.abort();
+    this.restartLoop?.();
   }
 
   private async fetchNewTweets(
@@ -87,7 +117,8 @@ class SyncParticlesLoop {
       myAddress,
       [CID_TWEET],
       timestampUpdate,
-      CYBERLINKS_BATCH_LIMIT
+      CYBERLINKS_BATCH_LIMIT,
+      this.abortController?.signal
     );
 
     const newTweets: SyncStatusDto[] = [];
@@ -152,7 +183,8 @@ class SyncParticlesLoop {
           id,
           timestampUpdate,
           this.particlesResolver!,
-          QueuePriority.MEDIUM
+          QueuePriority.MEDIUM,
+          this.abortController?.signal
         );
 
         if (links.length > 0) {
@@ -175,14 +207,21 @@ class SyncParticlesLoop {
         }
       }
     } catch (e) {
-      console.log('>>> SyncParticlesLoop error:', e);
-      throw e;
+      const isAborted = e instanceof DOMException && e.name === 'AbortError';
+
+      console.log('>>> SyncParticlesLoop error:', e, isAborted);
+      if (!isAborted) {
+        throw e;
+      }
     } finally {
       this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
     }
   }
 
   private async syncMain() {
+    // setup abort controller
+    this.abortController = new AbortController();
+
     const { myAddress } = this.params!;
 
     this.statusApi.sendStatus('estimating');
@@ -193,13 +232,6 @@ class SyncParticlesLoop {
     });
 
     const timestampUpdate = syncItemParticles.at(0)?.timestampUpdate || 0;
-
-    // // Get last update timestamp by last my transaction
-    // const { timestampUpdate = 0 } = await this.db!.getSyncStatus(
-    //   myAddress!,
-    //   myAddress!,
-    //   EntryType.transactions
-    // );
 
     // Get count of new links after last update
     const newLinkCount = await fetchLinksCount(
@@ -231,16 +263,7 @@ class SyncParticlesLoop {
   }
 
   start() {
-    this._loop$ = createLoopObservable(
-      MY_PARTICLES_SYNC_INTERVAL,
-      this.isInitialized$,
-      defer(() => from(this.syncMain()))
-    );
-
-    this._loop$.subscribe({
-      next: (result) => this.statusApi.sendStatus('idle'),
-      error: (err) => this.statusApi.sendStatus('error', err.toString()),
-    });
+    this._loop$.subscribe((result) => this.statusApi.sendStatus('idle'));
 
     return this;
   }
