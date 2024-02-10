@@ -38,27 +38,22 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
   }
 
   protected async sync() {
-    try {
-      this.statusApi.sendStatus('in-progress', 'preparing...');
-      const { myAddress, followings } = this.params;
+    this.statusApi.sendStatus('in-progress', 'preparing...');
+    const { myAddress, followings } = this.params;
 
-      this.statusApi.sendStatus('estimating');
-      console.log(`>>> syncMyFriends ${myAddress} count ${followings.length}`);
+    this.statusApi.sendStatus('estimating');
+    console.log(`>>> syncMyFriends ${myAddress} count ${followings.length}`);
 
-      this.progressTracker.start(followings.length);
-      this.statusApi.sendStatus(
-        'in-progress',
-        `sync...`,
-        this.progressTracker.progress
-      );
+    this.progressTracker.start(followings.length);
+    this.statusApi.sendStatus(
+      'in-progress',
+      `sync...`,
+      this.progressTracker.progress
+    );
 
-      await executeSequentially(
-        followings.map((addr) => () => this.syncLinks(myAddress!, addr))
-      );
-    } catch (err) {
-      console.error('>>> syncAllTweets', err);
-      throw err;
-    }
+    await executeSequentially(
+      followings.map((addr) => () => this.syncLinks(myAddress!, addr))
+    );
   }
 
   public async syncLinks(myAddress: NeuronAddress, address: NeuronAddress) {

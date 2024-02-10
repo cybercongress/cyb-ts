@@ -142,55 +142,46 @@ class SyncParticlesLoop extends BaseSyncLoop {
   ) {
     const updatedSyncItems: SyncStatusDto[] = [];
 
-    try {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const syncItem of syncItems) {
-        const { id, timestampUpdate } = syncItem;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const syncItem of syncItems) {
+      const { id, timestampUpdate } = syncItem;
 
-        this.statusApi.sendStatus(
-          'in-progress',
-          `fetching tweet updates...`,
-          this.progressTracker.trackProgress(1)
-        );
+      this.statusApi.sendStatus(
+        'in-progress',
+        `fetching tweet updates...`,
+        this.progressTracker.trackProgress(1)
+      );
 
+      // eslint-disable-next-line no-await-in-loop
+      const links = await fetchCyberlinksAndResolveParticles(
+        id,
+        timestampUpdate,
+        this.particlesResolver!,
+        QueuePriority.MEDIUM,
+        this.abortController?.signal
+      );
+
+      if (links.length > 0) {
+        // save links
         // eslint-disable-next-line no-await-in-loop
-        const links = await fetchCyberlinksAndResolveParticles(
-          id,
-          timestampUpdate,
-          this.particlesResolver!,
-          QueuePriority.MEDIUM,
-          this.abortController?.signal
+        const result = await this.db!.putCyberlinks(
+          links.map(mapLinkFromIndexerToDbEntity)
         );
 
-        if (links.length > 0) {
-          // save links
-          // eslint-disable-next-line no-await-in-loop
-          const result = await this.db!.putCyberlinks(
-            links.map(mapLinkFromIndexerToDbEntity)
-          );
+        const newItem = changeSyncStatus(syncItem, links, myAddress);
 
-          const newItem = changeSyncStatus(syncItem, links, myAddress);
-
-          updatedSyncItems.push(newItem);
-        }
+        updatedSyncItems.push(newItem);
       }
-
-      if (updatedSyncItems.length > 0) {
-        const result = await this.db!.putSyncStatus(updatedSyncItems);
-        if (!result.ok) {
-          console.log('>>> syncParticles batch ERR:', result);
-        }
-      }
-    } catch (e) {
-      const isAborted = e instanceof DOMException && e.name === 'AbortError';
-
-      console.log('>>> SyncParticlesLoop error:', e, isAborted);
-      if (!isAborted) {
-        throw e;
-      }
-    } finally {
-      this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
     }
+
+    if (updatedSyncItems.length > 0) {
+      const result = await this.db!.putSyncStatus(updatedSyncItems);
+      if (!result.ok) {
+        console.log('>>> syncParticles batch ERR:', result);
+      }
+    }
+
+    this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
   }
 }
 

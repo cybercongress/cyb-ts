@@ -58,7 +58,7 @@ abstract class BaseSyncLoop {
         this.params?.myAddress &&
         this.params?.myAddress !== params.myAddress
       ) {
-        restart();
+        this.restart();
       }
       this.params = params;
     });
@@ -72,16 +72,16 @@ abstract class BaseSyncLoop {
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
 
-    const { loop$, restart } = createLoopObservable(
+    const { loop$, restartLoop } = createLoopObservable(
       intervalMs,
       isInitialized$,
       // defer(() => from(this.sync())),
       defer(() => from(this.doSync())),
       {
         onStartInterval: () => {
-          if (!this.abortController?.signal.aborted) {
-            this.abortController?.abort();
-          }
+          // if (!this.abortController?.signal.aborted) {
+          //   this.abortController?.abort();
+          // }
           this.abortController = new AbortController();
           // this.abortController.signal.onabort = () => {
           //   console.log('Request aborted');
@@ -97,11 +97,10 @@ abstract class BaseSyncLoop {
     );
 
     this.loop$ = loop$;
-    this.restartLoop = restart;
+    this.restartLoop = restartLoop;
   }
 
   public restart() {
-    debugger;
     this.abortController?.abort();
     this.restartLoop?.();
   }
