@@ -1,12 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {
-  IDBResult,
-  DBSchema,
-  DBResultWithColIndex,
-  DBValue,
-  Column,
-  IDBResultError,
-} from './types/types';
+import { IDBResult, DBResultWithColIndex, Column } from './types/types';
 import { DbEntity } from './types/entities';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
@@ -104,10 +97,7 @@ export function removeUndefinedFields(entity: Record<string, any>) {
   return entity;
 }
 
-export const dbResultToDtoList = (dbResult: IDBResult | IDBResultError) => {
-  if (!dbResult.ok) {
-    throw new Error(`Can't parse DBResult: ${dbResult.message}`);
-  }
+export const dbResultToDtoList = (dbResult: IDBResult) => {
   const { headers, rows } = dbResult;
 
   const camelCaseHeadersMap = headers.reduce((acc, header) => {

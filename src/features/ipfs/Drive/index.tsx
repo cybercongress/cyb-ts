@@ -24,6 +24,7 @@ import BackendStatus from './BackendStatus';
 import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
+import { DBResultError } from 'src/services/CozoDb/types/types';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -128,7 +129,7 @@ function Drive() {
             const result = await cozoDbRemote!.runCommand(query);
             const t1 = performance.now();
 
-            if (result.ok === true) {
+            try {
               setStatusMessage(
                 `finished with ${result.rows.length} rows in ${diffMs(t0, t1)}`
               );
@@ -175,11 +176,11 @@ function Drive() {
               });
 
               setQueryResults({ rows: rowsNormalized, cols });
-            } else {
-              console.error('Query failed', result);
+            } catch (e: DBResultError | any) {
+              console.error('Query failed', e);
               setStatusMessage(`finished with errors`);
-              if (result.display) {
-                setErrorMessage(result.display);
+              if (e.display) {
+                setErrorMessage(e.display);
               }
             }
           } catch (e) {
@@ -201,13 +202,13 @@ function Drive() {
       'link',
     ]);
     console.log('---export data', result);
-    if (result.ok) {
+    try {
       const blob = new Blob([JSON.stringify(result.data)], {
         type: 'text/plain;charset=utf-8',
       });
       saveAs(blob, 'export.json');
-    } else {
-      console.log('CozoDb: Failed to import', result);
+    } catch (e) {
+      console.log('CozoDb: Failed to import', e);
     }
   };
 

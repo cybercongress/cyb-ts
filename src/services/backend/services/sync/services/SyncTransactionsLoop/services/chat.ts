@@ -47,10 +47,9 @@ export const syncMyChats = async (
         disabled: false,
       };
 
-      const result = await db.putSyncStatus(newItem);
-      if (result.ok) {
-        results.push({ ...newItem, meta: lastTransaction });
-      }
+      await db.putSyncStatus(newItem);
+
+      results.push({ ...newItem, meta: lastTransaction });
     } else {
       const { id, timestampRead, timestampUpdate, meta } = syncItem;
       const { timestampUpdateContent = 0 } = meta || {};
@@ -71,14 +70,14 @@ export const syncMyChats = async (
             timestampUpdateContent,
           },
         };
-        const result = await db.updateSyncStatus(syncStatusChanges);
-        if (result.ok) {
-          results.push({
-            ...syncItem,
-            ...syncStatusChanges,
-            meta: lastTransaction,
-          } as SenseListItem);
-        }
+
+        await db.updateSyncStatus(syncStatusChanges);
+
+        results.push({
+          ...syncItem,
+          ...syncStatusChanges,
+          meta: lastTransaction,
+        } as SenseListItem);
       }
     }
   });

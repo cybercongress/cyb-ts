@@ -22,12 +22,26 @@ export interface IDBResult {
   ok: true;
 }
 
-export interface IDBResultError {
+interface IDBResultError {
   code: string;
   display: string;
   message: string;
   severity: string;
   ok: false;
+}
+
+export class DBResultError extends Error implements Omit<IDBResultError, 'ok'> {
+  code: string;
+  display: string;
+  severity: string;
+
+  constructor(error: IDBResult) {
+    const { message, code, display, severity } = error;
+    super(message);
+    this.code = code;
+    this.display = display;
+    this.severity = severity;
+  }
 }
 
 export type DBSchema = Record<string, TableSchema>;

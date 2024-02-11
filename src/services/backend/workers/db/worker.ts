@@ -83,14 +83,11 @@ const createDbWorkerApi = () => {
       const atomCommand = commandFactory!.generateAtomCommand(tableName, batch);
 
       // eslint-disable-next-line no-await-in-loop
-      const result = await runCommand([atomCommand, putCommand].join('\r\n'));
-      if (!result.ok) {
-        isOk = false;
-      }
+      await runCommand([atomCommand, putCommand].join('\r\n'));
 
       onProgress && onProgress(i + batch.length);
     }
-    return { ok: isOk };
+    return { ok: true };
   };
 
   return {

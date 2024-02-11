@@ -125,11 +125,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
       if (syncStatusEntities.length > 0) {
         const result = await this.db!.putSyncStatus(syncStatusEntities);
         newTweets.push(...syncStatusEntities);
-
-        if (!result.ok) {
-          console.log('NOT OK fetchMyTweets', result);
-          //   this.channelApi.postSenseUpdate(syncStatusEntities);
-        }
       }
     }
 
@@ -176,9 +171,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
 
     if (updatedSyncItems.length > 0) {
       const result = await this.db!.putSyncStatus(updatedSyncItems);
-      if (!result.ok) {
-        console.log('>>> syncParticles batch ERR:', result);
-      }
     }
 
     this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);

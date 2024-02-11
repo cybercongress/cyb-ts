@@ -65,10 +65,6 @@ class DbApiWrapper {
       ['id', 'owner_id', 'entry_type']
     );
 
-    if (!result.ok) {
-      throw new Error(result.message);
-    }
-
     const row = result.rows.length
       ? result.rows[0]
       : [TIMESTAMP_INTITAL, 0, TIMESTAMP_INTITAL];
@@ -145,10 +141,6 @@ class DbApiWrapper {
     const fields = withType ? ['cid', 'type'] : ['cid'];
     const result = await this.db!.executeGetCommand('pin', fields);
 
-    if (!result.ok) {
-      throw new Error(result.message);
-    }
-
     return result;
   }
 
@@ -156,10 +148,6 @@ class DbApiWrapper {
     const result = await this.db!.executeGetCommand('community', undefined, [
       `owner_id = '${ownerId}'`,
     ]);
-
-    if (!result.ok) {
-      throw new Error(result.message);
-    }
 
     return dbResultToDtoList(result) as CommunityDto[];
   }
@@ -189,10 +177,6 @@ class DbApiWrapper {
 
   public async getParticles(fields: string[]) {
     const result = await this.db!.executeGetCommand('particle', fields);
-
-    if (!result.ok) {
-      throw new Error(result.message);
-    }
 
     return result;
   }
@@ -331,10 +315,6 @@ class DbApiWrapper {
       [],
       { orderBy: ['-priority'], limit }
     );
-
-    if (!result.ok) {
-      throw new Error(result.message);
-    }
 
     return result.rows.map((row) => ({
       id: row[0] as string,

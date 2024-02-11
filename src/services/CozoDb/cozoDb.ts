@@ -4,9 +4,9 @@ import {
   IDBResult,
   Column,
   DBSchema,
-  IDBResultError,
   TableSchema,
   GetCommandOptions,
+  DBResultError,
 } from './types/types';
 import { DbEntity, ConfigDbEntity } from './types/entities';
 
@@ -49,18 +49,12 @@ function createCozoDb() {
 
   const getRelations = async (): Promise<string[]> => {
     const result = await runCommand('::relations');
-    if (result.ok !== true) {
-      throw new Error(result.message);
-    }
 
     return result.rows.map((row) => row[0] as string);
   };
 
   const createSchema = async (tableName: string) => {
     const columnResult = await runCommand(`::columns ${tableName}`);
-    if (!columnResult.ok) {
-      throw new Error((columnResult as IDBResultError).message);
-    }
 
     const fields = toListOfObjects<Column>(columnResult);
     const keys = fields.filter((c) => c.is_key).map((c) => c.column);
@@ -87,11 +81,7 @@ function createCozoDb() {
     if (relations.length === 0) {
       console.log('CozoDb: apply DB schema', initializeScript);
       const result = await runCommand(initializeScript);
-      if (!result.ok) {
-        throw new Error(
-          `DB SCHEMA INITIALIZATION FAILED. \r\n ${result.message}`
-        );
-      }
+
       relations = await getRelations();
     }
 
@@ -122,13 +112,8 @@ function createCozoDb() {
   const migrate = async () => {
     if (!dbSchema.community) {
       const result = await runCommand(communityScript);
-      console.log(
-        'CozoDb >>> migration: creating community relation....',
-        result.ok
-      );
-      if (result.ok) {
-        dbSchema.community = await createSchema('community');
-      }
+      console.log('CozoDb >>> migration: creating community relation....');
+      dbSchema.community = await createSchema('community');
     }
 
     if (!dbSchema.transaction.keys.includes('neuron')) {
@@ -150,7 +135,7 @@ function createCozoDb() {
   const runCommand = async (
     command: string,
     immutable = false
-  ): Promise<IDBResult | IDBResultError> => {
+  ): Promise<IDBResult> => {
     if (!db) {
       throw new Error('DB is not initialized');
     }
@@ -158,25 +143,29 @@ function createCozoDb() {
     const result = JSON.parse(resultStr);
     // console.log('----> runCommand ', command, result);
 
+    if (!result.ok) {
+      throw new DBResultError(result);
+    }
+
     return result;
   };
 
   const put = async (
     tableName: string,
     array: Partial<DbEntity>[]
-  ): Promise<IDBResult | IDBResultError> =>
+  ): Promise<IDBResult> =>
     runCommand(commandFactory!.generatePut(tableName, array));
 
   const rm = async (
     tableName: string,
     keyValues: Partial<DbEntity>[]
-  ): Promise<IDBResult | IDBResultError> =>
+  ): Promise<IDBResult> =>
     runCommand(commandFactory!.generateRm(tableName, keyValues));
 
   const update = async (
     tableName: string,
     array: Partial<DbEntity>[]
-  ): Promise<IDBResult | IDBResultError> =>
+  ): Promise<IDBResult> =>
     runCommand(commandFactory!.generateUpdate(tableName, array));
 
   const get = async (
@@ -185,7 +174,7 @@ function createCozoDb() {
     conditions: string[] = [],
     conditionFields: string[] = [],
     options: GetCommandOptions = {}
-  ): Promise<IDBResult | IDBResultError> =>
+  ): Promise<IDBResult> =>
     runCommand(
       commandFactory!.generateGet(
         tableName,

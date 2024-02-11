@@ -11,7 +11,14 @@ export const getFollowsAsCid = async (
     method: 'get',
     url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
   });
-
+  // console.log(
+  //   '-----getFollowsAsCid',
+  //   `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
+  //   response.data
+  // );
+  if (!response.data.txs) {
+    return [];
+  }
   return response.data.txs.map(
     (item) => item.tx.value.msg[0].value.links[0].to
   );
@@ -26,5 +33,13 @@ export const getFollowers = async (
     method: 'get',
     url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
   });
+  // console.log(
+  //   '-----getFollowers',
+  //   `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
+  //   response.data
+  // );
+  if (!response.data.txs) {
+    return [];
+  }
   return response.data.txs.map((item) => item.tx.value.msg[0].value.neuron);
 };
