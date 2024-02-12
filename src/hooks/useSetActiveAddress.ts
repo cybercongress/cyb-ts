@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DefaultAccount, AccountValue } from 'src/types/defaultAccount';
 
-function useSetActiveAddress(defaultAccount: DefaultAccount) {
+function useSetActiveAddress(
+  defaultAccount: DefaultAccount,
+  noUpdate?: boolean
+) {
   const [addressActive, setAddressActive] = useState<AccountValue | null>(null);
+  const firstEffectOccured = useRef(false);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -18,8 +22,15 @@ function useSetActiveAddress(defaultAccount: DefaultAccount) {
         addressPocket.name = name;
       }
     }
-    setAddressActive(addressPocket);
-  }, [defaultAccount.name]);
+
+    if (!firstEffectOccured.current) {
+      setAddressActive(addressPocket);
+    }
+
+    if (!noUpdate && addressPocket) {
+      firstEffectOccured.current = true;
+    }
+  }, [defaultAccount, noUpdate]);
 
   return { addressActive };
 }

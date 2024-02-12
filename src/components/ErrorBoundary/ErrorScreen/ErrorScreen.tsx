@@ -4,7 +4,6 @@ import styles from './ErrorScreen.module.scss';
 import robot from '../../../image/robot.svg';
 import { LinkWindow } from 'src/components/link/link';
 import { HUB_LINK } from 'src/pages/Social/Social';
-import ActionBar from 'src/components/actionBar';
 
 function ErrorScreen({ error }: { error: Error }) {
   return (
@@ -19,8 +18,10 @@ function ErrorScreen({ error }: { error: Error }) {
         ...and <LinkWindow to={HUB_LINK}>let us know</LinkWindow> about this
       </p>
 
-      <pre>{error.message}</pre>
-      <pre className={styles.stack}>{error.stack}</pre>
+      <div className={styles.errorDetails}>
+        <pre>{error.message}</pre>
+        <pre className={styles.stack}>{error.stack}</pre>
+      </div>
 
       <footer>
         {window.history.length > 0 && (

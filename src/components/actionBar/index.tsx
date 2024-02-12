@@ -11,6 +11,8 @@ import { useAppSelector } from 'src/redux/hooks';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
 import Button from '../btnGrd';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { trimString } from 'src/utils/utils';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -43,6 +45,7 @@ type Props = {
 };
 
 function ActionBar({ children, text, onClickBack, button }: Props) {
+  const { signerReady } = useSigningClient();
   const location = useLocation();
 
   const { defaultAccount, commander } = useAppSelector((store) => {
@@ -58,6 +61,12 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const noAccount = !defaultAccount.account;
   const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
 
+  const exception =
+    (location.pathname !== routes.keys.path &&
+      !location.pathname.includes('/drive') &&
+      // !location.pathname.includes('/oracle') &&
+      location.pathname !== '/') ||
+    location.pathname === '/oracle/learn';
   // TODO: not show while loading passport
 
   if (commander.isFocused) {
@@ -76,11 +85,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   if (
     (noAccount || noPassport) &&
     // maybe change to props
-    ((location.pathname !== routes.keys.path &&
-      !location.pathname.includes('/drive') &&
-      !location.pathname.includes('/oracle') &&
-      location.pathname !== '/') ||
-      location.pathname === '/oracle/learn')
+    exception &&
+    !location.pathname.includes(routes.gift.path)
   ) {
     return (
       <ActionBarContainer>
@@ -89,6 +95,25 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
         {noPassport && location.pathname !== routes.citizenship.path && (
           <Button link={routes.portal.path}>Get citizenship</Button>
         )}
+      </ActionBarContainer>
+    );
+  }
+
+  if (
+    !signerReady &&
+    exception &&
+    !location.pathname.includes(routes.gift.path)
+  ) {
+    const activeAddress =
+      defaultAccount.account?.cyber.name ||
+      trimString(defaultAccount.account?.cyber.bech32, 10, 4);
+
+    return (
+      <ActionBarContainer>
+        <span>
+          choose {defaultAccount.account?.cyber.name ? 'account' : 'address'}{' '}
+          <span className={styles.chooseAccount}>{activeAddress}</span> in keplr
+        </span>
       </ActionBarContainer>
     );
   }
