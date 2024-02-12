@@ -1,6 +1,11 @@
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { AccountValue } from 'src/types/defaultAccount';
+import { useQuery } from '@tanstack/react-query';
+import { Nullable } from 'src/types';
+import { Citizenship } from 'src/types/citizenship';
+import { CyberClient } from '@cybercongress/cyber-js';
 
 const AMOUNT_ALL_STAGE = 90;
 const NEW_RELEASE = 1000; // release 1% every 1k claims
@@ -35,66 +40,36 @@ const DICTIONARY = {
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
 
-const useGetActivePassport = (addressActive, updateFunc) => {
+const useGetActivePassport = (
+  addressActive: Nullable<AccountValue>,
+  updateFunc?: number
+) => {
   const queryClient = useQueryClient();
-  const [citizenship, setCitizenship] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const useGetActiveAddress = useMemo(() => {
-    const { account } = addressActive;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { keys, bech32, name } = account.cyber;
-      addressPocket = {
-        bech32,
-        keys,
-      };
-
-      if (name) {
-        addressPocket.name = name;
-      }
+  const data = useQuery(
+    ['active_passport', addressActive?.bech32],
+    () => activePassport(queryClient, addressActive?.bech32),
+    {
+      enabled: Boolean(addressActive) && Boolean(queryClient),
     }
-    return addressPocket;
-  }, [addressActive]);
+  );
 
   useEffect(() => {
-    const getActivePassport = async () => {
-      setLoading(true);
-      if (queryClient) {
-        if (useGetActiveAddress !== null) {
-          setLoading(true);
-          try {
-            const query = {
-              active_passport: {
-                address: useGetActiveAddress.bech32,
-              },
-            };
-            const response = await queryClient.queryContractSmart(
-              CONTRACT_ADDRESS_PASSPORT,
-              query
-            );
-            setCitizenship(response);
-            setLoading(false);
-          } catch (error) {
-            setCitizenship(null);
-            setLoading(false);
-          }
-        } else {
-          setLoading(false);
-        }
-      }
-    };
-    getActivePassport();
-  }, [useGetActiveAddress, queryClient, updateFunc]);
+    if (updateFunc) {
+      data.refetch();
+    }
+  }, [updateFunc]);
 
-  return { citizenship, loading, setLoading };
+  return {
+    citizenship: data.data,
+    loading: data.isFetching,
+  };
 };
 
 // TODO: replace with hook
-const activePassport = async (client, address) => {
+const activePassport = async (
+  client: CyberClient,
+  address: string
+): Promise<Nullable<Citizenship>> => {
   try {
     const query = {
       active_passport: {

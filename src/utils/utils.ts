@@ -6,12 +6,14 @@ import BigNumber from 'bignumber.js';
 import { ObjKeyValue } from 'src/types/data';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { Option } from 'src/types';
-import { CYBER } from './config';
+import { CYBER, LEDGER } from './config';
 import tokenList from './tokenList';
 
 import cyberSpace from '../image/large-purple-circle.png';
 import customNetwork from '../image/large-orange-circle.png';
 import cyberBostrom from '../image/large-green.png';
+import { Key } from '@keplr-wallet/types';
+import { AccountValue } from 'src/types/defaultAccount';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
@@ -403,6 +405,19 @@ const getNowUtcTime = (): number => {
   return utcTime.getTime();
 };
 
+const accountsKeplr = (accounts: Key): AccountValue => {
+  const { pubKey, bech32Address, name } = accounts;
+  const pk = Buffer.from(pubKey).toString('hex');
+
+  return {
+    bech32: bech32Address,
+    keys: 'keplr',
+    pk,
+    path: LEDGER.HDPATH,
+    name,
+  };
+};
+
 export {
   formatNumber,
   asyncForEach,
@@ -432,4 +447,5 @@ export {
   isNative,
   findPoolDenomInArr,
   getNowUtcTime,
+  accountsKeplr,
 };
