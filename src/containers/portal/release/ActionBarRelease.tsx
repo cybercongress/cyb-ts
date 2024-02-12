@@ -23,6 +23,7 @@ const releaseMsg = (giftAddress: string) => {
   };
 };
 
+
 const STEP_INIT = 0;
 const STEP_CHECK_ACC = 1;
 const STATE_CHANGE_ACCOUNT = 1.1;
