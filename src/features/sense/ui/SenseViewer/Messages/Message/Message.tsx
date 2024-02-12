@@ -2,7 +2,7 @@ import { Account, Tooltip } from 'src/components';
 import styles from './Message.module.scss';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { routes } from 'src/routes';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Date from '../../../components/Date/Date';
 import cx from 'classnames';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
@@ -40,6 +40,15 @@ function Message({
   const myAddress = useAppSelector(selectCurrentAddress);
   const myMessage = address === myAddress;
   const particle = isParticle(address);
+  const navigate = useNavigate();
+
+  function handleNavigate() {
+    navigate(
+      cid
+        ? routes.oracle.ask.getLink(cid)
+        : routes.txExplorer.getLink(transactionHash)
+    );
+  }
 
   return (
     <div
@@ -80,13 +89,24 @@ function Message({
         </Link>
       </div>
 
-      <Link
+      {/* <Link> not good here, because children may have links  */}
+      {/* Twitter example */}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          // if text not selected
+          // shouldn't be null
+          if (window.getSelection().toString() === '') {
+            handleNavigate();
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleNavigate();
+          }
+        }}
         className={styles.body}
-        to={
-          cid
-            ? routes.oracle.ask.getLink(cid)
-            : routes.txExplorer.getLink(transactionHash)
-        }
       >
         {content && <div className={styles.content}>{content}</div>}
 
@@ -102,7 +122,7 @@ function Message({
             />
           </div>
         )}
-      </Link>
+      </div>
     </div>
   );
 }
