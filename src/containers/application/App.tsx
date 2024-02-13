@@ -33,7 +33,7 @@ function App() {
   const adviserContext = useAdviser();
   useSenseManager();
 
-  const { ipfsError, isReady, senseApi } = useBackend();
+  const { ipfsError } = useBackend();
 
   useEffect(() => {
     dispatch(initPocket());

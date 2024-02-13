@@ -32,10 +32,12 @@ interface IDBResultError {
 
 export class DBResultError extends Error implements Omit<IDBResultError, 'ok'> {
   code: string;
+
   display: string;
+
   severity: string;
 
-  constructor(error: IDBResult) {
+  constructor(error: IDBResultError) {
     const { message, code, display, severity } = error;
     super(message);
     this.code = code;
