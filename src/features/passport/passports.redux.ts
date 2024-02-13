@@ -9,7 +9,6 @@ import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { RootState } from 'src/redux/store';
 import { AppThunk } from 'src/redux/types';
-import { selectFollowings } from 'src/redux/features/currentAccount';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
 import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
@@ -137,10 +136,10 @@ const slice = createSlice({
     });
 
     builder.addCase(getPassport.fulfilled, (state, action) => {
-      state[action.meta.arg.address] = {
+      Object.assign(state[action.meta.arg.address]!, {
         loading: false,
         data: action.payload,
-      };
+      });
     });
 
     builder.addCase(getPassport.rejected, (state, action) => {
@@ -148,9 +147,10 @@ const slice = createSlice({
         console.error(action);
       }
 
-      state[action.meta.arg.address] = {
+      Object.assign(state[action.meta.arg.address]!, {
         loading: false,
-      };
+        data: null,
+      });
     });
   },
 });
