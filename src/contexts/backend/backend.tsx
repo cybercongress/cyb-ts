@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
 import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
-import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcastChannelListener';
 
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
@@ -35,7 +35,7 @@ type BackendProviderContextType = {
   senseApi: SenseApi;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
-  dbApi: DbApiWrapper;
+  dbApi: DbApiWrapper | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
   loadIpfs?: () => Promise<void>;
@@ -46,13 +46,14 @@ type BackendProviderContextType = {
 };
 
 const valueContext = {
+  cozoDbRemote: null,
+  senseApi: null,
+  defferedDbApi: null,
   isIpfsInitialized: false,
   isDbInitialized: false,
   isSyncInitialized: false,
-  isSenseApiInitalized: false,
   isReady: false,
   dbApi: null,
-  senseApi: null,
   ipfsApi: null,
 };
 
@@ -106,18 +107,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
-  const [senseApi, setSenseApi] = useState<SenseApi>(null);
   const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
-  const [isSenseApiInitalized, setIsSenseApiInitialized] = useState(false);
 
-  useEffect(() => {
-    if (isDbInitialized && dbApi) {
-      setSenseApi(createSenseApi(dbApi, myAddress, followings));
-      setIsSenseApiInitialized(true);
-    } else {
-      setSenseApi(null);
-      setIsSenseApiInitialized(false);
+  const senseApi = useMemo(() => {
+    if (isDbInitialized && dbApi && myAddress) {
+      return createSenseApi(dbApi, myAddress, followings);
     }
+    return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
   useEffect(() => {
@@ -131,7 +127,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const channel = new BroadcastChannelListener((msg) => dispatch(msg.data));
+    // const channel = new BroadcastChannelListener((msg) => {
+    //   console.log('--------msg.data', msg.data);
+    //   dispatch(msg.data);
+    // });
+    const channel = new RxBroadcastChannelListener(dispatch);
 
     (async () => {
       console.log(
@@ -218,7 +218,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isIpfsInitialized,
         isDbInitialized,
         isSyncInitialized,
-        isSenseApiInitalized,
         isReady,
       } as BackendProviderContextType),
     [
@@ -228,7 +227,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       isSyncInitialized,
       ipfsError,
       senseApi,
-      isSenseApiInitalized,
       dbApi,
     ]
   );

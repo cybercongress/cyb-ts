@@ -76,6 +76,19 @@ export type BroadcastChannelMessage =
   | SyncStatusMessage
   | SyncEntryMessage
   | IndexedDbWriteMessage
-  | ServiceStatusMessage
-  // | SenseListUpdate
-  | SenseListRemove;
+  | ServiceStatusMessage;
+// | SenseListUpdate
+// | SenseListRemove;
+
+export const getBroadcastChannemMessageKey = (msg: BroadcastChannelMessage) => {
+  const { type, value } = msg;
+  switch (type) {
+    case 'service_status':
+      return `${type}_${value.name}`;
+    case 'sync_entry':
+      return `${type}_${value.entry}`;
+    case 'sync_status':
+    default:
+      return type;
+  }
+};

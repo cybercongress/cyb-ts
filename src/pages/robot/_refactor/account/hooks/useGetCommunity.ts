@@ -70,7 +70,7 @@ function useGetCommunity(address: string | null, skip?: boolean) {
       setIsLoaded(true);
       setLoading({ followers: true, following: true, friends: true });
     })();
-  }, [dbApi, isDbInitialized, fetchParticleAsync, address, skip]);
+  }, [dbApi, isDbInitialized, isLoaded, fetchParticleAsync, address, skip]);
 
   return {
     community,

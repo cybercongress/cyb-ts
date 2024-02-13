@@ -221,7 +221,7 @@ class DbApiWrapper {
       ['id', 'owner_id']
     );
 
-    const timestampUpdate = result.rows[0][0];
+    const timestampUpdate = result.rows[0][0] as number;
 
     this.updateSyncStatus({
       id,
@@ -237,7 +237,7 @@ class DbApiWrapper {
     {
       timestampFrom = 0,
       order = 'desc',
-    }: { order?: 'desc' | 'asc'; timestampFrom?: number }
+    }: { order?: 'desc' | 'asc'; timestampFrom?: number } = {}
   ) {
     const conditions = [
       `neuron = '${neuron}'`,
