@@ -36,7 +36,6 @@ class RxBroadcastChannelListener {
             const key = getBroadcastChannemMessageKey(msg.data);
             items.set(key, msg.data);
           });
-          console.log('Dispatching accumulated messages:', messages);
           items.forEach(dispatch);
         }
       });
