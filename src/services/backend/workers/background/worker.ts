@@ -31,6 +31,7 @@ import DbApi from '../../services/dataSource/indexedDb/dbApiWrapper';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
+import { SyncEntryName } from '../../types/services';
 
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
@@ -111,7 +112,7 @@ const createBackgroundWorkerApi = () => {
       ipfsNode?.fetchWithDetails(cid, parseAs),
     enqueue: async (
       cid: string,
-      callback: QueueItemCallback<IPFSContentMaybe>,
+      callback: QueueItemCallback,
       options: QueueItemOptions
     ) => ipfsQueue!.enqueue(cid, callback, options),
     enqueueAndWait: async (cid: string, options?: QueueItemOptions) =>
@@ -129,6 +130,7 @@ const createBackgroundWorkerApi = () => {
     ipfsApi: proxy(ipfsApi),
     defferedDbApi: proxy(defferedDbApi),
     ipfsQueue: proxy(ipfsQueue),
+    restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
   };

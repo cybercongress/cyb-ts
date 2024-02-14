@@ -17,12 +17,16 @@ import {
   MY_TRANSACTIONS_SYNC_INTERVAL,
 } from './services/consts';
 import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
+import { SyncEntryName } from '../../types/services';
+import BaseSyncLoop from './services/BaseSyncLoop/BaseSyncLoop';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
   private isInitialized$: Observable<boolean>;
 
   private channelApi = new BroadcastChannelSender();
+
+  private loops: Partial<Record<SyncEntryName, BaseSyncLoop>> = {};
 
   constructor(deps: ServiceDeps) {
     const { dbInstance$, ipfsInstance$ } = deps;
@@ -42,7 +46,7 @@ export class SyncService {
 
     // new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop(
+    this.loops.transaction = new SyncTransactionsLoop(
       'transaction',
       MY_TRANSACTIONS_SYNC_INTERVAL,
       deps,
@@ -62,5 +66,10 @@ export class SyncService {
       deps,
       particlesResolver
     ).start();
+  }
+
+  public restart(name: SyncEntryName) {
+    console.log('----sync restartSync', name, this.loops[name]);
+    this.loops[name]?.restart();
   }
 }

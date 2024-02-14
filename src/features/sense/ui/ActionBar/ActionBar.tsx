@@ -33,6 +33,8 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   const [message, setMessage] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
 
+  const { restartSync } = useBackend();
+
   const address = useAppSelector(selectCurrentAddress);
   const dispatch = useAppDispatch();
 
@@ -123,6 +125,8 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           'auto',
           message
         );
+
+        restartSync?.('transaction');
       }
 
       if (response.code !== 0) {

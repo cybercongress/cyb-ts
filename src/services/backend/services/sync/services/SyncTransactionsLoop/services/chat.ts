@@ -22,7 +22,8 @@ export const syncMyChats = async (
 
   const results: SenseListItem[] = [];
 
-  myChats.forEach(async (chat) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const chat of myChats.values()) {
     const syncItem = syncItemsMap.get(chat.userAddress);
     const lastTransaction = chat.transactions.at(-1)!;
 
@@ -47,6 +48,7 @@ export const syncMyChats = async (
         disabled: false,
       };
 
+      // eslint-disable-next-line no-await-in-loop
       await db.putSyncStatus(newItem);
 
       results.push({ ...newItem, meta: lastTransaction });
@@ -71,6 +73,7 @@ export const syncMyChats = async (
           },
         };
 
+        // eslint-disable-next-line no-await-in-loop
         await db.updateSyncStatus(syncStatusChanges);
 
         results.push({
@@ -80,7 +83,6 @@ export const syncMyChats = async (
         } as SenseListItem);
       }
     }
-  });
-
+  }
   return results;
 };

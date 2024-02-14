@@ -14,6 +14,7 @@ import { BackgroundWorker } from 'src/services/backend/workers/background/worker
 import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseApi, createSenseApi } from './services/senseApi';
+import { SyncEntryName } from 'src/services/backend/types/services';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -39,6 +40,7 @@ type BackendProviderContextType = {
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
   loadIpfs?: () => Promise<void>;
+  restartSync?: (name: SyncEntryName) => void;
   isIpfsInitialized: boolean;
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
@@ -211,6 +213,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
+        restartSync: (name: SyncEntryName) =>
+          backgroundWorkerInstance.restartSync(name),
         dbApi,
         senseApi,
         loadIpfs,
