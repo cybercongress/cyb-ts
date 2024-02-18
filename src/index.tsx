@@ -4,15 +4,20 @@ import 'regenerator-runtime/runtime';
 import { OperationDefinitionNode } from 'graphql';
 
 import { createRoot } from 'react-dom/client';
-import ApolloClient from 'apollo-client';
+
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink,
+  split,
+  ApolloProvider,
+} from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ApolloProvider } from 'react-apollo';
-import { getMainDefinition } from 'apollo-utilities';
-import { ApolloLink, split } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
-import { WebSocketLink } from 'apollo-link-ws';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { getMainDefinition } from '@apollo/client/utilities';
 import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
@@ -47,12 +52,11 @@ const httpLink = new HttpLink({
   },
 });
 
-const wsLink = new WebSocketLink({
-  uri: CYBER.CYBER_INDEX_WEBSOCKET,
-  options: {
-    reconnect: true,
-  },
-});
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: CYBER.CYBER_INDEX_WEBSOCKET,
+  })
+);
 
 const terminatingLink = split(
   ({ query }) => {

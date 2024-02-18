@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
-// import { useSubscription } from '@apollo/react-hooks';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { PATTERN_CYBER } from 'src/utils/config';
 import QUERY_GET_FOLLOWERS from './query';
