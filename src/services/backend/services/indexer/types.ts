@@ -78,3 +78,5 @@ export interface MsgSendTransaction
 export type Transaction =
   // | DelegateTransaction
   CyberLinkTransaction | MsgMultiSendTransaction | MsgSendTransaction;
+
+export type GqlType = 'query' | 'subscription';

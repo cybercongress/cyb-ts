@@ -68,16 +68,16 @@ abstract class BaseSyncLoop {
     const isInitialized$ = this.getIsInitializedObserver(deps);
 
     isInitialized$.subscribe((isInitialized) => {
-      // console.log(`>>> ${name} initialized`, isInitialized);
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
 
     const { loop$, restartLoop } = createLoopObservable(
-      intervalMs,
       isInitialized$,
       // defer(() => from(this.sync())),
       defer(() => from(this.doSync())),
       {
+        intervalMs,
+
         onStartInterval: () => {
           // if (!this.abortController?.signal.aborted) {
           //   this.abortController?.abort();

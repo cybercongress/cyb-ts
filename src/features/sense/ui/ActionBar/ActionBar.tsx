@@ -15,6 +15,7 @@ import { SenseMetaType } from 'src/services/backend/types/sense';
 import styles from './ActionBar.module.scss';
 import { isParticle } from 'src/features/particle/utils';
 import { useBackend } from 'src/contexts/backend/backend';
+import { getTransaction } from 'src/services/backend/services/lcd/lcd';
 
 type Props = {
   id: string | undefined;
@@ -32,8 +33,6 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
   const [message, setMessage] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
-
-  const { restartSync } = useBackend();
 
   const address = useAppSelector(selectCurrentAddress);
   const dispatch = useAppDispatch();
@@ -125,8 +124,6 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           'auto',
           message
         );
-
-        restartSync?.('transaction');
       }
 
       if (response.code !== 0) {

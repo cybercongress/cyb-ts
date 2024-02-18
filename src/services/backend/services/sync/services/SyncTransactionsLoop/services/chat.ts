@@ -8,7 +8,8 @@ import { extractSenseChats } from '../../utils/sense';
 // eslint-disable-next-line import/prefer-default-export
 export const syncMyChats = async (
   db: DbApiWrapper,
-  myAddress: NeuronAddress
+  myAddress: NeuronAddress,
+  timestampFrom?: number
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
@@ -17,7 +18,11 @@ export const syncMyChats = async (
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
 
-  const myTransactions = await db.getTransactions(myAddress, { order: 'asc' });
+  // TODO
+  const myTransactions = await db.getTransactions(myAddress, {
+    order: 'asc',
+    timestampFrom,
+  });
   const myChats = extractSenseChats(myAddress, myTransactions!);
 
   const results: SenseListItem[] = [];

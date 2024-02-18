@@ -69,6 +69,7 @@ const link = ApolloLink.from([terminatingLink]);
 
 const cache = new InMemoryCache();
 
+// TODO: replace with @apollo/client
 const client = new ApolloClient({
   link,
   cache,

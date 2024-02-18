@@ -46,26 +46,21 @@ export class SyncService {
 
     // new SyncIpfsLoop(deps, particlesResolver).start();
 
-    this.loops.transaction = new SyncTransactionsLoop(
-      'transaction',
-      MY_TRANSACTIONS_SYNC_INTERVAL,
-      deps,
-      particlesResolver
-    ).start();
+    new SyncTransactionsLoop('transaction', deps, particlesResolver).start();
 
-    new SyncParticlesLoop(
-      'particle',
-      MY_PARTICLES_SYNC_INTERVAL,
-      deps,
-      particlesResolver
-    ).start();
+    // new SyncParticlesLoop(
+    //   'particle',
+    //   MY_PARTICLES_SYNC_INTERVAL,
+    //   deps,
+    //   particlesResolver
+    // ).start();
 
-    new SyncMyFriendsLoop(
-      'my-friends',
-      MY_FRIENDS_SYNC_INTERVAL,
-      deps,
-      particlesResolver
-    ).start();
+    // new SyncMyFriendsLoop(
+    //   'my-friends',
+    //   MY_FRIENDS_SYNC_INTERVAL,
+    //   deps,
+    //   particlesResolver
+    // ).start();
   }
 
   public restart(name: SyncEntryName) {

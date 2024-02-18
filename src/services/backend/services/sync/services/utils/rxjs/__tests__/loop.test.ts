@@ -24,10 +24,9 @@ describe('createLoopObservable', () => {
     const actionObservable$ = defer(() => from(taskPromise));
 
     const { loop$, restart } = createLoopObservable(
-      100,
       isInitialized$,
       actionObservable$,
-      { onStartInterval: beforeCallback }
+      { onStartInterval: beforeCallback, intervalMs: 100 }
     );
 
     // restart
@@ -57,11 +56,9 @@ describe('createLoopObservable', () => {
 
     const actionObservable$ = defer(() => taskPromiseFactory());
 
-    const { loop$ } = createLoopObservable(
-      100,
-      isInitialized$,
-      actionObservable$
-    );
+    const { loop$ } = createLoopObservable(isInitialized$, actionObservable$, {
+      intervalMs: 100,
+    });
 
     subscription = loop$.subscribe(() => {
       if (afterCounter === 1) {

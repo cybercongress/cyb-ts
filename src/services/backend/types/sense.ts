@@ -6,7 +6,7 @@ import {
   MsgSendTransaction,
   CyberLinkTransaction,
   MsgMultiSendTransaction,
-} from '../services/dataSource/blockchain/types';
+} from '../services/indexer/types';
 
 export type SenseTransaction =
   | MsgSendTransaction

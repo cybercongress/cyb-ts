@@ -9,8 +9,13 @@ import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
 const PAGINATION_LIMIT = 10;
 
+type LcdEventType = {
+  key: string;
+  value: string;
+};
+
 async function getTransactions(
-  events: any,
+  events: LcdEventType[],
   pagination = { limit: 20, offset: 0 },
   orderBy = 'ORDER_BY_UNSPECIFIED'
 ) {
@@ -29,13 +34,15 @@ async function getTransactions(
   return response;
 }
 
-const fetchLinkByNeuron = async (
-  {
-    address,
-    from,
-    offset = 0,
-  }: { address: NeuronAddress; from: ParticleCid; offset: number }
-) => {
+const fetchLinkByNeuron = async ({
+  address,
+  from,
+  offset = 0,
+}: {
+  address: NeuronAddress;
+  from: ParticleCid;
+  offset: number;
+}) => {
   const events = [
     {
       key: 'cyberlink.particleFrom',
@@ -47,7 +54,7 @@ const fetchLinkByNeuron = async (
     },
   ];
   const response = await getTransactions(
-    CYBER_NODE_URL_LCD
+    CYBER_NODE_URL_LCD,
     events,
     { limit: PAGINATION_LIMIT, offset },
     'ORDER_BY_DESC'
@@ -81,7 +88,6 @@ const fetchLinkByNeuron = async (
 };
 
 const fetchLinksByNeuronTimestampIterable = (
-
   address: NeuronAddress,
   fromParticle: ParticleCid,
   timestamp: number
@@ -94,7 +100,6 @@ const fetchLinksByNeuronTimestampIterable = (
 
 // eslint-disable-next-line import/prefer-default-export
 export const fetchLinksByNeuronTimestamp = async (
-
   address: NeuronAddress,
   from: ParticleCid,
   timestamp: number

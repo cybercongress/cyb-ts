@@ -57,9 +57,9 @@ class SyncIpfsLoop {
 
   start() {
     const { loop$ } = createLoopObservable(
-      IPFS_SYNC_INTERVAL,
       this.isInitialized$,
-      defer(() => from(this.syncPins()))
+      defer(() => from(this.syncPins())),
+      { intervalMs: IPFS_SYNC_INTERVAL }
     );
 
     this._loop$ = loop$;

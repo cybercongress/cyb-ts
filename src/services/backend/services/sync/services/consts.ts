@@ -3,7 +3,7 @@ import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
   Transaction,
-} from '../../dataSource/blockchain/types';
+} from '../../indexer/types';
 
 export const MY_PARTICLES_SYNC_INTERVAL = 2 * 60 * 1000; // 60 sec
 export const MY_TRANSACTIONS_SYNC_INTERVAL = 30 * 1000; // 60 sec

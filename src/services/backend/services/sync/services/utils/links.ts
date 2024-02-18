@@ -11,7 +11,7 @@ import {
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkTransaction,
   Transaction,
-} from '../../../dataSource/blockchain/types';
+} from '../../../indexer/types';
 
 const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [

@@ -17,7 +17,7 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import {
   MsgMultiSendValue,
   MsgSendValue,
-} from 'src/services/backend/services/dataSource/blockchain/types';
+} from 'src/services/backend/services/indexer/types';
 import { RootState } from 'src/redux/store';
 import { numberToDateWithTimezone } from 'src/utils/date';
 

@@ -1,9 +1,7 @@
 import { of } from 'rxjs';
 
-import {
-  fetchCyberlinksIterable,
-  fetchTransactionsIterable,
-} from 'src/services/backend/services/dataSource/blockchain/indexer';
+import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/indexer';
+import { fetchTransactionsIterable } from '../../../indexer/transactions';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import DbApi, {
@@ -18,7 +16,7 @@ import { dateToNumber } from 'src/utils/date';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
 import SyncTransactionsLoop from './SyncTransactionsLoop';
-import { CYBER_LINK_TRANSACTION_TYPE } from '../../../dataSource/blockchain/types';
+import { CYBER_LINK_TRANSACTION_TYPE } from '../../../indexer/types';
 
 jest.mock('src/services/backend/services/dataSource/blockchain/requests');
 jest.mock('src/services/backend/services/dataSource/indexedDb/dbApiWrapper');

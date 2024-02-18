@@ -7,7 +7,7 @@ import {
   MSG_SEND_TRANSACTION_TYPE,
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MsgSendTransaction,
-} from '../../../dataSource/blockchain/types';
+} from '../../../indexer/types';
 
 export const extractSenseChats = (
   myAddress: NeuronAddress,

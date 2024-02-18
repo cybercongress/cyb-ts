@@ -35,7 +35,7 @@ import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
-} from '../blockchain/types';
+} from '../../indexer/types';
 
 const TIMESTAMP_INTITAL = 0;
 

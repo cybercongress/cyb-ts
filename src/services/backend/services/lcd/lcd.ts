@@ -3,6 +3,7 @@ import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
 import { getIpfsHash } from 'src/utils/search/utils';
+import { LcdEventType } from './types';
 
 export const getFollowsAsCid = async (
   address: NeuronAddress
@@ -43,3 +44,11 @@ export const getFollowers = async (
   }
   return response.data.txs.map((item) => item.tx.value.msg[0].value.neuron);
 };
+
+export async function getTransaction(txHash: string) {
+  // https://lcd.bostrom.cybernode.ai/cosmos/tx/v1beta1/txs/67FD87EBCC1633B779C154C1CAFD48DE71350074A04F742DAD418F69F1D05BB0
+  const response = axios.get(
+    `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs/${txHash}`
+  );
+  return response;
+}

@@ -2,7 +2,7 @@ import { CID_TWEET } from 'src/constants/app';
 
 import { extractLinkData, changeSyncStatus } from '../utils';
 import { extractCybelinksFromTransaction } from '../services/utils/links';
-import { CYBER_LINK_TRANSACTION_TYPE } from '../../dataSource/blockchain/types';
+import { CYBER_LINK_TRANSACTION_TYPE } from '../../indexer/types';
 
 jest.mock('../../dataSource/blockchain/requests', () => ({
   fetchCyberlinksIterable: jest.fn(),

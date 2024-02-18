@@ -2,7 +2,7 @@ import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import {
   MsgMultiSendTransaction,
   MsgSendTransaction,
-} from 'src/services/backend/services/dataSource/blockchain/types';
+} from 'src/services/backend/services/indexer/types';
 
 import { SenseItem } from '../../redux/sense.redux';
 

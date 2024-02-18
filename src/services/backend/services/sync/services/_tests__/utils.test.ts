@@ -1,7 +1,7 @@
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
-} from 'src/services/backend/services/dataSource/blockchain/types';
+} from 'src/services/backend/services/indexer/types';
 import { extractSenseChats } from '../utils/sense';
 
 describe('createSenseChats', () => {

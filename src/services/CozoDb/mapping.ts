@@ -3,7 +3,7 @@ import { dateToNumber } from 'src/utils/date';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { IPFSContent } from '../ipfs/ipfs';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
-import { Transaction } from '../backend/services/dataSource/blockchain/types';
+import { Transaction } from '../backend/services/indexer/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
 import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/indexer';
 
