@@ -1,6 +1,7 @@
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from 'react-apollo';
+import { useQuery, gql } from '@apollo/client';
+
 import { useBackend } from 'src/contexts/backend/backend';
 import { useEffect, useState } from 'react';
 import { useBackend } from 'src/contexts/backend/backend';
@@ -56,7 +57,11 @@ function useCyberlinks(
     where = '{}';
   }
 
-  const query = useQuery(
+  const {
+    loading,
+    error,
+    data: gqlData,
+  } = useQuery(
     gql`
     query Cyberlinks {
       cyberlinks(limit: ${String(
@@ -74,7 +79,7 @@ function useCyberlinks(
     }
   );
 
-  const cyberlinks = query.data?.cyberlinks;
+  const cyberlinks = gqlData?.cyberlinks;
   const { isLoading, particlesPreview } = useParticlesPreview();
 
   const data = useMemo(() => {
@@ -118,7 +123,7 @@ function useCyberlinks(
 
   return {
     data,
-    loading: query.loading,
+    loading,
   };
 }
 

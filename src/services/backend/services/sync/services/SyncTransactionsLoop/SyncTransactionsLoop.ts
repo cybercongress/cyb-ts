@@ -6,7 +6,7 @@ import { dateToNumber, numberToDate } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
-import { SubscriptionResult } from 'react-apollo';
+import { SubscriptionResult } from '@apollo/client';
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
 

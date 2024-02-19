@@ -15,9 +15,10 @@ import {
 } from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
+
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { getMainDefinition } from '@apollo/client/utilities';
 import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';

@@ -1,7 +1,8 @@
 import { NeuronAddress } from 'src/types/base';
 import { GqlType, Transaction } from './types';
 
-import gql, { gql } from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { numberToDate } from 'src/utils/date';
 import {
   MessagesByAddressVariables,

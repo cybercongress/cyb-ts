@@ -1,7 +1,8 @@
 /* eslint-disable import/no-unused-modules */
 import { request } from 'graphql-request';
 
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
 import { dateToNumber, numberToDate } from 'src/utils/date';
 import { CYBER_INDEX_HTTPS } from 'src/constants/config';
