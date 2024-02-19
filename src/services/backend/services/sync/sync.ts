@@ -48,19 +48,19 @@ export class SyncService {
 
     new SyncTransactionsLoop('transaction', deps, particlesResolver).start();
 
-    // new SyncParticlesLoop(
-    //   'particle',
-    //   MY_PARTICLES_SYNC_INTERVAL,
-    //   deps,
-    //   particlesResolver
-    // ).start();
+    new SyncParticlesLoop(
+      'particle',
+      MY_PARTICLES_SYNC_INTERVAL,
+      deps,
+      particlesResolver
+    ).start();
 
-    // new SyncMyFriendsLoop(
-    //   'my-friends',
-    //   MY_FRIENDS_SYNC_INTERVAL,
-    //   deps,
-    //   particlesResolver
-    // ).start();
+    new SyncMyFriendsLoop(
+      'my-friends',
+      MY_FRIENDS_SYNC_INTERVAL,
+      deps,
+      particlesResolver
+    ).start();
   }
 
   public restart(name: SyncEntryName) {
