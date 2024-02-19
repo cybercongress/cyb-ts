@@ -60,7 +60,9 @@ function Sense() {
     const { entryStatus } = state.backend.syncState;
 
     return (['transaction', 'particle'] as SyncEntryName[]).some((entry) => {
-      return entryStatus[entry]?.status !== 'idle';
+      return !['idle', 'listen'].some(
+        (status) => entryStatus[entry]?.status === status
+      );
     });
   });
 

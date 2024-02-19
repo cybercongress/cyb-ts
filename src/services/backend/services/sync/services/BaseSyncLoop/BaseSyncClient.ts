@@ -48,7 +48,14 @@ abstract class BaseSyncClient extends BaseSync {
       )
     );
 
-    source$.subscribe(() => this.statusApi.sendStatus('idle'));
+    source$.subscribe({
+      next: () => {
+        this.statusApi.sendStatus('listen');
+      },
+      error: (err) => {
+        this.statusApi.sendStatus('error', err);
+      },
+    });
     this.source$ = source$;
   }
 

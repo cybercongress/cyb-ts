@@ -19,7 +19,7 @@ export const broadcastStatus = (
         status,
         message,
         progress,
-        done: status === 'idle' || status === 'error',
+        done: ['idle', 'error', 'listen'].some((s) => s === status),
       });
     },
   };
