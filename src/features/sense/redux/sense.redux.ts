@@ -19,7 +19,7 @@ import {
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { RootState } from 'src/redux/store';
-import { numberToDateWithTimezone } from 'src/utils/date';
+// import { numberToDateWithTimezone } from 'src/utils/date';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -193,10 +193,9 @@ const slice = createSlice({
   name: 'sense',
   initialState,
   reducers: {
+    // backend may push this action
     updateSenseList(state, action: PayloadAction<SenseListItem[]>) {
       const data = action.payload;
-
-      const newList: SliceState['list']['data'] = [...state.list.data];
 
       data.forEach((item) => {
         const { id } = item;
@@ -205,23 +204,16 @@ const slice = createSlice({
           state.chats[id] = { ...newChatStructure };
         }
 
-        // const descriptor = Object.getOwnPropertyDescriptor(chat, 'id');
-        // if (!descriptor?.writable) {
-        //   debugger;
-        // }
-
         state.chats[id]!.id = id;
         state.chats[id]!.unreadCount = item.unreadCount;
 
         // TODO: check if message already exists
         state.chats[id]!.data = [...state.chats[id]!.data, formatApiData(item)];
-
-        newList.push(id);
       });
 
-      state.list.data = Array.from(new Set(newList));
+      slice.caseReducers.orderSenseList(state);
     },
-
+    // optimistic update
     addSenseItem(
       state,
       action: PayloadAction<{ id: SenseItemId; item: SenseItem }>
@@ -239,7 +231,7 @@ const slice = createSlice({
       newList.unshift(id);
       state.list.data = newList;
     },
-
+    // optimistic confirm/error
     updateSenseItem(
       state,
       action: PayloadAction<{
@@ -261,6 +253,25 @@ const slice = createSlice({
         }
       }
     },
+    orderSenseList(state) {
+      const temp: {
+        id: string;
+        lastMsg: SenseItem;
+      }[] = Object.keys(state.chats).map((id) => {
+        return {
+          id,
+          lastMsg: state.chats[id]!.data[state.chats[id]!.data.length - 1],
+        };
+      });
+
+      const sorted = temp.sort((a, b) => {
+        return (
+          Date.parse(a.lastMsg.timestamp) - Date.parse(b.lastMsg.timestamp)
+        );
+      });
+
+      state.list.data = sorted.map((i) => i.id);
+    },
     reset() {
       return initialState;
     },
@@ -279,9 +290,9 @@ const slice = createSlice({
         const { id } = item;
 
         state.chats[id] = {
+          ...newChatStructure,
           id,
           isLoading: false,
-          error: undefined,
           data: [item],
           unreadCount: item.unreadCount || 0,
         };
@@ -299,7 +310,14 @@ const slice = createSlice({
     });
 
     builder.addCase(getSenseChat.pending, (state, action) => {
-      state.chats[action.meta.arg.id]!.isLoading = true;
+      const { id } = action.meta.arg;
+
+      if (!state.chats[id]) {
+        state.chats[id] = { ...newChatStructure };
+      }
+
+      // don't understand why ts warning
+      state.chats[id].isLoading = true;
     });
 
     builder.addCase(getSenseChat.fulfilled, (state, action) => {
