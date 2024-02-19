@@ -241,9 +241,12 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
 
   if (stage === STAGE_INIT && selected === 'myEnegy') {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => navigate(routes.hfr.path)}>Investmint</Button>
-      </ActionBarContainer>
+      <ActionBarCenter
+        button={{
+          text: 'Investmint',
+          link: routes.hfr.path,
+        }}
+      />
     );
   }
 
@@ -253,9 +256,12 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     Object.keys(selectedRoute).length === 0
   ) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => setStage(STAGE_ADD_ROUTER)}>Add Route</Button>
-      </ActionBarContainer>
+      <ActionBarCenter
+        button={{
+          onClick: () => setStage(STAGE_ADD_ROUTER),
+          text: 'Add Route',
+        }}
+      />
     );
   }
 
@@ -265,7 +271,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     Object.keys(selectedRoute).length > 0
   ) {
     return (
-      <ActionBarContainer>
+      <ActionBarCenter>
         <Button
           style={{
             margin: '0 10px',
@@ -282,7 +288,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
         >
           Delete Route
         </Button>
-      </ActionBarContainer>
+      </ActionBarCenter>
     );
   }
 

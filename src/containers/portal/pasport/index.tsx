@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { Nullable } from 'src/types';
 import { MusicalAddress, ParseAddressesImg } from '../components';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
@@ -16,7 +17,7 @@ type Props = {
   title: string;
   initState: any; // Replace 'any' with the actual type
   stateOpen: any; // Replace 'any' with the actual type
-  citizenship: Citizenship | null;
+  citizenship: Nullable<Citizenship>;
   karma: number;
   onClickEditAvatar?: () => void;
   addressActiveSignatures: any | null; // Replace 'any' with the actual type
@@ -79,7 +80,7 @@ function PasportCitizenship({
 
   useEffect(() => {
     const getPasport = async () => {
-      if (citizenship !== null) {
+      if (citizenship) {
         setOwner(citizenship.owner);
         const addressesData = [];
         if (
@@ -107,7 +108,7 @@ function PasportCitizenship({
   }, [addresses, active]);
 
   const useClosedTitle = useMemo(() => {
-    if (citizenship !== null) {
+    if (citizenship) {
       return (
         <div
           style={{
@@ -120,7 +121,7 @@ function PasportCitizenship({
           }}
         >
           <div style={{ color: '#1fcbff' }}>
-            {citizenship !== null && citizenship.extension.nickname}
+            {citizenship && citizenship.extension.nickname}
           </div>
 
           <div style={{ color: '#36D6AE' }}>
@@ -216,17 +217,13 @@ function PasportCitizenship({
           }}
         >
           <div style={{ color: '#36D6AE', lineHeight: '18px' }}>
-            {citizenship !== null && citizenship.extension.nickname}
+            {citizenship && citizenship.extension.nickname}
           </div>
           <div style={{ lineHeight: '18px' }}>
             karma {karma > 0 ? formatNumber(karma) : ''} 🔮
           </div>
           <ContainerAvatar>
-            <AvataImgIpfs
-              cidAvatar={
-                citizenship !== null ? citizenship.extension.avatar : false
-              }
-            />
+            <AvataImgIpfs cidAvatar={citizenship?.extension.avatar || false} />
             {onClickEditAvatar && (
               <BtnPasport
                 onClick={onClickEditAvatar}

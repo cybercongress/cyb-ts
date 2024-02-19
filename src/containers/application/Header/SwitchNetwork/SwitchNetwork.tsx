@@ -174,17 +174,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
           </div>
         </button>
         {mediaQuery && (
-          <div
-            style={{
-              display: 'flex',
-              height: '100%',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              padding: '27px 0',
-              color: '#1FCBFF',
-              fontSize: 20,
-            }}
-          >
+          <div className={styles.containerInfoSwitch}>
             <button
               className={styles.btnContainerText}
               type="button"
@@ -193,7 +183,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
             >
               {CYBER.CHAIN_ID}
             </button>
-            <div>
+            <div className={styles.containerBandwidthBar}>
               <BandwidthBar />
             </div>
           </div>

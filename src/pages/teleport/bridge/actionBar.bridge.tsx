@@ -91,6 +91,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     if (ibcClient && denomIbc && signer && traseDenom) {
       const [{ address }] = await ibcClient.signer.getAccounts();
       const [{ address: counterpartyAccount }] = await signer.getAccounts();
+      const responseChainId = await ibcClient.getChainId();
 
       setStage(STAGE_SUBMITTED);
 
@@ -114,23 +115,18 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           token: transferAmount,
         },
       };
-      const gasEstimation = await ibcClient.simulate(address, [msg], '');
-      const feeIbc = {
-        amount: [],
-        gas: Math.round(gasEstimation * 1.5).toString(),
-      };
+
       try {
         const response = await ibcClient.signAndBroadcast(
           address,
           [msg],
-          feeIbc,
+          1.5,
           ''
         );
 
         console.log('response', response);
 
         if (response.code === 0) {
-          const responseChainId = await ibcClient.getChainId();
           setTxHashIbc(response.transactionHash);
           setLinkIbcTxs(
             `${networks[responseChainId].explorerUrlToTx.replace(

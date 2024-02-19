@@ -44,7 +44,7 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
 
   const uploadAvatarImg = useCallback(async () => {
     if (signer && signingClient) {
-      if (avatarIpfs !== null && citizenship !== null) {
+      if (avatarIpfs !== null && citizenship) {
         try {
           const { nickname } = citizenship.extension;
           const msgObject = {
