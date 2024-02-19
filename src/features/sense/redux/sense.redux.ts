@@ -19,7 +19,6 @@ import {
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { RootState } from 'src/redux/store';
-// import { numberToDateWithTimezone } from 'src/utils/date';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -104,7 +103,9 @@ function formatApiData(item: SenseListItem): SenseItem {
 
       return {
         id: item.id || from,
-        timestamp: item.meta.timestamp,
+        // maybe ISO string better
+        timestamp:
+          item.meta.timestamp + -new Date().getTimezoneOffset() * 60 * 1000,
         transactionHash:
           item.transactionHash || item.hash || item.meta.transaction_hash,
         type,
