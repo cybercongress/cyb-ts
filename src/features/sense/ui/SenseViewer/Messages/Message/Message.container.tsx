@@ -74,6 +74,7 @@ function MessageContainer({ senseItem }: Props) {
       amountData={{
         amount,
         isAmountSendToMyAddress,
+        hide1Boot: !!text,
       }}
       status={senseItem.status}
     />

@@ -21,6 +21,7 @@ type Props = {
   amountData?: {
     amount: MsgSend['amount'] | undefined;
     isAmountSendToMyAddress: boolean;
+    hide1Boot: boolean;
   };
   txHash?: string;
   // fix
@@ -114,6 +115,7 @@ function Message({
           <div className={styles.amount}>
             <CoinsAmount
               amount={amountData.amount}
+              hide1Boot={amountData.hide1Boot}
               type={
                 !amountData.isAmountSendToMyAddress
                   ? CoinAction.send
