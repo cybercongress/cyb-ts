@@ -6,6 +6,7 @@ import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQ
 import { ServiceDeps } from '../types';
 import BaseSync from './BaseSync';
 import { withInitializerObserver } from '../utils/rxjs/withInitializer';
+import { SyncServiceParams } from '../../types';
 
 abstract class BaseSyncClient extends BaseSync {
   protected readonly source$: Observable<any>;
@@ -31,7 +32,7 @@ abstract class BaseSyncClient extends BaseSync {
           this.createInitObservable().pipe(
             switchMap((timestampFrom: number) =>
               this.createClientObservable(timestampFrom).pipe(
-                switchMap((data) => from(this.onUpdate(data)))
+                switchMap((data) => from(this.onUpdate(data, this.params)))
               )
             )
           )
@@ -66,7 +67,10 @@ abstract class BaseSyncClient extends BaseSync {
     console.log(`>>> ${this.name} client restart`);
   }
 
-  protected abstract onUpdate(data: any): Promise<void>;
+  protected abstract onUpdate(
+    data: any,
+    params: SyncServiceParams
+  ): Promise<void>;
 
   public start() {
     this.source$.subscribe(() => {

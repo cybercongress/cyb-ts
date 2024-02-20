@@ -42,6 +42,8 @@ abstract class BaseSync {
 
   protected readonly isInitialized$: Observable<boolean>;
 
+  private;
+
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
@@ -70,21 +72,21 @@ abstract class BaseSync {
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
 
-    const restartTrigger$ = this.isInitialized$.pipe(
-      switchMap(() => this.createRestartObserver(deps.params$!))
-    );
-
-    restartTrigger$.subscribe((shouldRestart) => {
-      if (shouldRestart) {
-        this.restart();
-      }
-    });
-
     this.isInitialized$
       .pipe(switchMap(() => deps.params$!))
       .subscribe((params) => {
         this.params = params;
         console.log(`>>> ${this.name} - params updated`, params);
+      });
+
+    // Restart observer
+    this.isInitialized$
+      .pipe(
+        switchMap(() => this.createRestartObserver(deps.params$!)),
+        filter((v) => !!v)
+      )
+      .subscribe(() => {
+        this.restart();
       });
   }
 
@@ -106,8 +108,7 @@ abstract class BaseSync {
       map((params) => params.myAddress),
       distinctUntilChanged((addrBefore, addrAfter) => addrBefore === addrAfter),
       map((v) => !!v),
-      filter((v) => !!v),
-      take(1)
+      filter((v) => !!v)
     );
   }
 

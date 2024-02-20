@@ -31,6 +31,7 @@ import { syncMyChats } from './services/chat';
 import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncClient from '../BaseSyncLoop/BaseSyncClient';
 import { createRxJsClient } from '../../../indexer/utils';
+import { SyncServiceParams } from '../../types';
 
 class SyncTransactionsLoop extends BaseSyncClient {
   protected createIsInitializedObserver(deps: ServiceDeps) {
@@ -55,7 +56,9 @@ class SyncTransactionsLoop extends BaseSyncClient {
   protected createClientObservable(timestampFrom: number): Observable<any> {
     const { myAddress } = this.params;
     console.log(
-      `>>> ${this.name} subscribe from ${numberToDate(timestampFrom)}`
+      `>>> ${this.name} subscribe ${myAddress} from ${numberToDate(
+        timestampFrom
+      )} [aborted: ${this.abortFlag}]`
     );
 
     const query = gqlMessagesByAddress('subscription');
@@ -74,6 +77,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
 
   protected createInitObservable() {
     return defer(() => from(this.initSync()));
+    // return from(this.initSync());
   }
 
   public async initSync() {
@@ -105,17 +109,19 @@ class SyncTransactionsLoop extends BaseSyncClient {
   }
 
   protected async onUpdate(
-    result: SubscriptionResult<TransactionsByAddressResponse>
+    result: SubscriptionResult<TransactionsByAddressResponse>,
+    params: SyncServiceParams
   ) {
     if (!result.data) {
       console.error(`${this.name} WS error ${result.error?.message}`);
       throw result.error;
     }
+    const { myAddress } = params;
     if (result.data.messages_by_address.length > 0) {
       console.log(
-        `>>> ${this.name} recived ${result.data.messages_by_address.length} updates `
+        `>>> ${this.name} ${myAddress} recived ${result.data.messages_by_address.length} updates `
       );
-      const { myAddress } = this.params;
+
       const syncItem = await this.db!.getSyncStatus(
         myAddress!,
         myAddress!,
@@ -215,7 +221,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     );
 
     console.log(
-      `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom}`
+      `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom} [aborted: ${this.abortFlag}]`
     );
 
     if (totalMessageCount === 0) {
