@@ -8,8 +8,6 @@ import BaseSync from './BaseSync';
 import { withInitializerObserver } from '../utils/rxjs/withInitializer';
 
 abstract class BaseSyncClient extends BaseSync {
-  protected readonly isInitialized$: Observable<boolean>;
-
   protected readonly source$: Observable<any>;
 
   protected readonly reloadTrigger$ = new Subject<void>();
@@ -21,14 +19,8 @@ abstract class BaseSyncClient extends BaseSync {
   ) {
     super(name, deps, particlesResolver);
 
-    this.isInitialized$ = this.createIsInitializedObserver(deps);
-
-    this.isInitialized$.subscribe((isInitialized) => {
-      this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
-    });
-
     const source$ = withInitializerObserver(
-      this.isInitialized$,
+      this.isInitialized$!,
       this.reloadTrigger$.pipe(
         startWith(null),
         tap(() => {

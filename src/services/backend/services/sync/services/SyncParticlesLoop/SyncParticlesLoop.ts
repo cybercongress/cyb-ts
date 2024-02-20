@@ -1,4 +1,4 @@
-import { map, combineLatest } from 'rxjs';
+import { take, map, combineLatest, distinctUntilChanged } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -25,15 +25,18 @@ class SyncParticlesLoop extends BaseSyncLoop {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
-      deps.params$!,
+      deps.params$!.pipe(
+        map((params) => params.myAddress),
+        distinctUntilChanged()
+      ),
       this.particlesResolver!.isInitialized$,
     ]).pipe(
       map(
-        ([dbInstance, ipfsInstance, params, particleResolverInitialized]) =>
+        ([dbInstance, ipfsInstance, myAddress, particleResolverInitialized]) =>
           !!ipfsInstance &&
           !!dbInstance &&
           !!particleResolverInitialized &&
-          !!params?.myAddress
+          !!myAddress
       )
     );
 

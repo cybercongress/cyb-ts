@@ -5,6 +5,8 @@ import {
   Observable,
   distinctUntilChanged,
   switchMap,
+  take,
+  filter,
 } from 'rxjs';
 import { equals } from 'ramda';
 
@@ -169,7 +171,8 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       switchMap((addressChanged) => {
         return params$.pipe(
           map((params) => params.followings),
-          distinctUntilChanged((a, b) => a.length === 0 || equals(a, b)),
+          distinctUntilChanged((a, b) => equals(a, b)),
+          filter((followings) => !!followings && followings.length > 0),
           // take(1),
           map(() => true)
         );

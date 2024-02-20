@@ -11,8 +11,6 @@ import BaseSync from './BaseSync';
 abstract class BaseSyncLoop extends BaseSync {
   private restartLoop: (() => void) | undefined;
 
-  protected readonly isInitialized$: Observable<boolean>;
-
   public readonly loop$: Observable<boolean>;
 
   constructor(
@@ -23,8 +21,6 @@ abstract class BaseSyncLoop extends BaseSync {
     { warmupMs }: { warmupMs: number } = { warmupMs: 0 }
   ) {
     super(name, deps, particlesResolver);
-
-    this.isInitialized$ = this.createIsInitializedObserver(deps);
 
     const { loop$, restartLoop } = createLoopObservable(
       this.isInitialized$,

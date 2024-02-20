@@ -1,9 +1,10 @@
 import {
   Observable,
-  defer,
+  filter,
   distinctUntilChanged,
   map,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 
@@ -39,6 +40,8 @@ abstract class BaseSync {
     followings: [],
   };
 
+  protected readonly isInitialized$: Observable<boolean>;
+
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
@@ -58,16 +61,16 @@ abstract class BaseSync {
 
     this.particlesResolver = particlesResolver;
 
-    const isInitialized$ = this.createIsInitializedObserver(deps);
+    this.isInitialized$ = this.createIsInitializedObserver(deps);
 
-    isInitialized$.subscribe((isInitialized) => {
+    this.isInitialized$.subscribe((isInitialized) => {
       console.log(
         `>>> ${this.name} - ${isInitialized ? 'initialized' : 'inactive'}`
       );
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
 
-    const restartTrigger$ = isInitialized$.pipe(
+    const restartTrigger$ = this.isInitialized$.pipe(
       switchMap(() => this.createRestartObserver(deps.params$!))
     );
 
@@ -77,10 +80,12 @@ abstract class BaseSync {
       }
     });
 
-    isInitialized$.pipe(switchMap(() => deps.params$!)).subscribe((params) => {
-      this.params = params;
-      console.log(`>>> ${this.name} - params updated`, params);
-    });
+    this.isInitialized$
+      .pipe(switchMap(() => deps.params$!))
+      .subscribe((params) => {
+        this.params = params;
+        console.log(`>>> ${this.name} - params updated`, params);
+      });
   }
 
   protected initAbortController() {
@@ -99,8 +104,10 @@ abstract class BaseSync {
   protected createRestartObserver(params$: Observable<SyncServiceParams>) {
     return params$.pipe(
       map((params) => params.myAddress),
-      distinctUntilChanged((a, b) => !a && a === b),
-      map((v) => !!v)
+      distinctUntilChanged((addrBefore, addrAfter) => addrBefore === addrAfter),
+      map((v) => !!v),
+      filter((v) => !!v),
+      take(1)
     );
   }
 

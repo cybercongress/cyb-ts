@@ -5,6 +5,7 @@ import {
   Observable,
   share,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 
@@ -15,8 +16,8 @@ export const withInitializerObserver = (
 ) =>
   isInitialized$.pipe(
     distinctUntilChanged(),
-    filter((initialized) => initialized),
     tap((isInitialized) => onChange?.(isInitialized)),
+    filter((initialized) => initialized),
     switchMap(() => actionObservable$),
     share()
   );

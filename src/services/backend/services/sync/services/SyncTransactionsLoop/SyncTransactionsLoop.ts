@@ -1,5 +1,14 @@
 /* eslint-disable camelcase */
-import { map, combineLatest, Observable, from, defer, tap } from 'rxjs';
+import {
+  map,
+  combineLatest,
+  Observable,
+  take,
+  from,
+  defer,
+  tap,
+  distinctUntilChanged,
+} from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { mapTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { dateToNumber, numberToDate } from 'src/utils/date';
@@ -27,12 +36,15 @@ class SyncTransactionsLoop extends BaseSyncClient {
   protected createIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
-      deps.params$!,
+      deps.params$!.pipe(
+        map((params) => params.myAddress),
+        distinctUntilChanged()
+      ),
       this.particlesResolver!.isInitialized$,
     ]).pipe(
       map(
-        ([dbInstance, params, syncQueueInitialized]) =>
-          !!dbInstance && !!syncQueueInitialized && !!params.myAddress
+        ([dbInstance, myAddress, syncQueueInitialized]) =>
+          !!dbInstance && !!syncQueueInitialized && !!myAddress
       )
     );
 
