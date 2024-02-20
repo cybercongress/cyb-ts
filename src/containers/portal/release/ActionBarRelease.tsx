@@ -97,7 +97,7 @@ function ActionBarRelease({
 
         if (isNanoLedger) {
           setAdviser(
-            "Ledger Nano-S is temporarily not supported, but don't worry, you can released your gift later",
+            "Ledger Nano-S is temporarily not supported, but don't worry, you can release your gift later",
             'red'
           );
         }
