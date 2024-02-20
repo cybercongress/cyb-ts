@@ -21,7 +21,7 @@ import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 
 class SyncParticlesLoop extends BaseSyncLoop {
-  protected getIsInitializedObserver(deps: ServiceDeps) {
+  protected createIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,

@@ -17,6 +17,7 @@ type LoopObservableOptions = {
   retryDelayMs?: number;
   onStartInterval?: () => void;
   onError?: (error: any) => void;
+  onChange?: (isInitialized: boolean) => void;
   intervalMs?: number;
 };
 
@@ -31,6 +32,7 @@ export const createLoopObservable = (
     onStartInterval,
     onError,
     retryDelayMs = 0,
+    onChange,
   } = options;
 
   const restartTrigger$ = new Subject<void>();
@@ -55,7 +57,8 @@ export const createLoopObservable = (
           })
         )
       )
-    )
+    ),
+    (isInitialized) => onChange?.(isInitialized)
   );
 
   return {

@@ -72,7 +72,8 @@ ${type} MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_fro
   }
 }
 `);
-export const fetchTransactions = async ({
+
+const fetchTransactions = async ({
   neuron,
   timestampFrom,
   offset = 0,
@@ -125,19 +126,14 @@ export const fetchTransactionMessagesCount = async (
   timestampFrom: number,
   abortSignal: AbortSignal
 ) => {
-  try {
-    const res = await createIndexerClient(
-      abortSignal
-    ).request<MessagesCountResponse>(transactionsCountByNeuron, {
-      address: `{${address}}`,
-      timestamp: numberToDate(timestampFrom),
-    });
+  const res = await createIndexerClient(
+    abortSignal
+  ).request<MessagesCountResponse>(transactionsCountByNeuron, {
+    address: `{${address}}`,
+    timestamp: numberToDate(timestampFrom),
+  });
 
-    return res?.messages_by_address_aggregate.aggregate.count;
-  } catch (e) {
-    console.log('--- fetchTransactionMessagesCount:', e);
-    return -1;
-  }
+  return res?.messages_by_address_aggregate.aggregate.count;
 };
 
 export const fetchTransactionsIterable = ({

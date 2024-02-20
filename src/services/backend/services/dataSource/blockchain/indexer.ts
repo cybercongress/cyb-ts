@@ -136,20 +136,15 @@ const fetchCyberlinksCount = async (
   timestampFrom: number,
   abortSignal?: AbortSignal
 ) => {
-  try {
-    const res = await createIndexerClient(
-      abortSignal
-    ).request<CyberlinksCountResponse>(cyberlinksCountByNeuron, {
-      address,
-      particles_from: particlesFrom,
-      timestamp: numberToDate(timestampFrom),
-    });
+  const res = await createIndexerClient(
+    abortSignal
+  ).request<CyberlinksCountResponse>(cyberlinksCountByNeuron, {
+    address,
+    particles_from: particlesFrom,
+    timestamp: numberToDate(timestampFrom),
+  });
 
-    return res?.cyberlinks_aggregate.aggregate.count;
-  } catch (e) {
-    console.log('--- fetchLinksCount:', e);
-    return -1;
-  }
+  return res?.cyberlinks_aggregate.aggregate.count;
 };
 
 const fetchCyberlinksByNeroun = async ({

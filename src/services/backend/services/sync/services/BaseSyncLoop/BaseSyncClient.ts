@@ -12,7 +12,7 @@ abstract class BaseSyncClient extends BaseSync {
 
   protected readonly source$: Observable<any>;
 
-  protected readonly restartTrigger$: Subject<void>;
+  protected readonly reloadTrigger$ = new Subject<void>();
 
   constructor(
     name: SyncEntryName,
@@ -22,7 +22,6 @@ abstract class BaseSyncClient extends BaseSync {
     super(name, deps, particlesResolver);
 
     this.isInitialized$ = this.createIsInitializedObserver(deps);
-    this.restartTrigger$ = new Subject<void>();
 
     this.isInitialized$.subscribe((isInitialized) => {
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
@@ -30,11 +29,11 @@ abstract class BaseSyncClient extends BaseSync {
 
     const source$ = withInitializerObserver(
       this.isInitialized$,
-      this.restartTrigger$.pipe(
+      this.reloadTrigger$.pipe(
         startWith(null),
         tap(() => {
           // initialize abort conteoller for restart strategy
-          this.abortController = new AbortController();
+          this.initAbortController();
         }),
         switchMap(() =>
           this.createInitObservable().pipe(
@@ -45,7 +44,11 @@ abstract class BaseSyncClient extends BaseSync {
             )
           )
         )
-      )
+      ),
+      (isInitialized) => {
+        console.log(`>>> ${name} isInitialized`, isInitialized);
+        this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
+      }
     );
 
     source$.subscribe({
@@ -67,7 +70,8 @@ abstract class BaseSyncClient extends BaseSync {
 
   public restart() {
     this.abortController?.abort();
-    this.restartTrigger$.next();
+    this.reloadTrigger$.next();
+    console.log(`>>> ${this.name} client restart`);
   }
 
   protected abstract onUpdate(data: any): Promise<void>;

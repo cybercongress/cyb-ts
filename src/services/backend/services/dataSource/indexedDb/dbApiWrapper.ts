@@ -156,9 +156,7 @@ class DbApiWrapper {
     const entitites = transformListToDbEntity(
       Array.isArray(community) ? community : [community]
     );
-    const res = await this.db!.executePutCommand('community', entitites);
-
-    // console.log('-----putCommunity', res, entitites);
+    await this.db!.executePutCommand('community', entitites);
   }
 
   public async deletePins(pins: ParticleCid[]) {
@@ -189,7 +187,7 @@ class DbApiWrapper {
     ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link], is_link
     ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link], !is_link, *transaction{hash, index, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success, 'index', index))
 
-    ?[entry_type, id, unread_count, timestamp_update, timestamp_read, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}'
+    ?[owner_id, entry_type, id, unread_count, timestamp_update, timestamp_read, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}'
     :order -timestamp_update
     `;
 
@@ -214,6 +212,8 @@ class DbApiWrapper {
     ownerId: NeuronAddress,
     id: NeuronAddress | ParticleCid
   ) {
+    console.log(`---senseMarkAsRead start ${id}`);
+    console.time(`---senseMarkAsRead done ${id}`);
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update'],
@@ -223,13 +223,16 @@ class DbApiWrapper {
 
     const timestampUpdate = result.rows[0][0] as number;
 
-    return this.updateSyncStatus({
+    const res = this.updateSyncStatus({
       id,
       ownerId,
       timestampUpdate,
       timestampRead: timestampUpdate,
       unreadCount: 0,
     });
+
+    console.timeEnd(`---senseMarkAsRead done ${id}`);
+    return res;
   }
 
   public async getTransactions(
