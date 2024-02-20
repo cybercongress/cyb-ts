@@ -31,6 +31,7 @@ function useGetCommunity(address: string | null, skip?: boolean) {
       followers: [],
       friends: [],
     });
+    setIsLoaded(false);
   }, [address]);
 
   useEffect(() => {
@@ -49,17 +50,17 @@ function useGetCommunity(address: string | null, skip?: boolean) {
         dbApi,
         address,
         fetchParticleAsync,
-        (community: CommunityDto[]) => {
-          const followers = community
+        (communityResolved: CommunityDto[]) => {
+          const followers = communityResolved
             .filter((item) => item.follower && !item.following)
             .map((item) => item.neuron);
-          const following = community
+          const following = communityResolved
             .filter((item) => item.following && !item.follower)
             .map((item) => item.neuron);
-
-          const friends = community
+          const friends = communityResolved
             .filter((item) => item.follower && item.following)
             .map((item) => item.neuron);
+
           setCommunity((community) => ({
             followers: [...new Set([...community.followers, ...followers])],
             following: [...new Set([...community.following, ...following])],

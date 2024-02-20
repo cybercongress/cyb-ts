@@ -6,13 +6,12 @@ import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQ
 import { ServiceDeps } from '../types';
 import BaseSync from './BaseSync';
 import { withInitializerObserver } from '../utils/rxjs/withInitializer';
+import { SyncServiceParams } from '../../types';
 
 abstract class BaseSyncClient extends BaseSync {
-  protected readonly isInitialized$: Observable<boolean>;
-
   protected readonly source$: Observable<any>;
 
-  protected readonly restartTrigger$: Subject<void>;
+  protected readonly reloadTrigger$ = new Subject<void>();
 
   constructor(
     name: SyncEntryName,
@@ -21,31 +20,28 @@ abstract class BaseSyncClient extends BaseSync {
   ) {
     super(name, deps, particlesResolver);
 
-    this.isInitialized$ = this.createIsInitializedObserver(deps);
-    this.restartTrigger$ = new Subject<void>();
-
-    this.isInitialized$.subscribe((isInitialized) => {
-      this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
-    });
-
     const source$ = withInitializerObserver(
-      this.isInitialized$,
-      this.restartTrigger$.pipe(
+      this.isInitialized$!,
+      this.reloadTrigger$.pipe(
         startWith(null),
         tap(() => {
           // initialize abort conteoller for restart strategy
-          this.abortController = new AbortController();
+          this.initAbortController();
         }),
         switchMap(() =>
           this.createInitObservable().pipe(
             switchMap((timestampFrom: number) =>
               this.createClientObservable(timestampFrom).pipe(
-                switchMap((data) => from(this.onUpdate(data)))
+                switchMap((data) => from(this.onUpdate(data, this.params)))
               )
             )
           )
         )
-      )
+      ),
+      (isInitialized) => {
+        console.log(`>>> ${name} isInitialized`, isInitialized);
+        this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
+      }
     );
 
     source$.subscribe({
@@ -67,10 +63,14 @@ abstract class BaseSyncClient extends BaseSync {
 
   public restart() {
     this.abortController?.abort();
-    this.restartTrigger$.next();
+    this.reloadTrigger$.next();
+    console.log(`>>> ${this.name} client restart`);
   }
 
-  protected abstract onUpdate(data: any): Promise<void>;
+  protected abstract onUpdate(
+    data: any,
+    params: SyncServiceParams
+  ): Promise<void>;
 
   public start() {
     this.source$.subscribe(() => {

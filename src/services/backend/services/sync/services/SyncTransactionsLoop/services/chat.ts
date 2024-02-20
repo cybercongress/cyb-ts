@@ -13,16 +13,16 @@ export const syncMyChats = async (
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
-    entryType: [EntryType.chat, EntryType.transactions],
+    entryType: EntryType.transactions,
   });
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
 
-  // TODO
   const myTransactions = await db.getTransactions(myAddress, {
     order: 'asc',
     timestampFrom,
   });
+
   const myChats = extractSenseChats(myAddress, myTransactions!);
 
   const results: SenseListItem[] = [];

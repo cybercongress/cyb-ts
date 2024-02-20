@@ -1,4 +1,4 @@
-import { map, combineLatest } from 'rxjs';
+import { take, map, combineLatest, distinctUntilChanged } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -21,19 +21,22 @@ import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 
 class SyncParticlesLoop extends BaseSyncLoop {
-  protected getIsInitializedObserver(deps: ServiceDeps) {
+  protected createIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
-      deps.params$!,
+      deps.params$!.pipe(
+        map((params) => params.myAddress),
+        distinctUntilChanged()
+      ),
       this.particlesResolver!.isInitialized$,
     ]).pipe(
       map(
-        ([dbInstance, ipfsInstance, params, particleResolverInitialized]) =>
+        ([dbInstance, ipfsInstance, myAddress, particleResolverInitialized]) =>
           !!ipfsInstance &&
           !!dbInstance &&
           !!particleResolverInitialized &&
-          !!params?.myAddress
+          !!myAddress
       )
     );
 

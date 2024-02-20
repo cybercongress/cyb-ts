@@ -1,4 +1,12 @@
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  filter,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
@@ -25,10 +33,16 @@ abstract class BaseSync {
 
   protected statusApi: ReturnType<typeof broadcastStatus>;
 
+  public abortFlag = false; // flag to break any cycle
+
   protected params: SyncServiceParams = {
     myAddress: null,
     followings: [],
   };
+
+  protected readonly isInitialized$: Observable<boolean>;
+
+  private;
 
   constructor(
     name: SyncEntryName,
@@ -47,28 +61,56 @@ abstract class BaseSync {
       this.db = db;
     });
 
-    deps.params$.subscribe((params) => {
-      const shouldRestart =
-        this.params?.myAddress && this.params?.myAddress !== params.myAddress;
-      this.params = params;
-
-      if (shouldRestart) {
-        this.restart();
-      }
-    });
-
     this.particlesResolver = particlesResolver;
 
-    const isInitialized$ = this.createIsInitializedObserver(deps);
+    this.isInitialized$ = this.createIsInitializedObserver(deps);
 
-    isInitialized$.subscribe((isInitialized) => {
+    this.isInitialized$.subscribe((isInitialized) => {
+      console.log(
+        `>>> ${this.name} - ${isInitialized ? 'initialized' : 'inactive'}`
+      );
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
     });
+
+    this.isInitialized$
+      .pipe(switchMap(() => deps.params$!))
+      .subscribe((params) => {
+        this.params = params;
+        console.log(`>>> ${this.name} - params updated`, params);
+      });
+
+    // Restart observer
+    this.isInitialized$
+      .pipe(
+        switchMap(() => this.createRestartObserver(deps.params$!)),
+        filter((v) => !!v)
+      )
+      .subscribe(() => {
+        this.restart();
+      });
+  }
+
+  protected initAbortController() {
+    this.abortController = new AbortController();
+    this.abortFlag = false;
+    this.abortController.signal.onabort = () => {
+      this.abortFlag = true;
+    };
   }
 
   protected abstract createIsInitializedObserver(
     deps: ServiceDeps
   ): Observable<boolean>;
+
+  // eslint-disable-next-line class-methods-use-this
+  protected createRestartObserver(params$: Observable<SyncServiceParams>) {
+    return params$.pipe(
+      map((params) => params.myAddress),
+      distinctUntilChanged((addrBefore, addrAfter) => addrBefore === addrAfter),
+      map((v) => !!v),
+      filter((v) => !!v)
+    );
+  }
 
   public abstract restart(): void;
 

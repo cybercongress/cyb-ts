@@ -64,7 +64,6 @@ export class SyncService {
   }
 
   public restart(name: SyncEntryName) {
-    console.log('----sync restartSync', name, this.loops[name]);
     this.loops[name]?.restart();
   }
 }

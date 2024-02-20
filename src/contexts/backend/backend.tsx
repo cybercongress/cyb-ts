@@ -97,6 +97,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const myAddress = useAppSelector(selectCurrentAddress);
 
+  useEffect(() => {
+    // HACK: Perform the action when myAddress changes
+    backgroundWorkerInstance.setParams({ followings: [] });
+    console.log('myAddress changed, followings set to empty');
+  }, [myAddress]);
+
   useDeepCompareEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
   }, [myAddress]);

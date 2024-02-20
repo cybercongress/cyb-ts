@@ -1,37 +1,15 @@
-import { Observable, defer, from } from 'rxjs';
+import { Observable, defer, filter, from, tap } from 'rxjs';
 
-import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { SyncEntryName } from 'src/services/backend/types/services';
+import { isAbortException } from 'src/utils/exceptions/helpers';
 
-import DbApiWrapper from '../../../dataSource/indexedDb/dbApiWrapper';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { ServiceDeps } from '../types';
 import { createLoopObservable } from '../utils/rxjs/loop';
-import { SyncServiceParams } from '../../types';
+import BaseSync from './BaseSync';
 
-abstract class BaseSyncLoop {
+abstract class BaseSyncLoop extends BaseSync {
   private restartLoop: (() => void) | undefined;
-
-  protected name: string;
-
-  protected db: DbApiWrapper | undefined;
-
-  protected abortController: AbortController | undefined;
-
-  protected progressTracker = new ProgressTracker();
-
-  protected channelApi = new BroadcastChannelSender();
-
-  protected particlesResolver: ParticlesResolverQueue | undefined;
-
-  protected statusApi: ReturnType<typeof broadcastStatus>;
-
-  protected params: SyncServiceParams = {
-    myAddress: null,
-    followings: [],
-  };
 
   public readonly loop$: Observable<boolean>;
 
@@ -39,59 +17,26 @@ abstract class BaseSyncLoop {
     name: SyncEntryName,
     intervalMs: number,
     deps: ServiceDeps,
-    particlesResolver: ParticlesResolverQueue
+    particlesResolver: ParticlesResolverQueue,
+    { warmupMs }: { warmupMs: number } = { warmupMs: 0 }
   ) {
-    this.name = name;
-    this.statusApi = broadcastStatus(name, this.channelApi);
-    this.particlesResolver = particlesResolver;
-
-    if (!deps.params$) {
-      throw new Error('params$ is not defined');
-    }
-
-    deps.dbInstance$.subscribe((db) => {
-      this.db = db;
-    });
-
-    deps.params$.subscribe((params) => {
-      if (
-        this.params?.myAddress &&
-        this.params?.myAddress !== params.myAddress
-      ) {
-        this.restart();
-      }
-      this.params = params;
-    });
-
-    this.particlesResolver = particlesResolver;
-
-    const isInitialized$ = this.getIsInitializedObserver(deps);
-
-    isInitialized$.subscribe((isInitialized) => {
-      this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
-    });
+    super(name, deps, particlesResolver);
 
     const { loop$, restartLoop } = createLoopObservable(
-      isInitialized$,
+      this.isInitialized$,
       // defer(() => from(this.sync())),
       defer(() => from(this.doSync())),
       {
         intervalMs,
-
-        onStartInterval: () => {
-          // if (!this.abortController?.signal.aborted) {
-          //   this.abortController?.abort();
-          // }
-          this.abortController = new AbortController();
-          // this.abortController.signal.onabort = () => {
-          //   console.log('Request aborted');
-          //   // debugger;
-          // };
-          // console.log(`>>> ${name} loop start`);
-        },
+        warmupMs,
+        onStartInterval: () => this.initAbortController(),
         onError: (error) => {
           console.log(`>>> ${name} error`, error.toString());
           this.statusApi.sendStatus('error', error.toString());
+        },
+        onChange: (isInitialized) => {
+          console.log(`>>> ${name} isInitialized`, isInitialized);
+          this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
         },
       }
     );
@@ -103,6 +48,7 @@ abstract class BaseSyncLoop {
   public restart() {
     this.abortController?.abort();
     this.restartLoop?.();
+    console.log(`>>> ${this.name} loop restart`);
   }
 
   public start() {
@@ -114,7 +60,7 @@ abstract class BaseSyncLoop {
     try {
       await this.sync();
     } catch (e) {
-      const isAborted = e instanceof DOMException && e.name === 'AbortError';
+      const isAborted = isAbortException(e);
       console.log(`>>> ${this.name} sync error:`, e, isAborted);
 
       if (!isAborted) {
@@ -124,10 +70,6 @@ abstract class BaseSyncLoop {
   }
 
   protected abstract sync(): Promise<void>;
-
-  protected abstract getIsInitializedObserver(
-    deps: ServiceDeps
-  ): Observable<boolean>;
 }
 
 export default BaseSyncLoop;
