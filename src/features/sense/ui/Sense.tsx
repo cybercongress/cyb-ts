@@ -10,10 +10,6 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { getSenseChat } from 'src/features/sense/redux/sense.redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
-import { isParticle } from 'src/features/particle/utils';
-import usePassportContract from 'src/features/passport/usePassportContract';
-import { Citizenship } from 'src/types/citizenship';
 
 export type AdviserProps = {
   adviser: {
@@ -23,59 +19,22 @@ export type AdviserProps = {
   };
 };
 
-function SenseWrapper() {
-  const { senseId: paramSenseId } = useParams<{
-    senseId: string;
-  }>();
-
-  console.log('paramSenseId', paramSenseId);
-
-  const nickname = paramSenseId?.includes('@')
-    ? paramSenseId.replace('@', '')
-    : undefined;
-
-  const { data: urlPassport } = usePassportContract<Citizenship | null>({
-    query: {
-      passport_by_nickname: {
-        nickname: nickname!,
-      },
-    },
-    skip: !nickname,
-  });
-
-  let senseId;
-
-  if (nickname) {
-    if (urlPassport && urlPassport.extension.nickname === nickname) {
-      senseId = urlPassport.owner;
-    }
-  } else if (paramSenseId) {
-    senseId = paramSenseId;
-  }
-
-  // eslint-disable-next-line no-use-before-define
-  return <Sense urlSenseId={senseId} />;
-}
-
 function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const { senseId: paramSenseId } = useParams<{
     senseId: string;
   }>();
 
-  console.log('urlSenseId', urlSenseId);
+  const navigate = useNavigate();
 
   const [selected, setSelected] = useState<string | undefined | null>(
     urlSenseId
   );
-
-  console.log('selected', selected);
 
   // update state asap
   if (urlSenseId !== selected) {
     setSelected(urlSenseId);
   }
 
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { senseApi } = useBackend();
 
@@ -83,30 +42,6 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
-
-  const { data: activeChatPassport } = usePassportByAddress(selected, {
-    skip: Boolean(selected && isParticle(selected)),
-  });
-
-  useEffect(() => {
-    if (!activeChatPassport) {
-      return;
-    }
-
-    const {
-      owner,
-      extension: { nickname },
-    } = activeChatPassport;
-
-    if (owner === paramSenseId) {
-      debugger;
-
-      navigate(`../@${nickname}`, {
-        relative: 'path',
-        replace: true,
-      });
-    }
-  }, [activeChatPassport, navigate, paramSenseId]);
 
   useEffect(() => {
     if (!selected || !senseApi) {
@@ -216,4 +151,4 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   );
 }
 
-export default SenseWrapper;
+export default Sense;

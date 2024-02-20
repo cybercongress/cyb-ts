@@ -34,8 +34,10 @@ function RobotRoutes() {
 
         <Route path="sense-old" element={<Taverna />} />
 
-        <Route path="sense" element={<SensePage />} />
-        <Route path="sense/:senseId" element={<SensePage />} />
+        {['sense', 'sense/:senseId'].map((path) => (
+          <Route key={path} path={path} element={<SensePage />} />
+        ))}
+
         <Route
           path="drive"
           element={isOwner ? <IpfsSettings /> : <UnderConstruction />}

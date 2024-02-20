@@ -1,7 +1,7 @@
-import Sense from 'src/features/sense/ui/Sense';
+import SenseRoutingWrapper from 'src/features/sense/ui/SenseRoutingWrapper';
 
 function SensePage() {
-  return <Sense />;
+  return <SenseRoutingWrapper />;
 }
 
 export default SensePage;
