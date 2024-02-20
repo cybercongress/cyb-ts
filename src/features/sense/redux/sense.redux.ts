@@ -123,7 +123,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
       return {
         id: item.id || meta.neuron,
-        timestamp: Date.parse(new Date(item.meta.timestamp)),
+        timestamp: Date.parse(new Date(meta.timestamp)),
         transactionHash: meta.transactionHash || meta.transaction_hash,
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
@@ -190,6 +190,16 @@ const newChatStructure: Chat = {
   unreadCount: 0,
 };
 
+function checkIfMessageExists(chat: Chat, newMessage: SenseItem) {
+  const lastMsg = chat.data[chat.data.length - 1];
+
+  if (newMessage.transactionHash === lastMsg?.transactionHash) {
+    return true;
+  }
+
+  return false;
+}
+
 const slice = createSlice({
   name: 'sense',
   initialState,
@@ -205,11 +215,20 @@ const slice = createSlice({
           state.chats[id] = { ...newChatStructure };
         }
 
-        state.chats[id]!.id = id;
-        state.chats[id]!.unreadCount = item.unreadCount;
+        const chat = state.chats[id]!;
 
-        // TODO: check if message already exists
-        state.chats[id]!.data = [...state.chats[id]!.data, formatApiData(item)];
+        Object.assign(chat, {
+          id,
+          unreadCount: item.unreadCount || 0,
+        });
+
+        const newMessage = formatApiData(item);
+
+        if (checkIfMessageExists(chat, newMessage)) {
+          return;
+        }
+
+        chat.data = chat.data.concat(newMessage);
       });
 
       slice.caseReducers.orderSenseList(state);
@@ -287,17 +306,27 @@ const slice = createSlice({
       state.list.isLoading = false;
 
       const newList: SliceState['list']['data'] = [];
-      action.payload.forEach((item) => {
-        const { id } = item;
 
-        state.chats[id] = {
-          ...newChatStructure,
+      action.payload.forEach((message) => {
+        const { id } = message;
+
+        if (!state.chats[id]) {
+          state.chats[id] = { ...newChatStructure };
+        }
+
+        const chat = state.chats[id]!;
+
+        Object.assign(chat, {
           id,
-          isLoading: false,
-          data: [item],
-          unreadCount: item.unreadCount || 0,
-        };
+          // fix
+          unreadCount: message.unreadCount || 0,
+        });
 
+        if (checkIfMessageExists(chat, message)) {
+          return;
+        }
+
+        chat.data.push(message);
         newList.push(id);
       });
 
