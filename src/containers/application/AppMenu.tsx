@@ -80,6 +80,17 @@ const itemsMenu = () => {
     //   ],
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    {
+      name: 'cybernet',
+      icon: temple,
+      to: '/cybernet',
+      subItems: [
+        { name: 'subnets', to: '/cybernet/subnets' },
+        { name: 'delegates', to: '/cybernet/delegates' },
+        { name: 'my staking', to: '/cybernet/staking/my' },
+      ],
+    },
+
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
