@@ -5,7 +5,6 @@ import styles from './Sense.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
-import { SyncEntryName } from 'src/services/backend/types/services';
 import { useBackend } from 'src/contexts/backend/backend';
 import { getSenseChat } from 'src/features/sense/redux/sense.redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -56,16 +55,6 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     );
   }, [dispatch, selected, senseApi]);
 
-  const senseBackendIsLoading = useAppSelector((state) => {
-    const { entryStatus } = state.backend.syncState;
-
-    return (['transaction', 'particle'] as SyncEntryName[]).some((entry) => {
-      return !['idle', 'listen'].some(
-        (status) => entryStatus[entry]?.status === status
-      );
-    });
-  });
-
   const syncState = useAppSelector((state) => state.backend.syncState);
 
   const { setAdviser } = useAdviser();
@@ -77,7 +66,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     if (error) {
       color = 'red';
       text = error;
-    } else if (loading || senseBackendIsLoading) {
+    } else if (loading) {
       color = 'yellow';
       text = loading ? (
         'loading...'
@@ -99,14 +88,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
       text = 'welcome to sense 🧬';
     }
     setAdviser(adviserText || text, error ? 'red' : color);
-  }, [
-    setAdviser,
-    loading,
-    senseBackendIsLoading,
-    error,
-    adviserText,
-    syncState,
-  ]);
+  }, [setAdviser, loading, error, adviserText, syncState]);
 
   //  seems use context
   const adviserProps = {

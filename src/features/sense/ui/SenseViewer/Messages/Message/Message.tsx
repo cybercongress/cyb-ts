@@ -86,7 +86,7 @@ function Message({
           to={routes.txExplorer.getLink(transactionHash)}
         >
           {/* {getStatusText(status) || '✔'} */}
-          <Date timestamp={+date} timeOnly />
+          <Date timestamp={date} timeOnly />
         </Link>
       </div>
 

@@ -79,6 +79,12 @@ const initialState: SliceState = {
   },
 };
 
+function formatDate(timestamp: number) {
+  return new Date(
+    timestamp + -new Date().getTimezoneOffset() * 60 * 1000
+  ).toISOString();
+}
+
 function formatApiData(item: SenseListItem): SenseItem {
   if (item.entryType === EntryType.chat && item.meta.to) {
     item.entryType = EntryType.particle;
@@ -104,8 +110,7 @@ function formatApiData(item: SenseListItem): SenseItem {
       return {
         id: item.id || from,
         // maybe ISO string better
-        timestamp:
-          item.meta.timestamp + -new Date().getTimezoneOffset() * 60 * 1000,
+        timestamp: formatDate(meta.timestamp),
         transactionHash:
           item.transactionHash || item.hash || item.meta.transaction_hash,
         type,
@@ -123,7 +128,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
       return {
         id: item.id || meta.neuron,
-        timestamp: Date.parse(new Date(meta.timestamp)),
+        timestamp: formatDate(meta.timestamp),
         transactionHash: meta.transactionHash || meta.transaction_hash,
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
@@ -205,33 +210,37 @@ const slice = createSlice({
   initialState,
   reducers: {
     // backend may push this action
-    updateSenseList(state, action: PayloadAction<SenseListItem[]>) {
-      const data = action.payload;
+    updateSenseList: {
+      reducer: (state, action: PayloadAction<SenseItem[]>) => {
+        const data = action.payload;
 
-      data.forEach((item) => {
-        const { id } = item;
+        data.forEach((message) => {
+          const { id } = message;
 
-        if (!state.chats[id]) {
-          state.chats[id] = { ...newChatStructure };
-        }
+          if (!state.chats[id]) {
+            state.chats[id] = { ...newChatStructure };
+          }
 
-        const chat = state.chats[id]!;
+          const chat = state.chats[id]!;
 
-        Object.assign(chat, {
-          id,
-          unreadCount: item.unreadCount || 0,
+          Object.assign(chat, {
+            id,
+            // fix ts
+            unreadCount: message.unreadCount || 0,
+          });
+
+          if (!checkIfMessageExists(chat, message)) {
+            chat.data = chat.data.concat(message);
+          }
         });
 
-        const newMessage = formatApiData(item);
-
-        if (checkIfMessageExists(chat, newMessage)) {
-          return;
-        }
-
-        chat.data = chat.data.concat(newMessage);
-      });
-
-      slice.caseReducers.orderSenseList(state);
+        slice.caseReducers.orderSenseList(state);
+      },
+      prepare: (data: SenseListItem[]) => {
+        return {
+          payload: data.map(formatApiData),
+        };
+      },
     },
     // optimistic update
     addSenseItem(
@@ -286,7 +295,7 @@ const slice = createSlice({
 
       const sorted = temp.sort((a, b) => {
         return (
-          Date.parse(a.lastMsg.timestamp) - Date.parse(b.lastMsg.timestamp)
+          Date.parse(b.lastMsg.timestamp) - Date.parse(a.lastMsg.timestamp)
         );
       });
 
@@ -322,11 +331,10 @@ const slice = createSlice({
           unreadCount: message.unreadCount || 0,
         });
 
-        if (checkIfMessageExists(chat, message)) {
-          return;
+        if (!checkIfMessageExists(chat, message)) {
+          chat.data = chat.data.concat(message);
         }
 
-        chat.data.push(message);
         newList.push(id);
       });
 

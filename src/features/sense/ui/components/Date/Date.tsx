@@ -5,7 +5,7 @@ import styles from './Date.module.scss';
 import { Tooltip } from 'src/components';
 
 type Props = {
-  timestamp: number;
+  timestamp: string;
   className?: string;
 
   // temp prop, refactor
