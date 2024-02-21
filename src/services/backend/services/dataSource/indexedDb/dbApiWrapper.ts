@@ -181,9 +181,9 @@ class DbApiWrapper {
 
   public async getSenseList(myAddress: NeuronAddress = '') {
     const command = `
-    ss_particles[id, meta] := *sync_status{entry_type,id, meta}, entry_type=${EntryType.particle}
+    ss_particles[id, meta] := *sync_status{entry_type,id, meta, owner_id}, entry_type=${EntryType.particle}, owner_id = '${myAddress}'
 
-    ss_chat_all[id, meta, hash, is_link] := *sync_status{entry_type, id, meta}, entry_type=${EntryType.chat}, hash=maybe_get(meta, 'transaction_hash'), is_link=!is_null(maybe_get(meta, 'to'))
+    ss_chat_all[id, meta, hash, is_link] := *sync_status{entry_type, id, meta, owner_id}, entry_type=${EntryType.chat}, hash=maybe_get(meta, 'transaction_hash'), is_link=!is_null(maybe_get(meta, 'to')), owner_id = '${myAddress}'
     ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link], is_link
     ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link], !is_link, *transaction{hash, index, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success, 'index', index))
 
@@ -192,10 +192,13 @@ class DbApiWrapper {
     `;
 
     const result = await this.db!.runCommand(command);
-    // console.log('-------cmd', command, result);
-    return dbResultToDtoList(result).map((i) =>
+    const senseList = dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
     ) as SenseListItem[];
+
+    console.log('-------cmd', senseList);
+
+    return senseList;
   }
 
   // public async getSenseSummary(myAddress: NeuronAddress = '') {

@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IDBResult, DBResultWithColIndex, Column } from './types/types';
 import { DbEntity } from './types/entities';
+import { DtoToDbEntity } from './types/dto';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
   const index = result.headers.reduce((acc, column, index) => {
@@ -78,8 +79,10 @@ export function transformToDbEntity<T extends Record<string, any>>(
 
 export function transformListToDbEntity<T extends Record<string, any>>(
   array: T[]
-): T[] {
-  return array.map((dto) => transformToDbEntity(dto)) as Partial<T>[];
+): DtoToDbEntity<T>[] {
+  return array.map((dto) => transformToDbEntity(dto)) as Partial<
+    DtoToDbEntity<T>
+  >[];
 }
 
 export function transformListToDto<T extends Record<string, any>>(

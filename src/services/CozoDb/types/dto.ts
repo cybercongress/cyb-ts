@@ -24,6 +24,14 @@ type DbEntityToDto<T> = {
   [P in keyof T as P extends string ? SnakeToCamelCase<P> : never]: T[P];
 };
 
+type CamelCaseToSnake<S extends string> = S extends `${infer T}${infer U}`
+  ? `${T extends Capitalize<T> ? `_${Lowercase<T>}` : T}${CamelCaseToSnake<U>}`
+  : S;
+
+export type DtoToDbEntity<T> = {
+  [P in keyof T as P extends string ? CamelCaseToSnake<P> : never]: T[P];
+};
+
 export type PinDto = DbEntityToDto<PinDbEntity>;
 export type SyncStatusDto = DbEntityToDto<SyncStatusDbEntity>;
 export type TransactionDto = DbEntityToDto<TransactionDbEntity>;

@@ -42,8 +42,6 @@ abstract class BaseSync {
 
   protected readonly isInitialized$: Observable<boolean>;
 
-  private;
-
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
