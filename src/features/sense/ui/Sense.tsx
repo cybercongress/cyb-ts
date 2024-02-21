@@ -66,7 +66,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     if (error) {
       color = 'red';
       text = error;
-    } else if (loading) {
+    } else if (loading || syncState.inProgress) {
       color = 'yellow';
       text = loading ? (
         'loading...'

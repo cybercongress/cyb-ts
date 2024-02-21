@@ -160,16 +160,20 @@ const getSenseChat = createAsyncThunk(
     const particle = isParticle(id);
 
     if (particle) {
-      return (await senseApi!.getLinks(id)).map((item) => {
+      const links = await senseApi!.getLinks(id);
+      const formattedLinks = links.reverse().map((item) => {
         return formatApiData({
           ...item,
           entryType: EntryType.particle,
           meta: item,
         });
       });
+
+      return formattedLinks;
     }
 
-    return (await senseApi!.getFriendItems(id)).map((item) => {
+    const data = await senseApi!.getFriendItems(id);
+    const formattedData = data.map((item) => {
       const entryType = item.to ? EntryType.particle : EntryType.chat;
       return formatApiData({
         ...item,
@@ -177,6 +181,8 @@ const getSenseChat = createAsyncThunk(
         meta: item,
       });
     });
+
+    return formattedData;
   }
 );
 
