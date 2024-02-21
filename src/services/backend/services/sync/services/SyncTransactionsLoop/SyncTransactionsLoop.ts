@@ -162,8 +162,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       address,
       batch.length,
       batch.at(0)?.transaction.block.timestamp,
-      batch.at(-1)?.transaction.block.timestamp,
-      batch
+      batch.at(-1)?.transaction.block.timestamp
     );
 
     const transactions = batch.map((i) => mapTransactionToEntity(address, i));

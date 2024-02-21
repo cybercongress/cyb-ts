@@ -25,6 +25,7 @@ import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { SyncServiceParams } from '../../types';
+import { getLastReadInfo } from '../../utils';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   private inProgress: NeuronAddress[] = [];
@@ -116,7 +117,10 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
 
         const links = linksBatch.map(mapLinkFromIndexerToDbEntity);
 
-        const unreadItemsCount = unreadCount + links.length;
+        const { timestampRead: newTimestampRead, unreadCount: newUnreadCount } =
+          getLastReadInfo(linksBatch, myAddress, timestampRead, unreadCount);
+
+        // const unreadItemsCount = unreadCount + links.length;
 
         if (links.length > 0) {
           const lastLink = links.at(-1);
@@ -134,8 +138,8 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
             entryType: EntryType.chat,
             id: address,
             timestampUpdate: Math.max(lastLink!.timestamp, timestampUpdateChat),
-            unreadCount: unreadItemsCount,
-            timestampRead,
+            unreadCount: newUnreadCount,
+            timestampRead: newTimestampRead,
             disabled: false,
             meta: {
               ...lastLink!,

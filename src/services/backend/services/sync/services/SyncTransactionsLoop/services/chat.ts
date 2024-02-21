@@ -48,8 +48,10 @@ export const syncMyChats = async (
       const newItem = {
         ...syncItemHeader,
         id: chat.userAddress,
-        unreadCount: chat.transactions.length,
-        timestampRead: 0,
+        unreadCount: chat.transactions.filter(
+          (t) => t.timestamp > chat.lastSendTimestamp
+        ).length,
+        timestampRead: chat.lastSendTimestamp,
         disabled: false,
       };
 
@@ -59,9 +61,15 @@ export const syncMyChats = async (
       results.push({ ...newItem, meta: lastTransaction });
     } else {
       const { id, timestampRead, timestampUpdate, meta } = syncItem;
+
+      const lastTimestampRead = Math.max(
+        timestampRead!,
+        chat.lastSendTimestamp
+      );
       const { timestampUpdateContent = 0 } = meta || {};
+
       const unreadCount = chat.transactions.filter(
-        (t) => t.timestamp > timestampRead!
+        (t) => t.timestamp > lastTimestampRead
       ).length;
 
       if (timestampUpdate < transactionTimestamp) {
@@ -69,6 +77,7 @@ export const syncMyChats = async (
           ...syncItemHeader,
           id: id!,
           unreadCount,
+          timestampRead: lastTimestampRead,
           timestampUpdate: Math.max(timestampUpdateContent, timestampUpdate),
 
           meta: {
