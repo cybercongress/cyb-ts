@@ -5,6 +5,7 @@ import {
 } from 'src/services/backend/services/indexer/types';
 
 import { SenseItem } from '../../redux/sense.redux';
+import { isParticle } from 'src/features/particle/utils';
 
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export function formatSenseItemDataToUI(
@@ -62,6 +63,11 @@ export function formatSenseItemDataToUI(
     default: {
       break;
     }
+  }
+
+  // content is cid
+  if (memo && isParticle(memo)) {
+    cid = memo;
   }
 
   return {
