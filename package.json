@@ -181,7 +181,7 @@
     "comlink": "^4.4.1",
     "core-js": "^3.30.0",
     "crypto": "^1.0.1",
-    "cyb-cozo-lib-wasm": "0.7.141",
+    "cyb-cozo-lib-wasm": "^0.7.1441",
     "datastore-core": "^9.2.3",
     "datastore-idb": "^2.1.4",
     "dateformat": "^3.0.3",
