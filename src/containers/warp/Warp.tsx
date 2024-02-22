@@ -57,6 +57,7 @@ function Warp() {
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState<number>(0);
   const [selectedPool, setSelectedPool] = useState<Pool | undefined>(undefined);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
+  const [isEmptyPool, setIsEmptyPool] = useState<boolean>(false);
   const [amountPoolCoin, setAmountPoolCoin] = useState<string | number>('');
   const [myPools, setMyPools] =
     useState<Option<{ [key: string]: MyPoolsT }>>(undefined);
@@ -124,40 +125,47 @@ function Warp() {
   }, [tokenA, tokenB, setSearchParams, searchParams, tab]);
 
   useEffect(() => {
-    const getBalancesPoolCurrentPair = async () => {
-      setTokenAPoolAmount(0);
-      setTokenBPoolAmount(0);
-
-      if (queryClient && selectedPool) {
-        const getAllBalancesPromise = await queryClient.getAllBalances(
-          selectedPool.reserveAccountAddress
-        );
-        const dataReduceBalances = reduceBalances(getAllBalancesPromise);
-        if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(dataReduceBalances[tokenA]);
-          setTokenBPoolAmount(dataReduceBalances[tokenB]);
-        }
-      }
-    };
-    getBalancesPoolCurrentPair();
-  }, [queryClient, tokenA, tokenB, selectedPool, update]);
-
-  useEffect(() => {
     // find pool for current pair
     setSelectedPool(undefined);
-    if (poolsData && poolsData.length > 0) {
-      if (tokenA.length > 0 && tokenB.length > 0) {
-        const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
-        poolsData.forEach((item) => {
-          if (
-            item.reserveCoinDenoms.join() === arrangedReserveCoinDenoms.join()
-          ) {
-            setSelectedPool(item);
-          }
-        });
-      }
+
+    if (!poolsData || !poolsData.length) {
+      return;
+    }
+
+    if (tokenA.length > 0 && tokenB.length > 0) {
+      const findPool = poolsData.find(
+        (item) =>
+          sortReserveCoinDenoms(
+            item.reserveCoinDenoms[0],
+            item.reserveCoinDenoms[1]
+          ).join() === sortReserveCoinDenoms(tokenA, tokenB).join()
+      );
+      setSelectedPool(findPool);
     }
   }, [poolsData, tokenA, tokenB]);
+
+  useEffect(() => {
+    (async () => {
+      setTokenAPoolAmount(0);
+      setTokenBPoolAmount(0);
+      setIsEmptyPool(false);
+
+      if (!queryClient || !selectedPool) {
+        return;
+      }
+
+      const getAllBalancesPromise = await queryClient.getAllBalances(
+        selectedPool.reserveAccountAddress
+      );
+
+      setIsEmptyPool(!getAllBalancesPromise.length);
+
+      const dataReduceBalances = reduceBalances(getAllBalancesPromise);
+
+      setTokenAPoolAmount(dataReduceBalances[tokenA] || 0);
+      setTokenBPoolAmount(dataReduceBalances[tokenB] || 0);
+    })();
+  }, [queryClient, tokenA, tokenB, selectedPool, update]);
 
   useEffect(() => {
     if (accountBalances !== null && poolsData && poolsData !== null) {
@@ -204,6 +212,16 @@ function Warp() {
         tab === 'add-liquidity' &&
         resultValidSelectTokens &&
         swapPrice !== 0
+      ) {
+        exceeded = false;
+      }
+
+      //valid add-liquidity in empty pool
+      if (
+        tab === 'add-liquidity' &&
+        isEmptyPool &&
+        resultValidSelectTokens &&
+        swapPrice === 0
       ) {
         exceeded = false;
       }
@@ -357,7 +375,11 @@ function Warp() {
             {tab === 'add-liquidity' && (
               <DepositCreatePool
                 stateProps={stateProps}
-                amountChangeHandler={amountChangeHandler}
+                amountChangeHandler={
+                  isEmptyPool
+                    ? amountChangeHandlerCreatePool
+                    : amountChangeHandler
+                }
               />
             )}
             {tab === 'create-pool' && (
