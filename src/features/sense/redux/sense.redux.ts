@@ -289,17 +289,26 @@ const slice = createSlice({
       }
     },
     orderSenseList(state) {
-      const temp: {
-        id: string;
-        lastMsg: SenseItem;
-      }[] = Object.keys(state.chats).map((id) => {
-        return {
-          id,
-          lastMsg: state.chats[id]!.data[state.chats[id]!.data.length - 1],
-        };
-      });
+      const chatsLastMessage = Object.keys(state.chats).reduce<
+        {
+          id: string;
+          lastMsg: SenseItem;
+        }[]
+      >((acc, id) => {
+        const chat = state.chats[id]!;
 
-      const sorted = temp.sort((a, b) => {
+        // may be loading this moment, no data
+        if (!chat.data.length) {
+          return acc;
+        }
+
+        const lastMsg = chat.data[chat.data.length - 1];
+        acc.push({ id, lastMsg });
+
+        return acc;
+      }, []);
+
+      const sorted = chatsLastMessage.sort((a, b) => {
         return (
           Date.parse(b.lastMsg.timestamp) - Date.parse(a.lastMsg.timestamp)
         );
