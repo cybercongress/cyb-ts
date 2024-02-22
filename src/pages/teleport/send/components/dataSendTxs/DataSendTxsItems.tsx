@@ -14,6 +14,7 @@ function MemoIpfsContent({ cid }: { cid: string }) {
   const { status, content, fetchParticle } = useQueueIpfsContent(cid);
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
+  // FIXME: use useParticleDetails hook
   useEffect(() => {
     (async () => {
       cid && fetchParticle && (await fetchParticle(cid));
