@@ -196,8 +196,8 @@ class DbApiWrapper {
       jsonifyFields(i, ['meta'])
     ) as SenseListItem[];
 
-    console.log('-------cmd', senseList);
-
+    // console.log('-------cmd', senseList);
+    console.log('!=!=! redundancy calls - FIX');
     return senseList;
   }
 
@@ -272,7 +272,7 @@ class DbApiWrapper {
         `neuron = '${myAddress}', type='${MSG_SEND_TRANSACTION_TYPE}' or type='${MSG_MULTI_SEND_TRANSACTION_TYPE}'`,
       ],
       ['neuron'],
-      { orderBy: ['-timestamp'] }
+      { orderBy: ['timestamp'] }
     );
     const sendTransactions = dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['value'])
@@ -345,7 +345,7 @@ class DbApiWrapper {
       ['from', 'to', 'timestamp', 'neuron', 'transaction_hash'],
       conditions,
       [],
-      { orderBy: ['-timestamp'] }
+      { orderBy: ['timestamp'] }
     );
 
     return dbResultToDtoList(result) as LinkDto[];

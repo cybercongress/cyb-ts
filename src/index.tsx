@@ -31,8 +31,7 @@ import './image/favicon.ico';
 // for bootloading
 import './image/robot.svg';
 
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
+// import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import DataProvider from './contexts/appData';
@@ -112,7 +111,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       <BackendProvider>
                         <DeviceProvider>
                           <AdviserProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
+                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                            {children}
                           </AdviserProvider>
                         </DeviceProvider>
                       </BackendProvider>

@@ -52,13 +52,13 @@ const updateSenseChat = (
   amount: Coin[],
   isSender: boolean
 ): Map<string, SenseChat> => {
-  const transactions = chats.has(addr)
-    ? chats.get(addr)?.transactions || []
-    : [];
+  const chat = chats.get(addr);
+  const transactions = chat?.transactions || [];
 
   transactions.push(t);
   chats.set(addr, {
     userAddress: addr,
+    lastSendTimestamp: isSender ? t.timestamp : chat?.lastSendTimestamp || 0,
     last: { amount, memo: t.memo, direction: isSender ? 'to' : 'from' },
     transactions,
   });
