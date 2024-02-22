@@ -90,6 +90,25 @@ function formatApiData(item: SenseListItem): SenseItem {
     item.entryType = EntryType.particle;
   }
 
+  const { meta } = item;
+
+  const formatted: SenseItem = {
+    timestamp: formatDate(meta.timestamp),
+
+    // lol
+    transactionHash:
+      item.transactionHash ||
+      item.hash ||
+      item.meta.transaction_hash ||
+      item.meta.hash ||
+      item.meta.transactionHash,
+
+    memo: item.memo || meta.memo,
+
+    // not good
+    unreadCount: item.unreadCount || 0,
+  };
+
   switch (item.entryType) {
     case EntryType.chat:
     case EntryType.transactions: {
@@ -107,43 +126,36 @@ function formatApiData(item: SenseListItem): SenseItem {
         from = value.inputs[0].address;
       }
 
-      return {
+      Object.assign(formatted, {
         id: item.id || from,
-        // maybe ISO string better
-        timestamp: formatDate(meta.timestamp),
-        transactionHash:
-          item.transactionHash || item.hash || item.meta.transaction_hash,
         type,
         from,
         meta: item.meta.value,
-        memo: item.memo || meta.memo,
+      });
 
-        // not good
-        unreadCount: item.unreadCount || 0,
-      };
+      break;
     }
 
     case EntryType.particle: {
       const meta = item.meta as SenseLinkResultMeta;
 
-      return {
+      Object.assign(formatted, {
         id: item.id || meta.neuron,
-        timestamp: formatDate(meta.timestamp),
-        transactionHash: meta.transactionHash || meta.transaction_hash,
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
-        meta: item.meta,
-        memo: '',
+        meta: meta,
+      });
 
-        // not good
-        unreadCount: item.unreadCount || 0,
-      };
+      break;
     }
 
     default:
+      // sholdn't be
       debugger;
       return {};
   }
+
+  return formatted;
 }
 
 const getSenseList = createAsyncThunk(
@@ -161,7 +173,7 @@ const getSenseChat = createAsyncThunk(
 
     if (particle) {
       const links = await senseApi!.getLinks(id);
-      const formattedLinks = links.reverse().map((item) => {
+      const formattedLinks = links.map((item) => {
         return formatApiData({
           ...item,
           entryType: EntryType.particle,
@@ -202,13 +214,13 @@ const newChatStructure: Chat = {
 };
 
 function checkIfMessageExists(chat: Chat, newMessage: SenseItem) {
-  const lastMsg = chat.data[chat.data.length - 1];
+  const lastMessages = chat.data.slice(-5);
 
-  if (newMessage.transactionHash === lastMsg?.transactionHash) {
-    return true;
-  }
+  const isMessageExists = lastMessages.some((msg) => {
+    return msg.transactionHash === newMessage.transactionHash;
+  });
 
-  return false;
+  return isMessageExists;
 }
 
 const slice = createSlice({
