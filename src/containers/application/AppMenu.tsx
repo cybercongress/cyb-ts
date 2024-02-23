@@ -53,7 +53,8 @@ const itemsMenu = () => {
     { name: 'Assets', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Swap',
-      to: routes.teleport.swap.path,
+      to: '/teleport/swap',
+      subItems: [],
       icon: teleport,
       // active: false,
       // subItems: [
