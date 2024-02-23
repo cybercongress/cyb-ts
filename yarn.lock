@@ -12363,10 +12363,10 @@ cwise-compiler@^1.0.0, cwise-compiler@^1.1.2:
   dependencies:
     uniq "^1.0.0"
 
-cyb-cozo-lib-wasm@0.7.141:
-  version "0.7.141"
-  resolved "https://registry.yarnpkg.com/cyb-cozo-lib-wasm/-/cyb-cozo-lib-wasm-0.7.141.tgz#dd47afe4dedcbae5c82005ae4d9354b0de847c18"
-  integrity sha512-Sp9aVaQ/LA7WCLf4g8k4Z6DWGEmNhq4hQq7bnya6F0zrtKznIhUEYkqzTf+V1HiSVkRp4OKOztjU6UdCYvGiTg==
+cyb-cozo-lib-wasm@^0.7.145:
+  version "0.7.145"
+  resolved "https://registry.yarnpkg.com/cyb-cozo-lib-wasm/-/cyb-cozo-lib-wasm-0.7.145.tgz#df82255d478415134d0a2cf82de1467c2009db92"
+  integrity sha512-vCbiFuBPFOaMyS9kPutatBDekAqEafmsQ9jX34J3eMzQiBmoyujsm+z6jZiLwVWz2yDNtF/H17ofgexalHKjnw==
 
 d3-array@1, d3-array@^1.1.1, d3-array@^1.2.0, d3-array@^1.2.1:
   version "1.2.4"
