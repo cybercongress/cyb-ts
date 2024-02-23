@@ -14,7 +14,6 @@ import { ServiceDeps } from './services/types';
 import {
   MY_FRIENDS_SYNC_INTERVAL,
   MY_PARTICLES_SYNC_INTERVAL,
-  MY_TRANSACTIONS_SYNC_INTERVAL,
 } from './services/consts';
 import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
 import { SyncEntryName } from '../../types/services';

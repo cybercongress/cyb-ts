@@ -6,7 +6,7 @@ import { dateToNumber } from 'src/utils/date';
 
 import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { MAX_PARRALEL_LINKS } from '../consts';
+import { MAX_LINKS_RESOLVE_BATCH } from '../consts';
 import {
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkTransaction,
@@ -44,7 +44,7 @@ export const fetchCyberlinksAndResolveParticles = async (
         particles,
         (cids: ParticleCid[]) =>
           particlesResolver!.enqueueBatch(cids, queuePriority),
-        MAX_PARRALEL_LINKS
+        MAX_LINKS_RESOLVE_BATCH
       );
     }
   }

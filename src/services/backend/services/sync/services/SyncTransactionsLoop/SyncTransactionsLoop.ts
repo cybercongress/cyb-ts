@@ -3,7 +3,6 @@ import {
   map,
   combineLatest,
   Observable,
-  take,
   from,
   defer,
   tap,
@@ -16,6 +15,7 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { SubscriptionResult } from '@apollo/client';
+import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
 
@@ -32,6 +32,7 @@ import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts'
 import BaseSyncClient from '../BaseSyncLoop/BaseSyncClient';
 import { createRxJsClient } from '../../../indexer/utils';
 import { SyncServiceParams } from '../../types';
+import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
 class SyncTransactionsLoop extends BaseSyncClient {
   protected createIsInitializedObserver(deps: ServiceDeps) {
@@ -275,7 +276,11 @@ class SyncTransactionsLoop extends BaseSyncClient {
     const { tweets, particlesFound, links } =
       extractCybelinksFromTransaction(batch);
     if (links.length > 0) {
-      await this.db!.putCyberlinks(links);
+      await asyncIterableBatchProcessor(
+        links,
+        (links) => this.db!.putCyberlinks(links),
+        MAX_DATABASE_PUT_SIZE
+      );
     }
 
     const tweetParticles = Object.keys(tweets);

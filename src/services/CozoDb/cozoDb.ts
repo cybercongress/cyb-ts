@@ -103,9 +103,7 @@ function createCozoDb() {
       ['key = "DB_VERSION"'],
       ['key']
     );
-    if (versionData.ok === false) {
-      throw new Error(versionData.message);
-    }
+
     return (versionData.rows[0][0] as string) || DB_VERSION;
   };
 

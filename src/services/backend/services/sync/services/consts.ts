@@ -1,21 +1,9 @@
-import {
-  CYBER_LINK_TRANSACTION_TYPE,
-  MSG_MULTI_SEND_TRANSACTION_TYPE,
-  MSG_SEND_TRANSACTION_TYPE,
-  Transaction,
-} from '../../indexer/types';
-
-export const MY_PARTICLES_SYNC_INTERVAL = 2 * 60 * 1000; // 60 sec
-export const MY_TRANSACTIONS_SYNC_INTERVAL = 30 * 1000; // 60 sec
+export const MY_PARTICLES_SYNC_INTERVAL = 5 * 60 * 1000; // 60 sec
 export const MY_FRIENDS_SYNC_INTERVAL = 5 * 60 * 1000; // 60 sec
-export const MY_FRIENDS_SYNC_WARMUP = 5 * 1000; // 60 sec
 export const IPFS_SYNC_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
-export const MAX_PARRALEL_TRANSACTIONS = 5;
-export const MAX_PARRALEL_LINKS = 20;
+export const MAX_DATABASE_PUT_SIZE = 500;
 
-export const SENSE_TRANSACTIONS = [
-  MSG_SEND_TRANSACTION_TYPE,
-  MSG_MULTI_SEND_TRANSACTION_TYPE,
-  CYBER_LINK_TRANSACTION_TYPE,
-] as Transaction['type'][];
+export const MAX_LINKS_RESOLVE_BATCH = 20;
+
+export const DAY_IN_MS = 24 * 60 * 60 * 1000;

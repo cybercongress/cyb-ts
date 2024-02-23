@@ -148,7 +148,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
             },
           };
           // Update transaction
-          const result = await this.db!.putSyncStatus(newSyncItem);
+          await this.db!.putSyncStatus(newSyncItem);
 
           syncUpdates.push(newSyncItem);
         }

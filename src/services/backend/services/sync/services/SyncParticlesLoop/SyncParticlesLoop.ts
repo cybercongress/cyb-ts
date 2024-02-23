@@ -8,6 +8,7 @@ import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
+import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
@@ -19,6 +20,7 @@ import {
 } from '../../../dataSource/blockchain/indexer';
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
+import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
 class SyncParticlesLoop extends BaseSyncLoop {
   protected createIsInitializedObserver(deps: ServiceDeps) {
@@ -126,7 +128,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
       });
 
       if (syncStatusEntities.length > 0) {
-        const result = await this.db!.putSyncStatus(syncStatusEntities);
+        await this.db!.putSyncStatus(syncStatusEntities);
         newTweets.push(...syncStatusEntities);
       }
     }
@@ -162,8 +164,11 @@ class SyncParticlesLoop extends BaseSyncLoop {
       if (links.length > 0) {
         // save links
         // eslint-disable-next-line no-await-in-loop
-        const result = await this.db!.putCyberlinks(
-          links.map(mapLinkFromIndexerToDbEntity)
+        await asyncIterableBatchProcessor(
+          links,
+          (links) =>
+            this.db!.putCyberlinks(links.map(mapLinkFromIndexerToDbEntity)),
+          MAX_DATABASE_PUT_SIZE
         );
 
         const newItem = changeSyncStatus(syncItem, links, myAddress);
@@ -173,7 +178,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
     }
 
     if (updatedSyncItems.length > 0) {
-      const result = await this.db!.putSyncStatus(updatedSyncItems);
+      await this.db!.putSyncStatus(updatedSyncItems);
     }
 
     this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);

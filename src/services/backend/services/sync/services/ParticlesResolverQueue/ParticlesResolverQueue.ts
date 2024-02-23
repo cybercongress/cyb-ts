@@ -14,12 +14,14 @@ import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { ParticleCid } from 'src/types/base';
 import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
+import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
 import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
 
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
 import { SyncQueueItem } from './types';
+import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
 const QUEUE_BATCH_SIZE = 100;
 
@@ -169,11 +171,16 @@ class ParticlesResolverQueue {
   }
 
   public async enqueueBatch(cids: ParticleCid[], priority: QueuePriority) {
-    this.enqueue(
-      cids.map((cid) => ({
-        id: cid /* from is tweet */,
-        priority,
-      }))
+    return asyncIterableBatchProcessor(
+      cids,
+      (cids) =>
+        this.enqueue(
+          cids.map((cid) => ({
+            id: cid /* from is tweet */,
+            priority,
+          }))
+        ),
+      MAX_DATABASE_PUT_SIZE
     );
   }
 

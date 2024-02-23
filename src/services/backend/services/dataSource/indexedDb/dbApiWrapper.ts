@@ -191,7 +191,7 @@ class DbApiWrapper {
     :order -timestamp_update
     `;
 
-    const result = await this.db!.runCommand(command);
+    const result = await this.db!.runCommand(command, true);
     const senseList = dbResultToDtoList(result).map((i) =>
       jsonifyFields(i, ['meta'])
     ) as SenseListItem[];
