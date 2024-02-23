@@ -4,13 +4,17 @@ import {
   Pane,
   Button,
 } from '@cybercongress/gravity';
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import Long from 'long';
 import BigNumber from 'bignumber.js';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { SigningStargateClient } from '@cosmjs/stargate';
+import {
+  MsgTransferEncodeObject,
+  SigningStargateClient,
+} from '@cosmjs/stargate';
 import {
   ActionBarContentText,
   LinkWindow,
@@ -100,20 +104,21 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
       );
+
       const [{ coinDecimals: coinDecimalsA }] = traseDenom(denomIbc);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
 
       const transferAmount = coinFunc(amount, denomIbc);
-      const msg = {
+      const msg: MsgTransferEncodeObject = {
         typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-        value: {
+        value: MsgTransfer.fromPartial({
           sourcePort,
-          sourceChannel,
+          sourceChannel: sourceChannel || '',
           sender: address,
           receiver: counterpartyAccount,
-          timeoutTimestamp,
+          timeoutTimestamp: BigInt(timeoutTimestamp.toNumber()),
           token: transferAmount,
-        },
+        }),
       };
 
       try {
