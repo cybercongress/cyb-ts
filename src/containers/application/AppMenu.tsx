@@ -5,7 +5,7 @@ import { CYBER } from '../../utils/config';
 import nebulaIcon from '../../image/temple/nebula.png';
 import teleport from '../../image/temple/teleport.png';
 import hfr from '../../image/temple/hfr.png';
-// import temple from '../../image/temple/temple.png';
+import temple from '../../image/temple/temple.png';
 import robot from '../../image/temple/robot.png';
 import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
@@ -25,6 +25,16 @@ const itemsMenu = () => {
       to: '/robot',
       subItems: [],
       // subItems: myRobotLinks,
+    },
+    {
+      name: 'cybertensor',
+      icon: temple,
+      to: '/cybernet',
+      subItems: [
+        { name: 'subnets', to: '/cybernet/subnets' },
+        { name: 'delegates', to: '/cybernet/delegates' },
+        { name: 'my staking', to: '/cybernet/staking/my' },
+      ],
     },
     {
       name: 'Explorer',
