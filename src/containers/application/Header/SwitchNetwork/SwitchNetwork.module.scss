@@ -91,14 +91,22 @@
   font-size: 16px;
 }
 
-.containerKrmaName {
+.containerInfoSwitch {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  justify-content: center;
   height: 100%;
-  justify-content: space-between;
-  padding: 27px 0;
+  gap: 10px;
+  color: var(--blue-light);
+}
+
+.containerInfoSwitchGapUnSet {
+  gap: unset;
+}
+
+.containerBandwidthBar {
+  width: 100%;
 }
 
 .containerSwichNetworkList {

@@ -14,12 +14,7 @@ import KeywordButton from './components/KeywordButton/KeywordButton';
 
 import Stats from './Stats/Stats';
 import graphDataPrepared from './graphDataPrepared.json';
-
-export enum TitleType {
-  search,
-  ai, // ask
-  learning,
-}
+import { TitleType } from './type';
 
 const mapTitleTypeToTitle = {
   [TitleType.search]: 'search',

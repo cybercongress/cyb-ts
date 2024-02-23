@@ -40,4 +40,9 @@
   &.red {
     background-color: #c80000;
   }
+
+  &.yellow {
+    background-color: var(--yellow);
+    color: #000;
+  }
 }

@@ -7,6 +7,8 @@ export type ReadyRelease = {
 export type CurrentRelease = {
   address: string;
   addressOwner: string;
+  balanceClaim: number;
+  stage: number;
 };
 
 export type DataReleaseStatus = {

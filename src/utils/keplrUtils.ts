@@ -85,13 +85,7 @@ const configKeplr = (prefix) => {
         coinDecimals: 0,
       },
     ],
-    coinType: 118,
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0.01,
-    },
-    features: ['stargate', 'ibc-transfer'],
+    features: ['ibc-transfer'],
   };
 };
 

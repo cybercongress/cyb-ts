@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useDevice } from 'src/contexts/device';
 import portalAmbient from 'sounds/portalAmbient112.mp3';
@@ -22,7 +22,7 @@ import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld'
 import STEP_INFO from './utils';
 import Info from './Info';
 import useGetStatGift from '../hook/useGetStatGift';
-import usePingTxs from '../hook/usePingTxs';
+import usePingTxs, { TxHash } from '../hook/usePingTxs';
 import ReleaseStatus from '../components/ReleaseStatus';
 import { CurrentRelease, ReadyRelease } from '../release/type';
 import useCheckRelease from '../hook/useCheckRelease';
@@ -69,11 +69,12 @@ const itemsStep = [
 
 function PortalGift() {
   const { isMobile: mobile } = useDevice();
+  const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const { defaultAccount } = useSelector((store: RootState) => store.pocket);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { addressActive } = useSetActiveAddress(defaultAccount, false);
   const { txHash, updateFunc, updateTxHash } = usePingTxs();
-  const { citizenship, loading, setLoading } = useGetActivePassport(
-    defaultAccount,
+  const { citizenship, loading } = useGetActivePassport(
+    addressActive,
     updateFunc
   );
   const { totalGift, totalGiftClaimed, loadingGift, giftData, setLoadingGift } =
@@ -94,10 +95,9 @@ function PortalGift() {
     currentStage
   );
 
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState<null | string>(null);
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
-  const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const [error, setError] = useState<string>();
 
   const [isRelease, setIsRelease] = useState(false);
@@ -153,8 +153,7 @@ function PortalGift() {
     if (
       appStep === STEP_INFO.STATE_INIT &&
       selectedAddress === null &&
-      citizenship &&
-      citizenship.owner
+      citizenship
     ) {
       setSelectedAddress(citizenship.owner);
     }
@@ -163,7 +162,7 @@ function PortalGift() {
   useEffect(() => {
     if (Math.floor(appStep) === STEP_INFO.STATE_INIT) {
       if (!loading) {
-        if (citizenship === null) {
+        if (!citizenship) {
           setStepApp(STEP_INFO.STATE_INIT_NULL);
         } else if (!loadingGift) {
           if (isClaimed !== null && !isClaimed) {
@@ -181,7 +180,7 @@ function PortalGift() {
 
     if (Math.floor(appStep) === STEP_INFO.STATE_CLAIME) {
       if (!loadingGift) {
-        if (citizenship === null) {
+        if (!citizenship) {
           setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
         } else if (
           totalGift === null &&
@@ -370,7 +369,7 @@ function PortalGift() {
   }, [selectedAddress, totalGift, totalGiftClaimed]);
 
   const useDisableNext = useMemo(() => {
-    if (citizenship !== null) {
+    if (citizenship) {
       return false;
     }
     return true;
@@ -383,7 +382,7 @@ function PortalGift() {
       appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
       txHash.status === 'confirmed' &&
       !loading &&
-      citizenship !== null
+      citizenship
     ) {
       const { addresses } = citizenship.extension;
       if (addresses && addresses !== null) {
@@ -397,7 +396,7 @@ function PortalGift() {
   const useUnClaimedGiftData = useMemo(() => {
     if (
       giftData !== null &&
-      citizenship !== null &&
+      citizenship &&
       Object.keys(giftData.unClaimed.addresses).length > 0
     ) {
       if (currentBonus?.current) {
@@ -481,6 +480,51 @@ function PortalGift() {
     loading,
     addressActive,
   ]);
+
+  const availableRelease = useCallback(
+    (isNanoLedger: boolean) => {
+      if (!totalGift || !currentRelease || !addressActive) {
+        return 0;
+      }
+
+      const sliceArrayRelease = currentRelease.slice(
+        0,
+        isNanoLedger ? 1 : currentRelease.length
+      );
+
+      const claimedAmount = sliceArrayRelease.reduce((sum, item) => {
+        if (
+          item.addressOwner === addressActive.bech32 &&
+          totalGift[item.address]?.claim
+        ) {
+          return sum + totalGift[item.address].claim;
+        }
+        return sum;
+      }, 0);
+
+      const alreadyClaimed = sliceArrayRelease.reduce((sum, item) => {
+        if (item.addressOwner === addressActive.bech32) {
+          return sum + item.balanceClaim;
+        }
+        return sum;
+      }, 0);
+
+      const currentStageProcent = new BigNumber(currentStage)
+        .dividedBy(100)
+        .toNumber();
+
+      const released = new BigNumber(claimedAmount).minus(alreadyClaimed);
+
+      const availableRelease = new BigNumber(claimedAmount)
+        .multipliedBy(currentStageProcent)
+        .minus(released)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber();
+
+      return availableRelease > 0 ? availableRelease : 0;
+    },
+    [currentRelease, totalGift, addressActive, currentStage]
+  );
 
   const useNextRelease = useMemo(() => {
     if (currentStage < AMOUNT_ALL_STAGE && claimStat) {
@@ -602,6 +646,8 @@ function PortalGift() {
       </MainContainer>
       {Math.floor(appStep) !== STEP_RELEASE && (
         <ActionBarPortalGift
+          currentBonus={currentBonus.current}
+          progressClaim={progressClaim}
           addressActive={addressActive}
           citizenship={citizenship}
           updateTxHash={updateTxHash}
@@ -610,7 +656,6 @@ function PortalGift() {
           currentGift={currentGift}
           activeStep={appStep}
           setStepApp={setStepApp}
-          setLoading={setLoading}
           setLoadingGift={setLoadingGift}
           loadingGift={loadingGift}
         />
@@ -630,6 +675,7 @@ function PortalGift() {
           totalRelease={totalRelease}
           loadingRelease={loadingRelease}
           redirectFunc={redirectFunc}
+          availableRelease={availableRelease}
         />
       )}
     </>

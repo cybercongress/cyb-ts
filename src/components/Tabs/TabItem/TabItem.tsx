@@ -13,6 +13,7 @@ export type Props = {
   step?: number;
   isSelected: boolean;
   to?: string;
+  disable?: boolean;
   onClick?: () => void;
 };
 
@@ -22,6 +23,7 @@ function TabItem({
   step,
   to,
   isSelected,
+  disable,
   onClick,
   ...props
 }: Props) {
@@ -44,7 +46,8 @@ function TabItem({
       className={cx(
         styles.tabButton,
         type && styles[`${type}`],
-        isSelected && styles[type ? `${type}Active` : 'tabButtonActive']
+        isSelected && styles[type ? `${type}Active` : 'tabButtonActive'],
+        disable && styles.disable
       )}
       {...props}
       {...componentProps}
