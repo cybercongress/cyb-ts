@@ -1,7 +1,4 @@
-import { ActionBar, Button, Input, InputNumber } from 'src/components';
-import { routes } from 'src/routes';
-import { isBostromAddress } from '../utils';
-import { log } from 'tone/build/esm/core/util/Debug';
+import { ActionBar, Button, Input } from 'src/components';
 import { useEffect, useState } from 'react';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
@@ -11,15 +8,12 @@ import { AdviserProps } from '../Sense';
 import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
-import { SenseMetaType } from 'src/services/backend/types/sense';
 import styles from './ActionBar.module.scss';
 import { isParticle } from 'src/features/particle/utils';
 import { useBackend } from 'src/contexts/backend/backend';
-import { getTransaction } from 'src/services/backend/services/lcd/lcd';
 
 type Props = {
   id: string | undefined;
-  update: () => void;
 } & AdviserProps;
 
 enum STEPS {
@@ -28,7 +22,7 @@ enum STEPS {
   AMOUNT,
 }
 
-function ActionBarWrapper({ id, adviser, update }: Props) {
+function ActionBarWrapper({ id, adviser }: Props) {
   const [step, setStep] = useState(STEPS.MESSAGE);
 
   const [message, setMessage] = useState<string>('');
@@ -81,7 +75,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
   }, [id]);
 
   async function send() {
-    if (!signerIsReady || !address) {
+    if (!signerIsReady || !address || !ipfsApi) {
       return;
     }
 
@@ -98,17 +92,18 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
       const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
 
-      let response;
-      let fromCid = message;
-      if (particle) {
-        if (!message.match(PATTERN_IPFS_HASH)) {
-          fromCid = await ipfsApi?.addContent(message);
-        }
+      let messageCid;
+      if (!message.match(PATTERN_IPFS_HASH)) {
+        messageCid = (await ipfsApi.addContent(message)) as string;
+      } else {
+        messageCid = message;
+      }
 
+      let response;
+
+      if (particle) {
+        const fromCid = messageCid;
         const toCid = id;
-        // if (!answer.match(PATTERN_IPFS_HASH)) {
-        //   toCid = await ipfsApi?.addContent(answer);
-        // }
 
         const fee = {
           amount: [],
@@ -122,7 +117,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           id!,
           formattedAmount,
           'auto',
-          message
+          messageCid
         );
       }
 
@@ -138,7 +133,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
         item: {
           from: address,
           type: undefined,
-          memo: message,
+          memo: messageCid,
           meta: {},
           id: address,
           address,
@@ -149,7 +144,7 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
 
       if (particle) {
         optimisticMessage.item.meta = {
-          from: fromCid,
+          from: messageCid,
         };
         optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgCyberlink';
       } else {
@@ -220,7 +215,11 @@ function ActionBarWrapper({ id, adviser, update }: Props) {
           value={message}
           placeholder="Send message"
         />
-        <Button className={styles.sendBtn} onClick={send}>
+        <Button
+          className={styles.sendBtn}
+          onClick={send}
+          disabled={!isIpfsInitialized || !signerIsReady}
+        >
           ▲
         </Button>
         {/* <span>or</span> */}
