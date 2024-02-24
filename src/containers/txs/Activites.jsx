@@ -2,16 +2,12 @@ import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
-import { Account, MsgType, DenomArr, AmountDenom } from 'src/components';
+import { Account, MsgType, DenomArr, AmountDenom, Cid } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
 
 const S_TO_MS = 1 * 10 ** 3;
-
-function Cid({ cid }) {
-  return <Link to={`/ipfs/${cid}`}>{cid}</Link>;
-}
 
 function ContainerMsgsType({ type, children }) {
   return (
@@ -49,7 +45,6 @@ function Row({ value, title }) {
         key={`${title}-title`}
         display="flex"
         fontSize="16px"
-        textTransform="capitalize"
         color="#fff"
         whiteSpace="nowrap"
         width="240px"

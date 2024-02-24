@@ -44,7 +44,6 @@ function InformationTxs({ data, messageError, ...props }) {
           key={`${key}-title`}
           display="flex"
           fontSize="16px"
-          textTransform="capitalize"
           color="#fff"
           whiteSpace="nowrap"
           width="240px"
