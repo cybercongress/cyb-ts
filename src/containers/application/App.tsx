@@ -28,7 +28,9 @@ function App() {
 
   const address = defaultAccount.account?.cyber?.bech32;
 
-  const { community, communityLoaded } = useGetCommunity(address || null);
+  const { community, communityLoaded } = useGetCommunity(address || null, {
+    main: true,
+  });
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();

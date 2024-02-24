@@ -8,7 +8,7 @@ import { FetchParticleAsync } from '../QueueManager/types';
 import { CommunityDto } from '../CozoDb/types/dto';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getAndSyncCommunity = async (
+export const featchStoredSyncCommunity = async (
   dbApi: DbApiWrapper,
   address: NeuronAddress,
   fetchParticleAsync?: FetchParticleAsync,
@@ -88,6 +88,54 @@ export const getAndSyncCommunity = async (
   if (communityUpdatesMap.size > 0 && onResolve) {
     onResolve(communityUpdates);
   }
+  console.log(`>>> sync community ${address}, done`);
 
   return [...storedCommunity, ...communityUpdates];
+};
+
+// eslint-disable-next-line import/no-unused-modules
+export const fetchCommunity = async (
+  address: NeuronAddress,
+  fetchParticleAsync?: FetchParticleAsync,
+  onResolve?: (community: CommunityDto[]) => void
+) => {
+  const followsCids = await getFollowsAsCid(address);
+  const followers = await getFollowers(address);
+
+  console.log(`>>> sync community ${address} without store`);
+  const communityUpdates: CommunityDto[] = [];
+
+  const followsPromise = Promise.all(
+    followsCids.map(async (cid) => {
+      const neuron = (await fetchParticleAsync!(cid))?.result?.textPreview;
+      if (neuron && neuron.match(PATTERN_CYBER)) {
+        const communityItem = {
+          neuron,
+          particle: cid,
+          following: true,
+        } as CommunityDto;
+
+        communityUpdates.push(communityItem);
+        onResolve && onResolve([communityItem]);
+      }
+    })
+  );
+
+  const followersPromise = Promise.all(
+    followers.map(async (neuron) => {
+      const cid = await getIpfsHash(neuron);
+
+      const communityItem = {
+        particle: cid,
+        neuron,
+        follower: true,
+      } as CommunityDto;
+
+      communityUpdates.push(communityItem);
+      onResolve && onResolve([communityItem]);
+    })
+  );
+
+  await Promise.all([followersPromise, followsPromise]);
+  return communityUpdates;
 };

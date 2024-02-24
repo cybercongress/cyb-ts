@@ -63,7 +63,7 @@ function FollowsTab() {
     (state: RootState) => state.currentAccount
   );
 
-  const communityHook = useGetCommunity(address, isOwner);
+  const communityHook = useGetCommunity(address, { skip: isOwner });
 
   const { setAdviser } = useAdviser();
 

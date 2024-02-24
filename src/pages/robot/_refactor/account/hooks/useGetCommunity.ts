@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
-import { getAndSyncCommunity } from 'src/services/common/community';
+import {
+  featchStoredSyncCommunity,
+  fetchCommunity,
+} from 'src/services/common/community';
 
 import { useBackend } from 'src/contexts/backend/backend';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
 
-function useGetCommunity(address: string | null, skip?: boolean) {
+function useGetCommunity(
+  address: string | null,
+  { skip, main }: { skip?: boolean; main?: boolean }
+) {
   const { fetchParticleAsync } = useQueueIpfsContent();
   const { dbApi, isDbInitialized } = useBackend();
 
@@ -35,51 +41,59 @@ function useGetCommunity(address: string | null, skip?: boolean) {
   }, [address]);
 
   useEffect(() => {
-    if (
-      !address ||
-      skip ||
-      !isDbInitialized ||
-      !dbApi ||
-      !fetchParticleAsync ||
-      isLoaded
-    ) {
+    const isInitialized = main ? isDbInitialized && dbApi : true;
+    if (!address || skip || !isInitialized || !fetchParticleAsync || isLoaded) {
       return;
     }
+
     (async () => {
-      await getAndSyncCommunity(
-        dbApi,
-        address,
-        fetchParticleAsync,
-        (communityResolved: CommunityDto[]) => {
-          const followers = communityResolved
-            .filter((item) => item.follower && !item.following)
-            .map((item) => item.neuron);
-          const following = communityResolved
-            .filter((item) => item.following && !item.follower)
-            .map((item) => item.neuron);
-          const friends = communityResolved
-            .filter((item) => item.follower && item.following)
-            .map((item) => item.neuron);
+      const onResolve = (communityResolved: CommunityDto[]) => {
+        const followers = communityResolved
+          .filter((item) => item.follower && !item.following)
+          .map((item) => item.neuron);
+        const following = communityResolved
+          .filter((item) => item.following && !item.follower)
+          .map((item) => item.neuron);
+        const friends = communityResolved
+          .filter((item) => item.follower && item.following)
+          .map((item) => item.neuron);
 
-          setCommunity((community) => ({
-            followers: [...new Set([...community.followers, ...followers])],
-            following: [...new Set([...community.following, ...following])],
-            friends: [...new Set([...community.friends, ...friends])],
-          }));
-        }
-      );
+        setCommunity((community) => ({
+          followers: [...new Set([...community.followers, ...followers])],
+          following: [...new Set([...community.following, ...following])],
+          friends: [...new Set([...community.friends, ...friends])],
+        }));
+      };
+
+      if (main) {
+        await featchStoredSyncCommunity(
+          dbApi!,
+          address,
+          fetchParticleAsync,
+          onResolve
+        );
+      } else {
+        await fetchCommunity(address, fetchParticleAsync, onResolve);
+      }
+
       setIsLoaded(true);
-      setLoading({ followers: true, following: true, friends: true });
-    })();
-  }, [dbApi, isDbInitialized, isLoaded, fetchParticleAsync, address, skip]);
 
+      // TODO: refactor, loading disabled
+      // setLoading({ followers: true, following: true, friends: true });
+    })();
+  }, [
+    dbApi,
+    isDbInitialized,
+    isLoaded,
+    fetchParticleAsync,
+    address,
+    skip,
+    main,
+  ]);
   return {
     community,
     communityLoaded: isLoaded,
-    loading: {
-      ...loading,
-      friends: loading.friends || loading.followers || loading.following,
-    },
+    loading,
   };
 }
 
