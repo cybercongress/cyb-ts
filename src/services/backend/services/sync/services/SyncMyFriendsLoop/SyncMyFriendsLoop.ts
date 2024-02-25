@@ -7,6 +7,9 @@ import {
   switchMap,
   take,
   filter,
+  Subject,
+  BehaviorSubject,
+  of,
 } from 'rxjs';
 import { equals } from 'ramda';
 
@@ -18,7 +21,8 @@ import { isAbortException } from 'src/utils/exceptions/helpers';
 
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
-
+import { CommunityDto } from 'src/services/CozoDb/types/dto';
+import { SyncEntryName } from 'src/services/backend/types/services';
 import { ServiceDeps } from '../types';
 
 import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
@@ -27,32 +31,75 @@ import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
+import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import { throwIfAborted } from 'src/utils/async/promise';
+
 class SyncMyFriendsLoop extends BaseSyncLoop {
   private inProgress: NeuronAddress[] = [];
+
+  private followings: NeuronAddress[] = [];
+
+  constructor(
+    name: SyncEntryName,
+    intervalMs: number,
+    deps: ServiceDeps,
+    particlesResolver: ParticlesResolverQueue,
+    { warmupMs }: { warmupMs: number } = { warmupMs: 0 }
+  ) {
+    if (!deps.followings$) {
+      throw new Error('followings$ is required');
+    }
+    const followingsInitialized$ = new BehaviorSubject<boolean>(false);
+
+    deps.params$
+      ?.pipe(
+        map((params) => params.myAddress),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        followingsInitialized$.next(false);
+      });
+
+    deps.followings$.subscribe((followings) => {
+      this.followings = followings;
+      followingsInitialized$.next(true);
+      this.restart();
+    });
+
+    super(name, intervalMs, deps, particlesResolver, {
+      warmupMs,
+      extraIsInitialized$: followingsInitialized$,
+    });
+  }
 
   protected createIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.params$!,
       this.particlesResolver!.isInitialized$,
+      this.extraIsInitialized$!,
     ]).pipe(
       // auditTime(MY_FRIENDS_SYNC_WARMUP),
       map(
-        ([dbInstance, params, syncQueueInitialized]) =>
+        ([dbInstance, params, syncQueueInitialized, followingsInitialized]) =>
           !!dbInstance &&
           !!syncQueueInitialized &&
           !!params.myAddress &&
-          !!params.followings &&
-          params.followings.length > 0
+          followingsInitialized
       )
     );
 
     return isInitialized$;
   }
 
-  protected async sync() {
+  protected async sync(params: SyncServiceParams) {
+    const { signal } = this.abortController;
+
     this.statusApi.sendStatus('in-progress', 'preparing...');
-    const { myAddress, followings } = this.params;
+    const { myAddress } = params;
+
+    const { followings } = this;
+
     console.log(`>>> sync my friends!!!!`, myAddress, followings);
 
     this.statusApi.sendStatus('estimating');
@@ -68,11 +115,15 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
     // eslint-disable-next-line no-restricted-syntax
     for (const addr of followings) {
       // eslint-disable-next-line no-await-in-loop
-      await this.syncLinks(myAddress!, addr);
+      await this.syncLinks(myAddress!, addr, signal);
     }
   }
 
-  public async syncLinks(myAddress: NeuronAddress, address: NeuronAddress) {
+  public async syncLinks(
+    myAddress: NeuronAddress,
+    address: NeuronAddress,
+    signal: AbortSignal
+  ) {
     const syncUpdates = [];
     try {
       if (this.inProgress.includes(address)) {
@@ -125,7 +176,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         if (links.length > 0) {
           const lastLink = links.at(-1);
 
-          await this.db!.putCyberlinks(links);
+          await throwIfAborted(this.db!.putCyberlinks, signal)(links);
 
           const particles = links.map((t) => t.to);
           await this.particlesResolver!.enqueueBatch(
@@ -148,7 +199,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
             },
           };
           // Update transaction
-          await this.db!.putSyncStatus(newSyncItem);
+          await throwIfAborted(this.db!.putSyncStatus, signal)(newSyncItem);
 
           syncUpdates.push(newSyncItem);
         }
@@ -171,17 +222,9 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
   protected createRestartObserver(
     params$: Observable<SyncServiceParams>
   ): Observable<boolean> {
-    return super.createRestartObserver(params$).pipe(
-      switchMap((addressChanged) => {
-        return params$.pipe(
-          map((params) => params.followings),
-          distinctUntilChanged((a, b) => equals(a, b)),
-          filter((followings) => !!followings && followings.length > 0),
-          // take(1),
-          map(() => true)
-        );
-      })
-    );
+    return super
+      .createRestartObserver(params$)
+      .pipe(switchMap((addressChanged) => this.isInitialized$));
   }
 }
 

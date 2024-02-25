@@ -1,4 +1,4 @@
-import { PATTERN_CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 
 export function cutSenseItem(value: string) {
   return `${value.slice(0, 5)}...${value.slice(-5)}`;

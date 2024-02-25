@@ -18,6 +18,7 @@ import {
 import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
 import { SyncEntryName } from '../../types/services';
 import BaseSyncLoop from './services/BaseSyncLoop/BaseSyncLoop';
+import createCommunitySync$ from './services/CommunitySync/CommunitySync';
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
@@ -43,6 +44,16 @@ export class SyncService {
 
     const particlesResolver = new ParticlesResolverQueue(deps).start();
 
+    const communitySync$ = createCommunitySync$(deps);
+    communitySync$.subscribe((community) => {
+      console.log('-------COMMUNITY FETCHED', community);
+    });
+
+    const followings$ = communitySync$.pipe(
+      map((c) => c.filter((i) => i.following)),
+      map((c) => c.map((i) => i.neuron))
+    );
+
     // new SyncIpfsLoop(deps, particlesResolver).start();
 
     new SyncTransactionsLoop('transaction', deps, particlesResolver).start();
@@ -57,8 +68,9 @@ export class SyncService {
     new SyncMyFriendsLoop(
       'my-friends',
       MY_FRIENDS_SYNC_INTERVAL,
-      deps,
+      { ...deps, followings$ },
       particlesResolver
+      // { warmupMs: 1000 }
     ).start();
   }
 

@@ -47,7 +47,7 @@ class BroadcastChannelSender {
   }
 
   public postSenseUpdate(senseList: SenseListItem[]) {
-    // console.log('postSyncEntryProgress', entry, state);
+    // console.log('postSenseUpdate', senseList);
     if (senseList.length > 0) {
       this.channel.postMessage(updateSenseList(senseList));
     }

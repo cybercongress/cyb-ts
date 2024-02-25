@@ -23,8 +23,8 @@ const createDbWorkerApi = () => {
     }
 
     // callback to sync writes count worker -> main thread
-    const onWriteCallback = (writesCount: number) =>
-      channel.post({ type: 'indexeddb_write', value: writesCount });
+    const onWriteCallback = (writesCount: number) => {};
+    // channel.post({ type: 'indexeddb_write', value: writesCount });
 
     await cozoDb.init(onWriteCallback);
     isInitialized = true;

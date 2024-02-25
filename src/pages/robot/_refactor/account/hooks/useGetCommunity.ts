@@ -1,27 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
-import {
-  featchStoredSyncCommunity,
-  fetchCommunity,
-} from 'src/services/common/community';
+import { fetchCommunity } from 'src/services/community/community';
 
-import { useBackend } from 'src/contexts/backend/backend';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
+import { makeCancellable } from 'src/utils/async/promise';
 
-function useGetCommunity(
-  address: string | null,
-  { skip, main }: { skip?: boolean; main?: boolean }
-) {
+function useGetCommunity(address: string | null, { skip }: { skip?: boolean }) {
   const { fetchParticleAsync } = useQueueIpfsContent();
-  const { dbApi, isDbInitialized } = useBackend();
+  const [abortController, setAbortController] = useState(new AbortController());
 
   const [community, setCommunity] = useState({
     following: [] as NeuronAddress[],
     followers: [] as NeuronAddress[],
     friends: [] as NeuronAddress[],
   });
+
   // TODO: maybe refactor
   const [loading, setLoading] = useState({
     following: false,
@@ -37,12 +32,18 @@ function useGetCommunity(
       followers: [],
       friends: [],
     });
+    abortController.abort();
+
+    setAbortController(abortController);
+
     setIsLoaded(false);
+
+    // don't set abortController
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   useEffect(() => {
-    const isInitialized = main ? isDbInitialized && dbApi : true;
-    if (!address || skip || !isInitialized || !fetchParticleAsync || isLoaded) {
+    if (!address || skip || !fetchParticleAsync || isLoaded) {
       return;
     }
 
@@ -65,31 +66,26 @@ function useGetCommunity(
         }));
       };
 
-      if (main) {
-        await featchStoredSyncCommunity(
-          dbApi!,
-          address,
-          fetchParticleAsync,
-          onResolve
+      // if (abortController.signal.aborted) {
+      //   console.log('______ALREADY ABORTED');
+      //   return;
+      await makeCancellable(fetchCommunity, abortController.signal)(
+        address,
+        fetchParticleAsync,
+        onResolve
+      )
+        .then(() => {
+          setIsLoaded(true);
+        })
+        .catch((e) =>
+          console.log(`>>>!!! sync community ${address} was cancelled`)
         );
-      } else {
-        await fetchCommunity(address, fetchParticleAsync, onResolve);
-      }
-
-      setIsLoaded(true);
 
       // TODO: refactor, loading disabled
       // setLoading({ followers: true, following: true, friends: true });
     })();
-  }, [
-    dbApi,
-    isDbInitialized,
-    isLoaded,
-    fetchParticleAsync,
-    address,
-    skip,
-    main,
-  ]);
+  }, [isLoaded, fetchParticleAsync, address, skip, abortController]);
+
   return {
     community,
     communityLoaded: isLoaded,

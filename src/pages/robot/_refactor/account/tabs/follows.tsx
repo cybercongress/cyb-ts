@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { useAdviser } from 'src/features/adviser/context';
 import { useEffect } from 'react';
+import { useBackend } from 'src/contexts/backend/backend';
 
 type CommunityEntityProps = {
   items: string[];
@@ -59,8 +60,8 @@ function CommunityEntity({
 
 function FollowsTab() {
   const { address, isOwner } = useRobotContext();
-  const currentAccount = useSelector(
-    (state: RootState) => state.currentAccount
+  const mainAccountCommunity = useSelector(
+    (state: RootState) => state.backend.community
   );
 
   const communityHook = useGetCommunity(address, { skip: isOwner });
@@ -75,9 +76,7 @@ function FollowsTab() {
     );
   }, [setAdviser]);
 
-  const community = isOwner
-    ? currentAccount.community
-    : communityHook.community;
+  const community = isOwner ? mainAccountCommunity : communityHook.community;
   const loading = isOwner
     ? {
         friends: false,
@@ -85,7 +84,6 @@ function FollowsTab() {
         followers: false,
       }
     : communityHook.loading;
-
   return (
     <Pane
       style={{

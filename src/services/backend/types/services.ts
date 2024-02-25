@@ -1,3 +1,4 @@
+import { SyncCommunityResult } from 'src/services/community/community';
 import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
 import { SenseListItem } from './sense';
 
@@ -69,6 +70,11 @@ export type SenseListRemove = {
   list: SenseListItem[];
 };
 
+export type LoadCommunityMessage = {
+  type: 'load_community';
+  value: SyncCommunityResult;
+};
+
 // export type SenseListUpdate = {
 //   type: 'sense_list_update';
 //   list: SenseListItem[];
@@ -78,7 +84,8 @@ export type BroadcastChannelMessage =
   | SyncStatusMessage
   | SyncEntryMessage
   | IndexedDbWriteMessage
-  | ServiceStatusMessage;
+  | ServiceStatusMessage
+  | LoadCommunityMessage;
 // | SenseListUpdate
 // | SenseListRemove;
 

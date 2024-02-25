@@ -5,7 +5,7 @@ import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
-import { getIpfsHash } from '../../utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { encodeSlash } from '../../utils/utils';
 import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';

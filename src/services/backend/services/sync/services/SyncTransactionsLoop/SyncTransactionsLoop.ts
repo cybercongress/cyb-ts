@@ -33,6 +33,7 @@ import BaseSyncClient from '../BaseSyncLoop/BaseSyncClient';
 import { createRxJsClient } from '../../../indexer/utils';
 import { SyncServiceParams } from '../../types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
+import { throwIfAborted } from 'src/utils/async/promise';
 
 class SyncTransactionsLoop extends BaseSyncClient {
   protected createIsInitializedObserver(deps: ServiceDeps) {
@@ -154,6 +155,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     batch: Transaction[],
     syncItem: SyncStatusDto
   ) {
+    const { signal } = this.abortController;
     const { timestampRead, unreadCount } = syncItem;
 
     console.log(
@@ -169,10 +171,10 @@ class SyncTransactionsLoop extends BaseSyncClient {
     const transactions = batch.map((i) => mapTransactionToEntity(address, i));
 
     // save transaction
-    await this.db!.putTransactions(transactions);
+    await throwIfAborted(this.db!.putTransactions, signal)(transactions);
 
     // save links
-    this.syncLinks(batch);
+    this.syncLinks(batch, signal);
 
     const {
       transaction_hash,
@@ -199,7 +201,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       },
     };
 
-    await this.db!.putSyncStatus(newSyncItem);
+    await throwIfAborted(this.db!.putSyncStatus, signal)(newSyncItem);
 
     return lastTimestampFrom;
   }
@@ -272,13 +274,13 @@ class SyncTransactionsLoop extends BaseSyncClient {
     return lastTimestampFrom;
   }
 
-  private async syncLinks(batch: Transaction[]) {
+  private async syncLinks(batch: Transaction[], signal: AbortSignal) {
     const { tweets, particlesFound, links } =
       extractCybelinksFromTransaction(batch);
     if (links.length > 0) {
       await asyncIterableBatchProcessor(
         links,
-        (links) => this.db!.putCyberlinks(links),
+        (links) => throwIfAborted(this.db!.putCyberlinks, signal)(links),
         MAX_DATABASE_PUT_SIZE
       );
     }

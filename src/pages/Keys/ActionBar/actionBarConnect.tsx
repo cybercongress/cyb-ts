@@ -8,7 +8,8 @@ import {
   Input,
   ActionBar,
 } from 'src/components';
-import { LEDGER, CYBER, PATTERN_CYBER } from 'src/utils/config';
+import { LEDGER, CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useDispatch } from 'react-redux';
 import { addAddressPocket } from 'src/redux/features/pocket';
@@ -84,12 +85,11 @@ function ActionBarConnect({
   const onClickAddAddressUserToLocalStr = async () => {
     const accounts = { bech32: valueInputAddres, keys: 'read-only' };
 
-
     setTimeout(() => {
       dispatch(addAddressPocket(accounts));
     }, 100);
 
-        setStage(STAGE_ADD_ADDRESS_OK);
+    setStage(STAGE_ADD_ADDRESS_OK);
 
     clearState();
     if (updateAddress) {

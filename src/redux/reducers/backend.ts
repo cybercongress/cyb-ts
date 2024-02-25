@@ -3,14 +3,24 @@ import {
   SyncState,
   ServiceStatus,
   BroadcastChannelMessage,
-  SyncEntryStatus,
   SyncEntryName,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
+import { CommunityDto } from 'src/services/CozoDb/types/dto';
+import { NeuronAddress } from 'src/types/base';
+import { raw } from '@storybook/react';
+import { removeDublicates } from 'src/utils/list';
 
 type BackendState = {
   dbPendingWrites: number;
   syncState: SyncState;
+  community: {
+    isLoaded: boolean;
+    raw: CommunityDto[];
+    following: NeuronAddress[];
+    followers: NeuronAddress[];
+    friends: NeuronAddress[];
+  };
   services: {
     [key in ServiceName]: {
       status: ServiceStatus;
@@ -22,6 +32,13 @@ type BackendState = {
 
 const initialState: BackendState = {
   dbPendingWrites: 0,
+  community: {
+    isLoaded: false,
+    raw: [],
+    following: [],
+    followers: [],
+    friends: [],
+  },
   syncState: {
     status: 'inactive',
     entryStatus: {},
@@ -101,6 +118,45 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
       const { name, status, message } = action.value;
       return assocPath(['services', name], { status, message }, state);
     }
+
+    case 'load_community': {
+      const { action: stateAction, items } = action.value;
+      // console.log('------------load_community', stateAction, items, state);
+      if (stateAction === 'reset') {
+        const community = {
+          isLoaded: false,
+          raw: [],
+          following: [],
+          followers: [],
+          friends: [],
+        };
+        return { ...state, community };
+      }
+      const allItems = [...state.community.raw, ...items];
+
+      const community = {
+        isLoaded: stateAction === 'complete',
+        raw: allItems,
+        following: removeDublicates(
+          allItems
+            .filter((item) => item.following && !item.follower)
+            .map((item) => item.neuron)
+        ),
+        followers: removeDublicates(
+          allItems
+            .filter((item) => item.follower && !item.following)
+            .map((item) => item.neuron)
+        ),
+        friends: removeDublicates(
+          allItems
+            .filter((item) => item.follower && item.following)
+            .map((item) => item.neuron)
+        ),
+      };
+
+      return { ...state, community };
+    }
+
     default:
       return state;
   }

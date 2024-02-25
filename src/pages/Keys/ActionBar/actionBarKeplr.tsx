@@ -10,12 +10,8 @@ import {
   TransactionError,
   ActionBarSend,
 } from 'components';
-import {
-  LEDGER,
-  CYBER,
-  PATTERN_CYBER,
-  DEFAULT_GAS_LIMITS,
-} from 'src/utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { getTxs } from 'src/utils/search/utils';
 
 const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
