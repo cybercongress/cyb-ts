@@ -29,10 +29,6 @@ export const fetchStoredSyncCommunity$ = (
 
       subscriber.next({ action: 'add', items: storedCommunity });
 
-      const storedCommunityMapByCid = new Map(
-        storedCommunity.map((c) => [c.particle, c])
-      );
-
       const communityUpdatesMap = new Map<ParticleCid, CommunityDto>(
         storedCommunity.map((c) => [c.particle, c])
       );
@@ -57,7 +53,7 @@ export const fetchStoredSyncCommunity$ = (
       );
 
       console.log(
-        `>>>$ sync community ${address}, stored ${storedCommunity.length} new followers: ${newFollowerCids.length} new following: ${newFollowingNeurons.length}`
+        `>>>$ sync community ${address} processing, stored ${storedCommunity.length} new followers: ${newFollowerCids.length} new following: ${newFollowingNeurons.length}`
       );
 
       const followersCommunity = await Promise.all(
@@ -131,7 +127,7 @@ export const fetchCommunity = async (
   const followsCids = await getFollowsAsCid(address, signal);
   const followers = await getFollowers(address, signal);
 
-  console.log(`>>> sync community ${address} without store`);
+  console.log(`>>> sync community ${address} processing without store`);
 
   const followsPromise = Promise.all(
     followsCids.map(async (cid) => {

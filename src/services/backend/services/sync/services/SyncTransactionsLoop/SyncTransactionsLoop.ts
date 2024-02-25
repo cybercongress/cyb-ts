@@ -60,7 +60,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     console.log(
       `>>> ${this.name} subscribe ${myAddress} from ${numberToDate(
         timestampFrom
-      )} [aborted: ${this.abortFlag}]`
+      )}`
     );
 
     const query = gqlMessagesByAddress('subscription');
@@ -223,7 +223,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     );
 
     console.log(
-      `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom} [aborted: ${this.abortFlag}]`
+      `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom}`
     );
 
     if (totalMessageCount === 0) {

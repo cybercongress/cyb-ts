@@ -1,6 +1,6 @@
 import { AppDispatch } from 'src/redux/store';
 import { Observable, Subscription, merge } from 'rxjs';
-import { bufferTime, filter, map } from 'rxjs/operators';
+import { bufferTime, filter } from 'rxjs/operators';
 
 import {
   BroadcastChannelMessage,
@@ -41,22 +41,18 @@ class RxBroadcastChannelListener {
       bufferTime(0)
     );
 
-    this.subscription = merge(bufferedMessages, normalMessages)
-      .pipe(
-        bufferTime(2000) // Accumulate messages in a 2-second window
-      )
-      .subscribe((messages) => {
+    this.subscription = merge(bufferedMessages, normalMessages).subscribe(
+      (messages) => {
         if (messages.length > 0) {
           const items = new Map<string, BroadcastChannelMessage>();
           messages.forEach((msg) => {
-            if (msg && msg.data) {
-              const key = getBroadcastChannemMessageKey(msg.data);
-              items.set(key, msg.data);
-            }
+            const key = getBroadcastChannemMessageKey(msg.data);
+            items.set(key, msg.data);
           });
           items.forEach(dispatch);
         }
-      });
+      }
+    );
   }
 
   close() {

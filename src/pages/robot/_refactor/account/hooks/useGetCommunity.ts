@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 import { fetchCommunity } from 'src/services/community/community';
@@ -6,6 +6,7 @@ import { fetchCommunity } from 'src/services/community/community';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
 import { makeCancellable } from 'src/utils/async/promise';
+import { removeDublicates } from 'src/utils/list';
 
 function useGetCommunity(address: string | null, { skip }: { skip?: boolean }) {
   const { fetchParticleAsync } = useQueueIpfsContent();
@@ -48,38 +49,38 @@ function useGetCommunity(address: string | null, { skip }: { skip?: boolean }) {
     }
 
     (async () => {
+      const communityRaw: CommunityDto[] = [];
+
       const onResolve = (communityResolved: CommunityDto[]) => {
-        const followers = communityResolved
+        communityRaw.push(...communityResolved);
+        const followers = communityRaw
           .filter((item) => item.follower && !item.following)
           .map((item) => item.neuron);
-        const following = communityResolved
+        const following = communityRaw
           .filter((item) => item.following && !item.follower)
           .map((item) => item.neuron);
-        const friends = communityResolved
+        const friends = communityRaw
           .filter((item) => item.follower && item.following)
           .map((item) => item.neuron);
 
         setCommunity((community) => ({
-          followers: [...new Set([...community.followers, ...followers])],
-          following: [...new Set([...community.following, ...following])],
-          friends: [...new Set([...community.friends, ...friends])],
+          followers: removeDublicates([...community.followers, ...followers]),
+          following: removeDublicates([...community.following, ...following]),
+          friends: removeDublicates([...community.friends, ...friends]),
         }));
       };
 
-      // if (abortController.signal.aborted) {
-      //   console.log('______ALREADY ABORTED');
-      //   return;
       await makeCancellable(fetchCommunity, abortController.signal)(
         address,
         fetchParticleAsync,
         onResolve
       )
-        .then(() => {
-          setIsLoaded(true);
-        })
-        .catch((e) =>
+        .catch(() =>
           console.log(`>>>!!! sync community ${address} was cancelled`)
-        );
+        )
+        .finally(() => {
+          setIsLoaded(true);
+        });
 
       // TODO: refactor, loading disabled
       // setLoading({ followers: true, following: true, friends: true });

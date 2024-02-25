@@ -33,8 +33,6 @@ abstract class BaseSync {
 
   protected statusApi: ReturnType<typeof broadcastStatus>;
 
-  public abortFlag = false; // flag to break any cycle
-
   protected params: SyncServiceParams = {
     myAddress: null,
   };
@@ -93,10 +91,6 @@ abstract class BaseSync {
 
   protected initAbortController() {
     this.abortController = new AbortController();
-    this.abortFlag = false;
-    this.abortController.signal.onabort = () => {
-      this.abortFlag = true;
-    };
   }
 
   protected abstract createIsInitializedObserver(

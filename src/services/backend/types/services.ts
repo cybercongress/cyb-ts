@@ -65,11 +65,6 @@ export type ServiceStatusMessage = {
   value: { name: ServiceName; status: ServiceStatus; message?: string };
 };
 
-export type SenseListRemove = {
-  type: 'sense_list_remove';
-  list: SenseListItem[];
-};
-
 export type LoadCommunityMessage = {
   type: 'load_community';
   value: SyncCommunityResult;

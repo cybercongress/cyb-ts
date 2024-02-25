@@ -219,13 +219,13 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected createRestartObserver(
-    params$: Observable<SyncServiceParams>
-  ): Observable<boolean> {
-    return super
-      .createRestartObserver(params$)
-      .pipe(switchMap((addressChanged) => this.isInitialized$));
-  }
+  // protected createRestartObserver(
+  //   params$: Observable<SyncServiceParams>
+  // ): Observable<boolean> {
+  //   return super
+  //     .createRestartObserver(params$)
+  //     .pipe(switchMap((addressChanged) => this.isInitialized$));
+  // }
 }
 
 export default SyncMyFriendsLoop;
