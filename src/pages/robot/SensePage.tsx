@@ -5,9 +5,9 @@ import Taverna from 'src/containers/taverna';
 function SensePage() {
   const { isOwner } = useRobotContext();
 
-  if (!isOwner) {
-    return <Taverna />;
-  }
+  // if (!isOwner) {
+  //   return <Taverna />;
+  // }
   return <SenseRoutingWrapper />;
 }
 
