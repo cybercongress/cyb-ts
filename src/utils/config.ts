@@ -265,10 +265,6 @@ const PATTERN = new RegExp(
   `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
   'g'
 );
-const PATTERN_CYBER = new RegExp(
-  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
-  'g'
-);
 const PATTERN_CYBER_CONTRACT = new RegExp(
   `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{59}$`,
   'g'

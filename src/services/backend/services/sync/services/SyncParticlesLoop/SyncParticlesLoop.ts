@@ -21,6 +21,8 @@ import {
 import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
+import { SyncServiceParams } from '../../types';
+import { throwIfAborted } from 'src/utils/async/promise';
 
 class SyncParticlesLoop extends BaseSyncLoop {
   protected createIsInitializedObserver(deps: ServiceDeps) {
@@ -45,9 +47,9 @@ class SyncParticlesLoop extends BaseSyncLoop {
     return isInitialized$;
   }
 
-  protected async sync(): Promise<void> {
-    const { myAddress } = this.params!;
-
+  protected async sync(params: SyncServiceParams): Promise<void> {
+    const { myAddress } = params;
+    const { signal } = this.abortController;
     this.statusApi.sendStatus('estimating');
 
     const syncItemParticles = await this.db!.findSyncStatus({
@@ -62,7 +64,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
       myAddress!,
       [CID_TWEET],
       timestampUpdate,
-      this.abortController?.signal
+      signal
     );
 
     console.log(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
@@ -78,7 +80,8 @@ class SyncParticlesLoop extends BaseSyncLoop {
       // fetch and save new particles
       const newSyncItemParticles = await this.fetchNewTweets(
         myAddress!,
-        timestampUpdate
+        timestampUpdate,
+        signal
       );
 
       // add to fetch-sync linked particles
@@ -86,12 +89,13 @@ class SyncParticlesLoop extends BaseSyncLoop {
     }
     // console.log(`-----sync syncParticles before`, syncItemParticles);
 
-    await this.syncParticles(myAddress!, syncItemParticles);
+    await this.syncParticles(myAddress!, syncItemParticles, signal);
   }
 
   private async fetchNewTweets(
     myAddress: NeuronAddress,
-    timestampUpdate: number
+    timestampUpdate: number,
+    signal: AbortSignal
   ) {
     const tweetsAsyncIterable = await fetchCyberlinksByNerounIterable(
       myAddress,
@@ -128,7 +132,10 @@ class SyncParticlesLoop extends BaseSyncLoop {
       });
 
       if (syncStatusEntities.length > 0) {
-        await this.db!.putSyncStatus(syncStatusEntities);
+        await throwIfAborted(
+          this.db!.putSyncStatus,
+          signal
+        )(syncStatusEntities);
         newTweets.push(...syncStatusEntities);
       }
     }
@@ -138,7 +145,8 @@ class SyncParticlesLoop extends BaseSyncLoop {
 
   private async syncParticles(
     myAddress: NeuronAddress,
-    syncItems: SyncStatusDto[]
+    syncItems: SyncStatusDto[],
+    signal: AbortSignal
   ) {
     const updatedSyncItems: SyncStatusDto[] = [];
 
@@ -167,7 +175,10 @@ class SyncParticlesLoop extends BaseSyncLoop {
         await asyncIterableBatchProcessor(
           links,
           (links) =>
-            this.db!.putCyberlinks(links.map(mapLinkFromIndexerToDbEntity)),
+            throwIfAborted(
+              this.db!.putCyberlinks,
+              signal
+            )(links.map(mapLinkFromIndexerToDbEntity)),
           MAX_DATABASE_PUT_SIZE
         );
 
@@ -178,7 +189,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
     }
 
     if (updatedSyncItems.length > 0) {
-      await this.db!.putSyncStatus(updatedSyncItems);
+      await throwIfAborted(this.db!.putSyncStatus, signal)(updatedSyncItems);
     }
 
     this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);

@@ -17,7 +17,7 @@ import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
 import useCheckRelease, { TotalRelease } from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
-import { PATTERN_CYBER } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import STEP_INFO from './utils';
 import Info from './Info';
 

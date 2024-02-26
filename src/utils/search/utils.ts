@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import Unixfs from 'ipfs-unixfs';
-import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
@@ -10,9 +7,7 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
-import { ParticleCid } from 'src/types/base';
-
-const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
+import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -25,22 +20,6 @@ export const formatNumber = (number, toFixed) => {
 
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
-
-export const getIpfsHash = (string: string): Promise<ParticleCid> =>
-  new Promise((resolve, reject) => {
-    const unixFsFile = new Unixfs('file', Buffer.from(string));
-
-    const buffer = unixFsFile.marshal();
-    DAGNode.create(buffer, (err, dagNode) => {
-      if (err) {
-        reject(new Error('Cannot create ipfs DAGNode'));
-      }
-
-      DAGUtil.cid(dagNode, (error, cid) => {
-        resolve(cid.toBaseEncodedString());
-      });
-    });
-  });
 
 export const getRankGrade = (rank) => {
   let from;

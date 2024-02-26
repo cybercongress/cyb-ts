@@ -9,7 +9,7 @@ import { Account, Input } from 'src/components';
 import LinearGradientContainer, {
   Color,
 } from 'src/components/LinearGradientContainer/LinearGradientContainer';
-import { PATTERN_CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import {
   SliceState,
   selectAccountsPassports,

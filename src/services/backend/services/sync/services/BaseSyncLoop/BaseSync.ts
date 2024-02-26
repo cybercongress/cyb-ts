@@ -21,7 +21,7 @@ import { SyncServiceParams } from '../../types';
 abstract class BaseSync {
   protected name: string;
 
-  protected abortController: AbortController | undefined;
+  protected abortController: AbortController;
 
   protected db: DbApiWrapper | undefined;
 
@@ -33,23 +33,27 @@ abstract class BaseSync {
 
   protected statusApi: ReturnType<typeof broadcastStatus>;
 
-  public abortFlag = false; // flag to break any cycle
-
   protected params: SyncServiceParams = {
     myAddress: null,
-    followings: [],
   };
 
   protected readonly isInitialized$: Observable<boolean>;
 
+  protected readonly extraIsInitialized$: Observable<boolean> | undefined;
+
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
-    particlesResolver: ParticlesResolverQueue
+    particlesResolver: ParticlesResolverQueue,
+    extraIsInitialized$?: Observable<boolean> | undefined
   ) {
     this.name = name;
+
+    this.abortController = new AbortController();
+
     this.statusApi = broadcastStatus(name, this.channelApi);
     this.particlesResolver = particlesResolver;
+    this.extraIsInitialized$ = extraIsInitialized$;
 
     if (!deps.params$) {
       throw new Error('params$ is not defined');
@@ -80,8 +84,8 @@ abstract class BaseSync {
     // Restart observer
     this.isInitialized$
       .pipe(
-        switchMap(() => this.createRestartObserver(deps.params$!)),
-        filter((v) => !!v)
+        filter((isInitialized) => !!isInitialized),
+        switchMap(() => this.createRestartObserver(deps.params$!))
       )
       .subscribe(() => {
         this.restart();
@@ -90,10 +94,6 @@ abstract class BaseSync {
 
   protected initAbortController() {
     this.abortController = new AbortController();
-    this.abortFlag = false;
-    this.abortController.signal.onabort = () => {
-      this.abortFlag = true;
-    };
   }
 
   protected abstract createIsInitializedObserver(

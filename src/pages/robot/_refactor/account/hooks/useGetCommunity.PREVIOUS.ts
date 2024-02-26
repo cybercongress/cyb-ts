@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
-import {
-  getFollowers,
-  getIpfsHash,
-  getFollows,
-} from '../../../../../utils/search/utils';
-import { PATTERN_CYBER } from '../../../../../utils/config';
+import { getFollowers, getFollows } from '../../../../../utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { useBackend } from 'src/contexts/backend/backend';
 
 function useGetCommunity(address: string | null, skip?: boolean) {

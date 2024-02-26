@@ -32,9 +32,6 @@ const slice = createSlice({
   },
 });
 
-export const selectFollowings = (state: RootState) =>
-  state.currentAccount.community.following;
-
 export const { setCommunity } = slice.actions;
 
 export default slice.reducer;

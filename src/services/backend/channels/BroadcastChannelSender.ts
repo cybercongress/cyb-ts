@@ -2,7 +2,6 @@ import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseListItem } from '../types/sense';
 import {
   BroadcastChannelMessage,
-  SenseListRemove,
   ServiceName,
   ServiceStatus,
   SyncEntryName,
@@ -11,13 +10,7 @@ import {
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 class BroadcastChannelSender {
-  static mockClear() {
-    throw new Error('Method not implemented.');
-  }
-
   private channel: BroadcastChannel;
-
-  static mock: any;
 
   constructor() {
     this.channel = new BroadcastChannel(CYB_BROADCAST_CHANNEL);
@@ -47,18 +40,10 @@ class BroadcastChannelSender {
   }
 
   public postSenseUpdate(senseList: SenseListItem[]) {
-    // console.log('postSyncEntryProgress', entry, state);
+    // console.log('postSenseUpdate', senseList);
     if (senseList.length > 0) {
       this.channel.postMessage(updateSenseList(senseList));
     }
-  }
-
-  public postSenseRemove(senseList: SenseListItem[]) {
-    // console.log('postSyncEntryProgress', entry, state);
-    this.channel.postMessage({
-      type: 'sense_list_remove',
-      list: senseList,
-    } as SenseListRemove);
   }
 
   post(msg: BroadcastChannelMessage) {

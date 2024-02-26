@@ -2,21 +2,18 @@ import axios from 'axios';
 import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
-import { getIpfsHash } from 'src/utils/search/utils';
-import { LcdEventType } from './types';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
 export const getFollowsAsCid = async (
-  address: NeuronAddress
+  address: NeuronAddress,
+  signal?: AbortSignal
 ): Promise<ParticleCid[]> => {
   const response = await axios({
     method: 'get',
     url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
+    signal,
   });
-  // console.log(
-  //   '-----getFollowsAsCid',
-  //   `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
-  //   response.data
-  // );
+
   if (!response.data.txs) {
     return [];
   }
@@ -26,13 +23,15 @@ export const getFollowsAsCid = async (
 };
 
 export const getFollowers = async (
-  address: NeuronAddress
+  address: NeuronAddress,
+  signal?: AbortSignal
 ): Promise<NeuronAddress[]> => {
   const addressHash = await getIpfsHash(address);
 
   const response = await axios({
     method: 'get',
     url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
+    signal,
   });
   // console.log(
   //   '-----getFollowers',

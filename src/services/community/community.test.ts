@@ -1,4 +1,4 @@
-import { getAndSyncCommunity } from './community';
+import { featchStoredSyncCommunity } from './community';
 import DbApiWrapper from '../backend/services/dataSource/indexedDb/dbApiWrapper';
 import { getFollowsAsCid, getFollowers } from '../backend/services/lcd/lcd';
 
@@ -48,7 +48,7 @@ describe('getCommunity function', () => {
     }));
 
     // Call the function under test
-    await getAndSyncCommunity(mockDbApi, 'ownerId', fetchParticleAsync);
+    await featchStoredSyncCommunity(mockDbApi, 'ownerId', fetchParticleAsync);
 
     const updatedCommunity = mockDbApi.putCommunity.mock.calls[0][0];
 

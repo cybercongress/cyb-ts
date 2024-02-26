@@ -6,7 +6,7 @@ import { MusicalAddress, ParseAddressesImg } from '../components';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
-import { PATTERN_CYBER } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
 import { ContainerGradient } from '../../../components';

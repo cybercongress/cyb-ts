@@ -20,11 +20,8 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import {
-  CYBER,
-  DEFAULT_GAS_LIMITS,
-  PATTERN_CYBER,
-} from '../../../utils/config';
+import { CYBER, DEFAULT_GAS_LIMITS } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,

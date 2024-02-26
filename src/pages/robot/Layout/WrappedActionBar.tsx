@@ -4,7 +4,8 @@ import { useLocation } from 'react-router-dom';
 import ActionBarContainer from 'src/pages/robot/_refactor/account/actionBar';
 
 import { RootState } from 'src/redux/store';
-import { getIpfsHash, chekFollow } from 'src/utils/search/utils';
+import { chekFollow } from 'src/utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { useRobotContext } from '../robot.context';
 
 import { ActionBar } from 'src/components';
