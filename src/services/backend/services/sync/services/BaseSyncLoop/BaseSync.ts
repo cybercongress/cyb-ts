@@ -21,7 +21,7 @@ import { SyncServiceParams } from '../../types';
 abstract class BaseSync {
   protected name: string;
 
-  protected abortController: AbortController | undefined;
+  protected abortController: AbortController;
 
   protected db: DbApiWrapper | undefined;
 
@@ -48,6 +48,9 @@ abstract class BaseSync {
     extraIsInitialized$?: Observable<boolean> | undefined
   ) {
     this.name = name;
+
+    this.abortController = new AbortController();
+
     this.statusApi = broadcastStatus(name, this.channelApi);
     this.particlesResolver = particlesResolver;
     this.extraIsInitialized$ = extraIsInitialized$;
@@ -81,8 +84,8 @@ abstract class BaseSync {
     // Restart observer
     this.isInitialized$
       .pipe(
-        switchMap(() => this.createRestartObserver(deps.params$!)),
-        filter((v) => !!v)
+        filter((isInitialized) => !!isInitialized),
+        switchMap(() => this.createRestartObserver(deps.params$!))
       )
       .subscribe(() => {
         this.restart();

@@ -21,7 +21,8 @@ import { isAbortException } from 'src/utils/exceptions/helpers';
 
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
-import { CommunityDto } from 'src/services/CozoDb/types/dto';
+import { throwIfAborted } from 'src/utils/async/promise';
+
 import { SyncEntryName } from 'src/services/backend/types/services';
 import { ServiceDeps } from '../types';
 
@@ -32,7 +33,6 @@ import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import { throwIfAborted } from 'src/utils/async/promise';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   private inProgress: NeuronAddress[] = [];
@@ -60,11 +60,13 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         followingsInitialized$.next(false);
       });
 
-    deps.followings$.subscribe((followings) => {
-      this.followings = followings;
-      followingsInitialized$.next(true);
-      this.restart();
-    });
+    deps.followings$
+      .pipe(filter((f) => f.length > 0))
+      .subscribe((followings) => {
+        this.followings = followings;
+        followingsInitialized$.next(true);
+        this.restart();
+      });
 
     super(name, intervalMs, deps, particlesResolver, {
       warmupMs,
