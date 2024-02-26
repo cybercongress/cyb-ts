@@ -197,7 +197,7 @@ class DbApiWrapper {
     ) as SenseListItem[];
 
     // console.log('-------cmd', senseList);
-    console.log('!=!=! redundancy calls - FIX');
+    console.log('!=!=! redundant calls - FIX');
     return senseList;
   }
 
@@ -215,8 +215,7 @@ class DbApiWrapper {
     ownerId: NeuronAddress,
     id: NeuronAddress | ParticleCid
   ) {
-    console.log(`---senseMarkAsRead start ${id}`);
-    console.time(`---senseMarkAsRead done ${id}`);
+    // console.time(`---senseMarkAsRead done ${id}`);
     const result = await this.db!.executeGetCommand(
       'sync_status',
       ['timestamp_update'],
@@ -234,7 +233,7 @@ class DbApiWrapper {
       unreadCount: 0,
     });
 
-    console.timeEnd(`---senseMarkAsRead done ${id}`);
+    // console.timeEnd(`---senseMarkAsRead done ${id}`);
     return res;
   }
 

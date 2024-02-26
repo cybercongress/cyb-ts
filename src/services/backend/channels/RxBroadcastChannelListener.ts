@@ -1,11 +1,17 @@
+import { AppDispatch } from 'src/redux/store';
+import { Observable, Subscription, merge } from 'rxjs';
+import { bufferTime, filter } from 'rxjs/operators';
+
 import {
   BroadcastChannelMessage,
   getBroadcastChannemMessageKey,
 } from '../types/services';
 import { CYB_BROADCAST_CHANNEL } from './consts';
-import { Subscriber, Observable, Subscription } from 'rxjs';
-import { throttleTime, bufferTime } from 'rxjs/operators';
-import { AppDispatch } from 'src/redux/store';
+
+const shouldTrottle = (msg: MessageEvent<BroadcastChannelMessage>) =>
+  ['sync_entry', 'service_status', 'sync_status', 'indexeddb_write'].some(
+    (name) => name === msg.data.type
+  );
 
 class RxBroadcastChannelListener {
   private subscription: Subscription;
@@ -25,11 +31,18 @@ class RxBroadcastChannelListener {
       };
     });
 
-    this.subscription = messageObservable
-      .pipe(
-        bufferTime(2000) // Accumulate messages in a 2-second window
-      )
-      .subscribe((messages) => {
+    const bufferedMessages = messageObservable.pipe(
+      filter((m) => shouldTrottle(m)),
+      bufferTime(2000)
+    ); // Accumulate messages in a 2-second window
+
+    const normalMessages = messageObservable.pipe(
+      filter((m) => !shouldTrottle(m)),
+      bufferTime(0)
+    );
+
+    this.subscription = merge(bufferedMessages, normalMessages).subscribe(
+      (messages) => {
         if (messages.length > 0) {
           const items = new Map<string, BroadcastChannelMessage>();
           messages.forEach((msg) => {
@@ -38,8 +51,10 @@ class RxBroadcastChannelListener {
           });
           items.forEach(dispatch);
         }
-      });
+      }
+    );
   }
+
   close() {
     this.subscription.unsubscribe();
   }

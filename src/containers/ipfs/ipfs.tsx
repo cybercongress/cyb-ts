@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
 import { encodeSlash } from 'src/utils/utils';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
-import { getIpfsHash } from 'src/utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
 import { useBackend } from 'src/contexts/backend/backend';

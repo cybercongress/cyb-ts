@@ -28,9 +28,9 @@ function App() {
 
   const address = defaultAccount.account?.cyber?.bech32;
 
-  const { community, communityLoaded } = useGetCommunity(address || null, {
-    main: true,
-  });
+  // const { community, communityLoaded } = useGetCommunity(address || null, {
+  //   main: true,
+  // });
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
@@ -55,11 +55,11 @@ function App() {
 
   // reset
 
-  useEffect(() => {
-    if (communityLoaded) {
-      dispatch(setCommunity(community));
-    }
-  }, [communityLoaded, community, dispatch]);
+  // useEffect(() => {
+  //   if (communityLoaded) {
+  //     dispatch(setCommunity(community));
+  //   }
+  // }, [communityLoaded, community, dispatch]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

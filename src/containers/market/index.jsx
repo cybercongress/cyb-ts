@@ -4,11 +4,8 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
-import {
-  getIpfsHash,
-  getRankGrade,
-  searchByHash,
-} from '../../utils/search/utils';
+import { getRankGrade, searchByHash } from '../../utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
 import SearchTokenInfo from './searchTokensInfo';

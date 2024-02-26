@@ -8,12 +8,8 @@ import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
 
-import {
-  getCyberlinks,
-  getFollowers,
-  getIpfsHash,
-  getTweet,
-} from 'src/utils/search/utils';
+import { getCyberlinks, getFollowers, getTweet } from 'src/utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 import { useRobotContext } from '../robot.context';
