@@ -25,11 +25,7 @@ import {
   TransactionDto,
 } from 'src/services/CozoDb/types/dto';
 
-import {
-  SenseListItem,
-  SenseUnread,
-  SenseMetaType,
-} from 'src/services/backend/types/sense';
+import { SenseListItem } from 'src/services/backend/types/sense';
 import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
 import { extractSenseChats } from '../../sync/services/utils/sense';
 import {
@@ -197,7 +193,7 @@ class DbApiWrapper {
     ) as SenseListItem[];
 
     // console.log('-------cmd', senseList);
-    console.log('!=!=! redundant calls - FIX');
+    console.log('!=!=! redundant calls - FIX', myAddress);
     return senseList;
   }
 
@@ -299,11 +295,29 @@ class DbApiWrapper {
     item: Partial<SyncQueueDto>[] | Partial<SyncQueueDto>
   ) {
     const entitites = Array.isArray(item) ? item : [item];
-    return this.db!.executeUpdateCommand('sync_queue', entitites);
+    try {
+      return this.db!.executeUpdateCommand('sync_queue', entitites);
+    } catch (e) {
+      console.log('----> updateSyncQueue, items will be removed', e, item);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const entity of entitites) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.removeSyncQueue(entity.id!);
+      }
+
+      return { ok: true };
+    }
   }
 
-  public async removeSyncQueue(id: ParticleCid) {
-    return this.db!.executeRmCommand('sync_queue', [{ id }]);
+  public async removeSyncQueue(id: ParticleCid | ParticleCid[]) {
+    const ids = Array.isArray(id) ? id : [id];
+
+    return this.db!.executeRmCommand(
+      'sync_queue',
+      ids.map((id) => ({
+        id,
+      }))
+    );
   }
 
   public async getSyncQueue({
