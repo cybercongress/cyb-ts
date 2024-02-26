@@ -135,7 +135,7 @@ function useMenuCounts(address: string | null) {
     cyberlinks: cyberlinksCount,
     passport: accounts ? Object.keys(accounts).length : 0,
     drive: (isOwner && repoSizeValue) || '-',
-    sense: unreadSenseTotal,
+    sense: isOwner ? unreadSenseTotal : 0, // 0 is temp
     karma: karma || 0,
     txs: sequence,
     rewards: balance.rewards,
