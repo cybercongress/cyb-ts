@@ -20,6 +20,12 @@ export enum EntryType {
   chat = 3,
 }
 
+// Transaction if formed by frontend
+// Should be replaced after sync
+export type LocalFlag = {
+  localFlag?: true;
+};
+
 export type PinDbEntity = {
   cid: string;
   type: keyof typeof PinTypeMap;
@@ -30,7 +36,7 @@ export type TransactionDbEntity = {
   index: number;
   type: string;
   timestamp: number;
-  value: SenseTransaction['value'];
+  value: SenseTransaction['value'] & LocalFlag;
   success: boolean;
   memo: string;
   neuron: NeuronAddress;

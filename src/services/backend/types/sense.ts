@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import { EntryType, LocalFlag } from 'src/services/CozoDb/types/entities';
 
 import {
   MsgSendTransaction,
@@ -47,13 +47,14 @@ export type SenseLinkResultMeta = {
 } & SenseLinkMeta;
 
 // Extension for Chat item to separate chat sync from tweet sync
-export type SenseChatExtesnsion = {
+export type SenseChatExtension = {
   timestampUpdateChat?: number;
   timestampUpdateContent?: number;
 };
 
 export type SenseMeta = (SenseLinkMeta | SenseTransactionMeta) &
-  SenseChatExtesnsion;
+  SenseChatExtension &
+  LocalFlag;
 
 export type SenseResultMeta = SenseLinkResultMeta | SenseTransactionResultMeta;
 
@@ -63,7 +64,7 @@ export type SenseListChatItem = {
   unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
-  meta: SenseResultMeta & SenseChatExtesnsion;
+  meta: SenseResultMeta & SenseChatExtension;
 };
 
 export type SenseListParticleItem = {

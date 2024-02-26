@@ -51,8 +51,8 @@ function SenseList({ select, selected }: Props) {
     }
   }
 
-  console.log('senseApi loading', apiLoading);
-  console.log('senseList.isLoading', senseList.isLoading);
+  // console.log('senseApi loading', apiLoading);
+  // console.log('senseList.isLoading', senseList.isLoading);
 
   return (
     <div className={styles.wrapper}>

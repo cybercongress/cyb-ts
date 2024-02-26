@@ -11,7 +11,6 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
-import useDeepCompareEffect from 'src/hooks/useDeepCompareEffect';
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { SyncEntryName } from 'src/services/backend/types/services';

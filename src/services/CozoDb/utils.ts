@@ -65,7 +65,7 @@ export function transformToDto<T extends Record<string, any>>(
 
 export function transformToDbEntity<T extends Record<string, any>>(
   dto: T
-): Partial<T> {
+): DtoToDbEntity<T> {
   // Replace T with the appropriate DB Entity type if known
   const dbEntity: any = {};
   for (const key in dto) {

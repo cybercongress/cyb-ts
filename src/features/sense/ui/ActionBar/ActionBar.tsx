@@ -31,7 +31,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
   const address = useAppSelector(selectCurrentAddress);
   const dispatch = useAppDispatch();
 
-  const { isIpfsInitialized, ipfsApi } = useBackend();
+  const { isIpfsInitialized, ipfsApi, senseApi } = useBackend();
 
   const [tx, setTx] = useState({
     hash: '',
@@ -146,12 +146,23 @@ function ActionBarWrapper({ id, adviser }: Props) {
         optimisticMessage.item.meta = {
           from: messageCid,
         };
+
         optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgCyberlink';
       } else {
         optimisticMessage.item.meta = {
           amount: formattedAmount,
         };
         optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgSend';
+
+        (async () => {
+          await senseApi?.addMsgSendAsLocal({
+            transactionHash: txHash,
+            fromAddress: address,
+            toAddress: id!,
+            amount: formattedAmount,
+            memo: messageCid,
+          });
+        })();
       }
 
       dispatch(addSenseItem(optimisticMessage));

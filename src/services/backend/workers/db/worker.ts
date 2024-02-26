@@ -34,7 +34,8 @@ const createDbWorkerApi = () => {
     }, 0);
   };
 
-  const runCommand = async (command: string) => cozoDb.runCommand(command);
+  const runCommand = async (command: string, immutable?: boolean) =>
+    cozoDb.runCommand(command, immutable);
 
   const executePutCommand = async (
     tableName: string,
