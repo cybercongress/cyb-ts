@@ -32,7 +32,7 @@ function Taverna() {
   useEffect(() => {
     setAdviser(
       <>
-        real feed. <br /> no ad, no spam, no scam.
+        real feed <br /> no ad, no spam, no scam
       </>
     );
   }, [setAdviser]);

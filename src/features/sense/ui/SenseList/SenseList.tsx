@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useAppSelector } from 'src/redux/hooks';
 import styles from './SenseList.module.scss';
 import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
@@ -8,8 +9,6 @@ import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container';
-import { useAppSelector } from 'src/redux/hooks';
-import { useBackend } from 'src/contexts/backend/backend';
 import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
@@ -21,9 +20,6 @@ function SenseList({ select, selected }: Props) {
   const [filter, setFilter] = useState(Filters.All);
 
   const senseList = useAppSelector((store) => store.sense.list);
-  const { senseApi } = useBackend();
-
-  const apiLoading = !senseApi;
 
   let items = senseList.data || [];
 
@@ -51,9 +47,6 @@ function SenseList({ select, selected }: Props) {
     }
   }
 
-  // console.log('senseApi loading', apiLoading);
-  // console.log('senseList.isLoading', senseList.isLoading);
-
   return (
     <div className={styles.wrapper}>
       <Display noPaddingX>
@@ -64,7 +57,7 @@ function SenseList({ select, selected }: Props) {
           />
         </div>
 
-        {apiLoading || senseList.isLoading ? (
+        {senseList.isLoading && !(items.length > 0) ? (
           <div className={styles.center}>
             <Loader2 />
           </div>

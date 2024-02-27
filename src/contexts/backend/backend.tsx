@@ -11,10 +11,10 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
-import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -67,6 +67,10 @@ const BackendContext =
 export function useBackend() {
   return useContext(BackendContext);
 }
+
+window.cyb.db = {
+  clear: () => indexedDB.deleteDatabase(DB_NAME),
+};
 
 // const dbApi = new DbApiWrapper();
 
@@ -129,15 +133,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     }
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
-
-  useEffect(() => {
-    if (senseApi) {
-      (async () => {
-        const list = await senseApi.getList();
-        dispatch(updateSenseList(list));
-      })();
-    }
-  }, [senseApi, dispatch]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
