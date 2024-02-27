@@ -141,11 +141,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const channel = new BroadcastChannelListener((msg) => {
-      // console.log('--------msg.data', msg.data);
-      dispatch(msg.data);
-    });
-    // const channel = new RxBroadcastChannelListener(dispatch);
+    // const channel = new BroadcastChannelListener((msg) => {
+    // console.log('--------msg.data', msg.data);
+    //   dispatch(msg.data);
+    // });
+    const channel = new RxBroadcastChannelListener(dispatch);
 
     (async () => {
       console.log(

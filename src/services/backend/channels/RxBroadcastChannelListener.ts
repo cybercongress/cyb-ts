@@ -3,8 +3,10 @@ import { Observable, Subscription, merge } from 'rxjs';
 import { bufferTime, filter } from 'rxjs/operators';
 
 import {
+  BC_MSG_LOAD_COMMUNITY,
   BroadcastChannelMessage,
   getBroadcastChannemMessageKey,
+  LoadCommunityMessage,
 } from '../types/services';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
@@ -23,6 +25,10 @@ class RxBroadcastChannelListener {
       const channel = new BroadcastChannel(CYB_BROADCAST_CHANNEL);
 
       channel.onmessage = (msg: MessageEvent<BroadcastChannelMessage>) => {
+        if (msg.data.type === BC_MSG_LOAD_COMMUNITY) {
+          dispatch(msg.data);
+          return;
+        }
         subscriber.next(msg);
       };
 

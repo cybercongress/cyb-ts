@@ -1,6 +1,5 @@
 import { SyncCommunityResult } from 'src/services/community/community';
 import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
-import { SenseListItem } from './sense';
 
 export type SyncEntryName =
   | 'pin'
@@ -65,8 +64,10 @@ export type ServiceStatusMessage = {
   value: { name: ServiceName; status: ServiceStatus; message?: string };
 };
 
+export const BC_MSG_LOAD_COMMUNITY = 'load_community';
+
 export type LoadCommunityMessage = {
-  type: 'load_community';
+  type: typeof BC_MSG_LOAD_COMMUNITY;
   value: SyncCommunityResult;
 };
 
