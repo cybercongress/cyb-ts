@@ -37,5 +37,16 @@
         <div id="progress-data"></div>
       </div>
     </div>
+
+    <script>
+      window.cyb = {};
+      const commitSHA = document.querySelector(
+        'meta[name="commit-version"]'
+      ).content;
+
+      window.cyb.buildCommit = commitSHA;
+      window.cyb.openCommit = () =>
+        window.open(`https://github.com/cybercongress/cyb/commit/${commitSHA}`);
+    </script>
   </body>
 </html>
