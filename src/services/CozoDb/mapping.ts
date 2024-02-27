@@ -29,7 +29,7 @@ export const mapPinToEntity = (pin: LsResult): PinDto => ({
   type: PinTypeMap[pin.type],
 });
 
-export const mapTransactionToEntity = (
+export const mapIndexerTransactionToEntity = (
   neuron: string,
   tx: Transaction
 ): TransactionDto => {
@@ -38,7 +38,7 @@ export const mapTransactionToEntity = (
     index,
     transaction: {
       memo,
-      block: { timestamp },
+      block: { timestamp, height },
       success,
     },
     type,
@@ -54,6 +54,7 @@ export const mapTransactionToEntity = (
     value,
     success,
     neuron,
+    blockHeight: height,
   };
 };
 

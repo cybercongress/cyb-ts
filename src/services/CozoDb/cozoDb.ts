@@ -108,13 +108,13 @@ function createCozoDb() {
   };
 
   const migrate = async () => {
-    if (!dbSchema.community) {
-      const result = await runCommand(communityScript);
-      console.log('CozoDb >>> migration: creating community relation....');
-      dbSchema.community = await createSchema('community');
-    }
+    // if (!dbSchema.community) {
+    //   const result = await runCommand(communityScript);
+    //   console.log('CozoDb >>> migration: creating community relation....');
+    //   dbSchema.community = await createSchema('community');
+    // }
 
-    if (!dbSchema.transaction.keys.includes('neuron')) {
+    if (!dbSchema.transaction.values.includes('block_height')) {
       console.log('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);

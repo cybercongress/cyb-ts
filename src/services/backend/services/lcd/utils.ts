@@ -12,7 +12,7 @@ export const mapLcdTransactionsToDto = (
   response.txs.forEach((item) => {
     const {
       timestamp,
-      body: { memo, messages },
+      body: { memo, messages, height },
       tx_response: { txhash, code },
     } = item;
 
@@ -27,6 +27,7 @@ export const mapLcdTransactionsToDto = (
         value: msg,
         memo,
         neuron,
+        blockHeight: height,
         success: code === 0,
       });
     });

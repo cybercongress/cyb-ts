@@ -20,7 +20,7 @@ type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
   : S;
 
 // Generic type transformer to convert DB entity type to DTO type
-type DbEntityToDto<T> = {
+export type DbEntityToDto<T> = {
   [P in keyof T as P extends string ? SnakeToCamelCase<P> : never]: T[P];
 };
 

@@ -6,7 +6,6 @@ import {
   BC_MSG_LOAD_COMMUNITY,
   BroadcastChannelMessage,
   getBroadcastChannemMessageKey,
-  LoadCommunityMessage,
 } from '../types/services';
 import { CYB_BROADCAST_CHANNEL } from './consts';
 

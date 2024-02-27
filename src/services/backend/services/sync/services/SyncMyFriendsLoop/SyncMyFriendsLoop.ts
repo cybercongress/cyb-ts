@@ -7,11 +7,10 @@ import {
   switchMap,
   take,
   filter,
-  Subject,
+  tap,
   BehaviorSubject,
   of,
 } from 'rxjs';
-import { equals } from 'ramda';
 
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
@@ -35,9 +34,7 @@ import { getLastReadInfo } from '../../utils';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
-  private inProgress: NeuronAddress[] = [];
-
-  private followings: NeuronAddress[] = [];
+  protected followings: NeuronAddress[] = [];
 
   constructor(
     name: SyncEntryName,
@@ -60,13 +57,12 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         followingsInitialized$.next(false);
       });
 
-    deps.followings$
-      .pipe(filter((f) => f.length > 0))
-      .subscribe((followings) => {
-        this.followings = followings;
-        followingsInitialized$.next(true);
-        this.restart();
-      });
+    deps.followings$.subscribe((followings) => {
+      this.followings = followings;
+      followingsInitialized$.next(true);
+
+      this.restart();
+    });
 
     super(name, intervalMs, deps, particlesResolver, {
       warmupMs,
@@ -81,12 +77,11 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       this.particlesResolver!.isInitialized$,
       this.extraIsInitialized$!,
     ]).pipe(
-      // auditTime(MY_FRIENDS_SYNC_WARMUP),
       map(
         ([dbInstance, params, syncQueueInitialized, followingsInitialized]) =>
           !!dbInstance &&
-          !!syncQueueInitialized &&
           !!params.myAddress &&
+          !!syncQueueInitialized &&
           followingsInitialized
       )
     );
@@ -128,14 +123,6 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
   ) {
     const syncUpdates = [];
     try {
-      if (this.inProgress.includes(address)) {
-        console.log(`>>> my-friends ${address} sync already in progress`);
-        return;
-      }
-
-      // add to in-progress list
-      this.inProgress.push(address);
-
       this.statusApi.sendStatus(
         'in-progress',
         `starting sync ${address}...`,
@@ -157,7 +144,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         [CID_TWEET, CID_FOLLOW],
         timestampFrom,
         CYBERLINKS_BATCH_LIMIT,
-        this.abortController?.signal
+        signal
       );
 
       // eslint-disable-next-line no-restricted-syntax
@@ -216,7 +203,6 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
     } finally {
       // console.log('-----syncUpdates with redux', syncUpdates);
       this.channelApi.postSenseUpdate(syncUpdates);
-      this.inProgress = this.inProgress.filter((addr) => addr !== address);
     }
   }
 
