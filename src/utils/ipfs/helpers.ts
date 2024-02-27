@@ -1,13 +1,5 @@
 import Unixfs from 'ipfs-unixfs';
-import Unixfs from 'ipfs-unixfs';
-import Unixfs from 'ipfs-unixfs';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { ParticleCid } from 'src/types/base';
-import { ParticleCid } from 'src/types/base';
-import { ParticleCid } from 'src/types/base';
-
 import { ParticleCid } from 'src/types/base';
 
 export const getIpfsHash = (string: string): Promise<ParticleCid> =>
