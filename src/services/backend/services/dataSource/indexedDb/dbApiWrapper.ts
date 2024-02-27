@@ -124,8 +124,11 @@ class DbApiWrapper {
     return dbResultToDtoList(result) as SyncStatusDto[];
   }
 
-  public async putTransactions(transactions: TransactionDbEntity[]) {
-    return this.db!.executePutCommand('transaction', transactions);
+  public async putTransactions(transactions: TransactionDto[]) {
+    return this.db!.executePutCommand(
+      'transaction',
+      transformListToDbEntity(transactions)
+    );
   }
 
   public async putPins(pins: PinDbEntity[] | PinDbEntity) {

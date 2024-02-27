@@ -45,7 +45,7 @@ export const createIndexerClient = (abortSignal?: AbortSignal) =>
 export function createRxJsClient<T>(
   query: DocumentNode,
   variables: object
-): Observable<T[]> {
+): Observable<T> {
   const client = new ApolloClient({
     link: cyberGraphQLWsLink,
     cache: new InMemoryCache(),
@@ -53,8 +53,8 @@ export function createRxJsClient<T>(
   const apolloObservable = client.subscribe({ query, variables });
   return new Observable((subscriber) => {
     const subscription = apolloObservable.subscribe({
-      next(data) {
-        subscriber.next(data as T[]);
+      next(result) {
+        subscriber.next(result.data as T);
       },
       error(err) {
         subscriber.error(err);

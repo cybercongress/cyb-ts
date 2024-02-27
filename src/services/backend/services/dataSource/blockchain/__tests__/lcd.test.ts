@@ -1,4 +1,4 @@
-import { CID_TWEET } from "src/constants/app";
+import { CID_TWEET } from 'src/constants/app';
 import { fetchLinksByNeuronTimestamp } from '../lcd';
 
 describe('fetchLinksByNeuronTimestamp with real LCD', () => {
@@ -6,7 +6,7 @@ describe('fetchLinksByNeuronTimestamp with real LCD', () => {
     const items = await fetchLinksByNeuronTimestamp(
       'https://lcd.bostrom.cybernode.ai',
       'bostrom1uj85l9uar80s342nw5uqjrnvm3zlzsd0392dq3',
-      CID_TWEET
+      CID_TWEET,
       1698150174000
     );
     console.log(items);

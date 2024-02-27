@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IDBResult, DBResultWithColIndex, Column } from './types/types';
 import { DbEntity } from './types/entities';
@@ -55,39 +56,50 @@ export const camelToSnake = (str: string) =>
 export function transformToDto<T extends Record<string, any>>(
   dbEntity: T
 ): DbEntityToDto<T> {
-  const dto: any = {};
-  for (const key in dbEntity) {
-    const camelCaseKey = snakeToCamel(key);
-    dto[camelCaseKey] = dbEntity[key];
-  }
+  const dto: DbEntityToDto<T> = {}; // Specify the type for dto
+  Object.keys(dbEntity).forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(dbEntity, key)) {
+      const camelCaseKey = snakeToCamel(key);
+      dto[camelCaseKey] = dbEntity[key];
+    }
+  });
   return dto as DbEntityToDto<T>;
 }
 
 export function transformToDbEntity<T extends Record<string, any>>(
   dto: T
 ): DtoToDbEntity<T> {
+  // in case of recursive calls
+  if (!dto || typeof dto !== 'object') {
+    return dto;
+  }
   // Replace T with the appropriate DB Entity type if known
   const dbEntity: any = {};
-  for (const key in dto) {
-    const snakeCaseKey = camelToSnake(key);
-    const value =
-      typeof dto[key] === 'object' ? transformToDbEntity(dto[key]) : dto[key];
-    dbEntity[snakeCaseKey] = value;
-  }
-  return dbEntity as Partial<T>; // Replace T with the appropriate DB Entity type if known
+
+  Object.keys(dto).forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(dto, key)) {
+      const snakeCaseKey = camelToSnake(key);
+      let value = dto[key];
+      if (Array.isArray(dto[key])) {
+        value = dto[key].map((item) => transformToDbEntity(item));
+      } else if (typeof dto[key] === 'object') {
+        value = transformToDbEntity(dto[key]);
+      }
+      dbEntity[snakeCaseKey] = value;
+    }
+  });
+  return dbEntity as DtoToDbEntity<T>; // Replace T with the appropriate DB Entity type if known
 }
 
 export function transformListToDbEntity<T extends Record<string, any>>(
   array: T[]
-): DtoToDbEntity<T>[] {
-  return array.map((dto) => transformToDbEntity(dto)) as Partial<
-    DtoToDbEntity<T>
-  >[];
+): unknown[] {
+  return array.map((dto) => transformToDbEntity(dto));
 }
 
 export function transformListToDto<T extends Record<string, any>>(
   array: T[]
-): T[] {
+): Partial<T>[] {
   return array.map((dto) => transformToDto(dto)) as Partial<T>[];
 }
 

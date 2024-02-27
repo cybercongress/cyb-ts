@@ -36,6 +36,7 @@ export type TransactionDbEntity = {
   index: number;
   type: string;
   timestamp: number;
+  blockHeight: number;
   value: SenseTransaction['value'] & LocalFlag;
   success: boolean;
   memo: string;

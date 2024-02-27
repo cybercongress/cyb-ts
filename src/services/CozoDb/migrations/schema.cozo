@@ -31,6 +31,7 @@
         index: Int,
         neuron: String,
         type: String =>
+        block_height: Int,
         success: Bool,
         timestamp: Int,
         value: Json,
@@ -64,5 +65,16 @@
         id: String =>
         status: Int default 0,
         priority: Float default 0,
+    }
+}
+
+{
+    :create community {
+        owner_id: String,
+        neuron: String =>
+        particle: String,
+        name: String default '',
+        following: Bool,
+        follower: Bool
     }
 }

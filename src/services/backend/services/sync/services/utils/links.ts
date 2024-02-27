@@ -10,8 +10,10 @@ import { MAX_LINKS_RESOLVE_BATCH } from '../consts';
 import {
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkTransaction,
+  CyberLinkValue,
   Transaction,
 } from '../../../indexer/types';
+import { TransactionDto } from 'src/services/CozoDb/types/dto';
 
 const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [
@@ -52,45 +54,33 @@ export const fetchCyberlinksAndResolveParticles = async (
   return links;
 };
 
-export function extractCybelinksFromTransaction(batch: Transaction[]) {
+export function extractCybelinksFromTransaction(batch: TransactionDto[]) {
   const cyberlinks = batch.filter(
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
-  ) as CyberLinkTransaction[];
+  );
   const particlesFound = new Set<string>();
   const links: CyberlinkTxHash[] = [];
   // Get links: only from TWEETS
   const tweets: Record<ParticleCid, CyberlinkTxHash> = cyberlinks.reduce<
     Record<ParticleCid, CyberlinkTxHash>
-  >(
-    (
-      acc,
-      {
-        value,
-        transaction_hash,
-        transaction: {
-          block: { timestamp },
-        },
-      }: CyberLinkTransaction
-    ) => {
-      value.links.forEach((link) => {
-        particlesFound.add(link.to);
-        particlesFound.add(link.from);
-        const txLink = {
-          ...link,
-          timestamp: dateToNumber(timestamp),
-          neuron: value.neuron,
-          transaction_hash,
-        };
-        links.push(txLink);
+  >((acc, { value, hash, timestamp }: TransactionDto) => {
+    (value as CyberLinkValue).links.forEach((link) => {
+      particlesFound.add(link.to);
+      particlesFound.add(link.from);
+      const txLink = {
+        ...link,
+        timestamp,
+        neuron: (value as CyberLinkValue).neuron,
+        transaction_hash: hash,
+      };
+      links.push(txLink);
 
-        if (link.from === CID_TWEET) {
-          acc[txLink.to] = txLink;
-        }
-      });
-      return acc;
-    },
-    {}
-  );
+      if (link.from === CID_TWEET) {
+        acc[txLink.to] = txLink;
+      }
+    });
+    return acc;
+  }, {});
 
   return {
     tweets,

@@ -58,6 +58,7 @@ const prepareSenseChatEntities = (
     value,
     memo,
     neuron: fromAddress,
+    blockHeight: -1,
     localFlag: true, // mark as local
   } as TransactionDto;
 
