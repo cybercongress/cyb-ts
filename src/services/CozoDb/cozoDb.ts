@@ -22,6 +22,10 @@ const DB_VERSION = '1.1';
 
 type OnWrite = (writesCount: number) => void;
 
+window.cyb.db = {
+  clear: () => indexedDB.deleteDatabase(DB_NAME),
+};
+
 function createCozoDb() {
   let db: CozoDb | undefined;
 
