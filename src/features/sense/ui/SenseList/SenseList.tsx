@@ -57,7 +57,7 @@ function SenseList({ select, selected }: Props) {
           />
         </div>
 
-        {senseList.isLoading && !items ? (
+        {senseList.isLoading && !(items.length > 0) ? (
           <div className={styles.center}>
             <Loader2 />
           </div>
