@@ -16,15 +16,11 @@ import initializeScript from './migrations/schema.cozo';
 import communityScript from './migrations/community.cozo';
 import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
-const DB_NAME = 'cyb-cozo-idb';
+export const DB_NAME = 'cyb-cozo-idb';
 const DB_STORE_NAME = 'cozodb';
 const DB_VERSION = '1.1';
 
 type OnWrite = (writesCount: number) => void;
-
-window.cyb.db = {
-  clear: () => indexedDB.deleteDatabase(DB_NAME),
-};
 
 function createCozoDb() {
   let db: CozoDb | undefined;

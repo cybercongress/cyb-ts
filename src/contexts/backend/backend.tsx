@@ -15,6 +15,7 @@ import { updateSenseList } from 'src/features/sense/redux/sense.redux';
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -67,6 +68,10 @@ const BackendContext =
 export function useBackend() {
   return useContext(BackendContext);
 }
+
+window.cyb.db = {
+  clear: () => indexedDB.deleteDatabase(DB_NAME),
+};
 
 // const dbApi = new DbApiWrapper();
 
