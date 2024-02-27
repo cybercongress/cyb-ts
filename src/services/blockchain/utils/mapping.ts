@@ -33,14 +33,14 @@ export const extractTxData = (data: string) => {
 
 // eslint-disable-next-line import/no-unused-modules
 export const mapWsDataToTransactions = (neuron: NeuronAddress, result: any) => {
-  console.log('----mapToTransactions', result);
   const { data, events } = result;
 
   const hash = events['tx.hash'][0];
   const transactionType = events['message.action'][0].slice(1);
   const timestamp = new Date().getTime();
   const blockHeight = events['tx.height'][0];
-  const { memo = '', messages } = extractTxData(data.tx);
+
+  const { memo = '', messages } = extractTxData(data.value.TxResult.tx);
 
   const transactions: TransactionDto[] = [];
   messages!.forEach((message, index) => {
@@ -56,6 +56,7 @@ export const mapWsDataToTransactions = (neuron: NeuronAddress, result: any) => {
       blockHeight,
     });
   });
+  console.log('----mapToTransactions2', transactions);
 
   return transactions;
 };

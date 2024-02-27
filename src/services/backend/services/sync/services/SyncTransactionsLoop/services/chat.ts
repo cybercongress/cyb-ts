@@ -4,12 +4,15 @@ import { NeuronAddress } from 'src/types/base';
 import { SenseListItem } from 'src/services/backend/types/sense';
 
 import { extractSenseChats } from '../../utils/sense';
+import { throwIfAborted } from 'src/utils/async/promise';
 
 // eslint-disable-next-line import/prefer-default-export
 export const syncMyChats = async (
   db: DbApiWrapper,
   myAddress: NeuronAddress,
-  timestampFrom?: number
+  timestampFrom: number,
+  signal: AbortSignal,
+  shouldUpdateTimestamp = true
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
@@ -37,7 +40,7 @@ export const syncMyChats = async (
     const syncItemHeader = {
       entryType: EntryType.chat,
       ownerId: myAddress,
-      timestampUpdate: transactionTimestamp,
+      timestampUpdate: shouldUpdateTimestamp ? transactionTimestamp : 0,
       meta: {
         transaction_hash: hash,
         index,
@@ -58,7 +61,7 @@ export const syncMyChats = async (
       };
 
       // eslint-disable-next-line no-await-in-loop
-      await db.putSyncStatus(newItem);
+      await throwIfAborted(db.putSyncStatus, signal)(newItem);
 
       results.push({ ...newItem, meta: lastTransaction });
     } else {
@@ -74,7 +77,8 @@ export const syncMyChats = async (
         timestampRead!,
         chat.lastSendTimestamp
       );
-      const { timestampUpdateContent = 0 } = meta || {};
+      const { timestampUpdateContent = 0, timestampUpdateChat = 0 } =
+        meta || {};
 
       const unreadCount =
         prevUnreadCount +
@@ -90,13 +94,15 @@ export const syncMyChats = async (
 
           meta: {
             ...syncItemHeader.meta,
-            timestampUpdateChat: transactionTimestamp,
+            timestampUpdateChat: shouldUpdateTimestamp
+              ? transactionTimestamp
+              : timestampUpdateChat,
             timestampUpdateContent,
           },
         };
 
         // eslint-disable-next-line no-await-in-loop
-        await db.updateSyncStatus(syncStatusChanges);
+        await throwIfAborted(db.updateSyncStatus, signal)(syncStatusChanges);
 
         results.push({
           ...syncItem,

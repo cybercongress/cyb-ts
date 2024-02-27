@@ -105,10 +105,12 @@ class SyncTransactionsLoop extends BaseSyncClient {
       getIncomingTransfersQuery(myAddress!)
     ).pipe(
       filter((data) => !isEmpty(data)),
-      map((data) => ({
-        source: 'node',
-        transactions: [mapWsDataToTransactions(myAddress!, data)],
-      }))
+      map((data) => {
+        return {
+          source: 'node',
+          transactions: mapWsDataToTransactions(myAddress!, data),
+        };
+      })
     );
 
     return merge(
@@ -124,7 +126,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
 
   public async initSync() {
     const { myAddress } = this.params;
-
+    const { signal } = this.abortController;
     const syncItem = await this.db!.getSyncStatus(
       myAddress!,
       myAddress!,
@@ -141,7 +143,8 @@ class SyncTransactionsLoop extends BaseSyncClient {
     const syncStatusItems = await syncMyChats(
       this.db!,
       myAddress!,
-      syncItem.timestampUpdate
+      syncItem.timestampUpdate,
+      signal
     );
 
     this.channelApi.postSenseUpdate(syncStatusItems);
@@ -159,11 +162,11 @@ class SyncTransactionsLoop extends BaseSyncClient {
     //   throw result.error;
     // }
     const { myAddress } = params;
-    // if (result.data.messages_by_address.length > 0) {
-    //   console.log(
-    //     `>>> ${this.name} ${myAddress} recived ${result.data.messages_by_address.length} updates `
-    //   );
-
+    const { signal } = this.abortController;
+    if (transactions.length === 0) {
+      console.log(`>>> ${this.name} ${myAddress} recived 0 updates `);
+      return;
+    }
     const syncItem = await this.db!.getSyncStatus(
       myAddress!,
       myAddress!,
@@ -182,7 +185,9 @@ class SyncTransactionsLoop extends BaseSyncClient {
     const syncStatusItems = await syncMyChats(
       this.db!,
       myAddress!,
-      syncItem.timestampUpdate
+      syncItem.timestampUpdate,
+      signal,
+      source !== 'node'
     );
 
     this.channelApi.postSenseUpdate(syncStatusItems);
@@ -197,7 +202,11 @@ class SyncTransactionsLoop extends BaseSyncClient {
     source: DataStreamResult['source']
   ) {
     const { signal } = this.abortController;
-    const { timestampRead, unreadCount } = syncItem;
+    const { timestampRead, unreadCount, timestampUpdate } = syncItem;
+
+    // node transaction is limited by incoming messages,
+    // to prevent missing of other msg types let's avoid to change ts
+    const shouldUpdateTimestamp = source !== 'node';
 
     console.log(
       '--------syncTransactions batch ',
@@ -231,7 +240,9 @@ class SyncTransactionsLoop extends BaseSyncClient {
       ownerId: myAddress,
       entryType: EntryType.transactions,
       id: address,
-      timestampUpdate: lastTimestampFrom,
+      timestampUpdate: shouldUpdateTimestamp
+        ? lastTimestampFrom
+        : timestampUpdate,
       unreadCount: unreadCount + transactions.length,
       timestampRead,
       disabled: false,
