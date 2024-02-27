@@ -9,6 +9,7 @@ import { SenseItem } from 'src/features/sense/redux/sense.redux';
 import { formatSenseItemDataToUI } from '../../../utils/format';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { useEffect, useState } from 'react';
+import { PATTERN_IPFS_HASH } from 'src/utils/config';
 
 type Props = {
   senseItem: SenseItem;
@@ -29,12 +30,12 @@ function MessageContainer({ senseItem }: Props) {
     isAmountSendToMyAddress,
   } = formatSenseItemDataToUI(senseItem, address);
 
-  const { data, loading } = useParticleDetails(cid!, {
+  const particleDetails = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
   });
 
   useEffect(() => {
-    if (!text) {
+    if (!text || text.match(PATTERN_IPFS_HASH)) {
       return;
     }
 
@@ -51,6 +52,8 @@ function MessageContainer({ senseItem }: Props) {
   let content;
 
   if (cid) {
+    const { data, loading } = particleDetails;
+
     if (loading) {
       content = (
         <span>
