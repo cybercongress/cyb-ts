@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IDBResult, DBResultWithColIndex, Column } from './types/types';
 import { DbEntity } from './types/entities';
-import { DbEntityToDto, DtoToDbEntity } from './types/dto';
+import { DbEntityToDto, DtoToDbEntity } from 'src/types/dto';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
   const index = result.headers.reduce((acc, column, index) => {

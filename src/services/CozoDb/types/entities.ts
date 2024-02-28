@@ -1,12 +1,10 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { Transaction } from 'src/services/backend/services/indexer/types';
-import {
-  SenseItemMeta,
-  SenseTransaction,
-} from 'src/services/backend/types/sense';
+import { SenseListItemtMeta } from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
+import { DtoToDbEntity } from 'src/types/dto';
 
 type PinEntryType = Exclude<PinType, 'all'>;
 // example of db optimization for classifiers
@@ -51,7 +49,7 @@ export type SyncStatusDbEntity = {
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
-  meta: SenseItemMeta;
+  meta: DtoToDbEntity<SenseListItemtMeta>;
 };
 
 export type ParticleDbEntity = {
