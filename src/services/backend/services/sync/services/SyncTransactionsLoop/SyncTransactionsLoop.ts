@@ -148,7 +148,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     );
 
     this.channelApi.postSenseUpdate(syncStatusItems);
-    this.statusApi.sendStatus('idle');
+    this.statusApi.sendStatus('active');
 
     return lastTransactionTimestamp;
   }
@@ -157,10 +157,6 @@ class SyncTransactionsLoop extends BaseSyncClient {
     { source, transactions }: DataStreamResult,
     params: SyncServiceParams
   ) {
-    // if (!result.data) {
-    //   console.error(`${this.name} WS error ${result.error?.message}`);
-    //   throw result.error;
-    // }
     const { myAddress } = params;
     const { signal } = this.abortController;
     if (transactions.length === 0) {

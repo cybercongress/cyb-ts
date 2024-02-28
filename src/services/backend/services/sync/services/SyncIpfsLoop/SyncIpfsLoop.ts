@@ -64,7 +64,7 @@ class SyncIpfsLoop {
 
     this._loop$ = loop$;
     this._loop$.subscribe({
-      next: (result) => this.statusApi.sendStatus('idle'),
+      next: (result) => this.statusApi.sendStatus('active'),
       error: (err) => this.statusApi.sendStatus('error', err.toString()),
     });
 

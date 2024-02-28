@@ -16,7 +16,7 @@ export type ProgressTracking = {
 
 export type SyncProgress = Partial<{
   status:
-    | 'idle'
+    | 'active'
     | 'initialized'
     | 'listen'
     | 'estimating'

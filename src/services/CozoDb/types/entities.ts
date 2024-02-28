@@ -1,7 +1,10 @@
 import { PinType } from 'ipfs-core-types/src/pin';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import { SenseMeta } from 'src/services/backend/types/sense';
-import { SenseTransaction } from 'src/services/backend/types/sense';
+import { Transaction } from 'src/services/backend/services/indexer/types';
+import {
+  SenseItemMeta,
+  SenseTransaction,
+} from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
@@ -22,9 +25,6 @@ export enum EntryType {
 
 // Transaction if formed by frontend
 // Should be replaced after sync
-export type LocalFlag = {
-  localFlag?: true;
-};
 
 export type PinDbEntity = {
   cid: string;
@@ -36,8 +36,8 @@ export type TransactionDbEntity = {
   index: number;
   type: string;
   timestamp: number;
-  blockHeight: number;
-  value: SenseTransaction['value'] & LocalFlag;
+  block_height: number;
+  value: Transaction['value'];
   success: boolean;
   memo: string;
   neuron: NeuronAddress;
@@ -51,7 +51,7 @@ export type SyncStatusDbEntity = {
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
-  meta: SenseMeta;
+  meta: SenseItemMeta;
 };
 
 export type ParticleDbEntity = {
@@ -69,9 +69,6 @@ export type LinkDbEntity = {
   to: ParticleCid;
   neuron: NeuronAddress;
   timestamp: number;
-  // text: string;
-  // mime: string;
-  // direction: 'from' | 'to';
   transaction_hash: string;
 };
 

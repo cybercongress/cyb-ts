@@ -32,6 +32,7 @@ abstract class BaseSyncClient extends BaseSync {
           this.createInitObservable().pipe(
             switchMap((timestampFrom: number) =>
               this.createClientObservable(timestampFrom).pipe(
+                tap(() => this.statusApi.sendStatus('listen')),
                 switchMap((data) => from(this.onUpdate(data, this.params)))
               )
             )

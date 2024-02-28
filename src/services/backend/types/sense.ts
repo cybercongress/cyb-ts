@@ -1,11 +1,12 @@
 /* eslint-disable import/no-unused-modules */
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { EntryType, LocalFlag } from 'src/services/CozoDb/types/entities';
+import { EntryType } from 'src/services/CozoDb/types/entities';
 
 import {
   MsgSendTransaction,
   CyberLinkTransaction,
   MsgMultiSendTransaction,
+  Transaction,
 } from '../services/indexer/types';
 
 export type SenseTransaction =
@@ -18,33 +19,29 @@ export type SenseUnread = {
   unreadCount: number;
 };
 
-export const enum SenseMetaType {
-  link = 2,
-  transaction = 1,
-}
-
 export type SenseLinkMeta = {
   from: ParticleCid;
   to: ParticleCid;
   neuron: NeuronAddress;
   timestamp: number;
+  transactionHash: TransactionHash;
 };
 
 export type SenseTransactionMeta = {
-  transaction_hash: TransactionHash;
+  transactionHash: TransactionHash;
   index: number;
 };
 
-export type SenseTransactionResultMeta = {
+export type SenseListItemTransactionMeta = {
   timestamp: number;
   success: boolean;
-  value: Object;
+  value: Transaction['value'];
   memo?: string;
-} & SenseTransactionMeta;
+  hash: TransactionHash;
+  index: number;
+};
 
-export type SenseLinkResultMeta = {
-  timestamp: number;
-} & SenseLinkMeta;
+type SenseListItemLinkMeta = SenseLinkMeta;
 
 // Extension for Chat item to separate chat sync from tweet sync
 export type SenseChatExtension = {
@@ -52,11 +49,13 @@ export type SenseChatExtension = {
   timestampUpdateContent?: number;
 };
 
-export type SenseMeta = (SenseLinkMeta | SenseTransactionMeta) &
-  SenseChatExtension &
-  LocalFlag;
+export type SenseItemLinkMeta = SenseLinkMeta & SenseChatExtension;
+export type SenseItemTransactionMeta = SenseTransactionMeta &
+  SenseChatExtension;
 
-export type SenseResultMeta = SenseLinkResultMeta | SenseTransactionResultMeta;
+export type SenseListItemtMeta =
+  | SenseListItemLinkMeta
+  | SenseListItemTransactionMeta;
 
 export type SenseListChatItem = {
   entryType: EntryType;
@@ -64,7 +63,7 @@ export type SenseListChatItem = {
   unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
-  meta: SenseResultMeta & SenseChatExtension;
+  meta: SenseItemLinkMeta | SenseItemTransactionMeta;
 };
 
 export type SenseListParticleItem = {
@@ -73,7 +72,7 @@ export type SenseListParticleItem = {
   unreadCount: number;
   timestampUpdate: number;
   timestampRead: number;
-  meta: SenseLinkResultMeta;
+  meta: SenseItemLinkMeta;
 };
 
 export type SenseListItem = SenseListParticleItem | SenseListChatItem;

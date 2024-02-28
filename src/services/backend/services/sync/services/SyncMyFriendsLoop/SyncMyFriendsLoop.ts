@@ -32,6 +32,12 @@ import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import {
+  SenseLinkMeta,
+  SenseItemLinkMeta,
+  SenseListItemTransactionMeta,
+} from 'src/services/backend/types/sense';
+import { transformToDto } from 'src/services/CozoDb/utils';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   protected followings: NeuronAddress[] = [];
@@ -163,7 +169,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         // const unreadItemsCount = unreadCount + links.length;
 
         if (links.length > 0) {
-          const lastLink = links.at(-1);
+          const lastLink = transformToDto(links.at(-1)!);
 
           await throwIfAborted(this.db!.putCyberlinks, signal)(links);
 
@@ -185,7 +191,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
               ...lastLink!,
               timestampUpdateContent: lastLink!.timestamp,
               timestampUpdateChat,
-            },
+            } as SenseItemLinkMeta,
           };
           // Update transaction
           await throwIfAborted(this.db!.putSyncStatus, signal)(newSyncItem);

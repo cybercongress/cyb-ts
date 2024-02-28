@@ -6,6 +6,8 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 import { findLastIndex } from 'lodash';
+import { SenseItemLinkMeta } from '../../types/sense';
+import { transformToDto } from 'src/services/CozoDb/utils';
 
 export function extractLinkData(
   cid: ParticleCid,
@@ -53,7 +55,6 @@ export function changeSyncStatus(
   links: CyberlinksByParticleResponse['cyberlinks'],
   ownerId: NeuronAddress
 ) {
-  const lastLink = links[0];
   const timestampUpdate = dateToNumber(links[0].timestamp);
   const { timestampRead, unreadCount } = getLastReadInfo(
     links,
@@ -62,13 +63,18 @@ export function changeSyncStatus(
     statusEntity.unreadCount
   );
 
+  const lastLink = transformToDto(links[0]);
+
   return {
     ...statusEntity,
     ownerId,
     entryType: EntryType.particle,
     disabled: false,
     unreadCount,
-    meta: { ...lastLink, timestamp: timestampUpdate },
+    meta: {
+      ...lastLink,
+      timestamp: timestampUpdate,
+    } as SenseItemLinkMeta,
     timestampRead,
     timestampUpdate,
   } as SyncStatusDto;

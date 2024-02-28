@@ -3,7 +3,7 @@ import {
   SyncEntryName,
   SyncProgress,
 } from '../types/services';
-import { BroadcastChannelSender } from './BroadcastChannelSender';
+import BroadcastChannelSender from './BroadcastChannelSender';
 
 export const broadcastStatus = (
   name: SyncEntryName,
@@ -19,7 +19,7 @@ export const broadcastStatus = (
         status,
         message,
         progress,
-        done: ['idle', 'error', 'listen'].some((s) => s === status),
+        done: ['active', 'error', 'listen'].some((s) => s === status),
       });
     },
   };

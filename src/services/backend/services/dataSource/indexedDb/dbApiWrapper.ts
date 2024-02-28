@@ -200,16 +200,6 @@ class DbApiWrapper {
     return senseList;
   }
 
-  // public async getSenseSummary(myAddress: NeuronAddress = '') {
-  //   const command = `
-  //   r[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'
-  //   ?[entry_type, unread_count] :=r[entry_type, unread_count]
-  //   `;
-
-  //   const result = await this.db!.runCommand(command);
-  //   return dbResultToDtoList(result) as SenseUnread[];
-  // }
-
   public async senseMarkAsRead(
     ownerId: NeuronAddress,
     id: NeuronAddress | ParticleCid

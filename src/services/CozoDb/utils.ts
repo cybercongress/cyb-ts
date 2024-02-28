@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-unused-modules */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IDBResult, DBResultWithColIndex, Column } from './types/types';
 import { DbEntity } from './types/entities';
-import { DtoToDbEntity } from './types/dto';
+import { DbEntityToDto, DtoToDbEntity } from './types/dto';
 
 export function withColIndex(result: IDBResult): DBResultWithColIndex {
   const index = result.headers.reduce((acc, column, index) => {
@@ -18,7 +19,7 @@ export const toListOfObjects = <T extends Record<string, any>>({
   headers,
 }: IDBResult): T[] => {
   return rows.map((row) => {
-    const obj: Partial<T> = {};
+    const obj: Record<string, any> = {};
     row.forEach((value, index) => {
       const key = headers[index];
       obj[key] = value;
@@ -56,7 +57,7 @@ export const camelToSnake = (str: string) =>
 export function transformToDto<T extends Record<string, any>>(
   dbEntity: T
 ): DbEntityToDto<T> {
-  const dto: DbEntityToDto<T> = {}; // Specify the type for dto
+  const dto: Record<string, any> = {}; // Specify the type for dto
   Object.keys(dbEntity).forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(dbEntity, key)) {
       const camelCaseKey = snakeToCamel(key);
@@ -93,14 +94,14 @@ export function transformToDbEntity<T extends Record<string, any>>(
 
 export function transformListToDbEntity<T extends Record<string, any>>(
   array: T[]
-): unknown[] {
+): DtoToDbEntity<T>[] {
   return array.map((dto) => transformToDbEntity(dto));
 }
 
 export function transformListToDto<T extends Record<string, any>>(
   array: T[]
-): Partial<T>[] {
-  return array.map((dto) => transformToDto(dto)) as Partial<T>[];
+): DbEntityToDto<T>[] {
+  return array.map((dto) => transformToDto(dto));
 }
 
 export function removeUndefinedFields(entity: Record<string, any>) {
@@ -112,30 +113,35 @@ export function removeUndefinedFields(entity: Record<string, any>) {
   return entity;
 }
 
-export const dbResultToDtoList = (dbResult: IDBResult) => {
+export function dbResultToDtoList<T>(dbResult: IDBResult): T[] {
   const { headers, rows } = dbResult;
 
-  const camelCaseHeadersMap = headers.reduce((acc, header) => {
-    acc[header] = snakeToCamel(header);
-    return acc;
-  }, {});
+  const camelCaseHeadersMap = headers.reduce(
+    (acc: Record<string, any>, header) => {
+      acc[header] = snakeToCamel(header);
+      return acc;
+    },
+    {}
+  );
 
   return rows.map((row) => {
-    const obj = {};
+    const obj: Record<string, any> = {};
     headers.forEach((header, index) => {
       obj[camelCaseHeadersMap[header]] = row[index];
     });
-    return obj;
+    return obj as T;
   });
-};
+}
 
-export function jsonifyFields(obj: Object, fields: string[]) {
+export function jsonifyFields(obj: Record<string, any>, fields: string[]) {
   Object.keys(obj).forEach((k) => {
     if (fields.includes(k)) {
       if (obj[k]) {
         try {
           obj[k] = JSON.parse(obj[k]);
-        } catch {}
+        } catch {
+          // ???
+        }
       }
     }
   });
@@ -151,7 +157,7 @@ export async function clearIndexedDBStore(
     const request = indexedDB.open(dbName);
 
     request.onerror = (event) => {
-      reject(`Database error: ${request.error?.message}`);
+      reject(new Error(`Database error: ${request.error?.message}`));
     };
 
     request.onsuccess = (event) => {
@@ -170,7 +176,9 @@ export async function clearIndexedDBStore(
       };
 
       clearRequest.onerror = () => {
-        reject(`Error clearing the store: ${clearRequest.error?.message}`);
+        reject(
+          new Error(`Error clearing the store: ${clearRequest.error?.message}`)
+        );
       };
 
       // Close the database when the transaction is complete
