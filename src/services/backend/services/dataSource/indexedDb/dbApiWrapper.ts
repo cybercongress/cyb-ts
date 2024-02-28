@@ -7,13 +7,13 @@ import {
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
+import { dbResultToDtoList } from 'src/services/CozoDb/utils';
+import { jsonifyFields } from 'src/utils/dto';
 import {
-  dbResultToDtoList,
-  jsonifyFields,
   removeUndefinedFields,
-  transformListToDbEntity,
-  transformToDbEntity,
-} from 'src/services/CozoDb/utils';
+  dtoListToEntity,
+  dtoToEntity,
+} from 'src/utils/dto';
 
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import {
@@ -50,7 +50,7 @@ class DbApiWrapper {
   ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
-      ['timestamp_update', 'unread_count', 'timestamp_read'],
+      ['timestamp_update', 'unread_count', 'timestamp_read', 'meta'],
       [
         `id = '${id}'`,
         `owner_id = '${ownerId}'`,
@@ -61,19 +61,18 @@ class DbApiWrapper {
       ['id', 'owner_id', 'entry_type']
     );
 
-    const row = result.rows.length
-      ? result.rows[0]
-      : [TIMESTAMP_INTITAL, 0, TIMESTAMP_INTITAL];
-
-    return {
-      timestampUpdate: row[0],
-      unreadCount: row[1],
-      timestampRead: row[2],
-    } as SyncStatusDto;
+    return result.rows.length
+      ? dbResultToDtoList<SyncStatusDto>(result)[0]
+      : ({
+          timestampUpdate: TIMESTAMP_INTITAL,
+          timestampRead: TIMESTAMP_INTITAL,
+          unreadCount: 0,
+          meta: {},
+        } as SyncStatusDto);
   }
 
   public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(entity) ? entity : [entity]
     );
 
@@ -89,7 +88,7 @@ class DbApiWrapper {
     }
   ) {
     return this.db!.executeUpdateCommand('sync_status', [
-      transformToDbEntity(removeUndefinedFields(entity)),
+      dtoToEntity(removeUndefinedFields(entity)),
     ]);
   }
 
@@ -127,7 +126,7 @@ class DbApiWrapper {
   public async putTransactions(transactions: TransactionDto[]) {
     return this.db!.executePutCommand(
       'transaction',
-      transformListToDbEntity(transactions)
+      dtoListToEntity(transactions)
     );
   }
 
@@ -152,7 +151,7 @@ class DbApiWrapper {
   }
 
   public async putCommunity(community: CommunityDto[] | CommunityDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(community) ? community : [community]
     );
     await this.db!.executePutCommand('community', entitites);
@@ -166,7 +165,7 @@ class DbApiWrapper {
   }
 
   public async putParticles(particles: ParticleDto[] | ParticleDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(particles) ? particles : [particles]
     );
     await this.db!.executePutCommand('particle', entitites);
@@ -199,16 +198,6 @@ class DbApiWrapper {
     console.log('!=!=! redundant calls - FIX', myAddress);
     return senseList;
   }
-
-  // public async getSenseSummary(myAddress: NeuronAddress = '') {
-  //   const command = `
-  //   r[entry_type, sum(unread_count)] := *sync_status{id, entry_type, unread_count}, id!='${myAddress}'
-  //   ?[entry_type, unread_count] :=r[entry_type, unread_count]
-  //   `;
-
-  //   const result = await this.db!.runCommand(command);
-  //   return dbResultToDtoList(result) as SenseUnread[];
-  // }
 
   public async senseMarkAsRead(
     ownerId: NeuronAddress,

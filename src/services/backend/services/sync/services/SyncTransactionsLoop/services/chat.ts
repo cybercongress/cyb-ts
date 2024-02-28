@@ -1,10 +1,12 @@
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import { NeuronAddress } from 'src/types/base';
-import { SenseListItem } from 'src/services/backend/types/sense';
-
-import { extractSenseChats } from '../../utils/sense';
+import {
+  SenseListItem,
+  SenseTransactionMeta,
+} from 'src/services/backend/types/sense';
 import { throwIfAborted } from 'src/utils/async/promise';
+import { extractSenseChats } from '../../utils/sense';
 
 // eslint-disable-next-line import/prefer-default-export
 export const syncMyChats = async (
@@ -42,9 +44,9 @@ export const syncMyChats = async (
       ownerId: myAddress,
       timestampUpdate: shouldUpdateTimestamp ? transactionTimestamp : 0,
       meta: {
-        transaction_hash: hash,
+        transactionHash: hash,
         index,
-      },
+      } as SenseTransactionMeta,
     };
 
     if (!syncItem) {

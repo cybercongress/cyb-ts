@@ -148,7 +148,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     );
 
     this.channelApi.postSenseUpdate(syncStatusItems);
-    this.statusApi.sendStatus('idle');
+    this.statusApi.sendStatus('active');
 
     return lastTransactionTimestamp;
   }
@@ -157,10 +157,6 @@ class SyncTransactionsLoop extends BaseSyncClient {
     { source, transactions }: DataStreamResult,
     params: SyncServiceParams
   ) {
-    // if (!result.data) {
-    //   console.error(`${this.name} WS error ${result.error?.message}`);
-    //   throw result.error;
-    // }
     const { myAddress } = params;
     const { signal } = this.abortController;
     if (transactions.length === 0) {
@@ -198,11 +194,10 @@ class SyncTransactionsLoop extends BaseSyncClient {
     myAddress: NeuronAddress,
     address: NeuronAddress,
     transactions: TransactionDto[],
-    syncItem: SyncStatusDto,
+    { timestampRead, unreadCount, timestampUpdate }: SyncStatusDto,
     source: DataStreamResult['source']
   ) {
     const { signal } = this.abortController;
-    const { timestampRead, unreadCount, timestampUpdate } = syncItem;
 
     // node transaction is limited by incoming messages,
     // to prevent missing of other msg types let's avoid to change ts
@@ -242,12 +237,12 @@ class SyncTransactionsLoop extends BaseSyncClient {
       id: address,
       timestampUpdate: shouldUpdateTimestamp
         ? lastTimestampFrom
-        : timestampUpdate,
-      unreadCount: unreadCount + transactions.length,
-      timestampRead,
+        : timestampUpdate!,
+      unreadCount: unreadCount! + transactions.length,
+      timestampRead: timestampRead || 0,
       disabled: false,
       meta: {
-        transaction_hash: hash,
+        transactionHash: hash,
         index,
       },
     };

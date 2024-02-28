@@ -1,4 +1,4 @@
-import { transformToDbEntity, transformToDto } from '../utils';
+import { dtoToEntity, entityToDto } from 'src/utils/dto';
 
 describe('DTO<->DB Entity', () => {
   it('transforms DTO to DB entity and vice versa', () => {
@@ -60,9 +60,9 @@ describe('DTO<->DB Entity', () => {
       block_height: 10863958,
     };
 
-    const entityResult = transformToDbEntity(dtoEntity);
+    const entityResult = dtoToEntity(dtoEntity);
     expect(entityResult).toEqual(dbEntity);
-    const dtoResult = transformToDto(dbEntity);
+    const dtoResult = entityToDto(dbEntity);
     expect(dtoResult).toEqual(dtoEntity);
   });
 });

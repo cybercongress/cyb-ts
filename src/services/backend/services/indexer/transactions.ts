@@ -17,7 +17,7 @@ import {
   MessagesByAddressVariables,
   gqlMessagesByAddress,
 } from './transactions';
-import { camelToSnake } from 'src/services/CozoDb/utils';
+import { camelToSnake } from 'src/utils/dto';
 import { fetchIterable } from '../dataSource/blockchain/utils/fetch';
 
 type OrderDirection = 'desc' | 'asc';

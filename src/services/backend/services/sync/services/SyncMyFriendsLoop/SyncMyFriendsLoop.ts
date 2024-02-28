@@ -32,6 +32,12 @@ import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import {
+  SenseLinkMeta,
+  SenseItemLinkMeta,
+  SenseListItemTransactionMeta,
+} from 'src/services/backend/types/sense';
+import { entityToDto } from 'src/utils/dto';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   protected followings: NeuronAddress[] = [];
@@ -121,7 +127,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
     address: NeuronAddress,
     signal: AbortSignal
   ) {
-    const syncUpdates = [];
+    let syncUpdates = [];
     try {
       this.statusApi.sendStatus(
         'in-progress',
@@ -163,7 +169,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         // const unreadItemsCount = unreadCount + links.length;
 
         if (links.length > 0) {
-          const lastLink = links.at(-1);
+          const lastLink = entityToDto(links.at(-1)!);
 
           await throwIfAborted(this.db!.putCyberlinks, signal)(links);
 
@@ -185,7 +191,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
               ...lastLink!,
               timestampUpdateContent: lastLink!.timestamp,
               timestampUpdateChat,
-            },
+            } as SenseItemLinkMeta,
           };
           // Update transaction
           await throwIfAborted(this.db!.putSyncStatus, signal)(newSyncItem);
@@ -198,6 +204,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       if (!isAbortException(err)) {
         this.statusApi.sendStatus('error', err.toString());
       } else {
+        syncUpdates = [];
         throw err;
       }
     } finally {

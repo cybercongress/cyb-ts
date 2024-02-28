@@ -60,7 +60,7 @@ abstract class BaseSyncLoop extends BaseSync {
   }
 
   public start() {
-    this.loop$.subscribe(() => this.statusApi.sendStatus('idle'));
+    this.loop$.subscribe(() => this.statusApi.sendStatus('active'));
     return this;
   }
 

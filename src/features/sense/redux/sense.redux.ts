@@ -6,9 +6,9 @@ import {
 } from '@reduxjs/toolkit';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import {
-  SenseLinkResultMeta,
+  SenseItemLinkMeta,
   SenseListItem,
-  SenseTransactionResultMeta,
+  SenseListItemTransactionMeta,
   SenseUnread,
 } from 'src/services/backend/types/sense';
 import { isParticle } from '../../particle/utils';
@@ -112,7 +112,7 @@ function formatApiData(item: SenseListItem): SenseItem {
   switch (item.entryType) {
     case EntryType.chat:
     case EntryType.transactions: {
-      const meta = item.meta as SenseTransactionResultMeta;
+      const meta = item.meta as SenseListItemTransactionMeta;
       const { type } = meta;
 
       let from = item.ownerId;
@@ -137,7 +137,7 @@ function formatApiData(item: SenseListItem): SenseItem {
     }
 
     case EntryType.particle: {
-      const meta = item.meta as SenseLinkResultMeta;
+      const meta = item.meta as SenseItemLinkMeta;
 
       Object.assign(formatted, {
         id: item.id || meta.neuron,

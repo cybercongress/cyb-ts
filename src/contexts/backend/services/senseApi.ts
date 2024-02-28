@@ -1,14 +1,14 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import { CID_TWEET } from 'src/constants/app';
-import { SyncStatusDto, TransactionDto } from 'src/services/CozoDb/types/dto';
+import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { transformToDbEntity } from 'src/services/CozoDb/utils';
+import { dtoToEntity } from 'src/utils/dto';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
   MSG_SEND_TRANSACTION_TYPE,
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
-import { SenseTransactionResultMeta } from 'src/services/backend/types/sense';
+import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 type LocalSenseChatMessage = {
@@ -19,64 +19,38 @@ type LocalSenseChatMessage = {
   memo: string;
 };
 
-const prepareSenseChatEntities = (
+const prepareSenseTransaction = ({
+  transactionHash,
+  fromAddress,
+  toAddress,
+  amount,
+  memo,
+}: LocalSenseChatMessage) =>
+  // syncItem?: SyncStatusDto
   {
-    transactionHash,
-    fromAddress,
-    toAddress,
-    amount,
-    memo,
-  }: LocalSenseChatMessage,
-  syncItem?: SyncStatusDto
-) => {
-  const index = 0;
-  const timestamp = new Date().getTime();
-  const success = true;
+    const index = 0;
+    const timestamp = new Date().getTime();
 
-  const value = transformToDbEntity({
-    fromAddress,
-    toAddress,
-    amount,
-  }) as MsgSendValue;
+    const value = dtoToEntity({
+      fromAddress,
+      toAddress,
+      amount,
+    }) as MsgSendValue;
 
-  const meta = transformToDbEntity({
-    transactionHash,
-    index,
-    timestamp,
-    success,
-    value,
-    memo,
-    localFlag: true,
-  }) as SenseTransactionResultMeta;
+    const transaction = {
+      hash: transactionHash,
+      type: MSG_SEND_TRANSACTION_TYPE,
+      index,
+      timestamp,
+      success: true,
+      value,
+      memo,
+      neuron: fromAddress,
+      blockHeight: -1,
+    } as TransactionDto;
 
-  const transaction = {
-    hash: transactionHash,
-    type: MSG_SEND_TRANSACTION_TYPE,
-    index,
-    timestamp,
-    success: true,
-    value,
-    memo,
-    neuron: fromAddress,
-    blockHeight: -1,
-    localFlag: true, // mark as local
-  } as TransactionDto;
-
-  const newSyncItem = syncItem
-    ? { ...syncItem, meta: { ...syncItem.meta, ...meta } }
-    : {
-        id: toAddress,
-        entryType: EntryType.chat,
-        ownerId: fromAddress,
-        timestampRead: 0,
-        timestampUpdate: 0,
-        disabled: false,
-        unreadCount: 0,
-        meta,
-      };
-
-  return { transaction, syncItem: newSyncItem };
-};
+    return transaction;
+  };
 
 export const createSenseApi = (
   dbApi: DbApiWrapper,
@@ -90,10 +64,8 @@ export const createSenseApi = (
   getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
   addMsgSendAsLocal: async (msg: LocalSenseChatMessage) => {
     /*
-    This function add to database virtual sync item
-    and create transaction as well.
-    When actual data is recieved from blockchain,
-    thoose 'local' items must be rewritten by that.
+    This function create syntetic transaction (blockHeight=-1)
+    and create syncItem as well.
     */
     const syncItems = await dbApi.findSyncStatus({
       ownerId: myAddress!,
@@ -101,13 +73,17 @@ export const createSenseApi = (
       id: msg.toAddress,
     });
 
-    const { transaction, syncItem } = prepareSenseChatEntities(
-      msg,
-      syncItems[0]
-    );
-    console.log('------addMsgSendAsLocal', syncItems[0], transaction, syncItem);
+    const transaction = prepareSenseTransaction(msg);
+    console.log('------addMsgSendAsLocal', syncItems[0], transaction);
+
     await dbApi.putTransactions([transaction]);
-    await dbApi.putSyncStatus([syncItem]);
+    await syncMyChats(
+      dbApi,
+      myAddress!,
+      transaction.timestamp,
+      new AbortController().signal,
+      false
+    );
   },
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getFriendItems: async (userAddress: NeuronAddress) => {
