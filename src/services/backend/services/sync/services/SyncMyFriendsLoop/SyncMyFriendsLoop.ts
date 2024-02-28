@@ -127,7 +127,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
     address: NeuronAddress,
     signal: AbortSignal
   ) {
-    const syncUpdates = [];
+    let syncUpdates = [];
     try {
       this.statusApi.sendStatus(
         'in-progress',
@@ -204,6 +204,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       if (!isAbortException(err)) {
         this.statusApi.sendStatus('error', err.toString());
       } else {
+        syncUpdates = [];
         throw err;
       }
     } finally {

@@ -50,7 +50,7 @@ class DbApiWrapper {
   ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
-      ['timestamp_update', 'unread_count', 'timestamp_read'],
+      ['timestamp_update', 'unread_count', 'timestamp_read', 'meta'],
       [
         `id = '${id}'`,
         `owner_id = '${ownerId}'`,
@@ -61,15 +61,14 @@ class DbApiWrapper {
       ['id', 'owner_id', 'entry_type']
     );
 
-    const row = result.rows.length
-      ? result.rows[0]
-      : [TIMESTAMP_INTITAL, 0, TIMESTAMP_INTITAL];
-
-    return {
-      timestampUpdate: row[0],
-      unreadCount: row[1],
-      timestampRead: row[2],
-    } as SyncStatusDto;
+    return result.rows.length
+      ? dbResultToDtoList<SyncStatusDto>(result)[0]
+      : ({
+          timestampUpdate: TIMESTAMP_INTITAL,
+          timestampRead: TIMESTAMP_INTITAL,
+          unreadCount: 0,
+          meta: {},
+        } as SyncStatusDto);
   }
 
   public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {

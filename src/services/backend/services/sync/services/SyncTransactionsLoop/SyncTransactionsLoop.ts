@@ -194,11 +194,10 @@ class SyncTransactionsLoop extends BaseSyncClient {
     myAddress: NeuronAddress,
     address: NeuronAddress,
     transactions: TransactionDto[],
-    syncItem: SyncStatusDto,
+    { timestampRead, unreadCount, timestampUpdate }: SyncStatusDto,
     source: DataStreamResult['source']
   ) {
     const { signal } = this.abortController;
-    const { timestampRead, unreadCount, timestampUpdate } = syncItem;
 
     // node transaction is limited by incoming messages,
     // to prevent missing of other msg types let's avoid to change ts
@@ -238,9 +237,9 @@ class SyncTransactionsLoop extends BaseSyncClient {
       id: address,
       timestampUpdate: shouldUpdateTimestamp
         ? lastTimestampFrom
-        : timestampUpdate,
-      unreadCount: unreadCount + transactions.length,
-      timestampRead,
+        : timestampUpdate!,
+      unreadCount: unreadCount! + transactions.length,
+      timestampRead: timestampRead || 0,
       disabled: false,
       meta: {
         transaction_hash: hash,
@@ -256,9 +255,8 @@ class SyncTransactionsLoop extends BaseSyncClient {
   public async syncTransactions(
     myAddress: NeuronAddress,
     address: NeuronAddress,
-    syncItem: SyncStatusDto
+    { unreadCount, timestampUpdate }: SyncStatusDto
   ) {
-    const { unreadCount, timestampUpdate } = syncItem;
     const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
     this.statusApi.sendStatus('estimating');
