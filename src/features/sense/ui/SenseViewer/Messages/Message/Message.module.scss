@@ -1,132 +1,122 @@
-.wrapper {
-  // border: 1px solid red;
-  // display: grid;
-  align-self: flex-start;
-  // grid-template-areas:
-  //   'avatar title date'
-  //   'avatar content content'
-  //   'avatar amount .';
+@mixin gradient($opacityStart: 0.2, $opacityEnd: 0) {
+  border-radius: 2px 2px 0px 0px;
 
-  // grid-template-columns: 40px auto 80px;
-  // gap: 12px 15px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(var(--color-r), var(--color-g), var(--color-b), $opacityStart) 0%,
+    rgba(var(--color-r), var(--color-g), var(--color-b), $opacityEnd) 100%
+  );
+
+  filter: blur(14px);
+}
+
+.wrapper {
+  align-self: flex-start;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   max-width: 62%;
 
-  // border: 2px solid #085c36;
-  // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
+  &.myMessage {
+    direction: rtl;
+    margin-left: auto;
 
-  padding: 3px 0px;
+    .content {
+      direction: ltr;
+      text-align: right;
 
-  > h6 {
-    grid-area: title;
-    font-size: 16px;
+      .amount {
+        direction: ltr;
+        justify-content: flex-end;
+      }
 
-    a {
-      text-transform: none;
+      &:before {
+        transform: rotate(180deg);
+      }
     }
   }
 
-  &.myMessage {
-    // justify-self: flex-end;
-    align-self: flex-end;
-    // border-left: transparent;
-    flex-direction: row-reverse;
-  }
+  // TODO: use mixin somehow
+  --color-r: var(--primary-color-r);
+  --color-g: var(--primary-color-g);
+  --color-b: var(--primary-color-b);
 
   &.pending {
-    .timestampBlock,
-    .body {
-      border-color: rgba($color: yellow, $alpha: 0.5);
-    }
+    --color-r: var(--yellow-r);
+    --color-g: var(--yellow-g);
+    --color-b: var(--yellow-b);
+  }
+
+  &.error {
+    --color-r: var(--red-r);
+    --color-g: var(--red-g);
+    --color-b: var(--red-b);
   }
 }
 
-// .avatar {
-//   width: 40px;
-//   height: 40px;
-//   border-radius: 50%;
-//   // margin-right: 10px;
-
-//   grid-area: avatar;
-// }
-
-.timestampBlock {
-  // grid-area: date;
-  // justify-self: flex-end;
-  // display: flex;
-  border: 2px solid #085c36;
-  // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
-  // max-width: 50px;
-  // border: 1px solid green;
-  border-right: transparent;
-  border-left: transparent;
-  align-items: center;
+.dateBlock {
   display: flex;
+  align-items: center;
+  gap: 0 5px;
+  position: relative;
   z-index: 1;
-  // align-items: center;
   min-height: 40px;
   padding: 5px;
 
-  .tx {
-    color: var(--green-light);
-    margin-right: 6px;
+  .icon {
+    cursor: help;
+  }
 
-    &.status_ {
-      &pending {
-        color: yellow;
-      }
-    }
+  &::before {
+    content: '';
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    @include gradient(0.2, 0.2);
 
-    &:hover {
-      color: var(--primary-color);
-    }
+    pointer-events: none;
   }
 }
 
 .content {
-  grid-area: content;
   word-break: break-word;
-}
-
-.amount {
-  > div {
-    grid-area: amount;
-  }
-}
-
-.content,
-.amount {
-  font-size: 14px;
-}
-
-.body {
+  padding: 13px 10px;
   display: flex;
-  padding: 10px;
-  min-height: 100px;
-  min-width: 100px;
   justify-content: center;
   flex-direction: column;
-  border: 2px solid #085c36;
+
+  font-size: 14px;
+  min-height: 50px;
+  min-width: 100px;
 
   color: white !important;
-
+  position: relative;
   gap: 10px 0;
-  border-radius: 20px;
-  border-left: transparent;
   cursor: pointer;
-  // box-shadow: 0 0 10px #085c36, 0 0 5px #085c36;
 
-  .myMessage & {
-    border-right: transparent;
-    border-left: 2px solid #085c36;
+  &:before {
+    content: ' ';
+    @include gradient(0.2, 0);
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    display: block;
+    pointer-events: none;
   }
 
   &:hover {
-    opacity: 0.8;
-
-    background-color: rgba($color: #085c36, $alpha: 0.5);
-    // border-color: var(--green-light);
+    &::before {
+      @include gradient(0.3, 0);
+    }
   }
+}
+
+.amount {
+  margin-top: 10px;
+  display: flex;
+  gap: 0 10px;
 }

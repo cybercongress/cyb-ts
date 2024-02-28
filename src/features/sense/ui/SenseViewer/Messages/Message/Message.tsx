@@ -1,4 +1,4 @@
-import { Account, Tooltip } from 'src/components';
+import { Tooltip } from 'src/components';
 import styles from './Message.module.scss';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { routes } from 'src/routes';
@@ -9,38 +9,32 @@ import { SenseItem } from 'src/features/sense/redux/sense.redux';
 import CoinsAmount, {
   CoinAction,
 } from '../../../components/CoinAmount/CoinAmount';
-import { getStatusText } from '../../../utils/getStatusText';
-import { useAppSelector } from 'src/redux/hooks';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
-  address: string;
+  date: string | Date;
+  transactionHash: string;
   content: string | JSX.Element;
-  date: number;
   amountData?: {
     amount: MsgSend['amount'] | undefined;
-    isAmountSendToMyAddress: boolean;
-    hide1Boot: boolean;
+    isAmountSendToMyAddress?: boolean;
   };
-  txHash?: string;
-  // fix
-  cid: string;
-  status: SenseItem['status'];
+
+  myMessage?: boolean;
+  cid?: string;
+  fromLog?: boolean;
+  status?: SenseItem['status'];
 };
 
 function Message({
-  address,
   content,
   date,
   amountData,
-  txHash: transactionHash,
+  fromLog,
+  transactionHash,
+  myMessage,
   cid,
   status,
 }: Props) {
-  const myAddress = useAppSelector(selectCurrentAddress);
-  const myMessage = address === myAddress;
-  const particle = isParticle(address);
   const navigate = useNavigate();
 
   function handleNavigate() {
@@ -56,38 +50,24 @@ function Message({
       className={cx(styles.wrapper, {
         [styles.myMessage]: myMessage,
         [styles.pending]: status === 'pending',
+        [styles.error]: status === 'error',
       })}
     >
-      {/* <div className={styles.avatar}>
-        <Account address={address} onlyAvatar avatar sizeAvatar={40} />
-      </div> */}
-      {/* <h6><Account address={address} /></h6> */}
-
-      <div className={styles.timestampBlock}>
-        {/* {txHash && (
-          // <Tooltip
-          //   tooltip={(() => {
-          //     if (status === 'pending') {
-          //       return 'Tx pending - view';
-          //     }
-          //     if (status === 'error') {
-          //       return 'Tx error - view';
-          //     }
-          //     return 'View tx';
-          //   })()}
-          // ></Tooltip>
-        // )} */}
-
+      <div className={styles.dateBlock}>
         <Link
           className={cx(styles.tx, {
             [styles[`status_${status}`]]: status,
           })}
-          // target="_blank"
           to={routes.txExplorer.getLink(transactionHash)}
         >
-          {/* {getStatusText(status) || '✔'} */}
           <Date timestamp={date} timeOnly />
         </Link>
+
+        {fromLog && (
+          <Tooltip tooltip="message from log">
+            <span className={styles.icon}>🍀</span>
+          </Tooltip>
+        )}
       </div>
 
       {/* <Link> not good here, because children may have links  */}
@@ -107,17 +87,16 @@ function Message({
             handleNavigate();
           }
         }}
-        className={styles.body}
+        className={styles.content}
       >
-        {content && <div className={styles.content}>{content}</div>}
+        {content}
 
-        {amountData?.amount && (
+        {!!amountData?.amount?.length && (
           <div className={styles.amount}>
             <CoinsAmount
               amount={amountData.amount}
-              hide1Boot={amountData.hide1Boot}
               type={
-                !amountData.isAmountSendToMyAddress
+                amountData.isAmountSendToMyAddress === false
                   ? CoinAction.send
                   : CoinAction.receive
               }
