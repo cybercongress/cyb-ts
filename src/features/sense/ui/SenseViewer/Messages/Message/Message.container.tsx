@@ -42,8 +42,8 @@ function MessageContainer({ senseItem }: Props) {
     (async () => {
       const cid = await getIpfsHash(text);
 
-      console.debug('text', text);
-      console.debug('cid', cid);
+      // console.debug('text', text);
+      // console.debug('cid', cid);
 
       setTextCid(cid);
     })();
@@ -77,14 +77,14 @@ function MessageContainer({ senseItem }: Props) {
   return (
     <Message
       address={from}
-      txHash={transactionHash}
+      myMessage={address === from}
+      transactionHash={transactionHash}
       date={timestamp}
       content={content}
       cid={cid || textCid}
       amountData={{
         amount,
         isAmountSendToMyAddress,
-        hide1Boot: !!text,
       }}
       status={senseItem.status}
     />

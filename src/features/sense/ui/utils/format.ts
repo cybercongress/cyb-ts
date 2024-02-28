@@ -74,7 +74,7 @@ export function formatSenseItemDataToUI(
     ...senseItem,
     text: memo || '',
     cid,
-    amount,
+    amount: amount?.filter((a) => !(a.denom === 'boot' && a.amount === '1')),
     isAmountSendToMyAddress,
   };
 }

@@ -38,17 +38,12 @@ export function CoinAmount({
 type Props = {
   amount: Coin[];
   type?: CoinAction;
-  hide1Boot?: boolean;
 };
 
-export default function CoinsAmount({ amount, type, hide1Boot }: Props) {
+export default function CoinsAmount({ amount, type }: Props) {
   return (
     <>
       {amount.map(({ amount, denom }, i) => {
-        if (denom === 'boot' && amount === '1' && hide1Boot) {
-          return null;
-        }
-
         return <CoinAmount key={i} amount={amount} denom={denom} type={type} />;
       })}
     </>

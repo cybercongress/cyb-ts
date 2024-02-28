@@ -67,7 +67,6 @@ function SenseListItemContainer({ senseItemId }: Props) {
         {amount && (
           <CoinsAmount
             amount={amount}
-            hide1Boot={!!text}
             type={
               !isAmountSendToMyAddress ? CoinAction.send : CoinAction.receive
             }
