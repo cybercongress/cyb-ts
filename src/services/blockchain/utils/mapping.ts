@@ -8,7 +8,7 @@ import {
 } from 'src/services/backend/services/indexer/types';
 import { NeuronAddress } from 'src/types/base';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import { transformToDbEntity } from 'src/services/CozoDb/utils';
+import { dtoToEntity } from 'src/utils/dto';
 
 // eslint-disable-next-line import/no-unused-modules
 export const extractTxData = (data: string) => {
@@ -50,7 +50,7 @@ export const mapWsDataToTransactions = (neuron: NeuronAddress, result: any) => {
       type: transactionType,
       timestamp,
       success: true,
-      value: transformToDbEntity(message!),
+      value: dtoToEntity(message!),
       memo,
       neuron,
       blockHeight,

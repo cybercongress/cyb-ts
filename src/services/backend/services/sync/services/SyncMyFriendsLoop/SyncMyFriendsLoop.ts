@@ -37,7 +37,7 @@ import {
   SenseItemLinkMeta,
   SenseListItemTransactionMeta,
 } from 'src/services/backend/types/sense';
-import { transformToDto } from 'src/services/CozoDb/utils';
+import { entityToDto } from 'src/utils/dto';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   protected followings: NeuronAddress[] = [];
@@ -169,7 +169,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         // const unreadItemsCount = unreadCount + links.length;
 
         if (links.length > 0) {
-          const lastLink = transformToDto(links.at(-1)!);
+          const lastLink = entityToDto(links.at(-1)!);
 
           await throwIfAborted(this.db!.putCyberlinks, signal)(links);
 

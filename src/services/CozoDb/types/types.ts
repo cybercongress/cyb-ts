@@ -47,9 +47,6 @@ export class DBResultError extends Error implements Omit<IDBResultError, 'ok'> {
 }
 
 export type DBSchema = Record<string, TableSchema>;
-export interface DBResultWithColIndex extends IDBResult {
-  index: Record<string, number>;
-}
 
 export type IndexedDbWriteMessage = {
   type: 'indexeddb_write';

@@ -4,7 +4,7 @@ import { Transaction } from 'src/services/backend/services/indexer/types';
 import { SenseListItemtMeta } from 'src/services/backend/types/sense';
 import { IpfsContentType } from 'src/services/ipfs/ipfs';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { DtoToDbEntity } from 'src/types/dto';
+import { DtoToEntity } from 'src/types/dto';
 
 type PinEntryType = Exclude<PinType, 'all'>;
 // example of db optimization for classifiers
@@ -49,7 +49,7 @@ export type SyncStatusDbEntity = {
   timestamp_read: number;
   disabled: boolean;
   unread_count: number;
-  meta: DtoToDbEntity<SenseListItemtMeta>;
+  meta: DtoToEntity<SenseListItemtMeta>;
 };
 
 export type ParticleDbEntity = {

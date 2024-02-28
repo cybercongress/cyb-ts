@@ -1,15 +1,14 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import { CID_TWEET } from 'src/constants/app';
-import { SyncStatusDto, TransactionDto } from 'src/services/CozoDb/types/dto';
+import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { transformToDbEntity } from 'src/services/CozoDb/utils';
+import { dtoToEntity } from 'src/utils/dto';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
   MSG_SEND_TRANSACTION_TYPE,
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
-import { SenseListItemTransactionMeta } from 'src/services/backend/types/sense';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 
 type LocalSenseChatMessage = {
@@ -32,7 +31,7 @@ const prepareSenseTransaction = ({
     const index = 0;
     const timestamp = new Date().getTime();
 
-    const value = transformToDbEntity({
+    const value = dtoToEntity({
       fromAddress,
       toAddress,
       amount,

@@ -7,7 +7,7 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 import { findLastIndex } from 'lodash';
 import { SenseItemLinkMeta } from '../../types/sense';
-import { transformToDto } from 'src/services/CozoDb/utils';
+import { entityToDto } from 'src/utils/dto';
 
 export function extractLinkData(
   cid: ParticleCid,
@@ -63,7 +63,7 @@ export function changeSyncStatus(
     statusEntity.unreadCount
   );
 
-  const lastLink = transformToDto(links[0]);
+  const lastLink = entityToDto(links[0]);
 
   return {
     ...statusEntity,

@@ -7,13 +7,13 @@ import {
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
+import { dbResultToDtoList } from 'src/services/CozoDb/utils';
+import { jsonifyFields } from 'src/utils/dto';
 import {
-  dbResultToDtoList,
-  jsonifyFields,
   removeUndefinedFields,
-  transformListToDbEntity,
-  transformToDbEntity,
-} from 'src/services/CozoDb/utils';
+  dtoListToEntity,
+  dtoToEntity,
+} from 'src/utils/dto';
 
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import {
@@ -73,7 +73,7 @@ class DbApiWrapper {
   }
 
   public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(entity) ? entity : [entity]
     );
 
@@ -89,7 +89,7 @@ class DbApiWrapper {
     }
   ) {
     return this.db!.executeUpdateCommand('sync_status', [
-      transformToDbEntity(removeUndefinedFields(entity)),
+      dtoToEntity(removeUndefinedFields(entity)),
     ]);
   }
 
@@ -127,7 +127,7 @@ class DbApiWrapper {
   public async putTransactions(transactions: TransactionDto[]) {
     return this.db!.executePutCommand(
       'transaction',
-      transformListToDbEntity(transactions)
+      dtoListToEntity(transactions)
     );
   }
 
@@ -152,7 +152,7 @@ class DbApiWrapper {
   }
 
   public async putCommunity(community: CommunityDto[] | CommunityDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(community) ? community : [community]
     );
     await this.db!.executePutCommand('community', entitites);
@@ -166,7 +166,7 @@ class DbApiWrapper {
   }
 
   public async putParticles(particles: ParticleDto[] | ParticleDto) {
-    const entitites = transformListToDbEntity(
+    const entitites = dtoListToEntity(
       Array.isArray(particles) ? particles : [particles]
     );
     await this.db!.executePutCommand('particle', entitites);

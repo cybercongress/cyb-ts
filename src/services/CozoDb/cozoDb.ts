@@ -10,7 +10,8 @@ import {
 } from './types/types';
 import { DbEntity, ConfigDbEntity } from './types/entities';
 
-import { toListOfObjects, clearIndexedDBStore } from './utils';
+import { clearIndexedDBStore } from './utils';
+import { toListOfObjects } from './utils';
 
 import initializeScript from './migrations/schema.cozo';
 import communityScript from './migrations/community.cozo';
