@@ -242,7 +242,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       timestampRead: timestampRead || 0,
       disabled: false,
       meta: {
-        transaction_hash: hash,
+        transactionHash: hash,
         index,
       },
     };
@@ -255,8 +255,9 @@ class SyncTransactionsLoop extends BaseSyncClient {
   public async syncTransactions(
     myAddress: NeuronAddress,
     address: NeuronAddress,
-    { unreadCount, timestampUpdate }: SyncStatusDto
+    syncItem: SyncStatusDto
   ) {
+    const { unreadCount, timestampUpdate } = syncItem;
     const timestampFrom = timestampUpdate + 1; // ofsset + 1 to fix milliseconds precision bug
 
     this.statusApi.sendStatus('estimating');
