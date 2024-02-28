@@ -19,7 +19,7 @@
 
   &.myMessage {
     direction: rtl;
-    margin-left: auto;
+    align-self: flex-end;
 
     .content {
       direction: ltr;

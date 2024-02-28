@@ -4,6 +4,7 @@ import MessageContainer from './Message/Message.container';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './Messages.module.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import DateTitle from './DateTitle/DateTitle';
 
 type Props = {
   messages: SenseItem[];
@@ -88,17 +89,9 @@ function Messages({ messages }: Props) {
 
               return (
                 <Fragment key={i}>
-                  {render && !isLastMessage && (
-                    <p className={styles.date}>
-                      {dateFormat(render, 'mmmm dd')}
-                    </p>
-                  )}
+                  {render && !isLastMessage && <DateTitle date={render} />}
                   <MessageContainer key={i} senseItem={senseItem} />
-                  {isLastMessage && (
-                    <p className={styles.date}>
-                      {dateFormat(render, 'mmmm dd')}
-                    </p>
-                  )}
+                  {isLastMessage && <DateTitle date={render!} />}
                 </Fragment>
               );
             })}
