@@ -2,7 +2,6 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { ObjKeyValue } from 'src/types/data';
 import BigNumber from 'bignumber.js';
 import { MyPoolsT } from './type';
-import coinDecimalsConfig from '../../utils/configToken';
 
 const reduceTextCoin = (text: string) => {
   switch (text) {
@@ -60,89 +59,63 @@ export function getMyTokenBalanceNumber(denom: string, indexer) {
   return Number(getMyTokenBalance(denom, indexer));
 }
 
-function pow(a) {
-  let result = 1;
-  for (let i = 0; i < a; i++) {
-    result *= 10;
-  }
-  return result;
+function pow(coinDecimals) {
+  return new BigNumber(1).multipliedBy(new BigNumber(10).pow(coinDecimals));
 }
 
-const getCoinDecimals = (amount, token: string) => {
-  let amountReduce = amount;
-
-  if (coinDecimalsConfig[token]) {
-    const { coinDecimals } = coinDecimalsConfig[token];
-    if (coinDecimals) {
-      amountReduce = parseFloat(amount) / pow(coinDecimals);
-    }
-  }
-  return amountReduce;
-};
-
-const getDecimals = (denom) => {
-  let decimals = 0;
-  if (coinDecimalsConfig[denom]) {
-    decimals = coinDecimalsConfig[denom].coinDecimals;
-  }
-  return decimals;
-};
-
-const getCounterPairAmount = (amount, decimals, swapPrice) => {
-  const inputAmountBN = new BigNumber(amount);
-  return inputAmountBN
-    .dividedBy(swapPrice)
-    .dp(decimals, BigNumber.ROUND_FLOOR)
-    .toNumber();
-};
-
-export function calculateCounterPairAmount(values, e, state) {
+export function calculateCounterPairAmount(values, state) {
   const inputAmount = values;
 
-  let counterPairAmount = 0;
+  let counterPairAmount = new BigNumber(0);
+  let swapPrice = new BigNumber(0);
 
-  const { tokenAPoolAmount, tokenA, tokenBPoolAmount, tokenB } = state;
+  const {
+    tokenAPoolAmount,
+    tokenBPoolAmount,
+    tokenA,
+    tokenB,
+    tokenACoinDecimals,
+    tokenBCoinDecimals,
+    isReverse,
+  } = state;
 
-  const poolAmountA = new BigNumber(
-    getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+  const poolAmountA = new BigNumber(tokenAPoolAmount);
+  const poolAmountB = new BigNumber(tokenBPoolAmount);
+
+  const amount = new BigNumber(inputAmount).multipliedBy(
+    pow(isReverse ? tokenBCoinDecimals : tokenACoinDecimals)
   );
-  const poolAmountB = new BigNumber(
-    getCoinDecimals(Number(tokenBPoolAmount), tokenB)
-  );
 
-  if (
-    inputAmount.length > 0 &&
-    poolAmountA.comparedTo(0) > 0 &&
-    poolAmountB.comparedTo(0) > 0
-  ) {
-    let swapPrice = null;
-    let decimals = 0;
+  const isPoolPair = [tokenA, tokenB].sort()[0] === tokenA;
 
-    if (e.target.id === 'tokenAAmount') {
-      swapPrice = poolAmountA.dividedBy(poolAmountB);
-      swapPrice = swapPrice.multipliedBy(1.03).toNumber();
-      if (tokenB.length > 0) {
-        decimals = getDecimals(tokenB);
-      }
-      counterPairAmount = getCounterPairAmount(
-        inputAmount,
-        decimals,
-        swapPrice
-      );
-    } else {
-      swapPrice = poolAmountB.dividedBy(poolAmountA);
-      swapPrice = swapPrice.multipliedBy(0.97).toNumber();
+  let poolCoins: BigNumber[] = [];
 
-      if (tokenA.length > 0) {
-        decimals = getDecimals(tokenA);
-      }
-      counterPairAmount = getCounterPairAmount(
-        inputAmount,
-        decimals,
-        swapPrice
-      );
-    }
+  if (isPoolPair) {
+    poolCoins = [poolAmountA, poolAmountB];
+  } else {
+    poolCoins = [poolAmountB, poolAmountA];
   }
+
+  if ((isPoolPair && !isReverse) || (!isPoolPair && isReverse)) {
+    swapPrice = poolCoins[1].dividedBy(poolCoins[0]);
+  }
+
+  if ((isPoolPair && isReverse) || (!isPoolPair && !isReverse)) {
+    swapPrice = poolCoins[0].dividedBy(poolCoins[1]);
+  }
+
+  if (isReverse) {
+    counterPairAmount = amount
+      .multipliedBy(swapPrice.multipliedBy(new BigNumber(1)))
+      .dividedBy(pow(tokenACoinDecimals))
+      .dp(tokenACoinDecimals, BigNumber.ROUND_FLOOR);
+  } else {
+    counterPairAmount = amount
+      .multipliedBy(swapPrice)
+      .dividedBy(pow(tokenBCoinDecimals))
+      .dp(tokenBCoinDecimals, BigNumber.ROUND_FLOOR);
+  }
+
   return {
     counterPairAmount,
   };
