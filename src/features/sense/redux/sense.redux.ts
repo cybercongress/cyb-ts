@@ -35,6 +35,7 @@ export type SenseItem = {
 
   // for optimistic update
   status?: 'pending' | 'error';
+  fromLog?: boolean;
 };
 
 type Chat = {
@@ -144,6 +145,7 @@ function formatApiData(item: SenseListItem): SenseItem {
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
         meta: meta,
+        fromLog: true,
       });
 
       break;

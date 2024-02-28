@@ -27,6 +27,7 @@ function MessageContainer({ senseItem }: Props) {
     from,
     cid,
     text,
+    fromLog,
     isAmountSendToMyAddress,
   } = formatSenseItemDataToUI(senseItem, address);
 
@@ -78,6 +79,7 @@ function MessageContainer({ senseItem }: Props) {
     <Message
       address={from}
       myMessage={address === from}
+      fromLog={fromLog}
       transactionHash={transactionHash}
       date={timestamp}
       content={content}
