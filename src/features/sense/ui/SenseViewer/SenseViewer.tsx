@@ -93,7 +93,7 @@ function SenseViewer({ selected, adviser }: Props) {
         }
       >
         {selected && !!messages?.length ? (
-          <Messages messages={messages} />
+          <Messages messages={messages} currentChatId={selected} />
         ) : loading ? (
           <div className={styles.noData}>
             <Loader2 />
