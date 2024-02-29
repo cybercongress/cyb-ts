@@ -338,11 +338,20 @@ class DbApiWrapper {
     cid,
     neuron,
   }: {
-    cid?: ParticleCid;
+    cid?: ParticleCid | ParticleCid[];
     neuron?: NeuronAddress;
   }) {
     const conditions = [];
-    cid && conditions.push(`from='${cid}' or to='${cid}'`);
+
+    if (cid) {
+      if (!Array.isArray(cid)) {
+        conditions.push(`from='${cid}' or to='${cid}'`);
+      } else {
+        const listStr = cid.map((i) => `'${i}'`).join(', ');
+        conditions.push(`is_in(from,[${listStr}]) or is_in(to,[${listStr}])`);
+      }
+    }
+
     neuron && conditions.push(`neuron='${neuron}'`);
 
     const result = await this.db!.executeGetCommand(
