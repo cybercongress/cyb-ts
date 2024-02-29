@@ -99,6 +99,7 @@
   &:before {
     content: ' ';
     @include gradient(0.2, 0);
+    z-index: -1;
     width: 100%;
     top: 0;
     left: 0;

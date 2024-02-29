@@ -44,39 +44,19 @@ function SenseListItemContainer({ senseItemId }: Props) {
   let content;
 
   if (cid) {
-    content = (
-      // eslint-disable-next-line react/jsx-no-useless-fragment
-      <>
-        {loading ? (
-          <span>
-            resolving particle <Dots />
-          </span>
-        ) : (
-          data &&
-          (data.text ||
-            contentTypeConfig[data.type]?.label ||
-            'unsupported type')
-        )}
-      </>
-    );
+    if (loading) {
+      content = (
+        <span>
+          resolving particle <Dots />
+        </span>
+      );
+    } else if (data) {
+      content =
+        data.text || contentTypeConfig[data.type]?.label || 'unsupported type';
+    }
   } else {
-    content = (
-      <>
-        <span>{text}</span>
-
-        {amount && (
-          <CoinsAmount
-            amount={amount}
-            type={
-              !isAmountSendToMyAddress ? CoinAction.send : CoinAction.receive
-            }
-          />
-        )}
-      </>
-    );
+    content = text;
   }
-
-  const withAmount = Boolean(amount?.length);
 
   function formatParticleTitle(text: string) {
     return text.trim().substring(0, 20).replaceAll('#', '');
@@ -90,12 +70,12 @@ function SenseListItemContainer({ senseItemId }: Props) {
   return (
     <SenseListItem
       address={senseItemId}
-      timestamp={timestamp}
+      date={timestamp}
       title={particleText ? formatParticleTitle(particleText) : icon}
       unreadCount={unreadCount}
-      value={content}
-      withAmount={withAmount}
+      content={content}
       status={senseData.status}
+      amountData={{ amount, isAmountSendToMyAddress }}
     />
   );
 }

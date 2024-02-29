@@ -1,3 +1,5 @@
+import { Coin } from '@cosmjs/launchpad';
+
 export const title = 'Moon Citizenship';
 
 export const text50 =
@@ -14,3 +16,20 @@ export const img = 'https://cyb.ai/images/preview.png';
 export const address = 'bostrom1f5warat4vc0q98k7ygys4saka8u04rfxpmthvl';
 export const transactionHash =
   'BAA06424541F011A759CE61DDA9D8A5471D87FFA93BAF7E82FA0FC02014D86E5';
+
+export const particle = 'QmZ4b5kbCV9K9Jd2ZXpfUAKiPSkzPfD558wBbebYFpztKY';
+
+export const amounts = [
+  {
+    denom: 'boot',
+    amount: '100000000',
+  },
+  {
+    denom: 'hydrogen',
+    amount: '100000000000',
+  },
+  {
+    denom: 'eth',
+    amount: '1.5',
+  },
+] as Coin[];

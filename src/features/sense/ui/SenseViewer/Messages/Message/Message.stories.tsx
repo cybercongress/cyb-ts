@@ -22,28 +22,13 @@ export default meta;
 type Story = StoryObj<typeof Message>;
 type Props = React.ComponentProps<typeof Message>;
 
-const amount = [
-  {
-    denom: 'boot',
-    amount: '100000000',
-  },
-  {
-    denom: 'hydrogen',
-    amount: '100000000000',
-  },
-  {
-    denom: 'eth',
-    amount: '1.5',
-  },
-] as Coin[];
-
 const defaultArgs: Props = {
   transactionHash: stubs.transactionHash,
   date: new Date().toISOString(),
   content: stubs.text50,
   fromLog: true,
   amountData: {
-    amount: [amount[0]],
+    amount: [stubs.amounts[0]],
   },
 };
 
@@ -56,7 +41,7 @@ export const WithAmounts: Story = {
     ...defaultArgs,
     amountData: {
       ...defaultArgs.amountData,
-      amount,
+      amount: stubs.amounts,
     },
   },
 

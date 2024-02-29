@@ -5,6 +5,8 @@
   min-height: 62px;
   color: #fff;
 
+  max-width: 350px;
+
   grid-template-areas:
     'avatar title date'
     'avatar text  unread';
@@ -22,8 +24,16 @@
 .avatar {
   grid-area: avatar;
   height: 50px;
+  align-self: center;
   width: 50px;
   border-radius: 100%;
+  position: relative;
+
+  .icon {
+    position: absolute;
+    bottom: 0;
+    right: -5px;
+  }
 }
 
 .title {
@@ -58,17 +68,30 @@
   }
 }
 
-.text {
+.content {
   grid-area: text;
   color: rgba(255, 255, 255, 0.5);
-
-  line-height: 1.2em; // Adjust this value as needed
-  max-height: 2.4em; // 2 lines of text
+  font-size: 15px;
+  line-height: 1.2em;
+  max-height: 2.4em;
   overflow: hidden;
   text-align: left;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+
+  &.withAmount {
+    > p {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: block;
+    }
+  }
+
+  .amounts {
+    display: flex;
+  }
 }
 
 .date {
@@ -79,20 +102,11 @@
 .unread {
   grid-area: unread;
   overflow-x: hidden;
+  align-self: center;
   margin-right: 0 !important;
 }
 
 .date,
 .unread {
   justify-self: flex-end;
-}
-
-.withAmount {
-  // 1 line
-  > span {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    display: block;
-  }
 }

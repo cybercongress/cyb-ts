@@ -8,19 +8,20 @@ import DateTitle from './DateTitle/DateTitle';
 
 type Props = {
   messages: SenseItem[];
+  currentChatId: string;
 };
 
 const DEFAULT_ITEMS_LENGTH = 15;
 const LOAD_MORE_ITEMS_LENGTH = 15;
 
-function Messages({ messages }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-
+function Messages({ messages, currentChatId }: Props) {
   const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
 
-  //   useEffect(() => {
-  //     setShowItemsLength(DEFAULT_ITEMS_LENGTH);
-  //   }, [selected]);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setShowItemsLength(DEFAULT_ITEMS_LENGTH);
+  }, [currentChatId]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -36,12 +37,28 @@ function Messages({ messages }: Props) {
     );
   }
 
-  const renderedMessages = useMemo(() => {
-    return [...messages].reverse().slice(0, showItemsLength);
-  }, [messages, showItemsLength]);
+  const messagesByDate = useMemo(() => {
+    const msgs = [...messages].reverse().slice(0, showItemsLength);
 
-  // think better refactor to combine messages by dates
-  const dates: string[] = [];
+    const messagesByDate = msgs.reduce<{
+      [date: string]: SenseItem[];
+    }>((acc, senseItem) => {
+      const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
+
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+
+      acc[date].push(senseItem);
+
+      return acc;
+    }, {});
+
+    // maybe need order?
+    const arr = Object.entries(messagesByDate);
+
+    return arr;
+  }, [messages, showItemsLength]);
 
   return (
     // wrappers for correct scroll
@@ -54,44 +71,20 @@ function Messages({ messages }: Props) {
             loader={null}
             scrollThreshold={0.9}
             className={styles.inner}
-            dataLength={renderedMessages.length}
+            dataLength={messagesByDate.length}
             hasMore={showItemsLength < messages.length}
             next={setMore}
           >
-            {renderedMessages.map((senseItem, i, messages) => {
-              const date = dateFormat(senseItem.timestamp, 'dd-mm-yyyy');
-
-              // refactor this bullshit
-              const lastItem = dates[dates.length - 1];
-
-              let render;
-              if (lastItem && date !== lastItem) {
-                let parts = lastItem.split('-');
-                let day = parseInt(parts[0], 10);
-                let month = parseInt(parts[1], 10) - 1;
-                let year = parseInt(parts[2], 10);
-
-                let date = new Date(year, month, day);
-
-                render = date;
-              }
-
-              const noDate = !dates.includes(date);
-              if (noDate) {
-                dates.push(date);
-              }
-
-              const isLastMessage = i === messages.length - 1;
-
-              if (isLastMessage) {
-                render = new Date(senseItem.timestamp);
-              }
-
+            {messagesByDate.map(([date, messages]) => {
               return (
-                <Fragment key={i}>
-                  {render && !isLastMessage && <DateTitle date={render} />}
-                  <MessageContainer key={i} senseItem={senseItem} />
-                  {isLastMessage && <DateTitle date={render!} />}
+                <Fragment key={date}>
+                  {messages.map((senseItem) => (
+                    <MessageContainer
+                      key={senseItem.transactionHash}
+                      senseItem={senseItem}
+                    />
+                  ))}
+                  <DateTitle date={new Date(date)} />
                 </Fragment>
               );
             })}
