@@ -11,7 +11,7 @@ import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
 import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
-import warp from '../../image/temple/warp.jpg';
+import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
 import congress from './images/congress.png';
 
