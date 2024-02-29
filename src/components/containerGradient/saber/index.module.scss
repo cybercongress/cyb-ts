@@ -1,7 +1,7 @@
 @mixin saber-background($position) {
   content: '';
   position: absolute;
-  z-index: -1;
+  z-index: -2;
   #{$position}: 0;
 
   @if ($position == left or $position == right) {
@@ -67,13 +67,11 @@ $saber-border-width: 2px;
     @error "Invalid color: #{$color}";
   }
 
-  @if($borderColor == 'color') {
-    border-#{$position}: $saber-border-width solid rgb(var(--color-r),
-          var(--color-g),
-          var(--color-b));
-  }
-
-  @else {
+  @if ($borderColor == 'color') {
+    border-#{$position}: $saber-border-width
+      solid
+      rgb(var(--color-r), var(--color-g), var(--color-b));
+  } @else {
     border-#{$position}: $saber-border-width solid white;
   }
 
