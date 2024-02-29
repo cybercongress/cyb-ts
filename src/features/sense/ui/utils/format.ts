@@ -28,11 +28,6 @@ export function formatSenseItemDataToUI(
       const { amount: a, to_address: toAddress } =
         meta as MsgSendTransaction['value'];
 
-      if (a && !Array.isArray(a)) {
-        debugger;
-        break;
-      }
-
       amount = a;
       isAmountSendToMyAddress = toAddress === currentAddress;
 
