@@ -8,6 +8,7 @@ import useCybernetContract from 'src/features/cybernet/useContract';
 import { routes } from 'src/routes';
 import WeightsTable from './WeightsTable/WeightsTable';
 import WeightsSetter from './WeightsSetter/WeightsSetter';
+import ActionBar from './ActionBar/ActionBar';
 
 function Subnet() {
   const { id } = useParams();
@@ -107,6 +108,8 @@ function Subnet() {
           )}
         </Display>
       )}
+
+      <ActionBar netuid={+id} burn={data?.burn} />
     </MainContainer>
   );
 }
