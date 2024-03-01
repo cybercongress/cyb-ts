@@ -84,7 +84,13 @@ export const createSenseApi = (
           cid: [CID_TWEET, CID_FOLLOW],
         })
       : [];
-    return [...chats, ...links];
+
+    // merge 2 lists and reorder
+    const result = [...chats, ...links].sort((a, b) =>
+      a.timestamp > b.timestamp ? 1 : -1
+    );
+
+    return result;
   },
 });
 
