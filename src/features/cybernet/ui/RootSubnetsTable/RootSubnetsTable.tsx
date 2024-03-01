@@ -39,11 +39,11 @@ function RootSubnetsTable({ data }: Props) {
             columnHelper.accessor('owner', {
               header: 'owner',
               cell: (info) => (
-                // <Link to={routes.neuron.getLink(info.getValue())}>
-                <Link to={'../delegators/' + info.getValue()}>
-                  <NProvider address={info.getValue()} />
-                  {/* <Account address={info.getValue()} /> */}
-                  {info.getValue().substr(0, 10) + '...'}
+                <Link to={routes.neuron.getLink(info.getValue())}>
+                  {/* // <Link to={'../delegators/' + info.getValue()}> */}
+                  {/* <NProvider address={info.getValue()} /> */}
+                  <Account address={info.getValue()} />
+                  {/* {info.getValue().substr(0, 10) + '...'} */}
                 </Link>
               ),
             }),
