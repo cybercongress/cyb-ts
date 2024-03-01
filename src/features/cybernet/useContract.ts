@@ -53,10 +53,17 @@ function useCybernetContract<DataType>({ query, skip }: Props) {
     queryContract(query);
   }, [query, skip]);
 
+  console.log(data);
+
+  function refetch() {
+    queryContract(query);
+  }
+
   return {
     data,
     loading,
     error,
+    refetch,
   };
 }
 

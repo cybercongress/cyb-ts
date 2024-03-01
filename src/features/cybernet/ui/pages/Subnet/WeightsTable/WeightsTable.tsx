@@ -15,6 +15,16 @@ const columnHelper = createColumnHelper<any>();
 function WeightsTable({ data }: Props) {
   const navigate = useNavigate();
 
+  const d = data.map((item, i) => {
+    const summ = data[i].reduce((acc, item) => acc + item, 0);
+
+    return data[i].map((item) => (item / summ) * 100);
+  });
+
+  if (!d.length) {
+    return;
+  }
+
   return (
     <div>
       <Table
@@ -22,18 +32,22 @@ function WeightsTable({ data }: Props) {
         columns={
           // useMemo(
           // () =>
-          new Array(data[0].length).fill(null).map((_, i) => {
+          new Array(d[0].length).fill(null).map((_, i) => {
             return columnHelper.accessor(String(i), {
               header: String(i),
-              cell: (info) => info.getValue(),
+              cell: (info) => {
+                const val = info.getValue();
+
+                if (!val) {
+                  return '-';
+                }
+                return val.toFixed(2) + '%';
+                // return (val / summ) * 100;
+              },
             });
           })
-
-          // })),
-
-          // []
         }
-        data={data}
+        data={d}
       />
     </div>
   );

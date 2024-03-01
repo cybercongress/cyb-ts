@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { MainContainer } from 'src/components';
+import { Input, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { SubnetHyperParameters, SubnetInfo } from 'src/features/cybernet/types';
 import useCybernetContract from 'src/features/cybernet/useContract';
 import { routes } from 'src/routes';
 import WeightsTable from './WeightsTable/WeightsTable';
+import WeightsSetter from './WeightsSetter/WeightsSetter';
 
 function Subnet() {
   const { id } = useParams();
+
+  const [setWeightsOpen, setSetWeightsOpen] = useState(false);
 
   const { data, loading, error } = useCybernetContract<SubnetInfo>({
     query: {
@@ -35,12 +38,12 @@ function Subnet() {
     },
   });
 
-  console.log(data);
-
-  console.log(hyperparamsQuery);
+  console.info('info', data);
+  console.info('hyperparams', hyperparamsQuery);
+  console.info('weights', weightsQuery);
 
   return (
-    <MainContainer>
+    <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title={'Subnet: ' + id} />}>
         <ul>
           {data &&
@@ -85,9 +88,25 @@ function Subnet() {
         </ul>
       </Display>
 
-      <Display title={<DisplayTitle title={'Weights: '} />}>
-        {weightsQuery.data && <WeightsTable data={weightsQuery.data} />}
-      </Display>
+      {data?.subnetwork_n > 0 && (
+        <Display title={<DisplayTitle title={'Weights: '} />}>
+          {weightsQuery.data && <WeightsTable data={weightsQuery.data || []} />}
+
+          {weightsQuery.data && (
+            <>
+              <hr />
+              <WeightsSetter
+                callback={() => {
+                  weightsQuery.refetch();
+                }}
+                length={weightsQuery.data?.length}
+                netuid={+id}
+                max_weights_limit={data?.max_weights_limit}
+              />
+            </>
+          )}
+        </Display>
+      )}
     </MainContainer>
   );
 }
