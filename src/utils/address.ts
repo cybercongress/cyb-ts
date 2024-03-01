@@ -15,7 +15,9 @@ export function getTypeFromAddress(address: string): Networks {
     return Networks.COSMOS;
   } else if (address.startsWith('pussy')) {
     return Networks.SPACE_PUSSY;
-  }
+  } else if (address.startsWith('deep')) {
+    return Networks.DEEP;
+  } 
 
   return undefined;
 }

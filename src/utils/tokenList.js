@@ -106,6 +106,12 @@ const tokenList = [
     coinMinimalDenom: 'millivolt',
     counterpartyChainId: 'bostrom',
   },
+  {
+    coinMinimalDenom: 'energy',
+    coinDecimals: 0,
+    denom: 'ENERGY',
+    coinImageCid: 'Qma2FzrFTrDBpq71xUZeSKCUCyPSuiYNaEDcUmuUC2ZHLC',
+  },
 ];
 
 export default tokenList;

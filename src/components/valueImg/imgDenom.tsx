@@ -10,6 +10,7 @@ import tocyb from 'images/boot.png';
 import boot from 'images/large-green.png';
 import pussy from 'images/large-purple-circle.png';
 import defaultImg from 'images/large-orange-circle.png';
+import deep from 'images/black_circle.png';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
@@ -29,6 +30,7 @@ const nativeImageMap = {
   pussy,
   tocyb,
   eth,
+  energy: deep,
 };
 
 const getNativeImg = (text: string) => {

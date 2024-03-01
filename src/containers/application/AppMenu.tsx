@@ -46,7 +46,6 @@ const itemsMenu = () => {
         { name: 'Codes', to: '/libs' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
         { name: 'Txs', to: '/network/bostrom/tx' },
-
       ],
     },
     // { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
@@ -59,8 +58,8 @@ const itemsMenu = () => {
       // active: false,
       // subItems: [
       //   { name: 'Swap', to: routes.teleport.swap.path },
-        // { name: 'Bridge', to: routes.teleport.bridge.path },
-        // { name: 'Send', to: routes.teleport.send.path },
+      // { name: 'Bridge', to: routes.teleport.bridge.path },
+      // { name: 'Send', to: routes.teleport.send.path },
       // ],
     },
     {
@@ -138,9 +137,7 @@ const itemsMenu = () => {
     // },
   ];
 
-  if (
-    CYBER.CHAIN_ID === Networks.BOSTROM
-  ) {
+  if (CYBER.CHAIN_ID === Networks.BOSTROM) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,
