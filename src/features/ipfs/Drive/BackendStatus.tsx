@@ -9,6 +9,8 @@ import {
   ServiceStatus,
   SyncProgress,
 } from 'src/services/backend/types/services';
+import { convertTimestampToString } from 'src/utils/date';
+
 import styles from './drive.scss';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
@@ -16,9 +18,11 @@ const getProgressTrackingInfo = (progress?: ProgressTracking) => {
     return '';
   }
   const { totalCount, completeCount, estimatedTime } = progress;
-  const estimatedTimeStr = estimatedTime <= 0 ? '' : ` (${estimatedTime}s)`;
-
-  return ` ${completeCount}/${totalCount} ${estimatedTimeStr}`;
+  const estimatedTimeStr =
+    estimatedTime > -1 ? convertTimestampToString(estimatedTime) : '???';
+  return ` ${Math.round(
+    (completeCount / totalCount) * 100
+  )}% (${estimatedTimeStr})`;
 };
 
 function ServiceStatus({

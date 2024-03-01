@@ -6,7 +6,7 @@ export const getIncomingTransfersQuery = (address: NeuronAddress) =>
   `tm.event='Tx' AND transfer.recipient='${address}'`;
 
 // eslint-disable-next-line import/no-unused-modules
-export function createWebSocketObservable(
+export function createNodeWebsocketObservable(
   address: NeuronAddress,
   query: string
 ) {
@@ -14,7 +14,7 @@ export function createWebSocketObservable(
     const ws = new WebSocket(CYBER_NODE_URL_WS);
 
     ws.onopen = () => {
-      console.log(`WebSocket connected to ${CYBER_NODE_URL_WS} with ${query}`);
+      console.log(`node ws connected to ${CYBER_NODE_URL_WS} with ${query}`);
       ws.send(
         JSON.stringify({
           jsonrpc: '2.0',

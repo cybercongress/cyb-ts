@@ -1,8 +1,6 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import { EntryType } from 'src/services/CozoDb/types/entities';
-import { dtoToEntity } from 'src/utils/dto';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
   MSG_SEND_TRANSACTION_TYPE,
@@ -10,7 +8,7 @@ import {
 } from 'src/services/backend/services/indexer/types';
 import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { result } from 'lodash';
+import { EntityToDto } from 'src/types/dto';
 
 type LocalSenseChatMessage = {
   transactionHash: TransactionHash;
@@ -26,32 +24,27 @@ const prepareSenseTransaction = ({
   toAddress,
   amount,
   memo,
-}: LocalSenseChatMessage) =>
-  // syncItem?: SyncStatusDto
-  {
-    const index = 0;
-    const timestamp = new Date().getTime();
+}: LocalSenseChatMessage) => {
+  const value = {
+    fromAddress,
+    toAddress,
+    amount,
+  } as EntityToDto<MsgSendValue>;
 
-    const value = dtoToEntity({
-      fromAddress,
-      toAddress,
-      amount,
-    }) as MsgSendValue;
+  const transaction = {
+    hash: transactionHash,
+    type: MSG_SEND_TRANSACTION_TYPE,
+    index: 0,
+    timestamp: new Date().getTime(),
+    success: true,
+    value,
+    memo,
+    neuron: fromAddress,
+    blockHeight: -1,
+  } as TransactionDto;
 
-    const transaction = {
-      hash: transactionHash,
-      type: MSG_SEND_TRANSACTION_TYPE,
-      index,
-      timestamp,
-      success: true,
-      value,
-      memo,
-      neuron: fromAddress,
-      blockHeight: -1,
-    } as TransactionDto;
-
-    return transaction;
-  };
+  return transaction;
+};
 
 export const createSenseApi = (
   dbApi: DbApiWrapper,
@@ -91,10 +84,6 @@ export const createSenseApi = (
           cid: [CID_TWEET, CID_FOLLOW],
         })
       : [];
-
-    // const result = [...chats, ...links].sort((a, b) =>
-    //   a.timestamp > b.timestamp ? 1 : -1
-    // );
     return [...chats, ...links];
   },
 });

@@ -89,9 +89,10 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
 
             if (progress && status === 'in-progress') {
               totalEstimatedTime += progress.estimatedTime;
-              messages.push(
-                `${name}: ${progress.completeCount}/${progress.totalCount}`
+              const percents = Math.round(
+                (progress.completeCount / progress.totalCount) * 100
               );
+              messages.push(`${name}: ${percents}%`);
             }
           }
         }

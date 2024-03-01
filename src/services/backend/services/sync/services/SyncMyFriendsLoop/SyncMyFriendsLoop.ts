@@ -23,6 +23,8 @@ import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 import { throwIfAborted } from 'src/utils/async/promise';
 
 import { SyncEntryName } from 'src/services/backend/types/services';
+import { SenseItemLinkMeta } from 'src/services/backend/types/sense';
+import { entityToDto } from 'src/utils/dto';
 import { ServiceDeps } from '../types';
 
 import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
@@ -32,12 +34,6 @@ import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
-import {
-  SenseLinkMeta,
-  SenseItemLinkMeta,
-  SenseListItemTransactionMeta,
-} from 'src/services/backend/types/sense';
-import { entityToDto } from 'src/utils/dto';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   protected followings: NeuronAddress[] = [];
@@ -52,8 +48,14 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
     if (!deps.followings$) {
       throw new Error('followings$ is required');
     }
-    const followingsInitialized$ = new BehaviorSubject<boolean>(false);
 
+    super(name, intervalMs, deps, particlesResolver, {
+      warmupMs,
+    });
+  }
+
+  protected createIsInitializedObserver(deps: ServiceDeps) {
+    const followingsInitialized$ = new BehaviorSubject<boolean>(false);
     deps.params$
       ?.pipe(
         map((params) => params.myAddress),
@@ -63,25 +65,18 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         followingsInitialized$.next(false);
       });
 
-    deps.followings$.subscribe((followings) => {
+    deps.followings$!.subscribe((followings) => {
       this.followings = followings;
       followingsInitialized$.next(true);
 
       this.restart();
     });
 
-    super(name, intervalMs, deps, particlesResolver, {
-      warmupMs,
-      extraIsInitialized$: followingsInitialized$,
-    });
-  }
-
-  protected createIsInitializedObserver(deps: ServiceDeps) {
     const isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.params$!,
       this.particlesResolver!.isInitialized$,
-      this.extraIsInitialized$!,
+      followingsInitialized$!,
     ]).pipe(
       map(
         ([dbInstance, params, syncQueueInitialized, followingsInitialized]) =>

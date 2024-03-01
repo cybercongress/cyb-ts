@@ -10,7 +10,7 @@ import {
   exhaustMap,
   Subject,
 } from 'rxjs';
-import { withInitializerObserver } from './withInitializer';
+import { switchWhenInitialized } from './withInitializer';
 
 type LoopObservableOptions = {
   warmupMs?: number;
@@ -42,7 +42,7 @@ export const createLoopObservable = (
     switchMap(() => interval(intervalMs).pipe(startWith(0), delay(warmupMs)))
   );
 
-  const source$ = withInitializerObserver(
+  const source$ = switchWhenInitialized(
     isInitialized$,
     intervalOrRestart$.pipe(
       tap(() => onStartInterval && onStartInterval()),

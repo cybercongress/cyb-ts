@@ -36,13 +36,13 @@ const cyberGraphQLWsLink = new GraphQLWsLink(
   })
 );
 
-export const createIndexerClient = (abortSignal?: AbortSignal) =>
+export const createIndexerClient = (abortSignal: AbortSignal) =>
   new GraphQLClient(CYBER_INDEX_HTTPS, {
     signal: abortSignal,
   });
 
 // eslint-disable-next-line import/no-unused-modules
-export function createRxJsClient<T>(
+export function createIndexerWebsocket<T>(
   query: DocumentNode,
   variables: object
 ): Observable<T> {

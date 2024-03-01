@@ -55,7 +55,7 @@ export interface CyberLinkValue {
   links: CyberLinkSimple[];
 }
 
-export interface DelegateTransaction
+interface DelegateTransaction
   extends GenericIndexerTransaction<MsgDelegateValue> {
   type: typeof DELEGATION_TRANSACTION_TYPE;
 }

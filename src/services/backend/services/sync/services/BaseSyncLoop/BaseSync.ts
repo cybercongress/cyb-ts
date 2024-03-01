@@ -39,13 +39,10 @@ abstract class BaseSync {
 
   protected readonly isInitialized$: Observable<boolean>;
 
-  protected readonly extraIsInitialized$: Observable<boolean> | undefined;
-
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
-    particlesResolver: ParticlesResolverQueue,
-    extraIsInitialized$?: Observable<boolean> | undefined
+    particlesResolver: ParticlesResolverQueue
   ) {
     this.name = name;
 
@@ -53,7 +50,6 @@ abstract class BaseSync {
 
     this.statusApi = broadcastStatus(name, this.channelApi);
     this.particlesResolver = particlesResolver;
-    this.extraIsInitialized$ = extraIsInitialized$;
 
     if (!deps.params$) {
       throw new Error('params$ is not defined');

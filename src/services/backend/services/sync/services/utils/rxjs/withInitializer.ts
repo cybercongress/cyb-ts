@@ -5,12 +5,11 @@ import {
   Observable,
   share,
   switchMap,
-  take,
   tap,
 } from 'rxjs';
 
-export const withInitializerObserver = (
-  isInitialized$: Observable<any>,
+export const switchWhenInitialized = (
+  isInitialized$: Observable<boolean>,
   actionObservable$: Observable<any>,
   onChange?: (isInitialized: boolean) => void
 ) =>

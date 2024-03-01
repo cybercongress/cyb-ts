@@ -22,13 +22,11 @@ abstract class BaseSyncLoop extends BaseSync {
     particlesResolver: ParticlesResolverQueue,
     {
       warmupMs,
-      extraIsInitialized$,
     }: {
       warmupMs: number;
-      extraIsInitialized$?: Observable<boolean> | undefined;
     } = { warmupMs: 0 }
   ) {
-    super(name, deps, particlesResolver, extraIsInitialized$);
+    super(name, deps, particlesResolver);
 
     const { loop$, restartLoop } = createLoopObservable(
       this.isInitialized$,

@@ -5,7 +5,6 @@ import {
   Observable,
   from,
   defer,
-  tap,
   distinctUntilChanged,
   merge,
   filter,
@@ -21,10 +20,10 @@ import { SyncStatusDto, TransactionDto } from 'src/services/CozoDb/types/dto';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { throwIfAborted } from 'src/utils/async/promise';
 import {
-  createWebSocketObservable,
+  createNodeWebsocketObservable,
   getIncomingTransfersQuery,
 } from 'src/services/blockchain/websocket';
-import { mapWsDataToTransactions } from 'src/services/blockchain/utils/mapping';
+import { mapWebsocketTxToTransactions } from 'src/services/blockchain/utils/mapping';
 
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
@@ -39,7 +38,7 @@ import {
 import { syncMyChats } from './services/chat';
 import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncClient from '../BaseSyncLoop/BaseSyncClient';
-import { createRxJsClient } from '../../../indexer/utils';
+import { createIndexerWebsocket } from '../../../indexer/utils';
 import { SyncServiceParams } from '../../types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
@@ -86,21 +85,22 @@ class SyncTransactionsLoop extends BaseSyncClient {
       limit: 100,
     });
 
-    const indexerObservable$ = createRxJsClient<TransactionsByAddressResponse>(
-      gqlMessagesByAddress('subscription'),
-      variables
-    ).pipe(
-      map((response: TransactionsByAddressResponse) => {
-        return {
-          source: 'indexer',
-          transactions: response.messages_by_address.map((i) =>
-            mapIndexerTransactionToEntity(myAddress!, i)
-          ),
-        };
-      })
-    );
+    const indexerObservable$ =
+      createIndexerWebsocket<TransactionsByAddressResponse>(
+        gqlMessagesByAddress('subscription'),
+        variables
+      ).pipe(
+        map((response: TransactionsByAddressResponse) => {
+          return {
+            source: 'indexer',
+            transactions: response.messages_by_address.map((i) =>
+              mapIndexerTransactionToEntity(myAddress!, i)
+            ),
+          };
+        })
+      );
 
-    const nodeObservample$ = createWebSocketObservable(
+    const nodeObservample$ = createNodeWebsocketObservable(
       myAddress!,
       getIncomingTransfersQuery(myAddress!)
     ).pipe(
@@ -108,7 +108,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       map((data) => {
         return {
           source: 'node',
-          transactions: mapWsDataToTransactions(myAddress!, data),
+          transactions: mapWebsocketTxToTransactions(myAddress!, data),
         };
       })
     );
@@ -211,7 +211,6 @@ class SyncTransactionsLoop extends BaseSyncClient {
       transactions.length,
       transactions.at(0)?.timestamp,
       transactions.at(-1)?.timestamp,
-      transactions,
       source
     );
 

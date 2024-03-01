@@ -5,7 +5,7 @@ import { SyncEntryName } from 'src/services/backend/types/services';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
 import BaseSync from './BaseSync';
-import { withInitializerObserver } from '../utils/rxjs/withInitializer';
+import { switchWhenInitialized } from '../utils/rxjs/withInitializer';
 import { SyncServiceParams } from '../../types';
 
 abstract class BaseSyncClient extends BaseSync {
@@ -20,7 +20,7 @@ abstract class BaseSyncClient extends BaseSync {
   ) {
     super(name, deps, particlesResolver);
 
-    const source$ = withInitializerObserver(
+    const source$ = switchWhenInitialized(
       this.isInitialized$!,
       this.reloadTrigger$.pipe(
         startWith(null),

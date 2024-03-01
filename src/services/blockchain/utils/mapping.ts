@@ -8,7 +8,6 @@ import {
 } from 'src/services/backend/services/indexer/types';
 import { NeuronAddress } from 'src/types/base';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import { dtoToEntity } from 'src/utils/dto';
 
 // eslint-disable-next-line import/no-unused-modules
 export const extractTxData = (data: string) => {
@@ -32,7 +31,10 @@ export const extractTxData = (data: string) => {
 };
 
 // eslint-disable-next-line import/no-unused-modules
-export const mapWsDataToTransactions = (neuron: NeuronAddress, result: any) => {
+export const mapWebsocketTxToTransactions = (
+  neuron: NeuronAddress,
+  result: any
+) => {
   const { data, events } = result;
 
   const hash = events['tx.hash'][0];
@@ -50,13 +52,12 @@ export const mapWsDataToTransactions = (neuron: NeuronAddress, result: any) => {
       type: transactionType,
       timestamp,
       success: true,
-      value: dtoToEntity(message!),
+      value: message!,
       memo,
       neuron,
       blockHeight,
     });
   });
-  console.log('----mapToTransactions2', transactions);
 
   return transactions;
 };

@@ -13,7 +13,7 @@ import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { SyncEntryName } from 'src/services/backend/types/services';
-import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+// import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 
 const setupStoragePersistence = async () => {
@@ -45,7 +45,6 @@ type BackendProviderContextType = {
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
   isReady: boolean;
-  userAbortController: AbortController | null;
 };
 
 const valueContext = {
@@ -58,7 +57,6 @@ const valueContext = {
   isReady: false,
   dbApi: null,
   ipfsApi: null,
-  userAbortController: null,
 };
 
 const BackendContext =
@@ -80,8 +78,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const [ipfsError, setIpfsError] = useState(null);
 
-  const [abortController, setAbortController] = useState(new AbortController());
-
   const isDbInitialized = useAppSelector(
     (state) => state.backend.services.db.status === 'started'
   );
@@ -100,24 +96,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   // // TODO: preload from DB
   const followings = useMemo(() => {
-    // console.log(
-    //   `--------cCTX followings ${myAddress}`,
-    //   friends.length + following.length
-    // );
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
 
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
-  // useEffect(() => {
-  //   // HACK: Perform the action when myAddress changes
-  //   backgroundWorkerInstance.setParams({ followings: [] });
-  //   console.log('myAddress changed, followings set to empty');
-  // }, [myAddress]);
-
   useEffect(() => {
-    // abortController.abort();
-    // setAbortController(new AbortController());
     backgroundWorkerInstance.setParams({ myAddress });
   }, [myAddress]);
 
@@ -230,7 +214,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isDbInitialized,
         isSyncInitialized,
         isReady,
-        userAbortController: abortController,
       } as BackendProviderContextType),
     [
       isReady,
@@ -240,7 +223,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       ipfsError,
       senseApi,
       dbApi,
-      abortController,
     ]
   );
 
