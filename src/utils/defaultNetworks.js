@@ -28,6 +28,21 @@ const defaultNetworks = {
     BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'pussyvaloper',
     MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
   },
+  deep: {
+    CHAIN_ID: 'deep',
+    DENOM_CYBER: 'energy',
+    DENOM_LIQUID_TOKEN: 'hydrogen',
+    DENOM_CYBER_G: 'GENERGY',
+    CYBER_NODE_URL_API: 'https://rpc.testnet.deepchain.dev/',
+    CYBER_WEBSOCKET_URL: 'wss://rpc.testnet.deepchain.dev/websocket',
+    CYBER_NODE_URL_LCD: 'https://lcd.testnet.deepchain.dev',
+    CYBER_INDEX_HTTPS: 'https://index.testnet.deepchain.dev/v1/graphql',
+    CYBER_INDEX_WEBSOCKET: 'wss://index.testnet.deepchain.dev/v1/graphql',
+
+    BECH32_PREFIX_ACC_ADDR_CYBER: 'deep',
+    BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'deepvaloper',
+    MEMO_KEPLR: '[deep] deepchain.dev, using keplr',
+  },
 };
 
 export default defaultNetworks;

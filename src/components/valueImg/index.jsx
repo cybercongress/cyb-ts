@@ -4,6 +4,7 @@ import styles from './ValueImg.module.scss';
 const hydrogen = require('../../image/hydrogen.svg');
 const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
+const deep = require('../../image/black_circle.png');
 const downOutline = require('../../image/chevronDownOutline.svg');
 const gol = require('../../image/seedling.png');
 const atom = require('../../image/cosmos-2.svg');
@@ -112,6 +113,11 @@ function ValueImg({
     case 'space-pussy':
       img = pussy;
       textCurency = 'space-pussy';
+      break;
+
+    case 'deep':
+      img = deep;
+      textCurency = 'energy';
       break;
 
     default:

@@ -10,6 +10,7 @@ import { CYBER, LEDGER } from './config';
 import tokenList from './tokenList';
 
 import cyberSpace from '../image/large-purple-circle.png';
+import deepSpace from '../image/black_circle.png'
 import customNetwork from '../image/large-orange-circle.png';
 import cyberBostrom from '../image/large-green.png';
 import { Key } from '@keplr-wallet/types';
@@ -312,6 +313,8 @@ const selectNetworkImg = (network) => {
       return cyberBostrom;
     case 'space-pussy':
       return cyberSpace;
+    case 'deep':
+      return deepSpace;
 
     default:
       return customNetwork;

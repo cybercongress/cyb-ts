@@ -8,11 +8,11 @@ services:
       - '3000:3000'
     environment:
       - NODE_OPTIONS=--max-old-space-size=8192
-      - CHAIN_ID=bostrom
-      - CYBER_NODE_URL_API=https://rpc.bostrom.cybernode.ai
-      - CYBER_NODE_URL_WS=wss://rpc.bostrom.cybernode.ai/websocket
-      - CYBER_NODE_URL_LCD=https://lcd.bostrom.cybernode.ai
-      - CYBER_INDEX_HTTPS=https://index.bostrom.cybernode.ai/v1/graphql
-      - CYBER_INDEX_WEBSOCKET=wss://index.bostrom.cybernode.ai/v1/graphql
+      - CHAIN_ID=deep
+      - CYBER_NODE_URL_API=https://rpc.testnet.deepchain.dev
+      - CYBER_NODE_URL_WS=wss://rpc.testnet.deepchain.dev/websocket
+      - CYBER_NODE_URL_LCD=https://lcd.testnet.deepchain.dev
+      - CYBER_INDEX_HTTPS=https://index.testnet.deepchain.dev/v1/graphql
+      - CYBER_INDEX_WEBSOCKET=wss://index.testnet.deepchain.dev/v1/graphql
       - CYBER_GATEWAY=https://gateway.bostrom.cybernode.ai
     command: npx serve -s build

@@ -7,6 +7,7 @@ import Tooltip from '../tooltip/tooltip';
 
 import boot from '../../image/large-green.png';
 import pussy from '../../image/large-purple-circle.png';
+import deep from '../../image/black_circle.png';
 import eth from 'images/Ethereum_logo_2014.svg';
 import osmo from 'images/osmosis.svg';
 import cosmos from 'images/cosmos-2.svg';
@@ -25,6 +26,10 @@ const getNativeImg = (text) => {
 
     case 'space-pussy':
       img = pussy;
+      break;
+
+    case 'deep':
+      img = deep;
       break;
 
     case 'eth':
