@@ -34,7 +34,8 @@
   ],
   "globals": {
     "expect": true,
-    "FileReader": true
+    "FileReader": true,
+    "cyblog": "readonly"
   },
   "rules": {
     "valid-jsdoc": "off",
@@ -125,12 +126,12 @@
       "always",
       { "ts": "never", "tsx": "never", "jsx": "never", "js": "never" }
     ],
-    "import/no-unresolved": "off",
     "no-unused-expressions": [
       "error",
       { "allowShortCircuit": true, "allowTernary": true }
     ],
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "import/no-unresolved": "off"
   },
   "settings": {
     "import/resolver": {

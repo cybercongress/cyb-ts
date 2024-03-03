@@ -1,4 +1,4 @@
-import { take, map, combineLatest, distinctUntilChanged } from 'rxjs';
+import { map, combineLatest, distinctUntilChanged } from 'rxjs';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -9,6 +9,7 @@ import { CID_TWEET } from 'src/constants/app';
 import { dateToNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
+import { throwIfAborted } from 'src/utils/async/promise';
 
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
@@ -22,7 +23,6 @@ import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 import { SyncServiceParams } from '../../types';
-import { throwIfAborted } from 'src/utils/async/promise';
 
 class SyncParticlesLoop extends BaseSyncLoop {
   protected createIsInitializedObserver(deps: ServiceDeps) {
