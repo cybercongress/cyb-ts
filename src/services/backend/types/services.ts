@@ -3,8 +3,8 @@ import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
 
 export type SyncEntryName =
   | 'pin'
-  | 'particle'
-  | 'transaction'
+  | 'particles'
+  | 'transactions'
   | 'resolver'
   | 'my-friends';
 
@@ -25,7 +25,6 @@ export type SyncProgress = Partial<{
     | 'inactive';
 
   progress: ProgressTracking;
-
   done: boolean;
   error: string;
   message: string;
@@ -36,12 +35,13 @@ export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 export type SyncEntryStatus = Record<SyncEntryName, SyncProgress>;
 
 export type SyncState = {
-  status: ServiceStatus;
   entryStatus: Partial<SyncEntryStatus>;
   lastError?: string;
   totalEstimatedTime: number;
   message: string;
   inProgress: boolean;
+  completeIntialSyncEntries: SyncEntryName[];
+  initialSyncDone: boolean;
 };
 
 export type SyncStatusMessage = {

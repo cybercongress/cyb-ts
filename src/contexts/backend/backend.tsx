@@ -15,6 +15,7 @@ import { SenseApi, createSenseApi } from './services/senseApi';
 import { SyncEntryName } from 'src/services/backend/types/services';
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 import { DB_NAME } from 'src/services/CozoDb/cozoDb';
+import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -103,7 +104,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
-  }, [myAddress]);
+    dispatch({ type: RESET_SYNC_STATE_ACTION_NAME });
+  }, [myAddress, dispatch]);
 
   useEffect(() => {
     isReady && console.log('🟢 Backend started.');

@@ -127,11 +127,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
   public async initSync() {
     const { myAddress } = this.params;
     const { signal } = this.abortController;
-    const syncItem = await this.db!.getSyncStatus(
-      myAddress!,
-      myAddress!,
-      EntryType.transactions
-    );
+    const syncItem = await this.db!.getSyncStatus(myAddress!, myAddress!);
 
     const lastTransactionTimestamp = await this.syncTransactions(
       myAddress!,
@@ -163,11 +159,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       console.log(`>>> ${this.name} ${myAddress} recived 0 updates `);
       return;
     }
-    const syncItem = await this.db!.getSyncStatus(
-      myAddress!,
-      myAddress!,
-      EntryType.transactions
-    );
+    const syncItem = await this.db!.getSyncStatus(myAddress!, myAddress!);
 
     await this.processBatchTransactions(
       myAddress!,

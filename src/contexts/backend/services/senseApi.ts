@@ -1,5 +1,5 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
+import { isParticle } from 'src/features/particle/utils';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
@@ -7,6 +7,7 @@ import {
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
+import { SENSE_FRIEND_PARTICLES } from 'src/services/backend/services/sync/services/consts';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { EntityToDto } from 'src/types/dto';
 
@@ -52,9 +53,50 @@ export const createSenseApi = (
   followingAddresses = [] as NeuronAddress[]
 ) => ({
   getList: () => dbApi.getSenseList(myAddress),
-  markAsRead: (id: NeuronAddress | ParticleCid) =>
-    dbApi.senseMarkAsRead(myAddress!, id),
-  getAllParticles: (fields: string[]) => dbApi.getParticles(fields),
+  markAsRead: async (
+    id: NeuronAddress | ParticleCid,
+    lastTimestampRead?: number
+  ) => {
+    const syncItem = await dbApi.getSyncStatus(myAddress!, id);
+
+    let unreadCount = 0;
+    let timestampRead = syncItem.timestampUpdate;
+
+    if (lastTimestampRead) {
+      timestampRead = lastTimestampRead;
+
+      if (isParticle(id)) {
+        const links = await dbApi.getLinks({
+          cid: id,
+          neuron: myAddress!,
+          timestampFrom: lastTimestampRead,
+        });
+
+        unreadCount = links.length;
+      } else {
+        const links = await dbApi.getLinks({
+          cid: SENSE_FRIEND_PARTICLES,
+          neuron: id,
+          timestampFrom: lastTimestampRead,
+        });
+
+        const chats = await dbApi.getMyChats(myAddress!, id);
+
+        unreadCount = links.length + chats.length;
+      }
+    }
+
+    const res = await dbApi.updateSyncStatus({
+      id,
+      ownerId: myAddress!,
+      timestampRead, //  conditional or read all
+      unreadCount,
+    });
+    console.log('------senseMarkAsRead', syncItem, res, timestampRead);
+    // console.timeEnd(`---senseMarkAsRead done ${id}`);
+    return res;
+  },
+  getAllParticles: (fields: string[]) => dbApi.getParticlesRaw(fields),
   getLinks: (cid: ParticleCid) => dbApi.getLinks({ cid }),
   addMsgSendAsLocal: async (msg: LocalSenseChatMessage) => {
     /*
@@ -81,7 +123,7 @@ export const createSenseApi = (
     const links = followingAddresses.includes(userAddress)
       ? await dbApi.getLinks({
           neuron: userAddress,
-          cid: [CID_TWEET, CID_FOLLOW],
+          cid: SENSE_FRIEND_PARTICLES,
         })
       : [];
 

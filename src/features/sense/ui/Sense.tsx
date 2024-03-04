@@ -73,14 +73,12 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
       ) : (
         <p>
           syncing txs data <br />
-          {syncState.inProgress
+          {!syncState.initialSyncDone && syncState.inProgress
             ? `${syncState.message} (remaining: ${
                 syncState.totalEstimatedTime > -1
                   ? convertTimestampToString(syncState.totalEstimatedTime)
                   : '???'
               })...`
-            : syncState.status === 'started'
-            ? 'estimating time to complete...'
             : ''}
         </p>
       );

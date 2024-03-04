@@ -1,14 +1,12 @@
 import {
   EntryType,
   PinDbEntity,
-  TransactionDbEntity,
   SyncQueueStatus,
   LinkDbEntity,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
 import { dbResultToDtoList } from 'src/services/CozoDb/utils';
-import { jsonifyFields } from 'src/utils/dto';
 import {
   removeUndefinedFields,
   dtoListToEntity,
@@ -34,6 +32,12 @@ import {
 } from '../../indexer/types';
 
 const TIMESTAMP_INTITAL = 0;
+const DEFAULT_SYNC_STATUS = {
+  timestampUpdate: TIMESTAMP_INTITAL,
+  timestampRead: TIMESTAMP_INTITAL,
+  unreadCount: 0,
+  meta: {},
+} as SyncStatusDto;
 
 class DbApiWrapper {
   private db: CozoDbWorker | undefined;
@@ -46,36 +50,24 @@ class DbApiWrapper {
   public async getSyncStatus(
     ownerId: NeuronAddress,
     id: NeuronAddress | ParticleCid,
-    entryType: EntryType | EntryType[]
+    defaultSyncStatus = DEFAULT_SYNC_STATUS
   ) {
     const result = await this.db!.executeGetCommand(
       'sync_status',
-      ['timestamp_update', 'unread_count', 'timestamp_read', 'meta'],
-      [
-        `id = '${id}'`,
-        `owner_id = '${ownerId}'`,
-        `entry_type in [${
-          Array.isArray(entryType) ? entryType.join(', ') : entryType
-        }]`,
-      ],
-      ['id', 'owner_id', 'entry_type']
+      undefined,
+      [`id = '${id}'`, `owner_id = '${ownerId}'`],
+      ['id', 'owner_id']
     );
 
     return result.rows.length
       ? dbResultToDtoList<SyncStatusDto>(result)[0]
-      : ({
-          timestampUpdate: TIMESTAMP_INTITAL,
-          timestampRead: TIMESTAMP_INTITAL,
-          unreadCount: 0,
-          meta: {},
-        } as SyncStatusDto);
+      : defaultSyncStatus;
   }
 
   public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {
     const entitites = dtoListToEntity(
       Array.isArray(entity) ? entity : [entity]
     );
-
     const result = await this.db!.executePutCommand('sync_status', entitites);
 
     return result;
@@ -119,8 +111,7 @@ class DbApiWrapper {
       ['entry_type', 'owner_id'],
       { orderBy: ['-timestamp_update'] }
     );
-
-    return dbResultToDtoList(result) as SyncStatusDto[];
+    return dbResultToDtoList<SyncStatusDto>(result);
   }
 
   public async putTransactions(transactions: TransactionDto[]) {
@@ -147,7 +138,7 @@ class DbApiWrapper {
       `owner_id = '${ownerId}'`,
     ]);
 
-    return dbResultToDtoList(result) as CommunityDto[];
+    return dbResultToDtoList<CommunityDto>(result);
   }
 
   public async putCommunity(community: CommunityDto[] | CommunityDto) {
@@ -171,7 +162,7 @@ class DbApiWrapper {
     await this.db!.executePutCommand('particle', entitites);
   }
 
-  public async getParticles(fields: string[]) {
+  public async getParticlesRaw(fields: string[]) {
     const result = await this.db!.executeGetCommand('particle', fields);
 
     return result;
@@ -190,39 +181,11 @@ class DbApiWrapper {
     `;
 
     const result = await this.db!.runCommand(command, true);
-    const senseList = dbResultToDtoList(result).map((i) =>
-      jsonifyFields(i, ['meta'])
-    ) as SenseListItem[];
+    const senseList = dbResultToDtoList<SenseListItem>(result);
 
     // console.log('-------cmd', senseList);
     console.log('!=!=! redundant calls - FIX', myAddress);
     return senseList;
-  }
-
-  public async senseMarkAsRead(
-    ownerId: NeuronAddress,
-    id: NeuronAddress | ParticleCid
-  ) {
-    // console.time(`---senseMarkAsRead done ${id}`);
-    const result = await this.db!.executeGetCommand(
-      'sync_status',
-      ['timestamp_update'],
-      [`id = '${id}'`, `owner_id = '${ownerId}'`],
-      ['id', 'owner_id']
-    );
-
-    const timestampUpdate = result.rows[0][0] as number;
-
-    const res = this.updateSyncStatus({
-      id,
-      ownerId,
-      timestampUpdate,
-      timestampRead: timestampUpdate,
-      unreadCount: 0,
-    });
-
-    // console.timeEnd(`---senseMarkAsRead done ${id}`);
-    return res;
   }
 
   public async getTransactions(
@@ -243,9 +206,8 @@ class DbApiWrapper {
       ['neuron'],
       { orderBy: [order === 'desc' ? '-timestamp' : 'timestamp'] }
     );
-    return dbResultToDtoList(result).map((i) =>
-      jsonifyFields(i, ['value'])
-    ) as TransactionDto[];
+
+    return dbResultToDtoList<TransactionDto>(result);
   }
 
   public async getMyChats(
@@ -261,9 +223,8 @@ class DbApiWrapper {
       ['neuron'],
       { orderBy: ['timestamp'] }
     );
-    const sendTransactions = dbResultToDtoList(result).map((i) =>
-      jsonifyFields(i, ['value'])
-    ) as TransactionDto[];
+
+    const sendTransactions = dbResultToDtoList<TransactionDto>(result);
 
     const chats = extractSenseChats(myAddress, sendTransactions);
     const userChats = [...chats.values()].find(
@@ -337,9 +298,11 @@ class DbApiWrapper {
   public async getLinks({
     cid,
     neuron,
+    timestampFrom,
   }: {
     cid?: ParticleCid | ParticleCid[];
     neuron?: NeuronAddress;
+    timestampFrom?: number;
   }) {
     const conditions = [];
 
@@ -353,6 +316,7 @@ class DbApiWrapper {
     }
 
     neuron && conditions.push(`neuron='${neuron}'`);
+    timestampFrom && conditions.push(`timestamp > ${timestampFrom}`);
 
     const result = await this.db!.executeGetCommand(
       'link',
@@ -362,7 +326,7 @@ class DbApiWrapper {
       { orderBy: ['timestamp'] }
     );
 
-    return dbResultToDtoList(result) as LinkDto[];
+    return dbResultToDtoList<LinkDto>(result);
   }
 }
 

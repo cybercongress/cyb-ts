@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-unused-modules */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { snakeToCamel } from 'src/utils/dto';
+import { entityToDto, snakeToCamel } from 'src/utils/dto';
 
 import { Column, IDBResult } from './types/types';
 import { DbEntity } from './types/entities';
@@ -9,20 +9,22 @@ import { DbEntity } from './types/entities';
 export function dbResultToDtoList<T>(dbResult: IDBResult): T[] {
   const { headers, rows } = dbResult;
 
-  const camelCaseHeadersMap = headers.reduce(
-    (acc: Record<string, any>, header) => {
-      acc[header] = snakeToCamel(header);
-      return acc;
-    },
-    {}
-  );
+  // const camelCaseHeadersMap = headers.reduce(
+  //   (acc: Record<string, any>, header) => {
+  //     acc[header] = snakeToCamel(header);
+  //     return acc;
+  //   },
+  //   {}
+  // );
 
   return rows.map((row) => {
     const obj: Record<string, any> = {};
     headers.forEach((header, index) => {
-      obj[camelCaseHeadersMap[header]] = row[index];
+      // obj[camelCaseHeadersMap[header]] = row[index];
+      obj[header] = row[index];
     });
-    return obj as T;
+
+    return entityToDto(obj) as T;
   });
 }
 

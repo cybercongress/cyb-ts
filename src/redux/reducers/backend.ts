@@ -3,13 +3,16 @@ import {
   SyncState,
   ServiceStatus,
   BroadcastChannelMessage,
-  SyncEntryName,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
-import { raw } from '@storybook/react';
+
 import { removeDublicates } from 'src/utils/list';
+import { clone } from 'lodash';
+import { SYNC_ENTRIES_TO_TRACK_PROGRESS } from 'src/services/backend/services/sync/services/consts';
+
+export const RESET_SYNC_STATE_ACTION_NAME = 'reset_sync_entry';
 
 type BackendState = {
   dbPendingWrites: number;
@@ -30,6 +33,16 @@ type BackendState = {
   };
 };
 
+const initialSyncState = {
+  // status: 'inactive',
+  entryStatus: {},
+  totalEstimatedTime: 0,
+  message: '',
+  inProgress: false,
+  completeIntialSyncEntries: [],
+  initialSyncDone: false,
+};
+
 const initialState: BackendState = {
   dbPendingWrites: 0,
   community: {
@@ -39,13 +52,7 @@ const initialState: BackendState = {
     followers: [],
     friends: [],
   },
-  syncState: {
-    status: 'inactive',
-    entryStatus: {},
-    totalEstimatedTime: 0,
-    message: '',
-    inProgress: false,
-  },
+  syncState: initialSyncState,
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
@@ -54,23 +61,26 @@ const initialState: BackendState = {
 };
 
 // Backend state
-function backendReducer(state = initialState, action: BroadcastChannelMessage) {
+function backendReducer(
+  state = initialState,
+  action:
+    | BroadcastChannelMessage
+    | {
+        type: typeof RESET_SYNC_STATE_ACTION_NAME;
+      }
+) {
   switch (action.type) {
     case 'indexeddb_write': {
       return assocPath(['dbPendingWrites'], action.value, state);
     }
-    case 'sync_status': {
-      return assocPath(
-        ['syncState'],
-        { ...state.syncState, ...action.value },
-        state
-      );
+
+    case RESET_SYNC_STATE_ACTION_NAME: {
+      return { ...state, syncState: initialSyncState };
     }
     case 'sync_entry': {
       const { entry, state: entryState } = action.value;
       const updatedEntry = {
         ...state.syncState.entryStatus[entry],
-        done: false,
         ...entryState,
       };
       const newState = assocPath(
@@ -81,35 +91,44 @@ function backendReducer(state = initialState, action: BroadcastChannelMessage) {
 
       const messages: string[] = [];
       let totalEstimatedTime = 0;
-      const { entryStatus } = newState.syncState;
-      (['my-friends', 'particle', 'transaction'] as SyncEntryName[]).forEach(
-        (name) => {
-          if (entryStatus[name]) {
-            const { progress, status } = newState.syncState.entryStatus[name]!;
+      const { entryStatus, completeIntialSyncEntries } = newState.syncState;
+      const newCompleteIntitalSyncEntries = clone(completeIntialSyncEntries);
+      SYNC_ENTRIES_TO_TRACK_PROGRESS.forEach((name) => {
+        if (entryStatus[name]) {
+          const { progress, status } = newState.syncState.entryStatus[name]!;
 
-            if (progress && status === 'in-progress') {
-              totalEstimatedTime += progress.estimatedTime;
-              const percents = Math.round(
-                (progress.completeCount / progress.totalCount) * 100
-              );
-              messages.push(`${name}: ${percents}%`);
-            }
+          // Push flags that initial sync was done
+          if (
+            status &&
+            ['active', 'listen'].some((s) => s === status) &&
+            !completeIntialSyncEntries.some((entryName) => entryName === name)
+          ) {
+            newCompleteIntitalSyncEntries.push(name);
+          }
+
+          if (progress && status === 'in-progress') {
+            totalEstimatedTime += progress.estimatedTime;
+            const percents = Math.round(
+              (progress.completeCount / progress.totalCount) * 100
+            );
+            messages.push(`${name}: ${percents}%`);
           }
         }
-      );
+      });
 
-      // if (
-      //   messages.length === 0 &&
-      //   state.syncState.entryStatus['transaction']?.status === 'in-progress'
-      // ) {
-      //   debugger;
-      // }
+      const initialSyncDone = SYNC_ENTRIES_TO_TRACK_PROGRESS.reduce(
+        (prev, curr) =>
+          prev && newCompleteIntitalSyncEntries.some((n) => n === curr),
+        true
+      );
 
       newState.syncState = {
         ...newState.syncState,
         message: messages.join(', '),
         totalEstimatedTime,
         inProgress: messages.length > 0,
+        completeIntialSyncEntries: newCompleteIntitalSyncEntries,
+        initialSyncDone,
       };
 
       return newState;

@@ -56,10 +56,10 @@ export class SyncService {
 
     // new SyncIpfsLoop(deps, particlesResolver).start();
 
-    new SyncTransactionsLoop('transaction', deps, particlesResolver).start();
+    new SyncTransactionsLoop('transactions', deps, particlesResolver).start();
 
     new SyncParticlesLoop(
-      'particle',
+      'particles',
       MY_PARTICLES_SYNC_INTERVAL,
       deps,
       particlesResolver

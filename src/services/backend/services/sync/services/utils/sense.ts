@@ -34,10 +34,10 @@ export const extractSenseChats = (
         updateSenseChat(chats, msg.address, t, msg.coins, isSender)
       );
     } else if (t.type === MSG_SEND_TRANSACTION_TYPE) {
-      const { from_address, to_address, amount } =
+      const { fromAddress, toAddress, amount } =
         t.value as MsgSendTransaction['value'];
-      const isSender = from_address === myAddress;
-      userAddress = isSender ? to_address : from_address;
+      const isSender = fromAddress === myAddress;
+      userAddress = isSender ? toAddress : fromAddress;
       updateSenseChat(chats, userAddress, t, amount, isSender);
     }
   });

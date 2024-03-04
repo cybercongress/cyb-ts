@@ -18,7 +18,7 @@ export const syncMyChats = async (
 ) => {
   const syncItems = await db.findSyncStatus({
     ownerId: myAddress,
-    entryType: EntryType.transactions,
+    entryType: EntryType.chat,
   });
 
   const syncItemsMap = new Map(syncItems?.map((i) => [i.id, i]));
@@ -49,6 +49,7 @@ export const syncMyChats = async (
       } as SenseTransactionMeta,
     };
 
+    // if no sync item(first message/initial)
     if (!syncItem) {
       const unreadCount = chat.transactions.filter(
         (t) => t.timestamp > chat.lastSendTimestamp
@@ -79,9 +80,7 @@ export const syncMyChats = async (
         timestampRead!,
         chat.lastSendTimestamp
       );
-      const { timestampUpdateContent = 0, timestampUpdateChat = 0 } =
-        meta || {};
-
+      const { timestampUpdateContent = 0, timestampUpdateChat = 0 } = meta;
       const unreadCount =
         prevUnreadCount +
         chat.transactions.filter((t) => t.timestamp > lastTimestampRead).length;
@@ -96,6 +95,7 @@ export const syncMyChats = async (
 
           meta: {
             ...syncItemHeader.meta,
+            // if message source is 'fast' then no update till 'slow' reupdate
             timestampUpdateChat: shouldUpdateTimestamp
               ? transactionTimestamp
               : timestampUpdateChat,

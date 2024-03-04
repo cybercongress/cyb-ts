@@ -191,7 +191,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
     if (updatedSyncItems.length > 0) {
       await throwIfAborted(this.db!.putSyncStatus, signal)(updatedSyncItems);
     }
-
     this.channelApi.postSenseUpdate(updatedSyncItems as SenseListItem[]);
   }
 }

@@ -2,14 +2,8 @@
 import {
   map,
   combineLatest,
-  Observable,
   distinctUntilChanged,
-  switchMap,
-  take,
-  filter,
-  tap,
   BehaviorSubject,
-  of,
 } from 'rxjs';
 
 import { EntryType } from 'src/services/CozoDb/types/entities';
@@ -18,7 +12,6 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { isAbortException } from 'src/utils/exceptions/helpers';
 
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 import { throwIfAborted } from 'src/utils/async/promise';
 
@@ -34,6 +27,7 @@ import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import { SENSE_FRIEND_PARTICLES } from '../consts';
 
 class SyncMyFriendsLoop extends BaseSyncLoop {
   protected followings: NeuronAddress[] = [];
@@ -131,8 +125,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
       );
       const { timestampRead, unreadCount, meta } = await this.db!.getSyncStatus(
         myAddress,
-        address,
-        EntryType.chat
+        address
       );
 
       const { timestampUpdateChat = 0, timestampUpdateContent = 0 } =
@@ -142,7 +135,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
 
       const linksAsyncIterable = await fetchCyberlinksByNerounIterable(
         address,
-        [CID_TWEET, CID_FOLLOW],
+        SENSE_FRIEND_PARTICLES,
         timestampFrom,
         CYBERLINKS_BATCH_LIMIT,
         signal

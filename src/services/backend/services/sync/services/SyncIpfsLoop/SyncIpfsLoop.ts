@@ -97,7 +97,7 @@ class SyncIpfsLoop {
       }
 
       const particlesExist = new Set(
-        (await this.db!.getParticles(['cid'])).rows.map(
+        (await this.db!.getParticlesRaw(['cid'])).rows.map(
           (row) => row[0] as string
         )
       );

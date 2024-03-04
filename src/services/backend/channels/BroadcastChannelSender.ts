@@ -27,13 +27,6 @@ class BroadcastChannelSender {
     });
   }
 
-  public postSyncStatus(status: ServiceStatus, lastError?: string) {
-    this.channel.postMessage({
-      type: 'sync_status',
-      value: { status, lastError },
-    });
-  }
-
   public postSyncEntryProgress(entry: SyncEntryName, state: SyncProgress) {
     // console.log('postSyncEntryProgress', entry, state);
     this.channel.postMessage({ type: 'sync_entry', value: { entry, state } });
