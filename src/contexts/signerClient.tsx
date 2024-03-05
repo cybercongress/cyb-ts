@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import _ from 'lodash';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
@@ -14,6 +15,7 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Keplr } from '@keplr-wallet/types';
 import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
 import { accountsKeplr } from 'src/utils/utils';
+import usePrevious from 'src/hooks/usePrevious';
 
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
@@ -60,10 +62,11 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   const [signerReady, setSignerReady] = useState(false);
   const [signingClient, setSigningClient] =
     useState<SignerClientContextType['signingClient']>();
+  const prevAccounts = usePrevious(accounts);
 
   const selectAddress = useCallback(
     async (keplr: Keplr) => {
-      if (!accounts) {
+      if (!accounts || _.isEqual(prevAccounts, accounts)) {
         return;
       }
       const keyInfo = await keplr.getKey(CYBER.CHAIN_ID);
@@ -82,7 +85,7 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
         dispatch(addAddressPocket(accountsKeplr(keyInfo)));
       }
     },
-    [accounts, dispatch]
+    [accounts, prevAccounts, dispatch]
   );
 
   useEffect(() => {
