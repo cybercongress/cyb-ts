@@ -6,6 +6,7 @@ import {
 
 import { SenseItem } from '../../redux/sense.redux';
 import { isParticle } from 'src/features/particle/utils';
+import { EntityToDto } from 'src/types/dto';
 
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export function formatSenseItemDataToUI(
@@ -25,9 +26,10 @@ export function formatSenseItemDataToUI(
 
   switch (type) {
     case 'cosmos.bank.v1beta1.MsgSend': {
-      const { amount: a, to_address: toAddress } =
-        meta as MsgSendTransaction['value'];
-
+      // TODO: create meta types for particular transactions
+      const { amount: a, toAddress } = meta as unknown as EntityToDto<
+        MsgSendTransaction['value']
+      >;
       amount = a;
       isAmountSendToMyAddress = toAddress === currentAddress;
 
