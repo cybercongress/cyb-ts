@@ -120,7 +120,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
       if (type === 'cosmos.bank.v1beta1.MsgSend') {
         const value = meta.value as MsgSendValue;
-        from = value.from_address;
+        from = value.fromAddress;
       } else if (type === 'cosmos.bank.v1beta1.MsgMultiSend') {
         const value = meta.value as MsgMultiSendValue;
 
