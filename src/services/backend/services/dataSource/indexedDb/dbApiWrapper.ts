@@ -172,9 +172,9 @@ class DbApiWrapper {
     const command = `
     ss_particles[id, meta] := *sync_status{entry_type,id, meta, owner_id}, entry_type=${EntryType.particle}, owner_id = '${myAddress}'
 
-    ss_chat_all[id, meta, hash, is_link] := *sync_status{entry_type, id, meta, owner_id}, entry_type=${EntryType.chat}, hash=maybe_get(meta, 'transaction_hash'), is_link=!is_null(maybe_get(meta, 'to')), owner_id = '${myAddress}'
-    ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link], is_link
-    ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link], !is_link, *transaction{hash, index, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success, 'index', index))
+    ss_chat_all[id, meta, hash, is_link, index] := *sync_status{entry_type, id, meta, owner_id}, entry_type=${EntryType.chat}, index=maybe_get(meta, 'index'), hash=maybe_get(meta, 'transaction_hash'), is_link=!is_null(maybe_get(meta, 'to')), owner_id = '${myAddress}'
+    ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link, index], is_link
+    ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link, index], !is_link, *transaction{hash, index, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success, 'index', index))
 
     ?[owner_id, entry_type, id, unread_count, timestamp_update, timestamp_read, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}'
     :order -timestamp_update
@@ -201,7 +201,7 @@ class DbApiWrapper {
     ];
     const result = await this.db!.executeGetCommand(
       'transaction',
-      ['hash', 'type', 'success', 'value', 'timestamp', 'memo'],
+      ['hash', 'type', 'success', 'value', 'timestamp', 'memo', 'index'],
       conditions,
       ['neuron'],
       { orderBy: [order === 'desc' ? '-timestamp' : 'timestamp'] }
