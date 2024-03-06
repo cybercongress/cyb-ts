@@ -13,6 +13,7 @@ import styles from './styles.module.scss';
 import Button from '../btnGrd';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { trimString } from 'src/utils/utils';
+import Long from 'long';
 
 const back = require('../../image/arrow-left-img.svg');
 

@@ -9,6 +9,7 @@ import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import {
+  Link,
   matchPath,
   useLocation,
   useNavigate,
@@ -18,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import { initPocket } from 'src/redux/features/pocket';
 import { Networks } from 'src/types/networks';
 import { routes } from 'src/routes';
+import { renderSubItems } from 'src/components/appMenu/AppMenu';
 
 export const menuButtonId = 'menu-button';
 
@@ -59,7 +61,7 @@ const updateAddress = (prefix: any) => {
   }
 };
 
-function SwitchNetwork({ onClickOpenMenu, openMenu }) {
+function SwitchNetwork({ onClickOpenMenu, openMenu, activeApp }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const location = useLocation();
@@ -140,6 +142,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         </button>
       ));
 
+  console.log('activeApp', activeApp);
   return (
     <>
       <div
@@ -160,10 +163,10 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         >
           <img
             alt="cyb"
-            src={selectNetworkImg(CYBER.CHAIN_ID)}
+            src={activeApp.icon || selectNetworkImg(CYBER.CHAIN_ID)}
             className={styles.networkBtnImg}
           />
-          <div
+          {/* <div
             className={cx(styles.networkBtnImgIconMenu, {
               [styles.networkBtnImgIconMenuClose]: !openMenu,
             })}
@@ -171,7 +174,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
             <div />
             <div />
             <div />
-          </div>
+          </div> */}
         </button>
         {mediaQuery && (
           <div className={styles.containerInfoSwitch}>
@@ -189,6 +192,12 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
           </div>
         )}
       </div>
+
+      {activeApp && activeApp.subItems && (
+        <div className={cx(styles.containerSubItems, styles.tooltipContainer)}>
+          {renderSubItems(activeApp.subItems, location, undefined)}
+        </div>
+      )}
 
       {/* {renderItemChain && Object.keys(renderItemChain).length > 0 && (
         <Transition in={visible} timeout={300}>

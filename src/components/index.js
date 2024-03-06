@@ -54,6 +54,7 @@ import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
+import Time from './time/time';
 
 const BtnGrd = Button;
 
@@ -114,6 +115,7 @@ export {
   Slider,
   CreatedAt,
   Tabs,
+  Time,
 };
 
 export { Dots } from './ui/Dots';

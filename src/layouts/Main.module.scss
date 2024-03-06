@@ -1,5 +1,13 @@
 .wrapper {
   footer {
+    display: flex;
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    bottom: 0px;
+    height: 40px;
+    background-color: #000;
+
     a {
       position: fixed;
       z-index: 2;
@@ -8,5 +16,11 @@
       display: flex;
       align-items: center;
     }
+  }
+
+  .Time {
+    display: flex;
+    position: fixed;
+    right: 5vw;
   }
 }
