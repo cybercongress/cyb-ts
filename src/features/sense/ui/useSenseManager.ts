@@ -6,26 +6,34 @@ import { useBackend } from 'src/contexts/backend/backend';
 
 function useSenseManager() {
   const currentAddress = useAppSelector(selectCurrentAddress);
+  const { isLoading: listIsLoading } = useAppSelector(
+    (store) => store.sense.list
+  );
   const dispatch = useAppDispatch();
 
+  // TODO: usePrevious hook
   const lastAddress = useRef<string>();
   const { senseApi } = useBackend();
 
+  // refetch sense list when address changes
   useEffect(() => {
-    if (!currentAddress) {
+    if (!currentAddress || listIsLoading) {
       return;
     }
 
-    if (lastAddress.current && lastAddress.current !== currentAddress) {
-      dispatch(reset());
-    }
+    // main account changed
+    if (lastAddress.current !== currentAddress) {
+      if (lastAddress.current) {
+        dispatch(reset());
+      }
 
-    lastAddress.current = currentAddress;
+      if (senseApi) {
+        dispatch(getSenseList(senseApi));
 
-    if (senseApi) {
-      dispatch(getSenseList(senseApi));
+        lastAddress.current = currentAddress;
+      }
     }
-  }, [currentAddress, dispatch, senseApi]);
+  }, [currentAddress, dispatch, senseApi, listIsLoading]);
 
   return null;
 }
