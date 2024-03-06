@@ -80,20 +80,23 @@ function SenseViewer({ selected, adviser }: Props) {
                       {cutSenseItem(selected)}
                     </Link>
 
-                    <p>
-                      {particleContentOpen && (
-                        <TextMarkdown preview>{text}</TextMarkdown>
-                      )}
-                      <button
-                        type="button"
-                        className={styles.toggleContent}
-                        onClick={() =>
-                          setParticleContentOpen(!particleContentOpen)
-                        }
-                      >
-                        {particleContentOpen ? 'Hide' : 'Show'} content
-                      </button>
-                    </p>
+                    {/* TODO: need refactor */}
+                    {text && (
+                      <p>
+                        {particleContentOpen && (
+                          <TextMarkdown preview>{text}</TextMarkdown>
+                        )}
+                        <button
+                          type="button"
+                          className={styles.toggleContent}
+                          onClick={() =>
+                            setParticleContentOpen(!particleContentOpen)
+                          }
+                        >
+                          {particleContentOpen ? 'Hide' : 'Show'} content
+                        </button>
+                      </p>
+                    )}
                   </header>
                 ) : (
                   <header className={styles.header_Neuron}>
