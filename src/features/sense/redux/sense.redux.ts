@@ -176,6 +176,10 @@ const getSenseChat = createAsyncThunk(
     if (particle) {
       const links = await senseApi!.getLinks(id);
       const formattedLinks = links.map((item) => {
+        if (item.timestamp === 0) {
+          // FIXME:
+          return;
+        }
         return formatApiData({
           ...item,
           entryType: EntryType.particle,
@@ -183,7 +187,7 @@ const getSenseChat = createAsyncThunk(
         });
       });
 
-      return formattedLinks;
+      return formattedLinks.filter(Boolean);
     }
 
     const data = await senseApi!.getFriendItems(id);

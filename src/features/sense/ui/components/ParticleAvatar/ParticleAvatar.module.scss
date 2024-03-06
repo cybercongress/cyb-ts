@@ -9,5 +9,9 @@
   border-radius: 10px;
   font-size: 20px;
 
+  img {
+    max-height: 100%;
+  }
+
   background: rgba(217, 217, 217, 0.1);
 }

@@ -7,11 +7,22 @@ function ParticleAvatar({ particleId }: { particleId: string }) {
   const { data, loading } = useParticleDetails(particleId);
 
   const type = data?.type;
+  const isImgType = type === 'image';
 
   const icon =
     type && contentTypeConfig[type as keyof typeof contentTypeConfig]?.label;
 
-  return <div className={styles.wrapper}>{loading ? <Dots /> : icon}</div>;
+  return (
+    <div className={styles.wrapper}>
+      {loading ? (
+        <Dots />
+      ) : isImgType ? (
+        <img src={data?.content} alt={data?.cid} />
+      ) : (
+        icon
+      )}
+    </div>
+  );
 }
 
 export default ParticleAvatar;
