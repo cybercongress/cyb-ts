@@ -6,7 +6,7 @@ import { Account } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Loader2 from 'src/components/ui/Loader2';
 import { cutSenseItem } from '../utils';
 import ParticleAvatar from '../components/ParticleAvatar/ParticleAvatar';
@@ -18,6 +18,7 @@ import Karma from 'src/containers/application/Karma/Karma';
 import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 
 import Messages from './Messages/Messages';
+import TextMarkdown from 'src/components/TextMarkdown';
 
 type Props = {
   selected: string | undefined;
@@ -38,18 +39,21 @@ function SenseViewer({ selected, adviser }: Props) {
 
   const dispatch = useAppDispatch();
 
+  const [particleContentOpen, setParticleContentOpen] = useState(false);
+
   const { error, isLoading: loading, data: messages } = chat || {};
 
   const text = particleData?.text;
 
   useEffect(() => {
-    selected &&
+    if (selected && senseApi) {
       dispatch(
         markAsRead({
           id: selected,
           senseApi,
         })
       );
+    }
   }, [selected, senseApi, dispatch]);
 
   useEffect(() => {
@@ -76,7 +80,24 @@ function SenseViewer({ selected, adviser }: Props) {
                     >
                       {cutSenseItem(selected)}
                     </Link>
-                    {text && <p>{text}</p>}
+
+                    {/* TODO: need refactor */}
+                    {text && (
+                      <p>
+                        {particleContentOpen && (
+                          <TextMarkdown preview>{text}</TextMarkdown>
+                        )}
+                        <button
+                          type="button"
+                          className={styles.toggleContent}
+                          onClick={() =>
+                            setParticleContentOpen(!particleContentOpen)
+                          }
+                        >
+                          {particleContentOpen ? 'Hide' : 'Show'} content
+                        </button>
+                      </p>
+                    )}
                   </header>
                 ) : (
                   <header className={styles.header_Neuron}>
