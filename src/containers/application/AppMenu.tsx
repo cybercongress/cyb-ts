@@ -148,7 +148,7 @@ const itemsMenu = () => {
 export type MenuItems = ReturnType<typeof itemsMenu>;
 export type MenuItem = MenuItems[0];
 
-function AppMenu({ addressActive, closeMenu }) {
+function AppMenu({ addressActive, closeMenu, setActiveApp }) {
   return (
     <div
       style={{
@@ -158,7 +158,11 @@ function AppMenu({ addressActive, closeMenu }) {
         height: '100%',
       }}
     >
-      <Bookmarks items={itemsMenu(addressActive)} closeMenu={closeMenu} />
+      <Bookmarks
+        items={itemsMenu(addressActive)}
+        closeMenu={closeMenu}
+        setActiveApp={setActiveApp}
+      />
     </div>
   );
 }

@@ -53,18 +53,21 @@ function Items({ item, selected, onClick }: Props) {
   );
 }
 
-const renderSubItems = (
+export const renderSubItems = (
   subItems: MenuItem['subItems'],
   location,
   onClickSubItem
 ) => {
   return subItems.map((itemSub) => {
+    const onClickFuc = () => {
+      onClickSubItem && onClickSubItem(itemSub.name);
+    };
     return (
       <Items
         selected={itemSub.to === location.pathname}
         key={itemSub.name}
         item={itemSub}
-        onClick={() => onClickSubItem(itemSub.name)}
+        onClick={onClickFuc}
       />
     );
   });
@@ -74,9 +77,16 @@ const renderSubItems = (
 export function Bookmarks({
   items,
   closeMenu,
+  setActiveApp,
 }: {
   items: MenuItems;
   closeMenu: () => void;
+  setActiveApp: React.Dispatch<
+    React.SetStateAction<{
+      icon: undefined | string;
+      subItems: any[] | undefined;
+    }>
+  >;
 }) {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedItemSub, setSelectedItemSub] = useState<string>('');
@@ -87,11 +97,36 @@ export function Bookmarks({
     setSelectedItemSub('');
 
     const item = items.find((item) => item.name === itemKey);
+    setActiveApp({
+      subItems: item?.subItems,
+      icon: item?.icon,
+    });
 
-    if (item && item.subItems.length === 0) {
-      closeMenu();
-    }
+    closeMenu();
+
+    // if (item && item.subItems.length === 0) {
+    //   closeMenu();
+    // }
   }
+
+  // useEffect(() => {
+  //   const item = items.find((item) => {
+  //     if (
+  //       location.pathname.includes('@') ||
+  //       location.pathname.includes('neuron/')
+  //     ) {
+  //       return item.to === '/robot';
+  //     }
+  //     return item.to === location.pathname;
+  //   });
+
+  //   console.log('item', item);
+
+  //   setActiveApp({
+  //     subItems: item?.subItems,
+  //     icon: item?.icon,
+  //   });
+  // }, [location, JSON.stringify(items), setActiveApp]);
 
   function onClickSubItem(itemKey: string) {
     setSelectedItemSub(itemKey);
@@ -120,11 +155,11 @@ export function Bookmarks({
               item={item}
               onClick={() => onClickItem(item.name)}
             />
-            {item.name === selectedItem && (
+            {/* {item.name === selectedItem && (
               <Pane paddingLeft={50}>
                 {renderSubItems(item.subItems, location, onClickSubItem)}
               </Pane>
-            )}
+            )} */}
           </div>
         );
       })}
