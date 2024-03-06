@@ -38,27 +38,33 @@ export const syncMyChats = async (
     const lastTransaction = chat.transactions.at(-1)!;
 
     const { timestamp: transactionTimestamp, hash, index } = lastTransaction;
-
+    // const lastUpdateTimestamp = Math.max(transactionTimestamp, syncItem?.timestampUpdate);
     const syncItemHeader = {
       entryType: EntryType.chat,
       ownerId: myAddress,
-      timestampUpdate: shouldUpdateTimestamp ? transactionTimestamp : 0,
       meta: {
         transactionHash: hash,
         index,
       } as SenseTransactionMeta,
     };
-
+    // if (
+    //   chat.userAddress === 'bostrom13hepw93y8mjcew7mfra5z7ju7k6585348dnux4' ||
+    //   chat.userAddress === 'bostrom1a4krl6m7jg7ckczk94hh0wdlcezvpgwcwkrpcg'
+    // ) {
+    //   debugger;
+    // }
     // if no sync item(first message/initial)
     if (!syncItem) {
       const unreadCount = chat.transactions.filter(
         (t) => t.timestamp > chat.lastSendTimestamp
-      ).length;
+      ).length; // uread count on top of my last send message
 
       const newItem = {
         ...syncItemHeader,
         id: chat.userAddress,
         unreadCount,
+        // if 'fast' then no shift update poiter till 'slow' reupdate
+        timestampUpdate: shouldUpdateTimestamp ? transactionTimestamp : 0,
         timestampRead: chat.lastSendTimestamp,
         disabled: false,
       };
@@ -81,9 +87,14 @@ export const syncMyChats = async (
         chat.lastSendTimestamp
       );
       const { timestampUpdateContent = 0, timestampUpdateChat = 0 } = meta;
+      const timestampUnreadFrom = Math.max(
+        chat.lastSendTimestamp,
+        timestampUpdateChat
+      );
       const unreadCount =
         prevUnreadCount +
-        chat.transactions.filter((t) => t.timestamp > lastTimestampRead).length;
+        chat.transactions.filter((t) => t.timestamp > timestampUnreadFrom) // + new messages count
+          .length;
 
       if (timestampUpdate < transactionTimestamp) {
         const syncStatusChanges = {
@@ -91,7 +102,11 @@ export const syncMyChats = async (
           id: id!,
           unreadCount,
           timestampRead: lastTimestampRead,
-          timestampUpdate: Math.max(timestampUpdateContent, timestampUpdate),
+          timestampUpdate: Math.max(
+            timestampUpdateContent,
+            timestampUpdate,
+            timestampUpdateChat
+          ),
 
           meta: {
             ...syncItemHeader.meta,
