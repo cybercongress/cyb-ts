@@ -46,13 +46,14 @@ function SenseViewer({ selected, adviser }: Props) {
   const text = particleData?.text;
 
   useEffect(() => {
-    selected &&
+    if (selected && senseApi) {
       dispatch(
         markAsRead({
           id: selected,
           senseApi,
         })
       );
+    }
   }, [selected, senseApi, dispatch]);
 
   useEffect(() => {
