@@ -1,4 +1,4 @@
-import { Tooltip } from 'src/components';
+import { Account, Tooltip } from 'src/components';
 import styles from './Message.module.scss';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { routes } from 'src/routes';
@@ -31,6 +31,7 @@ function Message({
   amountData,
   fromLog,
   transactionHash,
+  from,
   myMessage,
   cid,
   status,
@@ -64,9 +65,12 @@ function Message({
         </Link>
 
         {fromLog && (
-          <Tooltip tooltip="message from log">
-            <span className={styles.icon}>🍀</span>
-          </Tooltip>
+          <Link to={routes.neuron.getLink(from)}>
+            <Account address={from} sizeAvatar="20px" avatar onlyAvatar />
+          </Link>
+          // <Tooltip tooltip="message from log">
+          // <span className={styles.icon}>🍀</span>
+          // </Tooltip>
         )}
       </div>
 

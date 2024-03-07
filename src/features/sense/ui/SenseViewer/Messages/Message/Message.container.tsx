@@ -80,6 +80,7 @@ function MessageContainer({ senseItem }: Props) {
       address={from}
       myMessage={address === from}
       fromLog={fromLog}
+      from={from}
       transactionHash={transactionHash}
       date={timestamp}
       content={content}
