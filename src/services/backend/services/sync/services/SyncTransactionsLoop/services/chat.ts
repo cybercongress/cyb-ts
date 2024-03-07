@@ -38,7 +38,6 @@ export const syncMyChats = async (
     const lastTransaction = chat.transactions.at(-1)!;
 
     const { timestamp: transactionTimestamp, hash, index } = lastTransaction;
-    // const lastUpdateTimestamp = Math.max(transactionTimestamp, syncItem?.timestampUpdate);
     const syncItemHeader = {
       entryType: EntryType.chat,
       ownerId: myAddress,

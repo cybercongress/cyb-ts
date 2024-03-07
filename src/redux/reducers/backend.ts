@@ -11,6 +11,7 @@ import { NeuronAddress } from 'src/types/base';
 import { removeDublicates } from 'src/utils/list';
 import { clone } from 'lodash';
 import { SYNC_ENTRIES_TO_TRACK_PROGRESS } from 'src/services/backend/services/sync/services/consts';
+import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 
 export const RESET_SYNC_STATE_ACTION_NAME = 'reset_sync_entry';
 
@@ -111,7 +112,7 @@ function backendReducer(
             const percents = Math.round(
               (progress.completeCount / progress.totalCount) * 100
             );
-            messages.push(`${name}: ${percents}%`);
+            messages.push(`${syncEntryNameToReadable(name)}: ${percents}%`);
           }
         }
       });
