@@ -8,6 +8,7 @@ import {
 } from 'src/services/backend/services/indexer/types';
 import { NeuronAddress } from 'src/types/base';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
+import { getNowUtcTime } from 'src/utils/utils';
 
 // eslint-disable-next-line import/no-unused-modules
 export const extractTxData = (data: string) => {
@@ -39,7 +40,7 @@ export const mapWebsocketTxToTransactions = (
 
   const hash = events['tx.hash'][0];
   const transactionType = events['message.action'][0].slice(1);
-  const timestamp = new Date().getTime();
+  const timestamp = getNowUtcTime();
   const blockHeight = events['tx.height'][0];
 
   const { memo = '', messages } = extractTxData(data.value.TxResult.tx);
