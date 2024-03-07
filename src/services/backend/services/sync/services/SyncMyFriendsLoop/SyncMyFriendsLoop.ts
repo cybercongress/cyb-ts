@@ -158,6 +158,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
 
         if (links.length > 0) {
           const lastLink = entityToDto(links.at(-1)!);
+          const newTimestampUpdateContent = lastLink!.timestamp;
 
           await throwIfAborted(this.db!.putCyberlinks, signal)(links);
 
@@ -171,13 +172,16 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
             ownerId: myAddress,
             entryType: EntryType.chat,
             id: address,
-            timestampUpdate: Math.max(lastLink!.timestamp, timestampUpdateChat),
+            timestampUpdate: Math.max(
+              newTimestampUpdateContent,
+              timestampUpdateChat
+            ),
             unreadCount: newUnreadCount,
             timestampRead: newTimestampRead,
             disabled: false,
             meta: {
               ...lastLink!,
-              timestampUpdateContent: lastLink!.timestamp,
+              timestampUpdateContent: newTimestampUpdateContent,
               timestampUpdateChat,
             } as SenseItemLinkMeta,
           };

@@ -96,23 +96,27 @@ export const syncMyChats = async (
           .length;
 
       if (timestampUpdate < transactionTimestamp) {
+        // if message source is 'fast' then no update till 'slow' reupdate
+        const newTimestampUpdateChat = shouldUpdateTimestamp
+          ? transactionTimestamp
+          : timestampUpdateChat;
+
         const syncStatusChanges = {
           ...syncItemHeader,
           id: id!,
           unreadCount,
           timestampRead: lastTimestampRead,
+          // show max timestamp to use in sorting, in sense list
+          // real timestamp shold be resynced with 'slow' data source by timestampUpdateChat
           timestampUpdate: Math.max(
+            transactionTimestamp,
             timestampUpdateContent,
-            timestampUpdate,
-            timestampUpdateChat
+            newTimestampUpdateChat
           ),
 
           meta: {
             ...syncItemHeader.meta,
-            // if message source is 'fast' then no update till 'slow' reupdate
-            timestampUpdateChat: shouldUpdateTimestamp
-              ? transactionTimestamp
-              : timestampUpdateChat,
+            timestampUpdateChat: newTimestampUpdateChat,
             timestampUpdateContent,
           },
         };
