@@ -8,7 +8,7 @@ import {
 } from 'src/services/backend/services/indexer/types';
 import { NeuronAddress } from 'src/types/base';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import { getNowUtcTime } from 'src/utils/utils';
+import { getNowUtcTime } from 'src/utils/date';
 
 // eslint-disable-next-line import/no-unused-modules
 export const extractTxData = (data: string) => {

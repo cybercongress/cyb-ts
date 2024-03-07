@@ -5,6 +5,20 @@ const numberToDate = (timestamp: number) =>
 
 const dateToNumber = (isoString: string) => Date.parse(isoString);
 
+const getNowUtcTime = (): number => {
+  const now = new Date();
+  const utcTime = new Date(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  );
+
+  return utcTime.getTime();
+};
+//
 function roundMilliseconds(dateTimeString: string) {
   const date = new Date(dateTimeString);
   const roundedMilliseconds = Math.round(date.getMilliseconds() / 1000) * 1000;
@@ -62,6 +76,7 @@ function convertTimestampToString(timestamp: number): string {
 export {
   numberToDate,
   dateToNumber,
+  getNowUtcTime,
   roundMilliseconds,
   numberToDateWithTimezone,
   convertTimestampToString,
