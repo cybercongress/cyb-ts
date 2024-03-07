@@ -8,6 +8,7 @@ import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 import { findLastIndex } from 'lodash';
 import { SenseItemLinkMeta } from '../../types/sense';
 import { entityToDto } from 'src/utils/dto';
+import { SyncEntryName } from '../../types/services';
 
 export function extractLinkData(
   cid: ParticleCid,
@@ -79,3 +80,12 @@ export function changeSyncStatus(
     timestampUpdate,
   } as SyncStatusDto;
 }
+
+const mapSyncEntryReadable: Record<SyncEntryName, string> = {
+  'my-friends': "friend's logs",
+  particles: 'log cyberlinks',
+  resolver: 'particles',
+  transactions: 'transactions',
+};
+export const syncEntryNameToReadable = (name: SyncEntryName) =>
+  mapSyncEntryReadable[name] || name;

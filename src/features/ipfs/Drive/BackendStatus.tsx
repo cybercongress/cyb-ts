@@ -7,11 +7,13 @@ import Display from 'src/components/containerGradient/Display/Display';
 import {
   ProgressTracking,
   ServiceStatus,
+  SyncEntryName,
   SyncProgress,
 } from 'src/services/backend/types/services';
 import { convertTimestampToString } from 'src/utils/date';
 
 import styles from './drive.scss';
+import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {
@@ -43,11 +45,11 @@ function EntrySatus({
   name,
   progress,
 }: {
-  name: string;
+  name: SyncEntryName;
   progress: SyncProgress;
 }) {
   const msg = progress.error || progress.message ? `- ${progress.message}` : '';
-  const text = `${name}: ${progress.status} ${msg}
+  const text = `${syncEntryNameToReadable(name)}: ${progress.status} ${msg}
   ${getProgressTrackingInfo(progress.progress)}`;
   return <div className={styles.tabbed}>{text}</div>;
 }

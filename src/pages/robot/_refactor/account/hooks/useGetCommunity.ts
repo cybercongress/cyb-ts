@@ -63,6 +63,9 @@ function useGetCommunity(address: string | null, { skip }: { skip?: boolean }) {
           .filter((item) => item.follower && item.following)
           .map((item) => item.neuron);
 
+        // TODO: exclude dublicates when followe and following from 2 sources
+        // const allItems = [...state.community.raw, ...items];
+
         setCommunity((community) => ({
           followers: removeDublicates([...community.followers, ...followers]),
           following: removeDublicates([...community.following, ...following]),
