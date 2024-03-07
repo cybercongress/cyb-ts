@@ -1,4 +1,4 @@
-import { ActionBar, Button, Input } from 'src/components';
+import { ActionBar, Button, DenomArr, Input } from 'src/components';
 import { useEffect, useState } from 'react';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
@@ -11,6 +11,9 @@ import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import styles from './ActionBar.module.scss';
 import { isParticle } from 'src/features/particle/utils';
 import { useBackend } from 'src/contexts/backend/backend';
+import { routes } from 'src/routes';
+import { Link, createSearchParams } from 'react-router-dom';
+import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
 
 type Props = {
   id: string | undefined;
@@ -75,7 +78,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
   }, [id]);
 
   async function send() {
-    if (!signerIsReady || !address || !ipfsApi) {
+    if (!signerIsReady || !address || !ipfsApi || !senseApi) {
       return;
     }
 
@@ -200,9 +203,34 @@ function ActionBarWrapper({ id, adviser }: Props) {
         adviser.setAdviserText('');
         return;
       }
+
       console.dir(error);
-      adviser.setError(error.message);
-      adviser.setAdviserText(error.message);
+
+      let { message } = error;
+
+      if (message.includes('insufficient funds')) {
+        message = (
+          <div className={styles.error}>
+            sending message needs at least 1{' '}
+            <DenomArr denomValue={'boot'} onlyImg /> <br />
+            <Link
+              to={{
+                pathname: routes.teleport.swap.path,
+                search: createSearchParams({
+                  from: ibcDenomAtom,
+                  to: 'boot',
+                  amount: '1',
+                }).toString(),
+              }}
+            >
+              get BOOT
+            </Link>
+          </div>
+        );
+      }
+
+      adviser.setError(message);
+      adviser.setAdviserText(message);
     }
   }
 
@@ -229,7 +257,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
         <Button
           className={styles.sendBtn}
           onClick={send}
-          disabled={!isIpfsInitialized || !signerIsReady}
+          disabled={!isIpfsInitialized || !signerIsReady || !senseApi}
         >
           ▲
         </Button>

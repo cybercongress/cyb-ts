@@ -20,14 +20,43 @@
 }
 
 .header {
-  display: grid;
-  grid-template-areas:
-    'avatar title'
-    'avatar text';
+  // display: grid;
+  // grid-template-areas:
+  //   'avatar title'
+  //   'avatar text';
+
+  display: flex;
+  flex-direction: column;
 
   padding: 10px 15px;
 
   gap: 0 10px;
+
+  img {
+    max-width: 100px;
+  }
+
+  .meta {
+    > div {
+      min-width: unset;
+      padding: 0;
+
+      > :nth-child(1) {
+        display: none;
+      }
+
+      > :nth-child(2) {
+        justify-content: left;
+      }
+
+      > :last-child {
+        display: none;
+        > :last-child {
+          display: none;
+        }
+      }
+    }
+  }
 
   & > :nth-child(1) {
     grid-area: avatar;

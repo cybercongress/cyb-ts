@@ -10,6 +10,7 @@ import CoinsAmount, {
   CoinAction,
 } from '../../components/CoinAmount/CoinAmount';
 import { isParticle } from 'src/features/particle/utils';
+import { cutSenseItem } from '../../utils';
 
 type Props = {
   senseItemId: SenseItemId;
@@ -58,8 +59,16 @@ function SenseListItemContainer({ senseItemId }: Props) {
     content = text;
   }
 
-  function formatParticleTitle(text: string) {
-    return text.trim().substring(0, 20).replaceAll('#', '');
+  function formatParticleTitle(text: string, type) {
+    if (type === 'image') {
+      return '#' + cutSenseItem(cid);
+    }
+
+    if (text) {
+      return text.trim().substring(0, 20).replaceAll('#', '');
+    }
+
+    return null;
   }
 
   const { type, text: particleText } = details.data || {};
@@ -71,7 +80,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
     <SenseListItem
       address={senseItemId}
       date={timestamp}
-      title={particleText ? formatParticleTitle(particleText) : icon}
+      title={formatParticleTitle(particleText, data?.type) || icon}
       unreadCount={unreadCount}
       content={content}
       status={senseData.status}
