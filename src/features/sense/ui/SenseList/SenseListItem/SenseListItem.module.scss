@@ -44,7 +44,7 @@
 
   &,
   > div > a {
-    text-transform: none;
+    text-transform: none !important;
     font-weight: 400;
 
     &:hover {
