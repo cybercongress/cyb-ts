@@ -19,6 +19,8 @@ import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 
 import Messages from './Messages/Messages';
 import TextMarkdown from 'src/components/TextMarkdown';
+import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
+import AdviserMeta from 'src/containers/ipfs/components/AdviserMeta/AdviserMeta';
 
 type Props = {
   selected: string | undefined;
@@ -44,6 +46,8 @@ function SenseViewer({ selected, adviser }: Props) {
   const { error, isLoading: loading, data: messages } = chat || {};
 
   const text = particleData?.text;
+
+  console.log(particleData);
 
   useEffect(() => {
     if (selected && senseApi) {
@@ -73,21 +77,37 @@ function SenseViewer({ selected, adviser }: Props) {
               title={
                 isParticle ? (
                   <header className={styles.header}>
-                    <ParticleAvatar particleId={selected} />
+                    {/* <ParticleAvatar particleId={selected} /> */}
+
+                    {/* {cutSenseItem(selected)} */}
+
+                    <div className={styles.meta}>
+                      <AdviserMeta
+                        cid={selected}
+                        type={particleData?.type}
+                        size={null}
+                      />
+                    </div>
+
                     <Link
                       className={styles.title}
                       to={routes.oracle.ask.getLink(selected)}
                     >
-                      {cutSenseItem(selected)}
+                      <ContentIpfs
+                        search
+                        cid={selected}
+                        details={particleData}
+                        content={particleData?.content}
+                      />
                     </Link>
 
                     {/* TODO: need refactor */}
                     {text && (
                       <p>
-                        {particleContentOpen && (
+                        {/* {particleContentOpen && (
                           <TextMarkdown preview>{text}</TextMarkdown>
-                        )}
-                        <button
+                        )} */}
+                        {/* <button
                           type="button"
                           className={styles.toggleContent}
                           onClick={() =>
@@ -95,7 +115,7 @@ function SenseViewer({ selected, adviser }: Props) {
                           }
                         >
                           {particleContentOpen ? 'Hide' : 'Show'} content
-                        </button>
+                        </button> */}
                       </p>
                     )}
                   </header>
