@@ -10,7 +10,7 @@ import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTra
 import { SENSE_FRIEND_PARTICLES } from 'src/services/backend/services/sync/services/consts';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { EntityToDto } from 'src/types/dto';
-import { getNowUtcTime } from 'src/utils/date';
+import { getNowUtcNumber } from 'src/utils/date';
 
 type LocalSenseChatMessage = {
   transactionHash: TransactionHash;
@@ -37,7 +37,7 @@ const prepareSenseTransaction = ({
     hash: transactionHash,
     type: MSG_SEND_TRANSACTION_TYPE,
     index: 0,
-    timestamp: getNowUtcTime(),
+    timestamp: getNowUtcNumber(),
     success: true,
     value,
     memo,

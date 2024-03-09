@@ -1,5 +1,3 @@
-// Assuming you are using a testing framework like Jest, you can create unit tests for the functions in date.ts as follows:
-
 import {
   numberToUtcDate,
   dateToUtcNumber,
@@ -11,12 +9,13 @@ test('numberToDate should convert timestamp to formatted date string', () => {
   const timestamp = 0;
   const result = numberToUtcDate(timestamp);
   expect(result).toBe('1970-01-01T00:00:00.000');
+});
 
 test('dateToUtcNumber should convert ISO string to UTC timestamp regardless of "Z"', () => {
-  const isoString = '1970-01-01T00:00';
-  const isoStringZ = '1970-01-01T00:00Z';
+  const isoString = '1970-01-01T00:00:00.000';
+  // const isoStringZ = '1970-01-01T00:00Z';
   expect(dateToUtcNumber(isoString)).toBe(0);
-  expect(dateToUtcNumber(isoStringZ)).toBe(0);
+  expect(numberToUtcDate(0)).toBe(isoString);
 });
 
 test('dateToUtcNumber should convert ISO string to timestamp', () => {

@@ -6,18 +6,8 @@ export const numberToUtcDate = (timestamp: number) =>
 export const dateToUtcNumber = (isoString: string) =>
   Date.parse(isoString.endsWith('Z') ? isoString : `${isoString}Z`);
 
-const getNowUtcTime = (): number => {
-  const now = new Date();
-  const utcTime = new Date(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    now.getUTCHours(),
-    now.getUTCMinutes(),
-    now.getUTCSeconds()
-  );
-
-  return utcTime.getTime();
+export const getNowUtcNumber = (): number => {
+  return dateToUtcNumber(new Date().toISOString());
 };
 //
 function roundMilliseconds(dateTimeString: string) {
@@ -75,7 +65,6 @@ function convertTimestampToString(timestamp: number): string {
 }
 
 export {
-  getNowUtcTime,
   roundMilliseconds,
   numberToDateWithTimezone,
   convertTimestampToString,
