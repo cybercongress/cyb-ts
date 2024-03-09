@@ -1,9 +1,10 @@
 import dateFormat from 'dateformat';
 
-const numberToDate = (timestamp: number) =>
-  dateFormat(new Date(timestamp), 'yyyy-mm-dd"T"HH:MM:ss.l');
+export const numberToUtcDate = (timestamp: number) =>
+  dateFormat(new Date(timestamp), 'yyyy-mm-dd"T"HH:MM:ss.l', true);
 
-const dateToNumber = (isoString: string) => Date.parse(isoString);
+export const dateToUtcNumber = (isoString: string) =>
+  Date.parse(isoString.endsWith('Z') ? isoString : `${isoString}Z`);
 
 const getNowUtcTime = (): number => {
   const now = new Date();
@@ -74,8 +75,6 @@ function convertTimestampToString(timestamp: number): string {
 }
 
 export {
-  numberToDate,
-  dateToNumber,
   getNowUtcTime,
   roundMilliseconds,
   numberToDateWithTimezone,

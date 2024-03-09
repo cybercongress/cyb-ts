@@ -2,18 +2,15 @@ import { CyberLinkSimple, CyberlinkTxHash, ParticleCid } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/constants/app';
-import { dateToNumber } from 'src/utils/date';
+import { TransactionDto } from 'src/services/CozoDb/types/dto';
 
 import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { MAX_LINKS_RESOLVE_BATCH } from '../consts';
 import {
   CYBER_LINK_TRANSACTION_TYPE,
-  CyberLinkTransaction,
   CyberLinkValue,
-  Transaction,
 } from '../../../indexer/types';
-import { TransactionDto } from 'src/services/CozoDb/types/dto';
 
 const getUniqueParticlesFromLinks = (links: CyberLinkSimple[]) =>
   [

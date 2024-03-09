@@ -6,10 +6,11 @@ import { NeuronAddress } from 'src/types/base';
 
 import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
 import { CID_TWEET } from 'src/constants/app';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { throwIfAborted } from 'src/utils/async/promise';
+import { entityToDto } from 'src/utils/dto';
 
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
@@ -67,8 +68,8 @@ class SyncParticlesLoop extends BaseSyncLoop {
       signal
     );
 
-    console.log(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
-
+    // console.log(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
+    cyblogBg.info(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
     this.progressTracker.start(newLinkCount + syncItemParticles.length);
     this.statusApi.sendStatus(
       'in-progress',
@@ -114,9 +115,9 @@ class SyncParticlesLoop extends BaseSyncLoop {
         `fetching new tweets...`,
         this.progressTracker.trackProgress(1)
       );
-      const syncStatusEntities = tweetsBatch.map((item) => {
+      const syncStatusEntities = tweetsBatch.map(entityToDto).map((item) => {
         const { timestamp, to } = item;
-        const timestampUpdate = dateToNumber(timestamp);
+        const timestampUpdate = dateToUtcNumber(timestamp);
 
         // Initial state
         return {

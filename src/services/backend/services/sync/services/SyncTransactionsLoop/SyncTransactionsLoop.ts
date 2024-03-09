@@ -13,7 +13,7 @@ import { isEmpty } from 'lodash';
 
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import { mapIndexerTransactionToEntity } from 'src/services/CozoDb/mapping';
-import { numberToDate } from 'src/utils/date';
+import { numberToUtcDate } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { SyncStatusDto, TransactionDto } from 'src/services/CozoDb/types/dto';
@@ -72,7 +72,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
   ): Observable<DataStreamResult> {
     const { myAddress } = this.params;
     console.log(
-      `>>> ${this.name} subscribe ${myAddress} from ${numberToDate(
+      `>>> ${this.name} subscribe ${myAddress} from ${numberToUtcDate(
         timestampFrom
       )}`
     );

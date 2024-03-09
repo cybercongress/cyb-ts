@@ -11,7 +11,7 @@ import DbApi, {
 import { createAsyncIterable } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/constants/app';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ServiceDeps } from '../types';
@@ -107,8 +107,8 @@ describe('SyncTransactionsLoop', () => {
             id: particleTest,
             ownerId: 'user-address',
             entryType: EntryType.particle,
-            timestampUpdate: dateToNumber('2022-01-10'),
-            timestampRead: dateToNumber('2021-01-01'),
+            timestampUpdate: dateToUtcNumber('2022-01-10'),
+            timestampRead: dateToUtcNumber('2021-01-01'),
             unreadCount: 2,
             lastId: 'mockTo2',
             disabled: false,

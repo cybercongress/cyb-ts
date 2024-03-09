@@ -3,7 +3,7 @@ import axios from 'axios';
 import { T } from 'ramda';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_TWEET } from 'src/constants/app';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 import { fetchIterable } from './utils/fetch';
 import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
@@ -77,7 +77,7 @@ const fetchLinkByNeuron = async ({
           from: l.from,
           to: l.to,
           neuron: address,
-          timestamp: dateToNumber(timestamp),
+          timestamp: dateToUtcNumber(timestamp),
           transaction_hash: txhash,
         });
       });

@@ -1,5 +1,5 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { IPFSContent } from '../ipfs/ipfs';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
@@ -48,7 +48,7 @@ export const mapIndexerTransactionToEntity = (
     hash: transaction_hash,
     index,
     type,
-    timestamp: dateToNumber(timestamp),
+    timestamp: dateToUtcNumber(timestamp),
     // value: JSON.stringify(value),
     memo,
     value,
@@ -101,6 +101,6 @@ export const mapLinkFromIndexerToDbEntity = ({
   from,
   to,
   neuron,
-  timestamp: dateToNumber(timestamp),
+  timestamp: dateToUtcNumber(timestamp),
   transaction_hash,
 });

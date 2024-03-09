@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 
 import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/indexer';
-import { numberToDate } from 'src/utils/date';
+import { numberToUtcDate } from 'src/utils/date';
 import { createAsyncIterable } from 'src/utils/async/iterable';
 
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
@@ -44,7 +44,7 @@ describe('SyncParticlesLoop', () => {
   it('should call updateSyncState and putSyncStatus correctly', (done) => {
     (fetchCyberlinksIterable as jest.Mock).mockReturnValueOnce(
       createAsyncIterable([
-        [{ from: 'cid', to: 'cid1', timestamp: numberToDate(333) }],
+        [{ from: 'cid', to: 'cid1', timestamp: numberToUtcDate(333) }],
       ])
     );
 

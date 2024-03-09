@@ -1,4 +1,4 @@
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
@@ -17,8 +17,8 @@ export function extractLinkData(
   return {
     lastLink: links[0],
     count: links.length,
-    lastTimestamp: dateToNumber(links[0].timestamp),
-    firstTimestamp: dateToNumber(links[links.length - 1].timestamp),
+    lastTimestamp: dateToUtcNumber(links[0].timestamp),
+    firstTimestamp: dateToUtcNumber(links[links.length - 1].timestamp),
   };
 }
 
@@ -32,7 +32,7 @@ export function getLastReadInfo(
     links,
     (link) =>
       link.neuron === ownerId &&
-      dateToNumber(link.timestamp) > prevTimestampRead
+      dateToUtcNumber(link.timestamp) > prevTimestampRead
   );
 
   const unreadCount =
@@ -43,7 +43,7 @@ export function getLastReadInfo(
   const timestampRead =
     lastMyLinkIndex < 0
       ? prevTimestampRead
-      : dateToNumber(links[lastMyLinkIndex].timestamp);
+      : dateToUtcNumber(links[lastMyLinkIndex].timestamp);
 
   return {
     timestampRead,
@@ -56,7 +56,7 @@ export function changeSyncStatus(
   links: CyberlinksByParticleResponse['cyberlinks'],
   ownerId: NeuronAddress
 ) {
-  const timestampUpdate = dateToNumber(links[0].timestamp);
+  const timestampUpdate = dateToUtcNumber(links[0].timestamp);
   const { timestampRead, unreadCount } = getLastReadInfo(
     links,
     ownerId,

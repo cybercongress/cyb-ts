@@ -1,6 +1,6 @@
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const mapLcdTransactionsToDto = (
@@ -23,7 +23,7 @@ export const mapLcdTransactionsToDto = (
         hash: txhash,
         index,
         type,
-        timestamp: dateToNumber(timestamp),
+        timestamp: dateToUtcNumber(timestamp),
         value: msg,
         memo,
         neuron,

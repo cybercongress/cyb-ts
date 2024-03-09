@@ -1,5 +1,5 @@
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import { dateToNumber } from 'src/utils/date';
+import { dateToUtcNumber } from 'src/utils/date';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
@@ -37,7 +37,7 @@ describe('SyncMyChatsLoop', () => {
           from_address: myAddress,
           to_address: 'receiver1',
         },
-        timestamp: dateToNumber('2022-01-01'),
+        timestamp: dateToUtcNumber('2022-01-01'),
         hash: 'hash000',
       },
       {
@@ -47,7 +47,7 @@ describe('SyncMyChatsLoop', () => {
           from_address: myAddress,
           to_address: 'receiver1',
         },
-        timestamp: dateToNumber('2022-01-10'),
+        timestamp: dateToUtcNumber('2022-01-10'),
         hash: 'hash321',
         memo: 'hello test',
       },
@@ -61,7 +61,7 @@ describe('SyncMyChatsLoop', () => {
             { address: myAddress, coins: [{ amount: '50', denom: 'ATOM' }] },
           ],
         },
-        timestamp: dateToNumber('2022-01-02'),
+        timestamp: dateToUtcNumber('2022-01-02'),
         hash: 'hash456',
       },
     ];
@@ -69,7 +69,7 @@ describe('SyncMyChatsLoop', () => {
     mockFindSyncStatus.mockResolvedValueOnce([
       {
         id: 'sender2',
-        timestampUpdate: dateToNumber('2022-01-01'),
+        timestampUpdate: dateToUtcNumber('2022-01-01'),
         unreadCount: 1,
         timestampRead: 0,
         disabled: false,
@@ -90,7 +90,7 @@ describe('SyncMyChatsLoop', () => {
       entryType: EntryType.chat,
       id: 'receiver1',
       ownerId: 'my-address',
-      timestampUpdate: dateToNumber('2022-01-10'),
+      timestampUpdate: dateToUtcNumber('2022-01-10'),
       unreadCount: 2,
       timestampRead: 0,
       disabled: false,
@@ -104,7 +104,7 @@ describe('SyncMyChatsLoop', () => {
 
     expect(mockUpdateSyncStatus).toHaveBeenCalledWith({
       id: 'sender2',
-      timestampUpdate: dateToNumber('2022-01-02'),
+      timestampUpdate: dateToUtcNumber('2022-01-02'),
       unreadCount: 1,
       ownerId: 'my-address',
       meta: {

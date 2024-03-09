@@ -4,7 +4,7 @@ import { request } from 'graphql-request';
 import { gql } from '@apollo/client';
 
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
-import { dateToNumber, numberToDate } from 'src/utils/date';
+import { dateToUtcNumber, numberToUtcDate } from 'src/utils/date';
 import { CYBER_INDEX_HTTPS } from 'src/constants/config';
 
 import { CYBERLINKS_BATCH_LIMIT } from './consts';
@@ -123,7 +123,7 @@ const fetchCyberlinks = async ({
         },
       ],
       timestamp: {
-        _gt: numberToDate(timestampFrom),
+        _gt: numberToUtcDate(timestampFrom),
       },
     },
   });
@@ -141,7 +141,7 @@ const fetchCyberlinksCount = async (
   ).request<CyberlinksCountResponse>(cyberlinksCountByNeuron, {
     address,
     particles_from: particlesFrom,
-    timestamp: numberToDate(timestampFrom),
+    timestamp: numberToUtcDate(timestampFrom),
   });
 
   return res?.cyberlinks_aggregate.aggregate.count;
@@ -166,7 +166,7 @@ const fetchCyberlinksByNeroun = async ({
     _and: [
       {
         timestamp: {
-          _gt: numberToDate(timestampFrom),
+          _gt: numberToUtcDate(timestampFrom),
         },
       },
       {
@@ -238,7 +238,7 @@ const fetchCyberlinkSyncStats = async (
           },
         ],
         timestamp: {
-          _gt: numberToDate(timestampFrom),
+          _gt: numberToUtcDate(timestampFrom),
         },
       },
     }
@@ -264,8 +264,8 @@ const fetchCyberlinkSyncStats = async (
       : lastCyberlink.from);
 
   return {
-    firstTimestamp: first.length > 0 ? dateToNumber(first[0].timestamp) : 0,
-    lastTimestamp: lastCyberlink ? dateToNumber(lastCyberlink.timestamp) : 0,
+    firstTimestamp: first.length > 0 ? dateToUtcNumber(first[0].timestamp) : 0,
+    lastTimestamp: lastCyberlink ? dateToUtcNumber(lastCyberlink.timestamp) : 0,
     lastLinkedParticle,
     isFrom,
     count,

@@ -3,7 +3,7 @@ import { GqlType, Transaction } from './types';
 
 import { gql } from '@apollo/client';
 
-import { numberToDate } from 'src/utils/date';
+import { numberToUtcDate } from 'src/utils/date';
 import {
   MessagesByAddressVariables,
   gqlMessagesByAddress,
@@ -43,7 +43,7 @@ export const mapMessagesByAddressVariables = ({
 }: MessagesByAddressVariables) => ({
   address: `{${neuron}}`,
   limit,
-  timestamp_from: numberToDate(timestampFrom),
+  timestamp_from: numberToUtcDate(timestampFrom),
   offset,
   types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
   order_direction: orderDirection,
@@ -130,7 +130,7 @@ export const fetchTransactionMessagesCount = async (
     abortSignal
   ).request<MessagesCountResponse>(transactionsCountByNeuron, {
     address: `{${address}}`,
-    timestamp: numberToDate(timestampFrom),
+    timestamp: numberToUtcDate(timestampFrom),
   });
 
   return res?.messages_by_address_aggregate.aggregate.count;
