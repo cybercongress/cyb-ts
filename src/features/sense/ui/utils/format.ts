@@ -11,14 +11,15 @@ import { EntityToDto } from 'src/types/dto';
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export function formatSenseItemDataToUI(
   senseItem: SenseItem,
-  currentAddress: string
+  currentAddress: string,
+  currentChatId: string
 ): SenseItem & {
   text: string;
   cid: string | undefined;
   amount: Coin[] | undefined;
   isAmountSendToMyAddress: boolean;
 } {
-  const { type, memo, meta } = senseItem;
+  const { type, memo, meta, id } = senseItem;
 
   let amount: Coin[] | undefined;
   let isAmountSendToMyAddress = false;
@@ -52,7 +53,7 @@ export function formatSenseItemDataToUI(
     }
 
     case 'cyber.graph.v1beta1.MsgCyberlink': {
-      cid = meta.to;
+      cid = currentChatId === meta.to ? meta.from : meta.to;
 
       break;
     }

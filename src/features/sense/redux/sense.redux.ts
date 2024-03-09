@@ -80,12 +80,6 @@ const initialState: SliceState = {
   },
 };
 
-function formatDate(timestamp: number) {
-  return new Date(
-    timestamp + -new Date().getTimezoneOffset() * 60 * 1000
-  ).toISOString();
-}
-
 function formatApiData(item: SenseListItem): SenseItem {
   if (item.entryType === EntryType.chat && item.meta.to) {
     item.entryType = EntryType.particle;
@@ -106,6 +100,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
     memo: item.memo || meta.memo,
 
+    senseChatId: item.id,
     // not good
     unreadCount: item.unreadCount || 0,
   };
@@ -128,7 +123,6 @@ function formatApiData(item: SenseListItem): SenseItem {
       }
 
       Object.assign(formatted, {
-        id: item.id || from,
         type,
         from,
         meta: item.meta.value,
@@ -141,7 +135,6 @@ function formatApiData(item: SenseListItem): SenseItem {
       const meta = item.meta as SenseItemLinkMeta;
 
       Object.assign(formatted, {
-        id: item.id || meta.neuron,
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
         meta: meta,
@@ -182,6 +175,7 @@ const getSenseChat = createAsyncThunk(
         }
         return formatApiData({
           ...item,
+          id,
           entryType: EntryType.particle,
           meta: item,
         });
@@ -196,6 +190,7 @@ const getSenseChat = createAsyncThunk(
       return formatApiData({
         ...item,
         entryType,
+        id,
         meta: item,
       });
     });
@@ -239,7 +234,7 @@ const slice = createSlice({
         const data = action.payload;
 
         data.forEach((message) => {
-          const { id } = message;
+          const { senseChatId: id } = message;
 
           if (!state.chats[id]) {
             state.chats[id] = { ...newChatStructure };
@@ -350,7 +345,7 @@ const slice = createSlice({
       const newList: SliceState['list']['data'] = [];
 
       action.payload.forEach((message) => {
-        const { id } = message;
+        const { senseChatId: id } = message;
 
         if (!state.chats[id]) {
           state.chats[id] = { ...newChatStructure };

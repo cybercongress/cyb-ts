@@ -16,7 +16,7 @@ type Props = {
   senseItemId: SenseItemId;
 };
 
-function SenseListItemContainer({ senseItemId }: Props) {
+function SenseListItemContainer({ senseItemId, currentChatId }: Props) {
   const { senseData, unreadCount } = useAppSelector((store) => {
     const chat = store.sense.chats[senseItemId]!;
 
@@ -30,7 +30,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
   const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
-    formatSenseItemDataToUI(senseData, address);
+    formatSenseItemDataToUI(senseData, address, currentChatId);
 
   const particle = isParticle(senseItemId);
 

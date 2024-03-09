@@ -15,7 +15,7 @@ type Props = {
   senseItem: SenseItem;
 };
 
-function MessageContainer({ senseItem }: Props) {
+function MessageContainer({ senseItem, currentChatId }: Props) {
   const [textCid, setTextCid] = useState<string>();
 
   const address = useAppSelector(selectCurrentAddress);
@@ -29,7 +29,7 @@ function MessageContainer({ senseItem }: Props) {
     text,
     fromLog,
     isAmountSendToMyAddress,
-  } = formatSenseItemDataToUI(senseItem, address);
+  } = formatSenseItemDataToUI(senseItem, address, currentChatId);
 
   const particleDetails = useParticleDetails(cid!, {
     skip: Boolean(text && !cid),
@@ -42,10 +42,6 @@ function MessageContainer({ senseItem }: Props) {
 
     (async () => {
       const cid = await getIpfsHash(text);
-
-      // console.debug('text', text);
-      // console.debug('cid', cid);
-
       setTextCid(cid);
     })();
   }, [text]);
