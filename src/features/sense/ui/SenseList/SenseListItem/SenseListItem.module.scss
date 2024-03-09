@@ -11,9 +11,9 @@
     'avatar title date'
     'avatar text  unread';
 
-  grid-template-columns: 50px auto 1fr;
+  grid-template-columns: 50px 1fr auto;
 
-  gap: 3px 15px;
+  gap: 3px 10px;
 
   &::before {
     content: '';
@@ -39,12 +39,25 @@
 .title {
   grid-area: title;
   font-size: 16px;
+  align-self: flex-start;
   display: flex;
   font-weight: 400;
+  width: 100%;
+  // border: 1px solid red;
+  // position: relative;
+  // &::after {
+  //   content: ' ';
+  //   width: 100px;
+  //   filter: blur(10px);
+  //   border: 1px solid yellow;
+  //   position: absolute;
+  //   right: 0;
+  //   height: 100%;
+  //   z-index: -1;
+  // }
 
   &,
   > div > a {
-    text-transform: none !important;
     font-weight: 400;
 
     &:hover {
@@ -62,9 +75,15 @@
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    line-height: 1.2em;
+    max-height: 2.4em;
     overflow: hidden;
     text-align: left;
     text-transform: lowercase;
+  }
+
+  &.uppercase {
+    text-transform: none !important;
   }
 }
 

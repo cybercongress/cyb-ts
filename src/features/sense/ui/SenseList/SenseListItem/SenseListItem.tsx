@@ -4,7 +4,7 @@ import styles from './SenseListItem.module.scss';
 import Pill from 'src/components/Pill/Pill';
 import Date from '../../components/Date/Date';
 import cx from 'classnames';
-import { cutSenseItem } from '../../utils';
+import { cutSenseItem, isBostromAddress } from '../../utils';
 import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import { isParticle as isParticleFunc } from 'src/features/particle/utils';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
@@ -84,6 +84,7 @@ function SenseListItem({
       <h5
         className={cx(styles.title, {
           [styles.particleTitle]: isParticle,
+          [styles.uppercase]: !title,
         })}
         onClickCapture={(e) => e.preventDefault()}
       >

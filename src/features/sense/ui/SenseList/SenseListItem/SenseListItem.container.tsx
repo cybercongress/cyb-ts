@@ -16,7 +16,7 @@ type Props = {
   senseItemId: SenseItemId;
 };
 
-function SenseListItemContainer({ senseItemId, currentChatId }: Props) {
+function SenseListItemContainer({ senseItemId }: Props) {
   const { senseData, unreadCount } = useAppSelector((store) => {
     const chat = store.sense.chats[senseItemId]!;
 
@@ -30,11 +30,11 @@ function SenseListItemContainer({ senseItemId, currentChatId }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
   const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
-    formatSenseItemDataToUI(senseData, address, currentChatId);
+    formatSenseItemDataToUI(senseData, address, senseItemId);
 
   const particle = isParticle(senseItemId);
 
-  const details = useParticleDetails(senseItemId, {
+  const chatParticleDetails = useParticleDetails(senseItemId, {
     skip: !particle,
   });
 
@@ -53,34 +53,29 @@ function SenseListItemContainer({ senseItemId, currentChatId }: Props) {
       );
     } else if (data) {
       content =
-        data.text || contentTypeConfig[data.type]?.label || 'unsupported type';
+        data.text?.replaceAll('#', '') ||
+        contentTypeConfig[data.type]?.label ||
+        'unsupported type';
     }
   } else {
     content = text;
   }
 
-  function formatParticleTitle(text: string, type) {
-    if (type === 'image') {
-      return '#' + cutSenseItem(cid);
+  function formatParticleTitle(text?: string, type: string) {
+    if (type === 'image' || !text) {
+      return null;
     }
 
-    if (text) {
-      return text.trim().substring(0, 20).replaceAll('#', '');
-    }
-
-    return null;
+    return text.trim().substring(0, 30).replaceAll('#', '');
   }
 
-  const { type, text: particleText } = details.data || {};
-
-  const icon =
-    type && contentTypeConfig[type as keyof typeof contentTypeConfig]?.label;
+  const { text: particleText } = chatParticleDetails.data || {};
 
   return (
     <SenseListItem
       address={senseItemId}
       date={timestamp}
-      title={formatParticleTitle(particleText, data?.type) || icon}
+      title={formatParticleTitle(particleText, data?.type)}
       unreadCount={unreadCount}
       content={content}
       status={senseData.status}
