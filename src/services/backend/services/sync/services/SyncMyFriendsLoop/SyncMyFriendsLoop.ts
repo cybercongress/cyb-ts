@@ -92,10 +92,15 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
 
     const { followings } = this;
 
-    console.log(`>>> sync my friends!!!!`, myAddress, followings);
-
     this.statusApi.sendStatus('estimating');
-    console.log(`>>> syncMyFriends ${myAddress} count ${followings.length}`);
+
+    this.cyblogCh.info(
+      `>>> syncMyFriends ${myAddress} count ${followings.length}`,
+      {
+        unit: 'friends-sync',
+        data: followings,
+      }
+    );
 
     this.progressTracker.start(followings.length);
     this.statusApi.sendStatus(
@@ -192,7 +197,9 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         }
       }
     } catch (err) {
-      console.log('>>> SyncMyFriends error', address, err);
+      this.cyblogCh.error(`>>> SyncMyFriends ${address} error`, {
+        error: err,
+      });
       if (!isAbortException(err)) {
         this.statusApi.sendStatus('error', err.toString());
       } else {

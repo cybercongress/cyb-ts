@@ -19,7 +19,12 @@ import styles from './styles.scss';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
+import { initCyblog } from 'src/utils/logging/bootstrap';
+
 export const PORTAL_ID = 'portal';
+
+initCyblog();
 
 function App() {
   const dispatch: AppDispatch = useAppDispatch();
@@ -27,7 +32,7 @@ function App() {
   const queryClient = useQueryClient();
 
   const address = defaultAccount.account?.cyber?.bech32;
-
+  // cyblog.info('TEST!!!!');
   // const { community, communityLoaded } = useGetCommunity(address || null, {
   //   main: true,
   // });

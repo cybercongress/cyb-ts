@@ -19,6 +19,9 @@ import SyncMyFriendsLoop from './services/SyncMyFriendsLoop/SyncMyFriendsLoop';
 import { SyncEntryName } from '../../types/services';
 import BaseSyncLoop from './services/BaseSyncLoop/BaseSyncLoop';
 import createCommunitySync$ from './services/CommunitySync/CommunitySync';
+import { createCyblogChannel } from 'src/utils/logging/cyblog';
+
+const cyblogCh = createCyblogChannel({ thread: 'bckd' });
 
 // eslint-disable-next-line import/prefer-default-export
 export class SyncService {
@@ -33,7 +36,6 @@ export class SyncService {
     this.isInitialized$ = combineLatest([dbInstance$, ipfsInstance$]).pipe(
       map(([dbInstance, ipfsInstance]) => !!dbInstance && !!ipfsInstance)
     );
-
     // subscribe when started
     this.isInitialized$.subscribe({
       next: (result) => {
@@ -46,7 +48,10 @@ export class SyncService {
 
     const communitySync$ = createCommunitySync$(deps);
     communitySync$.subscribe((community) => {
-      console.log('-------COMMUNITY FETCHED', community);
+      cyblogCh.info('--> community fetched', {
+        unit: 'community',
+        data: community,
+      });
     });
 
     const followings$ = communitySync$.pipe(

@@ -40,7 +40,7 @@ class DeferredDbSaver implements IDeferredDbSaver {
     dbInstance$
       .pipe(
         filter((dbInstance) => !!dbInstance),
-        tap(() => console.log('DeferredDbSaver - initialized')),
+        tap(() => cyblog.info('DeferredDbSaver - initialized')),
         mergeMap(() => this.queue$), // Merge the queue$ stream here.
         filter((queue) => queue.size > 0),
         mergeMap((queue) => defer(() => from(this.processQueue(queue))))

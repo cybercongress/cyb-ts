@@ -1,4 +1,5 @@
 import initCozoDb, { CozoDb } from 'cyb-cozo-lib-wasm';
+import { createCyblogChannel } from 'src/utils/logging/cyblog';
 
 import {
   IDBResult,
@@ -8,16 +9,16 @@ import {
   GetCommandOptions,
   DBResultError,
 } from './types/types';
-import { DbEntity, ConfigDbEntity } from './types/entities';
+import { DbEntity } from './types/entities';
 
-import { clearIndexedDBStore } from './utils';
-import { toListOfObjects } from './utils';
+import { clearIndexedDBStore, toListOfObjects } from './utils';
 
-import initializeScript from './migrations/schema.cozo';
-import communityScript from './migrations/community.cozo';
 import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
+import initializeScript from './migrations/schema.cozo';
+
 export const DB_NAME = 'cyb-cozo-idb';
+
 const DB_STORE_NAME = 'cozodb';
 const DB_VERSION = '1.1';
 
@@ -29,6 +30,8 @@ function createCozoDb() {
   let dbSchema: DBSchema = {};
   let commandFactory: ReturnType<typeof createCozoDbCommandFactory> | undefined;
   let onIndexedDbWrite: OnWrite | undefined;
+
+  const cyblogCh = createCyblogChannel({ thread: 'cozo' });
 
   const loadCozoDb = async () => {
     db = await CozoDb.new_from_indexed_db(
@@ -80,7 +83,7 @@ function createCozoDb() {
     let relations = await getRelations();
 
     if (relations.length === 0) {
-      console.log('CozoDb: apply DB schema', initializeScript);
+      cyblogCh.info('CozoDb: apply DB schema', initializeScript);
       const result = await runCommand(initializeScript);
 
       relations = await getRelations();
@@ -94,7 +97,9 @@ function createCozoDb() {
     );
 
     dbSchema = Object.fromEntries(schemasMap);
-    console.log('CozoDb schema initialized: ', dbSchema, relations, schemasMap);
+    cyblogCh.info('CozoDb schema initialized: ', {
+      data: [dbSchema, relations, schemasMap],
+    });
   };
 
   const getVersion = async () => {
@@ -116,7 +121,7 @@ function createCozoDb() {
     // }
 
     if (!dbSchema.transaction.values.includes('block_height')) {
-      console.log('💀 HARD RESET experemental db...');
+      cyblogCh.info('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);
       await put('config', [

@@ -4,8 +4,6 @@ import { initIpfsNode } from 'src/services/ipfs/node/factory';
 
 import {
   CybIpfsNode,
-  IPFSContent,
-  IPFSContentMaybe,
   IpfsContentType,
   IpfsOptsType,
 } from 'src/services/ipfs/ipfs';
@@ -22,6 +20,7 @@ import {
 import { ParticleCid } from 'src/types/base';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
+
 import { exposeWorkerApi } from '../factoryMethods';
 
 import { SyncService } from '../../services/sync/sync';
@@ -40,7 +39,6 @@ const createBackgroundWorkerApi = () => {
 
   const params$ = new BehaviorSubject<SyncServiceParams>({
     myAddress: null,
-    followings: [],
   });
 
   let ipfsNode: CybIpfsNode | undefined;

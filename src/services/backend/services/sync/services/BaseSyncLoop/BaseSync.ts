@@ -11,6 +11,7 @@ import {
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { SyncEntryName } from 'src/services/backend/types/services';
+import { CyblogChannel, createCyblogChannel } from 'src/utils/logging/cyblog';
 
 import DbApiWrapper from '../../../dataSource/indexedDb/dbApiWrapper';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
@@ -39,6 +40,8 @@ abstract class BaseSync {
 
   protected readonly isInitialized$: Observable<boolean>;
 
+  protected cyblogCh: CyblogChannel;
+
   constructor(
     name: SyncEntryName,
     deps: ServiceDeps,
@@ -50,7 +53,7 @@ abstract class BaseSync {
 
     this.statusApi = broadcastStatus(name, this.channelApi);
     this.particlesResolver = particlesResolver;
-
+    this.cyblogCh = createCyblogChannel({ thread: 'bckd', module: name });
     if (!deps.params$) {
       throw new Error('params$ is not defined');
     }
@@ -64,7 +67,7 @@ abstract class BaseSync {
     this.isInitialized$ = this.createIsInitializedObserver(deps);
 
     this.isInitialized$.subscribe((isInitialized) => {
-      console.log(
+      this.cyblogCh.info(
         `>>> ${this.name} - ${isInitialized ? 'initialized' : 'inactive'}`
       );
       this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
@@ -74,7 +77,9 @@ abstract class BaseSync {
       .pipe(switchMap(() => deps.params$!))
       .subscribe((params) => {
         this.params = params;
-        console.log(`>>> ${this.name} - params updated`, params);
+        this.cyblogCh.info(`>>> ${this.name} - params updated`, {
+          data: params,
+        });
       });
 
     // Restart observer

@@ -71,7 +71,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     timestampFrom: number
   ): Observable<DataStreamResult> {
     const { myAddress } = this.params;
-    console.log(
+    this.cyblogCh.info(
       `>>> ${this.name} subscribe ${myAddress} from ${numberToUtcDate(
         timestampFrom
       )}`
@@ -102,7 +102,8 @@ class SyncTransactionsLoop extends BaseSyncClient {
 
     const nodeObservample$ = createNodeWebsocketObservable(
       myAddress!,
-      getIncomingTransfersQuery(myAddress!)
+      getIncomingTransfersQuery(myAddress!),
+      (message, ctx) => this.cyblogCh.info(message, { unit: 'node-ws', ...ctx })
     ).pipe(
       filter((data) => !isEmpty(data)),
       map((data) => {
@@ -156,7 +157,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     const { myAddress } = params;
     const { signal } = this.abortController;
     if (transactions.length === 0) {
-      console.log(`>>> ${this.name} ${myAddress} recived 0 updates `);
+      this.cyblogCh.info(`>>> ${this.name} ${myAddress} recived 0 updates `);
       return;
     }
     const syncItem = await this.db!.getSyncStatus(myAddress!, myAddress!);
@@ -195,16 +196,16 @@ class SyncTransactionsLoop extends BaseSyncClient {
     // to prevent missing of other msg types let's avoid to change ts
     const shouldUpdateTimestamp = source !== 'node';
 
-    console.log(
-      '--------syncTransactions batch ',
-      this.abortController?.signal.aborted,
-      myAddress,
-      address,
-      transactions.length,
-      transactions.at(0)?.timestamp,
-      transactions.at(-1)?.timestamp,
-      source
-    );
+    this.cyblogCh.info('--------syncTransactions batch ', {
+      data: [
+        myAddress,
+        address,
+        transactions.length,
+        transactions.at(0)?.timestamp,
+        transactions.at(-1)?.timestamp,
+        source,
+      ],
+    });
 
     // save transaction
     await throwIfAborted(this.db!.putTransactions, signal)(transactions);
@@ -259,7 +260,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
       this.abortController!.signal
     );
 
-    console.log(
+    this.cyblogCh.info(
       `>>> syncTransactions - start ${address},  count: ${totalMessageCount}, from: ${timestampFrom}`
     );
 

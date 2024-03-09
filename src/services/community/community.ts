@@ -8,11 +8,17 @@ import { getFollowsAsCid, getFollowers } from '../backend/services/lcd/lcd';
 import { FetchParticleAsync, QueuePriority } from '../QueueManager/types';
 import { CommunityDto } from '../CozoDb/types/dto';
 import { FetchIpfsFunc } from '../backend/services/sync/types';
+import { createCyblogChannel } from 'src/utils/logging/cyblog';
 
 export type SyncCommunityResult = {
   action: 'reset' | 'add' | 'complete';
   items: CommunityDto[];
 };
+
+const cyblogCh = createCyblogChannel({
+  thread: 'bckd',
+  unit: 'fetchStoredSyncCommunity',
+});
 
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export const fetchStoredSyncCommunity$ = (
@@ -52,7 +58,7 @@ export const fetchStoredSyncCommunity$ = (
         (addr) => !storedCommunity.some((i) => i.neuron === addr && i.follower)
       );
 
-      console.log(
+      cyblogCh.info(
         `>>>$ sync community ${address} processing, stored ${storedCommunity.length} new followers: ${newFollowerCids.length} new following: ${newFollowingNeurons.length}`
       );
 
@@ -94,7 +100,7 @@ export const fetchStoredSyncCommunity$ = (
         })
       );
 
-      console.log(`>>>$ sync community ${address}, done`);
+      cyblogCh.info(`>>>$ sync community ${address}, done`);
       // const communityUpdates = [...communityUpdatesMap.values()];
 
       // if (communityUpdates.length > 0) {
@@ -103,7 +109,10 @@ export const fetchStoredSyncCommunity$ = (
       subscriber.next({ action: 'complete', items: [] });
 
       subscriber.complete();
-    })().catch((err) => subscriber.error(err));
+    })().catch((err) => {
+      cyblogCh.error(`>>>$ sync community ${address}, error`, { error: err });
+      subscriber.error(err);
+    });
   });
 };
 

@@ -68,8 +68,9 @@ class SyncParticlesLoop extends BaseSyncLoop {
       signal
     );
 
-    // console.log(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
-    cyblogBg.info(`>>> syncMyParticles ${myAddress} count ${newLinkCount}`);
+    this.cyblogCh.info(
+      `>>> syncMyParticles ${myAddress} count ${newLinkCount}`
+    );
     this.progressTracker.start(newLinkCount + syncItemParticles.length);
     this.statusApi.sendStatus(
       'in-progress',
@@ -88,8 +89,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
       // add to fetch-sync linked particles
       syncItemParticles.push(...newSyncItemParticles);
     }
-    // console.log(`-----sync syncParticles before`, syncItemParticles);
-
     await this.syncParticles(myAddress!, syncItemParticles, signal);
   }
 
@@ -109,7 +108,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
     const newTweets: SyncStatusDto[] = [];
     // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
     for await (const tweetsBatch of tweetsAsyncIterable) {
-      // console.log(`-----sync fetchNewTweets ${timestampUpdate}`, tweetsBatch);
       this.statusApi.sendStatus(
         'in-progress',
         `fetching new tweets...`,

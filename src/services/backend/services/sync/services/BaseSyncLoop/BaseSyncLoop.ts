@@ -37,11 +37,11 @@ abstract class BaseSyncLoop extends BaseSync {
         warmupMs,
         // onStartInterval: () => this.initAbortController(),
         onError: (error) => {
-          console.log(`>>> ${name} error`, error.toString());
+          this.cyblogCh.info(`>>> ${name} error`, error.toString());
           this.statusApi.sendStatus('error', error.toString());
         },
         onChange: (isInitialized) => {
-          console.log(`>>> ${name} isInitialized`, isInitialized);
+          this.cyblogCh.info(`>>> ${name} initialized: ${isInitialized}`);
           this.statusApi.sendStatus(isInitialized ? 'initialized' : 'inactive');
         },
       }
@@ -54,7 +54,7 @@ abstract class BaseSyncLoop extends BaseSync {
   public restart() {
     this.abortController?.abort();
     this.restartLoop?.();
-    console.log(`>>> ${this.name} loop restart`);
+    this.cyblogCh.info(`>>> ${this.name} loop restart`);
   }
 
   public start() {
@@ -69,10 +69,11 @@ abstract class BaseSyncLoop extends BaseSync {
       await this.sync(params);
     } catch (e) {
       const isAborted = isAbortException(e);
-      console.log(
-        `>>> ${this.name} ${params.myAddress} sync error:`,
-        e,
-        isAborted
+      this.cyblogCh.info(
+        `>>> ${this.name} ${params.myAddress} sync error [abrt:${isAborted}]:`,
+        {
+          error: e,
+        }
       );
 
       if (!isAborted) {
