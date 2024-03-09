@@ -82,6 +82,7 @@ function Messages({ messages, currentChatId }: Props) {
                     <MessageContainer
                       key={senseItem.transactionHash}
                       senseItem={senseItem}
+                      currentChatId={currentChatId}
                     />
                   ))}
                   <DateTitle date={new Date(date)} />

@@ -27,6 +27,7 @@
 
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   padding: 10px 15px;
 
@@ -42,7 +43,15 @@
       padding: 0;
 
       > :nth-child(1) {
-        display: none;
+        > :nth-child(1) {
+          display: none;
+        }
+
+        > :nth-child(2) {
+          > span:nth-of-type(1) {
+            display: none;
+          }
+        }
       }
 
       > :nth-child(2) {
@@ -50,7 +59,6 @@
       }
 
       > :last-child {
-        display: none;
         > :last-child {
           display: none;
         }
@@ -66,6 +74,20 @@
     font-size: 16px;
     text-transform: none;
     grid-area: title;
+
+    margin-top: 15px;
+
+    color: white;
+
+    > div {
+      display: flex;
+      justify-content: center;
+    }
+
+    > div > div {
+      min-height: 50px;
+      // max-height: 20vh;
+    }
   }
 
   > p {

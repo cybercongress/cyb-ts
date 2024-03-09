@@ -94,7 +94,7 @@ function SenseViewer({ selected, adviser }: Props) {
                       to={routes.oracle.ask.getLink(selected)}
                     >
                       <ContentIpfs
-                        search
+                        // search
                         cid={selected}
                         details={particleData}
                         content={particleData?.content}

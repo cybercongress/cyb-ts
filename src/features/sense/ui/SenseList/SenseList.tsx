@@ -79,7 +79,10 @@ function SenseList({ select, selected }: Props) {
                         select(id);
                       }}
                     >
-                      <SenseListItemContainer senseItemId={id} />
+                      <SenseListItemContainer
+                        senseItemId={id}
+                        currentChatId={selected}
+                      />
                     </button>
                   </li>
                 );
