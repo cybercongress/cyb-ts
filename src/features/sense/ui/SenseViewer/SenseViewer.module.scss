@@ -33,6 +33,15 @@
 
   gap: 0 10px;
 
+  .toggleContent {
+    margin-top: 15px;
+    color: var(--primary-color);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
   img {
     max-width: 100px;
   }
@@ -55,7 +64,7 @@
       }
 
       > :nth-child(2) {
-        justify-content: left;
+        // justify-content: left;
       }
 
       > :last-child {
@@ -79,14 +88,33 @@
 
     color: white;
 
+    &.largeContent {
+      > div > div {
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+      }
+
+      &.fullContent {
+        > div > div {
+          -webkit-line-clamp: unset;
+          -webkit-box-orient: unset;
+          display: unset;
+        }
+      }
+    }
+
     > div {
       display: flex;
       justify-content: center;
+      overflow: hidden;
     }
 
     > div > div {
+      * {
+        line-height: normal;
+      }
       min-height: 50px;
-      // max-height: 20vh;
     }
   }
 

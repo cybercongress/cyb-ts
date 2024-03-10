@@ -21,6 +21,7 @@ import Messages from './Messages/Messages';
 import TextMarkdown from 'src/components/TextMarkdown';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import AdviserMeta from 'src/containers/ipfs/components/AdviserMeta/AdviserMeta';
+import cx from 'classnames';
 
 type Props = {
   selected: string | undefined;
@@ -68,6 +69,8 @@ function SenseViewer({ selected, adviser }: Props) {
     adviser.setError(error || '');
   }, [error, adviser]);
 
+  const largeContent = text?.length > 200;
+
   return (
     <div className={styles.wrapper}>
       <Display
@@ -85,43 +88,44 @@ function SenseViewer({ selected, adviser }: Props) {
                       <AdviserMeta
                         cid={selected}
                         type={particleData?.type}
-                        size={null}
+                        size={particleData?.content?.length}
                       />
                     </div>
 
                     <Link
-                      className={styles.title}
+                      className={cx(styles.title, {
+                        [styles.largeContent]: largeContent,
+                        [styles.fullContent]:
+                          largeContent && particleContentOpen,
+                      })}
                       to={routes.oracle.ask.getLink(selected)}
                     >
                       <ContentIpfs
                         // search
                         cid={selected}
                         details={particleData}
-                        content={particleData?.content}
                       />
                     </Link>
 
-                    {/* TODO: need refactor */}
-                    {text && (
-                      <p>
-                        {/* {particleContentOpen && (
-                          <TextMarkdown preview>{text}</TextMarkdown>
-                        )} */}
-                        {/* <button
-                          type="button"
-                          className={styles.toggleContent}
-                          onClick={() =>
-                            setParticleContentOpen(!particleContentOpen)
-                          }
-                        >
-                          {particleContentOpen ? 'Hide' : 'Show'} content
-                        </button> */}
-                      </p>
+                    {largeContent && (
+                      <button
+                        type="button"
+                        className={styles.toggleContent}
+                        onClick={() => {
+                          setParticleContentOpen(!particleContentOpen);
+                        }}
+                      >
+                        {particleContentOpen ? 'Hide' : 'Show'} full content
+                      </button>
                     )}
                   </header>
                 ) : (
                   <header className={styles.header_Neuron}>
-                    <Karma address={selected} />
+                    {/* need this wrapper to prevent jump */}
+                    <div className={styles.karma}>
+                      <Karma address={selected} />
+                    </div>
+
                     <Account address={selected} avatar />
                     <Link to={routes.neuron.getLink(selected)}>
                       <HydrogenBalance address={selected} />
