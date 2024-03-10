@@ -12,10 +12,6 @@ import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
 import { useBackend } from 'src/contexts/backend/backend';
-import {
-  ServiceStatus,
-  SyncProgress,
-} from 'src/services/backend/types/services';
 
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
@@ -24,7 +20,6 @@ import BackendStatus from './BackendStatus';
 import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
-import { DBResultError } from 'src/services/CozoDb/types/types';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -37,69 +32,6 @@ const presetsAsSelectOptions = [
 ];
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
-
-function ServiceStatus({
-  name,
-  status,
-  message,
-}: {
-  name: string;
-  status: ServiceStatus;
-  message?: string;
-}) {
-  const icon = status === 'error' ? '❌' : status === 'starting' ? '⏳' : '';
-  const msg = message ? `- ${message}` : '';
-  return <div>{`${icon} ${name} ${status} ${msg}`}</div>;
-}
-
-// function SyncEntryStatus({
-//   entry,
-//   status,
-// }: {
-//   entry: SyncEntryName;
-//   status: SyncProgress;
-// }) {
-//   if (status.progress === 0) {
-//     return (
-//       <div>
-//         {`▫️ ${entry} items pending`}
-//         <Dots />
-//       </div>
-//     );
-//   }
-//   if (status.done) {
-//     return <div>{`☑️ ${entry} ${status.message || ''}`}</div>;
-//   }
-//   if (status.error) {
-//     return (
-//       <div>{`❌ ${entry} items syncronization failed - ${status.error}`}</div>
-//     );
-//   }
-//   return (
-//     <div>
-//       {`⏳ ${status.progress} ${entry} items syncronized`}
-//       <Dots />
-//     </div>
-//   );
-// }
-// function SyncInfo({ syncState }: { syncState: SyncState }) {
-//   return (
-//     <div>
-//       <div className={styles.logs}>
-//         <div>sync db in progress:</div>
-//         <div className={styles.logItems}>
-//           {Object.keys(syncState.entryStatus).map((name) => (
-//             <SyncEntryStatus
-//               key={`log_${name}`}
-//               entry={name}
-//               status={syncState.entryStatus[name]}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 function Drive() {
   const [queryText, setQueryText] = useState('');

@@ -121,6 +121,7 @@ function createCybLog<T>(defaultContext: Partial<LogContext<T>> = {}) {
     warn,
     trace,
     logList,
+    getLogs: () => logList,
     clear: () => logList.splice(0, logList.length),
     getConsoleLogParams,
   };

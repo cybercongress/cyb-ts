@@ -14,6 +14,8 @@ import { convertTimestampToString } from 'src/utils/date';
 
 import styles from './drive.scss';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
+import { Button } from 'src/components';
+import { downloadJson } from 'src/utils/json';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {
@@ -59,6 +61,11 @@ function BackendStatus() {
     (store) => store.backend
   );
 
+  const downloadLogsOnClick = () => {
+    const logs = cyblog.getLogs();
+    downloadJson(logs, `cyblog_${new Date().toISOString()}.json`);
+  };
+
   return (
     <Display color={Colors.GREEN}>
       <div className={styles.list}>
@@ -85,6 +92,11 @@ function BackendStatus() {
             progress={syncState.entryStatus[name]}
           />
         ))}
+        <div className={styles.buttonPanel}>
+          <Button small onClick={downloadLogsOnClick}>
+            🐞 download logs
+          </Button>
+        </div>
       </div>
     </Display>
   );
