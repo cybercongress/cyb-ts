@@ -121,7 +121,11 @@ function SenseViewer({ selected, adviser }: Props) {
                   </header>
                 ) : (
                   <header className={styles.header_Neuron}>
-                    <Karma address={selected} />
+                    {/* need this wrapper to prevent jump */}
+                    <div className={styles.karma}>
+                      <Karma address={selected} />
+                    </div>
+
                     <Account address={selected} avatar />
                     <Link to={routes.neuron.getLink(selected)}>
                       <HydrogenBalance address={selected} />
