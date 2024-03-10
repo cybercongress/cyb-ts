@@ -114,6 +114,29 @@ function createCybLog<T>(defaultContext: Partial<LogContext<T>> = {}) {
     return log('warn', message, context);
   }
 
+  function normalizeLog() {
+    return logList.map((logItem) => {
+      const { context, ...rest } = logItem;
+      const {
+        unit = '',
+        module = '',
+        thread = '',
+        data = '',
+        error = '',
+        stacktrace = '',
+      } = context || {};
+      return {
+        ...rest,
+        unit,
+        module,
+        thread,
+        data, //: JSON.stringify(data),
+        error,
+        stacktrace,
+      };
+    });
+  }
+
   return {
     log,
     info,
@@ -121,7 +144,7 @@ function createCybLog<T>(defaultContext: Partial<LogContext<T>> = {}) {
     warn,
     trace,
     logList,
-    getLogs: () => logList,
+    getLogs: () => normalizeLog(),
     clear: () => logList.splice(0, logList.length),
     getConsoleLogParams,
   };

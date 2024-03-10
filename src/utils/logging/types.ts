@@ -16,7 +16,7 @@ export type LogItem = {
   timestamp: Date;
   level: LogLevel;
   message: any;
-  context?: Omit<LogContext<any>, 'stacktrace' | 'formatter'>;
+  context?: Omit<LogContext<any>, 'formatter'>; //'stacktrace' |
   stacktrace?: any[];
 };
 
