@@ -14,9 +14,9 @@ function SenseButton({ className }: Props) {
   const { particles, neurons } = useAppSelector(selectUnreadCounts);
   const total = particles + neurons;
 
-  if (!total) {
-    return null;
-  }
+  // if (!total) {
+  //   return null;
+  // }
 
   return (
     <Link

@@ -24,8 +24,12 @@
   }
 
   &:hover {
+    transition: all 0.3s;
+    padding-right: 30px;
+
+    background-color: var(--green-light);
     span {
-      color: var(--primary-color);
+      color: var(--green-light);
     }
   }
 }
