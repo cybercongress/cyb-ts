@@ -69,7 +69,7 @@ function SenseViewer({ selected, adviser }: Props) {
     adviser.setError(error || '');
   }, [error, adviser]);
 
-  const largeContent = text?.length > 100;
+  const largeContent = text?.length > 200;
 
   return (
     <div className={styles.wrapper}>
