@@ -115,7 +115,7 @@ function SenseViewer({ selected, adviser }: Props) {
                           setParticleContentOpen(!particleContentOpen);
                         }}
                       >
-                        {particleContentOpen ? 'Hide' : 'Show'} content
+                        {particleContentOpen ? 'Hide' : 'Show'} full content
                       </button>
                     )}
                   </header>
