@@ -88,7 +88,7 @@ function SenseViewer({ selected, adviser }: Props) {
                       <AdviserMeta
                         cid={selected}
                         type={particleData?.type}
-                        size={null}
+                        size={particleData?.content?.length}
                       />
                     </div>
 
