@@ -97,6 +97,8 @@ function SwitchAccount() {
 
   const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
 
+  const dispatch = useAppDispatch();
+
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   const { passport } = usePassportByAddress(useGetAddress);
