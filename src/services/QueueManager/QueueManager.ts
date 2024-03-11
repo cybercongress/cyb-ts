@@ -47,9 +47,7 @@ function getQueueItemTotalPriority(item: QueueItem): number {
 }
 
 const debugCid = (cid: ParticleCid, prefix: string, ...args) => {
-  // if (cid === 'QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao') {
   console.log(`>>> ${prefix}: ${cid}`, ...args);
-  // }
 };
 
 const strategies = {
@@ -167,25 +165,14 @@ class QueueManager {
 
     return promiseToObservable(async () => {
       try {
-        // console.log(
-        //   '---vef fetchIpfsContent',
-        //   fetchIpfsContent,
-        //   cid,
-        //   source,
-        //   controller?.signal.aborted
-        // );
-
         const res = await fetchIpfsContent(cid, source, {
           controller,
           node: this.node,
         }).then((content) => {
-          // debugCid(cid, 'fetchData - fetchIpfsContent', cid, source, content);
-
           this.defferedDbSaver?.enqueueIpfsContent(content);
 
           return content;
         });
-        // console.log('---prom fetchIpfsContent', res);
         return res;
       } catch (e) {
         // console.log('---promtoo', e);

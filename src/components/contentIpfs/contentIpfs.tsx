@@ -60,12 +60,11 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
 
       {contentType === 'audio' && content && <Audio content={content} />}
 
-      {contentType === 'video' && content && (
-        <VideoPlayerGatewayOnly content={content} />
-      )}
-
       {details && (
         <>
+          {contentType === 'video' && (
+            <VideoPlayerGatewayOnly content={content} details={details} />
+          )}
           {contentType === 'text' && (
             <TextMarkdown preview={search}>
               {search ? details.text : details.content}

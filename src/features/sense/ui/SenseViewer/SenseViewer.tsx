@@ -48,7 +48,7 @@ function SenseViewer({ selected, adviser }: Props) {
 
   const text = particleData?.text;
 
-  console.log(particleData);
+  // console.log(particleData);
 
   useEffect(() => {
     if (selected && senseApi) {

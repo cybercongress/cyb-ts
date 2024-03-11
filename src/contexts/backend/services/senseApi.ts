@@ -93,7 +93,7 @@ export const createSenseApi = (
       timestampRead, //  conditional or read all
       unreadCount,
     });
-    console.log('------senseMarkAsRead', syncItem, res, timestampRead);
+    // console.log('------senseMarkAsRead', syncItem, res, timestampRead);
     // console.timeEnd(`---senseMarkAsRead done ${id}`);
     return res;
   },
