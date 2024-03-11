@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
+
 import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';

@@ -114,6 +114,10 @@ const config = {
       ),
       'process.env.CYBER_GATEWAY': JSON.stringify(process.env.CYBER_GATEWAY),
     }),
+    new webpack.ProvidePlugin({
+      // ProvidePlugin configuration
+      cyblog: ['src/utils/logging/cyblog.ts', 'default'],
+    }),
   ],
   module: {
     rules: [

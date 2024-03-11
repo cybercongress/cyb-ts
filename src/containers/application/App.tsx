@@ -1,36 +1,47 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
-import { AppDispatch, RootState } from 'src/redux/store';
-import { initPocket } from 'src/redux/features/pocket';
+import { AppDispatch } from 'src/redux/store';
+import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
-import styles from './styles.scss';
 
 import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
 import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
+
+import styles from './styles.scss';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import useSenseManager from 'src/features/sense/ui/useSenseManager';
+
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
+import { initCyblog } from 'src/utils/logging/bootstrap';
 
 export const PORTAL_ID = 'portal';
 
+initCyblog();
+
 function App() {
-  const dispatch: AppDispatch = useDispatch();
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
+  const dispatch: AppDispatch = useAppDispatch();
+  const { defaultAccount } = useAppSelector((state) => state.pocket);
   const queryClient = useQueryClient();
 
   const address = defaultAccount.account?.cyber?.bech32;
-
-  const { community } = useGetCommunity(address || null);
+  // cyblog.info('TEST!!!!');
+  // const { community, communityLoaded } = useGetCommunity(address || null, {
+  //   main: true,
+  // });
   const location = useLocation();
   const adviserContext = useAdviser();
+  useSenseManager();
 
   const { ipfsError } = useBackend();
+
   useEffect(() => {
     dispatch(initPocket());
   }, []);
@@ -49,9 +60,11 @@ function App() {
 
   // reset
 
-  useEffect(() => {
-    dispatch(setCommunity(community));
-  }, [community, dispatch]);
+  // useEffect(() => {
+  //   if (communityLoaded) {
+  //     dispatch(setCommunity(community));
+  //   }
+  // }, [communityLoaded, community, dispatch]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

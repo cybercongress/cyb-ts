@@ -17,6 +17,7 @@ import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import { Time } from 'src/components';
 import { getNowUtcTime } from 'src/utils/utils';
+import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);
@@ -95,6 +96,8 @@ function MainLayout({ children }: { children: JSX.Element }) {
       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
         <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
       </AppSideBar>
+
+      <SenseButton className={styles.senseBtn} />
 
       {children}
 

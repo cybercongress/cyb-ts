@@ -1,5 +1,6 @@
 import { request } from 'graphql-request';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { CYBER } from '../../../../../utils/config';

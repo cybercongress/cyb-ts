@@ -5,9 +5,12 @@ import { getRankGrade, searchByHash } from 'src/utils/search/utils';
 import { LinksTypeFilter } from '../types';
 import { coinDecimals } from 'src/utils/utils';
 import { merge } from './shared';
+import { useBackend } from 'src/contexts/backend/backend';
+import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
 
 const useSearch = (hash: string, { skip = false } = {}) => {
   const cid = hash;
+  const { defferedDbApi } = useBackend();
 
   const queryClient = useQueryClient();
 
@@ -23,10 +26,11 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     ['useSearch', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const response = await searchByHash(queryClient, cid, pageParam, {
-        storeToCozo: true,
-      });
-
+      const response = await searchByHash(queryClient, cid, pageParam);
+      response.result &&
+        defferedDbApi?.importCyberlinks(
+          response.result.map((l) => mapLinkToEntity(hash, l.particle))
+        );
       return { data: response, page: pageParam };
     },
     {

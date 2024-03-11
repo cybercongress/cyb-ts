@@ -186,6 +186,7 @@ function CyberlinksGraph({ data, size }: Props) {
             //   ? 'red'
             'rgba(9,255,13,1)'
         }
+        linkLabel={''}
         linkWidth={4}
         linkCurvature={0.2}
         linkOpacity={0.7}

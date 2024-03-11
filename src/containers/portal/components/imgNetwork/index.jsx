@@ -1,8 +1,5 @@
-import {
-  PATTERN_COSMOS,
-  PATTERN_CYBER,
-  PATTERN_ETH,
-} from '../../../../utils/config';
+import { PATTERN_COSMOS, PATTERN_ETH } from '../../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 
 import styles from './styles.scss';
 

@@ -1,7 +1,8 @@
 import { Coin } from '@cosmjs/launchpad';
 import { useMemo } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { CYBER, PATTERN_CYBER } from 'src/utils/config';
+import { CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { getDisplayAmount, trimString } from 'src/utils/utils';
 import ImgArrow from 'images/fromToIbc.svg';
 import { Account, DenomArr, FormatNumberTokens } from 'src/components';

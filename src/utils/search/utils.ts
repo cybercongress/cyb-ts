@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import Unixfs from 'ipfs-unixfs';
-import { backendApi } from 'src/services/backend/workers/background/service';
 
 import * as config from '../config';
 
@@ -9,8 +6,8 @@ import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
-
-const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
+import { CID_TWEET } from 'src/constants/app';
+import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -23,22 +20,6 @@ export const formatNumber = (number, toFixed) => {
 
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
-
-export const getIpfsHash = (string: string) =>
-  new Promise((resolve, reject) => {
-    const unixFsFile = new Unixfs('file', Buffer.from(string));
-
-    const buffer = unixFsFile.marshal();
-    DAGNode.create(buffer, (err, dagNode) => {
-      if (err) {
-        reject(new Error('Cannot create ipfs DAGNode'));
-      }
-
-      DAGUtil.cid(dagNode, (error, cid) => {
-        resolve(cid.toBaseEncodedString());
-      });
-    });
-  });
 
 export const getRankGrade = (rank) => {
   let from;
@@ -696,7 +677,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${config.CID_TWEET}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -899,36 +880,10 @@ export const getDenomTraces = async () => {
   }
 };
 
-export const searchByHash = async (
-  client,
-  hash,
-  page,
-  options = { storeToCozo: false, callback: undefined }
-) => {
+export const searchByHash = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash, page);
+    const results = await client.search(hash, page);
 
-    // TODO: refactor ???
-
-    const results = responseSearchResults.result ? responseSearchResults : [];
-
-    if (
-      page === 0 &&
-      options.callback &&
-      responseSearchResults.pagination.total
-    ) {
-      options.callback(responseSearchResults.pagination.total);
-    }
-    if (options.storeToCozo) {
-      console.log('-----searc', hash);
-      backendApi.importApi.importParticle(hash);
-      backendApi.importApi.importCyberlinks(
-        responseSearchResults.result.map((item) => ({
-          from: hash,
-          to: item.particle,
-        }))
-      );
-    }
     return results;
   } catch (error) {
     // TODO: handle

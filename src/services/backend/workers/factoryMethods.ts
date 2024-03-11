@@ -61,18 +61,18 @@ function installLoggingHandler(worker: Worker | MessagePort, name: string) {
 export function createWorkerApi<T>(
   workerUrl: URL,
   workerName: string
-): { worker: WorkerType; apiProxy: Remote<T> } {
+): { worker: WorkerType; workerApiProxy: Remote<T> } {
   installTransferHandlers();
   //&& !process.env.IS_DEV
   if (isSharedWorkerUsed) {
     const worker = new SharedWorker(workerUrl, { name: workerName });
     installLoggingHandler(worker.port, workerName);
-    return { worker, apiProxy: wrap<T>(worker.port) };
+    return { worker, workerApiProxy: wrap<T>(worker.port) };
   }
 
   const worker = new Worker(workerUrl);
   // installLoggingHandler(worker, workerName);
-  return { worker, apiProxy: wrap<T>(worker) };
+  return { worker, workerApiProxy: wrap<T>(worker) };
 }
 
 export function exposeWorkerApi<T>(worker: WorkerType, api: T) {

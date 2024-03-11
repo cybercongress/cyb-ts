@@ -36,7 +36,7 @@ export function Telegram() {
           <span>t/eng</span>
         </LinkWindow>
 
-        <LinkWindow to="https://t.me/cyber_russian_community">
+        <LinkWindow to="https://t.me/CyberGlobalHub">
           <img
             alt="telegram"
             style={{ width: 30, height: 30 }}

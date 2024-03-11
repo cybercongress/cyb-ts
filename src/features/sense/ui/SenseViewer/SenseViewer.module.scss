@@ -1,0 +1,143 @@
+.wrapper {
+  // Display
+  > div {
+    padding: 0;
+
+    display: flex;
+    overflow-x: hidden;
+    flex-direction: column;
+
+    // Display title
+    > header {
+      top: 0;
+
+      > div {
+        left: -2px;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.header {
+  // display: grid;
+  // grid-template-areas:
+  //   'avatar title'
+  //   'avatar text';
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  padding: 10px 15px;
+
+  gap: 0 10px;
+
+  .toggleContent {
+    margin-top: 15px;
+    color: var(--primary-color);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  img {
+    max-width: 100px;
+  }
+
+  .meta {
+    > div {
+      min-width: unset;
+      padding: 0;
+
+      > :nth-child(1) {
+        > :nth-child(1) {
+          display: none;
+        }
+
+        > :nth-child(2) {
+          > span:nth-of-type(1) {
+            display: none;
+          }
+        }
+      }
+
+      > :nth-child(2) {
+        // justify-content: left;
+      }
+
+      > :last-child {
+        > :last-child {
+          display: none;
+        }
+      }
+    }
+  }
+
+  & > :nth-child(1) {
+    grid-area: avatar;
+  }
+
+  .title {
+    font-size: 16px;
+    text-transform: none;
+    grid-area: title;
+
+    margin-top: 15px;
+
+    color: white;
+
+    &.largeContent {
+      > div > div {
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+      }
+
+      &.fullContent {
+        > div > div {
+          -webkit-line-clamp: unset;
+          -webkit-box-orient: unset;
+          display: unset;
+        }
+      }
+    }
+
+    > div {
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    > div > div {
+      * {
+        line-height: normal;
+      }
+      min-height: 50px;
+    }
+  }
+
+  > p {
+    grid-area: text;
+    font-size: 14px;
+
+    button {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.header_Neuron {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0 5px;
+}
+
+.noData {
+  margin: auto;
+  color: #616161;
+  text-align: center;
+}

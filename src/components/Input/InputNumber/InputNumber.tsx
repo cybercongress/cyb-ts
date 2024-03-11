@@ -14,6 +14,8 @@ export type Props = {
   title?: string;
   color?: Color;
   fixedDecimalScale?: boolean;
+  maxValue?: number;
+  min?: number;
 };
 
 function InputNumber({
@@ -22,6 +24,7 @@ function InputNumber({
   fixedDecimalScale,
   onChange,
   maxValue,
+  min,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -44,6 +47,7 @@ function InputNumber({
         return true;
       }}
       maxValue={maxValue}
+      min={min}
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
       decimalScale={3}

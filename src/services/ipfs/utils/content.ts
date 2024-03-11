@@ -70,7 +70,7 @@ export const parseArrayLikeToDetails = async (
     };
     const initialType = detectContentType(mime);
     if (['video', 'audio'].indexOf(initialType) > -1) {
-      return { ...response, type: initialType };
+      return { ...response, type: initialType, gateway: true };
     }
 
     const rawData = content?.result

@@ -13,6 +13,8 @@ import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { useAdviser } from 'src/features/adviser/context';
+import { DenomArr } from 'src/components';
+import styles from './Validators.module.scss';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -39,7 +41,14 @@ function Validators({ defaultAccount }) {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser('choose your hero');
+    setAdviser(
+      <div className={styles.info}>
+        the current undelegation period is <strong>42 days</strong>
+        <br />
+        you need to burn 1 <DenomArr denomValue="hydrogen" onlyImg /> to unstake
+        1 <DenomArr denomValue="boot" onlyImg />
+      </div>
+    );
   }, [setAdviser]);
 
   useEffect(() => {

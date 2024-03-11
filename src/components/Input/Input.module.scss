@@ -44,6 +44,8 @@
   height: unset;
 
   textarea {
+    position: relative;
+    top: -5px;
     color: white;
     resize: none;
     box-shadow: unset;

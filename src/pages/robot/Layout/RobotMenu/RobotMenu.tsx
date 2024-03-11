@@ -99,7 +99,7 @@ const links: MenuItem[] = [
     text: 'Sense',
     link: './sense',
     icon: '🧬',
-    description: 'news today',
+    description: 'unread',
     name: 'sense',
   },
   {

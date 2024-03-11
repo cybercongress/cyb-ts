@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { routes } from 'src/routes';
-import { getIpfsHash } from 'src/utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { PATTERN_IPFS_HASH } from 'src/utils/config';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { setFocus, setValue } from './commander.redux';

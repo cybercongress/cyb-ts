@@ -1,5 +1,4 @@
-import gql from 'graphql-tag';
-import { useQuery } from 'react-apollo';
+import { useQuery, gql } from '@apollo/client';
 
 function generateQuery(cid: string, type: 'to' | 'from') {
   return gql`

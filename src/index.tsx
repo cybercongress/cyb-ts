@@ -4,15 +4,21 @@ import 'regenerator-runtime/runtime';
 import { OperationDefinitionNode } from 'graphql';
 
 import { createRoot } from 'react-dom/client';
-import ApolloClient from 'apollo-client';
+
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink,
+  split,
+  ApolloProvider,
+} from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
+
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ApolloProvider } from 'react-apollo';
-import { getMainDefinition } from 'apollo-utilities';
-import { ApolloLink, split } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
-import { WebSocketLink } from 'apollo-link-ws';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
@@ -25,8 +31,7 @@ import './image/favicon.ico';
 // for bootloading
 import './image/robot.svg';
 
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
+// import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import DataProvider from './contexts/appData';
@@ -34,7 +39,7 @@ import WebsocketsProvider from './websockets/context';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
-import BackendProvider from './contexts/backend';
+import BackendProvider from './contexts/backend/backend';
 
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
@@ -47,12 +52,11 @@ const httpLink = new HttpLink({
   },
 });
 
-const wsLink = new WebSocketLink({
-  uri: CYBER.CYBER_INDEX_WEBSOCKET,
-  options: {
-    reconnect: true,
-  },
-});
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: CYBER.CYBER_INDEX_WEBSOCKET,
+  })
+);
 
 const terminatingLink = split(
   ({ query }) => {
@@ -69,6 +73,7 @@ const link = ApolloLink.from([terminatingLink]);
 
 const cache = new InMemoryCache();
 
+// TODO: replace with @apollo/client
 const client = new ApolloClient({
   link,
   cache,
@@ -106,7 +111,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       <BackendProvider>
                         <DeviceProvider>
                           <AdviserProvider>
-                            <ErrorBoundary>{children}</ErrorBoundary>
+                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                            {children}
                           </AdviserProvider>
                         </DeviceProvider>
                       </BackendProvider>

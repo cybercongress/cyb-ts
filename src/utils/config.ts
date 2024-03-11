@@ -78,7 +78,6 @@ const COSMOS = {
 const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
 
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
-
 let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
   DENOM_CYBER: 'boot',
@@ -262,15 +261,8 @@ const BOND_STATUS = {
   BOND_STATUS_BONDED: 3,
 };
 
-const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
-const CID_TWEET = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
-
 const PATTERN = new RegExp(
   `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
-  'g'
-);
-const PATTERN_CYBER = new RegExp(
-  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
   'g'
 );
 const PATTERN_CYBER_CONTRACT = new RegExp(
@@ -302,7 +294,6 @@ export {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
-  PATTERN_CYBER,
   PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
@@ -325,8 +316,6 @@ export {
   PROPOSAL_STATUS,
   VOTE_OPTION,
   BOND_STATUS,
-  CID_AVATAR,
-  CID_TWEET,
   PATTERN_HTML,
   HUB_CONTRACTS,
 };
