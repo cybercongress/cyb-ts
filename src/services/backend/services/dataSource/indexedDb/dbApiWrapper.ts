@@ -183,8 +183,6 @@ class DbApiWrapper {
     const result = await this.db!.runCommand(command, true);
     const senseList = dbResultToDtoList<SenseListItem>(result);
 
-    // console.log('-------cmd', senseList);
-    console.log('!=!=! redundant calls - FIX', myAddress);
     return senseList;
   }
 
@@ -251,7 +249,11 @@ class DbApiWrapper {
     try {
       return this.db!.executeUpdateCommand('sync_queue', entitites);
     } catch (e) {
-      console.log('----> updateSyncQueue, items will be removed', e, item);
+      cyblog.error('----> updateSyncQueue, items will be removed', {
+        error: e,
+        data: item,
+        module: 'dbApiWrapper',
+      });
       // eslint-disable-next-line no-restricted-syntax
       for (const entity of entitites) {
         // eslint-disable-next-line no-await-in-loop
