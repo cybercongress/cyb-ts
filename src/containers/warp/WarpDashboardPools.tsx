@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useSelector } from 'react-redux';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
-import { NoItems, MainContainer } from 'src/components';
+import { NoItems, MainContainer, LinkWindow } from 'src/components';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import { Coin } from '@cosmjs/launchpad';
@@ -33,7 +33,14 @@ function WarpDashboardPools() {
     if (loading) {
       setAdviser('loading...', 'yellow');
     } else {
-      setAdviser('add or sub liquidity. create a pool');
+      setAdviser(
+        <span>
+          warp is power dex for all things cyber.{' '}
+          <LinkWindow to="https://api.warp-dex.cyb.ai/docs">
+            api docs
+          </LinkWindow>
+        </span>
+      );
     }
   }, [setAdviser, loading]);
 

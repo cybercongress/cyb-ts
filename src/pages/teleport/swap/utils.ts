@@ -22,12 +22,8 @@ export function calculatePairAmount(inputAmount: string | number, state) {
   const feeRatio = new BigNumber(0.03);
   const swapFeeRatio = new BigNumber(1).minus(feeRatio); // TO DO get params
 
-  const poolAmountA = new BigNumber(
-    getDisplayAmount(tokenAPoolAmount, coinDecimalsA)
-  );
-  const poolAmountB = new BigNumber(
-    getDisplayAmount(tokenBPoolAmount, coinDecimalsB)
-  );
+  const poolAmountA = new BigNumber(tokenAPoolAmount);
+  const poolAmountB = new BigNumber(tokenBPoolAmount);
 
   const powA = new BigNumber(1).multipliedBy(
     new BigNumber(10).pow(coinDecimalsA)
@@ -36,7 +32,10 @@ export function calculatePairAmount(inputAmount: string | number, state) {
     new BigNumber(10).pow(coinDecimalsB)
   );
 
-  const amount = new BigNumber(inputAmount);
+  const amount = new BigNumber(inputAmount).multipliedBy(
+    isReverse ? powB : powA
+  );
+
   const amount2 = amount.multipliedBy(2);
 
   const isPoolPair = [tokenA, tokenB].sort()[0] === tokenA;
@@ -51,24 +50,23 @@ export function calculatePairAmount(inputAmount: string | number, state) {
 
   if ((isPoolPair && !isReverse) || (!isPoolPair && isReverse)) {
     swapPrice = poolCoins[1].dividedBy(poolCoins[0].plus(amount2));
-    price = new BigNumber(1)
-      .dividedBy(swapPrice)
-      .dividedBy(powA)
-      .dividedBy(powB);
+    price = new BigNumber(1).dividedBy(swapPrice);
   }
 
   if ((isPoolPair && isReverse) || (!isPoolPair && !isReverse)) {
     swapPrice = poolCoins[0].dividedBy(poolCoins[1].plus(amount2));
-    price = new BigNumber(swapPrice).dividedBy(powA).dividedBy(powB);
+    price = new BigNumber(swapPrice);
   }
 
   if (isReverse) {
     counterPairAmount = amount
       .multipliedBy(swapPrice.multipliedBy(new BigNumber(1).plus(feeRatio)))
+      .dividedBy(powA)
       .dp(coinDecimalsA, BigNumber.ROUND_FLOOR);
   } else {
     counterPairAmount = amount
       .multipliedBy(swapPrice.multipliedBy(swapFeeRatio))
+      .dividedBy(powB)
       .dp(coinDecimalsB, BigNumber.ROUND_FLOOR);
   }
 

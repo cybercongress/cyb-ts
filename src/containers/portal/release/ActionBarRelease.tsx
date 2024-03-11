@@ -15,6 +15,7 @@ import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
 import mssgsClaim from '../utilsMsgs';
+import { useAdviser } from 'src/features/adviser/context';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -60,6 +61,7 @@ function ActionBarRelease({
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
   const queryClient = useQueryClient();
+  const { setAdviser } = useAdviser();
 
   const getRelease = useCallback(async () => {
     try {
@@ -92,6 +94,13 @@ function ActionBarRelease({
           availableRelease(isNanoLedger),
           queryClient
         );
+
+        if (isNanoLedger) {
+          setAdviser(
+            "Ledger Nano-S is temporarily not supported, but don't worry, you can release your gift later",
+            'red'
+          );
+        }
 
         if (!msgsBroadcast.length) {
           return;
@@ -130,7 +139,14 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, signingClient, currentRelease, queryClient, availableRelease]);
+  }, [
+    signer,
+    signingClient,
+    currentRelease,
+    queryClient,
+    availableRelease,
+    setAdviser,
+  ]);
 
   useEffect(() => {
     const checkAddress = async () => {

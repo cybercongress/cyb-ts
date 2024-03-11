@@ -3,7 +3,6 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { db as dbIbcHistory } from './db';
 import { HistoriesItem, StatusTx } from './HistoriesItem';
 import { RootState } from 'src/redux/store';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Coin } from '@cosmjs/launchpad';
 import { parseRawLog } from '@cosmjs/stargate/build/logs';
@@ -85,7 +84,7 @@ function HistoryContextProvider({ children }: { children: React.ReactNode }) {
     useState<Option<HistoriesItem[]>>(undefined);
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const [update, setUpdate] = useState(0);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+   const addressActive = defaultAccount.account?.cyber || undefined; 
 
   function getBlockSubscriber(chainId: string): PollingStatusSubscription {
     if (!blockSubscriberMap.has(chainId)) {

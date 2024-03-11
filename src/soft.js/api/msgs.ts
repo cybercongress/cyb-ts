@@ -70,6 +70,7 @@ class Soft3MessageFactory {
   }
 
   private async checkFreeSlotMint() {
+    const HALF_MAX_SLOTS = MAX_SLOTS / 2;
     const dataAuthAccounts = await authAccounts(this.senderAddress);
 
     if (!dataAuthAccounts?.result?.value?.vesting_periods) {
@@ -79,7 +80,7 @@ class Soft3MessageFactory {
     const { vesting_periods: vestingPeriods, start_time: startTime } =
       dataAuthAccounts.result.value;
 
-    if (vestingPeriods.length < MAX_SLOTS) {
+    if (vestingPeriods.length < HALF_MAX_SLOTS) {
       return true;
     }
 
@@ -94,7 +95,7 @@ class Soft3MessageFactory {
       }
     });
 
-    if (slotData.length === MAX_SLOTS) {
+    if (slotData.length >= HALF_MAX_SLOTS) {
       return false;
     }
 
