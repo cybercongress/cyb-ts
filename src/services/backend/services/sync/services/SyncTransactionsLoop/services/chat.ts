@@ -122,7 +122,10 @@ export const syncMyChats = async (
         };
 
         // eslint-disable-next-line no-await-in-loop
-        await throwIfAborted(db.updateSyncStatus, signal)(syncStatusChanges);
+        await throwIfAborted(
+          db.updateSyncStatus.bind(db),
+          signal
+        )(syncStatusChanges);
 
         results.push({
           ...syncItem,

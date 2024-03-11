@@ -12,6 +12,7 @@ import { LEDGER } from '../../../utils/config';
 import { convertAmountReverce } from '../../../utils/utils';
 
 import ActionBarPingTxs from '../components/actionBarPingTxs';
+import { useBackend } from 'src/contexts/backend/backend';
 
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
@@ -37,7 +38,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [errorMessage, setErrorMessage] =
     useState<Option<string | JSX.Element>>(undefined);
-
+  const { senseApi } = useBackend();
   const {
     tokenAmount,
     tokenSelect,
@@ -70,7 +71,15 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           );
 
           if (response.code === 0) {
-            setTxHash(response.transactionHash);
+            const txHash = response.transactionHash;
+            setTxHash(txHash);
+            await senseApi?.addMsgSendAsLocal({
+              transactionHash: txHash,
+              fromAddress: address,
+              toAddress: recipient,
+              amount: offerCoin,
+              memo: memoValue,
+            });
           } else {
             setTxHash(undefined);
             setStage(STAGE_ERROR);
@@ -79,7 +88,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         } catch (error) {
           setTxHash(undefined);
           setStage(STAGE_ERROR);
-
+          console.log('error', error);
           setErrorMessage(error.toString());
         }
       } else {
