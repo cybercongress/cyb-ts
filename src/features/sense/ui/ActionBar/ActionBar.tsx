@@ -95,12 +95,9 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
       const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
 
-      let messageCid;
-      if (!message.match(PATTERN_IPFS_HASH)) {
-        messageCid = (await ipfsApi.addContent(message)) as string;
-      } else {
-        messageCid = message;
-      }
+      const messageCid = !message.match(PATTERN_IPFS_HASH)
+        ? ((await ipfsApi.addContent(message)) as string)
+        : message;
 
       let response;
 

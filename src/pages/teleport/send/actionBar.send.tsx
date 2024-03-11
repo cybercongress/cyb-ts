@@ -8,7 +8,7 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import { useAppSelector } from 'src/redux/hooks';
 import { Account, ActionBar as ActionBarCenter } from '../../../components';
-import { LEDGER } from '../../../utils/config';
+import { LEDGER, PATTERN_IPFS_HASH } from '../../../utils/config';
 import { convertAmountReverce } from '../../../utils/utils';
 
 import ActionBarPingTxs from '../components/actionBarPingTxs';
@@ -38,7 +38,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [errorMessage, setErrorMessage] =
     useState<Option<string | JSX.Element>>(undefined);
-  const { senseApi } = useBackend();
+  const { senseApi, ipfsApi } = useBackend();
   const {
     tokenAmount,
     tokenSelect,
@@ -62,12 +62,16 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
 
       if (addressActive !== null && addressActive.bech32 === address) {
         try {
+          const memoAsCid = !memoValue.match(PATTERN_IPFS_HASH)
+            ? ((await ipfsApi!.addContent(memoValue)) as string)
+            : memoValue;
+
           const response = await signingClient.sendTokens(
             address,
             recipient,
             offerCoin,
             'auto',
-            memoValue
+            memoAsCid
           );
 
           if (response.code === 0) {
