@@ -11,10 +11,6 @@ type Props = {
   menuProps: {
     isOpen: boolean;
     toggleMenu: () => void;
-    activeApp: {
-      icon: undefined | string;
-      subItems: [] | string;
-    };
   };
 };
 
@@ -49,7 +45,6 @@ function Header({ menuProps }: Props) {
       <SwitchNetwork
         openMenu={menuProps.isOpen}
         onClickOpenMenu={menuProps.toggleMenu}
-        activeApp={menuProps.activeApp}
       />
 
       {/* <Commander /> */}

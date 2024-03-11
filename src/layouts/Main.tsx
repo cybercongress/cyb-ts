@@ -16,6 +16,7 @@ import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/Cy
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import { Time } from 'src/components';
+import { getNowUtcTime } from 'src/utils/utils';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);
@@ -24,10 +25,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
-  const [activeApp, setActiveApp] = useState({
-    icon: undefined,
-    subItems: [],
-  });
 
   const graphSize = 220;
   const isMobile =
@@ -92,28 +89,23 @@ function MainLayout({ children }: { children: JSX.Element }) {
         menuProps={{
           toggleMenu: useMemo(() => () => toggleMenu(!openMenu), [openMenu]),
           isOpen: openMenu,
-          activeApp,
         }}
       />
 
       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu
-          addressActive={addressActive}
-          closeMenu={closeMenu}
-          setActiveApp={setActiveApp}
-        />
+        <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
       </AppSideBar>
 
       {children}
 
       <footer>
         {!isMobile && (
-          <div className={stylesOracle.graphWrapper}>
-            <Link
+          <Link to={routes.brain.path} className={stylesOracle.graphWrapper}>
+            {/* <Link
               to={routes.brain.path}
               className={stylesOracle.enlargeBtn}
               title="open full graph"
-            />
+            /> */}
 
             {isRenderGraph && (
               <CyberlinksGraphContainer
@@ -121,13 +113,24 @@ function MainLayout({ children }: { children: JSX.Element }) {
                 data={graphDataPrepared}
               />
             )}
-          </div>
+          </Link>
         )}
-        <Commander />
+        <div
+          style={{
+            width: '62%',
+            position: 'fixed',
+            left: '50%',
+            bottom: '20px',
+            transform: 'translate(-50%, -20px)',
+            maxWidth: '1000px',
+          }}
+        >
+          <Commander />
+        </div>
         <div className={styles.Time}>
           <Time />
         </div>
-        <Link to={routes.social.path}>contacts</Link>
+        {/* <Link to={routes.social.path}>contacts</Link> */}
       </footer>
     </div>
   );

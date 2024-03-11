@@ -22,7 +22,8 @@ function RobotRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={newUser ? <ZeroUser /> : <Sigma />} />
+        <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
+        <Route path="sigma" element={<Sigma />} />
         <Route path="timeline" element={<TxsTable />} />
         <Route path="chat" element={<UnderConstruction />} />
         <Route path="badges" element={<TableDiscipline />} />
@@ -36,7 +37,7 @@ function RobotRoutes() {
           path="drive"
           element={isOwner ? <IpfsSettings /> : <UnderConstruction />}
         />
-        <Route path="log" element={<FeedsTab />} />
+        {/* <Route path="log" element={<FeedsTab />} /> */}
         <Route path="energy/*" element={<RoutedEnergy />} />
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<Brain />} />

@@ -33,6 +33,9 @@
   border: none;
   background: transparent;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   &::before {

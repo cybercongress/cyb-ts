@@ -77,16 +77,9 @@ export const renderSubItems = (
 export function Bookmarks({
   items,
   closeMenu,
-  setActiveApp,
 }: {
   items: MenuItems;
   closeMenu: () => void;
-  setActiveApp: React.Dispatch<
-    React.SetStateAction<{
-      icon: undefined | string;
-      subItems: any[] | undefined;
-    }>
-  >;
 }) {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedItemSub, setSelectedItemSub] = useState<string>('');
@@ -96,37 +89,12 @@ export function Bookmarks({
     setSelectedItem(itemKey);
     setSelectedItemSub('');
 
-    const item = items.find((item) => item.name === itemKey);
-    setActiveApp({
-      subItems: item?.subItems,
-      icon: item?.icon,
-    });
-
     closeMenu();
 
     // if (item && item.subItems.length === 0) {
     //   closeMenu();
     // }
   }
-
-  // useEffect(() => {
-  //   const item = items.find((item) => {
-  //     if (
-  //       location.pathname.includes('@') ||
-  //       location.pathname.includes('neuron/')
-  //     ) {
-  //       return item.to === '/robot';
-  //     }
-  //     return item.to === location.pathname;
-  //   });
-
-  //   console.log('item', item);
-
-  //   setActiveApp({
-  //     subItems: item?.subItems,
-  //     icon: item?.icon,
-  //   });
-  // }, [location, JSON.stringify(items), setActiveApp]);
 
   function onClickSubItem(itemKey: string) {
     setSelectedItemSub(itemKey);

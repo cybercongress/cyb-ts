@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
@@ -20,129 +20,39 @@ import { initPocket } from 'src/redux/features/pocket';
 import { Networks } from 'src/types/networks';
 import { routes } from 'src/routes';
 import { renderSubItems } from 'src/components/appMenu/AppMenu';
+import itemsMenu from 'src/utils/appsMenu';
+import { MenuItem, MenuItems } from '../../AppMenu';
 
 export const menuButtonId = 'menu-button';
 
-const forEachObjbech32 = (data, prefix) => {
-  const newObj = {};
-  Object.keys(data).forEach((key) => {
-    const valueObj = data[key];
-    if (Object.prototype.hasOwnProperty.call(valueObj, 'cyber')) {
-      const { bech32 } = valueObj.cyber;
-      const bech32NewPrefix = fromBech32(bech32, prefix);
-      newObj[key] = {
-        ...valueObj,
-        cyber: {
-          ...valueObj.cyber,
-          bech32: bech32NewPrefix,
-        },
-      };
-    }
-  });
-  return newObj;
-};
-
-const updateAddress = (prefix: any) => {
-  const localStoragePocketAccount = localStorage.getItem('pocketAccount');
-  const localStoragePocket = localStorage.getItem('pocket');
-
-  if (localStoragePocket !== null) {
-    const localStoragePocketData = JSON.parse(localStoragePocket);
-    const newObjPocketData = forEachObjbech32(localStoragePocketData, prefix);
-    localStorage.setItem('pocket', JSON.stringify(newObjPocketData));
-  }
-  if (localStoragePocketAccount !== null) {
-    const localStoragePocketAccountData = JSON.parse(localStoragePocketAccount);
-    const newObjAccountData = forEachObjbech32(
-      localStoragePocketAccountData,
-      prefix
-    );
-    localStorage.setItem('pocketAccount', JSON.stringify(newObjAccountData));
-  }
-};
-
-function SwitchNetwork({ onClickOpenMenu, openMenu, activeApp }) {
+function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const location = useLocation();
-  // const navigate = useNavigate();
-  const params = useParams();
-  // const dispatch = useDispatch();
 
-  const [controlledVisible, setControlledVisible] = React.useState(false);
-  const { networks } = useNetworks();
-  const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
-    trigger: 'click',
-    closeOnOutsideClick: false,
-    visible: controlledVisible,
-    onVisibleChange: setControlledVisible,
-    placement: 'bottom',
-  });
-
-  const onClickChain = async (chainId: Networks, prefix: any) => {
-    localStorage.setItem('chainId', chainId);
-    updateAddress(prefix);
-
-    // dispatch(initPocket());
-
-    let redirectHref = location.pathname;
-    if (matchPath(routes.neuron.path, location.pathname)) {
-      const newAddress = fromBech32(params.address, prefix);
-
-      redirectHref = routes.neuron.getLink(newAddress);
-    } else if (location.pathname.includes('@')) {
-      redirectHref = routes.robot.path;
+  const getRoute = useMemo(() => {
+    let { pathname } = location;
+    if (
+      location.pathname.includes('@') ||
+      location.pathname.includes('neuron/')
+    ) {
+      pathname = routes.robot.path;
     }
 
-    // TODO: remove reload page (need fix config)
-    window.location.pathname = redirectHref;
-  };
+    const findApp = itemsMenu().reduce((acc: MenuItems, item: MenuItem) => {
+      if (item.to === pathname) {
+        acc.push(item);
+      } else if (
+        item.subItems.filter((item) => item.to === pathname).length !== 0
+      ) {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
 
-  const renderItemChain =
-    networks &&
-    Object.keys(networks)
-      .filter((itemKey) => itemKey !== CYBER.CHAIN_ID)
-      .map((key) => (
-        // <ButtonNetwork
-        //   // disabled={CYBER.CHAIN_ID === key}
-        //   onClick={() =>
-        //     onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-        //   }
-        //   network={key}
-        // />
-        <button
-          key={key}
-          type="button"
-          className={styles.containerBtnItemSelect}
-          onClick={() =>
-            onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-          }
-        >
-          <div className={styles.networkBtn}>
-            <img
-              className={styles.networkBtnImg}
-              alt="cyb"
-              src={selectNetworkImg(key)}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              height: '100%',
-              flexDirection: 'column',
-              // justifyContent: 'space-between',
-              // padding: '27px 0',
-              color: '#1FCBFF',
-              fontSize: '16px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className={styles.containerBtnItemSelect}>{key}</div>
-          </div>
-        </button>
-      ));
+    return findApp;
+  }, [location]);
 
-  console.log('activeApp', activeApp);
   return (
     <>
       <div
@@ -155,15 +65,15 @@ function SwitchNetwork({ onClickOpenMenu, openMenu, activeApp }) {
           height: 100,
         }}
       >
-        <button
+        <Link
           id={menuButtonId}
-          type="button"
-          onClick={onClickOpenMenu}
+          to={getRoute[0].to || routes.oracle.path}
+          // onClick={onClickOpenMenu}
           className={styles.networkBtn}
         >
           <img
             alt="cyb"
-            src={activeApp.icon || selectNetworkImg(CYBER.CHAIN_ID)}
+            src={getRoute[0]?.icon || selectNetworkImg(CYBER.CHAIN_ID)}
             className={styles.networkBtnImg}
           />
           {/* <div
@@ -175,14 +85,13 @@ function SwitchNetwork({ onClickOpenMenu, openMenu, activeApp }) {
             <div />
             <div />
           </div> */}
-        </button>
+        </Link>
         {mediaQuery && (
           <div className={styles.containerInfoSwitch}>
             <button
               className={styles.btnContainerText}
               type="button"
               style={{ fontSize: '20px' }}
-              onClick={() => setControlledVisible((item) => !item)}
             >
               {CYBER.CHAIN_ID}
             </button>
@@ -193,32 +102,11 @@ function SwitchNetwork({ onClickOpenMenu, openMenu, activeApp }) {
         )}
       </div>
 
-      {activeApp && activeApp.subItems && (
+      {getRoute && getRoute[0] && (
         <div className={cx(styles.containerSubItems, styles.tooltipContainer)}>
-          {renderSubItems(activeApp.subItems, location, undefined)}
+          {renderSubItems(getRoute[0].subItems, location, undefined)}
         </div>
       )}
-
-      {/* {renderItemChain && Object.keys(renderItemChain).length > 0 && (
-        <Transition in={visible} timeout={300}>
-          {(state) => {
-            return (
-              <div
-                ref={setTooltipRef}
-                {...getTooltipProps({ className: styles.tooltipContainer })}
-              >
-                <div
-                  className={cx(styles.containerSwichNetworkList, [
-                    styles[`containerSwichNetworkList${state}`],
-                  ])}
-                >
-                  {renderItemChain}
-                </div>
-              </div>
-            );
-          }}
-        </Transition> */}
-      {/* )} */}
     </>
   );
 }
