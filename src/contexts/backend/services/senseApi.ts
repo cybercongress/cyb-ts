@@ -1,6 +1,7 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 import { isParticle } from 'src/features/particle/utils';
 import { TransactionDto } from 'src/services/CozoDb/types/dto';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
   MSG_SEND_TRANSACTION_TYPE,
@@ -107,13 +108,14 @@ export const createSenseApi = (
     const transaction = prepareSenseTransaction(msg);
 
     await dbApi.putTransactions([transaction]);
-    await syncMyChats(
+    const items = await syncMyChats(
       dbApi,
       myAddress!,
       transaction.timestamp,
       new AbortController().signal,
       false
     );
+    new BroadcastChannelSender().postSenseUpdate(items);
   },
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getFriendItems: async (userAddress: NeuronAddress) => {

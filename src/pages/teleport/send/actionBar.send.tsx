@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useSigningClient } from 'src/contexts/signerClient';
@@ -13,6 +13,10 @@ import { convertAmountReverce } from '../../../utils/utils';
 
 import ActionBarPingTxs from '../components/actionBarPingTxs';
 import { useBackend } from 'src/contexts/backend/backend';
+import { set } from 'lodash';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
+import { SenseApi } from 'src/contexts/backend/services/senseApi';
+import { IpfsApi } from 'src/services/backend/workers/background/worker';
 
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
@@ -29,6 +33,46 @@ type Props = {
   memoValue: string;
 };
 
+const sendTokensWitMessage = async (
+  address: string,
+  recipient: string,
+  offerCoin: Coin[],
+  memo: string,
+  {
+    senseApi,
+    ipfsApi,
+    signingClient,
+  }: { signingClient: SigningCyberClient; senseApi: SenseApi; ipfsApi: IpfsApi }
+) => {
+  const memoAsCid = !memo.match(PATTERN_IPFS_HASH)
+    ? ((await ipfsApi!.addContent(memo)) as string)
+    : memo;
+
+  const response = await signingClient.sendTokens(
+    address,
+    recipient,
+    offerCoin,
+    'auto',
+    memoAsCid
+  );
+
+  if (response.code === 0) {
+    const txHash = response.transactionHash;
+    await senseApi?.addMsgSendAsLocal({
+      transactionHash: txHash,
+      fromAddress: address,
+      toAddress: recipient,
+      amount: offerCoin,
+      memo: memoAsCid,
+    });
+
+    return txHash;
+  }
+
+  console.log('error', response);
+  throw Error(response.rawLog.toString());
+};
+
 function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -39,6 +83,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const [errorMessage, setErrorMessage] =
     useState<Option<string | JSX.Element>>(undefined);
   const { senseApi, ipfsApi } = useBackend();
+
   const {
     tokenAmount,
     tokenSelect,
@@ -61,40 +106,19 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const offerCoin = [coinFunc(amountTokenA, tokenSelect)];
 
       if (addressActive !== null && addressActive.bech32 === address) {
-        try {
-          const memoAsCid = !memoValue.match(PATTERN_IPFS_HASH)
-            ? ((await ipfsApi!.addContent(memoValue)) as string)
-            : memoValue;
-
-          const response = await signingClient.sendTokens(
-            address,
-            recipient,
-            offerCoin,
-            'auto',
-            memoAsCid
-          );
-
-          if (response.code === 0) {
-            const txHash = response.transactionHash;
+        await sendTokensWitMessage(address, recipient, offerCoin, memoValue, {
+          senseApi,
+          ipfsApi,
+          signingClient,
+        })
+          .then((txHash) => {
             setTxHash(txHash);
-            await senseApi?.addMsgSendAsLocal({
-              transactionHash: txHash,
-              fromAddress: address,
-              toAddress: recipient,
-              amount: offerCoin,
-              memo: memoValue,
-            });
-          } else {
+          })
+          .catch((e) => {
             setTxHash(undefined);
             setStage(STAGE_ERROR);
-            setErrorMessage(response.rawLog.toString());
-          }
-        } catch (error) {
-          setTxHash(undefined);
-          setStage(STAGE_ERROR);
-          console.log('error', error);
-          setErrorMessage(error.toString());
-        }
+            setErrorMessage(e.toString());
+          });
       } else {
         setStage(STAGE_ERROR);
         setErrorMessage(
