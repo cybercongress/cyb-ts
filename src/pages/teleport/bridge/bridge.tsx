@@ -33,7 +33,7 @@ type Query = {
   amount?: string;
 };
 
-const ibcDenomAtom =
+export const ibcDenomAtom =
   'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159';
 
 const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;

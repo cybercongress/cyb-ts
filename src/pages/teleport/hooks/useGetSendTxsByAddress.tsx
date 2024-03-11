@@ -1,5 +1,6 @@
 import { request } from 'graphql-request';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -12,7 +13,7 @@ const { CYBER_INDEX_HTTPS } = CYBER;
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint, $type: _text) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: $type}, 
+  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: $type},
     order_by: {transaction: {block: {height: desc}}}) {
     transaction_hash
     value

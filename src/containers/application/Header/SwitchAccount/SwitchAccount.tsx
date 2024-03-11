@@ -11,7 +11,6 @@ import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddre
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import Pill from 'src/components/Pill/Pill';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { useBackend } from 'src/contexts/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
@@ -19,6 +18,7 @@ import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
+import { useBackend } from 'src/contexts/backend/backend';
 
 // should be refactored
 function AccountItem({

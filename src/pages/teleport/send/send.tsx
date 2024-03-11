@@ -8,7 +8,8 @@ import {
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CYBER, PATTERN_CYBER } from 'src/utils/config';
+import { CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
   getDisplayAmount,
