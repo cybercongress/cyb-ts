@@ -4,24 +4,23 @@ import { localStorageKeys } from 'src/constants/localStorageKeys';
 import AppMenu from 'src/containers/application/AppMenu';
 import AppSideBar from 'src/containers/application/AppSideBar';
 import Header from 'src/containers/application/Header/Header';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import styles from './Main.module.scss';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import Commander from 'src/containers/application/Header/Commander/Commander';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import { Time } from 'src/components';
+import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
-import { Time } from 'src/components';
-import { getNowUtcTime } from 'src/utils/utils';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
+import styles from './Main.module.scss';
 
 function MainLayout({ children }: { children: JSX.Element }) {
-  const pocket = useAppSelector(({ pocket }) => pocket);
-  const { defaultAccount } = pocket;
+  const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
+  const addressBech32 = defaultAccount.account?.cyber.bech32;
   const { viewportWidth } = useDevice();
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -30,8 +29,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
-
-  const { addressActive } = useSetActiveAddress(defaultAccount);
 
   // for new user show menu, else no + animation
   const [openMenu, setOpenMenu] = useState(
@@ -94,10 +91,11 @@ function MainLayout({ children }: { children: JSX.Element }) {
       />
 
       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
+        <AppMenu closeMenu={closeMenu} />
       </AppSideBar>
 
       <SenseButton className={styles.senseBtn} />
+      <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
 
       {children}
 
