@@ -19,6 +19,7 @@ import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
 import { useBackend } from 'src/contexts/backend/backend';
+import BroadcastChannelAccount from 'src/services/backend/channels/BroadcastChannelAccount';
 
 // should be refactored
 function AccountItem({
@@ -96,7 +97,6 @@ function SwitchAccount() {
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
   const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
-  const dispatch = useAppDispatch();
 
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
@@ -121,11 +121,8 @@ function SwitchAccount() {
   const isReadOnly = defaultAccount.account?.cyber.keys === 'read-only';
 
   const onClickChangeActiveAcc = async (key: string) => {
-    dispatch(
-      setDefaultAccount({
-        name: key,
-      })
-    );
+    const setChannelAccount = new BroadcastChannelAccount();
+    setChannelAccount.postSetDefaultAccount(key);
     setControlledVisible(false);
   };
 
