@@ -4,7 +4,7 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 export type MenuItems = ReturnType<typeof itemsMenu>;
 export type MenuItem = MenuItems[0];
 
-function AppMenu({ addressActive, closeMenu }) {
+function AppMenu({ closeMenu }) {
   return (
     <div
       style={{

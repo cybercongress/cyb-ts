@@ -19,14 +19,28 @@
   }
 }
 
-.senseBtn {
+@mixin positionFixed() {
   position: fixed;
-  top: 45%;
   z-index: 3;
+
+  top: 45%;
 }
 
 .Time {
   display: flex;
   position: fixed;
   right: 5vw;
+}
+
+.senseBtn {
+  @include positionFixed();
+}
+
+.hydrogenBtn {
+  @include positionFixed();
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
 }
