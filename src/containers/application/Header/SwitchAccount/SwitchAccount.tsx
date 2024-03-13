@@ -19,7 +19,7 @@ import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
 import { useBackend } from 'src/contexts/backend/backend';
-import BroadcastChannelAccount from 'src/services/backend/channels/BroadcastChannelAccount';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 
 // should be refactored
 function AccountItem({
@@ -121,8 +121,8 @@ function SwitchAccount() {
   const isReadOnly = defaultAccount.account?.cyber.keys === 'read-only';
 
   const onClickChangeActiveAcc = async (key: string) => {
-    const setChannelAccount = new BroadcastChannelAccount();
-    setChannelAccount.postSetDefaultAccount(key);
+    const broadcastChannel = new BroadcastChannelSender();
+    broadcastChannel.postSetDefaultAccount(key);
     setControlledVisible(false);
   };
 
