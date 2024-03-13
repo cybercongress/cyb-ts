@@ -31,6 +31,8 @@ function WrappedActionBar() {
     if (response && Number(response.total_count) === 0) {
       setFollow(true);
       // setTweets(false);
+    } else {
+      setFollow(false);
     }
   }, [activeAddress, address]);
 

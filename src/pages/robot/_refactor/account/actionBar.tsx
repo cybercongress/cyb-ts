@@ -144,7 +144,7 @@ class ActionBarContainer extends Component<Props> {
             );
           }
         }
-      } else if (type === 'log' && follow) {
+      } else if ((type === 'log' || !type) && follow) {
         const toCid = await ipfsApi.addContent(addressSend);
         response = await signingClient.cyberlink(
           address,
@@ -152,7 +152,7 @@ class ActionBarContainer extends Component<Props> {
           toCid,
           fee
         );
-      } else if ((type === 'log' || !type) && tweets) {
+      } else if (type === 'log' && tweets) {
         const toCid = await this.calculationIpfsTo(contentHash);
         response = await signingClient.cyberlink(
           address,
