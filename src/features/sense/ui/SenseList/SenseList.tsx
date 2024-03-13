@@ -63,30 +63,28 @@ function SenseList({ select, selected }: Props) {
           </div>
         ) : items.length ? (
           <ul>
-            {items
-              // .slice(0, 4)
-              .map((id) => {
-                return (
-                  <li
-                    key={id}
-                    className={cx(styles.item, {
-                      [styles.selected]: id === selected,
-                    })}
+            {items.map((id) => {
+              return (
+                <li
+                  key={id}
+                  className={cx(styles.item, {
+                    [styles.selected]: id === selected,
+                  })}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      select(id);
+                    }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        select(id);
-                      }}
-                    >
-                      <SenseListItemContainer
-                        senseItemId={id}
-                        currentChatId={selected}
-                      />
-                    </button>
-                  </li>
-                );
-              })}
+                    <SenseListItemContainer
+                      senseItemId={id}
+                      currentChatId={selected}
+                    />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className={styles.center}>no {getFilterText(filter)} chats</p>
