@@ -26,6 +26,10 @@ import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
 import Button from 'src/components/btnGrd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
+import { routes } from 'src/routes';
+import { createSearchParams } from 'react-router-dom';
+import { AccountValue } from 'src/types/defaultAccount';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -39,8 +43,24 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-class ActionBarContainer extends Component {
-  constructor(props) {
+type Props = {
+  defaultAccount: AccountValue;
+
+  type: string;
+
+  addressSend: string;
+
+  // can be followed
+  follow: boolean;
+  tweets: boolean;
+
+  updateAddress: () => void;
+
+  // add more
+};
+
+class ActionBarContainer extends Component<Props> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
@@ -125,15 +145,21 @@ class ActionBarContainer extends Component {
           }
         }
       } else if (type === 'log' && follow) {
-        // TODO: REFACT need to just get cid of 'follow' instead of pin
-        const fromCid = await ipfsApi.addContent('follow');
         const toCid = await ipfsApi.addContent(addressSend);
-        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
-      } else if (type === 'log' && tweets) {
-        // TODO: REFACT need to just get cid of 'tweet' instead of pin
-        const fromCid = await ipfsApi.addContent('tweet');
+        response = await signingClient.cyberlink(
+          address,
+          CID_FOLLOW,
+          toCid,
+          fee
+        );
+      } else if ((type === 'log' || !type) && tweets) {
         const toCid = await this.calculationIpfsTo(contentHash);
-        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
+        response = await signingClient.cyberlink(
+          address,
+          CID_TWEET,
+          toCid,
+          fee
+        );
       } else {
         msg.push({
           type: 'cosmos-sdk/MsgSend',
@@ -145,7 +171,6 @@ class ActionBarContainer extends Component {
         });
       }
 
-      console.log(`response`, response);
       if (response.code === 0) {
         const hash = response.transactionHash;
         console.log('hash :>> ', hash);
@@ -264,13 +289,39 @@ class ActionBarContainer extends Component {
       file,
     } = this.state;
 
-    if (stage === STAGE_INIT && type === 'log' && follow) {
-      return (
-        <ActionBarComp
-          button={{ text: 'Follow', onClick: (e) => this.onClickSend(e) }}
-        />
+    if (stage === STAGE_INIT) {
+      const sendBtn = (
+        <Button
+          link={
+            routes.teleport.send.path +
+            '?' +
+            createSearchParams({
+              recipient: addressSend,
+              token: 'boot',
+              amount: '1',
+            }).toString()
+          }
+        >
+          Send
+        </Button>
       );
+      const followBtn = <Button onClick={this.onClickSend}>Follow</Button>;
+
+      const content = [];
+
+      // main page
+      if (!type && addressSend !== defaultAccount.bech32) {
+        content.push(sendBtn);
+      }
+
+      if ((type === 'log' || !type) && follow) {
+        content.push(followBtn);
+      }
+
+      return <ActionBarComp>{content}</ActionBarComp>;
     }
+
+    // TODO: continue refactoring
 
     if (stage === STAGE_INIT && type === 'log' && tweets) {
       return (
