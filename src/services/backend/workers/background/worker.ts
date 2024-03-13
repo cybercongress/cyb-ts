@@ -135,7 +135,7 @@ const createBackgroundWorkerApi = () => {
 };
 
 const backgroundWorker = createBackgroundWorkerApi();
-export type IpfsApi = typeof backgroundWorker.ipfsApi;
+export type IpfsApi = Remote<typeof backgroundWorker.ipfsApi>;
 export type BackgroundWorker = typeof backgroundWorker;
 
 // Expose the API to the main thread as shared/regular worker

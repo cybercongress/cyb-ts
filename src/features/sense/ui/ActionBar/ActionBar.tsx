@@ -14,6 +14,11 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { routes } from 'src/routes';
 import { Link, createSearchParams } from 'react-router-dom';
 import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
+import {
+  addIfpsMessageOrCid,
+  sendCyberlink,
+  sendTokensWithMessage,
+} from 'src/services/user/userApi';
 
 type Props = {
   id: string | undefined;
@@ -95,37 +100,22 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
       const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
 
-      const messageCid = !message.match(PATTERN_IPFS_HASH)
-        ? ((await ipfsApi.addContent(message)) as string)
-        : message;
+      const messageCid = await addIfpsMessageOrCid(message, { ipfsApi });
 
-      let response;
+      const deps = {
+        senseApi,
+        signingClient: signingClient!,
+      };
 
-      if (particle) {
-        const fromCid = messageCid;
-        const toCid = id;
-
-        const fee = {
-          amount: [],
-          gas: DEFAULT_GAS_LIMITS.toString(),
-        };
-
-        response = await signingClient!.cyberlink(address, fromCid, toCid, fee);
-      } else {
-        response = await signingClient!.sendTokens(
-          address,
-          id!,
-          formattedAmount,
-          'auto',
-          messageCid
-        );
-      }
-
-      if (response.code !== 0) {
-        throw new Error(response.rawLog);
-      }
-
-      const txHash = response.transactionHash;
+      const txHash = await (particle
+        ? sendCyberlink(address, messageCid, id, deps)
+        : sendTokensWithMessage(
+            address,
+            id!,
+            formattedAmount,
+            messageCid,
+            deps
+          ));
 
       const optimisticMessage = {
         id: id!,
@@ -153,16 +143,6 @@ function ActionBarWrapper({ id, adviser }: Props) {
           amount: formattedAmount,
         };
         optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgSend';
-
-        (async () => {
-          await senseApi?.addMsgSendAsLocal({
-            transactionHash: txHash,
-            fromAddress: address,
-            toAddress: id!,
-            amount: formattedAmount,
-            memo: messageCid,
-          });
-        })();
       }
 
       dispatch(addSenseItem(optimisticMessage));
