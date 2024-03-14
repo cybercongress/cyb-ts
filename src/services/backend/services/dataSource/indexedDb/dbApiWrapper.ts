@@ -64,10 +64,8 @@ class DbApiWrapper {
       : defaultSyncStatus;
   }
 
-  public async putSyncStatus(entity: SyncStatusDto[] | SyncStatusDto) {
-    const entitites = dtoListToEntity(
-      Array.isArray(entity) ? entity : [entity]
-    );
+  public async putSyncStatus(item: SyncStatusDto[] | SyncStatusDto) {
+    const entitites = dtoListToEntity(Array.isArray(item) ? item : [item]);
     const result = await this.db!.executePutCommand('sync_status', entitites);
 
     return result;
@@ -232,8 +230,9 @@ class DbApiWrapper {
     return userChats ? userChats.transactions : [];
   }
 
-  public async putCyberlinks(links: LinkDbEntity[] | LinkDbEntity) {
-    const entitites = Array.isArray(links) ? links : [links];
+  public async putCyberlinks(links: LinkDto[] | LinkDto) {
+    const entitites = dtoListToEntity(Array.isArray(links) ? links : [links]);
+    console.log('putCyberlinks', links, entitites);
     return this.db!.executePutCommand('link', entitites);
   }
 

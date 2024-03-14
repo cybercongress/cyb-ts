@@ -4,7 +4,7 @@ import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { NeuronAddress } from 'src/types/base';
 
-import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import { mapLinkFromIndexerToDto } from 'src/services/CozoDb/mapping';
 import { CID_TWEET } from 'src/constants/app';
 import { dateToUtcNumber } from 'src/utils/date';
 import { SenseListItem } from 'src/services/backend/types/sense';
@@ -15,7 +15,7 @@ import { entityToDto } from 'src/utils/dto';
 import { ServiceDeps } from '../types';
 import { fetchCyberlinksAndResolveParticles } from '../utils/links';
 
-import { changeSyncStatus } from '../../utils';
+import { changeParticleSyncStatus } from '../../utils';
 import {
   fetchCyberlinksByNerounIterable,
   fetchCyberlinksCount,
@@ -160,7 +160,7 @@ class SyncParticlesLoop extends BaseSyncLoop {
       );
 
       // eslint-disable-next-line no-await-in-loop
-      const links = await fetchCyberlinksAndResolveParticles(
+      const linksIndexer = await fetchCyberlinksAndResolveParticles(
         id,
         timestampUpdate,
         this.particlesResolver!,
@@ -168,20 +168,18 @@ class SyncParticlesLoop extends BaseSyncLoop {
         this.abortController?.signal
       );
 
-      if (links.length > 0) {
+      if (linksIndexer.length > 0) {
+        const links = linksIndexer.map(mapLinkFromIndexerToDto);
+
         // save links
         // eslint-disable-next-line no-await-in-loop
         await asyncIterableBatchProcessor(
           links,
-          (links) =>
-            throwIfAborted(
-              this.db!.putCyberlinks,
-              signal
-            )(links.map(mapLinkFromIndexerToDbEntity)),
+          (links) => throwIfAborted(this.db!.putCyberlinks, signal)(links),
           MAX_DATABASE_PUT_SIZE
         );
 
-        const newItem = changeSyncStatus(syncItem, links, myAddress);
+        const newItem = changeParticleSyncStatus(syncItem, links, myAddress);
 
         updatedSyncItems.push(newItem);
       }

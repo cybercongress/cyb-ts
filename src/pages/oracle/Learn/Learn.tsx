@@ -8,7 +8,7 @@ import {
 } from 'src/components';
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
-import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
+import { CYBER } from 'src/utils/config';
 import { useAdviser } from 'src/features/adviser/context';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -19,10 +19,14 @@ import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { Networks } from 'src/types/networks';
 import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useBackend } from 'src/contexts/backend/backend';
+import {
+  addIfpsMessageOrCid,
+  sendCyberlink,
+} from 'src/services/neuron/neuronApi';
+import TitleText from '../landing/components/TitleText/TitleText';
 import KeywordButton from '../landing/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
-import { useBackend } from 'src/contexts/backend/backend';
-import TitleText from '../landing/components/TitleText/TitleText';
 
 const learningListConfig = [
   {
@@ -43,11 +47,6 @@ const learningListConfig = [
   },
 ];
 
-const fee = {
-  amount: [],
-  gas: DEFAULT_GAS_LIMITS.toString(),
-};
-
 function Learn() {
   const [ask, setAsk] = useState('');
   const [answer, setAnswer] = useState('');
@@ -55,7 +54,7 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const { isIpfsInitialized, ipfsApi } = useBackend();
+  const { isIpfsInitialized, ipfsApi, senseApi } = useBackend();
 
   const queryClient = useQueryClient();
 
@@ -141,41 +140,29 @@ function Learn() {
 
     try {
       setLoading(true);
-      let fromCid = ask;
-      if (!ask.match(PATTERN_IPFS_HASH)) {
-        fromCid = await ipfsApi?.addContent(ask);
-      }
 
-      let toCid = answer;
-      if (!answer.match(PATTERN_IPFS_HASH)) {
-        toCid = await ipfsApi?.addContent(answer);
-      }
+      const fromCid = await addIfpsMessageOrCid(ask, { ipfsApi });
+      const toCid = await addIfpsMessageOrCid(answer, { ipfsApi });
 
-      const result = await signingClient.cyberlink(
-        address,
-        fromCid,
-        toCid,
-        fee
-      );
-
-      if (result.code !== 0) {
-        throw new Error(result.rawLog);
-      }
+      const txHash = await sendCyberlink(address, fromCid, toCid, {
+        signingClient,
+        senseApi,
+      });
 
       setTx({
-        hash: result.transactionHash,
+        hash: txHash,
         onSuccess: () => {
           navigate(routes.ipfs.getLink(toCid));
         },
       });
-    } catch (error) {
+    } catch (e) {
       // better use code of error
-      if (error.message === 'Request rejected') {
+      if (e.message === 'Request rejected') {
         return;
       }
 
       console.error(error);
-      setError(error.message);
+      setError(e.message);
     } finally {
       setLoading(false);
     }

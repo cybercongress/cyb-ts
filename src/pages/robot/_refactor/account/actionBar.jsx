@@ -1,8 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { Pane, ActionBar } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
-import { coins } from '@cosmjs/launchpad';
+import { ActionBar } from '@cybercongress/gravity';
 import {
   JsonTransaction,
   TransactionSubmitted,
@@ -24,8 +22,9 @@ import {
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
-import Button from 'src/components/btnGrd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -88,6 +87,7 @@ class ActionBarContainer extends Component {
       signer,
       signingClient,
       ipfsApi,
+      senseApi,
     } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
@@ -97,65 +97,64 @@ class ActionBarContainer extends Component {
 
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
-      let response = null;
-      const msg = [];
-      if (type === 'security') {
-        if (address === addressSend) {
-          const dataTotalRewards = await getTotalRewards(address);
-          console.log(`dataTotalRewards`, dataTotalRewards);
-          if (dataTotalRewards !== null && dataTotalRewards.rewards) {
-            const { rewards } = dataTotalRewards;
-            const validatorAddress = [];
-            Object.keys(rewards).forEach((key) => {
-              if (rewards[key].reward !== null) {
-                validatorAddress.push(rewards[key].validator_address);
+      try {
+        let txHash = null;
+
+        if (type === 'security') {
+          if (address === addressSend) {
+            const dataTotalRewards = await getTotalRewards(address);
+            console.log(`dataTotalRewards`, dataTotalRewards);
+            if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+              const { rewards } = dataTotalRewards;
+              const validatorAddress = [];
+              Object.keys(rewards).forEach((key) => {
+                if (rewards[key].reward !== null) {
+                  validatorAddress.push(rewards[key].validator_address);
+                }
+              });
+              const gasLimitsRewards =
+                100000 * Object.keys(validatorAddress).length;
+              const feeRewards = {
+                amount: [],
+                gas: gasLimitsRewards.toString(),
+              };
+
+              response = await signingClient.withdrawAllRewards(
+                address,
+                validatorAddress,
+                feeRewards
+              );
+
+              txHash = response.transactionHash;
+
+              if (response.code) {
+                throw Error(response.rawLog.toString());
               }
+            }
+          }
+        } else if (type === 'log') {
+          if (follow) {
+            const toCid = await ipfsApi.addContent(addressSend);
+            txHash = await sendCyberlink(address, CID_FOLLOW, toCid, {
+              signingClient,
+              senseApi,
             });
-            const gasLimitsRewards =
-              100000 * Object.keys(validatorAddress).length;
-            const feeRewards = {
-              amount: [],
-              gas: gasLimitsRewards.toString(),
-            };
-            response = await signingClient.withdrawAllRewards(
-              address,
-              validatorAddress,
-              feeRewards
-            );
+          } else if (tweets) {
+            const toCid = await this.calculationIpfsTo(contentHash);
+            txHash = await sendCyberlink(address, CID_TWEET, toCid, {
+              signingClient,
+              senseApi,
+            });
           }
         }
-      } else if (type === 'log' && follow) {
-        // TODO: REFACT need to just get cid of 'follow' instead of pin
-        const fromCid = await ipfsApi.addContent('follow');
-        const toCid = await ipfsApi.addContent(addressSend);
-        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
-      } else if (type === 'log' && tweets) {
-        // TODO: REFACT need to just get cid of 'tweet' instead of pin
-        const fromCid = await ipfsApi.addContent('tweet');
-        const toCid = await this.calculationIpfsTo(contentHash);
-        response = await signingClient.cyberlink(address, fromCid, toCid, fee);
-      } else {
-        msg.push({
-          type: 'cosmos-sdk/MsgSend',
-          value: {
-            amount: coins(amount, CYBER.DENOM_CYBER),
-            from_address: address,
-            to_address: toSendAddres,
-          },
-        });
-      }
-
-      console.log(`response`, response);
-      if (response.code === 0) {
-        const hash = response.transactionHash;
-        console.log('hash :>> ', hash);
-        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        console.log('hash :>> ', txHash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash });
         this.timeOut = setTimeout(this.confirmTx, 1500);
-      } else {
+      } catch (e) {
         this.setState({
           txHash: null,
           stage: STAGE_ERROR,
-          errorMessage: response.rawLog.toString(),
+          errorMessage: e.message,
         });
       }
     }

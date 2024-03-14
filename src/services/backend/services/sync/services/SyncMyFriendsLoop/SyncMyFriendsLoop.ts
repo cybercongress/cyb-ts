@@ -12,7 +12,7 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { isAbortException } from 'src/utils/exceptions/helpers';
 
-import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import { mapLinkFromIndexerToDto } from 'src/services/CozoDb/mapping';
 import { throwIfAborted } from 'src/utils/async/promise';
 
 import { SyncEntryName } from 'src/services/backend/types/services';
@@ -154,7 +154,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
           this.progressTracker.trackProgress(1)
         );
 
-        const links = linksBatch.map(mapLinkFromIndexerToDbEntity);
+        const links = linksBatch.map(mapLinkFromIndexerToDto);
 
         const { timestampRead: newTimestampRead, unreadCount: newUnreadCount } =
           getLastReadInfo(linksBatch, myAddress, timestampRead, unreadCount);

@@ -11,7 +11,7 @@ import { useBackend } from 'src/contexts/backend/backend';
 import {
   addIfpsMessageOrCid,
   sendTokensWithMessage,
-} from 'src/services/user/userApi';
+} from 'src/services/neuron/neuronApi';
 import { convertAmountReverce } from '../../../utils/utils';
 
 import { LEDGER } from '../../../utils/config';

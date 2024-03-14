@@ -69,7 +69,7 @@ export const syncMyChats = async (
       };
 
       // eslint-disable-next-line no-await-in-loop
-      await throwIfAborted(db.putSyncStatus, signal)(newItem);
+      await throwIfAborted(db.putSyncStatus.bind(db), signal)(newItem);
 
       results.push({ ...newItem, meta: lastTransaction });
     } else {
