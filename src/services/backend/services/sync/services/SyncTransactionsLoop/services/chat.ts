@@ -46,12 +46,7 @@ export const syncMyChats = async (
         index,
       } as SenseTransactionMeta,
     };
-    // if (
-    //   chat.userAddress === 'bostrom13hepw93y8mjcew7mfra5z7ju7k6585348dnux4' ||
-    //   chat.userAddress === 'bostrom1a4krl6m7jg7ckczk94hh0wdlcezvpgwcwkrpcg'
-    // ) {
-    //   debugger;
-    // }
+
     // if no sync item(first message/initial)
     if (!syncItem) {
       const unreadCount = chat.transactions.filter(

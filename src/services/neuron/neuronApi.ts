@@ -60,7 +60,6 @@ export const sendCyberlink = async (
       neuron,
     } as LinkDto;
     await senseApi?.putCyberlinsks(link);
-    debugger;
     await senseApi?.addCyberlinkLocal(link);
 
     return txHash;

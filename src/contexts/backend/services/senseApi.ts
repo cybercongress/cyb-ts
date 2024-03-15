@@ -1,5 +1,5 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
+import { CID_TWEET } from 'src/constants/app';
 import { isParticle } from 'src/features/particle/utils';
 import {
   LinkDto,
@@ -10,6 +10,7 @@ import { EntryType } from 'src/services/CozoDb/types/entities';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
+  CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkValue,
   MSG_SEND_TRANSACTION_TYPE,
   MsgSendValue,
@@ -17,7 +18,6 @@ import {
 import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
 import { SENSE_FRIEND_PARTICLES } from 'src/services/backend/services/sync/services/consts';
 import { changeParticleSyncStatus } from 'src/services/backend/services/sync/utils';
-import { SenseLinkMeta } from 'src/services/backend/types/sense';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { EntityToDto } from 'src/types/dto';
 import { getNowUtcNumber } from 'src/utils/date';
@@ -67,7 +67,7 @@ const prepareSenseCyberlinkTransaction = (link: LinkDto) => {
 
   const transaction = {
     hash: transactionHash,
-    type: MSG_SEND_TRANSACTION_TYPE,
+    type: CYBER_LINK_TRANSACTION_TYPE,
     index: 0,
     timestamp,
     success: true,
