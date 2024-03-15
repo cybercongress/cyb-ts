@@ -8,3 +8,9 @@ export type Slot = {
     milliampere: number;
   };
 };
+
+export enum SelectedState {
+  millivolt = 'millivolt',
+  milliampere = 'milliampere',
+}
+

@@ -1,14 +1,19 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Tablist, Pane } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { Btn, ItemBalance } from './ui';
-import 'rc-slider/assets/index.css';
+import { useAdviser } from 'src/features/adviser/context';
+import Display from 'src/components/containerGradient/Display/Display';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { QueryParamsResponse as QueryParamsResponseResources } from '@cybercongress/cyber-js/build/codec/cyber/resources/v1beta1/query';
+import { ItemBalance } from './ui';
+import ERatio from './eRatio';
 import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import ERatio from './eRatio';
 import {
   Dots,
   CardStatisics,
@@ -19,15 +24,9 @@ import {
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
-import { useAdviser } from 'src/features/adviser/context';
-import Display from 'src/components/containerGradient/Display/Display';
-import ImgDenom from 'src/components/valueImg/imgDenom';
-import { useAppSelector } from 'src/redux/hooks';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
 import styles from './Mint.module.scss';
-
-const BASE_VESTING_TIME = 86401;
-const BASE_MAX_MINT_TIME = 41;
+import { SLOTS_MAX, getAmountResource, getERatio, getMaxTimeMint } from './utils';
+import { SelectedState } from './types';
 
 const grid = {
   display: 'grid',
@@ -50,36 +49,45 @@ const returnColorDot = (marks) => {
   };
 };
 
-const SLOTS_MAX = 16;
-
-enum SelectedState {
-  millivolt = 'millivolt',
-  milliampere = 'milliampere',
-}
 
 function Mint() {
   const queryClient = useQueryClient();
   const { traseDenom } = useIbcDenom();
   const [updateAddress, setUpdateAddress] = useState(0);
-  // const { balance } = useGetBalance(addressActive, updateAddress);
   const [selected, setSelected] = useState<SelectedState>(
     SelectedState.milliampere
   );
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
-  const [max, setMax] = useState(0);
-  const [maxMintTime, setMaxMintTime] = useState(BASE_MAX_MINT_TIME);
-  const [eRatio, setERatio] = useState(0);
-  const [resourceToken, setResourceToken] = useState(0);
   const [height, setHeight] = useState(0);
-  const [resourcesParams, setResourcesParams] = useState(null);
+  const [resourcesParams, setResourcesParams] =
+    useState<QueryParamsResponseResources['params']>(undefined);
   const [balanceHydrogen, SetBalanceHydrogen] = useState(0);
 
   const addressActive = useAppSelector(selectCurrentAddress);
-  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
-    useGetSlots(addressActive, updateAddress);
+  const { slotsData, vested, loadingAuthAccounts, originalVesting, update } =
+    useGetSlots(addressActive);
 
   const { setAdviser } = useAdviser();
+
+  const liquidH =
+    originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0
+      ? new BigNumber(originalVesting[CYBER.DENOM_LIQUID_TOKEN])
+          .minus(vested[CYBER.DENOM_LIQUID_TOKEN])
+          .toNumber()
+      : 0;
+
+  const eRatio = getERatio(liquidH, balanceHydrogen);
+  const max = new BigNumber(balanceHydrogen)
+    .minus(liquidH)
+    .dp(0, BigNumber.ROUND_FLOOR)
+    .toNumber();
+
+  const maxMintTime = getMaxTimeMint(resourcesParams, selected, height);
+  const resourceToken = getAmountResource(resourcesParams, selected, height, {
+    valueH: value,
+    valueDays,
+  });
 
   useEffect(() => {
     const availableSlots =
@@ -102,161 +110,64 @@ function Mint() {
   }, [setAdviser, slotsData]);
 
   useEffect(() => {
-    const getBalanceH = async () => {
-      let amountHydrogen = 0;
-      if (queryClient && addressActive !== null) {
-        const responseBalance = await queryClient.getBalance(
-          addressActive,
-          CYBER.DENOM_LIQUID_TOKEN
-        );
-        if (responseBalance.amount) {
-          amountHydrogen = parseFloat(responseBalance.amount);
-        }
-      }
-      SetBalanceHydrogen(amountHydrogen);
-    };
-    getBalanceH();
-  }, [queryClient, addressActive]);
+    if (!queryClient || !addressActive) {
+      return;
+    }
+
+    queryClient
+      .getBalance(addressActive, CYBER.DENOM_LIQUID_TOKEN)
+      .then((response) => {
+        SetBalanceHydrogen(parseFloat(response.amount));
+      });
+  }, [queryClient, addressActive, updateAddress]);
 
   useEffect(() => {
-    const getParam = async () => {
-      const responseResourcesParams = await queryClient.resourcesParams();
-      if (
-        responseResourcesParams.params &&
-        Object.keys(responseResourcesParams.params).length > 0
-      ) {
-        const { params } = responseResourcesParams;
-        setResourcesParams((item) => ({ ...item, ...params }));
-      }
+    if (!queryClient) {
+      return;
+    }
 
-      const responseGetHeight = await queryClient.getHeight();
-      if (responseGetHeight > 0) {
-        setHeight(responseGetHeight);
-      }
-    };
-    getParam();
+    queryClient
+      .resourcesParams()
+      .then((response: QueryParamsResponseResources) => {
+        setResourcesParams(response.params);
+      });
+
+    queryClient.getHeight().then((response) => {
+      setHeight(response);
+    });
   }, [queryClient]);
-
-  useEffect(() => {
-    let vestedTokens = 0;
-    let maxValue = 0;
-    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
-      vestedTokens =
-        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
-        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
-    }
-    if (balanceHydrogen > 0) {
-      maxValue = Math.floor(balanceHydrogen) - vestedTokens;
-    } else {
-      maxValue = 0;
-    }
-
-    setMax(maxValue);
-  }, [balanceHydrogen, vested, originalVesting]);
-
-  useEffect(() => {
-    let vestedTokens = 0;
-    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
-      vestedTokens =
-        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
-        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
-    }
-    if (vestedTokens > 0 && balanceHydrogen > 0) {
-      const procent = (vestedTokens / balanceHydrogen) * 100;
-      const eRatioTemp = Math.floor(procent * 100) / 100;
-      setERatio(eRatioTemp);
-    } else {
-      setERatio(0);
-    }
-  }, [balanceHydrogen, vested, originalVesting]);
-
-  useEffect(() => {
-    let maxValueTaime = BASE_MAX_MINT_TIME;
-    if (resourcesParams !== null) {
-      const {
-        halvingPeriodAmpereBlocks: halvingPeriodBlocksAmpere,
-        halvingPeriodVoltBlocks: halvingPeriodBlocksVolt,
-      } = resourcesParams;
-      let halvingPeriod = 0;
-      if (selected === 'millivolt') {
-        halvingPeriod = halvingPeriodBlocksVolt;
-      } else {
-        halvingPeriod = halvingPeriodBlocksAmpere;
-      }
-
-      const halving = 2 ** Math.floor(height / halvingPeriod);
-      maxValueTaime = Math.floor(
-        (halvingPeriod * 5 * halving) / BASE_VESTING_TIME
-      );
-    }
-    setMaxMintTime(maxValueTaime);
-  }, [resourcesParams, height, selected]);
-
-  useEffect(() => {
-    let token = 0;
-    if (resourcesParams !== null && value > 0 && valueDays > 0) {
-      const hydrogen = value;
-      const {
-        baseInvestmintAmountVolt,
-        baseInvestmintAmountAmpere,
-        baseInvestmintPeriodVolt,
-        baseInvestmintPeriodAmpere,
-        halvingPeriodAmpereBlocks: halvingPeriodBlocksAmpere,
-        halvingPeriodVoltBlocks: halvingPeriodBlocksVolt,
-      } = resourcesParams;
-      let baseLength = 0;
-      let baseAmount = 0;
-      let halvingPeriod = 0;
-      if (selected === 'millivolt') {
-        baseLength = baseInvestmintPeriodVolt;
-        baseAmount = parseFloat(baseInvestmintAmountVolt.amount);
-        halvingPeriod = halvingPeriodBlocksVolt;
-      } else {
-        baseLength = baseInvestmintPeriodAmpere;
-        baseAmount = parseFloat(baseInvestmintAmountAmpere.amount);
-        halvingPeriod = halvingPeriodBlocksAmpere;
-      }
-      const vestingTime = valueDays * BASE_VESTING_TIME;
-      const cycles = vestingTime / baseLength;
-      const base = hydrogen / baseAmount;
-      const halving = 0.5 ** Math.floor(height / halvingPeriod);
-
-      token = Math.floor(cycles * base * halving);
-    }
-    setResourceToken(token);
-  }, [value, valueDays, selected, resourcesParams, height]);
 
   const updateFunc = () => {
     setValue(0);
     setValueDays(1);
-    setUpdateAddress(updateAddress + 1);
+    setUpdateAddress((item) => item + 1);
+    update();
   };
 
   const vestedA = useMemo(() => {
-    let amountA = 0;
-    if (originalVesting.milliampere > 0) {
-      const [{ coinDecimals }] = traseDenom('milliampere');
-      const vestedTokensA = new BigNumber(originalVesting.milliampere)
-        .minus(vested.milliampere)
-        .toNumber();
-      amountA = getDisplayAmount(vestedTokensA, coinDecimals);
+    if (originalVesting.milliampere <= 0) {
+      return 0;
     }
-    return amountA;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vested, originalVesting]);
+
+    const [{ coinDecimals }] = traseDenom(SelectedState.milliampere);
+    const amount = new BigNumber(originalVesting.milliampere)
+      .minus(vested.milliampere)
+      .toNumber();
+
+    return getDisplayAmount(amount, coinDecimals);
+  }, [vested, originalVesting, traseDenom]);
 
   const vestedV = useMemo(() => {
-    let amountV = 0;
-    if (originalVesting.millivolt > 0) {
-      const [{ coinDecimals }] = traseDenom('millivolt');
-      const vestedTokensA = new BigNumber(originalVesting.millivolt)
-        .minus(vested.millivolt)
-        .toNumber();
-      amountV = getDisplayAmount(vestedTokensA, coinDecimals);
+    if (originalVesting.millivolt <= 0) {
+      return 0;
     }
-    return amountV;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vested, originalVesting]);
+
+    const [{ coinDecimals }] = traseDenom(SelectedState.millivolt);
+    const amount = new BigNumber(originalVesting.millivolt)
+      .minus(vested.millivolt)
+      .toNumber();
+    return getDisplayAmount(amount, coinDecimals);
+  }, [vested, originalVesting, traseDenom]);
 
   return (
     <>
@@ -304,7 +215,6 @@ function Mint() {
               height: '100%',
             }}
           >
-            {/* <ItemBalance text="Liquid balance" amount={balance.available} /> */}
             <ItemBalance
               text="Liquid"
               amount={max}
