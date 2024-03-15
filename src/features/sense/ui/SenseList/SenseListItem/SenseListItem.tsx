@@ -39,6 +39,7 @@ function SenseListItem({
   content,
   status,
   amountData,
+  from,
   fromLog,
   title,
 }: Props) {
@@ -78,6 +79,12 @@ function SenseListItem({
           <Tooltip tooltip={statusText!}>
             <span className={styles.icon}>{icon}</span>
           </Tooltip>
+        )}
+
+        {address !== from && (
+          <div className={styles.icon}>
+            <Account address={from} onlyAvatar avatar sizeAvatar={20} />
+          </div>
         )}
       </div>
 

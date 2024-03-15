@@ -2,7 +2,7 @@ import useParticleDetails from '../../../../particle/useParticleDetails';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
-import { Dots } from 'src/components';
+import { Account, Dots } from 'src/components';
 import SenseListItem from './SenseListItem';
 import { formatSenseItemDataToUI } from '../../utils/format';
 import { SenseItemId } from 'src/features/sense/types/sense';
@@ -29,8 +29,15 @@ function SenseListItemContainer({ senseItemId }: Props) {
   });
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, amount, cid, text, isAmountSendToMyAddress, isFollow } =
-    formatSenseItemDataToUI(senseData, address, senseItemId);
+  const {
+    timestamp,
+    amount,
+    cid,
+    text,
+    isAmountSendToMyAddress,
+    isFollow,
+    from,
+  } = formatSenseItemDataToUI(senseData, address, senseItemId);
 
   const particle = isParticle(senseItemId);
 
@@ -52,17 +59,27 @@ function SenseListItemContainer({ senseItemId }: Props) {
         </span>
       );
     } else if (data) {
-      content =
-        data.text?.replaceAll('#', '') ||
-        contentTypeConfig[data.type]?.label ||
-        'unsupported type';
+      if (isFollow) {
+        content = (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+            }}
+          >
+            💚 <Account address={data.content} avatar sizeAvatar={20} />{' '}
+          </div>
+        );
+      } else {
+        content =
+          data.text?.replaceAll('#', '') ||
+          contentTypeConfig[data.type]?.label ||
+          'unsupported type';
+      }
     }
   } else {
     content = text;
-  }
-
-  if (isFollow) {
-    content = `followed 💚 neuron`;
   }
 
   function formatParticleTitle(text?: string, type: string) {
@@ -82,6 +99,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
       title={formatParticleTitle(particleText, data?.type)}
       unreadCount={unreadCount}
       content={content}
+      from={from}
       status={senseData.status}
       amountData={{ amount, isAmountSendToMyAddress }}
     />
