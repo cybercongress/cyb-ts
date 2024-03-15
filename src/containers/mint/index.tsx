@@ -1,7 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Pane } from '@cybercongress/gravity';
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useQueryClient } from 'src/contexts/queryClient';
@@ -10,19 +7,16 @@ import Display from 'src/components/containerGradient/Display/Display';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { QueryParamsResponse as QueryParamsResponseResources } from '@cybercongress/cyber-js/build/codec/cyber/resources/v1beta1/query';
-import { ItemBalance } from './ui';
-import ERatio from './eRatio';
-import { formatNumber, getDisplayAmount } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import {
   Dots,
   ValueImg,
   DenomArr,
   Tabs,
   MainContainer,
-  FormatNumber,
   FormatNumberTokens,
-} from '../../components';
+} from 'src/components';
+import { formatNumber, getDisplayAmount } from 'src/utils/utils';
+import { CYBER } from '../../utils/config';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
@@ -36,17 +30,9 @@ import {
 import { SelectedState } from './types';
 import Statistics from './Statistics/Statistics';
 import RcSlider from './components/Slider/Slider';
-
-const grid = {
-  display: 'grid',
-  gridTemplateColumns: '250px 1fr 250px',
-  gridTemplateRows: 'auto',
-  alignItems: 'center',
-  margin: '64px 8px 0 8px',
-  gridGap: '16px 16px',
-  position: 'relative',
-  paddingBottom: '150px',
-};
+import InfoText from './InfoText/InfoText';
+import LiquidBalances from './LiquidBalances/LiquidBalances';
+import ERatio from './components/ERatio/ERatio';
 
 const returnColorDot = (marks) => {
   return {
@@ -78,16 +64,17 @@ function Mint() {
 
   const { setAdviser } = useAdviser();
 
-  const liquidH =
+  const frozenH =
     originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0
       ? new BigNumber(originalVesting[CYBER.DENOM_LIQUID_TOKEN])
           .minus(vested[CYBER.DENOM_LIQUID_TOKEN])
           .toNumber()
       : 0;
 
-  const eRatio = getERatio(liquidH, balanceHydrogen);
-  const max = new BigNumber(balanceHydrogen)
-    .minus(liquidH)
+  const eRatio = getERatio(frozenH, balanceHydrogen);
+
+  const liquidH = new BigNumber(balanceHydrogen)
+    .minus(frozenH)
     .dp(0, BigNumber.ROUND_FLOOR)
     .toNumber();
 
@@ -199,30 +186,9 @@ function Mint() {
           />
         </div>
 
-        <div style={grid}>
-          <div
-            style={{
-              display: 'grid',
-              alignContent: 'space-evenly',
-              height: '100%',
-            }}
-          >
-            <ItemBalance
-              text="Liquid"
-              amount={max}
-              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
-            />
-            <ItemBalance
-              text="Frozen"
-              amount={
-                loadingAuthAccounts
-                  ? null
-                  : originalVesting[CYBER.DENOM_LIQUID_TOKEN] -
-                    vested[CYBER.DENOM_LIQUID_TOKEN]
-              }
-              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
-            />
-          </div>
+        <div className={styles.containerControl}>
+          <LiquidBalances amount={{ liquidH, frozenH }} />
+
           <div className={styles.containerRcSlider}>
             <FormatNumberTokens
               value={resourceToken}
@@ -232,9 +198,9 @@ function Mint() {
 
             <RcSlider
               value={{ amount: value, onChange: onChangeValue }}
-              minMax={{ min: 0, max }}
+              minMax={{ min: 0, max: liquidH }}
               marks={{
-                [max]: returnColorDot(`${formatNumber(max)} H`),
+                [liquidH]: returnColorDot(`${formatNumber(liquidH)} H`),
               }}
             />
 
@@ -247,20 +213,15 @@ function Mint() {
               }}
             />
           </div>
-          <div>
-            <ERatio eRatio={eRatio} />
-          </div>
+
+          <ERatio eRatio={eRatio} />
+
           {value > 0 && (
-            <p className={styles.text}>
-              You’re freezing <strong>{formatNumber(value)}</strong>{' '}
-              <DenomArr denomValue="hydrogen" onlyImg /> for{' '}
-              <strong>{valueDays} days</strong>. It will release{' '}
-              <strong>{resourceToken}</strong>{' '}
-              <DenomArr denomValue={selected} onlyImg /> for you. At the end of
-              the period, {selected} becomes liquid automatically, but you can
-              use it to boost ranking during the freeze. You can have only{' '}
-              <strong>{SLOTS_MAX} slots</strong> for investmint at a time.
-            </p>
+            <InfoText
+              value={{ amount: value, days: valueDays }}
+              selected={selected}
+              resourceToken={resourceToken}
+            />
           )}
         </div>
 
@@ -278,7 +239,6 @@ function Mint() {
         valueDays={valueDays}
         resourceToken={resourceToken}
         updateFnc={updateFunc}
-        addressActive={addressActive}
       />
     </>
   );

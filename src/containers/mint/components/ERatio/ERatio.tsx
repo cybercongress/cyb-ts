@@ -1,25 +1,13 @@
 import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
-import { Tooltip } from '../../components';
+import { Tooltip } from 'src/components';
+import styles from './ERatio.module.scss';
 
-function ERatio({ eRatio }) {
+function ERatio({ eRatio }: { eRatio: number }) {
   return (
-    <>
-      <div
-        style={{
-          fontSize: '20px',
-          marginBottom: 20,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
+    <div>
+      <div className={styles.containerText}>
         E-Ratio
-        <div
-          style={{
-            marginLeft: 5,
-            marginTop: 3,
-          }}
-        >
+        <div className={styles.icon}>
           <Tooltip
             placement="top"
             tooltip="Efficiency ratio show how much of your energy is not utilzed. Investmint H into A or V to improve your E-Ratio. The lower E-Ratio the more benefit you miss"
@@ -40,7 +28,7 @@ function ERatio({ eRatio }) {
         </svg>
         <div className="svg_value">{eRatio}</div>
       </div>
-    </>
+    </div>
   );
 }
 

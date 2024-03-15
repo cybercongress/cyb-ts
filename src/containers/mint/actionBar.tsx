@@ -1,19 +1,15 @@
 import { useEffect, useState } from 'react';
 import { coin } from '@cosmjs/launchpad';
-import { Link } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
   Dots,
-  ActionBarContentText,
   TransactionSubmitted,
   Confirmed,
   TransactionError,
-  Account,
   ActionBar as ActionBarContainer,
-  BtnGrd,
 } from '../../components';
-import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { CYBER, LEDGER } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 
 const {
@@ -32,7 +28,6 @@ function ActionBar({
   valueDays,
   resourceToken,
   updateFnc,
-  addressActive,
 }) {
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
@@ -74,46 +69,26 @@ function ActionBar({
     if (signer && signingClient) {
       setStage(STAGE_SUBMITTED);
       const [{ address }] = await signer.getAccounts();
-      const gas = DEFAULT_GAS_LIMITS * 2;
-      const fee = {
-        amount: [],
-        gas: gas.toString(),
-      };
-      if (addressActive === address) {
-        try {
-          const response = await signingClient.investmint(
-            address,
-            coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
-            selected,
-            parseFloat(BASE_VESTING_TIME * valueDays),
-            fee
-          );
 
-          if (response.code === 0) {
-            setTxHash(response.transactionHash);
-          } else if (response.code === 4) {
-            setTxHash(null);
-            setErrorMessage(
-              'Cyberlinking and investmint is not working. Wait for updates.'
-            );
-            setStage(STAGE_ERROR);
-          } else {
-            setTxHash(null);
-            setErrorMessage(response.rawLog.toString());
-            setStage(STAGE_ERROR);
-          }
-        } catch (error) {
+      try {
+        const response = await signingClient.investmint(
+          address,
+          coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
+          selected,
+          parseFloat(BASE_VESTING_TIME * valueDays),
+          'auto'
+        );
+
+        if (response.code === 0) {
+          setTxHash(response.transactionHash);
+        } else {
           setTxHash(null);
-          setErrorMessage(error.toString());
+          setErrorMessage(response.rawLog.toString());
           setStage(STAGE_ERROR);
         }
-      } else {
-        setErrorMessage(
-          <span>
-            Add address <Account margin="0 5px" address={address} /> to your
-            pocket or make active{' '}
-          </span>
-        );
+      } catch (error) {
+        setTxHash(null);
+        setErrorMessage(error.toString());
         setStage(STAGE_ERROR);
       }
     }
