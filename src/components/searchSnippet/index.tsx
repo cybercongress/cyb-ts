@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import { useEffect, useState } from 'react';
+import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
-import Rank from '../Rank/rank';
+import { getRankGrade } from '../../utils/search/utils';
 import {
-  timeSince,
   coinDecimals,
   exponentialToDecimal,
+  timeSince,
 } from '../../utils/utils';
-import { getRankGrade } from '../../utils/search/utils';
 import ContentItem from '../ContentItem/contentItem';
-import { useDevice } from 'src/contexts/device';
+import Rank from '../Rank/rank';
 
 function TimeAgo({ timeAgoInMS }) {
   return (
