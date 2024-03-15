@@ -16,17 +16,26 @@ import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import {
   Dots,
-  CardStatisics,
   ValueImg,
   DenomArr,
   Tabs,
+  MainContainer,
+  FormatNumber,
+  FormatNumberTokens,
 } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
 import styles from './Mint.module.scss';
-import { SLOTS_MAX, getAmountResource, getERatio, getMaxTimeMint } from './utils';
+import {
+  SLOTS_MAX,
+  getAmountResource,
+  getERatio,
+  getMaxTimeMint,
+} from './utils';
 import { SelectedState } from './types';
+import Statistics from './Statistics/Statistics';
+import RcSlider from './components/Slider/Slider';
 
 const grid = {
   display: 'grid',
@@ -48,7 +57,6 @@ const returnColorDot = (marks) => {
     label: marks,
   };
 };
-
 
 function Mint() {
   const queryClient = useQueryClient();
@@ -169,30 +177,14 @@ function Mint() {
     return getDisplayAmount(amount, coinDecimals);
   }, [vested, originalVesting, traseDenom]);
 
+  const onChangeValue = (eValue: number) => setValue(eValue);
+
+  const onChangeValueDays = (days: number) => setValueDays(days);
+
   return (
     <>
-      <main className="block-body">
-        <Pane
-          marginTop={10}
-          marginBottom={50}
-          display="grid"
-          gridTemplateColumns="300px 300px 300px"
-          gridGap="20px"
-          justifyContent="center"
-        >
-          <CardStatisics
-            title={<ValueImg text="milliampere" />}
-            value={formatNumber(vestedA)}
-          />
-          <CardStatisics
-            title={<ValueImg text="millivolt" />}
-            value={formatNumber(vestedV)}
-          />
-          <CardStatisics
-            title="My Energy"
-            value={`${formatNumber(vestedA * vestedV)} W`}
-          />
-        </Pane>
+      <MainContainer width="100%">
+        <Statistics amount={{ vestedA, vestedV }} />
 
         <div className={styles.tabs}>
           <Tabs
@@ -231,63 +223,27 @@ function Mint() {
               currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
             />
           </div>
-          <div
-            style={{
-              height: '100%',
-              display: 'grid',
-              gridTemplateRows: '1fr 1fr 1fr',
-              width: '100%',
-              justifyItems: 'center',
-              padding: '0 10px',
-            }}
-          >
-            <Pane fontSize="30px">{resourceToken}</Pane>
-            <Slider
-              value={value}
-              min={0}
-              max={max}
+          <div className={styles.containerRcSlider}>
+            <FormatNumberTokens
+              value={resourceToken}
+              text={selected}
+              styleContainer={{ fontSize: '30px' }}
+            />
+
+            <RcSlider
+              value={{ amount: value, onChange: onChangeValue }}
+              minMax={{ min: 0, max }}
               marks={{
                 [max]: returnColorDot(`${formatNumber(max)} H`),
               }}
-              onChange={(eValue) => setValue(eValue)}
-              trackStyle={{ backgroundColor: '#3ab793' }}
-              railStyle={{ backgroundColor: '#97979775' }}
-              dotStyle={{
-                backgroundColor: '#97979775',
-                borderColor: '#97979775',
-              }}
-              activeDotStyle={{
-                borderColor: '#3ab793',
-                backgroundColor: '#3ab793',
-              }}
-              handleStyle={{
-                border: 'none',
-                backgroundColor: '#3ab793',
-              }}
             />
 
-            <Slider
-              value={valueDays}
-              min={1}
-              max={maxMintTime}
+            <RcSlider
+              value={{ amount: valueDays, onChange: onChangeValueDays }}
+              minMax={{ min: 1, max: maxMintTime }}
               marks={{
                 1: returnColorDot('1 day'),
                 [maxMintTime]: returnColorDot(`${maxMintTime} days`),
-              }}
-              onChange={(eValue) => setValueDays(eValue)}
-              trackStyle={{ backgroundColor: '#3ab793' }}
-              railStyle={{ backgroundColor: '#97979775' }}
-              dotStyle={{
-                backgroundColor: '#97979775',
-                borderColor: '#97979775',
-              }}
-              activeDotStyle={{
-                borderColor: '#3ab793',
-                backgroundColor: '#3ab793',
-              }}
-              handleStyle={{
-                border: 'none',
-                backgroundColor: '#3ab793',
               }}
             />
           </div>
@@ -315,7 +271,7 @@ function Mint() {
             <TableSlots data={slotsData} />
           </Display>
         )}
-      </main>
+      </MainContainer>
       <ActionBar
         value={value}
         selected={selected}

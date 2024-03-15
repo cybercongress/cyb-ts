@@ -1,15 +1,16 @@
-import React from 'react'
+import { CardStatisics, ValueImg } from 'src/components';
+import { formatNumber } from 'src/utils/utils';
+import styles from './Statistics.module.scss';
 
-function Statistics() {
+function Statistics({
+  amount,
+}: {
+  amount: { vestedA: number; vestedV: number };
+}) {
+  const { vestedA, vestedV } = amount;
+
   return (
-    <div
-      marginTop={10}
-      marginBottom={50}
-      display="grid"
-      gridTemplateColumns="300px 300px 300px"
-      gridGap="20px"
-      justifyContent="center"
-    >
+    <div className={styles.container}>
       <CardStatisics
         title={<ValueImg text="milliampere" />}
         value={formatNumber(vestedA)}

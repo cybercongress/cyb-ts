@@ -18,7 +18,16 @@
     white-space: nowrap;
   }
 
-  > div {
+  >div {
     display: inline-block !important;
   }
+}
+
+.containerRcSlider {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  justify-items: center;
+  padding: 0px 10px;
+  height: 100%;
+  width: 100%;
 }
