@@ -88,7 +88,7 @@ function formatApiData(item: SenseListItem): SenseItem {
   const { meta } = item;
 
   const formatted: SenseItem = {
-    timestamp: meta.timestamp,
+    timestamp: new Date(meta.timestamp).toISOString(),
 
     // lol
     transactionHash:

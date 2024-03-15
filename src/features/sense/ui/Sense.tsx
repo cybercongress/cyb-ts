@@ -6,7 +6,10 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import ActionBar from './ActionBar/ActionBar';
 import { useBackend } from 'src/contexts/backend/backend';
-import { getSenseChat } from 'src/features/sense/redux/sense.redux';
+import {
+  getSenseChat,
+  getSenseList,
+} from 'src/features/sense/redux/sense.redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
 
@@ -94,6 +97,14 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     setError: (error: string) => setError(error),
     setAdviserText: (text: string) => setAdviserText(text),
   };
+
+  useEffect(() => {
+    if (!senseApi) {
+      return;
+    }
+
+    dispatch(getSenseList(senseApi));
+  }, [dispatch, senseApi]);
 
   function update() {
     // dispatch(getSenseList(senseApi));
