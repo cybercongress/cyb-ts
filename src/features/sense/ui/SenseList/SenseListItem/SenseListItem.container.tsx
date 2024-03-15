@@ -29,7 +29,7 @@ function SenseListItemContainer({ senseItemId }: Props) {
   });
   const address = useAppSelector(selectCurrentAddress);
 
-  const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
+  const { timestamp, amount, cid, text, isAmountSendToMyAddress, isFollow } =
     formatSenseItemDataToUI(senseData, address, senseItemId);
 
   const particle = isParticle(senseItemId);
@@ -59,6 +59,10 @@ function SenseListItemContainer({ senseItemId }: Props) {
     }
   } else {
     content = text;
+  }
+
+  if (isFollow) {
+    content = `followed 💚 neuron`;
   }
 
   function formatParticleTitle(text?: string, type: string) {
