@@ -232,7 +232,6 @@ class DbApiWrapper {
 
   public async putCyberlinks(links: LinkDto[] | LinkDto) {
     const entitites = dtoListToEntity(Array.isArray(links) ? links : [links]);
-    console.log('putCyberlinks', links, entitites);
     return this.db!.executePutCommand('link', entitites);
   }
 

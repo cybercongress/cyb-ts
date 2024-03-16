@@ -32,7 +32,7 @@ function Ipfs() {
     } else if (isIpfsInitialized) {
       (async () => {
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
-        console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
+        // console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
         await ipfsApi!.addContent(query);
         setCid(cidFromQuery);
       })();

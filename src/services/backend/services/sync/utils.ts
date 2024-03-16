@@ -1,6 +1,4 @@
-import { dateToUtcNumber } from 'src/utils/date';
-
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { NeuronAddress } from 'src/types/base';
 import { LinkDto, SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
@@ -28,15 +26,18 @@ export function getLastReadInfo(
   prevTimestampRead = 0,
   prevUnreadCount = 0
 ) {
+  const lastUnreadLinks = links.filter(
+    (link) => link.timestamp > prevTimestampRead
+  );
   const lastMyLinkIndex = findLastIndex(
-    links,
-    (link) => link.neuron === ownerId && link.timestamp > prevTimestampRead
+    lastUnreadLinks,
+    (link) => link.neuron === ownerId
   );
 
   const unreadCount =
     lastMyLinkIndex < 0
-      ? prevUnreadCount || 0
-      : links.length - lastMyLinkIndex - 1;
+      ? prevUnreadCount + lastUnreadLinks.length
+      : lastUnreadLinks.length - lastMyLinkIndex - 1;
 
   const timestampRead =
     lastMyLinkIndex < 0 ? prevTimestampRead : links[lastMyLinkIndex].timestamp;
@@ -54,6 +55,15 @@ export function changeParticleSyncStatus(
   shouldUpdateTimestamp = true
 ) {
   const timestampUpdate = links[0].timestamp;
+  // if (syncStatus.id === 'QmVvYEERKAEFm1fqSZxKYdvHJqL6QLPbTYLSeaGSNv4NKy') {
+  //   console.log(
+  //     '----changeParticleSyncStatus led',
+  //     syncStatus,
+  //     links,
+  //     shouldUpdateTimestamp
+  //   );
+  //   debugger;
+  // }
   const { timestampRead, unreadCount } = getLastReadInfo(
     links,
     ownerId,
@@ -61,7 +71,7 @@ export function changeParticleSyncStatus(
     syncStatus.unreadCount
   );
 
-  const lastLink = entityToDto(links[0]);
+  const lastLink = entityToDto(links[links.length - 1]);
 
   return {
     ...syncStatus,

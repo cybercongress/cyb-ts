@@ -2,7 +2,7 @@ import { CyberLinkSimple, CyberlinkTxHash, ParticleCid } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/constants/app';
-import { TransactionDto } from 'src/services/CozoDb/types/dto';
+import { LinkDto, TransactionDto } from 'src/services/CozoDb/types/dto';
 
 import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
@@ -26,7 +26,7 @@ export const fetchCyberlinksAndResolveParticles = async (
   timestampUpdate: number,
   particlesResolver: ParticlesResolverQueue,
   queuePriority: QueuePriority,
-  abortSignal?: AbortSignal
+  abortSignal: AbortSignal
 ) => {
   const cyberlinksIterable = fetchCyberlinksIterable(
     cid,
@@ -56,10 +56,10 @@ export function extractCybelinksFromTransaction(batch: TransactionDto[]) {
     (l) => l.type === CYBER_LINK_TRANSACTION_TYPE
   );
   const particlesFound = new Set<string>();
-  const links: CyberlinkTxHash[] = [];
+  const links: LinkDto[] = [];
   // Get links: only from TWEETS
-  const tweets: Record<ParticleCid, CyberlinkTxHash> = cyberlinks.reduce<
-    Record<ParticleCid, CyberlinkTxHash>
+  const tweets: Record<ParticleCid, LinkDto> = cyberlinks.reduce<
+    Record<ParticleCid, LinkDto>
   >((acc, { value, hash, timestamp }: TransactionDto) => {
     (value as CyberLinkValue).links.forEach((link) => {
       particlesFound.add(link.to);
@@ -68,7 +68,7 @@ export function extractCybelinksFromTransaction(batch: TransactionDto[]) {
         ...link,
         timestamp,
         neuron: (value as CyberLinkValue).neuron,
-        transaction_hash: hash,
+        transactionHash: hash,
       };
       links.push(txLink);
 

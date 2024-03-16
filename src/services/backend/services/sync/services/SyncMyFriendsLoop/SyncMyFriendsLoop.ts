@@ -157,7 +157,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
         const links = linksBatch.map(mapLinkFromIndexerToDto);
 
         const { timestampRead: newTimestampRead, unreadCount: newUnreadCount } =
-          getLastReadInfo(linksBatch, myAddress, timestampRead, unreadCount);
+          getLastReadInfo(links, myAddress, timestampRead, unreadCount);
 
         // const unreadItemsCount = unreadCount + links.length;
 

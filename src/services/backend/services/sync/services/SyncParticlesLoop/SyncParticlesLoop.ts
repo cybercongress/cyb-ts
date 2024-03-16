@@ -106,6 +106,13 @@ class SyncParticlesLoop extends BaseSyncLoop {
     );
 
     const newTweets: SyncStatusDto[] = [];
+    const existingParticles = await this.db!.findSyncStatus({
+      ownerId: myAddress,
+      entryType: EntryType.particle,
+    });
+    const existingParticlesMap = new Map(
+      existingParticles.map((i) => [i.id, i])
+    );
     // eslint-disable-next-line no-await-in-loop, no-restricted-syntax
     for await (const tweetsBatch of tweetsAsyncIterable) {
       this.statusApi.sendStatus(
@@ -117,12 +124,17 @@ class SyncParticlesLoop extends BaseSyncLoop {
         const { timestamp, to } = item;
         const timestampUpdate = dateToUtcNumber(timestamp);
 
+        // In case my tweet already linked from other neuron, resync from beginning
+        const timestampSyncFrom = existingParticlesMap.get(to)
+          ? dateToUtcNumber(timestamp)
+          : 0;
+
         // Initial state
         return {
           ownerId: myAddress,
           id: to,
           entryType: EntryType.particle,
-          timestampUpdate,
+          timestampUpdate: timestampSyncFrom,
           timestampRead: timestampUpdate,
           unreadCount: 0,
           disabled: false,
@@ -158,7 +170,6 @@ class SyncParticlesLoop extends BaseSyncLoop {
         `fetching tweet updates...`,
         this.progressTracker.trackProgress(1)
       );
-
       // eslint-disable-next-line no-await-in-loop
       const linksIndexer = await fetchCyberlinksAndResolveParticles(
         id,

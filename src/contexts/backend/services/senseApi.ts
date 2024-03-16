@@ -169,8 +169,10 @@ export const createSenseApi = (
     } else {
       syncItemLink = syncItemLinkFrom.id ? syncItemLinkFrom : syncItemLinkTo;
     }
+
+    // Just cyberlink, no tweet no syncable item
     if (!syncItemLink || !syncItemLink.id) {
-      throw new Error('syncItem not found, and not tweet link');
+      return;
     }
 
     const transaction = prepareSenseCyberlinkTransaction(link);
