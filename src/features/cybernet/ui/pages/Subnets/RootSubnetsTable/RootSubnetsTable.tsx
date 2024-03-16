@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { SubnetInfo } from '../../types';
+import { SubnetInfo } from '../../../../types';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { Link, useNavigate } from 'react-router-dom';

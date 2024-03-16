@@ -4,11 +4,11 @@ import { Input, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { SubnetHyperParameters, SubnetInfo } from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/useContract';
+import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { routes } from 'src/routes';
 import WeightsTable from './WeightsTable/WeightsTable';
 import WeightsSetter from './WeightsSetter/WeightsSetter';
-import ActionBar from './ActionBar/ActionBar';
+import ActionBar from './SubnetActionBar/SubnetActionBar';
 
 function Subnet() {
   const { id } = useParams();

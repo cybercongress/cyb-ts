@@ -46,15 +46,6 @@ function DelegatorsTable({ data }: Props) {
                 </div>
               ),
             }),
-
-            //   columnHelper.accessor('supplied', {
-            //     header: 'Supplied',
-            //     cell: (info) => info.getValue(),
-            //   }),
-            //   columnHelper.accessor('received', {
-            //     header: 'Received',
-            //     cell: (info) => info.getValue(),
-            //   }),
           ],
           []
         )}

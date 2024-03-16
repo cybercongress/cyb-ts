@@ -1,6 +1,6 @@
 import React from 'react';
 import { Delegator } from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/useContract';
+import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import DelegatorsTable from './DelegatorsTable/DelegatorsTable';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SubnetInfo } from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/useContract';
+import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 
 function NProvider({ address }) {
   console.log(address);

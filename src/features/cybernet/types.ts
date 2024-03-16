@@ -49,3 +49,9 @@ export type SubnetHyperParameters = {
   bonds_moving_avg: number;
   max_regs_per_block: number;
 };
+
+export type StakeInfo = {
+  coldkey: string;
+  hotkey: string;
+  stake: number;
+}[];

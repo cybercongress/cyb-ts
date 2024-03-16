@@ -16,7 +16,7 @@ function Cybernet() {
         <Route path="subnets" element={<Subnets />} />
         <Route path="subnets/:id" element={<Subnet />} />
 
-        <Route path="delegates" element={<Delegates />} />
+        <Route path="delegators" element={<Delegates />} />
         <Route path="delegators/:id" element={<Delegator />} />
 
         <Route path="staking/my" element={<MyDelegation />} />

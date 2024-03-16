@@ -1,35 +1,25 @@
-import React, { useEffect } from 'react';
-import { SubnetInfo } from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/useContract';
-import RootSubnetsTable from '../../RootSubnetsTable/RootSubnetsTable';
 import Display from 'src/components/containerGradient/Display/Display';
 import { MainContainer } from 'src/components';
-import { useAdviser } from 'src/features/adviser/context';
-import ActionBar from './ActionBar';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { Link } from 'react-router-dom';
+import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import { cybernetRoutes } from '../../routes';
 
 function Main() {
-  const { setAdviser } = useAdviser();
-  useEffect(() => {
-    let text;
-    let color;
-
-    text = 'welcome to Cybernet';
-
-    setAdviser(text, color);
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'welcome to Cybernet',
+  });
 
   return (
     <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title={'Cybernet'} />}>
-        <Link to="./subnets">Subnets</Link>
+        <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
         <br />
-        <Link to="./delegates">Delegates</Link>
+        <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
 
         <br />
 
-        <Link to="./staking/my">My delegation</Link>
+        <Link to="./staking/my">My stake</Link>
       </Display>
     </MainContainer>
   );

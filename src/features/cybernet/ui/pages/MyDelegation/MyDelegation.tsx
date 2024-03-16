@@ -1,62 +1,56 @@
-import React from 'react';
-import useCybernetContract from 'src/features/cybernet/useContract';
+import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import Delegator from '../Delegator/Delegator';
-import { MainContainer } from 'src/components';
+import { DenomArr, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import { Link } from 'react-router-dom';
-import { routes } from 'src/routes';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import { StakeInfo } from 'src/features/cybernet/types';
+import { routes as cybernetRoutes } from '../../routes';
+import styles from './MyDelegation.module.scss';
 
 function MyDelegation() {
-  //   const w = 'pussy1628xzz8mhhu9mekk3tat4jj0vymtzachuhtyfe';
+  const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const t = useAppSelector(selectCurrentAddress);
-
-  console.log(t);
-
-  const { data, loading, error } = useCybernetContract<Delegator>({
+  const { data, loading, error } = useCybernetContract<StakeInfo>({
     query: {
-      get_delegate: {
-        delegate: t,
+      get_stake_info_for_coldkey: {
+        coldkey: currentAddress,
       },
     },
+    skip: !currentAddress,
   });
 
-  console.log(data);
+  useAdviserTexts({
+    isLoading: loading,
+    error,
+    defaultText: 'my stake',
+  });
 
   const total =
-    data &&
-    data.nominators.reduce((acc, item) => {
-      return acc + item[1];
-    }, 0);
+    data?.reduce((acc, item) => {
+      return acc + item.stake;
+    }, 0) || 0;
 
   let content;
 
   if (data) {
     content = (
       <>
-        <p>will be table</p>
-        <br />
-        <ul>
-          {data &&
-            data.nominators.map((item) => {
-              const [address, amount] = item;
-
-              console.log(item);
-
-              return (
-                <li key={address}>
-                  <Link to={routes.neuron.getLink(address)}>{address}</Link>{' '}
-                  <br />
-                  {amount}
-                  <br />
-                  {(amount / total).toFixed(2)}%
-                  <hr />
-                </li>
-              );
-            })}
+        {/* TODO: need table */}
+        <ul className={styles.list}>
+          {data?.map(({ hotkey, stake }) => {
+            return (
+              <li key={hotkey}>
+                <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
+                  {hotkey}
+                </Link>{' '}
+                {stake} <DenomArr denomValue="pussy" />
+                {Number((stake / total).toFixed(2)) * 100}%
+              </li>
+            );
+          })}
         </ul>
       </>
     );
@@ -66,9 +60,7 @@ function MyDelegation() {
 
   return (
     <MainContainer>
-      <Display title={<DisplayTitle title={'My delegation'} />}>
-        {content}
-      </Display>
+      <Display title={<DisplayTitle title="My stake" />}>{content}</Display>
     </MainContainer>
   );
 }

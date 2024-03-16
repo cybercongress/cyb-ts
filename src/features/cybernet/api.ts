@@ -1,32 +1,12 @@
-// TODO: add type
-
 import { CyberClient } from '@cybercongress/cyber-js';
-import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import { CYBERNET_CONTRACT_ADDRESS } from './constants';
 
-// https://github.com/cybercongress/cw-cybergift/tree/main/contracts/cw-cyber-passport/schema
-export type PassportContractQuery = {
-  active_passport:
-    | {
-        address: string;
-      }
-    | {
-        passport_by_nickname: {
-          nickname: string;
-        };
-      }
-    | {
-        nft_info: {
-          token_id: string;
-        };
-      };
-};
+// use this for type somehow https://github.com/cybercongress/cybernet/tree/main/schema/raw
+export type CybernetContractQuery = object;
 
-export function queryContract2(query: any, queryClient: CyberClient) {
-  return queryClient.queryContractSmart(
-    'pussy1ddwq8rxgdsm27pvpxqdy2ep9enuen6t2yhrqujvj9qwl4dtukx0s8hpka9',
-    query
-  );
+export function queryCybernetContract(
+  query: CybernetContractQuery,
+  queryClient: CyberClient
+) {
+  return queryClient.queryContractSmart(CYBERNET_CONTRACT_ADDRESS, query);
 }
-
-export const CYBERNET_CONTRACT_ADDRESS =
-  'pussy1ddwq8rxgdsm27pvpxqdy2ep9enuen6t2yhrqujvj9qwl4dtukx0s8hpka9';

@@ -1,27 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { equals } from 'ramda';
-import {
-  PassportContractQuery,
-  queryPassportContract,
-} from 'src/soft.js/api/passport';
-import { queryContract2 } from './api';
+import { CybernetContractQuery, queryCybernetContract } from '../api';
 
 type Props = {
-  query: PassportContractQuery;
+  query: CybernetContractQuery;
   skip?: boolean;
 };
 
-function useCybernetContract<DataType>({ query, skip }: Props) {
+// TODO: copied from usePassportContract, reuse  core logic
+
+function useQueryCybernetContract<DataType>({ query, skip }: Props) {
   const [data, setData] = useState<DataType>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState();
+  const [error, setError] = useState<string>();
 
   const queryClient = useQueryClient();
 
-  const lastQuery = useRef<PassportContractQuery>();
+  const lastQuery = useRef<CybernetContractQuery>();
 
-  async function queryContract(query: PassportContractQuery) {
+  async function queryContract(query: CybernetContractQuery) {
     if (!queryClient) {
       return;
     }
@@ -31,11 +29,11 @@ function useCybernetContract<DataType>({ query, skip }: Props) {
       setData(undefined);
       setError(undefined);
 
-      const response = await queryContract2(query, queryClient);
+      const response = await queryCybernetContract(query, queryClient);
       setData(response);
     } catch (error) {
       console.error(error);
-      setError(error);
+      setError(error.message);
     }
     setLoading(false);
   }
@@ -67,4 +65,4 @@ function useCybernetContract<DataType>({ query, skip }: Props) {
   };
 }
 
-export default useCybernetContract;
+export default useQueryCybernetContract;
