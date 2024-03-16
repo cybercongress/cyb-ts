@@ -284,76 +284,69 @@ class ActionBarContainer extends Component<Props> {
       file,
     } = this.state;
 
+    const isOwner = defaultAccount && defaultAccount.bech32 === addressSend;
+
     if (stage === STAGE_INIT) {
-      const sendBtn = (
-        <Button
-          link={
-            routes.teleport.send.path +
-            '?' +
-            createSearchParams({
-              recipient: addressSend,
-              token: 'boot',
-              amount: '1',
-            }).toString()
-          }
-        >
-          Send
-        </Button>
-      );
       const followBtn = <Button onClick={this.onClickSend}>Follow</Button>;
 
       const content = [];
 
       // main page
-      if (!type && addressSend !== defaultAccount.bech32) {
-        content.push(sendBtn);
+      if (!type) {
+        if (!isOwner) {
+          content.push(
+            <Button
+              link={
+                routes.teleport.send.path +
+                '?' +
+                createSearchParams({
+                  recipient: addressSend,
+                  token: 'boot',
+                  amount: '1',
+                }).toString()
+              }
+            >
+              Send
+            </Button>
+          );
+        }
+
+        if (follow) {
+          content.push(followBtn);
+        }
       }
 
-      if ((type === 'log' || !type) && follow) {
-        content.push(followBtn);
+      if (type === 'log') {
+        if (follow) {
+          content.push(followBtn);
+        }
+
+        if (tweets) {
+          return (
+            <StartStageSearchActionBar
+              onClickBtn={this.onClickSend}
+              contentHash={
+                file !== null && file !== undefined ? file.name : contentHash
+              }
+              onChangeInputContentHash={this.onChangeInput}
+              textBtn="Tweet"
+              placeholder="What's happening?"
+              inputOpenFileRef={this.inputOpenFileRef}
+              showOpenFileDlg={this.showOpenFileDlg}
+              onChangeInput={this.onFilePickerChange}
+              onClickClear={this.onClickClear}
+              file={file}
+              keys={defaultAccount !== null ? defaultAccount.keys : false}
+            />
+          );
+        }
+      }
+
+      if (type === 'security' && isOwner && defaultAccount.keys === 'keplr') {
+        content.push(<Button onClick={this.onClickSend}>Claim rewards</Button>);
       }
 
       return <ActionBarComp>{content}</ActionBarComp>;
-    }
-
-    // TODO: continue refactoring
-
-    if (stage === STAGE_INIT && type === 'log' && tweets) {
-      return (
-        <StartStageSearchActionBar
-          onClickBtn={this.onClickSend}
-          contentHash={
-            file !== null && file !== undefined ? file.name : contentHash
-          }
-          onChangeInputContentHash={this.onChangeInput}
-          textBtn="Tweet"
-          placeholder="What's happening?"
-          inputOpenFileRef={this.inputOpenFileRef}
-          showOpenFileDlg={this.showOpenFileDlg}
-          onChangeInput={this.onFilePickerChange}
-          onClickClear={this.onClickClear}
-          file={file}
-          keys={defaultAccount !== null ? defaultAccount.keys : false}
-        />
-      );
-    }
-
-    if (
-      stage === STAGE_INIT &&
-      type === 'security' &&
-      defaultAccount !== null &&
-      defaultAccount.keys === 'keplr' &&
-      addressSend === defaultAccount.bech32
-    ) {
-      return (
-        <ActionBarComp
-          button={{
-            disabled: addressSend !== defaultAccount.bech32,
-            text: 'Claim rewards',
-            onClick: this.onClickSend,
-          }}
-        />
-      );
     }
 
     if (stage === STAGE_READY) {
