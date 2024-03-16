@@ -54,16 +54,6 @@ export function changeParticleSyncStatus(
   ownerId: NeuronAddress,
   shouldUpdateTimestamp = true
 ) {
-  const timestampUpdate = links[0].timestamp;
-  // if (syncStatus.id === 'QmVvYEERKAEFm1fqSZxKYdvHJqL6QLPbTYLSeaGSNv4NKy') {
-  //   console.log(
-  //     '----changeParticleSyncStatus led',
-  //     syncStatus,
-  //     links,
-  //     shouldUpdateTimestamp
-  //   );
-  //   debugger;
-  // }
   const { timestampRead, unreadCount } = getLastReadInfo(
     links,
     ownerId,
@@ -72,7 +62,7 @@ export function changeParticleSyncStatus(
   );
 
   const lastLink = entityToDto(links[links.length - 1]);
-
+  const timestampUpdate = lastLink.timestamp;
   return {
     ...syncStatus,
     ownerId,
