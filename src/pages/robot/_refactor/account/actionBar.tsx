@@ -152,7 +152,7 @@ class ActionBarContainer extends Component<Props> {
               }
             }
           }
-        } else if (type === 'log') {
+        } else if (type === 'log' || !type) {
           if (follow) {
             const toCid = await ipfsApi.addContent(addressSend);
             txHash = await sendCyberlink(address, CID_FOLLOW, toCid, {
@@ -167,7 +167,12 @@ class ActionBarContainer extends Component<Props> {
             });
           }
         }
-        console.log('hash :>> ', txHash);
+
+        // sholdn't be after refactoring
+        if (!txHash) {
+          throw new Error('Tx hash is empty');
+        }
+
         this.setState({ stage: STAGE_SUBMITTED, txHash });
 
         this.timeOut = setTimeout(this.confirmTx, 1500);
