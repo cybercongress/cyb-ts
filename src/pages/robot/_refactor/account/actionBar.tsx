@@ -289,7 +289,7 @@ class ActionBarContainer extends Component<Props> {
       file,
     } = this.state;
 
-    if (stage === STAGE_INIT && addressSend !== defaultAccount.bech32) {
+    if (stage === STAGE_INIT) {
       const sendBtn = (
         <Button
           link={
@@ -310,7 +310,7 @@ class ActionBarContainer extends Component<Props> {
       const content = [];
 
       // main page
-      if (!type) {
+      if (!type && addressSend !== defaultAccount.bech32) {
         content.push(sendBtn);
       }
 
@@ -322,6 +322,7 @@ class ActionBarContainer extends Component<Props> {
     }
 
     // TODO: continue refactoring
+
     if (stage === STAGE_INIT && type === 'log' && tweets) {
       return (
         <StartStageSearchActionBar
