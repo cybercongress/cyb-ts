@@ -15,10 +15,10 @@ import { routes } from 'src/routes';
 import { Link, createSearchParams } from 'react-router-dom';
 import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
 import {
-  addIfpsMessageOrCid,
   sendCyberlink,
   sendTokensWithMessage,
 } from 'src/services/neuron/neuronApi';
+import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 
 type Props = {
   id: string | undefined;

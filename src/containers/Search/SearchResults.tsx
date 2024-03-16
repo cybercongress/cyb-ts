@@ -9,7 +9,7 @@ import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { encodeSlash } from '../../utils/utils';
 import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { PATTERN_IPFS_HASH } from '../../utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
 import { MainContainer } from '../portal/components';
 import FirstItems from './_FirstItems.refactor';
 import useSearchData from './hooks/useSearchData';

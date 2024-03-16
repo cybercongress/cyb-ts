@@ -8,10 +8,8 @@ import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import { useAppSelector } from 'src/redux/hooks';
 import { useBackend } from 'src/contexts/backend/backend';
-import {
-  addIfpsMessageOrCid,
-  sendTokensWithMessage,
-} from 'src/services/neuron/neuronApi';
+import { sendTokensWithMessage } from 'src/services/neuron/neuronApi';
+import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import { convertAmountReverce } from '../../../utils/utils';
 
 import { LEDGER } from '../../../utils/config';

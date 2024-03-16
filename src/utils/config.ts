@@ -278,7 +278,6 @@ const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
 const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
-const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
 const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 const PATTERN_HTML = /<\/?[\w\d]+>/gi;

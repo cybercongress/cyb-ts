@@ -14,12 +14,8 @@ import {
   ActionBar as ActionBarComp,
   Button,
 } from '../../../../components';
-import {
-  LEDGER,
-  CYBER,
-  PATTERN_IPFS_HASH,
-  DEFAULT_GAS_LIMITS,
-} from '../../../../utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../../../utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
