@@ -67,7 +67,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
       >
         <Link
           id={menuButtonId}
-          to={getRoute[0].to || routes.oracle.path}
+          to={getRoute[0]?.to || routes.oracle.path}
           // onClick={onClickOpenMenu}
           className={styles.networkBtn}
         >
