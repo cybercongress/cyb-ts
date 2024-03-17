@@ -152,30 +152,22 @@ function ActionBarComp({ children, text, onClickBack, button }: Props) {
   );
 }
 
+function ActionBarWrap({ children }) {
+  return (
+    <div className={styles.ActionBarWrap}>
+      <div className={styles.ActionBarWrapContent}>{children}</div>
+    </div>
+  );
+}
+
 function ActionBar({ children, text, onClickBack, button }: Props) {
   return (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'grid',
-        gridTemplateColumns: '0.7fr 1fr',
-        width: '100%',
-        position: 'fixed',
-        bottom: '20px',
-        padding: '10px 0',
-        maxWidth: '1000px',
-        background:
-          'linear-gradient(0deg,rgba(0, 0, 0, 0.93) 76%, rgba(0, 0, 0, 0) 100%)',
-        left: '50%',
-        transform: 'translate(-50%, 10px)',
-        zIndex: '3',
-      }}
-    >
+    <ActionBarWrap>
       <Commander />
       <ActionBarComp text={text} onClickBack={onClickBack} button={button}>
         {children}
       </ActionBarComp>
-    </div>
+    </ActionBarWrap>
   );
 }
 
