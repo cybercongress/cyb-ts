@@ -3,6 +3,11 @@ import { Button, InputNumber } from 'src/components';
 
 import ActionBar from 'src/components/actionBar';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
+import { useGetBalance } from 'src/containers/sigma/hooks/utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { queryClient } from '../../../../../../../.storybook/preview';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
 
 enum Steps {
   INITIAL,
@@ -20,42 +25,57 @@ type Props = {
 function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
 
+  const currentAddress = useAppSelector(selectCurrentAddress);
+
+  const queryClient = useQueryClient();
+
+  const balance = useGetBalance(queryClient, currentAddress);
+  const availableBalance = balance?.liquid?.amount;
+
+  console.log(availableBalance);
+
   const [amount, setAmount] = useState(0);
 
-  const query = useMemo(() => {
-    return {
+  function handleSuccess() {
+    setStep(Steps.INITIAL);
+    setAmount(0);
+
+    onSuccess();
+  }
+
+  const executeStake = useExecuteCybernetContract({
+    query: {
       add_stake: {
         hotkey: address,
       },
-    };
-  }, [address]);
-
-  const funds = useMemo(() => {
-    return [
+    },
+    funds: [
       {
         denom: 'pussy',
         amount: String(amount),
       },
-    ];
-  }, [amount]);
+    ],
+    onSuccess: handleSuccess,
+  });
 
-  const onSuccessMemo = useMemo(() => {
-    return () => {
-      setStep(Steps.INITIAL);
-      setAmount(0);
-
-      onSuccess();
-    };
-  }, [onSuccess]);
-
-  const { isReady, mutate, isLoading } = useExecuteCybernetContract({
-    query,
-    funds,
-    onSuccess: onSuccessMemo,
+  const executeUnstake = useExecuteCybernetContract({
+    query: {
+      remove_stake: {
+        hotkey: address,
+        amount,
+      },
+    },
+    onSuccess: handleSuccess,
   });
 
   let button;
   let content;
+  let onClickBack;
+
+  function handleClickBack() {
+    setStep(Steps.INITIAL);
+    setAmount(0);
+  }
 
   switch (step) {
     case Steps.INITIAL:
@@ -71,7 +91,6 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
 
           {stakedAmount && (
             <Button
-              disabled
               onClick={() => {
                 setStep(Steps.UNSTAKE);
               }}
@@ -84,13 +103,18 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
 
       break;
 
-    case Steps.STAKE:
+    case Steps.STAKE: {
       content = (
         <InputNumber
           value={amount}
+          maxValue={availableBalance}
           onChange={(val) => setAmount(Number(val))}
         />
       );
+
+      onClickBack = handleClickBack;
+
+      const { mutate, isReady, isLoading } = executeStake;
 
       button = {
         text: 'Stake',
@@ -99,8 +123,9 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
       };
 
       break;
+    }
 
-    case Steps.UNSTAKE:
+    case Steps.UNSTAKE: {
       content = (
         <InputNumber
           value={amount}
@@ -109,17 +134,28 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
         />
       );
 
+      onClickBack = handleClickBack;
+
+      const { mutate, isReady, isLoading } = executeUnstake;
+
       button = {
         text: 'Unstake',
         onClick: mutate,
         disabled: !isReady || isLoading,
       };
 
+      break;
+    }
+
     default:
       break;
   }
 
-  return <ActionBar button={button}>{content}</ActionBar>;
+  return (
+    <ActionBar onClickBack={onClickBack} button={button}>
+      {content}
+    </ActionBar>
+  );
 }
 
 export default DelegatorActionBar;

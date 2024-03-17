@@ -32,8 +32,6 @@ function useExecuteContract({ contractAddress, query, funds }: Props) {
     },
   });
 
-  console.log(data);
-
   return {
     isLoading,
     isReady: Boolean(signer && signingClient),

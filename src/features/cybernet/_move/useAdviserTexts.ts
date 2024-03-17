@@ -25,6 +25,8 @@ function useAdviserTexts({ isLoading, error, defaultText }: Props) {
       adviserText = defaultText || '';
     }
 
+    console.log('adviserText', adviserText);
+
     setAdviser(adviserText, color);
   }, [setAdviser, isLoading, error, defaultText]);
 

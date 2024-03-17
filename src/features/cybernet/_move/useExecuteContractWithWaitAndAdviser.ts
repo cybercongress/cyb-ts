@@ -6,7 +6,7 @@ import { Coin } from '@cosmjs/launchpad';
 export type Props = {
   contractAddress: string;
   query: any;
-  funds: Coin[] | undefined;
+  funds?: Coin[] | undefined;
   onSuccess?: (response: any) => void;
 };
 

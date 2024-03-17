@@ -12,7 +12,7 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title={'Cybernet'} />}>
+      <Display title={<DisplayTitle title="Cybernet" />}>
         <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
         <br />
         <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
