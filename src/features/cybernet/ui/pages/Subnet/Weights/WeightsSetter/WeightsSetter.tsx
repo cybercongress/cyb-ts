@@ -2,16 +2,27 @@ import { useState } from 'react';
 import { Button, InputNumber } from 'src/components';
 import styles from './WeightsSetter.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
-import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
+import useExecuteCybernetContract from '../../../../useExecuteCybernetContract';
+import { SubnetNeuron } from 'src/features/cybernet/types';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import { Link } from 'react-router-dom';
 
 type Props = {
   length: number;
   netuid: number;
-  max_weights_limit: number;
   callback: () => void;
+  neurons: SubnetNeuron[];
+
+  max_weights_limit: number;
 };
 
-function WeightsSetter({ length, netuid, max_weights_limit, callback }: Props) {
+function WeightsSetter({
+  length,
+  netuid,
+  callback,
+  neurons,
+  max_weights_limit,
+}: Props) {
   const [weights, setWeights] = useState(new Array(length).fill(0));
 
   const { setAdviser } = useAdviser();
@@ -39,16 +50,19 @@ function WeightsSetter({ length, netuid, max_weights_limit, callback }: Props) {
   return (
     <div>
       <br />
-      <p>Set weights for operators. Max weights limit: {max_weights_limit}</p>
+      {/* <p>Set weights for operators. Max weights limit: {max_weights_limit}</p> */}
       <p>Sum: {sum}</p>
 
       <br />
 
       <div className={styles.group}>
         {new Array(length).fill(null).map((_, i) => {
+          const { hotkey } = neurons[i];
           return (
-            <div>
-              <span>Operator: {i}</span>
+            <div key={i}>
+              <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
+                {hotkey}
+              </Link>
               <InputNumber
                 value={weights[i]}
                 onChange={(e) => {

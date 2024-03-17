@@ -55,3 +55,48 @@ export type StakeInfo = {
   hotkey: string;
   stake: number;
 }[];
+
+type Stake = [string, number];
+export type Weight = [number, number];
+
+interface AxonInfo {
+  block: number;
+  version: number;
+  ip: string;
+  port: number;
+  ip_type: number;
+  protocol: number;
+  placeholder1: number;
+  placeholder2: number;
+}
+
+interface PrometheusInfo {
+  block: number;
+  version: number;
+  ip: string;
+  port: number;
+  ip_type: number;
+}
+
+export interface SubnetNeuron {
+  hotkey: string;
+  coldkey: string;
+  uid: number;
+  netuid: number;
+  active: boolean;
+  axon_info: AxonInfo;
+  prometheus_info: PrometheusInfo;
+  stake: Stake[];
+  rank: number;
+  emission: number;
+  incentive: number;
+  consensus: number;
+  trust: number;
+  validator_trust: number;
+  dividends: number;
+  last_update: number;
+  validator_permit: boolean;
+  weights: Weight[];
+  bonds: any[];
+  pruning_score: number;
+}

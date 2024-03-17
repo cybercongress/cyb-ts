@@ -7,8 +7,8 @@ import { useAppSelector } from 'src/redux/hooks';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 
 type Props = {
-  netuid: string;
-  burn: number;
+  netuid: number;
+  burn: number | undefined;
 };
 
 enum Steps {
