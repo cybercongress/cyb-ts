@@ -79,11 +79,7 @@ function Message({
       <div
         role="button"
         tabIndex={0}
-        onClick={(e) => {
-          // inner link clicked
-          if (e.target instanceof HTMLAnchorElement) {
-            return;
-          }
+        onClick={() => {
           // if text not selected
           // shouldn't be null
           if (window.getSelection().toString() === '') {
