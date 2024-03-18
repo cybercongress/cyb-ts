@@ -52,6 +52,7 @@ window.setCyblogConsole = (val: boolean | ConsoleLogParams) => {
           : {}
         : val
     ) as ConsoleLogParams;
+    console.log('---window.setCyblogConsole', params, val);
     localStorage.setItem(CYBLOG_LOG_SHOW, JSON.stringify(params));
     updateCyblogConsoleLogParams(params);
   } else {

@@ -91,16 +91,16 @@ export const mapLinkToEntity = (
   timestamp,
 });
 
-export const mapLinkFromIndexerToDbEntity = ({
+export const mapLinkFromIndexerToDto = ({
   from,
   to,
   neuron,
   timestamp,
   transaction_hash,
-}: CyberlinksByParticleResponse['cyberlinks'][0]): LinkDbEntity => ({
+}: CyberlinksByParticleResponse['cyberlinks'][0]): LinkDto => ({
   from,
   to,
   neuron,
   timestamp: dateToUtcNumber(timestamp),
-  transaction_hash,
+  transactionHash: transaction_hash,
 });

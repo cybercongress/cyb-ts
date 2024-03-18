@@ -4,7 +4,7 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { fetchCommunity } from 'src/services/community/community';
 
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
-import { NeuronAddress } from 'src/types/base';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { makeCancellable } from 'src/utils/async/promise';
 import { removeDublicates } from 'src/utils/list';
 
@@ -49,28 +49,32 @@ function useGetCommunity(address: string | null, { skip }: { skip?: boolean }) {
     }
 
     (async () => {
-      const communityRaw: CommunityDto[] = [];
+      const communityRaw: Map<ParticleCid, CommunityDto> = new Map();
 
       const onResolve = (communityResolved: CommunityDto[]) => {
-        communityRaw.push(...communityResolved);
-        const followers = communityRaw
-          .filter((item) => item.follower && !item.following)
-          .map((item) => item.neuron);
-        const following = communityRaw
-          .filter((item) => item.following && !item.follower)
-          .map((item) => item.neuron);
-        const friends = communityRaw
-          .filter((item) => item.follower && item.following)
-          .map((item) => item.neuron);
-
+        communityResolved.forEach((item) =>
+          communityRaw.set(item.neuron, item)
+        );
         // TODO: exclude dublicates when followe and following from 2 sources
         // const allItems = [...state.community.raw, ...items];
 
-        setCommunity((community) => ({
-          followers: removeDublicates([...community.followers, ...followers]),
-          following: removeDublicates([...community.following, ...following]),
-          friends: removeDublicates([...community.friends, ...friends]),
-        }));
+        setCommunity({
+          followers: removeDublicates(
+            [...communityRaw.values()]
+              .filter((item) => item.follower && !item.following)
+              .map((item) => item.neuron)
+          ),
+          following: removeDublicates(
+            [...communityRaw.values()]
+              .filter((item) => item.following && !item.follower)
+              .map((item) => item.neuron)
+          ),
+          friends: removeDublicates(
+            [...communityRaw.values()]
+              .filter((item) => item.follower && item.following)
+              .map((item) => item.neuron)
+          ),
+        });
       };
 
       await makeCancellable(fetchCommunity, abortController.signal)(
