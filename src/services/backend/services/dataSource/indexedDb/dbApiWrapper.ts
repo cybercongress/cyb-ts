@@ -174,8 +174,8 @@ class DbApiWrapper {
     ss_chat_links[id, meta] := ss_chat_all[id, meta, hash, is_link, index], is_link
     ss_chat_trans[id, m] := ss_chat_all[id, meta, hash, is_link, index], !is_link, *transaction{hash, index, value, type, timestamp, success, memo},  m=concat(meta, json_object('value', value, 'type', type, 'timestamp', timestamp, 'memo', memo, 'success', success, 'index', index))
 
-    ?[owner_id, entry_type, id, unread_count, timestamp_update, timestamp_read, meta] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}'
-    :order -timestamp_update
+    ?[owner_id, entry_type, id, unread_count, timestamp_update, timestamp_read, meta, meta_timestamp] := *sync_status{entry_type, id, unread_count, timestamp_update, timestamp_read, owner_id}, ss_particles[id, meta] or ss_chat_links[id, meta] or ss_chat_trans[id, meta], id!='${myAddress}', owner_id = '${myAddress}', meta_timestamp = maybe_get(meta, 'timestamp')
+    :order -meta_timestamp
     `;
 
     const result = await this.db!.runCommand(command, true);
