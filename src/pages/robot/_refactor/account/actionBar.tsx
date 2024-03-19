@@ -1,8 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { Pane, ActionBar } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
-import { coins } from '@cosmjs/launchpad';
+import { ActionBar } from '@cybercongress/gravity';
 import {
   JsonTransaction,
   TransactionSubmitted,
@@ -14,18 +12,15 @@ import {
   Dots,
   ActionBarContentText,
   ActionBar as ActionBarComp,
+  Button,
 } from '../../../../components';
-import {
-  LEDGER,
-  CYBER,
-  PATTERN_IPFS_HASH,
-  DEFAULT_GAS_LIMITS,
-} from '../../../../utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../../../utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
-import Button from 'src/components/btnGrd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { routes } from 'src/routes';
 import { createSearchParams } from 'react-router-dom';
@@ -108,6 +103,7 @@ class ActionBarContainer extends Component<Props> {
       signer,
       signingClient,
       ipfsApi,
+      senseApi,
     } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
@@ -117,70 +113,70 @@ class ActionBarContainer extends Component<Props> {
 
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
-      let response = null;
-      const msg = [];
-      if (type === 'security') {
-        if (address === addressSend) {
-          const dataTotalRewards = await getTotalRewards(address);
-          console.log(`dataTotalRewards`, dataTotalRewards);
-          if (dataTotalRewards !== null && dataTotalRewards.rewards) {
-            const { rewards } = dataTotalRewards;
-            const validatorAddress = [];
-            Object.keys(rewards).forEach((key) => {
-              if (rewards[key].reward !== null) {
-                validatorAddress.push(rewards[key].validator_address);
+      try {
+        let txHash = null;
+
+        if (type === 'security') {
+          if (address === addressSend) {
+            const dataTotalRewards = await getTotalRewards(address);
+            console.log(`dataTotalRewards`, dataTotalRewards);
+            if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+              const { rewards } = dataTotalRewards;
+              const validatorAddress = [];
+              Object.keys(rewards).forEach((key) => {
+                if (rewards[key].reward !== null) {
+                  validatorAddress.push(rewards[key].validator_address);
+                }
+              });
+              const gasLimitsRewards =
+                100000 * Object.keys(validatorAddress).length;
+              const feeRewards = {
+                amount: [],
+                gas: gasLimitsRewards.toString(),
+              };
+
+              response = await signingClient.withdrawAllRewards(
+                address,
+                validatorAddress,
+                feeRewards
+              );
+
+              txHash = response.transactionHash;
+
+              if (response.code) {
+                throw Error(response.rawLog.toString());
               }
+            }
+          }
+        } else if (type === 'log' || !type) {
+          if (follow) {
+            const toCid = await ipfsApi.addContent(addressSend);
+            txHash = await sendCyberlink(address, CID_FOLLOW, toCid, {
+              signingClient,
+              senseApi,
             });
-            const gasLimitsRewards =
-              100000 * Object.keys(validatorAddress).length;
-            const feeRewards = {
-              amount: [],
-              gas: gasLimitsRewards.toString(),
-            };
-            response = await signingClient.withdrawAllRewards(
-              address,
-              validatorAddress,
-              feeRewards
-            );
+          } else if (tweets) {
+            const toCid = await this.calculationIpfsTo(contentHash);
+            txHash = await sendCyberlink(address, CID_TWEET, toCid, {
+              signingClient,
+              senseApi,
+            });
           }
         }
-      } else if ((type === 'log' || !type) && follow) {
-        const toCid = await ipfsApi.addContent(addressSend);
-        response = await signingClient.cyberlink(
-          address,
-          CID_FOLLOW,
-          toCid,
-          fee
-        );
-      } else if (type === 'log' && tweets) {
-        const toCid = await this.calculationIpfsTo(contentHash);
-        response = await signingClient.cyberlink(
-          address,
-          CID_TWEET,
-          toCid,
-          fee
-        );
-      } else {
-        msg.push({
-          type: 'cosmos-sdk/MsgSend',
-          value: {
-            amount: coins(amount, CYBER.DENOM_CYBER),
-            from_address: address,
-            to_address: toSendAddres,
-          },
-        });
-      }
 
-      if (response.code === 0) {
-        const hash = response.transactionHash;
-        console.log('hash :>> ', hash);
-        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        // sholdn't be after refactoring
+        if (!txHash) {
+          throw new Error('Tx hash is empty');
+        }
+
+        this.setState({ stage: STAGE_SUBMITTED, txHash });
+
         this.timeOut = setTimeout(this.confirmTx, 1500);
-      } else {
+      } catch (e) {
         this.setState({
           txHash: null,
           stage: STAGE_ERROR,
-          errorMessage: response.rawLog.toString(),
+          errorMessage: e.message,
         });
       }
     }
@@ -289,76 +285,69 @@ class ActionBarContainer extends Component<Props> {
       file,
     } = this.state;
 
+    const isOwner = defaultAccount && defaultAccount.bech32 === addressSend;
+
     if (stage === STAGE_INIT) {
-      const sendBtn = (
-        <Button
-          link={
-            routes.teleport.send.path +
-            '?' +
-            createSearchParams({
-              recipient: addressSend,
-              token: 'boot',
-              amount: '1',
-            }).toString()
-          }
-        >
-          Send
-        </Button>
-      );
       const followBtn = <Button onClick={this.onClickSend}>Follow</Button>;
 
       const content = [];
 
       // main page
-      if (!type && addressSend !== defaultAccount.bech32) {
-        content.push(sendBtn);
+      if (!type) {
+        if (!isOwner) {
+          content.push(
+            <Button
+              link={
+                routes.teleport.send.path +
+                '?' +
+                createSearchParams({
+                  recipient: addressSend,
+                  token: 'boot',
+                  amount: '1',
+                }).toString()
+              }
+            >
+              Send
+            </Button>
+          );
+        }
+
+        if (follow) {
+          content.push(followBtn);
+        }
       }
 
-      if ((type === 'log' || !type) && follow) {
-        content.push(followBtn);
+      if (type === 'log') {
+        if (follow) {
+          content.push(followBtn);
+        }
+
+        if (tweets) {
+          return (
+            <StartStageSearchActionBar
+              onClickBtn={this.onClickSend}
+              contentHash={
+                file !== null && file !== undefined ? file.name : contentHash
+              }
+              onChangeInputContentHash={this.onChangeInput}
+              textBtn="Tweet"
+              placeholder="What's happening?"
+              inputOpenFileRef={this.inputOpenFileRef}
+              showOpenFileDlg={this.showOpenFileDlg}
+              onChangeInput={this.onFilePickerChange}
+              onClickClear={this.onClickClear}
+              file={file}
+              keys={defaultAccount !== null ? defaultAccount.keys : false}
+            />
+          );
+        }
+      }
+
+      if (type === 'security' && isOwner && defaultAccount.keys === 'keplr') {
+        content.push(<Button onClick={this.onClickSend}>Claim rewards</Button>);
       }
 
       return <ActionBarComp>{content}</ActionBarComp>;
-    }
-
-    // TODO: continue refactoring
-
-    if (stage === STAGE_INIT && type === 'log' && tweets) {
-      return (
-        <StartStageSearchActionBar
-          onClickBtn={this.onClickSend}
-          contentHash={
-            file !== null && file !== undefined ? file.name : contentHash
-          }
-          onChangeInputContentHash={this.onChangeInput}
-          textBtn="Tweet"
-          placeholder="What's happening?"
-          inputOpenFileRef={this.inputOpenFileRef}
-          showOpenFileDlg={this.showOpenFileDlg}
-          onChangeInput={this.onFilePickerChange}
-          onClickClear={this.onClickClear}
-          file={file}
-          keys={defaultAccount !== null ? defaultAccount.keys : false}
-        />
-      );
-    }
-
-    if (
-      stage === STAGE_INIT &&
-      type === 'security' &&
-      defaultAccount !== null &&
-      defaultAccount.keys === 'keplr' &&
-      addressSend === defaultAccount.bech32
-    ) {
-      return (
-        <ActionBarComp
-          button={{
-            disabled: addressSend !== defaultAccount.bech32,
-            text: 'Claim rewards',
-            onClick: this.onClickSend,
-          }}
-        />
-      );
     }
 
     if (stage === STAGE_READY) {

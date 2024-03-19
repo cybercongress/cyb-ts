@@ -9,7 +9,7 @@ import { SenseItem } from 'src/features/sense/redux/sense.redux';
 import { formatSenseItemDataToUI } from '../../../utils/format';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { useEffect, useState } from 'react';
-import { PATTERN_IPFS_HASH } from 'src/utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
 
 type Props = {
   senseItem: SenseItem;
