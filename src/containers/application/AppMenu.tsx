@@ -20,13 +20,6 @@ import { routes } from '../../routes';
 const itemsMenu = () => {
   const listItemMenu = [
     {
-      name: 'My account',
-      icon: robot,
-      to: '/robot',
-      subItems: [],
-      // subItems: myRobotLinks,
-    },
-    {
       name: 'cybertensor',
       icon: temple,
       to: '/cybernet',
@@ -37,10 +30,18 @@ const itemsMenu = () => {
       ],
     },
     {
+      name: 'My account',
+      icon: robot,
+      to: '/robot',
+      subItems: [],
+      // subItems: myRobotLinks,
+    },
+    {
       name: 'Explorer',
       to: '/oracle/stats',
       icon: oracle,
       subItems: [
+        { name: 'Assets', to: '/nebula' },
         { name: 'Particles', to: '/particles' },
         { name: 'Contracts', to: '/contracts' },
         { name: 'Codes', to: '/libs' },
@@ -50,29 +51,33 @@ const itemsMenu = () => {
       ],
     },
     // { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
-    { name: 'Assets', to: '/nebula', subItems: [], icon: nebulaIcon },
+    // { name: 'Assets', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Swap',
       to: '/teleport/swap',
       subItems: [],
       icon: teleport,
       // active: false,
-      // subItems: [
-      //   { name: 'Swap', to: routes.teleport.swap.path },
-        // { name: 'Bridge', to: routes.teleport.bridge.path },
-        // { name: 'Send', to: routes.teleport.send.path },
-      // ],
-    },
-    {
-      name: 'Pools',
-      icon: warp,
-      to: '/warp',
       subItems: [
+        { name: 'Pools', to: '/warp' },
         { name: 'Add liquidity', to: '/warp/add-liquidity' },
         { name: 'Create pool', to: '/warp/create-pool' },
         { name: 'Sub liquidity', to: '/warp/sub-liquidity' },
+        // { name: 'Swap', to: routes.teleport.swap.path },
+        // { name: 'Bridge', to: routes.teleport.bridge.path },
+        // { name: 'Send', to: routes.teleport.send.path },
       ],
     },
+    // {
+    //   name: 'Pools',
+    //   icon: warp,
+    //   to: '/warp',
+    //   subItems: [
+    //     { name: 'Add liquidity', to: '/warp/add-liquidity' },
+    //     { name: 'Create pool', to: '/warp/create-pool' },
+    //     { name: 'Sub liquidity', to: '/warp/sub-liquidity' },
+    //   ],
+    // },
     {
       name: 'Stake',
       icon: shpere,

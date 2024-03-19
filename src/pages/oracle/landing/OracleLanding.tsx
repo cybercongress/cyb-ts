@@ -57,12 +57,12 @@ const listConfig = {
       <>
         {/*behold the new{' '}*/}
         {/*<Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>*/}
-        <Link to={'https://github.com/cybercongress/cybertensor'}>cybertensor</Link>
+        <Link to={'/cybernet'}>cybertensor</Link>
       </>
     ),
     description: (
       <>
-        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> is the
+        <Link to={'https://github.com/cybercongress/cyber'}>cyber</Link> is the
         protocol for unified, provable, collective learning
       </>
     ),
