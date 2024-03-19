@@ -65,7 +65,7 @@ function MessageContainer({ senseItem, currentChatId }: Props) {
 
         content = (
           <div className={styles.follow}>
-            followed 💚 <Account address={address} avatar sizeAvatar={20} />
+            <span>💚</span> <Account address={address} avatar sizeAvatar={20} />
           </div>
         );
       } else {
@@ -88,7 +88,7 @@ function MessageContainer({ senseItem, currentChatId }: Props) {
       address={from}
       myMessage={address === from}
       fromLog={fromLog}
-      from={from}
+      from={currentChatId !== from ? from : undefined}
       transactionHash={transactionHash}
       date={timestamp}
       content={content}

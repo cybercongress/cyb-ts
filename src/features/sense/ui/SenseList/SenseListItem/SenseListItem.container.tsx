@@ -68,7 +68,16 @@ function SenseListItemContainer({ senseItemId }: Props) {
               gap: 5,
             }}
           >
-            💚 <Account address={data.content} avatar sizeAvatar={20} />{' '}
+            <span
+              style={{
+                position: 'relative',
+                top: 2,
+              }}
+            >
+              💚
+            </span>{' '}
+            {/* <Account address={data.content} avatar sizeAvatar={20} />{' '} */}
+            neuron
           </div>
         );
       } else {

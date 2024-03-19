@@ -64,10 +64,14 @@ function Message({
           <Date timestamp={date} timeOnly />
         </Link>
 
-        {fromLog && (
-          <Link to={routes.neuron.getLink(from)}>
-            <Account address={from} sizeAvatar="20px" avatar onlyAvatar />
-          </Link>
+        {fromLog && from && (
+          <>
+            {!myMessage && (
+              <Link to={routes.neuron.getLink(from)}>
+                <Account address={from} sizeAvatar="20px" avatar onlyAvatar />
+              </Link>
+            )}
+          </>
           // <Tooltip tooltip="message from log">
           // <span className={styles.icon}>🍀</span>
           // </Tooltip>

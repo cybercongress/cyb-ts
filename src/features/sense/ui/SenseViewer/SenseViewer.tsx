@@ -27,8 +27,10 @@ type Props = {
   selected: string | undefined;
 } & AdviserProps;
 
-function SenseViewer({ selected, adviser }: Props) {
+function SenseViewer({ adviser, selected }: Props) {
   const { senseApi } = useBackend();
+
+  // const selected = 'QmZ4b5kbCV9K9Jd2ZXpfUAKiPSkzPfD558wBbebYFpztKY';
 
   const isParticle = isParticleFunc(selected || '');
 
@@ -106,18 +108,6 @@ function SenseViewer({ selected, adviser }: Props) {
                         details={particleData}
                       />
                     </Link>
-
-                    {largeContent && (
-                      <button
-                        type="button"
-                        className={styles.toggleContent}
-                        onClick={() => {
-                          setParticleContentOpen(!particleContentOpen);
-                        }}
-                      >
-                        {particleContentOpen ? 'Hide' : 'Show'} full content
-                      </button>
-                    )}
                   </header>
                 ) : (
                   <header className={styles.header_Neuron}>
