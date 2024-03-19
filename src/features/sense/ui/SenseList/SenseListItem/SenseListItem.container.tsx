@@ -2,7 +2,7 @@ import useParticleDetails from '../../../../particle/useParticleDetails';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
-import { Account, Dots } from 'src/components';
+import { Dots } from 'src/components';
 import SenseListItem from './SenseListItem';
 import { formatSenseItemDataToUI } from '../../utils/format';
 import { SenseItemId } from 'src/features/sense/types/sense';
@@ -29,15 +29,8 @@ function SenseListItemContainer({ senseItemId }: Props) {
   });
   const address = useAppSelector(selectCurrentAddress);
 
-  const {
-    timestamp,
-    amount,
-    cid,
-    text,
-    isAmountSendToMyAddress,
-    isFollow,
-    from,
-  } = formatSenseItemDataToUI(senseData, address, senseItemId);
+  const { timestamp, amount, cid, text, isAmountSendToMyAddress } =
+    formatSenseItemDataToUI(senseData, address, senseItemId);
 
   const particle = isParticle(senseItemId);
 
@@ -108,7 +101,6 @@ function SenseListItemContainer({ senseItemId }: Props) {
       title={formatParticleTitle(particleText, data?.type)}
       unreadCount={unreadCount}
       content={content}
-      from={from}
       status={senseData.status}
       amountData={{ amount, isAmountSendToMyAddress }}
     />

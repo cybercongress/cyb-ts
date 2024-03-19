@@ -104,8 +104,7 @@ function Account({
       }}
     >
       {avatar && (
-        <Link
-          to={linkAddress}
+        <div
           className={cx(styles.avatar, avatarClassName)}
           style={{
             width: sizeAvatar,
@@ -113,7 +112,7 @@ function Account({
           }}
         >
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
-        </Link>
+        </div>
       )}
       {!onlyAvatar && (
         <Link

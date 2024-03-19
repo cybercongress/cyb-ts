@@ -7,7 +7,7 @@ export const dateToUtcNumber = (isoString: string) =>
   Date.parse(isoString.endsWith('Z') ? isoString : `${isoString}Z`);
 
 export const getNowUtcNumber = (): number => {
-  return dateToUtcNumber(new Date().toISOString());
+  return Date.now(); //dateToUtcNumber(new Date().toISOString());
 };
 //
 function roundMilliseconds(dateTimeString: string) {

@@ -7,7 +7,6 @@ import {
 import { SenseItem } from '../../redux/sense.redux';
 import { isParticle } from 'src/features/particle/utils';
 import { EntityToDto } from 'src/types/dto';
-import { CID_FOLLOW } from 'src/constants/app';
 
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export function formatSenseItemDataToUI(
@@ -19,13 +18,11 @@ export function formatSenseItemDataToUI(
   cid: string | undefined;
   amount: Coin[] | undefined;
   isAmountSendToMyAddress: boolean;
-  isFollow: boolean;
 } {
   const { type, memo, meta, id } = senseItem;
 
   let amount: Coin[] | undefined;
   let isAmountSendToMyAddress = false;
-  let isFollow = false;
   let cid;
 
   switch (type) {
@@ -58,10 +55,6 @@ export function formatSenseItemDataToUI(
     case 'cyber.graph.v1beta1.MsgCyberlink': {
       cid = currentChatId === meta.to ? meta.from : meta.to;
 
-      if (meta.from === CID_FOLLOW) {
-        isFollow = true;
-      }
-
       break;
     }
 
@@ -78,7 +71,6 @@ export function formatSenseItemDataToUI(
   return {
     ...senseItem,
     text: memo || '',
-    isFollow,
     cid,
     amount: amount?.filter((a) => !(a.denom === 'boot' && a.amount === '1')),
     isAmountSendToMyAddress,

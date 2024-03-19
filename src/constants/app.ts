@@ -8,3 +8,4 @@ export const PATTERN_CYBER = new RegExp(
   `^${BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
   'g'
 );
+export const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;

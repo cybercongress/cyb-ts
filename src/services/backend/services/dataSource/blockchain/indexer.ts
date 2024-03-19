@@ -97,7 +97,7 @@ const fetchCyberlinks = async ({
   particleCid: ParticleCid;
   timestampFrom: number;
   offset?: number;
-  abortSignal?: AbortSignal;
+  abortSignal: AbortSignal;
 }) => {
   const res = await createIndexerClient(
     abortSignal
@@ -106,7 +106,7 @@ const fetchCyberlinks = async ({
     offset,
     orderBy: [
       {
-        timestamp: 'desc',
+        timestamp: 'asc',
       },
     ],
     where: {
@@ -212,64 +212,8 @@ export const fetchCyberlinksByNerounIterable = async (
 const fetchCyberlinksIterable = (
   particleCid: ParticleCid,
   timestampFrom: number,
-  abortSignal?: AbortSignal
+  abortSignal: AbortSignal
 ) =>
   fetchIterable(fetchCyberlinks, { particleCid, timestampFrom, abortSignal });
-
-const fetchCyberlinkSyncStats = async (
-  particleCid: ParticleCid,
-  timestampFrom: number
-) => {
-  const res = await request<CyberlinksSyncStatsResponse>(
-    CYBER_INDEX_HTTPS,
-    cyberlinksSyncStats,
-    {
-      where: {
-        _or: [
-          {
-            particle_to: {
-              _eq: particleCid,
-            },
-          },
-          {
-            particle_from: {
-              _eq: particleCid,
-            },
-          },
-        ],
-        timestamp: {
-          _gt: numberToUtcDate(timestampFrom),
-        },
-      },
-    }
-  );
-
-  const {
-    first,
-    last,
-    cyberlinks_aggregate: {
-      aggregate: { count },
-    },
-  } = res;
-  const lastCyberlink = last[0];
-  if (!lastCyberlink) {
-    return undefined;
-  }
-
-  const isFrom = lastCyberlink?.from === particleCid;
-  const lastLinkedParticle =
-    lastCyberlink &&
-    (lastCyberlink.from === particleCid
-      ? lastCyberlink.to
-      : lastCyberlink.from);
-
-  return {
-    firstTimestamp: first.length > 0 ? dateToUtcNumber(first[0].timestamp) : 0,
-    lastTimestamp: lastCyberlink ? dateToUtcNumber(lastCyberlink.timestamp) : 0,
-    lastLinkedParticle,
-    isFrom,
-    count,
-  };
-};
 
 export { fetchCyberlinksIterable, fetchCyberlinksCount };

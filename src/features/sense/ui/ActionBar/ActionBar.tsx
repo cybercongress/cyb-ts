@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { AdviserProps } from '../Sense';
-import { CYBER, DEFAULT_GAS_LIMITS, PATTERN_IPFS_HASH } from 'src/utils/config';
+import { CYBER } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import styles from './ActionBar.module.scss';
@@ -14,6 +14,11 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { routes } from 'src/routes';
 import { Link, createSearchParams } from 'react-router-dom';
 import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
+import {
+  sendCyberlink,
+  sendTokensWithMessage,
+} from 'src/services/neuron/neuronApi';
+import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 
 type Props = {
   id: string | undefined;
@@ -95,40 +100,22 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
       const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
 
-      let messageCid;
-      if (!message.match(PATTERN_IPFS_HASH)) {
-        messageCid = (await ipfsApi.addContent(message)) as string;
-      } else {
-        messageCid = message;
-      }
+      const messageCid = await addIfpsMessageOrCid(message, { ipfsApi });
 
-      let response;
+      const deps = {
+        senseApi,
+        signingClient: signingClient!,
+      };
 
-      if (particle) {
-        const fromCid = messageCid;
-        const toCid = id;
-
-        const fee = {
-          amount: [],
-          gas: DEFAULT_GAS_LIMITS.toString(),
-        };
-
-        response = await signingClient!.cyberlink(address, fromCid, toCid, fee);
-      } else {
-        response = await signingClient!.sendTokens(
-          address,
-          id!,
-          formattedAmount,
-          'auto',
-          messageCid
-        );
-      }
-
-      if (response.code !== 0) {
-        throw new Error(response.rawLog);
-      }
-
-      const txHash = response.transactionHash;
+      const txHash = await (particle
+        ? sendCyberlink(address, messageCid, id, deps)
+        : sendTokensWithMessage(
+            address,
+            id!,
+            formattedAmount,
+            messageCid,
+            deps
+          ));
 
       const optimisticMessage = {
         id: id!,
@@ -156,16 +143,6 @@ function ActionBarWrapper({ id, adviser }: Props) {
           amount: formattedAmount,
         };
         optimisticMessage.item.type = 'cyber.graph.v1beta1.MsgSend';
-
-        (async () => {
-          await senseApi?.addMsgSendAsLocal({
-            transactionHash: txHash,
-            fromAddress: address,
-            toAddress: id!,
-            amount: formattedAmount,
-            memo: messageCid,
-          });
-        })();
       }
 
       dispatch(addSenseItem(optimisticMessage));
