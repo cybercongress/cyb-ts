@@ -95,7 +95,7 @@ function Mint() {
         )}
         <br />
         choose <ValueImg text="milliampere" /> or <ValueImg text="millivolt" />{' '}
-        to mint, the amount of <ValueImg text="hydrogen" /> to invest, and the
+        to mint, the amount of <ValueImg text={CYBER.DENOM_LIQUID_TOKEN} /> to invest, and the
         timeframe
       </p>
     );
@@ -387,7 +387,7 @@ function Mint() {
           {value > 0 && (
             <p className={styles.text}>
               You’re freezing <strong>{formatNumber(value)}</strong>{' '}
-              <DenomArr denomValue="hydrogen" onlyImg /> for{' '}
+              <DenomArr denomValue={CYBER.DENOM_LIQUID_TOKEN} onlyImg /> for{' '}
               <strong>{valueDays} days</strong>. It will release{' '}
               <strong>{resourceToken}</strong>{' '}
               <DenomArr denomValue={selected} onlyImg /> for you. At the end of

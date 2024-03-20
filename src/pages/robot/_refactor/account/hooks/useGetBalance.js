@@ -106,11 +106,11 @@ function useGetBalance(address, updateAddress) {
             setBalance((item) => ({
               ...item,
               rewards: Math.floor(
-                coinDecimals(parseFloat(rewardsPropsise.total[0].amount))
+                coinDecimals(parseFloat(rewardsPropsise.total[1].amount))
               ),
               total: Math.floor(
                 item.total +
-                  coinDecimals(parseFloat(rewardsPropsise.total[0].amount))
+                  coinDecimals(parseFloat(rewardsPropsise.total[1].amount))
               ),
             }));
           }
