@@ -164,7 +164,7 @@ function Mint() {
     return getDisplayAmount(amount, coinDecimals);
   }, [vested, originalVesting, traseDenom]);
 
-  const onChangeValue = (eValue: number) => setValue(eValue);
+  const onChangeValue = (amountH: number) => setValue(amountH);
 
   const onChangeValueDays = (days: number) => setValueDays(days);
 
@@ -234,10 +234,10 @@ function Mint() {
         )}
       </MainContainer>
       <ActionBar
-        value={value}
-        selected={selected}
+        amountH={value}
+        resource={selected}
         valueDays={valueDays}
-        resourceToken={resourceToken}
+        resourceAmount={resourceToken}
         updateFnc={updateFunc}
       />
     </>

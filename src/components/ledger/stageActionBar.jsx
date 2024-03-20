@@ -161,10 +161,12 @@ export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
             {trimString(txHash, 6, 6)}
           </Link>
         )}{' '}
-        <Pane display="inline">
-          was included in the block <br /> at height{' '}
-          {formatNumber(parseFloat(txHeight))}
-        </Pane>
+        {txHeight && (
+          <Pane display="inline">
+            was included in the block <br /> at height{' '}
+            {formatNumber(parseFloat(txHeight))}
+          </Pane>
+        )}
       </ActionBarContentText>
       <Button style={{ margin: '0 10px' }} onClick={onClickBtnClose}>
         Fuck Google

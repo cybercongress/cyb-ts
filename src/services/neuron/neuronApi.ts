@@ -73,3 +73,22 @@ export const sendTokensWithMessage = async (
 
   return transactionHash;
 };
+
+export const investmint = async (
+  address: NeuronAddress,
+  amount: Coin,
+  resource: string,
+  length: number,
+  signingClient: SigningCyberClient
+) => {
+  const response = await signingClient.investmint(
+    address,
+    amount,
+    resource,
+    length,
+    'auto'
+  );
+
+  const { transactionHash } = throwErrorOrResponse(response);
+  return transactionHash;
+};

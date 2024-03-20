@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { coin } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { useQueryClient } from 'src/contexts/queryClient';
+import { investmint } from 'src/services/neuron/neuronApi';
+import useWaitForTransaction, {
+  Props as PropsTx,
+} from 'src/hooks/useWaitForTransaction';
 import {
   Dots,
   TransactionSubmitted,
@@ -10,7 +13,7 @@ import {
   ActionBar as ActionBarContainer,
 } from '../../components';
 import { CYBER, LEDGER } from '../../utils/config';
-import { getTxs } from '../../utils/search/utils';
+import { SelectedState } from './types';
 
 const {
   STAGE_INIT,
@@ -22,82 +25,64 @@ const {
 
 const BASE_VESTING_TIME = 86401;
 
+type Props = {
+  amountH: number;
+  resource: SelectedState;
+  valueDays: number;
+  resourceAmount: number;
+  updateFnc?: () => void;
+};
+
 function ActionBar({
-  value,
-  selected,
+  amountH,
+  resource,
   valueDays,
-  resourceToken,
+  resourceAmount,
   updateFnc,
-}) {
-  const queryClient = useQueryClient();
+}: Props) {
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
-  const [txHash, setTxHash] = useState(null);
-  const [txHeight, setTxHeight] = useState(null);
+  const [tx, setTx] = useState<PropsTx>();
   const [errorMessage, setErrorMessage] = useState(null);
 
-  useEffect(() => {
-    const confirmTx = async () => {
-      if (queryClient && txHash) {
-        setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
+  useWaitForTransaction({ hash: tx?.hash, onSuccess: tx?.onSuccess });
 
-        if (response && response !== null) {
-          if (response.logs) {
-            setStage(STAGE_CONFIRMED);
-            setTxHeight(response.height);
-            if (updateFnc) {
-              updateFnc();
-            }
-            return;
-          }
-          if (response.code) {
-            setStage(STAGE_ERROR);
-            setTxHeight(response.height);
-            setErrorMessage(response.raw_log);
-            return;
-          }
-        }
-        setTimeout(confirmTx, 1500);
-      }
-    };
-    confirmTx();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signingClient, txHash]);
-
-  const investmint = async () => {
-    if (signer && signingClient) {
-      setStage(STAGE_SUBMITTED);
-      const [{ address }] = await signer.getAccounts();
-
-      try {
-        const response = await signingClient.investmint(
-          address,
-          coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
-          selected,
-          parseFloat(BASE_VESTING_TIME * valueDays),
-          'auto'
-        );
-
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
-        } else {
-          setTxHash(null);
-          setErrorMessage(response.rawLog.toString());
-          setStage(STAGE_ERROR);
-        }
-      } catch (error) {
-        setTxHash(null);
-        setErrorMessage(error.toString());
-        setStage(STAGE_ERROR);
-      }
+  const investmintFunc = async () => {
+    if (!signer || !signingClient) {
+      return;
     }
+
+    setStage(STAGE_SUBMITTED);
+    const [{ address }] = await signer.getAccounts();
+
+    await investmint(
+      address,
+      coin(amountH, CYBER.DENOM_LIQUID_TOKEN),
+      resource,
+      BASE_VESTING_TIME * valueDays,
+      signingClient
+    )
+      .then((txHash) => {
+        setStage(STAGE_CONFIRMING);
+
+        setTx({
+          hash: txHash,
+          onSuccess: () => {
+            updateFnc && updateFnc();
+            setStage(STAGE_CONFIRMED);
+          },
+        });
+      })
+      .catch((e) => {
+        setTx(undefined);
+        setErrorMessage(e.toString());
+        setStage(STAGE_ERROR);
+      });
   };
 
   const clearState = () => {
     setStage(STAGE_INIT);
-    setTxHash(null);
-    setTxHeight(null);
+    setTx(undefined);
     setErrorMessage(null);
   };
 
@@ -106,8 +91,8 @@ function ActionBar({
       <ActionBarContainer
         button={{
           text: 'Investmint',
-          onClick: investmint,
-          disabled: resourceToken === 0,
+          onClick: investmintFunc,
+          disabled: resourceAmount === 0,
         }}
       />
     );
@@ -130,13 +115,7 @@ function ActionBar({
   }
 
   if (stage === STAGE_CONFIRMED) {
-    return (
-      <Confirmed
-        txHash={txHash}
-        txHeight={txHeight}
-        onClickBtnClose={() => clearState()}
-      />
-    );
+    return <Confirmed txHash={tx?.hash} onClickBtnClose={() => clearState()} />;
   }
 
   if (stage === STAGE_ERROR && errorMessage !== null) {
