@@ -28,6 +28,10 @@ import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { MainContainer } from '../portal/components';
 
+import ProposalsDetailTableComments from './proposalsDetailTableComments';
+import { useState } from 'react';
+import { Tabs } from '../../components';
+
 const finalTallyResult = (item) => {
   const finalVotes = {
     yes: 0,
@@ -184,6 +188,18 @@ function ProposalsDetail({ defaultAccount }) {
   console.log(`proposals`, proposals);
   console.log(`addressActive`, addressActive);
 
+  const TabButtons = [
+    {
+      to: '',
+      key: 'voters',
+    },
+    {
+      to: '',
+      key: 'comments',
+    },
+  ];
+  const [select, setSelect] = useState(TabButtons[0].key);
+
   return (
     <>
       <MainContainer width="100%">
@@ -292,22 +308,37 @@ function ProposalsDetail({ defaultAccount }) {
           tally={tally}
         />
 
-        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
-          <ProposalsIdDetailTableVoters
-            proposalId={proposalId}
-            updateFunc={updateFunc}
-          />
+        <Tabs
+          options={TabButtons.map((item) => ({
+            key: item.key,
+            onClick: () => setSelect(item.key),
+          }))}
+          selected={select}
+        />
+
+        {select === 'comments' && (
+          <ProposalsDetailTableComments proposalId={proposalId} />
         )}
+
+        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD &&
+          select === 'voters' && (
+            <ProposalsIdDetailTableVoters
+              proposalId={proposalId}
+              updateFunc={updateFunc}
+            />
+          )}
       </MainContainer>
       {addressActive !== null && addressActive.keys === 'keplr' ? (
-        <ActionBarDetail
-          id={proposalId}
-          proposals={proposals}
-          minDeposit={minDeposit}
-          totalDeposit={totalDeposit}
-          update={() => setUpdateFunc((item) => item + 1)}
-          addressActive={addressActive}
-        />
+        select === 'voters' ? (
+          <ActionBarDetail
+            id={proposalId}
+            proposals={proposals}
+            minDeposit={minDeposit}
+            totalDeposit={totalDeposit}
+            update={() => setUpdateFunc((item) => item + 1)}
+            addressActive={addressActive}
+          />
+        ) : null
       ) : (
         <ActionBar>
           <Pane>
