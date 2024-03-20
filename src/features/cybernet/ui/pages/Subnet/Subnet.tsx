@@ -1,20 +1,34 @@
-import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { SubnetHyperParameters, SubnetInfo } from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/useContract';
+import {
+  SubnetHyperParameters,
+  SubnetInfo,
+  SubnetNeuron,
+} from 'src/features/cybernet/types';
+import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { routes } from 'src/routes';
-import WeightsTable from './WeightsTable/WeightsTable';
+import ActionBar from './SubnetActionBar/SubnetActionBar';
+import Weights from './Weights/Weights';
+import { cybernetRoutes } from '../../routes';
 
 function Subnet() {
   const { id } = useParams();
+  const netuid = Number(id!);
 
-  const { data, loading, error } = useCybernetContract<SubnetInfo>({
+  const neuronsQuery = useCybernetContract<SubnetNeuron[]>({
+    query: {
+      get_neurons: {
+        netuid,
+      },
+    },
+  });
+
+  const subnetQuery = useCybernetContract<SubnetInfo>({
     query: {
       get_subnet_info: {
-        netuid: +id,
+        netuid,
       },
     },
   });
@@ -22,30 +36,21 @@ function Subnet() {
   const hyperparamsQuery = useCybernetContract<SubnetHyperParameters>({
     query: {
       get_subnet_hyperparams: {
-        netuid: +id,
+        netuid,
       },
     },
   });
 
-  const weightsQuery = useCybernetContract<any>({
-    query: {
-      get_weights: {
-        netuid: +id,
-      },
-    },
-  });
-
-  console.log(data);
-
-  console.log(hyperparamsQuery);
+  console.info('info', subnetQuery.data);
+  console.info('hyperparams', hyperparamsQuery);
 
   return (
-    <MainContainer>
+    <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title={'Subnet: ' + id} />}>
         <ul>
-          {data &&
-            Object.keys(data).map((item) => {
-              const value = data[item];
+          {subnetQuery.data &&
+            Object.keys(subnetQuery.data).map((item) => {
+              const value = subnetQuery.data[item];
               let content = value;
 
               if (item === 'owner') {
@@ -69,7 +74,7 @@ function Subnet() {
         </ul>
       </Display>
 
-      <Display title={<DisplayTitle title={'Hyperparams: '} />}>
+      <Display title={<DisplayTitle title="Hyperparams" />}>
         <ul>
           {hyperparamsQuery.data &&
             Object.keys(hyperparamsQuery.data).map((item) => {
@@ -85,9 +90,28 @@ function Subnet() {
         </ul>
       </Display>
 
-      <Display title={<DisplayTitle title={'Weights: '} />}>
-        {weightsQuery.data && <WeightsTable data={weightsQuery.data} />}
-      </Display>
+      {neuronsQuery.data?.length && (
+        <Display title={<DisplayTitle title="Neurons" />}>
+          <ul>
+            {neuronsQuery.data.map((neuron) => (
+              <li key={neuron.hotkey}>
+                <Link to={cybernetRoutes.delegator.getLink(neuron.hotkey)}>
+                  {neuron.hotkey}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Display>
+      )}
+
+      {subnetQuery.data?.subnetwork_n > 0 && (
+        <Weights
+          neurons={neuronsQuery.data || []}
+          netuid={netuid}
+          max_weights_limit={subnetQuery.data.max_weights_limit}
+        />
+      )}
+      <ActionBar netuid={netuid} burn={subnetQuery.data?.burn} />
     </MainContainer>
   );
 }

@@ -5,11 +5,11 @@ import { Color } from 'src/components/LinearGradientContainer/LinearGradientCont
 import Input from '../Input';
 
 export type Props = {
-  value: string;
+  value: string | number;
   width?: string;
-  onChange?: Props['onValueChange'];
+  onChange: Props['onValueChange'];
   // TODO: delete
-  onValueChange: (val: string, event: any) => void;
+  onValueChange?: (val: string, event: any) => void;
   id?: string;
   title?: string;
   color?: Color;
@@ -28,7 +28,7 @@ function InputNumber({
 
   return (
     <NumericFormat
-      value={value}
+      value={Number(value)}
       onValueChange={(values, sourceInfo) => {
         onValueChange && onValueChange(values.value, sourceInfo.event);
         onChange && onChange(values.value, sourceInfo.event);
