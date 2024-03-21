@@ -31,6 +31,11 @@ function Main() {
         <br />
         <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
+      <Display title={<DisplayTitle title={'Docs'} />}>
+        <Link to="https://github.com/cybercongress/cybertensor">cli and python package</Link>
+        <br />
+        <Link to="https://github.com/cybercongress/cybernet">cosmwasm contract</Link>
+      </Display>
     </MainContainer>
   );
 }
