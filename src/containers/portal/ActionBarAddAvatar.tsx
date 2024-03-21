@@ -4,7 +4,6 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import { DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';

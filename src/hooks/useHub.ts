@@ -1,20 +1,24 @@
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import {
+  HUB_CHANNELS,
+  HUB_NETWORKS,
+  HUB_TOKENS,
+} from 'src/constants/hubContracts';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { Option } from 'src/types';
 import { Channel, Network, Token } from 'src/types/hub';
-import { CYBER, HUB_CONTRACTS } from 'src/utils/config';
-import networkList, { NetworkCons } from 'src/utils/networkListIbc';
+import { CYBER } from 'src/utils/config';
 
 type ObjectKey<T> = {
   [key: string]: T;
 };
 
 const enum TypeFetcher {
-  NETWORKS = 'NETWORKS',
-  TOKENS = 'TOKENS',
-  CHANNELS = 'CHANNELS',
+  NETWORKS = HUB_NETWORKS,
+  TOKENS = HUB_TOKENS,
+  CHANNELS = HUB_CHANNELS,
 }
 
 const QUERY_MSG = {
@@ -26,7 +30,7 @@ const fetcher = (client: Option<CyberClient>, type: TypeFetcher) => {
     return undefined;
   }
 
-  return client.queryContractSmart(HUB_CONTRACTS[type], QUERY_MSG);
+  return client.queryContractSmart(type, QUERY_MSG);
 };
 
 export function useNetworks() {

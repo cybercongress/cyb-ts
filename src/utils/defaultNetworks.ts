@@ -1,8 +1,8 @@
 const defaultNetworks = {
   bostrom: {
     CHAIN_ID: 'bostrom',
-    DENOM_CYBER: 'boot',
-    DENOM_LIQUID_TOKEN: 'hydrogen',
+    DENOM: 'boot',
+    DENOM_LIQUID: 'hydrogen',
     DENOM_CYBER_G: 'GBOOT',
     CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
     CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
@@ -15,8 +15,8 @@ const defaultNetworks = {
   },
   'space-pussy': {
     CHAIN_ID: 'space-pussy',
-    DENOM_CYBER: 'pussy',
-    DENOM_LIQUID_TOKEN: 'liquidpussy',
+    DENOM: 'pussy',
+    DENOM_LIQUID: 'liquidpussy',
     DENOM_CYBER_G: 'GPUSSY',
     CYBER_NODE_URL_API: 'https://rpc.space-pussy.cybernode.ai/',
     CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy.cybernode.ai/websocket',

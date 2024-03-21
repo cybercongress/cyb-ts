@@ -8,8 +8,7 @@ import {
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CYBER } from 'src/utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
   getDisplayAmount,
@@ -39,8 +38,9 @@ import {
 } from '../components/Inputs';
 import useGetSendTxsByAddressByLcd from '../hooks/useGetSendTxsByAddressByLcd';
 import { useTeleport } from '../Teleport.context';
+import { CHAIN_ID, DENOM } from 'src/constants/config';
 
-const tokenDefaultValue = CYBER.DENOM_CYBER;
+const tokenDefaultValue = DENOM;
 
 function Send() {
   const queryClient = useQueryClient();
@@ -247,16 +247,16 @@ function Send() {
       <MainContainer width="62%">
         <TeleportContainer>
           <Select
-            valueSelect={CYBER.CHAIN_ID}
-            currentValue={CYBER.CHAIN_ID}
+            valueSelect={CHAIN_ID}
+            currentValue={CHAIN_ID}
             disabled
             options={[
               {
-                value: CYBER.CHAIN_ID,
-                text: CYBER.CHAIN_ID,
+                value: CHAIN_ID,
+                text: CHAIN_ID,
                 img: (
                   <DenomArr
-                    denomValue={CYBER.CHAIN_ID}
+                    denomValue={CHAIN_ID}
                     onlyImg
                     type="network"
                     tooltipStatusImg={false}

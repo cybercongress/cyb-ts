@@ -32,7 +32,6 @@ function ActionBarConnect({
   updateAddress,
   updateFuncActionBar,
   onClickBack,
-  selectAccount,
 }) {
   const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);

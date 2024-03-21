@@ -9,8 +9,8 @@ export const enum Networks {
 
 export type NetworkConfig = {
   CHAIN_ID: Networks;
-  DENOM_CYBER: string;
-  DENOM_LIQUID_TOKEN: string;
+  DENOM: string;
+  DENOM_LIQUID: string;
   DENOM_CYBER_G: string;
   CYBER_NODE_URL_API: string;
   CYBER_WEBSOCKET_URL: string;

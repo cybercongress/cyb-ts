@@ -1,7 +1,9 @@
 import { Pane, Text } from '@cybercongress/gravity';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
+import { CYBER } from '../../utils/config';
 import Tooltip from '../tooltip/tooltip';
+import { DENOM } from 'src/constants/config';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');
@@ -161,27 +163,27 @@ export function IconStatus({ status, size, text, ...props }) {
   let statusText = '';
 
   switch (status) {
-    case PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD: {
+    case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD: {
       imgIcon = submitted;
       statusText = 'deposit period';
       break;
     }
-    case PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD: {
+    case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD: {
       imgIcon = voting;
       statusText = 'voting period';
       break;
     }
-    case PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED: {
+    case ProposalStatus.PROPOSAL_STATUS_PASSED: {
       imgIcon = passed;
       statusText = 'passed';
       break;
     }
-    case PROPOSAL_STATUS.PROPOSAL_STATUS_REJECTED: {
+    case ProposalStatus.PROPOSAL_STATUS_REJECTED: {
       imgIcon = rejected;
       statusText = 'rejected';
       break;
     }
-    case PROPOSAL_STATUS.PROPOSAL_STATUS_FAILED: {
+    case ProposalStatus.PROPOSAL_STATUS_FAILED: {
       imgIcon = failed;
       statusText = 'failed';
       break;
@@ -241,7 +243,7 @@ export function Deposit({ totalDeposit, minDeposit }) {
             className="tooltip-text-deposit"
           >
             Total Deposit {formatNumber(totalDeposit)}{' '}
-            {CYBER.DENOM_CYBER.toUpperCase()}
+            {DENOM.toUpperCase()}
           </Text>
         </Pane>
       </Pane>

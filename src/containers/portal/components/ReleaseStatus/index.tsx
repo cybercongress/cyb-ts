@@ -64,7 +64,7 @@ function RowItem({ item }: { item: Item }) {
     <div className={styles.RowItemReleaseStatus}>
       <div style={{ color: item.color }}>{item.title}</div>
       <div>
-        <FormatNumberTokens value={item.value} text={CYBER.DENOM_CYBER} />
+        <FormatNumberTokens value={item.value} text={DENOM} />
       </div>
     </div>
   );
@@ -81,7 +81,7 @@ function ReleaseStatus({
     <div className={styles.title}>
       <div>release status {GIFT_ICON}</div>
       <div>
-        <FormatNumberTokens value={amountGiftValue} text={CYBER.DENOM_CYBER} />
+        <FormatNumberTokens value={amountGiftValue} text={DENOM} />
       </div>
     </div>
   );

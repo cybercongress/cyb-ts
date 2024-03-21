@@ -3,9 +3,7 @@ import { gql } from '@apollo/client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { CYBER } from '../../../../../utils/config';
-
-const { CYBER_INDEX_HTTPS } = CYBER;
+import { INDEX_URL } from 'src/constants/config';
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint) {
@@ -31,7 +29,7 @@ function useGetTsxByAddress(address) {
     useInfiniteQuery(
       ['messagesByAddressGql', address],
       async ({ pageParam = 0 }) => {
-        const res = await request(CYBER_INDEX_HTTPS, messagesByAddress, {
+        const res = await request(INDEX_URL, messagesByAddress, {
           address: `{${address}}`,
           limit,
           offset: new BigNumber(limit).multipliedBy(pageParam).toString(),

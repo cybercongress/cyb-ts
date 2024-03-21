@@ -33,6 +33,7 @@ import RcSlider from './components/Slider/Slider';
 import InfoText from './InfoText/InfoText';
 import LiquidBalances from './LiquidBalances/LiquidBalances';
 import ERatio from './components/ERatio/ERatio';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const returnColorDot = (marks) => {
   return {
@@ -65,9 +66,9 @@ function Mint() {
   const { setAdviser } = useAdviser();
 
   const frozenH =
-    originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0
-      ? new BigNumber(originalVesting[CYBER.DENOM_LIQUID_TOKEN])
-          .minus(vested[CYBER.DENOM_LIQUID_TOKEN])
+    originalVesting[DENOM_LIQUID] > 0
+      ? new BigNumber(originalVesting[DENOM_LIQUID])
+          .minus(vested[DENOM_LIQUID])
           .toNumber()
       : 0;
 
@@ -110,7 +111,7 @@ function Mint() {
     }
 
     queryClient
-      .getBalance(addressActive, CYBER.DENOM_LIQUID_TOKEN)
+      .getBalance(addressActive, DENOM_LIQUID)
       .then((response) => {
         SetBalanceHydrogen(parseFloat(response.amount));
       });

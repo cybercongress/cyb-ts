@@ -98,7 +98,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
       adviser.setAdviserText('Preparing transaction...');
 
-      const formattedAmount = [coin(amount || 1, CYBER.DENOM_CYBER)];
+      const formattedAmount = [coin(amount || 1, DENOM)];
 
       const messageCid = await addIfpsMessageOrCid(message, { ipfsApi });
 

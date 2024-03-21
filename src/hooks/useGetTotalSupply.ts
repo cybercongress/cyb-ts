@@ -11,14 +11,15 @@ import { ObjKeyValue } from 'src/types/data';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 type OptionInterval = {
   refetchInterval?: number | false;
 };
 
 const defaultTokenList = {
-  [CYBER.DENOM_CYBER]: 0,
-  [CYBER.DENOM_LIQUID_TOKEN]: 0,
+  [DENOM]: 0,
+  [DENOM_LIQUID]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,

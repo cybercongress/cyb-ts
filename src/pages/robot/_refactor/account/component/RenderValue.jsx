@@ -341,7 +341,7 @@ function RenderValue({ value, type, accountUser }) {
           value={
             <AmountDenom
               amountValue={value.min_self_delegation}
-              denom={CYBER.DENOM_CYBER}
+              denom={DENOM}
             />
           }
         />
@@ -485,7 +485,7 @@ function RenderValue({ value, type, accountUser }) {
                 );
               })
             ) : (
-              <AmountDenom amountValue={0} denom={CYBER.DENOM_CYBER} />
+              <AmountDenom amountValue={0} denom={DENOM} />
             )
           }
         />

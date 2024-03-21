@@ -108,7 +108,7 @@ const getBalance = async (client, contractAddress, setBalance) => {
   try {
     const response = await client.getBalance(
       contractAddress,
-      CYBER.DENOM_CYBER
+      DENOM
     );
     if (response !== null) {
       setBalance(response);

@@ -49,7 +49,7 @@ function TableHeroes({ mobile, showJailed, children }) {
                   placement="bottom"
                   tooltip={
                     <div style={{ width: 150 }}>
-                      Amount of {CYBER.DENOM_CYBER.toUpperCase()} (tokens you
+                      Amount of {DENOM.toUpperCase()} (tokens you
                       bonded to validator in)
                     </div>
                   }

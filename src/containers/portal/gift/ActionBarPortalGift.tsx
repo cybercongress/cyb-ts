@@ -4,7 +4,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice, coins } from '@cosmjs/launchpad';
+import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
@@ -13,15 +13,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
 import { useBackend } from 'src/contexts/backend/backend';
-import txs from '../../../utils/txs';
+import { PATTERN_CYBER } from 'src/constants/patterns';
+import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import BigNumber from 'bignumber.js';
+import { Nullable } from 'src/types';
 import {
   Dots,
   ButtonIcon,
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../../utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
@@ -42,12 +43,9 @@ import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import mssgsClaim from '../utilsMsgs';
 import { ClaimMsg } from './type';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import BigNumber from 'bignumber.js';
-import { Nullable } from 'src/types';
 import { TxHash } from '../hook/usePingTxs';
+import { CHAIN_ID } from 'src/constants/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -357,7 +355,7 @@ function ActionBarPortalGift({
             msgs.push(msgObject);
           });
           const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
-            CYBER.CHAIN_ID
+            CHAIN_ID
           );
 
           if (!msgs.length) {

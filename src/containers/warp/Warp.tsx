@@ -32,9 +32,10 @@ import {
   calculateCounterPairAmount,
 } from './utils';
 import { useAdviser } from 'src/features/adviser/context';
+import { DENOM_LIQUID } from 'src/constants/config';
 
-const tokenADefaultValue = CYBER.DENOM_CYBER;
-const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
+const tokenADefaultValue = DENOM;
+const tokenBDefaultValue = DENOM_LIQUID;
 
 function Warp() {
   const queryClient = useQueryClient();

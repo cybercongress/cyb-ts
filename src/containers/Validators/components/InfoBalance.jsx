@@ -3,8 +3,9 @@ import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 
-const { DENOM_CYBER, HYDROGEN } = CYBER;
+const { DENOM, HYDROGEN } = CYBER;
 
 function TootipContent() {
   return (
@@ -32,7 +33,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
   return (
     <ContainerGrid>
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} staked`}
+        title={`${DENOM.toUpperCase()} staked`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -43,7 +44,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       />
 
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} available`}
+        title={`${DENOM.toUpperCase()} available`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -61,8 +62,8 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
               <Dots />
             ) : (
               formatNumber(
-                balanceToken[CYBER.DENOM_LIQUID_TOKEN]
-                  ? balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid
+                balanceToken[DENOM_LIQUID]
+                  ? balanceToken[DENOM_LIQUID].liquid
                   : 0
               )
             )
@@ -74,7 +75,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       </Link>
 
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} rewards`}
+        title={`${DENOM.toUpperCase()} rewards`}
         value={
           loadingBalanceInfo ? (
             <Dots />

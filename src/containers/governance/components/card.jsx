@@ -5,8 +5,8 @@ import {
   Tooltip,
   ContainerGradientText,
 } from '../../../components';
-import { PROPOSAL_STATUS } from '../../../utils/config';
 import Display from 'src/components/containerGradient/Display/Display';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
@@ -166,13 +166,13 @@ function ActiveCard({
         </Pane>
       </Pane>
 
-      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
+      {state === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
         <Pane>
           <Pane marginBottom={2}>Deposit End Time:</Pane>
           <Pane>{timeEndDeposit}</Pane>
         </Pane>
       )}
-      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD && (
+      {state === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD && (
         <Pane>
           <Pane marginBottom={2}>Voting End Time:</Pane>
           <Pane>{timeEndVoting}</Pane>

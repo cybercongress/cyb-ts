@@ -46,19 +46,19 @@ function DetailsNetwork() {
           MEMO_KEPLR: `[${value}]cyb.ai, using keplr`,
         }));
         break;
-      case 'BECH32_PREFIX_ACC_ADDR_CYBER':
+      case 'BECH32_PREFIX':
         setCustomConfig((item) => ({
           ...item,
           [key]: value,
-          BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `${value}valoper`,
+          BECH32_PREFIX_VALOPER: `${value}valoper`,
         }));
         break;
 
-      case 'DENOM_CYBER':
+      case 'DENOM':
         setCustomConfig((item) => ({
           ...item,
           [key]: value,
-          DENOM_CYBER_G: `G${value.toUpperCase()}`,
+          DENOM_G: `G${value.toUpperCase()}`,
         }));
         break;
 
@@ -106,13 +106,13 @@ function DetailsNetwork() {
               />
               <ValueItem
                 text="denom"
-                value={customConfig.DENOM_CYBER}
-                onChange={(e) => onChangeValue(e, 'DENOM_CYBER')}
+                value={customConfig.DENOM}
+                onChange={(e) => onChangeValue(e, 'DENOM')}
               />
               <ValueItem
                 text="liquid denom"
-                value={customConfig.DENOM_LIQUID_TOKEN}
-                onChange={(e) => onChangeValue(e, 'DENOM_LIQUID_TOKEN')}
+                value={customConfig.DENOM_LIQUID}
+                onChange={(e) => onChangeValue(e, 'DENOM_LIQUID')}
               />
               <ValueItem
                 text="rpc"

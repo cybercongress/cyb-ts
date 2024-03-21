@@ -6,6 +6,7 @@ import Table from 'src/components/Table/Table';
 import { CssVariables } from 'src/style/variables';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const columnHelper = createColumnHelper<any>();
 
@@ -54,10 +55,10 @@ function TableSlots({ data }: Props) {
               </TextTable>
             ),
           unfreezing: item.time ? <TextTable>{item.time}</TextTable> : '',
-          supplied: item.amount[CYBER.DENOM_LIQUID_TOKEN] ? (
+          supplied: item.amount[DENOM_LIQUID] ? (
             <TextTable>
-              {formatNumber(item.amount[CYBER.DENOM_LIQUID_TOKEN])}&nbsp;
-              <DenomArr denomValue={CYBER.DENOM_LIQUID_TOKEN} onlyImg />
+              {formatNumber(item.amount[DENOM_LIQUID])}&nbsp;
+              <DenomArr denomValue={DENOM_LIQUID} onlyImg />
             </TextTable>
           ) : (
             ''

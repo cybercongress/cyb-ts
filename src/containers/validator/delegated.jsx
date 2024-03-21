@@ -89,13 +89,13 @@ function Delegated({ data, marginBottom }) {
           title="Delegator Shares"
           value={`${formatNumber(
             Math.floor(delegatorShares)
-          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          )} ${DENOM.toUpperCase()}`}
         />
         <Row
           title="Token"
           value={`${formatNumber(
             Math.floor(total)
-          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          )} ${DENOM.toUpperCase()}`}
         />
         <Row
           title="Commission Rate"

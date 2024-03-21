@@ -9,7 +9,7 @@ import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-// const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+// const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
 
 function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
   const queryClient = useQueryClient();

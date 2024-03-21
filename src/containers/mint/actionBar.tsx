@@ -14,6 +14,7 @@ import {
 } from '../../components';
 import { CYBER, LEDGER } from '../../utils/config';
 import { SelectedState } from './types';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const {
   STAGE_INIT,
@@ -57,7 +58,7 @@ function ActionBar({
 
     await investmint(
       address,
-      coin(amountH, CYBER.DENOM_LIQUID_TOKEN),
+      coin(amountH, DENOM_LIQUID),
       resource,
       BASE_VESTING_TIME * valueDays,
       signingClient

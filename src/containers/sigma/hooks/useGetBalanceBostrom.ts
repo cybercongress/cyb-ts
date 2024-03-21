@@ -8,6 +8,7 @@ import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const usePrevious = (value: any) => {
   const ref = useRef<any>();
@@ -63,10 +64,10 @@ function useGetBalanceBostrom(address: Nullable<string>) {
             [key]: {
               ...data[key],
               price: {
-                denom: CYBER.DENOM_LIQUID_TOKEN,
+                denom: DENOM_LIQUID,
                 amount: price.toNumber(),
               },
-              cap: { denom: CYBER.DENOM_LIQUID_TOKEN, amount: tempCap },
+              cap: { denom: DENOM_LIQUID, amount: tempCap },
             },
           };
         }, {});
@@ -90,7 +91,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
       if (!loadingMalin && !loadingToken) {
         let dataResult = {};
         const mainToken = {
-          [CYBER.DENOM_CYBER]: { ...balanceMainToken },
+          [DENOM]: { ...balanceMainToken },
         };
         const dataResultTemp = { ...mainToken, ...balanceToken };
         const tempData = getBalanceMarket(dataResultTemp);

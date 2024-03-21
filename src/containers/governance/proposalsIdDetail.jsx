@@ -2,6 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import { IconStatus, Item, ContainerGradientText } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
+import { DENOM } from 'src/constants/config';
 
 const dateFormat = require('dateformat');
 
@@ -48,7 +49,7 @@ function ProposalsIdDetail({
           <Item
             marginBottom={15}
             title="Total Deposit"
-            value={`${formatNumber(totalDeposit)} ${CYBER.DENOM_CYBER}`}
+            value={`${formatNumber(totalDeposit)} ${DENOM}`}
           />
         )}
         {proposals.voting_start_time && (

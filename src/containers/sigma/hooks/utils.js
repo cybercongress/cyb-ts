@@ -6,10 +6,10 @@ import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { CYBER } from '../../../utils/config';
 import { fromBech32 } from '../../../utils/utils';
 
-const { DENOM_CYBER } = CYBER;
+const { DENOM } = CYBER;
 
 const initValue = {
-  denom: DENOM_CYBER,
+  denom: DENOM,
   amount: '0',
 };
 
@@ -32,7 +32,7 @@ const getDelegationsAmount = (data) => {
       delegationsAmount = delegationsAmount.plus(itemDelegation.balance.amount);
     });
   }
-  return initValueResponseFunc(DENOM_CYBER, delegationsAmount.toString());
+  return initValueResponseFunc(DENOM, delegationsAmount.toString());
 };
 
 const getUnbondingAmount = (data) => {
@@ -45,7 +45,7 @@ const getUnbondingAmount = (data) => {
       });
     });
   }
-  return initValueResponseFunc(DENOM_CYBER, unbondingAmount.toString());
+  return initValueResponseFunc(DENOM, unbondingAmount.toString());
 };
 
 const getRewardsAmount = (data) => {
@@ -57,7 +57,7 @@ const getRewardsAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM_CYBER, rewardsAmount.toString());
+  return initValueResponseFunc(DENOM, rewardsAmount.toString());
 };
 
 const getCommissionAmount = (data) => {
@@ -70,7 +70,7 @@ const getCommissionAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM_CYBER, commissionAmount.toString());
+  return initValueResponseFunc(DENOM, commissionAmount.toString());
 };
 
 export const useGetBalance = (client, addressBech32) => {
@@ -81,7 +81,7 @@ export const useGetBalance = (client, addressBech32) => {
       async () => {
         const responsegetBalance = await client.getBalance(
           addressBech32,
-          DENOM_CYBER
+          DENOM
         );
 
         const responsedelegatorDelegations = await getDelegatorDelegations(
@@ -136,7 +136,7 @@ export const useGetBalance = (client, addressBech32) => {
         return {
           ...resultBalance,
           total: {
-            denom: DENOM_CYBER,
+            denom: DENOM,
             amount: total,
           },
         };

@@ -32,7 +32,7 @@ const executePlaceholder = {
   },
 };
 
-const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
 export function JSONInputCard({ title, placeholder, setState, height }) {

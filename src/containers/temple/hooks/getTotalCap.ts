@@ -90,9 +90,9 @@ function useGetTotalCap() {
       const ibcDenomAtom = getDenomHash(path, denomInfo.coinMinimalDenom);
       if (
         Object.prototype.hasOwnProperty.call(marketData, ibcDenomAtom) &&
-        Object.prototype.hasOwnProperty.call(marketData, CYBER.DENOM_CYBER)
+        Object.prototype.hasOwnProperty.call(marketData, DENOM)
       ) {
-        const priceBoot = new BigNumber(marketData[CYBER.DENOM_CYBER]);
+        const priceBoot = new BigNumber(marketData[DENOM]);
         const priceAtom = new BigNumber(marketData[ibcDenomAtom]);
         const priceBootForAtom = priceAtom
           .dividedBy(priceBoot)

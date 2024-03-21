@@ -6,10 +6,11 @@ import useGetTotalSupply from './useGetTotalSupply';
 import usePoolListInterval from './usePoolListInterval';
 import { CYBER } from '../utils/config';
 import { reduceBalances, convertAmount } from '../utils/utils';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const defaultTokenList = {
-  [CYBER.DENOM_CYBER]: 0,
-  [CYBER.DENOM_LIQUID_TOKEN]: 0,
+  [DENOM]: 0,
+  [DENOM_LIQUID]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
@@ -41,10 +42,10 @@ const getPoolPrice = (data, traseDenom) => {
       const { balances } = element;
       let price = 0;
       if (
-        coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN ||
-        coinsPair[1] === CYBER.DENOM_LIQUID_TOKEN
+        coinsPair[0] === DENOM_LIQUID ||
+        coinsPair[1] === DENOM_LIQUID
       ) {
-        if (coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN) {
+        if (coinsPair[0] === DENOM_LIQUID) {
           price = calculatePrice(coinsPair, balances, traseDenom);
         } else {
           price = calculatePrice(coinsPair.reverse(), balances, traseDenom);
@@ -137,13 +138,13 @@ function useGetMarketData() {
         Object.keys(poolsTotal).length > 0
       ) {
         const marketDataObj = {};
-        marketDataObj[CYBER.DENOM_LIQUID_TOKEN] = 1;
+        marketDataObj[DENOM_LIQUID] = 1;
         Object.keys(dataTotal).forEach((keyI) => {
           Object.keys(poolsTotal).forEach((keyJ) => {
             const itemJ = poolsTotal[keyJ];
             const { reserveCoinDenoms } = itemJ;
             if (
-              reserveCoinDenoms[0] === CYBER.DENOM_LIQUID_TOKEN &&
+              reserveCoinDenoms[0] === DENOM_LIQUID &&
               reserveCoinDenoms[1] === keyI
             ) {
               marketDataObj[keyI] = itemJ.price;

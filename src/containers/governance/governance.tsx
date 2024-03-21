@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { useAdviser } from 'src/features/adviser/context';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import { DENOM, DENOM_LIQUID } from 'src/constants/config';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics } from '../../components';
-import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { useAdviser } from 'src/features/adviser/context';
 
 const dateFormat = require('dateformat');
 
@@ -23,7 +24,7 @@ function Statistics({ communityPoolCyber, staked }) {
       gridGap="20px"
     >
       <CardStatisics
-        title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        title={`Community pool, ${DENOM.toUpperCase()}`}
         value={formatNumber(Math.floor(communityPoolCyber))}
       />
       <Link to="/sphere">
@@ -81,9 +82,8 @@ function Governance() {
             totalCyb[item.denom] = parseFloat(item.amount);
           });
         }
-        if (totalCyb[CYBER.DENOM_CYBER] && totalCyb[CYBER.DENOM_LIQUID_TOKEN]) {
-          stakedBoot =
-            totalCyb[CYBER.DENOM_LIQUID_TOKEN] / totalCyb[CYBER.DENOM_CYBER];
+        if (totalCyb[DENOM] && totalCyb[DENOM_LIQUID]) {
+          stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[DENOM];
         }
         setStaked(stakedBoot);
       }
@@ -99,7 +99,7 @@ function Governance() {
     // if (queryClient !== null) {
     const responseProposals = await getProposals();
     // const responseProposals = await queryClient.proposals(
-    //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
+    //   ProposalStatus.PROPOSAL_STATUS_PASSED,
     //   '',
     //   ''
     // );
@@ -122,7 +122,7 @@ function Governance() {
     .reverse()
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status] < ProposalStatus.PROPOSAL_STATUS_PASSED
     )
     .map((item) => (
       <Link
@@ -137,7 +137,7 @@ function Governance() {
           minDeposit={minDeposit}
           totalDeposit={item.total_deposit}
           type={item.content['@type']}
-          state={PROPOSAL_STATUS[item.status]}
+          state={ProposalStatus[item.status]}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
             'dd/mm/yyyy, HH:MM:ss'
@@ -154,7 +154,7 @@ function Governance() {
   const accepted = tableData
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status] === ProposalStatus.PROPOSAL_STATUS_PASSED
     )
     .map((item) => (
       <Link
@@ -181,7 +181,7 @@ function Governance() {
     .reverse()
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status] > ProposalStatus.PROPOSAL_STATUS_PASSED
     )
     .map((item) => (
       <Link

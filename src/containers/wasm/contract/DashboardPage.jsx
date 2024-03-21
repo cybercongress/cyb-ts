@@ -104,7 +104,7 @@ function DashboardPage() {
             }
           />
           <CardStatisics
-            title={`Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            title={`Income, ${DENOM.toUpperCase()}`}
             value={
               dataAggregate !== null && dataAggregate.sum.fees !== null ? (
                 formatNumber(dataAggregate.sum.fees)

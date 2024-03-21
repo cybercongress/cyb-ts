@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from 'react';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -9,6 +8,8 @@ import {
   IconButton,
 } from '@cybercongress/gravity';
 
+import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import { useBackend } from 'src/contexts/backend/backend';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -17,17 +18,13 @@ import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER, BOND_STATUS } from '../../utils/config';
 import Button from '../btnGrd';
 import { InputNumber, Input } from '../Input';
 import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
-import { useBackend } from 'src/contexts/backend/backend';
-import useDelegation from 'src/features/staking/delegation/useDelegation';
-
-const { DENOM_CYBER } = CYBER;
+import { CHAIN_ID, DENOM } from 'src/constants/config';
 
 const param = {
   slashing: [
@@ -604,7 +601,7 @@ export function TextProposal({
             />
           </Pane>
           <Pane width="100%">
-            <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
+            <Text color="#fff">deposit, {DENOM.toUpperCase()}</Text>
             <InputNumber
               value={valueDeposit}
               onChange={onChangeInputDeposit}
@@ -921,7 +918,7 @@ export function Delegate({
         placeholder="amount"
       />
       <Text marginLeft={10} fontSize="16px" color="#fff">
-        {DENOM_CYBER.toUpperCase()}
+        {DENOM.toUpperCase()}
       </Text>
     </ActionBarContainer>
   );
@@ -955,7 +952,7 @@ export function ReDelegate({
         placeholder="amount"
       />
       <Text marginLeft={5} fontSize="16px" color="#fff">
-        {DENOM_CYBER.toUpperCase()} restake to:
+        {DENOM.toUpperCase()} restake to:
       </Text>
       <select
         style={{
@@ -968,7 +965,7 @@ export function ReDelegate({
         {validatorsAll
           .filter(
             (validator) =>
-              BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
+              BondStatus[validator.status] === BondStatus.BOND_STATUS_BONDED
           )
           .map((item) => (
             <option
@@ -1044,7 +1041,7 @@ export function RewardsDelegators({
           <Account address={item.validator_address} />
           <Pane>
             {formatNumber(Math.floor(item.reward[0].amount))}{' '}
-            {CYBER.DENOM_CYBER.toUpperCase()}
+            {DENOM.toUpperCase()}
           </Pane>
         </Pane>
       );
@@ -1055,7 +1052,7 @@ export function RewardsDelegators({
     <ContainetLedger onClickBtnClose={onClickBtnClose}>
       <Pane fontSize="20px" marginBottom={20}>
         Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
-        {CYBER.DENOM_CYBER.toUpperCase()}
+        {DENOM.toUpperCase()}
       </Pane>
       Rewards:
       <Pane marginTop={10} marginBottom={30}>
@@ -1122,8 +1119,8 @@ export function ConnectAddress({
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
         <ButtonIcon
           active={selectNetwork === 'cyber'}
-          img={selectNetworkImg(CYBER.CHAIN_ID)}
-          text={CYBER.CHAIN_ID}
+          img={selectNetworkImg(CHAIN_ID)}
+          text={CHAIN_ID}
         />
       </Pane>
     </ActionBarContainer>

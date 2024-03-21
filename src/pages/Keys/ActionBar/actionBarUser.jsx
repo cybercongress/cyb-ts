@@ -23,7 +23,7 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
       sendAddres,
       amount,
       MEMO,
-      CYBER.DENOM_CYBER,
+      DENOM,
       true,
       addressFrom
     );

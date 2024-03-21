@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
-import { CYBER } from '../../../../../utils/config';
-import useGetSlots from '../../../../../containers/mint/useGetSlots';
+import {
+  BECH32_PREFIX_VALOPER,
+  DENOM,
+  DENOM_LIQUID,
+} from 'src/constants/config';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
+import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
+import useGetSlots from '../../../../../containers/mint/useGetSlots';
 
 const initValue = {
   available: 0,
@@ -20,7 +24,7 @@ const initValueTokens = {
 };
 
 const initValueToken = {
-  [CYBER.DENOM_LIQUID_TOKEN]: { ...initValueTokens },
+  [DENOM_LIQUID]: { ...initValueTokens },
   milliampere: { ...initValueTokens },
   millivolt: { ...initValueTokens },
 };
@@ -55,7 +59,7 @@ function useGetBalance(address, updateAddress) {
           setLoadingBalanceInfo(true);
           const availablePromise = await queryClient.getBalance(
             addressActive,
-            CYBER.DENOM_CYBER
+            DENOM
           );
           setBalance((item) => ({
             ...item,
@@ -116,7 +120,7 @@ function useGetBalance(address, updateAddress) {
           }
           const dataValidatorAddress = fromBech32(
             addressActive,
-            CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+            BECH32_PREFIX_VALOPER
           );
           const resultGetDistribution = await queryClient.validatorCommission(
             dataValidatorAddress
@@ -150,7 +154,7 @@ function useGetBalance(address, updateAddress) {
   useEffect(() => {
     const getBalance = async () => {
       const initValueTokenAmount = {
-        [CYBER.DENOM_LIQUID_TOKEN]: {
+        [DENOM_LIQUID]: {
           ...initValueTokens,
         },
         milliampere: {
@@ -173,7 +177,7 @@ function useGetBalance(address, updateAddress) {
           Object.keys(balancesToken).forEach((key) => {
             if (
               Object.hasOwnProperty.call(balancesToken, key) &&
-              key !== CYBER.DENOM_CYBER
+              key !== DENOM
             ) {
               const elementBalancesToken = balancesToken[key];
 

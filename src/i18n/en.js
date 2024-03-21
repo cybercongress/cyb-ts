@@ -1,6 +1,6 @@
 import { CYBER } from '../utils/config';
 
-const { DENOM_CYBER } = CYBER;
+const { DENOM } = CYBER;
 
 const i18n = {
   en: {
@@ -27,12 +27,12 @@ const i18n = {
     },
     brain: {
       knowledge: 'Knowledge graph',
-      yourTotal: `your total ${DENOM_CYBER.toLocaleUpperCase()}`,
+      yourTotal: `your total ${DENOM.toLocaleUpperCase()}`,
       cyberlinks: 'cyberlinks',
       objects: 'objects',
       subjects: 'subjects',
       cybernomics: 'Cybernomics',
-      supply: `supply of ${DENOM_CYBER.toLocaleUpperCase()}`,
+      supply: `supply of ${DENOM.toLocaleUpperCase()}`,
       staked: '% of staked CYB',
       price: 'price of cyberlink in RC',
       consensus: 'Consensus',

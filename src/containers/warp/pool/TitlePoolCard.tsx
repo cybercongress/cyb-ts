@@ -2,6 +2,7 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { DenomArr, FormatNumberTokens } from 'src/components';
 import { CYBER } from '../../../utils/config';
 import styles from './styles.module.scss';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 type TitlePoolPool = {
   pool: Pool;
@@ -28,7 +29,7 @@ function TitlePool({ pool, totalCap, useInactive }: TitlePoolPool) {
       {totalCap !== undefined && (
         <FormatNumberTokens
           value={totalCap}
-          text={CYBER.DENOM_LIQUID_TOKEN}
+          text={DENOM_LIQUID}
           marginContainer="0px"
         />
       )}

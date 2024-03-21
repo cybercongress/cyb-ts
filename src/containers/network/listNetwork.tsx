@@ -79,11 +79,11 @@ function ListNetwork() {
               </ValueItem>
               <ValueItem>
                 <div>denom</div>
-                <div>{item.DENOM_CYBER}</div>
+                <div>{item.DENOM}</div>
               </ValueItem>
               <ValueItem>
                 <div>liquid denom</div>
-                <div>{item.DENOM_LIQUID_TOKEN}</div>
+                <div>{item.DENOM_LIQUID}</div>
               </ValueItem>
               <ValueItem>
                 <div>rpc</div>

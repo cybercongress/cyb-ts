@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { CYBER } from './config';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { LCD } from 'src/constants/config';
 
 export const getProposals = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/gov/v1beta1/proposals`,
+      url: `${LCD}/cosmos/gov/v1beta1/proposals`,
     });
 
     return response.data.proposals;
@@ -20,7 +20,7 @@ export const getProposalsDetail = (id) =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/gov/v1beta1/proposals/${id}`,
+      url: `${LCD}/cosmos/gov/v1beta1/proposals/${id}`,
     })
       .then((response) => {
         resolve(response.data.proposal);
@@ -34,7 +34,7 @@ export const getStakingPool = () =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/staking/pool`,
+      url: `${LCD}/staking/pool`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -48,7 +48,7 @@ export const getTallying = () =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/parameters/tallying`,
+      url: `${LCD}/gov/parameters/tallying`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -62,7 +62,7 @@ export const getProposer = async (id) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}/proposer`,
+      url: `${LCD}/gov/proposals/${id}/proposer`,
     });
     return response.data.result;
   } catch (error) {
@@ -75,7 +75,7 @@ export const getMinDeposit = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/parameters/deposit`,
+      url: `${LCD}/gov/parameters/deposit`,
     });
     return response.data.result;
   } catch (error) {
@@ -89,7 +89,7 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
     const response = await axios({
       method: 'get',
       url: `${
-        CYBER.CYBER_NODE_URL_LCD
+        LCD
       }/cosmos/tx/v1beta1/txs?pagination.offset=${
         offset * limit
       }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
@@ -108,7 +108,7 @@ export const getTallyingProposals = async (id) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}/tally`,
+      url: `${LCD}/gov/proposals/${id}/tally`,
     });
     return response.data.result;
   } catch (e) {

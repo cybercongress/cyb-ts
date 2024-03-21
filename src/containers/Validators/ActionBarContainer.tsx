@@ -222,7 +222,7 @@ function ActionBarContainer({
           const response = await signingClient.delegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, DENOM),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -250,7 +250,7 @@ function ActionBarContainer({
           const response = await signingClient.undelegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, DENOM),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -278,7 +278,7 @@ function ActionBarContainer({
             addressKeplr,
             validatorAddres,
             valueSelect,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, DENOM),
             fee,
             CYBER.MEMO_KEPLR
           );
@@ -407,8 +407,8 @@ function ActionBarContainer({
     return (
       <ActionBar>
         <Pane fontSize="18px" display="flex" alignItems="center">
-          {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
-            balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
+          {balanceToken[DENOM_LIQUID] &&
+            balanceToken[DENOM_LIQUID].liquid !== 0 && (
               <Pane>
                 <Button
                   link={routes.hfr.path}
@@ -421,7 +421,7 @@ function ActionBarContainer({
                 yor free H to get A and V
               </Pane>
             )}
-          {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
+          {balanceToken[DENOM_LIQUID].liquid === 0 &&
             balance.available !== 0 &&
             'Choose hero to get H'}
           {validRewards && (

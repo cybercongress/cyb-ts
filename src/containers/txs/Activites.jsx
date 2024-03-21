@@ -256,7 +256,7 @@ function Activites({ msg }) {
                     />
                   );
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -283,7 +283,7 @@ function Activites({ msg }) {
         <Row
           title="Mininum Self Delegation"
           value={`${formatNumber(msg.min_self_delegation)}
-           ${CYBER.DENOM_CYBER.toUpperCase()}`}
+           ${DENOM.toUpperCase()}`}
         />
         <Row title="Commission Rate" value={msg.commission.rate} />
         <Row title="Description" value={msg.description.moniker} />
@@ -514,7 +514,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -603,7 +603,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -649,7 +649,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
