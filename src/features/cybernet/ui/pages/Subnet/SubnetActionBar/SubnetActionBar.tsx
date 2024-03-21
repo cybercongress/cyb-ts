@@ -5,6 +5,8 @@ import { useAdviser } from 'src/features/adviser/context';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
+import { DenomArr } from 'src/components';
+import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 
 type Props = {
   netuid: number;
@@ -45,6 +47,19 @@ function SubnetActionBar({ netuid, burn }: Props) {
   let button;
   let content;
 
+  if (netuid === 0) {
+    return (
+      <ActionBar
+        button={{
+          text: 'Register to root',
+          link: '/contracts/' + CYBERNET_CONTRACT_ADDRESS,
+        }}
+      >
+        no ui for now, use contract call
+      </ActionBar>
+    );
+  }
+
   switch (step) {
     case Steps.INITIAL:
       button = {
@@ -52,7 +67,11 @@ function SubnetActionBar({ netuid, burn }: Props) {
         onClick: register,
       };
 
-      content = <>price is {burn}</>;
+      content = (
+        <>
+          fee is {burn} <DenomArr onlyImg denomValue="pussy" />
+        </>
+      );
 
       break;
 

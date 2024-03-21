@@ -13,6 +13,12 @@ function Subnets() {
     },
   });
 
+  console.log('Subnets', data, loading, error);
+
+  const subnetsWithoutRoot = data?.filter((subnet) => subnet.netuid !== 0);
+
+  const rootSubnet = data?.find((subnet) => subnet.netuid === 0);
+
   useAdviserTexts({
     isLoading: loading,
     error,
@@ -20,9 +26,29 @@ function Subnets() {
   });
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title="Subnets" />}>
-        <RootSubnetsTable data={data || []} />
+      <Display
+        noPaddingX
+        title={
+          <DisplayTitle
+            title={<header style={{ marginLeft: 15 }}>Subnets</header>}
+          />
+        }
+      >
+        <RootSubnetsTable data={subnetsWithoutRoot || []} />
       </Display>
+
+      {rootSubnet && (
+        <Display
+          noPaddingX
+          title={
+            <DisplayTitle
+              title={<header style={{ marginLeft: 15 }}>Root subnet</header>}
+            />
+          }
+        >
+          <RootSubnetsTable data={[rootSubnet] || []} />
+        </Display>
+      )}
     </MainContainer>
   );
 }

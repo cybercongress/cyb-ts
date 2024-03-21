@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../routes';
 import { cutAddress } from 'src/components/MusicalAddress/utils';
+import styles from './WeightsTable.module.scss';
 
 type Props = {
   data: any[];
@@ -25,31 +26,57 @@ function WeightsTable({ data, neurons }: Props) {
 
   return (
     <div>
-      <Table
-        columns={
-          // useMemo(
-          // () =>
-          data.map((_, i) => {
-            const { hotkey } = neurons[i];
-            return columnHelper.accessor(String(i), {
-              header: (
-                <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                  {hotkey}
-                </Link>
-              ),
+      <div className={styles.temp}>
+        <Table
+          data={neurons}
+          columns={[
+            columnHelper.accessor('hotkey', {
+              header: '',
               cell: (info) => {
-                const val = info.getValue();
+                const hotkey = info.getValue();
 
-                if (!val) {
-                  return '-';
-                }
-                return val.toFixed(2) + '%';
+                const uid = neurons.find((n) => n.hotkey === hotkey)?.uid;
+
+                return (
+                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
+                    {uid}
+                  </Link>
+                );
+
+                // if (!val) {
+                //   return '-';
+                // }
+                // return val.toFixed(2) + '%';
               },
-            });
-          })
-        }
-        data={percentsData}
-      />
+            }),
+          ]}
+        />
+        <Table
+          columns={
+            // useMemo(
+            // () =>
+            data.map((_, i) => {
+              const { hotkey, uid } = neurons[i];
+              return columnHelper.accessor(String(i), {
+                header: (
+                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
+                    {uid}
+                  </Link>
+                ),
+                cell: (info) => {
+                  const val = info.getValue();
+
+                  if (!val) {
+                    return '-';
+                  }
+                  return val.toFixed(2) + '%';
+                },
+              });
+            })
+          }
+          data={percentsData}
+        />
+      </div>
     </div>
   );
 }
