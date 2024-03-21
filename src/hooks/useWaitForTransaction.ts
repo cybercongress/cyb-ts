@@ -31,7 +31,9 @@ function useWaitForTransaction({ hash, onSuccess }: Props) {
     },
     {
       enabled: Boolean(queryClient && hash),
-      retry: 60,
+      retry: (_, error) => {
+        return error.message === NO_RESPONSE_ERROR;
+      },
       retryDelay: 2500,
       onSuccess: (response) => {
         onSuccess && onSuccess(response);
@@ -41,7 +43,7 @@ function useWaitForTransaction({ hash, onSuccess }: Props) {
 
   return {
     data,
-    error,
+    error: error?.message,
     isLoading: isFetching,
   };
 }

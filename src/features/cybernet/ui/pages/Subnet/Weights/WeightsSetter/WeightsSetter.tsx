@@ -37,11 +37,11 @@ function WeightsSetter({
         ),
         version_key: 0,
       },
-      onSuccess: () => {
-        setWeights(new Array(length).fill(0));
-        setAdviser('Weights set', 'green');
-        callback();
-      },
+    },
+    onSuccess: () => {
+      setWeights(new Array(length).fill(0));
+      setAdviser('Weights set', 'green');
+      callback();
     },
   });
 
