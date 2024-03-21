@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNetworks } from 'src/contexts/networks';
-import { CYBER } from '../../utils/config';
+import { CHAIN_ID } from 'src/constants/config';
+import { useAdviser } from 'src/features/adviser/context';
 import { MainContainer } from '../portal/components';
 import { ContainerGradientText } from '../../components';
 import BtnPasport from '../portal/pasport/btnPasport';
-import { useAdviser } from 'src/features/adviser/context';
 
 function ValueItem({ children }) {
   return (
@@ -59,7 +59,7 @@ function ListNetwork() {
         <ContainerGradientText status={statusCard(key)} key={key}>
           {key !== 'bostrom' &&
             key !== 'space-pussy' &&
-            key !== CYBER.CHAIN_ID && (
+            key !== CHAIN_ID && (
               <BtnPasport
                 onClick={() => onClickDeleteAddress(key)}
                 typeBtn="red"

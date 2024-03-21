@@ -6,7 +6,6 @@ import {
   FormatNumberTokens,
   AmountDenom,
 } from 'src/components';
-import { CYBER } from '../../../../../utils/config';
 import {
   formatNumber,
   timeSince,

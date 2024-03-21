@@ -3,9 +3,9 @@ import { Coin, StdFee } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
-import { DEFAULT_GAS_LIMITS } from 'src/utils/config';
 import { getNowUtcNumber } from 'src/utils/date';
 
+import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
 

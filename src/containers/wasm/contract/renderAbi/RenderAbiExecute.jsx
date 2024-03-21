@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { GasPrice } from '@cosmjs/launchpad';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
-import txs from '../../../../utils/txs';
-import { CYBER } from '../../../../utils/config';
 import JsonSchemaParse from './JsonSchemaParse';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
-
-const gasPrice = GasPrice.fromString('0.001boot');
+import { MEMO_KEPLR } from 'src/constants/config';
 
 // const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
 
@@ -80,7 +76,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
         contractAddress,
         formData,
         Soft3MessageFactory.fee(2),
-        CYBER.MEMO_KEPLR
+        MEMO_KEPLR
         // coinsPlaceholder
       );
       console.log(`executeResponseResult`, executeResponseResult);

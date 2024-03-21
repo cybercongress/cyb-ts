@@ -8,13 +8,12 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAppData } from 'src/contexts/appData';
 import { CardStatisics, Dots } from '../../components';
-import { CYBER } from '../../utils/config';
 import Txs from '../brain/tx';
 import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
-import { DENOM } from 'src/constants/config';
+import { DENOM, LCD } from 'src/constants/config';
 
 const PREFIXES = [
   {
@@ -115,7 +114,7 @@ function Home() {
       setEntropyLoader(true);
       const response = await axios({
         method: 'get',
-        url: `${CYBER.CYBER_NODE_URL_LCD}/rank/negentropy`,
+        url: `${LCD}/rank/negentropy`,
       });
       if (response.data.result.negentropy) {
         setEntropy(response.data.result.negentropy);

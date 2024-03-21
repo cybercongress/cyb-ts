@@ -16,7 +16,6 @@ import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import useGetBalances from 'src/hooks/getBalances';
-import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
@@ -32,7 +31,7 @@ import {
   calculateCounterPairAmount,
 } from './utils';
 import { useAdviser } from 'src/features/adviser/context';
-import { DENOM_LIQUID } from 'src/constants/config';
+import { DENOM, DENOM_LIQUID } from 'src/constants/config';
 
 const tokenADefaultValue = DENOM;
 const tokenBDefaultValue = DENOM_LIQUID;
@@ -217,7 +216,7 @@ function Warp() {
         exceeded = false;
       }
 
-      //valid add-liquidity in empty pool
+      // valid add-liquidity in empty pool
       if (
         tab === 'add-liquidity' &&
         isEmptyPool &&

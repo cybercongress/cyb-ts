@@ -7,8 +7,9 @@ import {
   Route as RouteUniswap,
 } from '@uniswap/sdk';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { TOTAL_GOL_GENESIS_SUPPLY, CYBER } from '../../utils/config';
+import { TOTAL_GOL_GENESIS_SUPPLY } from '../../utils/config';
 import { convertResources } from '../../utils/utils';
+import { DIVISOR_CYBER_G } from 'src/constants/config';
 
 const initValue = {
   supply: 0,
@@ -63,7 +64,7 @@ function useGetCybernomics() {
     const currentPriceGol = route.midPrice.invert().toSignificant(6);
     const gol = {
       supply: parseFloat(TOTAL_GOL_GENESIS_SUPPLY),
-      price: currentPriceGol * CYBER.DIVISOR_CYBER_G,
+      price: currentPriceGol * DIVISOR_CYBER_G,
       cap: parseFloat(currentPriceGol * TOTAL_GOL_GENESIS_SUPPLY),
       loading: false,
     };

@@ -7,6 +7,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import { routes } from 'src/routes';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
+import { DENOM, MEMO_KEPLR } from 'src/constants/config';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -19,8 +21,7 @@ import {
 
 import { trimString } from '../../utils/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
-import useDelegation from 'src/features/staking/delegation/useDelegation';
+import { LEDGER } from '../../utils/config';
 import useGetHeroes from './getHeroesHook';
 
 const {
@@ -224,7 +225,7 @@ function ActionBarContainer({
             validatorAddres,
             coin(amount, DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
@@ -252,7 +253,7 @@ function ActionBarContainer({
             validatorAddres,
             coin(amount, DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
@@ -280,7 +281,7 @@ function ActionBarContainer({
             valueSelect,
             coin(amount, DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }

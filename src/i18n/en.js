@@ -1,6 +1,5 @@
-import { CYBER } from '../utils/config';
+import { DENOM } from "src/constants/config";
 
-const { DENOM } = CYBER;
 
 const i18n = {
   en: {

@@ -16,7 +16,6 @@ import {
   FormatNumberTokens,
 } from 'src/components';
 import { formatNumber, getDisplayAmount } from 'src/utils/utils';
-import { CYBER } from '../../utils/config';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';

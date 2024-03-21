@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import { routes } from 'src/routes';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { setFocus, setValue } from './commander.redux';
 import styles from './Commander.module.scss';

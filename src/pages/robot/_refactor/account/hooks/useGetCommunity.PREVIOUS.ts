@@ -3,7 +3,7 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 import { getFollowers, getFollows } from '../../../../../utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useBackend } from 'src/contexts/backend/backend';
 
 function useGetCommunity(address: string | null, skip?: boolean) {

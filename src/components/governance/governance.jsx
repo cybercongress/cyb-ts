@@ -1,9 +1,8 @@
 import { Pane, Text } from '@cybercongress/gravity';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
-import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
-import Tooltip from '../tooltip/tooltip';
 import { DENOM } from 'src/constants/config';
+import { formatNumber } from '../../utils/search/utils';
+import Tooltip from '../tooltip/tooltip';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');

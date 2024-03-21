@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { CYBER } from 'src/utils/config';
 import {
   findDenomInTokenList,
   reduceBalances,
@@ -11,7 +10,7 @@ import { ObjKeyValue } from 'src/types/data';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { DENOM_LIQUID } from 'src/constants/config';
+import { DENOM, DENOM_LIQUID } from 'src/constants/config';
 
 type OptionInterval = {
   refetchInterval?: number | false;

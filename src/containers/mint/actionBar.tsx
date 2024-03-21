@@ -12,7 +12,7 @@ import {
   TransactionError,
   ActionBar as ActionBarContainer,
 } from '../../components';
-import { CYBER, LEDGER } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import { SelectedState } from './types';
 import { DENOM_LIQUID } from 'src/constants/config';
 

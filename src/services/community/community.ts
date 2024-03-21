@@ -1,6 +1,6 @@
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { Subject, Observable } from 'rxjs';
 
 import DbApiWrapper from '../backend/services/dataSource/indexedDb/dbApiWrapper';

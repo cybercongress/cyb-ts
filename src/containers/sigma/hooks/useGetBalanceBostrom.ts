@@ -4,11 +4,10 @@ import _ from 'lodash';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import { Nullable } from 'src/types';
+import { DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const usePrevious = (value: any) => {
   const ref = useRef<any>();

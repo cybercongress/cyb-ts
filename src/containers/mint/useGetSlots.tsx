@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { authAccounts } from '../../utils/search/utils';
 import { convertResources } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import { Slot } from './types';
 import { DENOM_LIQUID } from 'src/constants/config';
 

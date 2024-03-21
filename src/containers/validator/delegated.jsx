@@ -1,10 +1,10 @@
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { CardTemplate, FormatNumber } from '../../components';
-import { formatNumber } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
-import KeybaseCheck from './keybaseCheck';
 import Display from 'src/components/containerGradient/Display/Display';
+import { DENOM, DIVISOR_CYBER_G } from 'src/constants/config';
+import { FormatNumber } from '../../components';
+import { formatNumber } from '../../utils/utils';
+import KeybaseCheck from './keybaseCheck';
 
 const dateFormat = require('dateformat');
 
@@ -110,7 +110,7 @@ function Delegated({ data, marginBottom }) {
             <Pane display="flex">
               {formatNumber(selfPercent, 2)}% (
               <FormatNumber
-                number={formatNumber(self / CYBER.DIVISOR_CYBER_G, 6)}
+                number={formatNumber(self / DIVISOR_CYBER_G, 6)}
                 currency={`G${DENOM.toUpperCase()}`}
                 fontSizeDecimal={12}
               />

@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { CYBER } from '../../../utils/config';
+import { DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetSlots from '../../mint/useGetSlots';
-
-const { DENOM, DENOM_LIQUID } = CYBER;
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
   return { denom, amount };

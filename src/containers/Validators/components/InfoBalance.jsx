@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { CardStatisics, Dots } from '../../../components';
+import { CardStatisics, Dots, DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
-import { DENOM_LIQUID } from 'src/constants/config';
-
-const { DENOM, HYDROGEN } = CYBER;
+import { DENOM_LIQUID, DENOM } from 'src/constants/config';
 
 function TootipContent() {
   return (
@@ -56,7 +53,12 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
 
       <Link to="/hfr">
         <CardStatisics
-          title={`${HYDROGEN} available`}
+          title={
+            <span>
+              <DenomArr denomValue={DENOM_LIQUID} />
+              available
+            </span>
+          }
           value={
             loadingBalanceInfo ? (
               <Dots />

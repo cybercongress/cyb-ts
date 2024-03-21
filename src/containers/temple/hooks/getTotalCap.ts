@@ -2,12 +2,12 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
-import { CYBER } from '../../../utils/config';
 import {
   findDenomInTokenList,
   getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
+import { DENOM } from 'src/constants/config';
 
 function useGetTotalCap() {
   const { marketData, dataTotalSupply } = useAppData();

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ActionBarSend } from 'components';
 import txs from '../../../utils/txs';
-import { CYBER } from 'src/utils/config';
 import { downloadObjectAsJson } from 'src/utils/utils';
 
 const MEMO = 'cyb.ai, using CLI';

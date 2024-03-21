@@ -1,6 +1,7 @@
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { CHAIN_ID } from 'src/constants/config';
 import {
   HUB_CHANNELS,
   HUB_NETWORKS,
@@ -9,7 +10,6 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { Option } from 'src/types';
 import { Channel, Network, Token } from 'src/types/hub';
-import { CYBER } from 'src/utils/config';
 
 type ObjectKey<T> = {
   [key: string]: T;
@@ -75,7 +75,7 @@ export function useTokens() {
     const objectMappedResult: ObjectKey<Token> = {};
     if (data) {
       data.entries.forEach((row: Token) => {
-        if (row.chain_id === CYBER.CHAIN_ID) {
+        if (row.chain_id === CHAIN_ID) {
           const { contract } = row;
           const ticker =
             contract.indexOf('native') !== -1

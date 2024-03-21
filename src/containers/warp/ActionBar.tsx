@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
+import { CHAIN_ID, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { Account, ActionBar as ActionBarCenter } from '../../components';
 import { LEDGER } from '../../utils/config';
 import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
@@ -16,7 +17,6 @@ import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 import ActionBarStaps from './actionBarSteps';
 import { sortReserveCoinDenoms } from '../../pages/teleport/swap/utils';
 import { TypeTab, TypeTabEnum } from './type';
-import { CHAIN_ID, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 
 const POOL_TYPE_INDEX = 1;
 

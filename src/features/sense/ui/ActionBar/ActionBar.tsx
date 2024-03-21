@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { AdviserProps } from '../Sense';
-import { CYBER } from 'src/utils/config';
 import { coin } from '@cosmjs/launchpad';
 import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
 import styles from './ActionBar.module.scss';
@@ -19,6 +18,7 @@ import {
   sendTokensWithMessage,
 } from 'src/services/neuron/neuronApi';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
+import { DENOM } from 'src/constants/config';
 
 type Props = {
   id: string | undefined;

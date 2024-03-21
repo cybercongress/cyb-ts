@@ -1,7 +1,7 @@
 import { TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Tooltip } from '../../../components';
 import { TextTable } from './ui';
-import { CYBER } from '../../../utils/config';
+import { DENOM } from 'src/constants/config';
 
 function TableHeroes({ mobile, showJailed, children }) {
   return (

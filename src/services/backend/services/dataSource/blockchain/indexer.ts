@@ -5,7 +5,6 @@ import { gql } from '@apollo/client';
 
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
 import { dateToUtcNumber, numberToUtcDate } from 'src/utils/date';
-import { CYBER_INDEX_HTTPS } from 'src/constants/config';
 
 import { CYBERLINKS_BATCH_LIMIT } from './consts';
 import { fetchIterable } from './utils/fetch';

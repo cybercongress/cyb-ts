@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../../utils/config';
 import DonutChart from '../../../../components/DonutChart';
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
 import { GIFT_ICON } from '../../utils';
 import { ProgressBar } from '../progressCard';
 import styles from './ReleaseStatus.module.scss';
+import { DENOM } from 'src/constants/config';
 
 type DataReleaseStatus = {
   availableRelease: number;

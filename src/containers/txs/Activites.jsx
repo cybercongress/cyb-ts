@@ -4,8 +4,8 @@ import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
 import { Account, MsgType, DenomArr, AmountDenom, Cid } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
+import { DENOM } from 'src/constants/config';
 
 const S_TO_MS = 1 * 10 ** 3;
 

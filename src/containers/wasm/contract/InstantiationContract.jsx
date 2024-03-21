@@ -5,7 +5,6 @@ import JSONInput from 'react-json-editor-ajrm';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
-import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import styles from './stylesInstantiationContract.scss';
 import { CardItem } from '../codes/code';
@@ -15,6 +14,7 @@ import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 import Button from 'src/components/btnGrd';
 import { Input } from 'src/components';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import { DENOM } from 'src/constants/config';
 
 const executePlaceholder = {
   name: 'Nation coin',

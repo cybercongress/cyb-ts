@@ -1,8 +1,7 @@
 import { Coin } from '@cosmjs/launchpad';
 import { ContainerGradientText, FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../utils/config';
-import styles from './styles.module.scss';
 import { DENOM_LIQUID } from 'src/constants/config';
+import styles from './styles.module.scss';
 
 type Props = {
   vol24: undefined | Coin;

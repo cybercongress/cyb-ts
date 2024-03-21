@@ -1,7 +1,6 @@
-import { CYBER } from 'src/utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import ItemBalance from '../components/ItemBalance/ItemBalance';
 import styles from './LiquidBalances.module.scss';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 type Props = {
   amount: {
@@ -13,16 +12,8 @@ type Props = {
 function LiquidBalances({ amount: { liquidH, frozenH } }: Props) {
   return (
     <div className={styles.wrapper}>
-      <ItemBalance
-        text="Liquid"
-        amount={liquidH}
-        demon={DENOM_LIQUID}
-      />
-      <ItemBalance
-        text="Frozen"
-        amount={frozenH}
-        demon={DENOM_LIQUID}
-      />
+      <ItemBalance text="Liquid" amount={liquidH} demon={DENOM_LIQUID} />
+      <ItemBalance text="Frozen" amount={frozenH} demon={DENOM_LIQUID} />
     </div>
   );
 }

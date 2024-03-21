@@ -7,7 +7,7 @@ import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
-import { CYBER } from '../../../utils/config';
+import { DENOM } from 'src/constants/config';
 
 const PAGE_SIZE = 50;
 

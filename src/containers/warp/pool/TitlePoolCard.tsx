@@ -1,8 +1,7 @@
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { DenomArr, FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../utils/config';
-import styles from './styles.module.scss';
 import { DENOM_LIQUID } from 'src/constants/config';
+import styles from './styles.module.scss';
 
 type TitlePoolPool = {
   pool: Pool;

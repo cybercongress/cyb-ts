@@ -3,10 +3,8 @@ import { Decimal } from '@cosmjs/math';
 import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
-import { CYBER } from '../../../utils/config';
+import { BECH32_PREFIX_VALOPER, DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
-
-const { DENOM } = CYBER;
 
 const initValue = {
   denom: DENOM,
@@ -107,7 +105,7 @@ export const useGetBalance = (client, addressBech32) => {
 
         const dataValidatorAddress = fromBech32(
           addressBech32,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+          BECH32_PREFIX_VALOPER
         );
 
         const responsevalidatorCommission = await client.validatorCommission(

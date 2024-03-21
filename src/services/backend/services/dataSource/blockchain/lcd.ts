@@ -2,10 +2,9 @@
 import axios from 'axios';
 import { T } from 'ramda';
 import { CyberlinkTxHash, NeuronAddress, ParticleCid } from 'src/types/base';
-import { CID_TWEET } from 'src/constants/app';
 import { dateToUtcNumber } from 'src/utils/date';
+import { LCD } from 'src/constants/config';
 import { fetchIterable } from './utils/fetch';
-import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 
 const PAGINATION_LIMIT = 10;
 
@@ -20,7 +19,7 @@ async function getTransactions(
   orderBy = 'ORDER_BY_UNSPECIFIED'
 ) {
   const { offset, limit } = pagination;
-  const response = axios.get(`${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`, {
+  const response = axios.get(`${LCD}/cosmos/tx/v1beta1/txs`, {
     params: {
       'pagination.offset': offset,
       'pagination.limit': limit,
@@ -54,7 +53,7 @@ const fetchLinkByNeuron = async ({
     },
   ];
   const response = await getTransactions(
-    CYBER_NODE_URL_LCD,
+    LCD,
     events,
     { limit: PAGINATION_LIMIT, offset },
     'ORDER_BY_DESC'

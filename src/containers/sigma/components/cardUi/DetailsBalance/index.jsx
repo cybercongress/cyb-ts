@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { CYBER } from '../../../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.module.scss';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 function DetailsBalance({ data }) {
   const { traseDenom } = useIbcDenom();

@@ -15,7 +15,6 @@ import {
 import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, NebulaImg } from './components';
-import { CYBER } from '../../utils/config';
 import { useAdviser } from 'src/features/adviser/context';
 import { DENOM_LIQUID } from 'src/constants/config';
 

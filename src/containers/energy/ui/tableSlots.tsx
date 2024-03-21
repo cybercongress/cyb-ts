@@ -1,7 +1,6 @@
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { DenomArr, TextTable, ValueImg } from '../../../components';
-import { CYBER } from '../../../utils/config';
 import Table from 'src/components/Table/Table';
 import { CssVariables } from 'src/style/variables';
 import { createColumnHelper } from '@tanstack/react-table';

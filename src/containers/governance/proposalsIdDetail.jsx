@@ -1,7 +1,6 @@
 import { Pane } from '@cybercongress/gravity';
 import { IconStatus, Item, ContainerGradientText } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
 import { DENOM } from 'src/constants/config';
 
 const dateFormat = require('dateformat');
