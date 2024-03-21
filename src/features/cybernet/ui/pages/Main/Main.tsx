@@ -4,11 +4,14 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import { Link } from 'react-router-dom';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
+import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 function Main() {
   useAdviserTexts({
     defaultText: 'welcome to Cybernet',
   });
+
+  const address = useCurrentAddress();
 
   return (
     <MainContainer resetMaxWidth>
@@ -18,13 +21,15 @@ function Main() {
         <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
 
         <br />
-
-        <Link to="./staking/my">My stake</Link>
-      </Display>
-      <Display title={<DisplayTitle title={'Cybertensor Docs'} />}>
-        <Link to="https://github.com/cybercongress/cybertensor">cli and python package</Link>
         <br />
-        <Link to="https://github.com/cybercongress/cybernet">cosmwasm contract</Link>
+        <br />
+
+        <h3>My</h3>
+        <br />
+
+        <Link to="./staking/my">Stake</Link>
+        <br />
+        <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
     </MainContainer>
   );

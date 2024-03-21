@@ -37,11 +37,11 @@ function WeightsSetter({
         ),
         version_key: 0,
       },
-      onSuccess: () => {
-        setWeights(new Array(length).fill(0));
-        setAdviser('Weights set', 'green');
-        callback();
-      },
+    },
+    onSuccess: () => {
+      setWeights(new Array(length).fill(0));
+      setAdviser('Weights set', 'green');
+      callback();
     },
   });
 
@@ -51,18 +51,18 @@ function WeightsSetter({
     <div>
       <br />
       {/* <p>Set weights for operators. Max weights limit: {max_weights_limit}</p> */}
-      <p>Sum: {sum}</p>
+
+      <p>Set weights for operators</p>
+      <p>Sum: {sum}% (max 100%)</p>
 
       <br />
 
       <div className={styles.group}>
         {new Array(length).fill(null).map((_, i) => {
-          const { hotkey } = neurons[i];
+          const { hotkey, uid } = neurons[i];
           return (
             <div key={i}>
-              <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                {hotkey}
-              </Link>
+              <Link to={cybernetRoutes.delegator.getLink(hotkey)}>{uid}</Link>
               <InputNumber
                 value={weights[i]}
                 onChange={(e) => {

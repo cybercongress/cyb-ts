@@ -12,6 +12,8 @@ import { routes } from 'src/routes';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './Weights/Weights';
 import { cybernetRoutes } from '../../routes';
+import SubnetNeurons from './SubnetNeurons/SubnetNeurons';
+import styles from './Subnet.module.scss';
 
 function Subnet() {
   const { id } = useParams();
@@ -44,10 +46,12 @@ function Subnet() {
   console.info('info', subnetQuery.data);
   console.info('hyperparams', hyperparamsQuery);
 
+  const subnetNeurons = neuronsQuery.data;
+
   return (
     <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title={'Subnet: ' + id} />}>
-        <ul>
+        <ul className={styles.list}>
           {subnetQuery.data &&
             Object.keys(subnetQuery.data).map((item) => {
               const value = subnetQuery.data[item];
@@ -67,7 +71,7 @@ function Subnet() {
 
               return (
                 <li key={item}>
-                  {item}: {content}
+                  {item}: <div>{content}</div>
                 </li>
               );
             })}
@@ -75,7 +79,7 @@ function Subnet() {
       </Display>
 
       <Display title={<DisplayTitle title="Hyperparams" />}>
-        <ul>
+        <ul className={styles.list}>
           {hyperparamsQuery.data &&
             Object.keys(hyperparamsQuery.data).map((item) => {
               const value = hyperparamsQuery.data[item];
@@ -83,26 +87,14 @@ function Subnet() {
 
               return (
                 <li key={item}>
-                  {item}: {content}
+                  {item}: <div>{content}</div>
                 </li>
               );
             })}
         </ul>
       </Display>
 
-      {neuronsQuery.data?.length && (
-        <Display title={<DisplayTitle title="Neurons" />}>
-          <ul>
-            {neuronsQuery.data.map((neuron) => (
-              <li key={neuron.hotkey}>
-                <Link to={cybernetRoutes.delegator.getLink(neuron.hotkey)}>
-                  {neuron.hotkey}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Display>
-      )}
+      {subnetNeurons && <SubnetNeurons neurons={subnetNeurons} />}
 
       {subnetQuery.data?.subnetwork_n > 0 && (
         <Weights

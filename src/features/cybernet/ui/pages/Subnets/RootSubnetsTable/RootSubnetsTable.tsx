@@ -56,15 +56,7 @@ function RootSubnetsTable({ data }: Props) {
               header: 'tempo',
               cell: (info) => info.getValue(),
             }),
-            // columnHelper.accessor('metadata', {
-            //   header: 'metadata',
-            //   cell: (info) => (
-            //     <Link to={routes.oracle.ask.getLink(info.getValue())}>
-            //       {/* <Cid cid={info.getValue()} /> */}
-            //       {info.getValue().substr(0, 10) + '...'}
-            //     </Link>
-            //   ),
-            // }),
+
             columnHelper.accessor('max_allowed_validators', {
               header: 'Max validators',
               cell: (info) => info.getValue(),
@@ -72,6 +64,16 @@ function RootSubnetsTable({ data }: Props) {
             columnHelper.accessor('max_allowed_uids', {
               header: 'Max operators',
               cell: (info) => info.getValue(),
+            }),
+
+            columnHelper.accessor('metadata', {
+              header: 'metadata',
+              cell: (info) => (
+                <Link to={routes.oracle.ask.getLink(info.getValue())}>
+                  {/* <Cid cid={info.getValue()} /> */}
+                  {info.getValue().substr(0, 10) + '...'}
+                </Link>
+              ),
             }),
           ],
           []

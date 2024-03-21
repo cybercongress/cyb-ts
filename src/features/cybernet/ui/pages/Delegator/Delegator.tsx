@@ -54,6 +54,10 @@ function Delegator() {
               const value = data[item];
               let content = value;
 
+              if (item === 'delegate') {
+                return null;
+              }
+
               if (item === 'owner') {
                 content = (
                   <Link to={routes.neuron.getLink(value)}>{value}</Link>
@@ -71,7 +75,8 @@ function Delegator() {
                             {address}
                           </Link>
                           <p>
-                            Amount: {amount} <DenomArr denomValue="pussy" />
+                            Amount: {amount}{' '}
+                            <DenomArr denomValue="pussy" onlyImg />
                           </p>
                         </li>
                       );

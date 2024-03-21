@@ -10,6 +10,8 @@ import { StakeInfo } from 'src/features/cybernet/types';
 import { routes as cybernetRoutes } from '../../routes';
 import styles from './MyDelegation.module.scss';
 
+// mixed with my delegation, refactor
+
 function MyDelegation() {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
@@ -46,8 +48,10 @@ function MyDelegation() {
                 <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
                   {hotkey}
                 </Link>{' '}
-                {stake} <DenomArr denomValue="pussy" />
-                {Number((stake / total).toFixed(2)) * 100}%
+                {stake} <DenomArr denomValue="pussy" onlyImg />
+                {stake !== 0 && (
+                  <>{Number((stake / total).toFixed(2)) * 100}%</>
+                )}
               </li>
             );
           })}

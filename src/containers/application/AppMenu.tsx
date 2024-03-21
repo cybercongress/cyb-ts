@@ -2,7 +2,7 @@ import { Networks } from 'src/types/networks';
 import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
-import nebulaIcon from '../../image/temple/nebula.png';
+// import nebulaIcon from '../../image/temple/nebula.png';
 import teleport from '../../image/temple/teleport.png';
 import hfr from '../../image/temple/hfr.png';
 import temple from '../../image/temple/temple.png';
@@ -11,11 +11,12 @@ import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
 import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
-import warp from '../../image/temple/warp.png';
+// import warp from '../../image/temple/warp.png';
 // import hub from '../../image/temple/hub.png';
 // import congress from './images/congress.png';
 
 import { routes } from '../../routes';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 
 const itemsMenu = () => {
   const listItemMenu = [
@@ -24,8 +25,8 @@ const itemsMenu = () => {
       icon: temple,
       to: '/cybernet',
       subItems: [
-        { name: 'subnets', to: '/cybernet/subnets' },
-        { name: 'delegates', to: '/cybernet/delegates' },
+        { name: 'subnets', to: cybernetRoutes.subnets.getLink() },
+        { name: 'delegates', to: cybernetRoutes.delegators.getLink() },
         { name: 'my staking', to: '/cybernet/staking/my' },
       ],
     },
