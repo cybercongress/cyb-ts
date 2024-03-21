@@ -29,7 +29,6 @@ const initValue = {
   CHAIN_ID: 'bostrom',
   DENOM: 'boot',
   DENOM_LIQUID: 'hydrogen',
-  DENOM_CYBER_G: 'GBOOT',
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',

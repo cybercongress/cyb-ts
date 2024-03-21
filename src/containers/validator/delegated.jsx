@@ -93,9 +93,7 @@ function Delegated({ data, marginBottom }) {
         />
         <Row
           title="Token"
-          value={`${formatNumber(
-            Math.floor(total)
-          )} ${DENOM.toUpperCase()}`}
+          value={`${formatNumber(Math.floor(total))} ${DENOM.toUpperCase()}`}
         />
         <Row
           title="Commission Rate"
@@ -113,7 +111,7 @@ function Delegated({ data, marginBottom }) {
               {formatNumber(selfPercent, 2)}% (
               <FormatNumber
                 number={formatNumber(self / CYBER.DIVISOR_CYBER_G, 6)}
-                currency={CYBER.DENOM_CYBER_G}
+                currency={`G${DENOM.toUpperCase()}`}
                 fontSizeDecimal={12}
               />
               )

@@ -6,7 +6,6 @@ let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
   DENOM: 'boot',
   DENOM_LIQUID: 'hydrogen',
-  DENOM_CYBER_G: `GBOOT`,
   CYBER_NODE_URL_API:
     process.env.CYBER_NODE_URL_API || 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL:
@@ -30,7 +29,6 @@ if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
     CHAIN_ID: Networks.SPACE_PUSSY,
     DENOM: 'pussy',
     DENOM_LIQUID: 'liquidpussy',
-    DENOM_CYBER_G: `GPUSSY`,
     CYBER_NODE_URL_API: 'https://rpc.space-pussy.cybernode.ai/',
     CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy.cybernode.ai/websocket',
     CYBER_NODE_URL_LCD: 'https://lcd.space-pussy.cybernode.ai',

@@ -8,7 +8,7 @@ import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable, Option } from 'src/types';
 import { Log } from '@cosmjs/stargate/build/logs';
 
-import { INDEX_URL } from 'src/constants/config';
+import { INDEX_HTTPS } from 'src/constants/config';
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint, $type: _text) {
@@ -65,7 +65,7 @@ function useGetSendTxsByAddressByType(
   } = useInfiniteQuery(
     ['messagesByAddressGql', addressBech32, type],
     async ({ pageParam = 0 }) => {
-      const res = await request(INDEX_URL, messagesByAddress, {
+      const res = await request(INDEX_HTTPS, messagesByAddress, {
         address: `{${addressBech32}}`,
         limit,
         offset: new BigNumber(limit).multipliedBy(pageParam).toString(),

@@ -5,7 +5,7 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
-import { INDEX_URL, LCD } from 'src/constants/config';
+import { INDEX_HTTPS, LCD } from 'src/constants/config';
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -318,7 +318,7 @@ export const getTotalRewards = async (delegatorAddr) => {
 /**
  * @deprecated use Apollo
  */
-export const getGraphQLQuery = async (query, urlGraphql = INDEX_URL) => {
+export const getGraphQLQuery = async (query, urlGraphql = INDEX_HTTPS) => {
   const body = JSON.stringify({
     query,
   });
