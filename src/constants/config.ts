@@ -1,7 +1,8 @@
 import { Networks } from 'src/types/networks';
 import defaultNetworks from './defaultNetworks';
 
-const DEFAULT_CHAIN_ID = Networks.BOSTROM;
+const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
+  Networks.BOSTROM;
 
 export const CHAIN_ID = process.env.CHAIN_ID || DEFAULT_CHAIN_ID;
 

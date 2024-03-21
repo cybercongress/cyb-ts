@@ -1,6 +1,12 @@
-const defaultNetworks = {
+import { NetworkConfig, Networks } from 'src/types/networks';
+
+type NetworksList = {
+  [key in Networks.BOSTROM | Networks.SPACE_PUSSY]: NetworkConfig;
+};
+
+const defaultNetworks: NetworksList = {
   bostrom: {
-    CHAIN_ID: 'bostrom',
+    CHAIN_ID: Networks.BOSTROM,
     DENOM: 'boot',
     DENOM_LIQUID: 'hydrogen',
     API: 'https://rpc.bostrom.cybernode.ai',
@@ -12,7 +18,7 @@ const defaultNetworks = {
     MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
   },
   'space-pussy': {
-    CHAIN_ID: 'space-pussy',
+    CHAIN_ID: Networks.SPACE_PUSSY,
     DENOM: 'pussy',
     DENOM_LIQUID: 'liquidpussy',
     API: 'https://rpc.space-pussy.cybernode.ai/',
