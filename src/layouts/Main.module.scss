@@ -1,5 +1,13 @@
 .wrapper {
   footer {
+    display: flex;
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    bottom: 0px;
+    height: 40px;
+    background-color: #000;
+
     a {
       position: fixed;
       z-index: 2;
@@ -9,10 +17,29 @@
       align-items: center;
     }
   }
+
+  .Time {
+    display: flex;
+    position: fixed;
+    right: 5vw;
+  }
+}
+
+@mixin positionFixed() {
+  position: fixed;
+  z-index: 3;
+  top: 45%;
 }
 
 .senseBtn {
-  position: fixed;
-  top: 45%;
-  z-index: 3;
+  @include positionFixed();
+}
+
+.hydrogenBtn {
+  @include positionFixed();
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
 }

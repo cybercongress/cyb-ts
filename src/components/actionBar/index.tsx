@@ -13,6 +13,8 @@ import styles from './styles.module.scss';
 import Button from '../btnGrd';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { trimString } from 'src/utils/utils';
+import Long from 'long';
+import Commander from 'src/containers/application/Header/Commander/Commander';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -44,7 +46,7 @@ type Props = {
   };
 };
 
-function ActionBar({ children, text, onClickBack, button }: Props) {
+function ActionBarComp({ children, text, onClickBack, button }: Props) {
   const { signerReady } = useSigningClient();
   const location = useLocation();
 
@@ -147,6 +149,25 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       )}
       {/* <GitHub /> */}
     </ActionBarContainer>
+  );
+}
+
+function ActionBarWrap({ children }) {
+  return (
+    <div className={styles.ActionBarWrap}>
+      <div className={styles.ActionBarWrapContent}>{children}</div>
+    </div>
+  );
+}
+
+function ActionBar({ children, text, onClickBack, button }: Props) {
+  return (
+    <ActionBarWrap>
+      <Commander />
+      <ActionBarComp text={text} onClickBack={onClickBack} button={button}>
+        {children}
+      </ActionBarComp>
+    </ActionBarWrap>
   );
 }
 

@@ -53,18 +53,21 @@ function Items({ item, selected, onClick }: Props) {
   );
 }
 
-const renderSubItems = (
+export const renderSubItems = (
   subItems: MenuItem['subItems'],
   location,
   onClickSubItem
 ) => {
   return subItems.map((itemSub) => {
+    const onClickFuc = () => {
+      onClickSubItem && onClickSubItem(itemSub.name);
+    };
     return (
       <Items
         selected={itemSub.to === location.pathname}
         key={itemSub.name}
         item={itemSub}
-        onClick={() => onClickSubItem(itemSub.name)}
+        onClick={onClickFuc}
       />
     );
   });
@@ -86,11 +89,11 @@ export function Bookmarks({
     setSelectedItem(itemKey);
     setSelectedItemSub('');
 
-    const item = items.find((item) => item.name === itemKey);
+    closeMenu();
 
-    if (item && item.subItems.length === 0) {
-      closeMenu();
-    }
+    // if (item && item.subItems.length === 0) {
+    //   closeMenu();
+    // }
   }
 
   function onClickSubItem(itemKey: string) {
@@ -120,11 +123,11 @@ export function Bookmarks({
               item={item}
               onClick={() => onClickItem(item.name)}
             />
-            {item.name === selectedItem && (
+            {/* {item.name === selectedItem && (
               <Pane paddingLeft={50}>
                 {renderSubItems(item.subItems, location, onClickSubItem)}
               </Pane>
-            )}
+            )} */}
           </div>
         );
       })}
