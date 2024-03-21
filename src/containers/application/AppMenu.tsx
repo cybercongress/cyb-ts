@@ -16,6 +16,7 @@ import hub from '../../image/temple/hub.png';
 import congress from './images/congress.png';
 
 import { routes } from '../../routes';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 
 const itemsMenu = () => {
   const listItemMenu = [
@@ -80,6 +81,17 @@ const itemsMenu = () => {
     //   ],
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    {
+      name: 'cybernet',
+      icon: temple,
+      to: '/cybernet',
+      subItems: [
+        { name: 'subnets', to: cybernetRoutes.subnets.getLink() },
+        { name: 'delegates', to: cybernetRoutes.delegators.getLink() },
+        { name: 'my staking', to: '/cybernet/staking/my' },
+      ],
+    },
+
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',

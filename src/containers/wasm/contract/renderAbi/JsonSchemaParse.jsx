@@ -59,7 +59,16 @@ function JsonSchemaParse({
       {contractResponse !== null && contractResponse.key === keyItem && (
         <div>
           <span>Response:</span>
-          <JsonView src={contractResponse.result} />
+          <JsonView
+            src={
+              typeof contractResponse.result === 'object' &&
+              contractResponse.result !== null
+                ? contractResponse.result
+                : {
+                    result: contractResponse.result,
+                  }
+            }
+          />
         </div>
       )}
     </div>
