@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import defaultNetworks from 'src/constants/defaultNetworks';
 import { Option } from 'src/types';
 import { NetworksList } from 'src/types/networks';
-import defaultNetworks from 'src/utils/defaultNetworks';
 
 type NetworksContext = {
   networks: Option<NetworksList>;
