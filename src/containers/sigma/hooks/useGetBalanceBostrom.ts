@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import { Nullable } from 'src/types';
-import { DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
@@ -90,7 +90,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
       if (!loadingMalin && !loadingToken) {
         let dataResult = {};
         const mainToken = {
-          [DENOM]: { ...balanceMainToken },
+          [BASE_DENOM]: { ...balanceMainToken },
         };
         const dataResultTemp = { ...mainToken, ...balanceToken };
         const tempData = getBalanceMarket(dataResultTemp);

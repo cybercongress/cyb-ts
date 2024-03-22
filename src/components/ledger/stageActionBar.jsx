@@ -24,7 +24,7 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
-import { CHAIN_ID, DENOM } from 'src/constants/config';
+import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 
 const param = {
   slashing: [
@@ -601,7 +601,7 @@ export function TextProposal({
             />
           </Pane>
           <Pane width="100%">
-            <Text color="#fff">deposit, {DENOM.toUpperCase()}</Text>
+            <Text color="#fff">deposit, {BASE_DENOM.toUpperCase()}</Text>
             <InputNumber
               value={valueDeposit}
               onChange={onChangeInputDeposit}
@@ -918,7 +918,7 @@ export function Delegate({
         placeholder="amount"
       />
       <Text marginLeft={10} fontSize="16px" color="#fff">
-        {DENOM.toUpperCase()}
+        {BASE_DENOM.toUpperCase()}
       </Text>
     </ActionBarContainer>
   );
@@ -952,7 +952,7 @@ export function ReDelegate({
         placeholder="amount"
       />
       <Text marginLeft={5} fontSize="16px" color="#fff">
-        {DENOM.toUpperCase()} restake to:
+        {BASE_DENOM.toUpperCase()} restake to:
       </Text>
       <select
         style={{
@@ -1041,7 +1041,7 @@ export function RewardsDelegators({
           <Account address={item.validator_address} />
           <Pane>
             {formatNumber(Math.floor(item.reward[0].amount))}{' '}
-            {DENOM.toUpperCase()}
+            {BASE_DENOM.toUpperCase()}
           </Pane>
         </Pane>
       );
@@ -1052,7 +1052,7 @@ export function RewardsDelegators({
     <ContainetLedger onClickBtnClose={onClickBtnClose}>
       <Pane fontSize="20px" marginBottom={20}>
         Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
-        {DENOM.toUpperCase()}
+        {BASE_DENOM.toUpperCase()}
       </Pane>
       Rewards:
       <Pane marginTop={10} marginBottom={30}>

@@ -13,7 +13,7 @@ import {
 import { LEDGER } from 'src/utils/config';
 import { PATTERN_CYBER } from 'src/constants/patterns';
 import { getTxs } from 'src/utils/search/utils';
-import { DEFAULT_GAS_LIMITS, DENOM } from 'src/constants/config';
+import { DEFAULT_GAS_LIMITS, BASE_DENOM } from 'src/constants/config';
 
 const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
   LEDGER;
@@ -42,7 +42,7 @@ function ActionBarKeplr({ updateAddress, updateBalance, onClickBack }) {
       const result = await signingClient.sendTokens(
         address,
         recipient,
-        coins(amount, DENOM),
+        coins(amount, BASE_DENOM),
         fee
       );
       console.log('result: ', result);

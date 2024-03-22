@@ -79,7 +79,7 @@ function ListNetwork() {
               </ValueItem>
               <ValueItem>
                 <div>denom</div>
-                <div>{item.DENOM}</div>
+                <div>{item.BASE_DENOM}</div>
               </ValueItem>
               <ValueItem>
                 <div>liquid denom</div>

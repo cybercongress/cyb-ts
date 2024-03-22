@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetSlots from '../../mint/useGetSlots';
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
@@ -92,7 +92,7 @@ function useBalanceToken(address, updateAddress) {
         if (getAllBalancesPromise.length > 0) {
           getAllBalancesPromise.forEach((item) => {
             const { amount, denom } = item;
-            if (denom !== DENOM) {
+            if (denom !== BASE_DENOM) {
               const elementBalancesToken = amount;
 
               if (

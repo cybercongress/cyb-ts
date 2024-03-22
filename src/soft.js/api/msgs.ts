@@ -6,7 +6,7 @@ import { QueryLiquidityPoolResponse } from '@cybercongress/cyber-js/build/codec/
 import BigNumber from 'bignumber.js';
 import { QueryValidatorsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import Long from 'long';
-import { DEFAULT_GAS_LIMITS, DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { DEFAULT_GAS_LIMITS, BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import { calculatePairAmount } from 'src/pages/teleport/swap/utils';
 import { ObjKeyValue } from 'src/types/data';
 import coinDecimalsConfig from 'src/utils/configToken';
@@ -39,7 +39,7 @@ class Soft3MessageFactory {
   protected readonly queryClient: CyberClient | undefined;
 
   static denom() {
-    return DENOM;
+    return BASE_DENOM;
   }
 
   static fee(fee: number | string | undefined = DEFAULT_GAS_LIMITS.toString()) {

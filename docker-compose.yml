@@ -15,7 +15,7 @@ services:
       - INDEX_HTTPS=https://index.bostrom.cybernode.ai/v1/graphql
       - INDEX_WEBSOCKET=wss://index.bostrom.cybernode.ai/v1/graphql
       - CYBER_GATEWAY=https://gateway.bostrom.cybernode.ai
-      - DENOM=boot
+      - BASE_DENOM=boot
       - DENOM_LIQUID=hydrogen
       - BECH32_PREFIX=bostrom
 

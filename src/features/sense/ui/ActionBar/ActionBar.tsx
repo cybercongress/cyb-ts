@@ -18,7 +18,7 @@ import {
   sendTokensWithMessage,
 } from 'src/services/neuron/neuronApi';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 type Props = {
   id: string | undefined;
@@ -98,7 +98,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
       adviser.setAdviserText('Preparing transaction...');
 
-      const formattedAmount = [coin(amount || 1, DENOM)];
+      const formattedAmount = [coin(amount || 1, BASE_DENOM)];
 
       const messageCid = await addIfpsMessageOrCid(message, { ipfsApi });
 

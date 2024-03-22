@@ -8,7 +8,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import { routes } from 'src/routes';
 import useDelegation from 'src/features/staking/delegation/useDelegation';
-import { DENOM, MEMO_KEPLR } from 'src/constants/config';
+import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -223,7 +223,7 @@ function ActionBarContainer({
           const response = await signingClient.delegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, DENOM),
+            coin(amount, BASE_DENOM),
             fee,
             MEMO_KEPLR
           );
@@ -251,7 +251,7 @@ function ActionBarContainer({
           const response = await signingClient.undelegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, DENOM),
+            coin(amount, BASE_DENOM),
             fee,
             MEMO_KEPLR
           );
@@ -279,7 +279,7 @@ function ActionBarContainer({
             addressKeplr,
             validatorAddres,
             valueSelect,
-            coin(amount, DENOM),
+            coin(amount, BASE_DENOM),
             fee,
             MEMO_KEPLR
           );

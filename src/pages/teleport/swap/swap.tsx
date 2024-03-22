@@ -14,7 +14,7 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
-import { DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import TokenSetterSwap, { TokenSetterId } from './components/TokenSetterSwap';
 import { useGetParams, useGetSwapPrice } from '../hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
@@ -26,7 +26,7 @@ import DataSwapTxs from './components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
 import Slippage from './components/slippage/Slippage';
 
-const tokenADefaultValue = DENOM;
+const tokenADefaultValue = BASE_DENOM;
 const tokenBDefaultValue = DENOM_LIQUID;
 
 function Swap() {

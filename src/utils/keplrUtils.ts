@@ -1,5 +1,5 @@
 import { Keplr } from '@keplr-wallet/types';
-import { API, CHAIN_ID, DENOM, LCD } from 'src/constants/config';
+import { API, CHAIN_ID, BASE_DENOM, LCD } from 'src/constants/config';
 
 export const getKeplr = async (): Promise<Keplr | undefined> => {
   if (window.keplr) {
@@ -35,8 +35,8 @@ const configKeplr = (prefix) => {
     rpc: API,
     rest: LCD,
     stakeCurrency: {
-      coinDenom: DENOM.toUpperCase(),
-      coinMinimalDenom: DENOM,
+      coinDenom: BASE_DENOM.toUpperCase(),
+      coinMinimalDenom: BASE_DENOM,
       coinDecimals: 0,
     },
     bip44: {
@@ -54,8 +54,8 @@ const configKeplr = (prefix) => {
     },
     currencies: [
       {
-        coinDenom: DENOM.toUpperCase(),
-        coinMinimalDenom: DENOM,
+        coinDenom: BASE_DENOM.toUpperCase(),
+        coinMinimalDenom: BASE_DENOM,
         coinDecimals: 0,
       },
       {
@@ -78,9 +78,9 @@ const configKeplr = (prefix) => {
     feeCurrencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: DENOM.toUpperCase(),
+        coinDenom: BASE_DENOM.toUpperCase(),
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: DENOM,
+        coinMinimalDenom: BASE_DENOM,
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },

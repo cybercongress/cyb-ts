@@ -4,7 +4,7 @@ import { Pane } from '@cybercongress/gravity';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
-import { DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
@@ -24,7 +24,7 @@ function Statistics({ communityPoolCyber, staked }) {
       gridGap="20px"
     >
       <CardStatisics
-        title={`Community pool, ${DENOM.toUpperCase()}`}
+        title={`Community pool, ${BASE_DENOM.toUpperCase()}`}
         value={formatNumber(Math.floor(communityPoolCyber))}
       />
       <Link to="/sphere">
@@ -82,8 +82,8 @@ function Governance() {
             totalCyb[item.denom] = parseFloat(item.amount);
           });
         }
-        if (totalCyb[DENOM] && totalCyb[DENOM_LIQUID]) {
-          stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[DENOM];
+        if (totalCyb[BASE_DENOM] && totalCyb[DENOM_LIQUID]) {
+          stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[BASE_DENOM];
         }
         setStaked(stakedBoot);
       }

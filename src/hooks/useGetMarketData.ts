@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { DENOM_LIQUID, DENOM } from 'src/constants/config';
+import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 import useGetTotalSupply from './useGetTotalSupply';
 import usePoolListInterval from './usePoolListInterval';
 import { reduceBalances, convertAmount } from '../utils/utils';
 
 const defaultTokenList = {
-  [DENOM]: 0,
+  [BASE_DENOM]: 0,
   [DENOM_LIQUID]: 0,
   milliampere: 0,
   millivolt: 0,

@@ -8,7 +8,7 @@ import { formatNumber, formatCurrency } from '../../../../../utils/utils';
 import { useGetHeroes } from '../hooks';
 import hS from './heroes.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -45,8 +45,8 @@ function Unbonding({ amount, stages, entries }) {
         overflow="hidden"
       >
         {stages > 1
-          ? `${formatCurrency(amount, DENOM.toUpperCase())} in ${stages} stages`
-          : `${formatCurrency(entries[0].balance, DENOM.toUpperCase())} in 
+          ? `${formatCurrency(amount, BASE_DENOM.toUpperCase())} in ${stages} stages`
+          : `${formatCurrency(entries[0].balance, BASE_DENOM.toUpperCase())} in 
       ${getDaysIn(entries[0].completionTime)} days`}
       </Pane>
       <Tooltip
@@ -54,7 +54,7 @@ function Unbonding({ amount, stages, entries }) {
           <div key={index}>
             {`${formatNumber(
               parseFloat(items.balance)
-            )} ${DENOM.toUpperCase()}`}{' '}
+            )} ${BASE_DENOM.toUpperCase()}`}{' '}
             in {getDaysIn(items.completionTime)} days
           </div>
         ))}

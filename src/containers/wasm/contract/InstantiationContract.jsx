@@ -14,7 +14,7 @@ import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 import Button from 'src/components/btnGrd';
 import { Input } from 'src/components';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -32,7 +32,7 @@ const executePlaceholder = {
   },
 };
 
-const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
+const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
 export function JSONInputCard({ title, placeholder, setState, height }) {

@@ -14,7 +14,7 @@ import styles from './stylesContractPage.scss';
 import RenderAbi from './renderAbi';
 import ExecuteTable from './ExecuteTable';
 import { DenomArr } from '../../../components';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 function isStargateMsgExecuteContract(msg) {
   return msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract' && !!msg.value;
@@ -106,7 +106,7 @@ const getExecutions = async (client, contractAddress, setExecutions) => {
 
 const getBalance = async (client, contractAddress, setBalance) => {
   try {
-    const response = await client.getBalance(contractAddress, DENOM);
+    const response = await client.getBalance(contractAddress, BASE_DENOM);
     if (response !== null) {
       setBalance(response);
     }

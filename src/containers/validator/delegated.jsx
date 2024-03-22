@@ -1,7 +1,7 @@
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Display from 'src/components/containerGradient/Display/Display';
-import { DENOM, DIVISOR_CYBER_G } from 'src/constants/config';
+import { BASE_DENOM, DIVISOR_CYBER_G } from 'src/constants/config';
 import { FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseCheck from './keybaseCheck';
@@ -89,11 +89,11 @@ function Delegated({ data, marginBottom }) {
           title="Delegator Shares"
           value={`${formatNumber(
             Math.floor(delegatorShares)
-          )} ${DENOM.toUpperCase()}`}
+          )} ${BASE_DENOM.toUpperCase()}`}
         />
         <Row
           title="Token"
-          value={`${formatNumber(Math.floor(total))} ${DENOM.toUpperCase()}`}
+          value={`${formatNumber(Math.floor(total))} ${BASE_DENOM.toUpperCase()}`}
         />
         <Row
           title="Commission Rate"
@@ -111,7 +111,7 @@ function Delegated({ data, marginBottom }) {
               {formatNumber(selfPercent, 2)}% (
               <FormatNumber
                 number={formatNumber(self / DIVISOR_CYBER_G, 6)}
-                currency={`G${DENOM.toUpperCase()}`}
+                currency={`G${BASE_DENOM.toUpperCase()}`}
                 fontSizeDecimal={12}
               />
               )

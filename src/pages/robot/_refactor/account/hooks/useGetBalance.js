@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
   BECH32_PREFIX_VALOPER,
-  DENOM,
+  BASE_DENOM,
   DENOM_LIQUID,
 } from 'src/constants/config';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
@@ -59,7 +59,7 @@ function useGetBalance(address, updateAddress) {
           setLoadingBalanceInfo(true);
           const availablePromise = await queryClient.getBalance(
             addressActive,
-            DENOM
+            BASE_DENOM
           );
           setBalance((item) => ({
             ...item,
@@ -177,7 +177,7 @@ function useGetBalance(address, updateAddress) {
           Object.keys(balancesToken).forEach((key) => {
             if (
               Object.hasOwnProperty.call(balancesToken, key) &&
-              key !== DENOM
+              key !== BASE_DENOM
             ) {
               const elementBalancesToken = balancesToken[key];
 

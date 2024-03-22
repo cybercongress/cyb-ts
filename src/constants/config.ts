@@ -25,8 +25,8 @@ export const BECH32_PREFIX =
 
 export const BECH32_PREFIX_VALOPER = `${BECH32_PREFIX}valoper`;
 
-export const DENOM =
-  process.env.DENOM || defaultNetworks[DEFAULT_CHAIN_ID].DENOM;
+export const BASE_DENOM =
+  process.env.BASE_DENOM || defaultNetworks[DEFAULT_CHAIN_ID].BASE_DENOM;
 
 export const DENOM_LIQUID =
   process.env.DENOM_LIQUID || defaultNetworks[DEFAULT_CHAIN_ID].DENOM_LIQUID;

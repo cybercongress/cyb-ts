@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { Networks } from 'src/types/networks';
 import { routes } from 'src/routes';
-import { CHAIN_ID, DENOM } from 'src/constants/config';
+import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 import Tooltip from '../tooltip/tooltip';
 import {
   coinDecimals,
@@ -59,7 +59,7 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
                 : routes.teleport.path
             }
           >
-            Get {DENOM.toUpperCase()}
+            Get {BASE_DENOM.toUpperCase()}
           </Link>
         </Text>
       </Pane>

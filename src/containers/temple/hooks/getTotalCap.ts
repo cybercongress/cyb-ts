@@ -7,7 +7,7 @@ import {
   getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 function useGetTotalCap() {
   const { marketData, dataTotalSupply } = useAppData();
@@ -90,9 +90,9 @@ function useGetTotalCap() {
       const ibcDenomAtom = getDenomHash(path, denomInfo.coinMinimalDenom);
       if (
         Object.prototype.hasOwnProperty.call(marketData, ibcDenomAtom) &&
-        Object.prototype.hasOwnProperty.call(marketData, DENOM)
+        Object.prototype.hasOwnProperty.call(marketData, BASE_DENOM)
       ) {
-        const priceBoot = new BigNumber(marketData[DENOM]);
+        const priceBoot = new BigNumber(marketData[BASE_DENOM]);
         const priceAtom = new BigNumber(marketData[ibcDenomAtom]);
         const priceBootForAtom = priceAtom
           .dividedBy(priceBoot)

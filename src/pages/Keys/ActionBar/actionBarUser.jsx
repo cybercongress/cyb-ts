@@ -22,7 +22,7 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
       sendAddres,
       amount,
       MEMO,
-      DENOM,
+      BASE_DENOM,
       true,
       addressFrom
     );

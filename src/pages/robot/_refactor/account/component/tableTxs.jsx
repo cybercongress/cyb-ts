@@ -104,7 +104,7 @@ function TableTxs({ data, type, accountUser, amount }) {
               //   key={i}
               //   content={`${formatNumber(
               //     Math.floor(items.value.amount.amount)
-              //   )} ${DENOM.toUpperCase()}`}
+              //   )} ${BASE_DENOM.toUpperCase()}`}
               // >
               <TextTable
                 key={i}

@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { coins } from '@cosmjs/launchpad';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import { DefaultAccount } from 'src/types/defaultAccount';
-import { DEFAULT_GAS_LIMITS, DENOM } from 'src/constants/config';
+import { DEFAULT_GAS_LIMITS, BASE_DENOM } from 'src/constants/config';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -81,7 +81,7 @@ class ActionBar extends Component<ActionBarProps> {
       const [{ address }] = await signer.getAccounts();
 
       try {
-        const deposit = coins(parseFloat(valueDeposit), DENOM);
+        const deposit = coins(parseFloat(valueDeposit), BASE_DENOM);
         if (valueSelect === 'textProposal') {
           response = await signingClient.submitProposal(
             address,
@@ -98,7 +98,7 @@ class ActionBar extends Component<ActionBarProps> {
         }
 
         if (valueSelect === 'communityPool') {
-          const amount = coins(10, DENOM);
+          const amount = coins(10, BASE_DENOM);
           response = await signingClient.submitProposal(
             address,
             {

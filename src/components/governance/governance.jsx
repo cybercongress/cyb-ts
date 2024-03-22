@@ -1,6 +1,6 @@
 import { Pane, Text } from '@cybercongress/gravity';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 import { formatNumber } from '../../utils/search/utils';
 import Tooltip from '../tooltip/tooltip';
 
@@ -242,7 +242,7 @@ export function Deposit({ totalDeposit, minDeposit }) {
             className="tooltip-text-deposit"
           >
             Total Deposit {formatNumber(totalDeposit)}{' '}
-            {DENOM.toUpperCase()}
+            {BASE_DENOM.toUpperCase()}
           </Text>
         </Pane>
       </Pane>

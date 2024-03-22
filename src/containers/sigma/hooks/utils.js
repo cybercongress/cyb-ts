@@ -3,11 +3,11 @@ import { Decimal } from '@cosmjs/math';
 import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
-import { BECH32_PREFIX_VALOPER, DENOM } from 'src/constants/config';
+import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
 
 const initValue = {
-  denom: DENOM,
+  denom: BASE_DENOM,
   amount: '0',
 };
 
@@ -30,7 +30,7 @@ const getDelegationsAmount = (data) => {
       delegationsAmount = delegationsAmount.plus(itemDelegation.balance.amount);
     });
   }
-  return initValueResponseFunc(DENOM, delegationsAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, delegationsAmount.toString());
 };
 
 const getUnbondingAmount = (data) => {
@@ -43,7 +43,7 @@ const getUnbondingAmount = (data) => {
       });
     });
   }
-  return initValueResponseFunc(DENOM, unbondingAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, unbondingAmount.toString());
 };
 
 const getRewardsAmount = (data) => {
@@ -55,7 +55,7 @@ const getRewardsAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM, rewardsAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, rewardsAmount.toString());
 };
 
 const getCommissionAmount = (data) => {
@@ -68,7 +68,7 @@ const getCommissionAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM, commissionAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, commissionAmount.toString());
 };
 
 export const useGetBalance = (client, addressBech32) => {
@@ -79,7 +79,7 @@ export const useGetBalance = (client, addressBech32) => {
       async () => {
         const responsegetBalance = await client.getBalance(
           addressBech32,
-          DENOM
+          BASE_DENOM
         );
 
         const responsedelegatorDelegations = await getDelegatorDelegations(
@@ -134,7 +134,7 @@ export const useGetBalance = (client, addressBech32) => {
         return {
           ...resultBalance,
           total: {
-            denom: DENOM,
+            denom: BASE_DENOM,
             amount: total,
           },
         };

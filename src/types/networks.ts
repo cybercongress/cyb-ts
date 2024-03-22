@@ -9,7 +9,7 @@ export const enum Networks {
 
 export type NetworkConfig = {
   CHAIN_ID: Networks;
-  DENOM: string;
+  BASE_DENOM: string;
   DENOM_LIQUID: string;
   API: string;
   LCD: string;

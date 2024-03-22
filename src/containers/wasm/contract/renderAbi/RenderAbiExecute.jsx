@@ -5,7 +5,7 @@ import JsonSchemaParse from './JsonSchemaParse';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
 
-// const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
+// const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];
 
 function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
   const queryClient = useQueryClient();

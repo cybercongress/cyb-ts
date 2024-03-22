@@ -1,12 +1,12 @@
 import { Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/utils';
 import DenomArr from '../denom';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 function NumberCurrency({
   amount,
   fontSizeDecimal,
-  currencyNetwork = DENOM,
+  currencyNetwork = BASE_DENOM,
   onlyImg,
   onlyText = true,
   ...props

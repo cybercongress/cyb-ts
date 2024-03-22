@@ -1,4 +1,4 @@
-import { DENOM } from "src/constants/config";
+import { BASE_DENOM } from "src/constants/config";
 
 
 const i18n = {
@@ -26,12 +26,12 @@ const i18n = {
     },
     brain: {
       knowledge: 'Knowledge graph',
-      yourTotal: `your total ${DENOM.toLocaleUpperCase()}`,
+      yourTotal: `your total ${BASE_DENOM.toLocaleUpperCase()}`,
       cyberlinks: 'cyberlinks',
       objects: 'objects',
       subjects: 'subjects',
       cybernomics: 'Cybernomics',
-      supply: `supply of ${DENOM.toLocaleUpperCase()}`,
+      supply: `supply of ${BASE_DENOM.toLocaleUpperCase()}`,
       staked: '% of staked CYB',
       price: 'price of cyberlink in RC',
       consensus: 'Consensus',

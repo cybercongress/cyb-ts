@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Dots, DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
-import { DENOM_LIQUID, DENOM } from 'src/constants/config';
+import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 
 function TootipContent() {
   return (
@@ -30,7 +30,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
   return (
     <ContainerGrid>
       <CardStatisics
-        title={`${DENOM.toUpperCase()} staked`}
+        title={`${BASE_DENOM.toUpperCase()} staked`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -41,7 +41,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       />
 
       <CardStatisics
-        title={`${DENOM.toUpperCase()} available`}
+        title={`${BASE_DENOM.toUpperCase()} available`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -77,7 +77,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       </Link>
 
       <CardStatisics
-        title={`${DENOM.toUpperCase()} rewards`}
+        title={`${BASE_DENOM.toUpperCase()} rewards`}
         value={
           loadingBalanceInfo ? (
             <Dots />

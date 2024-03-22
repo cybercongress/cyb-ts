@@ -1,5 +1,5 @@
 import { Pane, Text } from '@cybercongress/gravity';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 import {
   IconStatus,
   Votes,
@@ -59,7 +59,7 @@ function ProposalsDetailProgressBar({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit)} {DENOM.toUpperCase()} MinDeposit
+            {formatNumber(minDeposit)} {BASE_DENOM.toUpperCase()} MinDeposit
           </Text>
         </Pane>
       </ContainerGradientText>

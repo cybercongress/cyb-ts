@@ -5,7 +5,7 @@ import ReactJson from 'react-json-view';
 import { Account, MsgType, DenomArr, AmountDenom, Cid } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
 import { timeSince } from '../../utils/utils';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 const S_TO_MS = 1 * 10 ** 3;
 
@@ -256,7 +256,7 @@ function Activites({ msg }) {
                     />
                   );
                 })
-              : `0 ${DENOM.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -283,7 +283,7 @@ function Activites({ msg }) {
         <Row
           title="Mininum Self Delegation"
           value={`${formatNumber(msg.min_self_delegation)}
-           ${DENOM.toUpperCase()}`}
+           ${BASE_DENOM.toUpperCase()}`}
         />
         <Row title="Commission Rate" value={msg.commission.rate} />
         <Row title="Description" value={msg.description.moniker} />
@@ -514,7 +514,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${DENOM.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -603,7 +603,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${DENOM.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -649,7 +649,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${DENOM.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>

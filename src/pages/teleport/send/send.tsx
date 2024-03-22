@@ -38,9 +38,9 @@ import {
 } from '../components/Inputs';
 import useGetSendTxsByAddressByLcd from '../hooks/useGetSendTxsByAddressByLcd';
 import { useTeleport } from '../Teleport.context';
-import { CHAIN_ID, DENOM } from 'src/constants/config';
+import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 
-const tokenDefaultValue = DENOM;
+const tokenDefaultValue = BASE_DENOM;
 
 function Send() {
   const queryClient = useQueryClient();

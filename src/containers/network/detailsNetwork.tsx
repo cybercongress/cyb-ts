@@ -54,7 +54,7 @@ function DetailsNetwork() {
         }));
         break;
 
-      case 'DENOM':
+      case 'BASE_DENOM':
         setCustomConfig((item) => ({
           ...item,
           [key]: value,
@@ -106,8 +106,8 @@ function DetailsNetwork() {
               />
               <ValueItem
                 text="denom"
-                value={customConfig.DENOM}
-                onChange={(e) => onChangeValue(e, 'DENOM')}
+                value={customConfig.BASE_DENOM}
+                onChange={(e) => onChangeValue(e, 'BASE_DENOM')}
               />
               <ValueItem
                 text="liquid denom"

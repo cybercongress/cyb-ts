@@ -9,7 +9,7 @@ import {
   VoteOption,
   ProposalStatus,
 } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
-import { DEFAULT_GAS_LIMITS, DENOM, MEMO_KEPLR } from 'src/constants/config';
+import { DEFAULT_GAS_LIMITS, BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -119,7 +119,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
           if (
             proposals.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ) {
-            const amount = coins(parseFloat(valueDeposit), DENOM);
+            const amount = coins(parseFloat(valueDeposit), BASE_DENOM);
             response = await signingClient.depositProposal(
               address,
               id,
@@ -189,7 +189,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
               allowLeadingZeros
             />
           </div>
-          <Pane>{DENOM.toUpperCase()}</Pane>
+          <Pane>{BASE_DENOM.toUpperCase()}</Pane>
         </ActionBarContentText>
         <BtnGrd
           text="Deposit"

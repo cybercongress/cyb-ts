@@ -9,7 +9,7 @@ import styles from './stylesExecuteContract.scss';
 import { Input } from 'src/components';
 import Button from 'src/components/btnGrd';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import { DENOM } from 'src/constants/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 const executePlaceholder = {
   transfer: {
@@ -18,7 +18,7 @@ const executePlaceholder = {
   },
 };
 
-const coinsPlaceholder = [{ denom: DENOM, amount: '1' }];
+const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];
 
 
 const gasPrice = GasPrice.fromString('0.001boot');

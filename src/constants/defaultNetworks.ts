@@ -7,7 +7,7 @@ type NetworksList = {
 const defaultNetworks: NetworksList = {
   bostrom: {
     CHAIN_ID: Networks.BOSTROM,
-    DENOM: 'boot',
+    BASE_DENOM: 'boot',
     DENOM_LIQUID: 'hydrogen',
     API: 'https://rpc.bostrom.cybernode.ai',
     LCD: 'https://lcd.bostrom.cybernode.ai',
@@ -19,7 +19,7 @@ const defaultNetworks: NetworksList = {
   },
   'space-pussy': {
     CHAIN_ID: Networks.SPACE_PUSSY,
-    DENOM: 'pussy',
+    BASE_DENOM: 'pussy',
     DENOM_LIQUID: 'liquidpussy',
     API: 'https://rpc.space-pussy.cybernode.ai/',
     LCD: 'https://lcd.space-pussy.cybernode.ai',

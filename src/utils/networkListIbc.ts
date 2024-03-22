@@ -19,7 +19,7 @@ const networkList: ObjectKey<NetworkCons> = {
   bostrom: {
     chainId: defaultNetworks.bostrom.CHAIN_ID,
     rpc: defaultNetworks.bostrom.API,
-    coinMinimalDenom: defaultNetworks.bostrom.DENOM,
+    coinMinimalDenom: defaultNetworks.bostrom.BASE_DENOM,
   },
   'osmosis-1': {
     chainId: 'osmosis-1',

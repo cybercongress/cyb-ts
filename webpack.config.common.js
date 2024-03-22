@@ -108,7 +108,7 @@ const config = {
         process.env.INDEX_WEBSOCKET
       ),
       'process.env.CYBER_GATEWAY': JSON.stringify(process.env.CYBER_GATEWAY),
-      'process.env.DENOM': JSON.stringify(process.env.DENOM),
+      'process.env.BASE_DENOM': JSON.stringify(process.env.BASE_DENOM),
       'process.env.DENOM_LIQUID': JSON.stringify(process.env.DENOM_LIQUID),
       'process.env.BECH32_PREFIX': JSON.stringify(process.env.BECH32_PREFIX),
     }),

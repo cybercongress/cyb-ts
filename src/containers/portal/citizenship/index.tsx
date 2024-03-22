@@ -130,7 +130,7 @@ const calculatePriceNicname = (valueNickname) => {
     const exponent = 8 - valueNickname.length;
     const base = new BigNumber(10).pow(exponent);
     const priceName = new BigNumber(1000000).multipliedBy(base).toNumber();
-    funds = coins(priceName, DENOM);
+    funds = coins(priceName, BASE_DENOM);
   }
 
   return funds;
@@ -327,7 +327,7 @@ function GetCitizenship({ defaultAccount }) {
       if (usePriceNickname !== null) {
         const { amountPrice } = usePriceNickname;
         if (queryClient) {
-          const getBalance = await queryClient.getBalance(bech32, DENOM);
+          const getBalance = await queryClient.getBalance(bech32, BASE_DENOM);
           const { amount } = getBalance;
           if (parseFloat(amount) === 0) {
             setRegisterDisabled(false);

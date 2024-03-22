@@ -13,7 +13,7 @@ import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
-import { DENOM, LCD } from 'src/constants/config';
+import { BASE_DENOM, LCD } from 'src/constants/config';
 
 const PREFIXES = [
   {
@@ -212,7 +212,7 @@ function Home() {
       <ContainerGrid>
         <CardStatisics
           value={`${formatNumber(staked * 100, 2)} %`}
-          title={`Staked ${DENOM.toUpperCase()}`}
+          title={`Staked ${BASE_DENOM.toUpperCase()}`}
           // styleContainer={{ minWidth: 'unset' }}
         />
         <CardStatisics
