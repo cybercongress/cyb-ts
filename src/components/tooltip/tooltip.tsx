@@ -1,9 +1,9 @@
+import cx from 'classnames';
 import React from 'react';
 import Popper, { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
-import cx from 'classnames';
 
-import { PositioningStrategy } from '@popperjs/core';
+import type { PositioningStrategy } from '@popperjs/core';
 import styles from './Tooltip.module.scss';
 
 export type TooltipProps = {

@@ -1,82 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Battery, Pane, Text } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { Battery } from '@cybercongress/gravity';
+import React, { ComponentProps, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useQueryClient } from 'src/contexts/queryClient';
-import Tooltip from '../tooltip/tooltip';
-import { CYBER } from '../../utils/config';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { setBandwidth } from '../../redux/actions/bandwidth';
 import {
   coinDecimals,
   convertResources,
-  formatCurrency,
   reduceBalances,
 } from '../../utils/utils';
-import { setBandwidth } from '../../redux/actions/bandwidth';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { Networks } from 'src/types/networks';
-import { routes } from 'src/routes';
+import Tooltip from '../tooltip/tooltip';
+import ContentTooltip from './ContentTooltip';
 
-const PREFIXES = [
-  {
-    prefix: 't',
-    power: 10 ** 12,
-  },
-  {
-    prefix: 'g',
-    power: 10 ** 9,
-  },
-  {
-    prefix: 'm',
-    power: 10 ** 6,
-  },
-  {
-    prefix: 'k',
-    power: 10 ** 3,
-  },
-];
-
-function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
-  let text =
-    'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
-
-  if (bwMaxValue > 0) {
-    text = `You have ${formatCurrency(
-      amounPower,
-      'W',
-      2,
-      PREFIXES
-    )} and can immediately submit ${Math.floor(countLink)} cyberlinks. `;
-  }
-
-  return (
-    <Pane zIndex={4} paddingX={10} paddingY={10} maxWidth={200}>
-      <Pane marginBottom={12}>
-        <Text color="#fff" size={400}>
-          {text}
-          <Link
-            to={
-              CYBER.CHAIN_ID === Networks.BOSTROM
-                ? routes.search.getLink('get BOOT')
-                : routes.teleport.path
-            }
-          >
-            Get {CYBER.DENOM_CYBER.toUpperCase()}
-          </Link>
-        </Text>
-      </Pane>
-    </Pane>
-  );
+interface BandwidthBarProps {
+  tooltipPlacement: ComponentProps<typeof Tooltip>['placement'];
 }
 
-function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
-// bwMaxValue = 0,
-// countLink = 0,
-// amounPower,
-// ...props
-
-{
+function BandwidthBar({ tooltipPlacement }: BandwidthBarProps) {
   const [linkPrice] = useState(4);
-
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   const [countLink, setCountLink] = useState(0);
@@ -84,10 +26,10 @@ function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
 
   const [amounPower, setAmounPower] = useState(0);
 
-  const bandwidth = useSelector((state) => state.bandwidth.bandwidth);
-  const { defaultAccount } = useSelector((state) => state.pocket);
+  const bandwidth = useAppSelector((state) => state.bandwidth.bandwidth);
+  const { defaultAccount } = useAppSelector((state) => state.pocket);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const bwRemained = bandwidth.remained;
   const bwMaxValue = bandwidth.maxValue;
@@ -99,11 +41,7 @@ function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
     const getBandwidth = async () => {
       try {
         const { account } = defaultAccount;
-        if (
-          account !== null &&
-          Object.prototype.hasOwnProperty.call(account, 'cyber') &&
-          queryClient
-        ) {
+        if (account !== null && 'cyber' in account && queryClient) {
           const { bech32: cyberBech32 } = account.cyber;
           const responseAccountBandwidth = await queryClient.accountBandwidth(
             cyberBech32
@@ -175,21 +113,16 @@ function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
   return (
     <Tooltip
       placement={tooltipPlacement || 'bottom'}
-      // trigger="click"
       tooltip={
         <ContentTooltip
-          bwRemained={bwRemained}
           bwMaxValue={bwMaxValue}
-          linkPrice={linkPrice}
           countLink={countLink}
           amounPower={amounPower}
         />
       }
     >
       <Battery
-        // {...props}
         height="10px"
-        // // styleText={{ display: 'none' }}
         fontSize={12}
         maxWidth={75}
         colorText="#000"
@@ -202,4 +135,4 @@ function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
   );
 }
 
-export default BandwidthBar;
+export default React.memo(BandwidthBar);
