@@ -1,11 +1,8 @@
 /* eslint-disable import/no-unused-modules */
-import { request } from 'graphql-request';
 
 import { gql } from '@apollo/client';
 
 import { Cyberlink, ParticleCid, NeuronAddress } from 'src/types/base';
-import { dateToUtcNumber, numberToUtcDate } from 'src/utils/date';
-import { CYBER_INDEX_HTTPS } from 'src/constants/config';
 
 import { CYBERLINKS_BATCH_LIMIT } from './consts';
 import { fetchIterable } from './utils/fetch';
@@ -17,22 +14,6 @@ type CyberlinksCountResponse = {
       count: number;
     };
   };
-};
-
-type CyberlinksSyncStatsResponse = {
-  cyberlinks_aggregate: {
-    aggregate: {
-      count: number;
-    };
-  };
-  first: {
-    timestamp: string;
-  }[];
-  last: {
-    timestamp: string;
-    to: ParticleCid;
-    from: ParticleCid;
-  }[];
 };
 
 export type CyberlinksByParticleResponse = {
@@ -52,24 +33,6 @@ query Cyberlinks($limit: Int, $offset: Int, $orderBy: [cyberlinks_order_by!], $w
     transaction_hash
   }
 }
-`);
-
-const cyberlinksSyncStats = gql(`
-  query Cyberlinks($where: cyberlinks_bool_exp) {
-    cyberlinks_aggregate(where: $where) {
-      aggregate {
-        count
-      }
-    }
-    first: cyberlinks(limit: 1, order_by: { timestamp: asc }, where: $where) {
-      timestamp
-    }
-    last: cyberlinks(limit: 1, order_by: { timestamp: desc }, where: $where) {
-      timestamp,
-      to: particle_to,
-      from: particle_from
-    }
-  }
 `);
 
 const cyberlinksCountByNeuron = gql(`

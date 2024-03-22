@@ -2,7 +2,6 @@ import {
   EntryType,
   PinDbEntity,
   SyncQueueStatus,
-  LinkDbEntity,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
