@@ -75,13 +75,14 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
-const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId') || Networks.SPACE_PUSSY;
 
 const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
 let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
+  SYMBOL_LIQUID_TOKEN: 'H',
   DENOM_CYBER_G: `GBOOT`,
   CYBER_NODE_URL_API:
     process.env.CYBER_NODE_URL_API || 'https://rpc.bostrom.cybernode.ai',
@@ -106,16 +107,16 @@ if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
     CHAIN_ID: Networks.SPACE_PUSSY,
     DENOM_CYBER: 'pussy',
     DENOM_LIQUID_TOKEN: 'liquidpussy',
+    SYMBOL_LIQUID_TOKEN: 'LP',
     DENOM_CYBER_G: `GPUSSY`,
     CYBER_NODE_URL_API: 'https://rpc.space-pussy.cybernode.ai/',
     CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy.cybernode.ai/websocket',
     CYBER_NODE_URL_LCD: 'https://lcd.space-pussy.cybernode.ai',
     CYBER_INDEX_HTTPS: 'https://index.space-pussy.cybernode.ai/v1/graphql',
     CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy.cybernode.ai/v1/graphql',
-
     BECH32_PREFIX_ACC_ADDR_CYBER: 'pussy',
     BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `pussyvaloper`,
-    MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
+    MEMO_KEPLR: '',
   };
 }
 
@@ -142,7 +143,7 @@ const CYBER = {
     process.env.CYBER_GATEWAY || 'https://gateway.ipfs.cybernode.ai',
 };
 
-const DEFAULT_GAS_LIMITS = 200000;
+const DEFAULT_GAS_LIMITS = 400000;
 
 const GAS_LIMITS = {
   send: 200000,
@@ -169,7 +170,7 @@ const LEDGER = {
   HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
-  MEMO: 'cyb.ai, using Ledger',
+  MEMO: '',
 };
 
 const TAKEOFF_SUPPLY = 100000000000000;

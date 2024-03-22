@@ -55,6 +55,7 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
+import Cybernet from './features/cybernet/ui/Cybernet';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -217,6 +218,8 @@ function AppRouter() {
           <Route path="/sigma" element={<SigmaWrapper />} />
 
           <Route path="/nebula" element={<Nebula />} />
+          <Route path="/cybernet" element={<Cybernet />} />
+          <Route path="/cybernet/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
 

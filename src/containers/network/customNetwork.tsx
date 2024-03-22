@@ -120,7 +120,7 @@ function CustomNetwork() {
               onChange={(e) => onChangeValue(e, 'DENOM_CYBER')}
             />
             <ValueItem
-              text="iquid denom"
+              text="liquid denom"
               value={customConfig.DENOM_LIQUID_TOKEN}
               onChange={(e) => onChangeValue(e, 'DENOM_LIQUID_TOKEN')}
             />

@@ -41,16 +41,7 @@ function Social() {
             <div>👾</div>
             <span>Hub links</span>
           </LinkWindow>
-          <br />
-          <DisplayTitle inDisplay title="other" />
-          <a
-            href="mailto:info.cyb.ai@protonmail.com"
-            target="_blank"
-            rel="noreferrer noopener"
-            className={styles.email}
-          >
-            info.cyb.ai@protonmail.com
-          </a>
+
         </div>
       </Display>
     </MainContainer>

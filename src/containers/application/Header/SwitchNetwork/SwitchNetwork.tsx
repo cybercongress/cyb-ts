@@ -190,7 +190,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         )}
       </div>
 
-      {/* {renderItemChain && Object.keys(renderItemChain).length > 0 && (
+      {renderItemChain && Object.keys(renderItemChain).length > 0 && (
         <Transition in={visible} timeout={300}>
           {(state) => {
             return (
@@ -208,8 +208,8 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
               </div>
             );
           }}
-        </Transition> */}
-      {/* )} */}
+        </Transition>
+      )}
     </>
   );
 }

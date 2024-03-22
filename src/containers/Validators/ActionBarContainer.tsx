@@ -418,12 +418,12 @@ function ActionBarContainer({
                 >
                   Investmint
                 </Button>
-                yor free H to get A and V
+                yor free LP to get A and V
               </Pane>
             )}
           {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
             balance.available !== 0 &&
-            'Choose hero to get H'}
+            'Choose hero to get LP'}
           {validRewards && (
             <Pane marginLeft={15}>
               or

@@ -9,7 +9,7 @@ const { DENOM_CYBER, HYDROGEN } = CYBER;
 function TootipContent() {
   return (
     <div style={{ width: 200 }}>
-      you receive H form staked BOOT, you can use H for investmint A and V
+      you receive LP form staked {CYBER.DENOM_CYBER}, you can use LP for investmint A and V
     </div>
   );
 }
@@ -55,7 +55,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
 
       <Link to="/hfr">
         <CardStatisics
-          title={`${HYDROGEN} available`}
+          title={`LP available`}
           value={
             loadingBalanceInfo ? (
               <Dots />

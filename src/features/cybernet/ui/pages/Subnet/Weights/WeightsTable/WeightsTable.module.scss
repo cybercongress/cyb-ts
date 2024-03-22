@@ -1,0 +1,14 @@
+.temp {
+  display: flex;
+
+  table:nth-of-type(1) {
+    th {
+      height: 54px;
+    }
+    tr {
+      &:hover {
+        background: transparent;
+      }
+    }
+  }
+}

@@ -25,10 +25,9 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 # build
 
 ```sh
-$ yarn install
-$ yarn start
+$ docker-compose up
 ```
-then pray that node.js will build something
+then pray that docker will build on [localhost:3000](http://localhost:3000/)
 
 # join
 
