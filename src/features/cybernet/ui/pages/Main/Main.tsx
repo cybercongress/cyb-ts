@@ -19,20 +19,19 @@ function Main() {
         <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
         <br />
         <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
-
         <br />
         <br />
         <br />
-
         <h3>My</h3>
         <br />
-
         <Link to="./staking/my">Stake</Link>
         <br />
         <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
-      <Display title={<DisplayTitle title={'Docs'} />}>
+      <Display title={<DisplayTitle title={'Docs and Code'} />}>
         <Link to="https://github.com/cybercongress/cybertensor">cli and python package</Link>
+        <br />
+        <Link to="https://github.com/cybercongress/cybertensor-subnet-template">subnet template</Link>
         <br />
         <Link to="https://github.com/cybercongress/cybernet">cosmwasm contract</Link>
       </Display>
