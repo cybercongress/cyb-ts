@@ -9,10 +9,14 @@ services:
     environment:
       - NODE_OPTIONS=--max-old-space-size=8192
       - CHAIN_ID=bostrom
-      - CYBER_NODE_URL_API=https://rpc.bostrom.cybernode.ai
-      - CYBER_NODE_URL_WS=wss://rpc.bostrom.cybernode.ai/websocket
-      - CYBER_NODE_URL_LCD=https://lcd.bostrom.cybernode.ai
-      - CYBER_INDEX_HTTPS=https://index.bostrom.cybernode.ai/v1/graphql
-      - CYBER_INDEX_WEBSOCKET=wss://index.bostrom.cybernode.ai/v1/graphql
+      - API=https://rpc.bostrom.cybernode.ai
+      - LCD=https://lcd.bostrom.cybernode.ai
+      - WEBSOCKET_URL=wss://rpc.bostrom.cybernode.ai/websocket
+      - INDEX_HTTPS=https://index.bostrom.cybernode.ai/v1/graphql
+      - INDEX_WEBSOCKET=wss://index.bostrom.cybernode.ai/v1/graphql
       - CYBER_GATEWAY=https://gateway.bostrom.cybernode.ai
+      - BASE_DENOM=boot
+      - DENOM_LIQUID=hydrogen
+      - BECH32_PREFIX=bostrom
+
     command: npx serve -s build

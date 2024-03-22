@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { CYBER_NODE_URL_WS } from 'src/constants/config';
+import { WEBSOCKET_URL } from 'src/constants/config';
 import { NeuronAddress } from 'src/types/base';
 import { LogFunc } from 'src/utils/logging/cyblog';
 
@@ -13,10 +13,10 @@ export function createNodeWebsocketObservable(
   log: LogFunc
 ) {
   return new Observable((subscriber) => {
-    const ws = new WebSocket(CYBER_NODE_URL_WS);
+    const ws = new WebSocket(WEBSOCKET_URL);
 
     ws.onopen = () => {
-      log(`node ws connected to ${CYBER_NODE_URL_WS} with ${query}`);
+      log(`node ws connected to ${WEBSOCKET_URL} with ${query}`);
       ws.send(
         JSON.stringify({
           jsonrpc: '2.0',

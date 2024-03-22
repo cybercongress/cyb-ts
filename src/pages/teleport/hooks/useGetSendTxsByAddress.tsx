@@ -7,9 +7,8 @@ import { useEffect, useState } from 'react';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable, Option } from 'src/types';
 import { Log } from '@cosmjs/stargate/build/logs';
-import { CYBER } from '../../../utils/config';
 
-const { CYBER_INDEX_HTTPS } = CYBER;
+import { INDEX_HTTPS } from 'src/constants/config';
 
 const messagesByAddress = gql(`
   query MyQuery($address: _text, $limit: bigint, $offset: bigint, $type: _text) {
@@ -66,7 +65,7 @@ function useGetSendTxsByAddressByType(
   } = useInfiniteQuery(
     ['messagesByAddressGql', addressBech32, type],
     async ({ pageParam = 0 }) => {
-      const res = await request(CYBER_INDEX_HTTPS, messagesByAddress, {
+      const res = await request(INDEX_HTTPS, messagesByAddress, {
         address: `{${addressBech32}}`,
         limit,
         offset: new BigNumber(limit).multipliedBy(pageParam).toString(),

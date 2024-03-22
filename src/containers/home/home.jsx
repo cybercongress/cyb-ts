@@ -8,12 +8,12 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAppData } from 'src/contexts/appData';
 import { CardStatisics, Dots } from '../../components';
-import { CYBER } from '../../utils/config';
 import Txs from '../brain/tx';
 import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
+import { BASE_DENOM, LCD } from 'src/constants/config';
 
 const PREFIXES = [
   {
@@ -114,7 +114,7 @@ function Home() {
       setEntropyLoader(true);
       const response = await axios({
         method: 'get',
-        url: `${CYBER.CYBER_NODE_URL_LCD}/rank/negentropy`,
+        url: `${LCD}/rank/negentropy`,
       });
       if (response.data.result.negentropy) {
         setEntropy(response.data.result.negentropy);
@@ -212,7 +212,7 @@ function Home() {
       <ContainerGrid>
         <CardStatisics
           value={`${formatNumber(staked * 100, 2)} %`}
-          title={`Staked ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          title={`Staked ${BASE_DENOM.toUpperCase()}`}
           // styleContainer={{ minWidth: 'unset' }}
         />
         <CardStatisics

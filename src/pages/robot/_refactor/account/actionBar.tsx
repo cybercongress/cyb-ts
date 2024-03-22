@@ -14,8 +14,8 @@ import {
   ActionBar as ActionBarComp,
   Button,
 } from '../../../../components';
-import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../../../utils/config';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { LEDGER } from '../../../../utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
@@ -25,8 +25,7 @@ import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { routes } from 'src/routes';
 import { createSearchParams } from 'react-router-dom';
 import { AccountValue } from 'src/types/defaultAccount';
-
-const { DIVISOR_CYBER_G } = CYBER;
+import { DIVISOR_CYBER_G, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 
 const {
   STAGE_INIT,

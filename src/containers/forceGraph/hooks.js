@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import QUERY_GET_FOLLOWERS from './query';
 
 const useGetDataGql = () => {

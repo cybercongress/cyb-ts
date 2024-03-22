@@ -7,7 +7,7 @@ import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
-import { CYBER } from '../../../utils/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 const PAGE_SIZE = 50;
 
@@ -104,7 +104,7 @@ function DashboardPage() {
             }
           />
           <CardStatisics
-            title={`Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            title={`Income, ${BASE_DENOM.toUpperCase()}`}
             value={
               dataAggregate !== null && dataAggregate.sum.fees !== null ? (
                 formatNumber(dataAggregate.sum.fees)

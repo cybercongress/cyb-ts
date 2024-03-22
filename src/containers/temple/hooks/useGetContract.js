@@ -4,7 +4,7 @@ import request from 'graphql-request';
 import { gql } from '@apollo/client';
 
 import { useEffect, useState } from 'react';
-import { CYBER } from '../../../utils/config';
+import { INDEX_HTTPS } from 'src/constants/config';
 
 const GET_CHARACTERS = gql`
   query MyQuery {
@@ -26,7 +26,7 @@ function useContractsCount() {
     queryKey: [keyQuery],
     queryFn: async () => {
       let response = { contractsCount: 0, timestamp: '' };
-      const res = await request(CYBER.CYBER_INDEX_HTTPS, GET_CHARACTERS);
+      const res = await request(INDEX_HTTPS, GET_CHARACTERS);
       const d = new Date();
 
       response = {

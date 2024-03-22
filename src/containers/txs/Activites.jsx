@@ -4,8 +4,8 @@ import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
 import { Account, MsgType, DenomArr, AmountDenom, Cid } from 'src/components';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
+import { BASE_DENOM } from 'src/constants/config';
 
 const S_TO_MS = 1 * 10 ** 3;
 
@@ -256,7 +256,7 @@ function Activites({ msg }) {
                     />
                   );
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -283,7 +283,7 @@ function Activites({ msg }) {
         <Row
           title="Mininum Self Delegation"
           value={`${formatNumber(msg.min_self_delegation)}
-           ${CYBER.DENOM_CYBER.toUpperCase()}`}
+           ${BASE_DENOM.toUpperCase()}`}
         />
         <Row title="Commission Rate" value={msg.commission.rate} />
         <Row title="Description" value={msg.description.moniker} />
@@ -514,7 +514,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -603,7 +603,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>
@@ -649,7 +649,7 @@ function Activites({ msg }) {
                     amount.amount
                   )} ${amount.denom.toUpperCase()}`;
                 })
-              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+              : `0 ${BASE_DENOM.toUpperCase()}`
           }
         />
       </ContainerMsgsType>

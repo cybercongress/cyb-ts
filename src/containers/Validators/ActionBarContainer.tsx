@@ -7,6 +7,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import { routes } from 'src/routes';
+import useDelegation from 'src/features/staking/delegation/useDelegation';
+import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -19,8 +21,7 @@ import {
 
 import { trimString } from '../../utils/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
-import useDelegation from 'src/features/staking/delegation/useDelegation';
+import { LEDGER } from '../../utils/config';
 import useGetHeroes from './getHeroesHook';
 
 const {
@@ -222,9 +223,9 @@ function ActionBarContainer({
           const response = await signingClient.delegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, BASE_DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
@@ -250,9 +251,9 @@ function ActionBarContainer({
           const response = await signingClient.undelegateTokens(
             addressKeplr,
             validatorAddres,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, BASE_DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
@@ -278,9 +279,9 @@ function ActionBarContainer({
             addressKeplr,
             validatorAddres,
             valueSelect,
-            coin(amount, CYBER.DENOM_CYBER),
+            coin(amount, BASE_DENOM),
             fee,
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
@@ -407,8 +408,8 @@ function ActionBarContainer({
     return (
       <ActionBar>
         <Pane fontSize="18px" display="flex" alignItems="center">
-          {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
-            balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
+          {balanceToken[DENOM_LIQUID] &&
+            balanceToken[DENOM_LIQUID].liquid !== 0 && (
               <Pane>
                 <Button
                   link={routes.hfr.path}
@@ -421,7 +422,7 @@ function ActionBarContainer({
                 yor free H to get A and V
               </Pane>
             )}
-          {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
+          {balanceToken[DENOM_LIQUID].liquid === 0 &&
             balance.available !== 0 &&
             'Choose hero to get H'}
           {validRewards && (

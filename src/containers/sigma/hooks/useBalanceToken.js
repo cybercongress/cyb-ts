@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { CYBER } from '../../../utils/config';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetSlots from '../../mint/useGetSlots';
-
-const { DENOM_CYBER, DENOM_LIQUID_TOKEN } = CYBER;
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
   return { denom, amount };
@@ -19,7 +17,7 @@ const initValueTokens = (denom = '', amount = 0) => {
 };
 
 const initValueToken = {
-  [DENOM_LIQUID_TOKEN]: { ...initValueTokens(DENOM_LIQUID_TOKEN, 0) },
+  [DENOM_LIQUID]: { ...initValueTokens(DENOM_LIQUID, 0) },
   milliampere: { ...initValueTokens('milliampere', 0) },
   millivolt: { ...initValueTokens('millivolt', 0) },
 };
@@ -76,8 +74,8 @@ function useBalanceToken(address, updateAddress) {
     const getBalance = async () => {
       setLoading(true);
       const initValueTokenAmount = {
-        [DENOM_LIQUID_TOKEN]: {
-          ...initValueTokens(DENOM_LIQUID_TOKEN, 0),
+        [DENOM_LIQUID]: {
+          ...initValueTokens(DENOM_LIQUID, 0),
         },
         milliampere: {
           ...initValueTokens('milliampere', 0),
@@ -94,7 +92,7 @@ function useBalanceToken(address, updateAddress) {
         if (getAllBalancesPromise.length > 0) {
           getAllBalancesPromise.forEach((item) => {
             const { amount, denom } = item;
-            if (denom !== DENOM_CYBER) {
+            if (denom !== BASE_DENOM) {
               const elementBalancesToken = amount;
 
               if (

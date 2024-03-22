@@ -7,11 +7,11 @@ import {
 import { GraphQLClient } from 'graphql-request';
 import { createClient } from 'graphql-ws';
 import { Observable } from 'rxjs';
-import { CYBER_INDEX_HTTPS, CYBER_INDEX_WSS } from 'src/constants/config';
+import { INDEX_WEBSOCKET, INDEX_HTTPS } from 'src/constants/config';
 
 const cyberGraphQLWsLink = new GraphQLWsLink(
   createClient({
-    url: CYBER_INDEX_WSS,
+    url: INDEX_WEBSOCKET,
     shouldRetry: (errOrCloseEvent: unknown) => true,
     retryAttempts: 10,
     retryWait: async (retries: number): Promise<void> => {
@@ -37,7 +37,7 @@ const cyberGraphQLWsLink = new GraphQLWsLink(
 );
 
 export const createIndexerClient = (abortSignal: AbortSignal) =>
-  new GraphQLClient(CYBER_INDEX_HTTPS, {
+  new GraphQLClient(INDEX_HTTPS, {
     signal: abortSignal,
   });
 
