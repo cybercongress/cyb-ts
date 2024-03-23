@@ -10319,6 +10319,11 @@ export type VoltsStatsVarianceFields = {
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
+export type TransactionsSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TransactionsSubscription = { __typename?: 'subscription_root', transaction: Array<{ __typename?: 'transaction', success: boolean, messages: any, height: any, hash: string }> };
+
 export type MessagesByAddressQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
   limit?: InputMaybe<Scalars['bigint']['input']>;
@@ -10329,6 +10334,38 @@ export type MessagesByAddressQueryVariables = Exact<{
 export type MessagesByAddressQuery = { __typename?: 'query_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, block: { __typename?: 'block', timestamp: any } } }> };
 
 
+export const TransactionsDocument = gql`
+    subscription Transactions {
+  transaction(offset: 0, limit: 200, order_by: {height: desc}) {
+    success
+    messages
+    height
+    hash
+  }
+}
+    `;
+
+/**
+ * __useTransactionsSubscription__
+ *
+ * To run a query within a React component, call `useTransactionsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTransactionsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTransactionsSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTransactionsSubscription(baseOptions?: Apollo.SubscriptionHookOptions<TransactionsSubscription, TransactionsSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TransactionsSubscription, TransactionsSubscriptionVariables>(TransactionsDocument, options);
+      }
+export type TransactionsSubscriptionHookResult = ReturnType<typeof useTransactionsSubscription>;
+export type TransactionsSubscriptionResult = Apollo.SubscriptionResult<TransactionsSubscription>;
 export const MessagesByAddressDocument = gql`
     query MessagesByAddress($address: _text, $limit: bigint, $offset: bigint) {
   messages_by_address(
