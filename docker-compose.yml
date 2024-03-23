@@ -9,8 +9,8 @@ services:
     environment:
       - NODE_OPTIONS=--max-old-space-size=8192
       - CHAIN_ID=bostrom
-      - API=https://rpc.bostrom.cybernode.ai
-      - LCD=https://lcd.bostrom.cybernode.ai
+      - RPC_URL=https://rpc.bostrom.cybernode.ai
+      - LCD_URL=https://lcd.bostrom.cybernode.ai
       - WEBSOCKET_URL=wss://rpc.bostrom.cybernode.ai/websocket
       - INDEX_HTTPS=https://index.bostrom.cybernode.ai/v1/graphql
       - INDEX_WEBSOCKET=wss://index.bostrom.cybernode.ai/v1/graphql

@@ -18,7 +18,7 @@ export type NetworkCons = {
 const networkList: ObjectKey<NetworkCons> = {
   bostrom: {
     chainId: defaultNetworks.bostrom.CHAIN_ID,
-    rpc: defaultNetworks.bostrom.API,
+    rpc: defaultNetworks.bostrom.RPC_URL,
     coinMinimalDenom: defaultNetworks.bostrom.BASE_DENOM,
   },
   'osmosis-1': {

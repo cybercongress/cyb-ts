@@ -13,7 +13,7 @@ import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
-import { BASE_DENOM, LCD } from 'src/constants/config';
+import { BASE_DENOM, LCD_URL } from 'src/constants/config';
 
 const PREFIXES = [
   {
@@ -114,7 +114,7 @@ function Home() {
       setEntropyLoader(true);
       const response = await axios({
         method: 'get',
-        url: `${LCD}/rank/negentropy`,
+        url: `${LCD_URL}/rank/negentropy`,
       });
       if (response.data.result.negentropy) {
         setEntropy(response.data.result.negentropy);

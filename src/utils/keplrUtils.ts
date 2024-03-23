@@ -1,5 +1,5 @@
 import { Keplr } from '@keplr-wallet/types';
-import { API, CHAIN_ID, BASE_DENOM, LCD } from 'src/constants/config';
+import { RPC_URL, CHAIN_ID, BASE_DENOM, LCD_URL } from 'src/constants/config';
 
 export const getKeplr = async (): Promise<Keplr | undefined> => {
   if (window.keplr) {
@@ -32,8 +32,8 @@ const configKeplr = (prefix) => {
     // The name of the chain to be displayed to the user.
     chainName: CHAIN_ID,
     // RPC endpoint of the chain.
-    rpc: API,
-    rest: LCD,
+    rpc: RPC_URL,
+    rest: LCD_URL,
     stakeCurrency: {
       coinDenom: BASE_DENOM.toUpperCase(),
       coinMinimalDenom: BASE_DENOM,

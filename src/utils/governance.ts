@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
-import { LCD } from 'src/constants/config';
+import { LCD_URL } from 'src/constants/config';
 
 export const getProposals = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/cosmos/gov/v1beta1/proposals`,
+      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals`,
     });
 
     return response.data.proposals;
@@ -20,7 +20,7 @@ export const getProposalsDetail = (id) =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${LCD}/cosmos/gov/v1beta1/proposals/${id}`,
+      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals/${id}`,
     })
       .then((response) => {
         resolve(response.data.proposal);
@@ -34,7 +34,7 @@ export const getStakingPool = () =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${LCD}/staking/pool`,
+      url: `${LCD_URL}/staking/pool`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -48,7 +48,7 @@ export const getTallying = () =>
   new Promise((resolve) => {
     axios({
       method: 'get',
-      url: `${LCD}/gov/parameters/tallying`,
+      url: `${LCD_URL}/gov/parameters/tallying`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -62,7 +62,7 @@ export const getProposer = async (id) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/gov/proposals/${id}/proposer`,
+      url: `${LCD_URL}/gov/proposals/${id}/proposer`,
     });
     return response.data.result;
   } catch (error) {
@@ -75,7 +75,7 @@ export const getMinDeposit = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/gov/parameters/deposit`,
+      url: `${LCD_URL}/gov/parameters/deposit`,
     });
     return response.data.result;
   } catch (error) {
@@ -88,9 +88,7 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${
-        LCD
-      }/cosmos/tx/v1beta1/txs?pagination.offset=${
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=${
         offset * limit
       }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
     });
@@ -108,7 +106,7 @@ export const getTallyingProposals = async (id) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/gov/proposals/${id}/tally`,
+      url: `${LCD_URL}/gov/proposals/${id}/tally`,
     });
     return response.data.result;
   } catch (e) {

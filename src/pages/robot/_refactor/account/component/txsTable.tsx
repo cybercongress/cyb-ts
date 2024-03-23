@@ -17,6 +17,7 @@ const limit = 1000; // Use a constant for the limit
 
 function TxsTable() {
   const { address: accountUser } = useRobotContext();
+  const [hasMore, setHasMore] = useState(true);
   const { setAdviser } = useAdviser();
   const { data, loading, fetchMore, error } = useMessagesByAddressQuery({
     variables: {
@@ -46,7 +47,7 @@ function TxsTable() {
         if (!fetchMoreResult) {
           return prev;
         }
-
+        setHasMore(fetchMoreResult.messages_by_address.length > 0);
         return {
           ...prev,
           messages_by_address: [
@@ -61,7 +62,7 @@ function TxsTable() {
   // Prepare data for the table, combining all fetched pages
   const tableData = useMemo(() => {
     return (data?.messages_by_address || []).map((item) => {
-      let timeAgoInMS =
+      const timeAgoInMS =
         getNowUtcTime() - Date.parse(item.transaction.block.timestamp);
 
       let typeTx = item.type;
@@ -107,8 +108,6 @@ function TxsTable() {
       };
     });
   }, [data, accountUser]);
-
-  const hasMore = data?.messages_by_address.length % limit === 0;
 
   return (
     <Display noPaddingX>

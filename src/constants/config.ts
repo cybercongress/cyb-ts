@@ -6,9 +6,11 @@ const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
 
 export const CHAIN_ID = process.env.CHAIN_ID || DEFAULT_CHAIN_ID;
 
-export const LCD = process.env.LCD || defaultNetworks[DEFAULT_CHAIN_ID].LCD;
+export const LCD_URL =
+  process.env.LCD_URL || defaultNetworks[DEFAULT_CHAIN_ID].LCD_URL;
 
-export const API = process.env.API || defaultNetworks[DEFAULT_CHAIN_ID].API;
+export const RPC_URL =
+  process.env.RPC_URL || defaultNetworks[DEFAULT_CHAIN_ID].RPC_URL;
 
 export const WEBSOCKET_URL =
   process.env.WEBSOCKET_URL || defaultNetworks[DEFAULT_CHAIN_ID].WEBSOCKET_URL;

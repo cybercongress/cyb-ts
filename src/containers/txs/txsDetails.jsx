@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useDevice } from 'src/contexts/device';
-import { LCD } from 'src/constants/config';
+import { LCD_URL } from 'src/constants/config';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
 import ActionBarContainer from '../Search/ActionBarContainer';
@@ -13,7 +13,7 @@ const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/cosmos/tx/v1beta1/txs/${txs}`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txs}`,
     });
     return response.data;
   } catch (e) {

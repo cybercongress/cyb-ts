@@ -2,7 +2,7 @@ import axios from 'axios';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { LCD } from 'src/constants/config';
+import { LCD_URL } from 'src/constants/config';
 
 export const getFollowsAsCid = async (
   address: NeuronAddress,
@@ -10,7 +10,7 @@ export const getFollowsAsCid = async (
 ): Promise<ParticleCid[]> => {
   const response = await axios({
     method: 'get',
-    url: `${LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
+    url: `${LCD_URL}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_FOLLOW}&limit=1000000000`,
     signal,
   });
 
@@ -30,14 +30,10 @@ export const getFollowers = async (
 
   const response = await axios({
     method: 'get',
-    url: `${LCD}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
+    url: `${LCD_URL}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
     signal,
   });
-  // console.log(
-  //   '-----getFollowers',
-  //   `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${CID_FOLLOW}&cyberlink.particleTo=${addressHash}&limit=1000000000`,
-  //   response.data
-  // );
+
   if (!response.data.txs) {
     return [];
   }
@@ -46,6 +42,6 @@ export const getFollowers = async (
 
 export async function getTransaction(txHash: string) {
   // https://lcd.bostrom.cybernode.ai/cosmos/tx/v1beta1/txs/67FD87EBCC1633B779C154C1CAFD48DE71350074A04F742DAD418F69F1D05BB0
-  const response = axios.get(`${LCD}/cosmos/tx/v1beta1/txs/${txHash}`);
+  const response = axios.get(`${LCD_URL}/cosmos/tx/v1beta1/txs/${txHash}`);
   return response;
 }

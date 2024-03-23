@@ -15,7 +15,7 @@ import { Keplr } from '@keplr-wallet/types';
 import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
 import { accountsKeplr } from 'src/utils/utils';
 import usePrevious from 'src/hooks/usePrevious';
-import { API, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
+import { RPC_URL, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
 
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
@@ -34,7 +34,7 @@ async function createClient(
 ): Promise<SigningCyberClient> {
   const options = { prefix: BECH32_PREFIX };
   const client = await SigningCyberClient.connectWithSigner(
-    API,
+    RPC_URL,
     signer,
     options
   );

@@ -11,8 +11,8 @@ export type NetworkConfig = {
   CHAIN_ID: Networks;
   BASE_DENOM: string;
   DENOM_LIQUID: string;
-  API: string;
-  LCD: string;
+  RPC_URL: string;
+  LCD_URL: string;
   WEBSOCKET_URL: string;
   INDEX_HTTPS: string;
   INDEX_WEBSOCKET: string;

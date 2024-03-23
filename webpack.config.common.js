@@ -100,8 +100,8 @@ const config = {
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
       'process.env.CHAIN_ID': JSON.stringify(process.env.CHAIN_ID),
 
-      'process.env.API': JSON.stringify(process.env.API),
-      'process.env.LCD': JSON.stringify(process.env.LCD),
+      'process.env.RPC_URL': JSON.stringify(process.env.RPC_URL),
+      'process.env.LCD_URL': JSON.stringify(process.env.LCD_URL),
       'process.env.WEBSOCKET_URL': JSON.stringify(process.env.WEBSOCKET_URL),
       'process.env.INDEX_HTTPS': JSON.stringify(process.env.INDEX_HTTPS),
       'process.env.INDEX_WEBSOCKET': JSON.stringify(

@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import axios from 'axios';
-import { LCD } from 'src/constants/config';
+import { LCD_URL } from 'src/constants/config';
 
 const getNegentropy = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD}/rank/negentropy`,
+      url: `${LCD_URL}/rank/negentropy`,
     });
 
     return response.data;
