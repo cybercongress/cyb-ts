@@ -196,6 +196,11 @@ const config = {
         test: /\.cozo$/,
         use: 'raw-loader',
       },
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        use: 'graphql-tag/loader',
+      },
     ],
   },
 };
