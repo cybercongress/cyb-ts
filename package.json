@@ -22,7 +22,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "jest --transformIgnorePatterns --verbose",
-    "gql": "yarn graphql-codegen --config ./codegen.ts"
+    "generate-graphql-types": "yarn graphql-codegen --config ./codegen.ts",
+    "generate-lcd-types": "npx swagger-typescript-api -p https://lcd.bostrom.cybernode.ai/swagger/swagger.yaml -o ./src/generated -n lcd.d.ts"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "license": "ISC",
@@ -128,6 +129,7 @@
     "stylelint-config-standard": "^33.0.0",
     "stylelint-config-standard-scss": "^9.0.0",
     "stylelint-order": "^6.0.3",
+    "swagger-typescript-api": "^13.0.3",
     "swr": "^1.0.1",
     "terser-webpack-plugin": "4.2.3",
     "ts-migrate": "^0.1.35",
