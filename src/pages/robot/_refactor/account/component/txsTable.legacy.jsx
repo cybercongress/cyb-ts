@@ -15,7 +15,7 @@ import {
 } from '../../../../../utils/utils';
 import RenderValue from './RenderValue';
 
-import useGetTsxByAddress from '../hooks/useGetTsxByAddress';
+import useGetTsxByAddress from '../hooks/useGetTsxByAddress.legacy';
 import { useAdviser } from 'src/features/adviser/context';
 
 function TxsTable() {
