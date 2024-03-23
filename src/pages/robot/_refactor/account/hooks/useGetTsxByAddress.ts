@@ -1,30 +1,12 @@
 import { request } from 'graphql-request';
-import { gql } from '@apollo/client';
-
 import { useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { INDEX_HTTPS } from 'src/constants/config';
 import {
   MessagesByAddressQuery,
   MessagesByAddressQueryVariables,
+  MessagesByAddressDocument,
 } from 'src/generated/graphql';
-
-const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"},
-    order_by: {transaction: {block: {height: desc}}}) {
-    transaction_hash
-    value
-    transaction {
-      success
-      block {
-        timestamp
-      }
-    }
-    type
-  }
-}
-`);
 
 const limit = '1000';
 
@@ -42,7 +24,7 @@ function useGetTsxByAddress(address: string) {
         // Directly typing the response improves type safety
         const response = await request<MessagesByAddressQuery>(
           INDEX_HTTPS,
-          messagesByAddress,
+          MessagesByAddressDocument,
           variables
         );
         return { data: response.messages_by_address, page: pageParam };
