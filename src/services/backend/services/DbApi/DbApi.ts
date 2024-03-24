@@ -23,12 +23,12 @@ import {
 } from 'src/services/CozoDb/types/dto';
 
 import { SenseListItem } from 'src/services/backend/types/sense';
-import { SyncQueueItem } from '../../sync/services/ParticlesResolverQueue/types';
-import { extractSenseChats } from '../../sync/services/utils/sense';
+import { SyncQueueItem } from '../sync/services/ParticlesResolverQueue/types';
+import { extractSenseChats } from '../sync/services/utils/sense';
 import {
   MSG_MULTI_SEND_TRANSACTION_TYPE,
   MSG_SEND_TRANSACTION_TYPE,
-} from '../../indexer/types';
+} from '../indexer/types';
 
 const TIMESTAMP_INTITAL = 0;
 const DEFAULT_SYNC_STATUS = {

@@ -13,7 +13,7 @@ import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
 import { v4 as uuidv4 } from 'uuid';
 import { ParticleCid } from 'src/types/base';
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
-import DbApi from '../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../DbApi/DbApi';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 type QueueItem = {

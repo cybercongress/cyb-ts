@@ -5,7 +5,7 @@ import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
 
 import { LsResult } from 'ipfs-core-types/src/pin';
 
-import DbApi from '../indexedDb/dbApiWrapper';
+import DbApi from '../../../DbApi/DbApi';
 
 const fetchPins = async (node: IpfsNode) => {
   const pins: LsResult[] = [];

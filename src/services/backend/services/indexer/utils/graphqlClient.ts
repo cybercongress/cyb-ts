@@ -1,9 +1,6 @@
 import { ApolloClient, DocumentNode, InMemoryCache } from '@apollo/client';
 
-import {
-  GraphQLWsLink,
-  Observable as ApolloObservable,
-} from '@apollo/client/link/subscriptions';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { GraphQLClient } from 'graphql-request';
 import { createClient } from 'graphql-ws';
 import { Observable } from 'rxjs';
@@ -50,6 +47,7 @@ export function createIndexerWebsocket<T>(
     link: cyberGraphQLWsLink,
     cache: new InMemoryCache(),
   });
+
   const apolloObservable = client.subscribe({ query, variables });
   return new Observable((subscriber) => {
     const subscription = apolloObservable.subscribe({

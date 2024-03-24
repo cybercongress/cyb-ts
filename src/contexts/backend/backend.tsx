@@ -8,7 +8,7 @@ import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcas
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 import { getIpfsOpts } from 'src/services/ipfs/config';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { SenseApi, createSenseApi } from './services/senseApi';

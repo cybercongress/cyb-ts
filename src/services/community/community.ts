@@ -3,8 +3,8 @@ import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { PATTERN_CYBER } from 'src/constants/patterns';
 import { Subject, Observable } from 'rxjs';
 
-import DbApiWrapper from '../backend/services/dataSource/indexedDb/dbApiWrapper';
-import { getFollowsAsCid, getFollowers } from '../backend/services/lcd/lcd';
+import DbApiWrapper from '../backend/services/DbApi/DbApi';
+import { getFollowsAsCid, getFollowers } from './lcd';
 import { FetchParticleAsync, QueuePriority } from '../QueueManager/types';
 import { CommunityDto } from '../CozoDb/types/dto';
 import { FetchIpfsFunc } from '../backend/services/sync/types';

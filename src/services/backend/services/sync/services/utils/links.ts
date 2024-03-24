@@ -4,7 +4,7 @@ import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { CID_TWEET } from 'src/constants/app';
 import { LinkDto, TransactionDto } from 'src/services/CozoDb/types/dto';
 
-import { fetchCyberlinksIterable } from '../../../dataSource/blockchain/indexer';
+import { fetchCyberlinksIterable } from '../../../indexer/cyberlinks';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { MAX_LINKS_RESOLVE_BATCH } from '../consts';
 import {

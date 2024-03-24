@@ -53,9 +53,3 @@ export const getFollowers = async (
   }
   return response.data.txs.map((item) => item.tx.value.msg[0].value.neuron);
 };
-
-export async function getTransaction(txHash: string) {
-  // https://lcd.bostrom.cybernode.ai/cosmos/tx/v1beta1/txs/67FD87EBCC1633B779C154C1CAFD48DE71350074A04F742DAD418F69F1D05BB0
-  const response = axios.get(`${LCD_URL}/cosmos/tx/v1beta1/txs/${txHash}`);
-  return response;
-}

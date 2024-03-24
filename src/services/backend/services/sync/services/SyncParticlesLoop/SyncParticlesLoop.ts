@@ -19,8 +19,8 @@ import { changeParticleSyncStatus } from '../../utils';
 import {
   fetchCyberlinksByNerounIterable,
   fetchCyberlinksCount,
-} from '../../../dataSource/blockchain/indexer';
-import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+} from '../../../indexer/cyberlinks';
+import { CYBERLINKS_BATCH_LIMIT } from '../../../indexer/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 import { SyncServiceParams } from '../../types';
