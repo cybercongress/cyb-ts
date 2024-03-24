@@ -7,8 +7,6 @@ import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { CID_TWEET } from 'src/constants/app';
 import { INDEX_HTTPS, LCD_URL } from 'src/constants/config';
 
-const SEARCH_RESULT_TIMEOUT_MS = 10000;
-
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
 

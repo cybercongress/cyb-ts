@@ -390,6 +390,7 @@ const findPoolDenomInArr = (
   return findObj;
 };
 
+// REFACTOR: Probably wrong timestamp
 const getNowUtcTime = (): number => {
   const now = new Date();
   const utcTime = new Date(
