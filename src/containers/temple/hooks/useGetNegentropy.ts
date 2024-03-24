@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { LCD_URL } from 'src/constants/config';
 
-import { Api } from 'src/generated/lcd';
 import { AxiosResponse } from 'axios';
+import { Cyber as CyberLcdApi } from 'src/generated/Cyber';
 
-const lcdApi = new Api({ baseURL: LCD_URL });
+const lcdCyberApi = new CyberLcdApi({ baseURL: LCD_URL });
 
 function dataOrEmpty<T>(response: AxiosResponse<T>) {
   try {
@@ -17,7 +17,7 @@ function dataOrEmpty<T>(response: AxiosResponse<T>) {
 }
 
 const getNegentropy = async () => {
-  const response = await lcdApi.cyber.negentropy();
+  const response = await lcdCyberApi.negentropy();
   return dataOrEmpty(response);
 };
 
