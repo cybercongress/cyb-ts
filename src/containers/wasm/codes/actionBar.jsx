@@ -4,7 +4,7 @@ import { ActionBar as ActionBarContainer, Pane } from '@cybercongress/gravity';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
 import { getTxs } from '../../../utils/search/utils';
 import {

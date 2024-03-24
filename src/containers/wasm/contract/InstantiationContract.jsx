@@ -13,7 +13,7 @@ import SelectFile from './renderAbi/SelectFile';
 import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 import Button from 'src/components/btnGrd';
 import { Input } from 'src/components';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { BASE_DENOM } from 'src/constants/config';
 
 const executePlaceholder = {

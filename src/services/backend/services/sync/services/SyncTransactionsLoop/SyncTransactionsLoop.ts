@@ -22,14 +22,14 @@ import { throwIfAborted } from 'src/utils/async/promise';
 import {
   createNodeWebsocketObservable,
   getIncomingTransfersQuery,
-} from 'src/services/blockchain/websocket';
+} from 'src/services/lcd/websocket';
 import {
   MessagesByAddressSenseQueryVariables,
   MessagesByAddressSenseWsDocument,
   MessagesByAddressSenseWsSubscription,
 } from 'src/generated/graphql';
 
-import { mapWebsocketTxToTransactions } from 'src/services/blockchain/utils/mapping';
+import { mapWebsocketTxToTransactions } from 'src/services/lcd/utils/mapping';
 
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';

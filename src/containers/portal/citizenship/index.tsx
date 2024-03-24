@@ -13,7 +13,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend/backend';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useAppDispatch } from 'src/redux/hooks';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { CHAIN_ID } from 'src/constants/config';
 import { MainContainer, MoonAnimation, Stars } from '../components';
 import {

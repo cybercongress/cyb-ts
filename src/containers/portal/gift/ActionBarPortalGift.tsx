@@ -14,7 +14,7 @@ import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
 import { useBackend } from 'src/contexts/backend/backend';
 import { PATTERN_CYBER } from 'src/constants/patterns';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { Nullable } from 'src/types';
 import {

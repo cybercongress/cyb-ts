@@ -8,7 +8,7 @@ import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
 import { Input } from 'src/components';
 import Button from 'src/components/btnGrd';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { BASE_DENOM } from 'src/constants/config';
 
 const executePlaceholder = {
@@ -19,7 +19,6 @@ const executePlaceholder = {
 };
 
 const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];
-
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

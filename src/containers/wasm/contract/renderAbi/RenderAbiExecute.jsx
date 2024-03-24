@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import JsonSchemaParse from './JsonSchemaParse';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
 
 // const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];

@@ -6,7 +6,7 @@ import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useQueryClient } from 'src/contexts/queryClient';
 import BigNumber from 'bignumber.js';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
 import { PATTERN_CYBER } from 'src/constants/patterns';
