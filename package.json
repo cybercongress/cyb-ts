@@ -243,7 +243,7 @@
     "ts-jest-resolver": "^2.0.1",
     "videostream": "^3.2.2",
     "web3": "1.2.4",
-    "web3-utils": "^1.2.4",
+    "web3-utils": "^4.2.1",
     "worker-url": "^1.1.0"
   },
   "prec-commit": [
