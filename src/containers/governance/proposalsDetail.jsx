@@ -197,8 +197,12 @@ function ProposalsDetail({ defaultAccount }) {
       to: '',
       key: 'comments',
     },
+    {
+      to: '',
+      key: 'meta',
+    },
   ];
-  const [select, setSelect] = useState(TabButtons[0].key);
+  const [select, setSelect] = useState(TabButtons[1].key);
 
   return (
     <>
@@ -292,14 +296,6 @@ function ProposalsDetail({ defaultAccount }) {
           )}
         </ContainerGradientText>
 
-        <ProposalsIdDetail
-          proposals={proposals}
-          tallying={tallying}
-          tally={tally}
-          totalDeposit={totalDeposit}
-          marginBottom={20}
-        />
-
         <ProposalsDetailProgressBar
           proposals={proposals}
           totalDeposit={totalDeposit}
@@ -318,6 +314,16 @@ function ProposalsDetail({ defaultAccount }) {
 
         {select === 'comments' && (
           <ProposalsDetailTableComments proposalId={proposalId} />
+        )}
+
+        {select === 'meta' && (
+          <ProposalsIdDetail
+            proposals={proposals}
+            tallying={tallying}
+            tally={tally}
+            totalDeposit={totalDeposit}
+            marginBottom={20}
+          />
         )}
 
         {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD &&
@@ -349,9 +355,9 @@ function ProposalsDetail({ defaultAccount }) {
                 display: 'block',
               }}
               className="btn"
-              to="/"
+              to="/keys"
             >
-              add address to your pocket from keplr
+              connect
             </Link>
           </Pane>
         </ActionBar>

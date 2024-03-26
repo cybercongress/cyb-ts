@@ -25,10 +25,12 @@ export const initialContentTypeFilterState = {
 
 const sortByLSKey = 'search-sort';
 
-function ProposalsDetailTableComments({ proposalId, ...props }) {
+function ProposalsDetailTableComments({ proposalId }) {
   const { ipfsApi } = useBackend();
   const query = `bostrom proposal ${proposalId}`;
+  
   const [proposalHash, setproposalHash] = useState('');
+  const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
     [key: string]: IpfsContentType;
@@ -38,12 +40,12 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
     initialContentTypeFilterState
   );
   const [sortBy, setSortBy] = useState(
-    localStorage.getItem(sortByLSKey) || SortBy.date
+    localStorage.getItem(sortByLSKey) || SortBy.rank
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
 
   const { isMobile: mobile } = useDevice();
-
+  console.debug(proposalId)
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
     setContentType({});
@@ -56,6 +58,14 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
       setproposalHash(keywordHashTemp);
     })();
   }, [query]);
+
+  const onClickRank = async (key) => {
+  if (rankLink === key) {
+    setRankLink(null);
+  } else {
+    setRankLink(key);
+  }
+};
 
   const {
     data: items,
@@ -83,6 +93,8 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
       return contentTypeFilter[contentType[cid]];
     })
     .map((key, i) => {
+      console.debug(key)
+      console.debug(key.cid)
       return (
         <Spark
           itemData={key}
@@ -90,6 +102,8 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
           key={key.cid + i}
           linkType={key.type}
           query={query}
+          rankSelected={rankLink === key.cid}
+          handleRankClick={onClickRank}
           handleContentType={(type) =>
             setContentType((items) => {
               return {
@@ -149,7 +163,9 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
             keywordHash={proposalHash}
             update={() => {
               refetch();
+              setRankLink(null);
             }}
+            rankLink={rankLink}
           />
         </div>
       )}
@@ -157,3 +173,4 @@ function ProposalsDetailTableComments({ proposalId, ...props }) {
   );
 }
 export default ProposalsDetailTableComments;
+
