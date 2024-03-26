@@ -8,7 +8,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import { routes } from 'src/routes';
 import useDelegation from 'src/features/staking/delegation/useDelegation';
-import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
+import { BASE_DENOM, DENOM_LIQUID, MEMO_KEPLR } from 'src/constants/config';
 import {
   Confirmed,
   TransactionSubmitted,

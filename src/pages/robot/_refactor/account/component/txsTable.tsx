@@ -24,6 +24,7 @@ function TxsTable() {
       address: `{${accountUser}}`,
       limit,
       offset: 0,
+      types: '{}'
     },
     notifyOnNetworkStatusChange: true,
   });

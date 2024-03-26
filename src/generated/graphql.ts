@@ -10343,6 +10343,20 @@ export type CyberlinksCountByNeuronQueryVariables = Exact<{
 
 export type CyberlinksCountByNeuronQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
 
+export type CyberlinksCountByParticleFromQueryVariables = Exact<{
+  cid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CyberlinksCountByParticleFromQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
+
+export type CyberlinksCountByParticleToQueryVariables = Exact<{
+  cid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CyberlinksCountByParticleToQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
+
 export type MessagesByAddressCountQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
   timestamp?: InputMaybe<Scalars['timestamp']['input']>;
@@ -10375,14 +10389,35 @@ export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
 
 export type MessagesByAddressSenseWsSubscription = { __typename?: 'subscription_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, index: any, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, memo?: string | null, block: { __typename?: 'block', timestamp: any, height: any } } }> };
 
+export type TransactionCountQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TransactionCountQuery = { __typename?: 'query_root', transaction_aggregate: { __typename?: 'transaction_aggregate', aggregate?: { __typename?: 'transaction_aggregate_fields', count: number } | null } };
+
+export type UptimeByAddressQueryVariables = Exact<{
+  address?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UptimeByAddressQuery = { __typename?: 'query_root', uptime: Array<{ __typename?: 'uptime', uptime?: any | null }> };
+
+export type WasmDashboardPageQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type WasmDashboardPageQuery = { __typename?: 'query_root', contracts: Array<{ __typename?: 'contracts', address: string, admin: string, code_id: any, creator: string, fees: any, gas: any, label: string, tx: any }>, contracts_aggregate: { __typename?: 'contracts_aggregate', aggregate?: { __typename?: 'contracts_aggregate_fields', count: number, sum?: { __typename?: 'contracts_sum_fields', gas?: any | null, fees?: any | null, tx?: any | null } | null } | null } };
+
 export type MessagesByAddressQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
   limit?: InputMaybe<Scalars['bigint']['input']>;
   offset?: InputMaybe<Scalars['bigint']['input']>;
+  types?: InputMaybe<Scalars['_text']['input']>;
 }>;
 
 
-export type MessagesByAddressQuery = { __typename?: 'query_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, block: { __typename?: 'block', timestamp: any } } }> };
+export type MessagesByAddressQuery = { __typename?: 'query_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, height: any, logs?: any | null, memo?: string | null, block: { __typename?: 'block', timestamp: any } } }> };
 
 
 export const TransactionsDocument = gql`
@@ -10510,6 +10545,90 @@ export type CyberlinksCountByNeuronQueryHookResult = ReturnType<typeof useCyberl
 export type CyberlinksCountByNeuronLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronLazyQuery>;
 export type CyberlinksCountByNeuronSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronSuspenseQuery>;
 export type CyberlinksCountByNeuronQueryResult = Apollo.QueryResult<CyberlinksCountByNeuronQuery, CyberlinksCountByNeuronQueryVariables>;
+export const CyberlinksCountByParticleFromDocument = gql`
+    query cyberlinksCountByParticleFrom($cid: String) {
+  cyberlinks_aggregate(where: {particle_from: {_eq: $cid}}) {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useCyberlinksCountByParticleFromQuery__
+ *
+ * To run a query within a React component, call `useCyberlinksCountByParticleFromQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCyberlinksCountByParticleFromQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCyberlinksCountByParticleFromQuery({
+ *   variables: {
+ *      cid: // value for 'cid'
+ *   },
+ * });
+ */
+export function useCyberlinksCountByParticleFromQuery(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+      }
+export function useCyberlinksCountByParticleFromLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+        }
+export function useCyberlinksCountByParticleFromSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+        }
+export type CyberlinksCountByParticleFromQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromQuery>;
+export type CyberlinksCountByParticleFromLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromLazyQuery>;
+export type CyberlinksCountByParticleFromSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromSuspenseQuery>;
+export type CyberlinksCountByParticleFromQueryResult = Apollo.QueryResult<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>;
+export const CyberlinksCountByParticleToDocument = gql`
+    query cyberlinksCountByParticleTo($cid: String) {
+  cyberlinks_aggregate(where: {particle_to: {_eq: $cid}}) {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useCyberlinksCountByParticleToQuery__
+ *
+ * To run a query within a React component, call `useCyberlinksCountByParticleToQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCyberlinksCountByParticleToQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCyberlinksCountByParticleToQuery({
+ *   variables: {
+ *      cid: // value for 'cid'
+ *   },
+ * });
+ */
+export function useCyberlinksCountByParticleToQuery(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
+      }
+export function useCyberlinksCountByParticleToLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
+        }
+export function useCyberlinksCountByParticleToSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
+        }
+export type CyberlinksCountByParticleToQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToQuery>;
+export type CyberlinksCountByParticleToLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToLazyQuery>;
+export type CyberlinksCountByParticleToSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToSuspenseQuery>;
+export type CyberlinksCountByParticleToQueryResult = Apollo.QueryResult<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>;
 export const MessagesByAddressCountDocument = gql`
     query MessagesByAddressCount($address: _text, $timestamp: timestamp) {
   messages_by_address_aggregate(
@@ -10666,16 +10785,158 @@ export function useMessagesByAddressSenseWsSubscription(baseOptions?: Apollo.Sub
       }
 export type MessagesByAddressSenseWsSubscriptionHookResult = ReturnType<typeof useMessagesByAddressSenseWsSubscription>;
 export type MessagesByAddressSenseWsSubscriptionResult = Apollo.SubscriptionResult<MessagesByAddressSenseWsSubscription>;
+export const TransactionCountDocument = gql`
+    query transactionCount {
+  transaction_aggregate {
+    aggregate {
+      count(columns: hash)
+    }
+  }
+}
+    `;
+
+/**
+ * __useTransactionCountQuery__
+ *
+ * To run a query within a React component, call `useTransactionCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTransactionCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTransactionCountQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTransactionCountQuery(baseOptions?: Apollo.QueryHookOptions<TransactionCountQuery, TransactionCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TransactionCountQuery, TransactionCountQueryVariables>(TransactionCountDocument, options);
+      }
+export function useTransactionCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TransactionCountQuery, TransactionCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TransactionCountQuery, TransactionCountQueryVariables>(TransactionCountDocument, options);
+        }
+export function useTransactionCountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TransactionCountQuery, TransactionCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TransactionCountQuery, TransactionCountQueryVariables>(TransactionCountDocument, options);
+        }
+export type TransactionCountQueryHookResult = ReturnType<typeof useTransactionCountQuery>;
+export type TransactionCountLazyQueryHookResult = ReturnType<typeof useTransactionCountLazyQuery>;
+export type TransactionCountSuspenseQueryHookResult = ReturnType<typeof useTransactionCountSuspenseQuery>;
+export type TransactionCountQueryResult = Apollo.QueryResult<TransactionCountQuery, TransactionCountQueryVariables>;
+export const UptimeByAddressDocument = gql`
+    query uptimeByAddress($address: String) {
+  uptime(where: {consensus_address: {_eq: $address}}) {
+    uptime
+  }
+}
+    `;
+
+/**
+ * __useUptimeByAddressQuery__
+ *
+ * To run a query within a React component, call `useUptimeByAddressQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUptimeByAddressQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUptimeByAddressQuery({
+ *   variables: {
+ *      address: // value for 'address'
+ *   },
+ * });
+ */
+export function useUptimeByAddressQuery(baseOptions?: Apollo.QueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
+      }
+export function useUptimeByAddressLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
+        }
+export function useUptimeByAddressSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
+        }
+export type UptimeByAddressQueryHookResult = ReturnType<typeof useUptimeByAddressQuery>;
+export type UptimeByAddressLazyQueryHookResult = ReturnType<typeof useUptimeByAddressLazyQuery>;
+export type UptimeByAddressSuspenseQueryHookResult = ReturnType<typeof useUptimeByAddressSuspenseQuery>;
+export type UptimeByAddressQueryResult = Apollo.QueryResult<UptimeByAddressQuery, UptimeByAddressQueryVariables>;
+export const WasmDashboardPageDocument = gql`
+    query wasmDashboardPage($offset: Int, $limit: Int) {
+  contracts(limit: $limit, offset: $offset, order_by: {tx: desc}) {
+    address
+    admin
+    code_id
+    creator
+    fees
+    gas
+    label
+    tx
+  }
+  contracts_aggregate {
+    aggregate {
+      sum {
+        gas
+        fees
+        tx
+      }
+      count(columns: address)
+    }
+  }
+}
+    `;
+
+/**
+ * __useWasmDashboardPageQuery__
+ *
+ * To run a query within a React component, call `useWasmDashboardPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWasmDashboardPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWasmDashboardPageQuery({
+ *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useWasmDashboardPageQuery(baseOptions?: Apollo.QueryHookOptions<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>(WasmDashboardPageDocument, options);
+      }
+export function useWasmDashboardPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>(WasmDashboardPageDocument, options);
+        }
+export function useWasmDashboardPageSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>(WasmDashboardPageDocument, options);
+        }
+export type WasmDashboardPageQueryHookResult = ReturnType<typeof useWasmDashboardPageQuery>;
+export type WasmDashboardPageLazyQueryHookResult = ReturnType<typeof useWasmDashboardPageLazyQuery>;
+export type WasmDashboardPageSuspenseQueryHookResult = ReturnType<typeof useWasmDashboardPageSuspenseQuery>;
+export type WasmDashboardPageQueryResult = Apollo.QueryResult<WasmDashboardPageQuery, WasmDashboardPageQueryVariables>;
 export const MessagesByAddressDocument = gql`
-    query MessagesByAddress($address: _text, $limit: bigint, $offset: bigint) {
+    query MessagesByAddress($address: _text, $limit: bigint, $offset: bigint, $types: _text) {
   messages_by_address(
-    args: {addresses: $address, limit: $limit, offset: $offset, types: "{}"}
+    args: {addresses: $address, limit: $limit, offset: $offset, types: $types}
     order_by: {transaction: {block: {height: desc}}}
   ) {
     transaction_hash
     value
     transaction {
       success
+      height
+      logs
+      memo
       block {
         timestamp
       }
@@ -10700,6 +10961,7 @@ export const MessagesByAddressDocument = gql`
  *      address: // value for 'address'
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
+ *      types: // value for 'types'
  *   },
  * });
  */

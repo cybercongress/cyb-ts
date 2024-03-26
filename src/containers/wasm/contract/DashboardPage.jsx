@@ -1,47 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
 
 import { useQueryClient } from 'src/contexts/queryClient';
+import { BASE_DENOM } from 'src/constants/config';
+import { useWasmDashboardPageQuery } from 'src/generated/graphql';
 import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
-import { BASE_DENOM } from 'src/constants/config';
 
 const PAGE_SIZE = 50;
-
-const GET_CHARACTERS = gql`
-  query MyQuery($offset: Int) {
-    contracts(limit: 50, offset: $offset, order_by: { tx: desc }) {
-      address
-      admin
-      code_id
-      creator
-      fees
-      gas
-      label
-      tx
-    }
-    contracts_aggregate {
-      aggregate {
-        sum {
-          gas
-          fees
-          tx
-        }
-        count(columns: address)
-      }
-    }
-  }
-`;
 
 const useGetContracts = (offset) => {
   const [dataContracts, setDataContracts] = useState([]);
   const [dataAggregate, setDataAggregate] = useState(null);
-  const { loading, data } = useQuery(GET_CHARACTERS, {
+  const { loading, data } = useWasmDashboardPageQuery({
     variables: {
       offset: offset * PAGE_SIZE,
+      limit: PAGE_SIZE,
     },
   });
 

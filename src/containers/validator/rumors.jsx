@@ -8,6 +8,8 @@ function Rumors({ accountUser }) {
   const GET_CHARACTERS = gql`
     subscription getRumors {
      transaction(
+        limit: 10
+        offset: 0
         order_by: { height: desc }
         where: {
           _and: [

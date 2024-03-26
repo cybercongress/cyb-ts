@@ -1,20 +1,15 @@
-import { useQuery, gql } from '@apollo/client';
-
-function generateQuery(cid: string, type: 'to' | 'from') {
-  return gql`
-      query Query {
-          cyberlinks_aggregate(where: {particle_${type}: {_eq: "${cid}"}}) {
-              aggregate {
-              count
-              }
-          }
-      }
-    `;
-}
+import {
+  useCyberlinksCountByParticleFromQuery,
+  useCyberlinksCountByParticleToQuery,
+} from 'src/generated/graphql';
 
 function useCyberlinksCount(cid: string) {
-  const toCountQuery = useQuery(generateQuery(cid, 'to'));
-  const fromCountQuery = useQuery(generateQuery(cid, 'from'));
+  const toCountQuery = useCyberlinksCountByParticleToQuery({
+    variables: { cid },
+  });
+  const fromCountQuery = useCyberlinksCountByParticleFromQuery({
+    variables: { cid },
+  });
 
   return {
     data: {

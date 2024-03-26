@@ -1,49 +1,34 @@
-import { UseInfiniteQueryResult } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Dots } from 'src/components';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { ResponseTxsByType } from '../../../hooks/useGetSendTxsByAddress';
+import { UseGetSendTxsByAddressByType } from 'src/pages/teleport/hooks/useGetSendTxsByAddress';
 import DataSwapTxsItem from './DataSwapTxsItem';
 import InfiniteScrollDataTsx from '../../../components/InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 
-type DataTxs = {
-  data: ResponseTxsByType[];
-  page: any;
-};
-
-function DataSwapTxs({
-  dataTxs,
-}: {
-  dataTxs: UseInfiniteQueryResult<DataTxs>;
-}) {
-  const { traseDenom } = useIbcDenom();
-  const { data, error, status, fetchNextPage, hasNextPage } = dataTxs;
+function DataSwapTxs({ dataTxs }: { dataTxs: UseGetSendTxsByAddressByType }) {
+  const { data, error, hasMore, fetchMoreData } = dataTxs;
 
   const itemRows = useMemo(() => {
-    if (data && traseDenom) {
-      return data.pages.map((page) => (
-        <React.Fragment key={page.page}>
-          {page.data.map((item) => {
-            const key = uuidv4();
+    if (data) {
+      return data.messages_by_address.map((item) => {
+        const key = uuidv4();
 
-            return (
-              <DataSwapTxsItem
-                item={item}
-                key={`${item.transaction_hash}_${key}`}
-              />
-            );
-          })}
-        </React.Fragment>
-      ));
+        return (
+          <DataSwapTxsItem
+            item={item}
+            key={`${item.transaction_hash}_${key}`}
+          />
+        );
+      });
     }
 
     return [];
-  }, [data, traseDenom]);
+  }, [data]);
+
+  console.log('data', data);
 
   const fetchNextPageFnc = () => {
     setTimeout(() => {
-      fetchNextPage();
+      fetchMoreData();
     }, 250);
   };
 
@@ -51,11 +36,9 @@ function DataSwapTxs({
     <InfiniteScrollDataTsx
       dataLength={Object.keys(itemRows).length}
       next={fetchNextPageFnc}
-      hasMore={hasNextPage}
+      hasMore={hasMore}
     >
-      {status === 'loading' ? (
-        <Dots />
-      ) : status === 'error' ? (
+      {error ? (
         <span>Error: {error.message}</span>
       ) : itemRows.length > 0 ? (
         itemRows
