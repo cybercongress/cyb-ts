@@ -1,7 +1,0 @@
-query cyberlinksCountByParticleFrom($cid: String) {
-  cyberlinks_aggregate(where: { particle_from: { _eq: $cid } }) {
-    aggregate {
-      count
-    }
-  }
-}

@@ -10353,19 +10353,13 @@ export type CyberlinksCountByNeuronQueryVariables = Exact<{
 
 export type CyberlinksCountByNeuronQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
 
-export type CyberlinksCountByParticleFromQueryVariables = Exact<{
+export type CyberlinksCountByParticleQueryVariables = Exact<{
   cid?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<Cyberlinks_Bool_Exp>;
 }>;
 
 
-export type CyberlinksCountByParticleFromQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
-
-export type CyberlinksCountByParticleToQueryVariables = Exact<{
-  cid?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type CyberlinksCountByParticleToQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
+export type CyberlinksCountByParticleQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
 
 export type LeadershipQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -10655,9 +10649,9 @@ export type CyberlinksCountByNeuronQueryHookResult = ReturnType<typeof useCyberl
 export type CyberlinksCountByNeuronLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronLazyQuery>;
 export type CyberlinksCountByNeuronSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronSuspenseQuery>;
 export type CyberlinksCountByNeuronQueryResult = Apollo.QueryResult<CyberlinksCountByNeuronQuery, CyberlinksCountByNeuronQueryVariables>;
-export const CyberlinksCountByParticleFromDocument = gql`
-    query cyberlinksCountByParticleFrom($cid: String) {
-  cyberlinks_aggregate(where: {particle_from: {_eq: $cid}}) {
+export const CyberlinksCountByParticleDocument = gql`
+    query cyberlinksCountByParticle($cid: String, $where: cyberlinks_bool_exp) {
+  cyberlinks_aggregate(where: $where) {
     aggregate {
       count
     }
@@ -10666,79 +10660,38 @@ export const CyberlinksCountByParticleFromDocument = gql`
     `;
 
 /**
- * __useCyberlinksCountByParticleFromQuery__
+ * __useCyberlinksCountByParticleQuery__
  *
- * To run a query within a React component, call `useCyberlinksCountByParticleFromQuery` and pass it any options that fit your needs.
- * When your component renders, `useCyberlinksCountByParticleFromQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCyberlinksCountByParticleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCyberlinksCountByParticleQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCyberlinksCountByParticleFromQuery({
+ * const { data, loading, error } = useCyberlinksCountByParticleQuery({
  *   variables: {
  *      cid: // value for 'cid'
+ *      where: // value for 'where'
  *   },
  * });
  */
-export function useCyberlinksCountByParticleFromQuery(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+export function useCyberlinksCountByParticleQuery(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+        return Apollo.useQuery<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>(CyberlinksCountByParticleDocument, options);
       }
-export function useCyberlinksCountByParticleFromLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+export function useCyberlinksCountByParticleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+          return Apollo.useLazyQuery<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>(CyberlinksCountByParticleDocument, options);
         }
-export function useCyberlinksCountByParticleFromSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>) {
+export function useCyberlinksCountByParticleSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>(CyberlinksCountByParticleFromDocument, options);
+          return Apollo.useSuspenseQuery<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>(CyberlinksCountByParticleDocument, options);
         }
-export type CyberlinksCountByParticleFromQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromQuery>;
-export type CyberlinksCountByParticleFromLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromLazyQuery>;
-export type CyberlinksCountByParticleFromSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleFromSuspenseQuery>;
-export type CyberlinksCountByParticleFromQueryResult = Apollo.QueryResult<CyberlinksCountByParticleFromQuery, CyberlinksCountByParticleFromQueryVariables>;
-export const CyberlinksCountByParticleToDocument = gql`
-    query cyberlinksCountByParticleTo($cid: String) {
-  cyberlinks_aggregate(where: {particle_to: {_eq: $cid}}) {
-    aggregate {
-      count
-    }
-  }
-}
-    `;
-
-/**
- * __useCyberlinksCountByParticleToQuery__
- *
- * To run a query within a React component, call `useCyberlinksCountByParticleToQuery` and pass it any options that fit your needs.
- * When your component renders, `useCyberlinksCountByParticleToQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCyberlinksCountByParticleToQuery({
- *   variables: {
- *      cid: // value for 'cid'
- *   },
- * });
- */
-export function useCyberlinksCountByParticleToQuery(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
-      }
-export function useCyberlinksCountByParticleToLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
-        }
-export function useCyberlinksCountByParticleToSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>(CyberlinksCountByParticleToDocument, options);
-        }
-export type CyberlinksCountByParticleToQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToQuery>;
-export type CyberlinksCountByParticleToLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToLazyQuery>;
-export type CyberlinksCountByParticleToSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToSuspenseQuery>;
-export type CyberlinksCountByParticleToQueryResult = Apollo.QueryResult<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>;
+export type CyberlinksCountByParticleQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleQuery>;
+export type CyberlinksCountByParticleLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleLazyQuery>;
+export type CyberlinksCountByParticleSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleSuspenseQuery>;
+export type CyberlinksCountByParticleQueryResult = Apollo.QueryResult<CyberlinksCountByParticleQuery, CyberlinksCountByParticleQueryVariables>;
 export const LeadershipDocument = gql`
     query leadership($limit: Int, $offset: Int, $valAddress: String) {
   _transaction(
