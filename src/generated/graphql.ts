@@ -10357,6 +10357,15 @@ export type CyberlinksCountByParticleToQueryVariables = Exact<{
 
 export type CyberlinksCountByParticleToQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
 
+export type LeadershipQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  valAddress?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type LeadershipQuery = { __typename?: 'query_root', _transaction: Array<{ __typename?: '_transaction', hash?: string | null, type?: string | null, success?: boolean | null, height?: any | null, messages?: any | null }> };
+
 export type MessagesByAddressCountQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
   timestamp?: InputMaybe<Scalars['timestamp']['input']>;
@@ -10388,6 +10397,15 @@ export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
 
 
 export type MessagesByAddressSenseWsSubscription = { __typename?: 'subscription_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, index: any, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, memo?: string | null, block: { __typename?: 'block', timestamp: any, height: any } } }> };
+
+export type GetRumorsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  valAddress?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetRumorsQuery = { __typename?: 'query_root', transaction: Array<{ __typename?: 'transaction', messages: any, success: boolean, hash: string, height: any }> };
 
 export type TransactionCountQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10629,6 +10647,57 @@ export type CyberlinksCountByParticleToQueryHookResult = ReturnType<typeof useCy
 export type CyberlinksCountByParticleToLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToLazyQuery>;
 export type CyberlinksCountByParticleToSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByParticleToSuspenseQuery>;
 export type CyberlinksCountByParticleToQueryResult = Apollo.QueryResult<CyberlinksCountByParticleToQuery, CyberlinksCountByParticleToQueryVariables>;
+export const LeadershipDocument = gql`
+    query leadership($limit: Int, $offset: Int, $valAddress: String) {
+  _transaction(
+    limit: $limit
+    offset: $offset
+    order_by: {height: desc}
+    where: {_and: [{type: {_in: ["cosmos.gov.v1beta1.MsgDeposit", "cosmos.gov.v1beta1.MsgVote", "cosmos.gov.v1beta1.MsgSubmitProposal"]}}, {_or: [{subject1: {_eq: $valAddress}}, {subject2: {_eq: $valAddress}}]}]}
+  ) {
+    hash
+    type
+    success
+    height
+    messages
+  }
+}
+    `;
+
+/**
+ * __useLeadershipQuery__
+ *
+ * To run a query within a React component, call `useLeadershipQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLeadershipQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLeadershipQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      valAddress: // value for 'valAddress'
+ *   },
+ * });
+ */
+export function useLeadershipQuery(baseOptions?: Apollo.QueryHookOptions<LeadershipQuery, LeadershipQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LeadershipQuery, LeadershipQueryVariables>(LeadershipDocument, options);
+      }
+export function useLeadershipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LeadershipQuery, LeadershipQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LeadershipQuery, LeadershipQueryVariables>(LeadershipDocument, options);
+        }
+export function useLeadershipSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<LeadershipQuery, LeadershipQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<LeadershipQuery, LeadershipQueryVariables>(LeadershipDocument, options);
+        }
+export type LeadershipQueryHookResult = ReturnType<typeof useLeadershipQuery>;
+export type LeadershipLazyQueryHookResult = ReturnType<typeof useLeadershipLazyQuery>;
+export type LeadershipSuspenseQueryHookResult = ReturnType<typeof useLeadershipSuspenseQuery>;
+export type LeadershipQueryResult = Apollo.QueryResult<LeadershipQuery, LeadershipQueryVariables>;
 export const MessagesByAddressCountDocument = gql`
     query MessagesByAddressCount($address: _text, $timestamp: timestamp) {
   messages_by_address_aggregate(
@@ -10785,6 +10854,56 @@ export function useMessagesByAddressSenseWsSubscription(baseOptions?: Apollo.Sub
       }
 export type MessagesByAddressSenseWsSubscriptionHookResult = ReturnType<typeof useMessagesByAddressSenseWsSubscription>;
 export type MessagesByAddressSenseWsSubscriptionResult = Apollo.SubscriptionResult<MessagesByAddressSenseWsSubscription>;
+export const GetRumorsDocument = gql`
+    query getRumors($limit: Int, $offset: Int, $valAddress: String) {
+  transaction(
+    limit: $limit
+    offset: $offset
+    order_by: {height: desc}
+    where: {_and: [{messagesByTransactionHash: {type: {_in: ["cosmos.staking.v1beta1.MsgDelegate", "cosmos.staking.v1beta1.MsgUndelegate"]}}}, {messagesByTransactionHash: {value: {_contains: {validator_address: $valAddress}}}}]}
+  ) {
+    messages
+    success
+    hash
+    height
+  }
+}
+    `;
+
+/**
+ * __useGetRumorsQuery__
+ *
+ * To run a query within a React component, call `useGetRumorsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRumorsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRumorsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      valAddress: // value for 'valAddress'
+ *   },
+ * });
+ */
+export function useGetRumorsQuery(baseOptions?: Apollo.QueryHookOptions<GetRumorsQuery, GetRumorsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRumorsQuery, GetRumorsQueryVariables>(GetRumorsDocument, options);
+      }
+export function useGetRumorsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRumorsQuery, GetRumorsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRumorsQuery, GetRumorsQueryVariables>(GetRumorsDocument, options);
+        }
+export function useGetRumorsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetRumorsQuery, GetRumorsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRumorsQuery, GetRumorsQueryVariables>(GetRumorsDocument, options);
+        }
+export type GetRumorsQueryHookResult = ReturnType<typeof useGetRumorsQuery>;
+export type GetRumorsLazyQueryHookResult = ReturnType<typeof useGetRumorsLazyQuery>;
+export type GetRumorsSuspenseQueryHookResult = ReturnType<typeof useGetRumorsSuspenseQuery>;
+export type GetRumorsQueryResult = Apollo.QueryResult<GetRumorsQuery, GetRumorsQueryVariables>;
 export const TransactionCountDocument = gql`
     query transactionCount {
   transaction_aggregate {

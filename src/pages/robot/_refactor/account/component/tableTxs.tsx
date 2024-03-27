@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -14,21 +15,16 @@ import {
 const statusTrueImg = require('src/image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('src/image/ionicons_svg_ios-close-circle.svg');
 
-function TableTxs({ data, type, accountUser, amount }) {
-  const [itemsToShow, setItemsToShow] = useState(30);
-
+function TableTxs({ data, type, accountUser, amount, fetchNextData, hasMore }) {
   const setNextDisplayedPalettes = useCallback(() => {
     setTimeout(() => {
-      setItemsToShow(itemsToShow + 10);
+      if (fetchNextData) {
+        fetchNextData();
+      }
     }, 250);
-  }, [itemsToShow, setItemsToShow]);
+  }, [fetchNextData]);
 
-  const displayedPalettes = useMemo(
-    () => data.slice(0, itemsToShow),
-    [itemsToShow, data]
-  );
-
-  const validatorRows = displayedPalettes.map((item, index) => (
+  const validatorRows = data.map((item, index) => (
     <Table.Row
       paddingX={0}
       paddingY={5}
@@ -37,7 +33,7 @@ function TableTxs({ data, type, accountUser, amount }) {
       display="flex"
       minHeight="48px"
       height="fit-content"
-      key={item.hash}
+      key={`${item.hash}_${uuidv4()}`}
     >
       <Table.TextCell flex={0.5} textAlign="center">
         <TextTable>
@@ -177,9 +173,9 @@ function TableTxs({ data, type, accountUser, amount }) {
         }}
       >
         <InfiniteScroll
-          dataLength={Object.keys(displayedPalettes).length}
+          dataLength={data.length}
           next={setNextDisplayedPalettes}
-          hasMore={itemsToShow < data.length}
+          hasMore={hasMore}
           loader={
             <h4>
               Loading

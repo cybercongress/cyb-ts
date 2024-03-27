@@ -13,21 +13,22 @@ import { useAdviser } from 'src/features/adviser/context';
 
 import RenderValue from './RenderValue';
 
-const limit = 1000; // Use a constant for the limit
+const limit = 10; // Use a constant for the limit
 
 function TxsTable() {
   const { address: accountUser } = useRobotContext();
   const [hasMore, setHasMore] = useState(true);
   const { setAdviser } = useAdviser();
-  const { data, loading, fetchMore, error } = useMessagesByAddressQuery({
-    variables: {
-      address: `{${accountUser}}`,
-      limit,
-      offset: 0,
-      types: '{}'
-    },
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, fetchMore, error } =
+    useMessagesByAddressQuery({
+      variables: {
+        address: `{${accountUser}}`,
+        limit,
+        offset: 0,
+        types: '{}',
+      },
+      notifyOnNetworkStatusChange: true,
+    });
 
   useEffect(() => {
     setAdviser(
