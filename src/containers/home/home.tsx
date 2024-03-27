@@ -2,8 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
-import { useQuery, gql } from '@apollo/client';
-
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAppData } from 'src/contexts/appData';
@@ -14,6 +12,7 @@ import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
 import { BASE_DENOM, LCD_URL } from 'src/constants/config';
+import { useContractsCountQuery } from 'src/generated/graphql';
 
 const PREFIXES = [
   {
@@ -48,16 +47,6 @@ function ContainerGrid({ children }) {
   );
 }
 
-const GET_CHARACTERS = gql`
-  query MyQuery {
-    contracts_aggregate {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
 function Home() {
   const { block } = useAppData();
   const queryClient = useQueryClient();
@@ -67,7 +56,7 @@ function Home() {
   const [memoryLoader, setMemoryLoader] = useState(true);
   const [counCitizenshipst, setCounCitizenshipst] = useState(0);
   const [citizensClaim, setCitizensClaim] = useState(0);
-  const { loading, data } = useQuery(GET_CHARACTERS);
+  const { loading, data } = useContractsCountQuery();
   const {
     linksCount,
     cidsCount,
@@ -146,13 +135,6 @@ function Home() {
       setMemoryLoader(false);
     }
   }, [queryClient]);
-
-  const useCountContracts = useMemo(() => {
-    if (data && data !== null && data.contracts_aggregate.aggregate) {
-      return data.contracts_aggregate.aggregate.count;
-    }
-    return 0;
-  }, [data]);
 
   const useGetBeta = useMemo(() => {
     const link = new BigNumber(linksCount);
@@ -244,7 +226,13 @@ function Home() {
         />
         <CardStatisics
           title="Contracts"
-          value={loading ? <Dots /> : formatNumber(useCountContracts)}
+          value={
+            loading ? (
+              <Dots />
+            ) : (
+              formatNumber(data?.contracts_aggregate.aggregate?.count || 0)
+            )
+          }
         />
         <CardStatisics
           value={formatNumber(useGetBeta)}

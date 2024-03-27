@@ -10324,6 +10324,16 @@ export type TransactionsSubscriptionVariables = Exact<{ [key: string]: never; }>
 
 export type TransactionsSubscription = { __typename?: 'subscription_root', transaction: Array<{ __typename?: 'transaction', success: boolean, messages: any, height: any, hash: string }> };
 
+export type AccountCountQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AccountCountQuery = { __typename?: 'query_root', account_aggregate: { __typename?: 'account_aggregate', aggregate?: { __typename?: 'account_aggregate_fields', count: number } | null } };
+
+export type ContractsCountQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ContractsCountQuery = { __typename?: 'query_root', contracts_aggregate: { __typename?: 'contracts_aggregate', aggregate?: { __typename?: 'contracts_aggregate_fields', count: number } | null } };
+
 export type CyberlinksByParticleQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10470,6 +10480,88 @@ export function useTransactionsSubscription(baseOptions?: Apollo.SubscriptionHoo
       }
 export type TransactionsSubscriptionHookResult = ReturnType<typeof useTransactionsSubscription>;
 export type TransactionsSubscriptionResult = Apollo.SubscriptionResult<TransactionsSubscription>;
+export const AccountCountDocument = gql`
+    query accountCount {
+  account_aggregate {
+    aggregate {
+      count(columns: address)
+    }
+  }
+}
+    `;
+
+/**
+ * __useAccountCountQuery__
+ *
+ * To run a query within a React component, call `useAccountCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAccountCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAccountCountQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAccountCountQuery(baseOptions?: Apollo.QueryHookOptions<AccountCountQuery, AccountCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AccountCountQuery, AccountCountQueryVariables>(AccountCountDocument, options);
+      }
+export function useAccountCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AccountCountQuery, AccountCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AccountCountQuery, AccountCountQueryVariables>(AccountCountDocument, options);
+        }
+export function useAccountCountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AccountCountQuery, AccountCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AccountCountQuery, AccountCountQueryVariables>(AccountCountDocument, options);
+        }
+export type AccountCountQueryHookResult = ReturnType<typeof useAccountCountQuery>;
+export type AccountCountLazyQueryHookResult = ReturnType<typeof useAccountCountLazyQuery>;
+export type AccountCountSuspenseQueryHookResult = ReturnType<typeof useAccountCountSuspenseQuery>;
+export type AccountCountQueryResult = Apollo.QueryResult<AccountCountQuery, AccountCountQueryVariables>;
+export const ContractsCountDocument = gql`
+    query contractsCount {
+  contracts_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useContractsCountQuery__
+ *
+ * To run a query within a React component, call `useContractsCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useContractsCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useContractsCountQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useContractsCountQuery(baseOptions?: Apollo.QueryHookOptions<ContractsCountQuery, ContractsCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ContractsCountQuery, ContractsCountQueryVariables>(ContractsCountDocument, options);
+      }
+export function useContractsCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ContractsCountQuery, ContractsCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ContractsCountQuery, ContractsCountQueryVariables>(ContractsCountDocument, options);
+        }
+export function useContractsCountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ContractsCountQuery, ContractsCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ContractsCountQuery, ContractsCountQueryVariables>(ContractsCountDocument, options);
+        }
+export type ContractsCountQueryHookResult = ReturnType<typeof useContractsCountQuery>;
+export type ContractsCountLazyQueryHookResult = ReturnType<typeof useContractsCountLazyQuery>;
+export type ContractsCountSuspenseQueryHookResult = ReturnType<typeof useContractsCountSuspenseQuery>;
+export type ContractsCountQueryResult = Apollo.QueryResult<ContractsCountQuery, ContractsCountQueryVariables>;
 export const CyberlinksByParticleDocument = gql`
     query CyberlinksByParticle($limit: Int, $offset: Int, $orderBy: [cyberlinks_order_by!], $where: cyberlinks_bool_exp) {
   cyberlinks(limit: $limit, offset: $offset, order_by: $orderBy, where: $where) {
