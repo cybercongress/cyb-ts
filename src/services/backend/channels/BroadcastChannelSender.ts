@@ -1,4 +1,6 @@
 import { updateSenseList } from 'src/features/sense/redux/sense.redux';
+import { setDefaultAccount } from 'src/redux/features/pocket';
+import { Account } from 'src/types/defaultAccount';
 import { SenseListItem } from '../types/sense';
 import {
   BroadcastChannelMessage,
@@ -37,6 +39,15 @@ class BroadcastChannelSender {
     if (senseList.length > 0) {
       this.channel.postMessage(updateSenseList(senseList));
     }
+  }
+
+  public postSetDefaultAccount(name: string, account?: Account) {
+    this.channel.postMessage(
+      setDefaultAccount({
+        name,
+        account,
+      })
+    );
   }
 
   post(msg: BroadcastChannelMessage) {
