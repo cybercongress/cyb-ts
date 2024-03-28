@@ -1,4 +1,5 @@
 import { Pane, Text } from '@cybercongress/gravity';
+import { BASE_DENOM } from 'src/constants/config';
 import {
   IconStatus,
   Votes,
@@ -6,7 +7,6 @@ import {
   ContainerGradientText,
 } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
 
 const iconPie = require('../../image/ionicons_svg_ios-pie.svg');
 const iconPieActive = require('../../image/ionicons_svg_ios-pie-active.svg');
@@ -59,8 +59,7 @@ function ProposalsDetailProgressBar({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()}{' '}
-            MinDeposit
+            {formatNumber(minDeposit)} {BASE_DENOM.toUpperCase()} MinDeposit
           </Text>
         </Pane>
       </ContainerGradientText>

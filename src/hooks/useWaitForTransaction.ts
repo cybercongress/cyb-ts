@@ -5,7 +5,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 // from
 // https://wagmi.sh/react/hooks/useWaitForTransaction
 
-type Props = {
+export type Props = {
   hash: string | null | undefined;
   onSuccess?: (response: IndexedTx) => void;
 };

@@ -21,19 +21,6 @@ export async function waitUntil(cond: () => boolean, timeoutDuration = 60000) {
   return Promise.race([waitPromise, timeoutPromise]);
 }
 
-export function executeSequentially<T>(
-  promiseFunctions: (() => Promise<T>)[]
-): Promise<T[]> {
-  return promiseFunctions.reduce((promiseChain, currentFunction) => {
-    return promiseChain.then((chainResults) =>
-      currentFunction().then((currentResult) => [
-        ...chainResults,
-        currentResult,
-      ])
-    );
-  }, Promise.resolve([] as T[]));
-}
-
 // eslint-disable-next-line import/no-unused-modules
 export function makeCancellable<T extends (...args: any[]) => Promise<any>>(
   func: T,
@@ -74,4 +61,30 @@ export function throwIfAborted<T extends (...args: any[]) => Promise<any>>(
     }
     return func(...args);
   };
+}
+
+/**
+ * Promise will be rejected after timeout.
+ *
+ * @param promise
+ * @param timeout ms
+ * @param abortController trigger abort
+ * @returns
+ */
+// eslint-disable-next-line import/no-unused-modules
+export async function withTimeout<T>(
+  promise: Promise<T>,
+  timeout: number,
+  abortController?: AbortController
+): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      const timer = setTimeout(() => {
+        abortController?.abort('timeout');
+        clearTimeout(timer);
+        reject(new DOMException('timeout', 'AbortError'));
+      }, timeout);
+    }),
+  ]);
 }

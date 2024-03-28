@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import { getInlfation } from '../../../utils/search/utils';
 import { getProposals } from '../../../utils/governance';
 import { coinDecimals } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
 
 function useGetStatisticsCyber() {
   const queryClient = useQueryClient();
@@ -75,9 +75,9 @@ function useGetStatisticsCyber() {
           });
         }
 
-        if (totalCyb[CYBER.DENOM_CYBER] && totalCyb[CYBER.DENOM_LIQUID_TOKEN]) {
-          staked = new BigNumber(totalCyb[CYBER.DENOM_LIQUID_TOKEN])
-            .dividedBy(totalCyb[CYBER.DENOM_CYBER])
+        if (totalCyb[BASE_DENOM] && totalCyb[DENOM_LIQUID]) {
+          staked = new BigNumber(totalCyb[DENOM_LIQUID])
+            .dividedBy(totalCyb[BASE_DENOM])
             .toString(10);
         }
         setKnowledge((item) => ({

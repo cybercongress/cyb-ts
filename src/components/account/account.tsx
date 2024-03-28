@@ -5,8 +5,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import cx from 'classnames';
+import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
 
@@ -25,9 +25,7 @@ function useGetValidatorInfo(address: string) {
     },
     {
       enabled: Boolean(
-        queryClient &&
-          address &&
-          address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+        queryClient && address && address.includes(BECH32_PREFIX_VALOPER)
       ),
     }
   );
@@ -77,7 +75,7 @@ function Account({
   }, [address, trimAddressParam]);
 
   const linkAddress = useMemo(() => {
-    if (address?.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
+    if (address?.includes(BECH32_PREFIX_VALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
 

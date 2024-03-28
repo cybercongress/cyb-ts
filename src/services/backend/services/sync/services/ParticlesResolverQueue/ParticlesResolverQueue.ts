@@ -16,7 +16,7 @@ import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
-import DbApi from '../../../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../../DbApi/DbApi';
 
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';

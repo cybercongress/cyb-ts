@@ -2,7 +2,6 @@ import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 
 import { routes } from 'src/routes';
-import { CYBER } from 'src/utils/config';
 import { useLocation } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
@@ -13,6 +12,7 @@ import styles from './styles.module.scss';
 import Button from '../btnGrd';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { trimString } from 'src/utils/utils';
+import { CHAIN_ID } from 'src/constants/config';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -59,7 +59,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const { passport } = usePassportByAddress(address);
 
   const noAccount = !defaultAccount.account;
-  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
+  const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
 
   const exception =
     (location.pathname !== routes.keys.path &&

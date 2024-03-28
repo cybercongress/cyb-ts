@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import usePassportContract from 'src/features/passport/usePassportContract';
 import { Citizenship } from 'src/types/citizenship';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import Sense from './Sense';
 
 /**

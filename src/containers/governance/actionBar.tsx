@@ -1,5 +1,8 @@
 import { Component } from 'react';
 import { coins } from '@cosmjs/launchpad';
+import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
+import { DefaultAccount } from 'src/types/defaultAccount';
+import { DEFAULT_GAS_LIMITS, BASE_DENOM } from 'src/constants/config';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -11,11 +14,9 @@ import {
   GovernanceSoftwareUpgrade,
 } from '../../components';
 
-import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import withAccount from '../../hocs/withAccount';
-import { DefaultAccount } from 'src/types/defaultAccount';
 
 const STAGE_TYPE_GOV = 9;
 
@@ -80,7 +81,7 @@ class ActionBar extends Component<ActionBarProps> {
       const [{ address }] = await signer.getAccounts();
 
       try {
-        const deposit = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
+        const deposit = coins(parseFloat(valueDeposit), BASE_DENOM);
         if (valueSelect === 'textProposal') {
           response = await signingClient.submitProposal(
             address,
@@ -97,7 +98,7 @@ class ActionBar extends Component<ActionBarProps> {
         }
 
         if (valueSelect === 'communityPool') {
-          const amount = coins(10, CYBER.DENOM_CYBER);
+          const amount = coins(10, BASE_DENOM);
           response = await signingClient.submitProposal(
             address,
             {
@@ -259,7 +260,7 @@ class ActionBar extends Component<ActionBarProps> {
   };
 
   onFilePickerChange = (files) => {
-    //TODO: create utils method for that
+    // TODO: create utils method for that
     const reader = new FileReader();
 
     reader.readAsText(files[0], 'UTF-8');

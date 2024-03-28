@@ -5,7 +5,6 @@ import JSONInput from 'react-json-editor-ajrm';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
-import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import styles from './stylesInstantiationContract.scss';
 import { CardItem } from '../codes/code';
@@ -14,7 +13,8 @@ import SelectFile from './renderAbi/SelectFile';
 import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 import Button from 'src/components/btnGrd';
 import { Input } from 'src/components';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import { BASE_DENOM } from 'src/constants/config';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -32,7 +32,7 @@ const executePlaceholder = {
   },
 };
 
-const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+const coinsPlaceholder = [{ denom: BASE_DENOM, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
 export function JSONInputCard({ title, placeholder, setState, height }) {

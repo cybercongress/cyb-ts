@@ -4,10 +4,10 @@ import _ from 'lodash';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import { Nullable } from 'src/types';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
 
 const usePrevious = (value: any) => {
   const ref = useRef<any>();
@@ -63,10 +63,10 @@ function useGetBalanceBostrom(address: Nullable<string>) {
             [key]: {
               ...data[key],
               price: {
-                denom: CYBER.DENOM_LIQUID_TOKEN,
+                denom: DENOM_LIQUID,
                 amount: price.toNumber(),
               },
-              cap: { denom: CYBER.DENOM_LIQUID_TOKEN, amount: tempCap },
+              cap: { denom: DENOM_LIQUID, amount: tempCap },
             },
           };
         }, {});
@@ -90,7 +90,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
       if (!loadingMalin && !loadingToken) {
         let dataResult = {};
         const mainToken = {
-          [CYBER.DENOM_CYBER]: { ...balanceMainToken },
+          [BASE_DENOM]: { ...balanceMainToken },
         };
         const dataResultTemp = { ...mainToken, ...balanceToken };
         const tempData = getBalanceMarket(dataResultTemp);

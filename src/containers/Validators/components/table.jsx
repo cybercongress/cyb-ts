@@ -1,7 +1,7 @@
 import { TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Tooltip } from '../../../components';
 import { TextTable } from './ui';
-import { CYBER } from '../../../utils/config';
+import { BASE_DENOM } from 'src/constants/config';
 
 function TableHeroes({ mobile, showJailed, children }) {
   return (
@@ -49,7 +49,7 @@ function TableHeroes({ mobile, showJailed, children }) {
                   placement="bottom"
                   tooltip={
                     <div style={{ width: 150 }}>
-                      Amount of {CYBER.DENOM_CYBER.toUpperCase()} (tokens you
+                      Amount of {BASE_DENOM.toUpperCase()} (tokens you
                       bonded to validator in)
                     </div>
                   }

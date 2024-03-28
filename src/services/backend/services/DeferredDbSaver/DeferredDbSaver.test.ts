@@ -1,5 +1,5 @@
 import DeferredDbSaver from './DeferredDbSaver';
-import DbApi from '../dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../DbApi/DbApi';
 import { IPFSContent } from 'src/services/ipfs/ipfs';
 import { BehaviorSubject, of } from 'rxjs';
 

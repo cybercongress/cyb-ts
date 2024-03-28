@@ -24,9 +24,9 @@ import { formatNumber } from '../../utils/utils';
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { MainContainer } from '../portal/components';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -89,8 +89,7 @@ function ProposalsDetail({ defaultAccount }) {
           proposalsInfo.title = title;
           proposalsInfo.type = responseProposalsDetail.content['@type'];
           proposalsInfo.description = description;
-          proposalsInfo.status =
-            PROPOSAL_STATUS[responseProposalsDetail.status];
+          proposalsInfo.status = ProposalStatus[responseProposalsDetail.status];
 
           if (plan) {
             proposalsInfo.plan = plan;
@@ -292,7 +291,7 @@ function ProposalsDetail({ defaultAccount }) {
           tally={tally}
         />
 
-        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
+        {proposals.status > ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
           <ProposalsIdDetailTableVoters
             proposalId={proposalId}
             updateFunc={updateFunc}

@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { Sha256 } from '@cosmjs/crypto';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { CYBER } from '../../../utils/config';
 import networkList from '../../../utils/networkListIbc';
 import useSubscribersBlokIbc from './useSubscribersBlokIbc';
+import { CHAIN_ID } from 'src/constants/config';
 
 const sha256 = (data) => {
   return new Uint8Array(new Sha256().update(data).digest());
@@ -35,7 +35,7 @@ function useGetBalancesIbc(client: SigningStargateClient, denom) {
   const getBalanceIbc = async () => {
     if (client && denom) {
       const responseChainId = client.signer.chainId;
-      if (responseChainId !== CYBER.CHAIN_ID) {
+      if (responseChainId !== CHAIN_ID) {
         let coinMinimalDenom = null;
         if (denom.includes('ibc') && ibcDataDenom) {
           coinMinimalDenom = ibcDataDenom[denom].baseDenom;

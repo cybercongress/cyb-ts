@@ -1,20 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import axios from 'axios';
-import { CYBER } from '../../../utils/config';
+import { LCD_URL } from 'src/constants/config';
+
+import { Cyber as CyberLcdApi } from 'src/generated/Cyber';
+import { dataOrNull } from 'src/utils/axios';
+
+const lcdCyberApi = new CyberLcdApi({ baseURL: LCD_URL });
 
 const getNegentropy = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/rank/negentropy`,
-    });
-
-    return response.data;
-  } catch (e) {
-    return null;
-  }
+  const response = await lcdCyberApi.negentropy();
+  return dataOrNull(response);
 };
 
 const keyQuery = 'negentropy';
@@ -28,32 +24,19 @@ function useGetNegentropy(refetchInterval: number | undefined) {
   const { data, status } = useQuery({
     queryKey: [keyQuery],
     queryFn: async () => {
-      let response = {
-        negentropy: 0,
-        timestamp: '',
-      };
-
-      const responseNegentropy = await getNegentropy();
-
-      if (responseNegentropy && responseNegentropy !== null) {
-        const { result } = responseNegentropy;
-        const d = new Date();
-        response = { negentropy: result.negentropy, timestamp: d };
-      }
-
-      return response;
+      const result = await getNegentropy();
+      return { negentropy: result?.negentropy || 0, timestamp: Date.now() };
     },
     refetchInterval,
   });
 
   useEffect(() => {
-    if (data && data !== null) {
+    if (data) {
       const lastgraphStatsLs = localStorage.getItem(keyQuery);
       if (lastgraphStatsLs !== null) {
         const oldData = JSON.parse(lastgraphStatsLs);
-        const timeChange =
-          Date.parse(data.timestamp) - Date.parse(oldData.timestamp);
-        const amountChange = new BigNumber(data.negentropy)
+        const timeChange = data!.timestamp - oldData.timestamp;
+        const amountChange = new BigNumber(data!.negentropy)
           .minus(oldData.negentropy)
           .toNumber();
         if (timeChange > 0 && amountChange > 0) {

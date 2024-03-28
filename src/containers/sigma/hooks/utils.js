@@ -3,13 +3,11 @@ import { Decimal } from '@cosmjs/math';
 import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
-import { CYBER } from '../../../utils/config';
+import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
 
-const { DENOM_CYBER } = CYBER;
-
 const initValue = {
-  denom: DENOM_CYBER,
+  denom: BASE_DENOM,
   amount: '0',
 };
 
@@ -32,7 +30,7 @@ const getDelegationsAmount = (data) => {
       delegationsAmount = delegationsAmount.plus(itemDelegation.balance.amount);
     });
   }
-  return initValueResponseFunc(DENOM_CYBER, delegationsAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, delegationsAmount.toString());
 };
 
 const getUnbondingAmount = (data) => {
@@ -45,7 +43,7 @@ const getUnbondingAmount = (data) => {
       });
     });
   }
-  return initValueResponseFunc(DENOM_CYBER, unbondingAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, unbondingAmount.toString());
 };
 
 const getRewardsAmount = (data) => {
@@ -57,7 +55,7 @@ const getRewardsAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM_CYBER, rewardsAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, rewardsAmount.toString());
 };
 
 const getCommissionAmount = (data) => {
@@ -70,7 +68,7 @@ const getCommissionAmount = (data) => {
       Decimal.fromAtomics(amount, 18).floor().toString()
     );
   }
-  return initValueResponseFunc(DENOM_CYBER, commissionAmount.toString());
+  return initValueResponseFunc(BASE_DENOM, commissionAmount.toString());
 };
 
 export const useGetBalance = (client, addressBech32) => {
@@ -81,7 +79,7 @@ export const useGetBalance = (client, addressBech32) => {
       async () => {
         const responsegetBalance = await client.getBalance(
           addressBech32,
-          DENOM_CYBER
+          BASE_DENOM
         );
 
         const responsedelegatorDelegations = await getDelegatorDelegations(
@@ -107,7 +105,7 @@ export const useGetBalance = (client, addressBech32) => {
 
         const dataValidatorAddress = fromBech32(
           addressBech32,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+          BECH32_PREFIX_VALOPER
         );
 
         const responsevalidatorCommission = await client.validatorCommission(
@@ -136,7 +134,7 @@ export const useGetBalance = (client, addressBech32) => {
         return {
           ...resultBalance,
           total: {
-            denom: DENOM_CYBER,
+            denom: BASE_DENOM,
             amount: total,
           },
         };

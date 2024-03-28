@@ -8,18 +8,6 @@ import { entityToDto } from 'src/utils/dto';
 import { SenseItemLinkMeta } from '../../types/sense';
 import { SyncEntryName } from '../../types/services';
 
-// export function extractLinkData(
-//   cid: ParticleCid,
-//   links: CyberlinksByParticleResponse['cyberlinks']
-// ) {
-//   return {
-//     lastLink: links[0],
-//     count: links.length,
-//     lastTimestamp: dateToUtcNumber(links[0].timestamp),
-//     firstTimestamp: dateToUtcNumber(links[links.length - 1].timestamp),
-//   };
-// }
-
 export function getLastReadInfo(
   links: LinkDto[],
   ownerId: NeuronAddress,

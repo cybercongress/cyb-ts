@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { reduceBalances } from '../utils/utils';
 import { authAccounts } from '../utils/search/utils';
-import { CYBER } from '../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
 const getVestingPeriodsData = (data, startTime) => {
   let length = parseFloat(startTime);
   const vestedAmount = {
-    [CYBER.DENOM_LIQUID_TOKEN]: 0,
+    [DENOM_LIQUID]: 0,
     millivolt: 0,
     milliampere: 0,
   };
@@ -68,7 +68,7 @@ function useGetBalances(addressActive) {
     const getAuth = async () => {
       if (addressActive) {
         const vested = {
-          [CYBER.DENOM_LIQUID_TOKEN]: 0,
+          [DENOM_LIQUID]: 0,
           millivolt: 0,
           milliampere: 0,
         };

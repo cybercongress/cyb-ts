@@ -3,8 +3,10 @@ import { Battery, Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { Networks } from 'src/types/networks';
+import { routes } from 'src/routes';
+import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 import Tooltip from '../tooltip/tooltip';
-import { CYBER } from '../../utils/config';
 import {
   coinDecimals,
   convertResources,
@@ -12,9 +14,6 @@ import {
   reduceBalances,
 } from '../../utils/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { Networks } from 'src/types/networks';
-import { routes } from 'src/routes';
 
 const PREFIXES = [
   {
@@ -55,12 +54,12 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
           {text}
           <Link
             to={
-              CYBER.CHAIN_ID === Networks.BOSTROM
+              CHAIN_ID === Networks.BOSTROM
                 ? routes.search.getLink('get BOOT')
                 : routes.teleport.path
             }
           >
-            Get {CYBER.DENOM_CYBER.toUpperCase()}
+            Get {BASE_DENOM.toUpperCase()}
           </Link>
         </Text>
       </Pane>
@@ -68,13 +67,13 @@ function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
   );
 }
 
-function BandwidthBar({ tooltipPlacement }) // bwRemained = 0,
-// bwMaxValue = 0,
-// countLink = 0,
-// amounPower,
-// ...props
+function BandwidthBar({ tooltipPlacement }) {
+  // bwRemained = 0,
+  // bwMaxValue = 0,
+  // countLink = 0,
+  // amounPower,
+  // ...props
 
-{
   const [linkPrice] = useState(4);
 
   const queryClient = useQueryClient();

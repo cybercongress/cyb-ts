@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CYBER } from 'src/utils/config';
+import { WEBSOCKET_URL } from 'src/constants/config';
 import useWebSocket, { Socket } from './hook';
 
 const WebsocketsContext = React.createContext<{ cyber: Socket | null }>({
@@ -11,7 +11,7 @@ export function useWebsockets() {
 }
 
 function WebsocketsProvider({ children }: { children: React.ReactNode }) {
-  const cyberWebsocket = useWebSocket(CYBER.CYBER_WEBSOCKET_URL);
+  const cyberWebsocket = useWebSocket(WEBSOCKET_URL);
 
   const value = useMemo(() => {
     return {

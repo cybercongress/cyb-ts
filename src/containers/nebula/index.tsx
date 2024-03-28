@@ -15,8 +15,8 @@ import {
 import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, NebulaImg } from './components';
-import { CYBER } from '../../utils/config';
 import { useAdviser } from 'src/features/adviser/context';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 function Title({
   capData,
@@ -168,7 +168,7 @@ function Nebula() {
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
-              text={CYBER.DENOM_LIQUID_TOKEN}
+              text={DENOM_LIQUID}
               value={dataRenderItems[key].price}
               tooltipStatusImg={false}
             />
@@ -176,7 +176,7 @@ function Nebula() {
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
               value={dataRenderItems[key].cap}
-              text={CYBER.DENOM_LIQUID_TOKEN}
+              text={DENOM_LIQUID}
               tooltipStatusImg={false}
             />
           </ColItem>

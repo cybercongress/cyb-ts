@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
+import { CHAIN_ID, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { Account, ActionBar as ActionBarCenter } from '../../components';
-import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 
 import ActionBarStaps from './actionBarSteps';
@@ -301,8 +302,8 @@ function ActionBar({ stateActionBar }: Props) {
           price 1 000 000 000
           <img
             style={{ width: '20px', marginLeft: '5px' }}
-            src={selectNetworkImg(CYBER.CHAIN_ID)}
-            alt={CYBER.CHAIN_ID}
+            src={selectNetworkImg(CHAIN_ID)}
+            alt={CHAIN_ID}
           />
         </div>
       ),

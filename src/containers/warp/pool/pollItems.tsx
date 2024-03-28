@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import { DenomArr, FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { replaceSlash } from '../../../utils/utils';
 
 function PoolItemsList({ assets, token }) {
@@ -75,12 +75,12 @@ function PoolItemsList({ assets, token }) {
       <FormatNumberTokens
         marginContainer="0px"
         value={usePrice}
-        text={CYBER.DENOM_LIQUID_TOKEN}
+        text={DENOM_LIQUID}
       />
       <FormatNumberTokens
         marginContainer="0px"
         value={useCap}
-        text={CYBER.DENOM_LIQUID_TOKEN}
+        text={DENOM_LIQUID}
       />
     </div>
   );

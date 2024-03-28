@@ -4,7 +4,7 @@ import {
   createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
-import { queryPassportContract } from 'src/soft.js/api/passport';
+import { queryPassportContract } from 'src/services/soft.js/api/passport';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { RootState } from 'src/redux/store';

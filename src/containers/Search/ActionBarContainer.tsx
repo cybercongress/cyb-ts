@@ -15,7 +15,7 @@ import {
 import { getTxs } from '../../utils/search/utils';
 
 import { LEDGER } from '../../utils/config';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { trimString } from '../../utils/utils';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import { DefaultAccount } from 'src/types/defaultAccount';

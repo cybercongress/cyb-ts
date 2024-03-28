@@ -1,9 +1,4 @@
-import {
-  numberToUtcDate,
-  dateToUtcNumber,
-  roundMilliseconds,
-  numberToDateWithTimezone,
-} from '../date';
+import { numberToUtcDate, dateToUtcNumber, roundMilliseconds } from '../date';
 
 test('numberToDate should convert timestamp to formatted date string', () => {
   const timestamp = 0;
@@ -28,12 +23,4 @@ test('roundMilliseconds should round the milliseconds of a date-time string', ()
   const dateTimeString = '2022-01-01T12:00:00.123';
   const result = roundMilliseconds(dateTimeString);
   expect(result).toBe('2022-01-01T12:00:00.000');
-});
-
-test('numberToDateWithTimezone should convert number to date with specified timezone', () => {
-  const timestamp = 1640995200000;
-  const timezoneOffset = 5.5;
-  const result = numberToDateWithTimezone(timestamp, timezoneOffset);
-
-  expect(result).toBe('2022-01-01 05:30:00');
 });

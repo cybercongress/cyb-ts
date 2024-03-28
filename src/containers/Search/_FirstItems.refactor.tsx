@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Account, SearchItem } from 'src/components';
 import {
+  PATTERN_CYBER,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_BLOCK,
-} from 'src/utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+} from 'src/constants/patterns';
 import { trimString, formatNumber } from 'src/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 

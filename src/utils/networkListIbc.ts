@@ -1,5 +1,5 @@
+import defaultNetworks from 'src/constants/defaultNetworks';
 import { ObjectKey } from 'src/types/data';
-import { CYBER } from './config';
 
 export type NetworkCons = {
   chainId: string;
@@ -17,9 +17,9 @@ export type NetworkCons = {
 
 const networkList: ObjectKey<NetworkCons> = {
   bostrom: {
-    chainId: 'bostrom',
-    rpc: CYBER.CYBER_NODE_URL_API,
-    coinMinimalDenom: CYBER.DENOM_CYBER,
+    chainId: defaultNetworks.bostrom.CHAIN_ID,
+    rpc: defaultNetworks.bostrom.RPC_URL,
+    coinMinimalDenom: defaultNetworks.bostrom.BASE_DENOM,
   },
   'osmosis-1': {
     chainId: 'osmosis-1',

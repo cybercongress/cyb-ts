@@ -1,5 +1,5 @@
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { NeuronAddress } from 'src/types/base';
 import {
   SenseListItem,

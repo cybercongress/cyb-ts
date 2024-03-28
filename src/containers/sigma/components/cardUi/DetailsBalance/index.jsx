@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { CYBER } from '../../../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.module.scss';
@@ -31,7 +31,7 @@ function DetailsBalance({ data }) {
               key={key}
               value={value}
               text={key}
-              cap={{ amount: cap, denom: CYBER.DENOM_LIQUID_TOKEN }}
+              cap={{ amount: cap, denom: DENOM_LIQUID }}
             />
           );
         })}

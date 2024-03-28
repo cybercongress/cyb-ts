@@ -8,12 +8,13 @@ import {
   Input,
   ActionBar,
 } from 'src/components';
-import { LEDGER, CYBER } from 'src/utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { LEDGER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useDispatch } from 'react-redux';
 import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
+import { CHAIN_ID } from 'src/constants/config';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
@@ -32,7 +33,6 @@ function ActionBarConnect({
   updateAddress,
   updateFuncActionBar,
   onClickBack,
-  selectAccount,
 }) {
   const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -103,7 +103,7 @@ function ActionBarConnect({
   const connectKeplr = async () => {
     if (signer) {
       const { bech32Address, pubKey, name } = await signer.keplr.getKey(
-        CYBER.CHAIN_ID
+        CHAIN_ID
       );
       const pk = Buffer.from(pubKey).toString('hex');
 

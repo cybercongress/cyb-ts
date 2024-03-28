@@ -1,0 +1,7 @@
+query accountCount {
+  account_aggregate {
+    aggregate {
+      count(columns: address)
+    }
+  }
+}

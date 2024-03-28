@@ -144,7 +144,7 @@ function PlayBanerContent() {
   }, [dataGetNegentropy]);
 
   useEffect(() => {
-    if (dataAccountCount.status === 'success' && dataAccountCount.data) {
+    if (dataAccountCount.data) {
       slideDataRef.current = {
         ...slideDataRef.current,
         everGrowing: {
@@ -160,7 +160,7 @@ function PlayBanerContent() {
   }, [dataAccountCount]);
 
   useEffect(() => {
-    if (dataContractsCount.status === 'success' && dataContractsCount.data) {
+    if (dataContractsCount.data) {
       slideDataRef.current = {
         ...slideDataRef.current,
         autonomousSemantic: {

@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/launchpad';
 import { ContainerGradientText, FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import styles from './styles.module.scss';
 
 type Props = {
@@ -17,7 +17,7 @@ function PoolsInfo({ totalCap, myCap, useMyProcent, vol24 }: Props) {
         <div className={styles.PoolsInfoContainerValue}>
           <FormatNumberTokens
             styleValue={{ fontSize: '18px' }}
-            text={CYBER.DENOM_LIQUID_TOKEN}
+            text={DENOM_LIQUID}
             value={myCap}
           />
         </div>
@@ -29,7 +29,7 @@ function PoolsInfo({ totalCap, myCap, useMyProcent, vol24 }: Props) {
           <FormatNumberTokens
             value={totalCap}
             styleValue={{ fontSize: '18px' }}
-            text={CYBER.DENOM_LIQUID_TOKEN}
+            text={DENOM_LIQUID}
           />
         </div>
 
@@ -44,7 +44,7 @@ function PoolsInfo({ totalCap, myCap, useMyProcent, vol24 }: Props) {
           <FormatNumberTokens
             value={vol24?.amount ? parseFloat(vol24.amount) : 0}
             styleValue={{ fontSize: '18px' }}
-            text={CYBER.DENOM_LIQUID_TOKEN}
+            text={DENOM_LIQUID}
           />
         </div>
         <div className={styles.PoolsInfoContainerText}>Volume 24h</div>

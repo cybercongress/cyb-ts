@@ -7,8 +7,9 @@ import Display from 'src/components/containerGradient/Display/Display';
 import { Colors } from 'src/components/containerGradient/types';
 import { FormatNumberTokens, AmountDenom, CreatedAt } from 'src/components';
 import { CssVariables } from 'src/style/variables';
+import { MessagesByAddressQuery } from 'src/generated/graphql';
+import { ArrayElement } from 'src/types';
 import useGetResultSwap from '../../../hooks/useGetResultSwap';
-import { ResponseTxsByType } from '../../../hooks/useGetSendTxsByAddress';
 import styles from './DataSwapTxs.module.scss';
 
 function getDataOrder(value, coinDecimalsA: number) {
@@ -30,7 +31,11 @@ function getDataOrder(value, coinDecimalsA: number) {
   };
 }
 
-function DataSwapTxsItem({ item }: { item: ResponseTxsByType }) {
+function DataSwapTxsItem({
+  item,
+}: {
+  item: ArrayElement<MessagesByAddressQuery['messages_by_address']>;
+}) {
   const { traseDenom } = useIbcDenom();
   const dataResultSwap = useGetResultSwap(
     item.transaction.height,

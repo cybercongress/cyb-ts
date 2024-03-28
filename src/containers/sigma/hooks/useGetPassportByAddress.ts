@@ -1,6 +1,6 @@
 import { Citizenship } from 'src/types/citizenship';
 import usePassportContract from 'src/features/passport/usePassportContract';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 
 function useGetPassportByAddress(accounts: any) {
   let address =

@@ -15,12 +15,13 @@ import {
   MsgTransferEncodeObject,
   SigningStargateClient,
 } from '@cosmjs/stargate';
+import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import {
   ActionBarContentText,
   LinkWindow,
   ActionBar as ActionBarCenter,
 } from '../../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../utils/config';
+import { LEDGER } from '../../../utils/config';
 import {
   fromBech32,
   trimString,

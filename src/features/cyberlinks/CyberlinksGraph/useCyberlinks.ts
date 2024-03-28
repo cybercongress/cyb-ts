@@ -1,10 +1,10 @@
 // import gql from 'graphql-tag';
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
-
 import { useBackend } from 'src/contexts/backend/backend';
-import { useEffect, useState } from 'react';
-import { useBackend } from 'src/contexts/backend/backend';
+import {
+  Order_By as OrderBy,
+  useCyberlinksByParticleQuery,
+} from 'src/generated/graphql';
 
 const valueByKeyOrSelf = (key: string, obj: Record<string, any>) =>
   obj[key] || key;
@@ -52,32 +52,23 @@ function useCyberlinks(
 ) {
   let where;
   if (address) {
-    where = `{neuron: {_eq: "${address}"}}`;
+    where = { neuron: { _eq: address } };
   } else {
-    where = '{}';
+    where = {};
   }
 
   const {
     loading,
     error,
     data: gqlData,
-  } = useQuery(
-    gql`
-    query Cyberlinks {
-      cyberlinks(limit: ${String(
-        limit
-      )}, order_by: {height: desc}, where: ${where}) {
-        particle_from
-        particle_to
-        neuron
-        transaction_hash
-      }
-    }
-  `,
-    {
-      skip,
-    }
-  );
+  } = useCyberlinksByParticleQuery({
+    variables: {
+      where,
+      orderBy: { height: OrderBy.Desc },
+      limit,
+    },
+    skip,
+  });
 
   const cyberlinks = gqlData?.cyberlinks;
   const { isLoading, particlesPreview } = useParticlesPreview();
@@ -91,8 +82,8 @@ function useCyberlinks(
     }
 
     // TODO: a lot of loops, try to refactor
-    const from = cyberlinks.map((a) => a.particle_from);
-    const to = cyberlinks.map((a) => a.particle_to);
+    const from = cyberlinks.map((a) => a.from);
+    const to = cyberlinks.map((a) => a.to);
 
     const object = Array.from(new Set(from.concat(to))).map((value) => ({
       id: valueByKeyOrSelf(value, particlesPreview),
@@ -107,10 +98,10 @@ function useCyberlinks(
 
     for (let i = 0; i < cyberlinks.length; i++) {
       links[i] = {
-        source: valueByKeyOrSelf(cyberlinks[i].particle_from, particlesPreview),
-        target: valueByKeyOrSelf(cyberlinks[i].particle_to, particlesPreview),
+        source: valueByKeyOrSelf(cyberlinks[i].from, particlesPreview),
+        target: valueByKeyOrSelf(cyberlinks[i].to, particlesPreview),
         name: cyberlinks[i].transaction_hash,
-        subject: cyberlinks[i].subject,
+        subject: cyberlinks[i].neuron,
         // curvative: getRandomInt(20, 500) / 1000,
       };
     }

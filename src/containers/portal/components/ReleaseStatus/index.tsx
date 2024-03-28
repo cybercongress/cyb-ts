@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { FormatNumberTokens } from 'src/components';
-import { CYBER } from '../../../../utils/config';
 import DonutChart from '../../../../components/DonutChart';
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
 import { GIFT_ICON } from '../../utils';
 import { ProgressBar } from '../progressCard';
 import styles from './ReleaseStatus.module.scss';
+import { BASE_DENOM } from 'src/constants/config';
 
 type DataReleaseStatus = {
   availableRelease: number;
@@ -64,7 +64,7 @@ function RowItem({ item }: { item: Item }) {
     <div className={styles.RowItemReleaseStatus}>
       <div style={{ color: item.color }}>{item.title}</div>
       <div>
-        <FormatNumberTokens value={item.value} text={CYBER.DENOM_CYBER} />
+        <FormatNumberTokens value={item.value} text={BASE_DENOM} />
       </div>
     </div>
   );
@@ -81,7 +81,7 @@ function ReleaseStatus({
     <div className={styles.title}>
       <div>release status {GIFT_ICON}</div>
       <div>
-        <FormatNumberTokens value={amountGiftValue} text={CYBER.DENOM_CYBER} />
+        <FormatNumberTokens value={amountGiftValue} text={BASE_DENOM} />
       </div>
     </div>
   );

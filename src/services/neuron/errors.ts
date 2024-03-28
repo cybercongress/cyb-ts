@@ -16,6 +16,8 @@ export class SigningCyberClientError extends Error {
     }
 
     super(message);
+    cyblog.error(message, { error: response });
+
     this.code = code;
   }
 }

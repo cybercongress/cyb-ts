@@ -21,8 +21,6 @@ export const MSG_MULTI_SEND_TRANSACTION_TYPE =
 
 export const CYBER_LINK_TRANSACTION_TYPE = 'cyber.graph.v1beta1.MsgCyberlink';
 
-const DELEGATION_TRANSACTION_TYPE = 'cosmos.staking.v1beta1.MsgDelegate';
-
 interface Input {
   address: NeuronAddress;
   coins: Coin[];
@@ -55,11 +53,6 @@ export interface CyberLinkValue {
   links: CyberLinkSimple[];
 }
 
-interface DelegateTransaction
-  extends GenericIndexerTransaction<MsgDelegateValue> {
-  type: typeof DELEGATION_TRANSACTION_TYPE;
-}
-
 export interface CyberLinkTransaction
   extends GenericIndexerTransaction<CyberLinkValue> {
   type: typeof CYBER_LINK_TRANSACTION_TYPE;
@@ -78,5 +71,3 @@ export interface MsgSendTransaction
 export type Transaction =
   // | DelegateTransaction
   CyberLinkTransaction | MsgMultiSendTransaction | MsgSendTransaction;
-
-export type GqlType = 'query' | 'subscription';

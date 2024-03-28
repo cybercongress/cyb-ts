@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useRef } from 'react';
 import { ActionBar as ActionBarContainer, Pane } from '@cybercongress/gravity';
-import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
-import txs from '../../../utils/txs';
-import { CYBER, LEDGER } from '../../../utils/config';
+import Button from 'src/components/btnGrd';
+import AddFileButton from 'src/components/buttons/AddFile/AddFile';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import { MEMO_KEPLR } from 'src/constants/config';
+import { getTxs } from '../../../utils/search/utils';
 import {
   ActionBarContentText,
   Dots,
@@ -13,12 +15,7 @@ import {
   TransactionError,
   Account,
 } from '../../../components';
-import { getTxs } from '../../../utils/search/utils';
-import Button from 'src/components/btnGrd';
-import AddFileButton from 'src/components/buttons/AddFile/AddFile';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
-
-const gasPrice = GasPrice.fromString('0.001boot');
+import { LEDGER } from '../../../utils/config';
 
 const {
   STAGE_INIT,
@@ -78,7 +75,7 @@ function ActionBar({ updateFnc, addressActive }) {
             address,
             wasmBytes,
             Soft3MessageFactory.fee(2),
-            CYBER.MEMO_KEPLR
+            MEMO_KEPLR
           );
           if (response.code === 0) {
             setTxHash(response.transactionHash);

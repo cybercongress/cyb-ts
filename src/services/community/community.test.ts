@@ -1,6 +1,6 @@
 import { featchStoredSyncCommunity } from './community';
-import DbApiWrapper from '../backend/services/dataSource/indexedDb/dbApiWrapper';
-import { getFollowsAsCid, getFollowers } from '../backend/services/lcd/lcd';
+import DbApiWrapper from '../backend/services/DbApi/DbApi';
+import { getFollowsAsCid, getFollowers } from './lcd';
 
 jest.mock('../backend/services/dataSource/indexedDb/dbApiWrapper');
 jest.mock('../backend/services/lcd/lcd');

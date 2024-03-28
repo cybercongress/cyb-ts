@@ -4,7 +4,7 @@ import { equals } from 'ramda';
 import {
   PassportContractQuery,
   queryPassportContract,
-} from 'src/soft.js/api/passport';
+} from 'src/services/soft.js/api/passport';
 
 type Props = {
   query: PassportContractQuery;

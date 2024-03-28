@@ -8,7 +8,6 @@ import {
 } from 'src/components';
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
-import { CYBER } from 'src/utils/config';
 import { useAdviser } from 'src/features/adviser/context';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
@@ -22,6 +21,7 @@ import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
+import { CHAIN_ID } from 'src/constants/config';
 import TitleText from '../landing/components/TitleText/TitleText';
 import KeywordButton from '../landing/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
@@ -65,7 +65,7 @@ function Learn() {
 
   const passport = useAppSelector(selectCurrentPassport);
 
-  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
+  const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
 
   const [tx, setTx] = useState({
     hash: '',

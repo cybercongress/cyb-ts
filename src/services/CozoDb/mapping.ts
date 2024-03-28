@@ -5,7 +5,7 @@ import { IPFSContent } from '../ipfs/ipfs';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/indexer/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
-import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/indexer';
+import { CyberlinksByParticleQuery } from 'src/generated/graphql';
 
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;
@@ -97,7 +97,7 @@ export const mapLinkFromIndexerToDto = ({
   neuron,
   timestamp,
   transaction_hash,
-}: CyberlinksByParticleResponse['cyberlinks'][0]): LinkDto => ({
+}: CyberlinksByParticleQuery['cyberlinks'][0]): LinkDto => ({
   from,
   to,
   neuron,

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getPassport } from '../passports.redux';
 
