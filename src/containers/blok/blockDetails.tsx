@@ -1,29 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
-
 import withRouter from 'src/components/helpers/withRouter';
-
+import { useBlockByHeightQuery } from 'src/generated/graphql';
 import InformationBlock from './informationBlock';
 import TableTxs from '../../pages/robot/_refactor/account/component/tableTxs';
 import { CardTemplate } from '../../components';
 import ActionBarContainer from '../Search/ActionBarContainer';
-
-const GET_CHARACTERS = gql`
-  query MyQuery($blockId: bigint) {
-    block(where: { height: { _eq: $blockId } }) {
-      hash
-      height
-      proposer_address
-      timestamp
-      transactions {
-        messages
-        hash
-        height
-        success
-      }
-    }
-  }
-`;
 
 const initialState = {
   height: null,
@@ -35,7 +16,7 @@ const initialState = {
 function BlockDetails({ router }) {
   const { idBlock } = router.params;
   const [blockInfo, setBlockInfo] = useState(initialState);
-  const { loading, error, data } = useQuery(GET_CHARACTERS, {
+  const { loading, error, data } = useBlockByHeightQuery({
     variables: {
       blockId: idBlock,
     },

@@ -10329,6 +10329,22 @@ export type AccountCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AccountCountQuery = { __typename?: 'query_root', account_aggregate: { __typename?: 'account_aggregate', aggregate?: { __typename?: 'account_aggregate_fields', count: number } | null } };
 
+export type BlockByHeightQueryVariables = Exact<{
+  blockId?: InputMaybe<Scalars['bigint']['input']>;
+}>;
+
+
+export type BlockByHeightQuery = { __typename?: 'query_root', block: Array<{ __typename?: 'block', hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions: Array<{ __typename?: 'transaction', messages: any, hash: string, height: any, success: boolean }> }> };
+
+export type BlocksQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<Block_Bool_Exp>;
+}>;
+
+
+export type BlocksQuery = { __typename?: 'query_root', block: Array<{ __typename?: 'block', hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions_aggregate: { __typename?: 'transaction_aggregate', aggregate?: { __typename?: 'transaction_aggregate_fields', count: number } | null } }> };
+
 export type ContractsCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -10515,6 +10531,105 @@ export type AccountCountQueryHookResult = ReturnType<typeof useAccountCountQuery
 export type AccountCountLazyQueryHookResult = ReturnType<typeof useAccountCountLazyQuery>;
 export type AccountCountSuspenseQueryHookResult = ReturnType<typeof useAccountCountSuspenseQuery>;
 export type AccountCountQueryResult = Apollo.QueryResult<AccountCountQuery, AccountCountQueryVariables>;
+export const BlockByHeightDocument = gql`
+    query blockByHeight($blockId: bigint) {
+  block(where: {height: {_eq: $blockId}}) {
+    hash
+    height
+    proposer_address
+    timestamp
+    transactions {
+      messages
+      hash
+      height
+      success
+    }
+  }
+}
+    `;
+
+/**
+ * __useBlockByHeightQuery__
+ *
+ * To run a query within a React component, call `useBlockByHeightQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBlockByHeightQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBlockByHeightQuery({
+ *   variables: {
+ *      blockId: // value for 'blockId'
+ *   },
+ * });
+ */
+export function useBlockByHeightQuery(baseOptions?: Apollo.QueryHookOptions<BlockByHeightQuery, BlockByHeightQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BlockByHeightQuery, BlockByHeightQueryVariables>(BlockByHeightDocument, options);
+      }
+export function useBlockByHeightLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BlockByHeightQuery, BlockByHeightQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BlockByHeightQuery, BlockByHeightQueryVariables>(BlockByHeightDocument, options);
+        }
+export function useBlockByHeightSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BlockByHeightQuery, BlockByHeightQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BlockByHeightQuery, BlockByHeightQueryVariables>(BlockByHeightDocument, options);
+        }
+export type BlockByHeightQueryHookResult = ReturnType<typeof useBlockByHeightQuery>;
+export type BlockByHeightLazyQueryHookResult = ReturnType<typeof useBlockByHeightLazyQuery>;
+export type BlockByHeightSuspenseQueryHookResult = ReturnType<typeof useBlockByHeightSuspenseQuery>;
+export type BlockByHeightQueryResult = Apollo.QueryResult<BlockByHeightQuery, BlockByHeightQueryVariables>;
+export const BlocksDocument = gql`
+    query blocks($limit: Int, $offset: Int, $where: block_bool_exp) {
+  block(where: $where, limit: $limit, offset: $offset, order_by: {height: desc}) {
+    hash
+    height
+    proposer_address
+    transactions_aggregate {
+      aggregate {
+        count
+      }
+    }
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useBlocksQuery__
+ *
+ * To run a query within a React component, call `useBlocksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBlocksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBlocksQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useBlocksQuery(baseOptions?: Apollo.QueryHookOptions<BlocksQuery, BlocksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BlocksQuery, BlocksQueryVariables>(BlocksDocument, options);
+      }
+export function useBlocksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BlocksQuery, BlocksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BlocksQuery, BlocksQueryVariables>(BlocksDocument, options);
+        }
+export function useBlocksSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BlocksQuery, BlocksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BlocksQuery, BlocksQueryVariables>(BlocksDocument, options);
+        }
+export type BlocksQueryHookResult = ReturnType<typeof useBlocksQuery>;
+export type BlocksLazyQueryHookResult = ReturnType<typeof useBlocksLazyQuery>;
+export type BlocksSuspenseQueryHookResult = ReturnType<typeof useBlocksSuspenseQuery>;
+export type BlocksQueryResult = Apollo.QueryResult<BlocksQuery, BlocksQueryVariables>;
 export const ContractsCountDocument = gql`
     query contractsCount {
   contracts_aggregate {
