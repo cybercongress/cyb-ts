@@ -20,6 +20,7 @@ import BackendStatus from './BackendStatus';
 import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
+import AutzKeys from './AutzKeys';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -186,7 +187,7 @@ function Drive() {
           </p>
         </Display>
         <BackendStatus />
-
+        <AutzKeys />
         <Pane width="100%">
           <textarea
             placeholder="Enter your query here..."

@@ -9,6 +9,11 @@ import { getNowUtcNumber } from 'src/utils/date';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
 
+export const defaultFee = {
+  amount: [],
+  gas: DEFAULT_GAS_LIMITS.toString(),
+} as StdFee;
+
 export const sendCyberlink = async (
   neuron: NeuronAddress,
   from: ParticleCid,
@@ -20,10 +25,7 @@ export const sendCyberlink = async (
     senseApi: SenseApi;
     signingClient: SigningCyberClient;
   },
-  fee: StdFee = {
-    amount: [],
-    gas: DEFAULT_GAS_LIMITS.toString(),
-  } as StdFee
+  fee: StdFee = defaultFee
 ) => {
   const response = await signingClient!.cyberlink(neuron, from, to, fee);
   const result = throwErrorOrResponse(response);

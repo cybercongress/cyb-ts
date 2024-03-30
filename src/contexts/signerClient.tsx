@@ -154,4 +154,5 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+export { createClient as createSignerClient };
 export default SigningClientProvider;
