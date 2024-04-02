@@ -84,13 +84,6 @@ function AutzKeys() {
 
         setAddress(address);
         await loadGrantees();
-        // const granters = await getGranters(myAddress);
-        // console.log('----grantees', granters.data.grants);
-        // setGranters(granters.data.grants);
-
-        // const grants = await getGrants(myAddress, address);
-        // console.log('----grants', grants.data.grants);
-        // setGrants(grants.data.grants);
       }
     })();
   }, [myAddress]);
@@ -105,20 +98,7 @@ function AutzKeys() {
           amount: coins(1, 'boot'),
         },
       };
-      // const thirtyDaysInFuture = new Date(
-      //   Date.now() + 30 * 24 * 60 * 60 * 1000
-      // );
-      // const expirationTimestamp = toTimestamp(thirtyDaysInFuture);
 
-      // const seconds = BigInt(
-      //   Math.round(thirtyDaysInFuture.getTime()).toString()
-      // );
-
-      // Create the Timestamp object with bigint values
-      // const expirationTimestamp = Timestamp.fromPartial({
-      //   seconds,
-      //   nanos: 0,
-      // });
       const expirationTimestamp = Math.floor(
         Date.parse('2024-05-01T18:52:56.449Z') / 1000
       );
@@ -223,15 +203,7 @@ function AutzKeys() {
         <h3>Autz keys</h3>
         <div>Mnemonic: {mnemonic}</div>
         <div>Address: {address}</div>
-        {/* <div>Granters:</div>
-        <ul>
-          {granters.map((data, index) => (
-            <li key={`grantees_${index}`}>
-              {data.granter} to {data.grantee} - {data.authorization.msg}: (
-              {data.expiration})
-            </li>
-          ))}
-        </ul> */}
+
         <div>Grantees:</div>
         <ul>
           {grantees.map((data, index) => (
@@ -241,14 +213,7 @@ function AutzKeys() {
             </li>
           ))}
         </ul>
-        {/* <div>Grants:</div>
-        <ul>
-          {grants.map((data, index) => (
-            <li key={`grant_${index}`}>
-              {data.authorization.msg}: ({data.expiration})
-            </li>
-          ))}
-        </ul> */}
+
         <div className={styles.buttonPanel}>
           <Button small onClick={onGrantClick}>
             grant link rights
