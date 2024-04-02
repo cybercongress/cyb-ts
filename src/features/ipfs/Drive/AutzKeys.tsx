@@ -17,13 +17,12 @@ import { NeuronAddress } from 'src/types/base';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz';
 import { defaultFee } from 'src/services/neuron/neuronApi';
-import { makeClientWithAuthz } from './queries';
 import { coins } from '@cosmjs/launchpad';
 import axios from 'axios';
 import { useBackend } from 'src/contexts/backend/backend';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { MsgCyberlink } from '@cybercongress/cyber-js/build/codec/cyber/graph/v1beta1/tx';
-import { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
+// import { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 
 /*
 https://lcd.bostrom.cybernode.ai/cosmos/authz/v1beta1/grants/grantee/bostrom1a3zu6emqfzkc6rz9a44mq2ks88dmgvjrfcq6jl
