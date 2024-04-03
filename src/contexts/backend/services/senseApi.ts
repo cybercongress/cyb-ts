@@ -8,7 +8,7 @@ import {
 } from 'src/services/CozoDb/types/dto';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import {
   CYBER_LINK_TRANSACTION_TYPE,
   CyberLinkValue,

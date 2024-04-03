@@ -2,12 +2,12 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
-import { CYBER } from '../../../utils/config';
 import {
   findDenomInTokenList,
   getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
+import { BASE_DENOM } from 'src/constants/config';
 
 function useGetTotalCap() {
   const { marketData, dataTotalSupply } = useAppData();
@@ -90,9 +90,9 @@ function useGetTotalCap() {
       const ibcDenomAtom = getDenomHash(path, denomInfo.coinMinimalDenom);
       if (
         Object.prototype.hasOwnProperty.call(marketData, ibcDenomAtom) &&
-        Object.prototype.hasOwnProperty.call(marketData, CYBER.DENOM_CYBER)
+        Object.prototype.hasOwnProperty.call(marketData, BASE_DENOM)
       ) {
-        const priceBoot = new BigNumber(marketData[CYBER.DENOM_CYBER]);
+        const priceBoot = new BigNumber(marketData[BASE_DENOM]);
         const priceAtom = new BigNumber(marketData[ibcDenomAtom]);
         const priceBootForAtom = priceAtom
           .dividedBy(priceBoot)

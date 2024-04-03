@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 
-import { fetchCyberlinksIterable } from 'src/services/backend/services/dataSource/blockchain/indexer';
+import { fetchCyberlinksIterable } from 'src/services/backend/services/indexer/cyberlinks';
 import { fetchTransactionsIterable } from '../../../indexer/transactions';
 import { CybIpfsNode } from 'src/services/ipfs/ipfs';
 

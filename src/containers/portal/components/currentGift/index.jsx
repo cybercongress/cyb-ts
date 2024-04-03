@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
 import styles from './CurrentGift.module.scss';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';

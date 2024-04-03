@@ -3,7 +3,7 @@ import { DenomArr, AvailableAmount } from 'src/components';
 import { ObjKeyValue } from 'src/types/data';
 import Select, { SelectOption } from 'src/components/Select/index';
 import { Nullable } from 'src/types';
-import { CYBER } from 'src/utils/config';
+import { CHAIN_ID } from 'src/constants/config';
 import { Col, GridContainer } from '../../components/containers/Containers';
 import InputNumberDecimalScale from '../../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import styles from './TokenSetterSwap.module.scss';
@@ -106,7 +106,7 @@ function TokenSetterSwap({
                 text: <span className={styles.defaultOptions}>warp</span>,
                 img: (
                   <DenomArr
-                    denomValue={CYBER.CHAIN_ID}
+                    denomValue={CHAIN_ID}
                     onlyImg
                     type="network"
                     tooltipStatusImg={false}

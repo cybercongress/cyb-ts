@@ -16,12 +16,15 @@ import { CYBER } from 'src/utils/config';
 import { NeuronAddress } from 'src/types/base';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz';
+import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz';
+
 import { defaultFee } from 'src/services/neuron/neuronApi';
 import { coins } from '@cosmjs/launchpad';
 import axios from 'axios';
 import { useBackend } from 'src/contexts/backend/backend';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { MsgCyberlink } from '@cybercongress/cyber-js/build/codec/cyber/graph/v1beta1/tx';
+import { CID_TWEET } from 'src/constants/app';
 // import { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 
 /*
@@ -101,32 +104,52 @@ function AutzKeys() {
       const expirationTimestamp = Math.floor(
         Date.parse('2024-05-01T18:52:56.449Z') / 1000
       );
-      const grantedMsg = '/cyber.graph.v1beta1.MsgCyberlink';
 
-      const grant = {
+      const grantCyberlink = {
         authorization: {
           typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
           value: GenericAuthorization.encode(
             GenericAuthorization.fromPartial({
-              msg: grantedMsg,
+              msg: '/cyber.graph.v1beta1.MsgCyberlink',
             })
           ).finish(),
         },
         expiration: { seconds: expirationTimestamp, nano: 0 },
       };
 
-      const grantMsg = {
+      // const grantCyberlinkMsg = {
+      //   typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
+      //   value: {
+      //     granter: myAddress,
+      //     grantee: address,
+      //     grant: grantCyberlink,
+      //   },
+      // };
+
+      const createGrantMsg = (grant: any) => ({
         typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
         value: {
           granter: myAddress,
           grantee: address,
           grant,
         },
+      });
+
+      const grantSend = {
+        authorization: {
+          typeUrl: '/cosmos.bank.v1beta1.SendAuthorization',
+          value: SendAuthorization.encode(
+            SendAuthorization.fromPartial({
+              spendLimit: coins(1, 'boot'),
+            })
+          ).finish(),
+        },
+        expiration: { seconds: expirationTimestamp, nano: 0 },
       };
 
       const result = await signingClient?.signAndBroadcast(
         myAddress,
-        [sendMsg, grantMsg],
+        [sendMsg, createGrantMsg(grantCyberlink), createGrantMsg(grantSend)],
         defaultFee
       );
       await loadGrantees();
@@ -155,7 +178,7 @@ function AutzKeys() {
 
   const onTestLink = async () => {
     if (myAddress && address) {
-      const fromCid = await ipfsApi?.addContent('test-autz');
+      const fromCid = CID_TWEET; // await ipfsApi?.addContent('test-autz');
 
       const toCid = await ipfsApi?.addContent(testLink);
       console.log('----test link', fromCid, toCid);

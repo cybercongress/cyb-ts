@@ -5,11 +5,12 @@ import { connect } from 'react-redux';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { setDefaultAccount, setAccounts } from '../../../redux/features/pocket';
 import { Dots, BtnGrd } from '../../../components';
-import { CYBER, LEDGER } from '../../../utils/config';
+import { LEDGER } from '../../../utils/config';
 import { steps } from './utils';
 import { ActionBarSteps } from '../components';
 import { useBackend } from 'src/contexts/backend/backend';
 import NodeIsLoadingButton from 'src/components/btnGrd/NodeIsLoadingButton/NodeIsLoadingButton';
+import { CHAIN_ID } from 'src/constants/config';
 
 const {
   STEP_INIT,
@@ -68,7 +69,7 @@ function ActionBar({
     let pocketAccount = {};
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
-    const chainId = CYBER.CHAIN_ID;
+    const chainId = CHAIN_ID;
 
     let count = 1;
     if (signer) {

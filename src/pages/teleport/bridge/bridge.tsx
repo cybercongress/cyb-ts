@@ -5,7 +5,6 @@ import {
   Slider,
 } from 'src/components';
 import Select, { OptionSelect } from 'src/components/Select';
-import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
@@ -25,6 +24,7 @@ import HistoryContextProvider from '../../../services/ibc-history/historyContext
 import DataIbcHistory from './components/dataIbcHistory/DataIbcHistory';
 import InputNumberDecimalScale from '../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
+import { CHAIN_ID } from 'src/constants/config';
 
 type Query = {
   networkFrom: string;
@@ -36,7 +36,7 @@ type Query = {
 export const ibcDenomAtom =
   'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159';
 
-const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;
+const isCyberChain = (chainId: string) => chainId === CHAIN_ID;
 
 function Bridge() {
   const { traseDenom } = useIbcDenom();
@@ -128,7 +128,7 @@ function Bridge() {
   const networkOptions = useCallback(
     () =>
       channels
-        ? [CYBER.CHAIN_ID, ...Object.keys(channels)].map((key) => ({
+        ? [CHAIN_ID, ...Object.keys(channels)].map((key) => ({
             value: key,
             text: (
               <DenomArr

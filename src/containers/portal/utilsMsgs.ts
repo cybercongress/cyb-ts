@@ -1,4 +1,4 @@
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { coin } from '@cosmjs/launchpad';
 import { CyberClient } from '@cybercongress/cyber-js';

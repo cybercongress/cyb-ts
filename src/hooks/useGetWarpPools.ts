@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useState } from 'react';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { useAppData } from 'src/contexts/appData';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { Nullable } from 'src/types';
 import { ObjectKey } from 'src/types/data';
-import { CYBER } from 'src/utils/config';
 import { getDisplayAmount } from 'src/utils/utils';
 
 export type responseWarpDexTickersItem = {
@@ -95,14 +95,14 @@ export default function useWarpDexTickers() {
         vol24Temp = vol24Temp.plus(vol24Item);
 
         listVol24ByPools[item.pool_id] = {
-          denom: CYBER.DENOM_LIQUID_TOKEN,
+          denom: DENOM_LIQUID,
           amount: vol24Item.dp(0, BigNumber.ROUND_FLOOR).toString(10),
         };
       });
 
       setVol24ByPool(listVol24ByPools);
       setVol24Total({
-        denom: CYBER.DENOM_LIQUID_TOKEN,
+        denom: DENOM_LIQUID,
         amount: vol24Temp.dp(0, BigNumber.ROUND_FLOOR).toString(10),
       });
     }
