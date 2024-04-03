@@ -1,59 +1,51 @@
-
-import TableTxs from '../../pages/robot/_refactor/account/component/tableTxs';
-import Loader2 from 'src/components/ui/Loader2';
-import { useLeadershipQuery } from 'src/generated/graphql';
+import { useMessagesByAddressQuery } from 'src/generated/graphql';
 import { useState } from 'react';
+import TableTxsInfinite from 'src/components/TableTxsInfinite/TableTxsInfinite';
 
 const LIMIT = 10;
 
+const typeTx = `{"cosmos.gov.v1beta1.MsgDeposit", "cosmos.gov.v1beta1.MsgVote", "cosmos.gov.v1beta1.MsgSubmitProposal"}`;
+
 function Leadership({ accountUser }: { accountUser: string }) {
   const [hasMore, setHasMore] = useState(true);
-  const { loading, error, data, fetchMore } = useLeadershipQuery({
+  const { loading, error, data, fetchMore } = useMessagesByAddressQuery({
     variables: {
+      address: `{${accountUser}}`,
+      types: typeTx,
       limit: LIMIT,
       offset: 0,
-      valAddress: accountUser,
     },
   });
-
-  const { _transaction: transaction } = data || {};
 
   const fetchNextData = () => {
     fetchMore({
       variables: {
-        offset: data?._transaction.length,
+        offset: data?.messages_by_address.length,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev;
         }
-        setHasMore(fetchMoreResult._transaction.length > 0);
+        setHasMore(fetchMoreResult.messages_by_address.length > 0);
 
         return {
           ...prev,
-         _transaction: [...prev._transaction, ...fetchMoreResult._transaction],
+          messages_by_address: [
+            ...prev.messages_by_address,
+            ...fetchMoreResult.messages_by_address,
+          ],
         };
       },
     });
   };
 
   return (
-    <div>
-      {loading ? (
-        <Loader2 />
-      ) : transaction ? (
-        <TableTxs
-          accountUser={accountUser}
-          data={transaction}
-          hasMore={hasMore}
-          fetchNextData={fetchNextData}
-        />
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : (
-        'No data'
-      )}
-    </div>
+    <TableTxsInfinite
+      response={{ data, loading, error }}
+      accountUser={accountUser}
+      hasMore={hasMore}
+      fetchMoreData={fetchNextData}
+    />
   );
 }
 

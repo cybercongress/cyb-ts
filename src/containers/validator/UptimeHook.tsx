@@ -1,14 +1,13 @@
 import { useUptimeByAddressQuery } from 'src/generated/graphql';
 import { INFINITY } from 'src/constants/app';
-import { BECH32_PREFIX_VAL_CONS } from 'src/constants/config';
 import BigNumber from 'bignumber.js';
 import { Dots } from '../../components';
-import { fromBech32 } from '../../utils/utils';
+import { consensusPubkey } from '../../utils/utils';
 
-function useUptime({ accountUser }) {
+function useUptime({ consensusPub }: { consensusPub: string }) {
   const { loading, data, error } = useUptimeByAddressQuery({
     variables: {
-      address: `${fromBech32(accountUser, BECH32_PREFIX_VAL_CONS)}`,
+      address: `${consensusPubkey(consensusPub)}`,
     },
   });
 
@@ -20,7 +19,7 @@ function useUptime({ accountUser }) {
     return INFINITY;
   }
 
-  return `${new BigNumber(data.uptime)
+  return `${new BigNumber(data?.uptime[0].uptime || 0)
     .shiftedBy(2)
     .dp(2, BigNumber.ROUND_FLOOR)
     .toString()} %`;

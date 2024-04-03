@@ -25,9 +25,11 @@ export const INDEX_WEBSOCKET =
 export const BECH32_PREFIX =
   process.env.BECH32_PREFIX || defaultNetworks[DEFAULT_CHAIN_ID].BECH32_PREFIX;
 
-export const BECH32_PREFIX_VALOPER = `${BECH32_PREFIX}valoper`;
+const BECH32_PREFIX_VAL = `${BECH32_PREFIX}val`;
 
-export const BECH32_PREFIX_VAL_CONS = `${BECH32_PREFIX}valcons`;
+export const BECH32_PREFIX_VALOPER = `${BECH32_PREFIX_VAL}oper`;
+
+export const BECH32_PREFIX_VAL_CONS = `${BECH32_PREFIX_VAL}cons`;
 
 export const BASE_DENOM =
   process.env.BASE_DENOM || defaultNetworks[DEFAULT_CHAIN_ID].BASE_DENOM;

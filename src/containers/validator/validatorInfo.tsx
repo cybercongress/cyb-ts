@@ -84,7 +84,7 @@ function ValidatorInfo({ data }) {
       <Display>
         <Card
           title="Uptime"
-          value={<UptimeHook accountUser={data.delegateAddress} />}
+          value={<UptimeHook consensusPub={data.consensus_pubkey.value} />}
           stylesContainer={{
             width: '100%',
             maxWidth: 'unset',

@@ -93,19 +93,6 @@ export const stakingPool = async () => {
   }
 };
 
-export const getAccountBandwidth = async (address) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/bandwidth/neuron/${address}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 export const getRelevance = async (page = 0, limit = 50) => {
   try {
     const response = await axios({
@@ -116,119 +103,6 @@ export const getRelevance = async (page = 0, limit = 50) => {
   } catch (error) {
     return {};
   }
-};
-
-export const getBalance = async (address, node) => {
-  try {
-    const availablePromise = await axios({
-      method: 'get',
-      url: `${node || LCD_URL}/bank/balances/${address}`,
-    });
-
-    const delegationsPromise = await axios({
-      method: 'get',
-      url: `${node || LCD_URL}/staking/delegators/${address}/delegations`,
-    });
-
-    const unbondingPromise = await axios({
-      method: 'get',
-      url: `${
-        node || LCD_URL
-      }/staking/delegators/${address}/unbonding_delegations`,
-    });
-
-    const rewardsPropsise = await axios({
-      method: 'get',
-      url: `${node || LCD_URL}/distribution/delegators/${address}/rewards`,
-    });
-
-    const response = {
-      available: availablePromise.data.result[0],
-      delegations: delegationsPromise.data.result,
-      unbonding: unbondingPromise.data.result,
-      rewards:
-        rewardsPropsise.data.result.total !== null
-          ? rewardsPropsise.data.result.total[0]
-          : 0,
-    };
-
-    return response;
-  } catch (e) {
-    console.log(e);
-    return {
-      available: 0,
-      delegations: 0,
-      unbonding: 0,
-      rewards: 0,
-    };
-  }
-};
-
-export const getTotalEUL = (data) => {
-  const balance = {
-    available: 0,
-    delegation: 0,
-    unbonding: 0,
-    rewards: 0,
-    total: 0,
-  };
-
-  if (data) {
-    if (data.available && data.available !== 0) {
-      balance.total += Math.floor(parseFloat(data.available.amount));
-      balance.available += Math.floor(parseFloat(data.available.amount));
-    }
-
-    if (
-      data.delegations &&
-      data.delegations.length > 0 &&
-      data.delegations !== 0
-    ) {
-      data.delegations.forEach((delegation, i) => {
-        if (delegation.balance.amount) {
-          balance.total += Math.floor(parseFloat(delegation.balance.amount));
-          balance.delegation += Math.floor(
-            parseFloat(delegation.balance.amount)
-          );
-        } else {
-          balance.total += Math.floor(parseFloat(delegation.balance));
-          balance.delegation += Math.floor(parseFloat(delegation.balance));
-        }
-      });
-    }
-
-    if (data.unbonding && data.unbonding.length > 0 && data.unbonding !== 0) {
-      data.unbonding.forEach((unbond, i) => {
-        unbond.entries.forEach((entry, j) => {
-          balance.unbonding += Math.floor(parseFloat(entry.balance));
-          balance.total += Math.floor(parseFloat(entry.balance));
-        });
-      });
-    }
-
-    if (data.rewards && data.rewards !== 0) {
-      balance.total += Math.floor(parseFloat(data.rewards.amount));
-      balance.rewards += Math.floor(parseFloat(data.rewards.amount));
-    }
-
-    if (data.val_commission && data.val_commission.length > 0) {
-      balance.commission = Math.floor(
-        parseFloat(data.val_commission[0].amount)
-      );
-      balance.total += Math.floor(parseFloat(data.val_commission[0].amount));
-    }
-    // const validatorAddress = fromBech32(account, 'cybervaloper');
-    // const resultGetDistribution = await getDistribution(validatorAddress);
-    // if (resultGetDistribution) {
-    //   balance.commission += Math.floor(
-    //     parseFloat(resultGetDistribution.val_commission[0].amount)
-    //   );
-    //   balance.total += Math.floor(
-    //     parseFloat(resultGetDistribution.val_commission[0].amount)
-    //   );;
-    // }
-  }
-  return balance;
 };
 
 export const getTxs = async (txs) => {
@@ -856,20 +730,11 @@ export const getCredit = async (address) => {
   }
 };
 
-export const getDenomTraces = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/ibc/apps/transfer/v1/denom_traces`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const searchByHash = async (client, hash, page) => {
+export const searchByHash = async (
+  client: CyberClient,
+  hash: string,
+  page: number
+) => {
   try {
     const results = await client.search(hash, page);
 
