@@ -1,37 +1,14 @@
 import { Link } from 'react-router-dom';
-import { Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
-import { Account, MsgType, DenomArr, AmountDenom, Cid } from 'src/components';
+import { Account, DenomArr, AmountDenom, Cid } from 'src/components';
 import { BASE_DENOM } from 'src/constants/config';
 import { formatNumber } from '../../utils/search/utils';
 import { timeSince } from '../../utils/utils';
-import Row, { RowsContainer } from './components/Row';
+import Row from './components/Row';
+import ContainerMsgsType from './components/ContainerMsgsType';
 
 const S_TO_MS = 1 * 10 ** 3;
-
-function ContainerMsgsType({ type, children }) {
-  return (
-    <Pane
-      borderRadius={5}
-      display="flex"
-      flexDirection="column"
-      // boxShadow="0 0 5px #3ab793"
-      marginBottom={20}
-    >
-      <Pane
-        display="flex"
-        gap="10px"
-        marginBottom={20}
-        fontSize="18px"
-        alignItems="center"
-      >
-        Type: <MsgType type={type} />
-      </Pane>
-      <RowsContainer>{children}</RowsContainer>
-    </Pane>
-  );
-}
 
 function MultiSend({ msg }) {
   return (

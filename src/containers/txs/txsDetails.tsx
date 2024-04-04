@@ -8,9 +8,7 @@ import { MainContainer } from '../portal/components';
 import { getTxs } from './api/data';
 import { ValueInformation } from './type';
 import { mapResponseDataGetTxs } from './api/mapping';
-import {
-  CosmosTxV1Beta1TxBody,
-} from 'src/generated/data-contracts';
+import { CosmosTxV1Beta1TxBody } from 'src/generated/data-contracts';
 import { useAdviser } from 'src/features/adviser/context';
 
 function TxsDetails() {
@@ -18,24 +16,22 @@ function TxsDetails() {
   const { txHash } = useParams();
   const [msgs, setMsgs] = useState<CosmosTxV1Beta1TxBody['messages']>();
   const [information, setInformation] = useState<ValueInformation>();
-  const { setAdviser } = useAdviser()
+  const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    (() => {
-      getTxs(txHash || '').then((response) => {
-        if (!response) {
-          return;
-        }
+    getTxs(txHash || '').then((response) => {
+      if (!response) {
+        return;
+      }
 
-        const { info, messages, rawLog } = mapResponseDataGetTxs(response);
-        setInformation({ ...info });
-        setMsgs(messages);
+      const { info, messages, rawLog } = mapResponseDataGetTxs(response);
+      setInformation({ ...info });
+      setMsgs(messages);
 
-        if (rawLog) {
-          setAdviser(rawLog, 'red');
-        }
-      });
-    })();
+      if (rawLog) {
+        setAdviser(rawLog, 'red');
+      }
+    });
   }, [txHash, setAdviser]);
 
   return (

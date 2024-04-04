@@ -1,22 +1,23 @@
-function ContainerMsgsType({ type, children }) {
+import { MsgType } from 'src/components';
+import { ReactNode } from 'react';
+import styles from './ContainerMsgsType.module.scss';
+import { RowsContainer } from './Row';
+
+function ContainerMsgsType({
+  type,
+  children,
+}: {
+  type: string;
+  children: ReactNode;
+}) {
   return (
-    <Pane
-      borderRadius={5}
-      display="flex"
-      flexDirection="column"
-      // boxShadow="0 0 5px #3ab793"
-      marginBottom={20}
-    >
-      <Pane
-        display="flex"
-        gap="10px"
-        marginBottom={20}
-        fontSize="18px"
-        alignItems="center"
-      >
+    <div className={styles.container}>
+      <div className={styles.type}>
         Type: <MsgType type={type} />
-      </Pane>
+      </div>
       <RowsContainer>{children}</RowsContainer>
-    </Pane>
+    </div>
   );
 }
+
+export default ContainerMsgsType;
