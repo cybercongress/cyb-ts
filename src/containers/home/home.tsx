@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAppData } from 'src/contexts/appData';
@@ -13,6 +12,7 @@ import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
 import { BASE_DENOM, LCD_URL } from 'src/constants/config';
 import { useContractsCountQuery } from 'src/generated/graphql';
+import { useGetNegentropy } from '../temple/hooks';
 
 const PREFIXES = [
   {
@@ -50,8 +50,6 @@ function ContainerGrid({ children }) {
 function Home() {
   const { block } = useAppData();
   const queryClient = useQueryClient();
-  const [entropy, setEntropy] = useState(0);
-  const [entropyLoader, setEntropyLoader] = useState(true);
   const [memory, setMemory] = useState(0);
   const [memoryLoader, setMemoryLoader] = useState(true);
   const [counCitizenshipst, setCounCitizenshipst] = useState(0);
@@ -67,6 +65,7 @@ function Home() {
     communityPool,
     proposals,
   } = useGetStatisticsCyber();
+  const { data: negentropy, status } = useGetNegentropy(undefined);
 
   useEffect(() => {
     const cheeckStateRelease = async () => {
@@ -93,28 +92,6 @@ function Home() {
     };
     cheeckStateRelease();
   }, [queryClient]);
-
-  useEffect(() => {
-    getEntropy();
-  }, []);
-
-  const getEntropy = async () => {
-    try {
-      setEntropyLoader(true);
-      const response = await axios({
-        method: 'get',
-        url: `${LCD_URL}/rank/negentropy`,
-      });
-      if (response.data.result.negentropy) {
-        setEntropy(response.data.result.negentropy);
-      }
-      setEntropyLoader(false);
-    } catch (e) {
-      console.log(e);
-      setEntropy(0);
-      setEntropyLoader(false);
-    }
-  };
 
   useEffect(() => {
     try {
@@ -155,7 +132,7 @@ function Home() {
     <main className="block-body">
       <ContainerGrid>
         <CardStatisics
-          value={entropyLoader ? <Dots /> : `${entropy} bits`}
+          value={status === 'loading' ? <Dots /> : `${negentropy?.negentropy || 0} bits`}
           title="Negentropy"
           styleContainer={{ minWidth: 'unset' }}
         />

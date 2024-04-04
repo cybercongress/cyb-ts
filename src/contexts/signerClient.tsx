@@ -38,7 +38,6 @@ async function createClient(
     signer,
     options
   );
-
   return client;
 }
 
