@@ -11,7 +11,10 @@ export const mapResponseDataGetTxs = (
       timestamp: dataTxs.tx_response?.timestamp || '',
       memo: dataTxs.tx?.body?.memo || '',
     },
-    rawLog: dataTxs.tx_response?.raw_log,
+    rawLog:
+      dataTxs.tx_response?.code !== 0
+        ? dataTxs.tx_response?.raw_log
+        : undefined,
     messages: dataTxs.tx?.body?.messages || [],
   };
 };
