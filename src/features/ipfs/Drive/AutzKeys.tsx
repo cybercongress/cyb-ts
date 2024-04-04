@@ -12,7 +12,7 @@ import {
   useSigningClient,
 } from 'src/contexts/signerClient';
 
-import { CYBER } from 'src/utils/config';
+import { LCD_URL } from 'src/constants/config';
 import { NeuronAddress } from 'src/types/base';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz';
@@ -37,21 +37,21 @@ https://lcd.bostrom.cybernode.ai/cosmos/authz/v1beta1/grants?granter=bostrom1p0r
 const getGranters = async (address: NeuronAddress) => {
   return axios({
     method: 'get',
-    url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/authz/v1beta1/grants/grantee/${address}`,
+    url: `${LCD_URL}/cosmos/authz/v1beta1/grants/grantee/${address}`,
   });
 };
 
 const getGrantees = async (address: NeuronAddress) => {
   return axios({
     method: 'get',
-    url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/authz/v1beta1/grants/granter/${address}`,
+    url: `${LCD_URL}/cosmos/authz/v1beta1/grants/granter/${address}`,
   });
 };
 
 const getGrants = async (granter: NeuronAddress, grantee: NeuronAddress) => {
   return axios({
     method: 'get',
-    url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/authz/v1beta1/grants?granter=${granter}&grantee=${grantee}`,
+    url: `${LCD_URL}/cosmos/authz/v1beta1/grants?granter=${granter}&grantee=${grantee}`,
   });
 };
 
