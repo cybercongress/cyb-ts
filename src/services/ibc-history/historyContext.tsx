@@ -11,8 +11,6 @@ import { SigningStargateClient } from '@cosmjs/stargate';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { Option } from 'src/types';
 import { PromiseExtended } from 'dexie';
-import { CYBER } from 'src/utils/config';
-import { TxsType } from '../../pages/teleport/type';
 import TracerTx from './tx/TracerTx';
 import networkList from 'src/utils/networkListIbc';
 import PollingStatusSubscription from './polling-status-subscription';

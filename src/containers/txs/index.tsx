@@ -1,31 +1,19 @@
-import { gql } from '@apollo/client';
-
 import { v4 as uuidv4 } from 'uuid';
-import { useSubscription } from '@apollo/client';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { useTransactionsSubscription } from 'src/generated/graphql';
+
 import { trimString, formatNumber } from '../../utils/utils';
 import { Loading, MsgType, TextTable } from '../../components';
 
-const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
-const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
-
-const GET_CHARACTERS = gql`
-  subscription Query {
-    transaction(offset: 0, limit: 200, order_by: { height: desc }) {
-      success
-      messages
-      height
-      hash
-    }
-  }
-`;
+import statusTrueImg from '../../image/ionicons_svg_ios-checkmark-circle.svg';
+import statusFalseImg from '../../image/ionicons_svg_ios-close-circle.svg';
 
 function Txs() {
-  const { loading, error, data } = useSubscription(GET_CHARACTERS);
+  const { loading, error, data } = useTransactionsSubscription();
 
   function renderRows() {
-    return data.transaction.map((item, index) => (
+    return (data?.transaction || []).map((item, index) => (
       <Table.Row
         paddingX={0}
         paddingY={5}
@@ -105,7 +93,7 @@ function Txs() {
 
         {loading ? (
           <Loading />
-        ) : data?.transaction.length > 0 ? (
+        ) : data?.transaction.length ? (
           <Table.Body
             style={{
               backgroundColor: '#000',

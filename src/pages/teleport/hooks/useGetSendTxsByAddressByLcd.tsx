@@ -5,7 +5,7 @@ import { Nullable, Option } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useCallback, useEffect, useState } from 'react';
 import { TxsResponse } from '@cosmjs/launchpad';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 
 const limit = 5;
 

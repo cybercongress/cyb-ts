@@ -1,15 +1,11 @@
 import axios from 'axios';
 
-import * as config from '../config';
-
 import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
-import { CYBER_NODE_URL_LCD } from 'src/constants/config';
-
-const SEARCH_RESULT_TIMEOUT_MS = 10000;
+import { INDEX_HTTPS, LCD_URL } from 'src/constants/config';
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -74,7 +70,7 @@ export const selfDelegationShares = async (
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
+      url: `${LCD_URL}/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
     });
     return response.data.result.balance.amount;
   } catch (e) {
@@ -87,7 +83,7 @@ export const stakingPool = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/pool`,
+      url: `${LCD_URL}/staking/pool`,
     });
 
     return response.data.result;
@@ -101,7 +97,7 @@ export const getAccountBandwidth = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/bandwidth/neuron/${address}`,
+      url: `${LCD_URL}/bandwidth/neuron/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -114,7 +110,7 @@ export const getRelevance = async (page = 0, limit = 50) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/rank/top?page=${page}&limit=${limit}`,
+      url: `${LCD_URL}/rank/top?page=${page}&limit=${limit}`,
     });
     return response.data.result;
   } catch (error) {
@@ -126,28 +122,24 @@ export const getBalance = async (address, node) => {
   try {
     const availablePromise = await axios({
       method: 'get',
-      url: `${node || CYBER_NODE_URL_LCD}/bank/balances/${address}`,
+      url: `${node || LCD_URL}/bank/balances/${address}`,
     });
 
     const delegationsPromise = await axios({
       method: 'get',
-      url: `${
-        node || CYBER_NODE_URL_LCD
-      }/staking/delegators/${address}/delegations`,
+      url: `${node || LCD_URL}/staking/delegators/${address}/delegations`,
     });
 
     const unbondingPromise = await axios({
       method: 'get',
       url: `${
-        node || CYBER_NODE_URL_LCD
+        node || LCD_URL
       }/staking/delegators/${address}/unbonding_delegations`,
     });
 
     const rewardsPropsise = await axios({
       method: 'get',
-      url: `${
-        node || CYBER_NODE_URL_LCD
-      }/distribution/delegators/${address}/rewards`,
+      url: `${node || LCD_URL}/distribution/delegators/${address}/rewards`,
     });
 
     const response = {
@@ -243,7 +235,7 @@ export const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs/${txs}`,
+      url: `${LCD_URL}/txs/${txs}`,
     });
     return response.data;
   } catch (e) {
@@ -256,7 +248,7 @@ export const getValidatorsInfo = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators/${address}`,
+      url: `${LCD_URL}/staking/validators/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -295,7 +287,7 @@ export const getDelegators = async (validatorAddr) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators/${validatorAddr}/delegations`,
+      url: `${LCD_URL}/staking/validators/${validatorAddr}/delegations`,
     });
     return response.data;
   } catch (e) {
@@ -308,7 +300,7 @@ export const getTotalRewards = async (delegatorAddr) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/delegators/${delegatorAddr}/rewards`,
+      url: `${LCD_URL}/distribution/delegators/${delegatorAddr}/rewards`,
     });
     return response.data.result;
   } catch (e) {
@@ -320,10 +312,7 @@ export const getTotalRewards = async (delegatorAddr) => {
 /**
  * @deprecated use Apollo
  */
-export const getGraphQLQuery = async (
-  query,
-  urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
-) => {
+export const getGraphQLQuery = async (query, urlGraphql = INDEX_HTTPS) => {
   const body = JSON.stringify({
     query,
   });
@@ -349,7 +338,7 @@ const getParamSlashing = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/slashing/parameters`,
+      url: `${LCD_URL}/slashing/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -362,7 +351,7 @@ const getParamDistribution = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/parameters`,
+      url: `${LCD_URL}/distribution/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -375,7 +364,7 @@ const getParamBandwidth = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/bandwidth/parameters`,
+      url: `${LCD_URL}/bandwidth/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -388,17 +377,17 @@ const getParamGov = async () => {
   try {
     const responseGovDeposit = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/gov/parameters/deposit`,
+      url: `${LCD_URL}/gov/parameters/deposit`,
     });
 
     const responseGovTallying = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/gov/parameters/tallying`,
+      url: `${LCD_URL}/gov/parameters/tallying`,
     });
 
     const responseGovVoting = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/gov/parameters/voting`,
+      url: `${LCD_URL}/gov/parameters/voting`,
     });
 
     const response = {
@@ -418,7 +407,7 @@ const getParamRank = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/rank/parameters`,
+      url: `${LCD_URL}/rank/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -431,7 +420,7 @@ const getParamInlfation = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/minting/parameters`,
+      url: `${LCD_URL}/minting/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -444,7 +433,7 @@ const getParamResources = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cyber/resources/v1beta1/resources/params`,
+      url: `${LCD_URL}/cyber/resources/v1beta1/resources/params`,
     });
     return response.data.params;
   } catch (e) {
@@ -457,7 +446,7 @@ const getParamStaking = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/parameters`,
+      url: `${LCD_URL}/staking/parameters`,
     });
     return response.data.result;
   } catch (e) {
@@ -470,7 +459,7 @@ const getParamLiquidity = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/params`,
+      url: `${LCD_URL}/cosmos/liquidity/v1beta1/params`,
     });
     return response.data.params;
   } catch (e) {
@@ -483,7 +472,7 @@ const getParamGrid = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cyber/grid/v1beta1/grid/params`,
+      url: `${LCD_URL}/cyber/grid/v1beta1/grid/params`,
     });
     return response.data.params;
   } catch (e) {
@@ -496,7 +485,7 @@ const getParamDmn = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cyber/dmn/v1beta1/dmn/params`,
+      url: `${LCD_URL}/cyber/dmn/v1beta1/dmn/params`,
     });
     return response.data.params;
   } catch (e) {
@@ -595,7 +584,7 @@ export const getInlfation = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/minting/inflation`,
+      url: `${LCD_URL}/minting/inflation`,
     });
     return response.data.result;
   } catch (e) {
@@ -617,7 +606,7 @@ const getLink = async (
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs`,
       params: {
         'pagination.offset': offset,
         'pagination.limit': limit,
@@ -664,7 +653,7 @@ export const getFollows = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
+      url: `${LCD_URL}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
     });
     return response.data;
   } catch (e) {
@@ -677,7 +666,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
+      url: `${LCD_URL}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=${CID_TWEET}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -690,7 +679,7 @@ export const chekFollow = async (address, addressFollowHash) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressFollowHash}&limit=1000000000`,
+      url: `${LCD_URL}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressFollowHash}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -715,7 +704,7 @@ export async function getTransactions({
   orderBy = 'ORDER_BY_UNSPECIFIED',
 }: PropsTx) {
   const { offset, limit } = pagination;
-  return axios.get(`${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs`, {
+  return axios.get(`${LCD_URL}/cosmos/tx/v1beta1/txs`, {
     params: {
       'pagination.offset': offset,
       'pagination.limit': limit,
@@ -740,7 +729,7 @@ export async function getCyberlinks(address) {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
     });
 
     return response.data.pagination.total;
@@ -754,7 +743,7 @@ export const getAvatar = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
+      url: `${LCD_URL}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -767,7 +756,7 @@ export const getFollowers = async (addressHash) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressHash}&limit=1000000000`,
+      url: `${LCD_URL}/txs?cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressHash}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -781,12 +770,12 @@ export const getCreator = async (cid) => {
     // TODO: refactor this
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
 
     const response2 = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=1&orderBy=ORDER_BY_ASC&events=cyberlink.particleFrom%3D%27${cid}%27`,
     });
 
     const h1 = Number(response.data.tx_responses?.[0]?.height || 0);
@@ -809,7 +798,7 @@ export const authAccounts = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/auth/accounts/${address}`,
+      url: `${LCD_URL}/auth/accounts/${address}`,
     });
     return response.data;
   } catch (error) {
@@ -871,7 +860,7 @@ export const getDenomTraces = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/ibc/apps/transfer/v1/denom_traces`,
+      url: `${LCD_URL}/ibc/apps/transfer/v1/denom_traces`,
     });
     return response.data;
   } catch (e) {

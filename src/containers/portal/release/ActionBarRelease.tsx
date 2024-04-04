@@ -6,16 +6,16 @@ import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useQueryClient } from 'src/contexts/queryClient';
 import BigNumber from 'bignumber.js';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
-import { CYBER } from '../../../utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
 import mssgsClaim from '../utilsMsgs';
 import { useAdviser } from 'src/features/adviser/context';
+import { CHAIN_ID } from 'src/constants/config';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -67,7 +67,7 @@ function ActionBarRelease({
     try {
       if (signer && signingClient && currentRelease) {
         const { isNanoLedger, bech32Address: addressKeplr } =
-          await signer.keplr.getKey(CYBER.CHAIN_ID);
+          await signer.keplr.getKey(CHAIN_ID);
 
         const msgs = [];
 

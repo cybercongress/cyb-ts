@@ -6,7 +6,6 @@ import {
   FormatNumberTokens,
   AmountDenom,
 } from 'src/components';
-import { CYBER } from '../../../../../utils/config';
 import {
   formatNumber,
   timeSince,
@@ -341,7 +340,7 @@ function RenderValue({ value, type, accountUser }) {
           value={
             <AmountDenom
               amountValue={value.min_self_delegation}
-              denom={CYBER.DENOM_CYBER}
+              denom={BASE_DENOM}
             />
           }
         />
@@ -485,7 +484,7 @@ function RenderValue({ value, type, accountUser }) {
                 );
               })
             ) : (
-              <AmountDenom amountValue={0} denom={CYBER.DENOM_CYBER} />
+              <AmountDenom amountValue={0} denom={BASE_DENOM} />
             )
           }
         />

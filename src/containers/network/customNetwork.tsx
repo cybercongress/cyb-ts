@@ -27,9 +27,8 @@ function ValueItem({ text, value, onChange }) {
 
 const initValue = {
   CHAIN_ID: 'bostrom',
-  DENOM_CYBER: 'boot',
-  DENOM_LIQUID_TOKEN: 'hydrogen',
-  DENOM_CYBER_G: 'GBOOT',
+  BASE_DENOM: 'boot',
+  DENOM_LIQUID: 'hydrogen',
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
@@ -69,7 +68,7 @@ function CustomNetwork() {
         }));
         break;
 
-      case 'DENOM_CYBER':
+      case 'BASE_DENOM':
         setCustomConfig((item) => ({
           ...item,
           [key]: value,
@@ -116,13 +115,13 @@ function CustomNetwork() {
             />
             <ValueItem
               text="denom"
-              value={customConfig.DENOM_CYBER}
-              onChange={(e) => onChangeValue(e, 'DENOM_CYBER')}
+              value={customConfig.BASE_DENOM}
+              onChange={(e) => onChangeValue(e, 'BASE_DENOM')}
             />
             <ValueItem
               text="iquid denom"
-              value={customConfig.DENOM_LIQUID_TOKEN}
-              onChange={(e) => onChangeValue(e, 'DENOM_LIQUID_TOKEN')}
+              value={customConfig.DENOM_LIQUID}
+              onChange={(e) => onChangeValue(e, 'DENOM_LIQUID')}
             />
             <ValueItem
               text="rpc"

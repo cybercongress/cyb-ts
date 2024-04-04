@@ -1,53 +1,29 @@
-import { useQuery, gql } from '@apollo/client';
+import { useUptimeByAddressQuery } from 'src/generated/graphql';
+import { INFINITY } from 'src/constants/app';
+import { BECH32_PREFIX_VAL_CONS } from 'src/constants/config';
+import BigNumber from 'bignumber.js';
 import { Dots } from '../../components';
-import { formatNumber, fromBech32 } from '../../utils/utils';
+import { fromBech32 } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
-  try {
-    const GET_CHARACTERS = gql`
-    query uptime {
-      uptime(where: {consensus_address: {_eq: "${fromBech32(
-        accountUser,
-        'bostromvalcons'
-      )}"}}) {
-        uptime
-      }
+  const { loading, data, error } = useUptimeByAddressQuery({
+    variables: {
+      address: `${fromBech32(accountUser, BECH32_PREFIX_VAL_CONS)}`,
+    },
+  });
 
-    }
-  `;
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { loading, data } = useQuery(GET_CHARACTERS);
-
-    if (loading) {
-      return <Dots />;
-    }
-
-    let uptime = 0;
-
-    if (data) {
-      const { pre_commit, pre_commit_aggregate, block_aggregate } = data;
-
-      if (
-        pre_commit &&
-        pre_commit_aggregate &&
-        block_aggregate &&
-        Object.keys(pre_commit).length !== 0 &&
-        Object.keys(pre_commit_aggregate).length !== 0 &&
-        Object.keys(block_aggregate).length !== 0
-      ) {
-        const thisBlock = block_aggregate.nodes[0].height;
-        const firstPreCommit = pre_commit[0].validator.blocks[0].height;
-        const countPreCommit = pre_commit_aggregate.aggregate.count;
-        uptime = countPreCommit / (thisBlock - firstPreCommit);
-      }
-    }
-
-    return `${formatNumber(uptime * 100, 2)} %`;
-  } catch (error) {
-    console.warn(error);
-    return '∞';
+  if (loading) {
+    return <Dots />;
   }
+
+  if (error) {
+    return INFINITY;
+  }
+
+  return `${new BigNumber(data.uptime)
+    .shiftedBy(2)
+    .dp(2, BigNumber.ROUND_FLOOR)
+    .toString()} %`;
 }
 
 export default useUptime;
