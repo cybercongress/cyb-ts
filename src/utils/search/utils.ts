@@ -6,6 +6,13 @@ import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
 import { INDEX_HTTPS, LCD_URL } from 'src/constants/config';
+import { Cyber } from 'src/generated/Cyber';
+import { Cosmos } from 'src/generated/Cosmos';
+
+import { QuerySearchResponse } from '@cybercongress/cyber-js/build/codec/cyber/rank/v1beta1/query';
+
+const lcdCyber = new Cyber({ url: LCD_URL });
+const lcdCosmos = new Cosmos({ url: LCD_URL });
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -181,31 +188,6 @@ export const getTotalRewards = async (delegatorAddr) => {
     console.log(e);
     return null;
   }
-};
-
-/**
- * @deprecated use Apollo
- */
-export const getGraphQLQuery = async (query, urlGraphql = INDEX_HTTPS) => {
-  const body = JSON.stringify({
-    query,
-  });
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-
-  const response = await axios({
-    method: 'post',
-    url: urlGraphql,
-    headers,
-    data: body,
-  });
-
-  if (response.data.errors) {
-    throw response.data;
-  }
-
-  return response.data;
 };
 
 const getParamSlashing = async () => {
@@ -599,17 +581,27 @@ export async function getTransactions({
 //     ],
 //   });
 // }
-export async function getCyberlinks(address) {
+export async function getCyberlinksTotal(address) {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
+    // const response = await axios({
+    //   method: 'get',
+    //   url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
+    // });
+
+    const response = await lcdCosmos.getTxsEvent({
+      paginationOffset: 0,
+      paginationLimit: 5,
+      order_by: 'ORDER_BY_ASC',
+      events: [
+        "message.action='/cyber.graph.v1beta1.MsgCyberlink'",
+        `cyberlink.neuron='${address}'`,
+      ],
     });
 
-    return response.data.pagination.total;
+    return response.data.pagination?.total;
   } catch (error) {
     console.log(error);
-    return null;
+    return undefined;
   }
 }
 
@@ -736,13 +728,13 @@ export const searchByHash = async (
   page: number
 ) => {
   try {
-    const results = await client.search(hash, page);
+    const results = (await client.search(hash, page)) as QuerySearchResponse;
 
     return results;
   } catch (error) {
     // TODO: handle
     console.error(error);
-    return [];
+    return undefined;
   }
 };
 
