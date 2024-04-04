@@ -1,7 +1,7 @@
 /* eslint-disable react/no-children-prop */
 import { useEffect, useState } from 'react';
 import { Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, Routes, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -21,16 +21,12 @@ import ActionBarDetail from './actionBarDatail';
 
 import { formatNumber } from '../../utils/utils';
 
-import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
-import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { MainContainer } from '../portal/components';
-
-import ProposalsDetailTableComments from './proposalsDetailTableComments';
-import { useState } from 'react';
-import { Tabs } from '../../components';
+import ProposalsRoutes from './proposalsRoutes';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -188,21 +184,14 @@ function ProposalsDetail({ defaultAccount }) {
   console.log(`proposals`, proposals);
   console.log(`addressActive`, addressActive);
 
-  const TabButtons = [
-    {
-      to: '',
-      key: 'voters',
-    },
-    {
-      to: '',
-      key: 'comments',
-    },
-    {
-      to: '',
-      key: 'meta',
-    },
-  ];
-  const [select, setSelect] = useState(TabButtons[1].key);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === `/senate/${proposalId}`) {
+      navigate(`/senate/${proposalId}/comments`);
+    }
+  }, [location.pathname]);
 
   return (
     <>
@@ -212,7 +201,6 @@ function ProposalsDetail({ defaultAccount }) {
             {proposals.title && ` #${proposalId} ${proposals.title}`}
           </Text>
         </Pane>
-
         {proposals.status && (
           <Pane>
             <IconStatus status={proposals.status} text marginRight={8} />
@@ -295,7 +283,6 @@ function ProposalsDetail({ defaultAccount }) {
             />
           )}
         </ContainerGradientText>
-
         <ProposalsDetailProgressBar
           proposals={proposals}
           totalDeposit={totalDeposit}
@@ -304,47 +291,25 @@ function ProposalsDetail({ defaultAccount }) {
           tally={tally}
         />
 
-        <Tabs
-          options={TabButtons.map((item) => ({
-            key: item.key,
-            onClick: () => setSelect(item.key),
-          }))}
-          selected={select}
+        <ProposalsRoutes
+          proposalId={proposalId}
+          proposals={proposals}
+          tallying={tallying}
+          tally={tally}
+          totalDeposit={totalDeposit}
+          updateFunc={updateFunc}
+          proposalStatus={PROPOSAL_STATUS}
         />
-
-        {select === 'comments' && (
-          <ProposalsDetailTableComments proposalId={proposalId} />
-        )}
-
-        {select === 'meta' && (
-          <ProposalsIdDetail
-            proposals={proposals}
-            tallying={tallying}
-            tally={tally}
-            totalDeposit={totalDeposit}
-            marginBottom={20}
-          />
-        )}
-
-        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD &&
-          select === 'voters' && (
-            <ProposalsIdDetailTableVoters
-              proposalId={proposalId}
-              updateFunc={updateFunc}
-            />
-          )}
       </MainContainer>
       {addressActive !== null && addressActive.keys === 'keplr' ? (
-        select === 'voters' ? (
-          <ActionBarDetail
-            id={proposalId}
-            proposals={proposals}
-            minDeposit={minDeposit}
-            totalDeposit={totalDeposit}
-            update={() => setUpdateFunc((item) => item + 1)}
-            addressActive={addressActive}
-          />
-        ) : null
+        <ActionBarDetail
+          id={proposalId}
+          proposals={proposals}
+          minDeposit={minDeposit}
+          totalDeposit={totalDeposit}
+          update={() => setUpdateFunc((item) => item + 1)}
+          addressActive={addressActive}
+        />
       ) : (
         <ActionBar>
           <Pane>

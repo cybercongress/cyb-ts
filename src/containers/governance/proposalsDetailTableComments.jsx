@@ -45,7 +45,7 @@ function ProposalsDetailTableComments({ proposalId }) {
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
 
   const { isMobile: mobile } = useDevice();
-  console.debug(proposalId)
+
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);
     setContentType({});
@@ -93,8 +93,7 @@ function ProposalsDetailTableComments({ proposalId }) {
       return contentTypeFilter[contentType[cid]];
     })
     .map((key, i) => {
-      console.debug(key)
-      console.debug(key.cid)
+
       return (
         <Spark
           itemData={key}
