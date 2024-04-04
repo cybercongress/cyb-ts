@@ -9,7 +9,7 @@ function useCyberlinksCount(cid: string) {
     variables: { where: getVar('to', cid) },
   });
   const fromCountQuery = useCyberlinksCountByParticleQuery({
-    variables: { where: getVar('to', cid) },
+    variables: { where: getVar('from', cid) },
   });
 
   return {

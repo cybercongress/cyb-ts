@@ -1,6 +1,9 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getGraphQLQuery } from 'src/utils/search/utils';
 import useCyberlinksCount from 'src/features/cyberlinks/hooks/useCyberlinksCount';
+import {
+  Order_By as OrderBy,
+  useCyberlinksByParticleQuery,
+} from 'src/generated/graphql';
+import { useEffect, useState } from 'react';
 
 export enum LinkType {
   to = 'to',
@@ -18,65 +21,64 @@ function useGetLinks(
   { hash, type = LinkType.from }: Props,
   { skip = false } = {}
 ) {
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const {
+    loading: isFetching,
+    error,
+    data,
+    networkStatus: status,
+    refetch,
+    fetchMore,
+  } = useCyberlinksByParticleQuery({
+    variables: {
+      where:
+        type === LinkType.from
+          ? { particle_from: { _eq: hash } }
+          : { particle_to: { _eq: hash } },
+      orderBy: { timestamp: OrderBy.Desc },
+      limit,
+    },
+    skip: skip || !hash,
+  });
+
+  useEffect(() => {
+    isInitialLoading && setIsInitialLoading(false);
+  }, [isFetching, isInitialLoading]);
+
+  const fetchNextPage = () => {
+    fetchMore({
+      variables: {
+        offset: data?.cyberlinks.length,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev;
+        }
+        setHasNextPage(fetchMoreResult.cyberlinks.length > 0);
+
+        return {
+          ...prev,
+          cyberlinks: [...prev.cyberlinks, ...fetchMoreResult.cyberlinks],
+        };
+      },
+    });
+  };
+
   const cyberlinksCountQuery = useCyberlinksCount(hash);
   const total = cyberlinksCountQuery.data[type];
-
-  const {
-    status,
-    data,
-    error,
-    isInitialLoading,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-  } = useInfiniteQuery(
-    ['useGetDiscussion', hash + type],
-    async ({ pageParam = 0 }) => {
-      const res = await getGraphQLQuery(`
-      query Query {
-        cyberlinks(limit: ${limit}, offset: ${
-        limit * pageParam
-      }, order_by: {timestamp: desc}, where: {particle_${type}: {_eq: "${hash}"}}) {
-          timestamp
-          particle_${type === LinkType.from ? 'to' : 'from'}
-        }
-      }
-      `);
-      const data = res.data.cyberlinks;
-
-      return { data, page: pageParam };
-    },
-    {
-      enabled: !skip && Boolean(hash),
-      getNextPageParam: (lastPage) => {
-        const { page } = lastPage;
-
-        if (!total || (page + 1) * limit >= total) {
-          return undefined;
-        }
-
-        return page + 1;
-      },
-    }
-  );
+  const particles = (data?.cyberlinks || []).map((item) => {
+    return {
+      // ...item,
+      cid: item[type === 'from' ? 'to' : 'from'],
+      type,
+      timestamp: item.timestamp,
+    };
+  });
 
   return {
     status,
-    data:
-      data?.pages?.reduce(
-        (acc, page) =>
-          acc.concat(
-            page.data.map((item) => {
-              return {
-                ...item,
-                cid: item[`particle_${type === LinkType.from ? 'to' : 'from'}`],
-                type,
-              };
-            })
-          ),
-        []
-      ) || [],
+    data: particles,
     error,
     isFetching,
     fetchNextPage,
