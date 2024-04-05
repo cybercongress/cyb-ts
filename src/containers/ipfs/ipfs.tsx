@@ -7,7 +7,7 @@ import { encodeSlash } from 'src/utils/utils';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { IPFSContentDetails } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';

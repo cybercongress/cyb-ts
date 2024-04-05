@@ -1,4 +1,4 @@
-import { IpfsNode, IPFSContent } from 'src/services/ipfs/ipfs';
+import { IpfsNode, IPFSContent } from 'src/services/ipfs/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';

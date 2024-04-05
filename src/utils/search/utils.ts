@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import { LinkType } from 'src/containers/ipfs/hooks/useGetDiscussion';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
@@ -10,6 +9,7 @@ import { Cyber } from 'src/generated/Cyber';
 import { Cosmos } from 'src/generated/Cosmos';
 
 import { QuerySearchResponse } from '@cybercongress/cyber-js/build/codec/cyber/rank/v1beta1/query';
+import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
 const lcdCyber = new Cyber({ url: LCD_URL });
 const lcdCosmos = new Cosmos({ url: LCD_URL });
@@ -456,7 +456,7 @@ enum Order {
 
 const getLink = async (
   cid: string,
-  type: LinkType = LinkType.from,
+  type: LinksType = LinksTypeFilter.from,
   { offset, limit, order = Order.DESC }
 ) => {
   try {
@@ -468,7 +468,7 @@ const getLink = async (
         'pagination.limit': limit,
         orderBy: Order.DESC,
         events: `cyberlink.particle${
-          type === LinkType.to ? 'To' : 'From'
+          type === LinksTypeFilter.to ? 'To' : 'From'
         }='${cid}'`,
       },
     });
@@ -480,11 +480,11 @@ const getLink = async (
 };
 
 export const getFromLink = async (cid, offset, limit) => {
-  return getLink(cid, LinkType.from, { offset, limit });
+  return getLink(cid, LinksTypeFilter.from, { offset, limit });
 };
 
 export const getToLink = async (cid, offset, limit) => {
-  return getLink(cid, LinkType.to, { offset, limit });
+  return getLink(cid, LinksTypeFilter.to, { offset, limit });
 };
 
 export const getSendBySenderRecipient = async (

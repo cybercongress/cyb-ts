@@ -18,7 +18,7 @@ import {
 import * as R from 'ramda';
 
 import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
-import { CybIpfsNode, IpfsContentSource } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode, IpfsContentSource } from 'src/services/ipfs/types';
 import { ParticleCid } from 'src/types/base';
 
 import { promiseToObservable } from '../../utils/rxjs/helpers';

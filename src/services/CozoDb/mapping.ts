@@ -1,7 +1,7 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { dateToUtcNumber } from 'src/utils/date';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { IPFSContent } from '../ipfs/ipfs';
+import { IPFSContent } from '../ipfs/types';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/indexer/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';

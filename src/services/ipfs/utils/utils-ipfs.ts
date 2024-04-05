@@ -9,7 +9,7 @@ import {
   CallBackFuncStatus,
   IpfsContentSource,
   IpfsNode,
-} from '../ipfs';
+} from '../types';
 
 import { getMimeFromUint8Array, toAsyncIterableWithMime } from './stream';
 

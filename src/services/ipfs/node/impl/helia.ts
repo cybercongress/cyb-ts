@@ -22,7 +22,7 @@ import {
   IpfsNodeType,
   IpfsFileStats,
   IpfsNode,
-} from '../../ipfs';
+} from '../../types';
 // import { all } from '@libp2p/websockets/filters';
 import { stringToCid } from '../../utils/cid';
 import { CYBER_GATEWAY_URL } from '../../config';

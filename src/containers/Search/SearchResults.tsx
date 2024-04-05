@@ -2,30 +2,21 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import { IpfsContentType } from 'src/services/ipfs/types';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import Display from 'src/components/containerGradient/Display/Display';
+
 import { encodeSlash } from '../../utils/utils';
-import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { MainContainer } from '../portal/components';
 import FirstItems from './_FirstItems.refactor';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
-import Display from 'src/components/containerGradient/Display/Display';
 import styles from './SearchResults.module.scss';
-
-export const initialContentTypeFilterState = {
-  text: false,
-  image: false,
-  video: false,
-  pdf: false,
-  link: false,
-  // audio: false,
-};
+import { initialContentTypeFilterState } from './constants';
 
 const sortByLSKey = 'search-sort';
 
