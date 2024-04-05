@@ -114,7 +114,6 @@ export type _Text_Comparison_Exp = {
 
 /** columns and relationships of "_transaction" */
 export type _Transaction = {
-  __typename?: '_transaction';
   fee?: Maybe<Scalars['jsonb']['output']>;
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
@@ -168,14 +167,12 @@ export type _TransactionValueArgs = {
 
 /** aggregated selection of "_transaction" */
 export type _Transaction_Aggregate = {
-  __typename?: '_transaction_aggregate';
   aggregate?: Maybe<_Transaction_Aggregate_Fields>;
   nodes: Array<_Transaction>;
 };
 
 /** aggregate fields of "_transaction" */
 export type _Transaction_Aggregate_Fields = {
-  __typename?: '_transaction_aggregate_fields';
   avg?: Maybe<_Transaction_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<_Transaction_Max_Fields>;
@@ -198,7 +195,6 @@ export type _Transaction_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type _Transaction_Avg_Fields = {
-  __typename?: '_transaction_avg_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -233,7 +229,6 @@ export type _Transaction_Bool_Exp = {
 
 /** aggregate max on columns */
 export type _Transaction_Max_Fields = {
-  __typename?: '_transaction_max_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   hash?: Maybe<Scalars['String']['output']>;
@@ -249,7 +244,6 @@ export type _Transaction_Max_Fields = {
 
 /** aggregate min on columns */
 export type _Transaction_Min_Fields = {
-  __typename?: '_transaction_min_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   hash?: Maybe<Scalars['String']['output']>;
@@ -330,7 +324,6 @@ export enum _Transaction_Select_Column {
 
 /** aggregate stddev on columns */
 export type _Transaction_Stddev_Fields = {
-  __typename?: '_transaction_stddev_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -339,7 +332,6 @@ export type _Transaction_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type _Transaction_Stddev_Pop_Fields = {
-  __typename?: '_transaction_stddev_pop_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -348,7 +340,6 @@ export type _Transaction_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type _Transaction_Stddev_Samp_Fields = {
-  __typename?: '_transaction_stddev_samp_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -357,7 +348,6 @@ export type _Transaction_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type _Transaction_Sum_Fields = {
-  __typename?: '_transaction_sum_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
@@ -366,7 +356,6 @@ export type _Transaction_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type _Transaction_Var_Pop_Fields = {
-  __typename?: '_transaction_var_pop_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -375,7 +364,6 @@ export type _Transaction_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type _Transaction_Var_Samp_Fields = {
-  __typename?: '_transaction_var_samp_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -384,7 +372,6 @@ export type _Transaction_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type _Transaction_Variance_Fields = {
-  __typename?: '_transaction_variance_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -393,21 +380,18 @@ export type _Transaction_Variance_Fields = {
 
 /** columns and relationships of "_uptime_temp" */
 export type _Uptime_Temp = {
-  __typename?: '_uptime_temp';
   pre_commits?: Maybe<Scalars['bigint']['output']>;
   validator_address?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "_uptime_temp" */
 export type _Uptime_Temp_Aggregate = {
-  __typename?: '_uptime_temp_aggregate';
   aggregate?: Maybe<_Uptime_Temp_Aggregate_Fields>;
   nodes: Array<_Uptime_Temp>;
 };
 
 /** aggregate fields of "_uptime_temp" */
 export type _Uptime_Temp_Aggregate_Fields = {
-  __typename?: '_uptime_temp_aggregate_fields';
   avg?: Maybe<_Uptime_Temp_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<_Uptime_Temp_Max_Fields>;
@@ -430,7 +414,6 @@ export type _Uptime_Temp_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type _Uptime_Temp_Avg_Fields = {
-  __typename?: '_uptime_temp_avg_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -445,14 +428,12 @@ export type _Uptime_Temp_Bool_Exp = {
 
 /** aggregate max on columns */
 export type _Uptime_Temp_Max_Fields = {
-  __typename?: '_uptime_temp_max_fields';
   pre_commits?: Maybe<Scalars['bigint']['output']>;
   validator_address?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type _Uptime_Temp_Min_Fields = {
-  __typename?: '_uptime_temp_min_fields';
   pre_commits?: Maybe<Scalars['bigint']['output']>;
   validator_address?: Maybe<Scalars['String']['output']>;
 };
@@ -473,49 +454,41 @@ export enum _Uptime_Temp_Select_Column {
 
 /** aggregate stddev on columns */
 export type _Uptime_Temp_Stddev_Fields = {
-  __typename?: '_uptime_temp_stddev_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type _Uptime_Temp_Stddev_Pop_Fields = {
-  __typename?: '_uptime_temp_stddev_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type _Uptime_Temp_Stddev_Samp_Fields = {
-  __typename?: '_uptime_temp_stddev_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type _Uptime_Temp_Sum_Fields = {
-  __typename?: '_uptime_temp_sum_fields';
   pre_commits?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type _Uptime_Temp_Var_Pop_Fields = {
-  __typename?: '_uptime_temp_var_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type _Uptime_Temp_Var_Samp_Fields = {
-  __typename?: '_uptime_temp_var_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type _Uptime_Temp_Variance_Fields = {
-  __typename?: '_uptime_temp_variance_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "account" */
 export type Account = {
-  __typename?: 'account';
   /** An object relationship */
   account_balance?: Maybe<Account_Balance>;
   address: Scalars['String']['output'];
@@ -643,14 +616,12 @@ export type AccountRoutes_AggregateArgs = {
 
 /** aggregated selection of "account" */
 export type Account_Aggregate = {
-  __typename?: 'account_aggregate';
   aggregate?: Maybe<Account_Aggregate_Fields>;
   nodes: Array<Account>;
 };
 
 /** aggregate fields of "account" */
 export type Account_Aggregate_Fields = {
-  __typename?: 'account_aggregate_fields';
   count: Scalars['Int']['output'];
   max?: Maybe<Account_Max_Fields>;
   min?: Maybe<Account_Min_Fields>;
@@ -665,7 +636,6 @@ export type Account_Aggregate_FieldsCountArgs = {
 
 /** columns and relationships of "account_balance" */
 export type Account_Balance = {
-  __typename?: 'account_balance';
   /** An object relationship */
   account: Account;
   address: Scalars['String']['output'];
@@ -675,14 +645,12 @@ export type Account_Balance = {
 
 /** aggregated selection of "account_balance" */
 export type Account_Balance_Aggregate = {
-  __typename?: 'account_balance_aggregate';
   aggregate?: Maybe<Account_Balance_Aggregate_Fields>;
   nodes: Array<Account_Balance>;
 };
 
 /** aggregate fields of "account_balance" */
 export type Account_Balance_Aggregate_Fields = {
-  __typename?: 'account_balance_aggregate_fields';
   avg?: Maybe<Account_Balance_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Account_Balance_Max_Fields>;
@@ -705,7 +673,6 @@ export type Account_Balance_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Account_Balance_Avg_Fields = {
-  __typename?: 'account_balance_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -722,14 +689,12 @@ export type Account_Balance_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Account_Balance_Max_Fields = {
-  __typename?: 'account_balance_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate min on columns */
 export type Account_Balance_Min_Fields = {
-  __typename?: 'account_balance_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
@@ -754,43 +719,36 @@ export enum Account_Balance_Select_Column {
 
 /** aggregate stddev on columns */
 export type Account_Balance_Stddev_Fields = {
-  __typename?: 'account_balance_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Account_Balance_Stddev_Pop_Fields = {
-  __typename?: 'account_balance_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Account_Balance_Stddev_Samp_Fields = {
-  __typename?: 'account_balance_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Account_Balance_Sum_Fields = {
-  __typename?: 'account_balance_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Account_Balance_Var_Pop_Fields = {
-  __typename?: 'account_balance_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Account_Balance_Var_Samp_Fields = {
-  __typename?: 'account_balance_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Account_Balance_Variance_Fields = {
-  __typename?: 'account_balance_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -810,13 +768,11 @@ export type Account_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Account_Max_Fields = {
-  __typename?: 'account_max_fields';
   address?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Account_Min_Fields = {
-  __typename?: 'account_min_fields';
   address?: Maybe<Scalars['String']['output']>;
 };
 
@@ -852,7 +808,6 @@ export type Bigint_Comparison_Exp = {
 
 /** columns and relationships of "block" */
 export type Block = {
-  __typename?: 'block';
   /** fetch data from the table: "cyberlinks" */
   cyberlinks: Array<Cyberlinks>;
   /** An aggregate relationship */
@@ -985,14 +940,12 @@ export type BlockTransactions_AggregateArgs = {
 
 /** aggregated selection of "block" */
 export type Block_Aggregate = {
-  __typename?: 'block_aggregate';
   aggregate?: Maybe<Block_Aggregate_Fields>;
   nodes: Array<Block>;
 };
 
 /** aggregate fields of "block" */
 export type Block_Aggregate_Fields = {
-  __typename?: 'block_aggregate_fields';
   avg?: Maybe<Block_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Block_Max_Fields>;
@@ -1030,7 +983,6 @@ export type Block_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Block_Avg_Fields = {
-  __typename?: 'block_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1064,7 +1016,6 @@ export type Block_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Block_Max_Fields = {
-  __typename?: 'block_max_fields';
   hash?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   num_txs?: Maybe<Scalars['Int']['output']>;
@@ -1085,7 +1036,6 @@ export type Block_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Block_Min_Fields = {
-  __typename?: 'block_min_fields';
   hash?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   num_txs?: Maybe<Scalars['Int']['output']>;
@@ -1138,7 +1088,6 @@ export enum Block_Select_Column {
 
 /** aggregate stddev on columns */
 export type Block_Stddev_Fields = {
-  __typename?: 'block_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1153,7 +1102,6 @@ export type Block_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Block_Stddev_Pop_Fields = {
-  __typename?: 'block_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1168,7 +1116,6 @@ export type Block_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Block_Stddev_Samp_Fields = {
-  __typename?: 'block_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1183,7 +1130,6 @@ export type Block_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Block_Sum_Fields = {
-  __typename?: 'block_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   num_txs?: Maybe<Scalars['Int']['output']>;
   total_gas?: Maybe<Scalars['bigint']['output']>;
@@ -1198,7 +1144,6 @@ export type Block_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Block_Var_Pop_Fields = {
-  __typename?: 'block_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1213,7 +1158,6 @@ export type Block_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Block_Var_Samp_Fields = {
-  __typename?: 'block_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1228,7 +1172,6 @@ export type Block_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Block_Variance_Fields = {
-  __typename?: 'block_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   num_txs?: Maybe<Scalars['Float']['output']>;
   total_gas?: Maybe<Scalars['Float']['output']>;
@@ -1256,7 +1199,6 @@ export type Coin_Comparison_Exp = {
 
 /** columns and relationships of "contracts" */
 export type Contracts = {
-  __typename?: 'contracts';
   address: Scalars['String']['output'];
   admin: Scalars['String']['output'];
   code_id: Scalars['bigint']['output'];
@@ -1271,14 +1213,12 @@ export type Contracts = {
 
 /** aggregated selection of "contracts" */
 export type Contracts_Aggregate = {
-  __typename?: 'contracts_aggregate';
   aggregate?: Maybe<Contracts_Aggregate_Fields>;
   nodes: Array<Contracts>;
 };
 
 /** aggregate fields of "contracts" */
 export type Contracts_Aggregate_Fields = {
-  __typename?: 'contracts_aggregate_fields';
   avg?: Maybe<Contracts_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Contracts_Max_Fields>;
@@ -1301,7 +1241,6 @@ export type Contracts_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Contracts_Avg_Fields = {
-  __typename?: 'contracts_avg_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1328,7 +1267,6 @@ export type Contracts_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Contracts_Max_Fields = {
-  __typename?: 'contracts_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   admin?: Maybe<Scalars['String']['output']>;
   code_id?: Maybe<Scalars['bigint']['output']>;
@@ -1343,7 +1281,6 @@ export type Contracts_Max_Fields = {
 
 /** aggregate min on columns */
 export type Contracts_Min_Fields = {
-  __typename?: 'contracts_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   admin?: Maybe<Scalars['String']['output']>;
   code_id?: Maybe<Scalars['bigint']['output']>;
@@ -1396,7 +1333,6 @@ export enum Contracts_Select_Column {
 
 /** aggregate stddev on columns */
 export type Contracts_Stddev_Fields = {
-  __typename?: 'contracts_stddev_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1406,7 +1342,6 @@ export type Contracts_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type Contracts_Stddev_Pop_Fields = {
-  __typename?: 'contracts_stddev_pop_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1416,7 +1351,6 @@ export type Contracts_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type Contracts_Stddev_Samp_Fields = {
-  __typename?: 'contracts_stddev_samp_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1426,7 +1360,6 @@ export type Contracts_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type Contracts_Sum_Fields = {
-  __typename?: 'contracts_sum_fields';
   code_id?: Maybe<Scalars['bigint']['output']>;
   fees?: Maybe<Scalars['bigint']['output']>;
   gas?: Maybe<Scalars['bigint']['output']>;
@@ -1436,7 +1369,6 @@ export type Contracts_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type Contracts_Var_Pop_Fields = {
-  __typename?: 'contracts_var_pop_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1446,7 +1378,6 @@ export type Contracts_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type Contracts_Var_Samp_Fields = {
-  __typename?: 'contracts_var_samp_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1456,7 +1387,6 @@ export type Contracts_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type Contracts_Variance_Fields = {
-  __typename?: 'contracts_variance_fields';
   code_id?: Maybe<Scalars['Float']['output']>;
   fees?: Maybe<Scalars['Float']['output']>;
   gas?: Maybe<Scalars['Float']['output']>;
@@ -1466,7 +1396,6 @@ export type Contracts_Variance_Fields = {
 
 /** columns and relationships of "cyb_cohort" */
 export type Cyb_Cohort = {
-  __typename?: 'cyb_cohort';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1481,14 +1410,12 @@ export type Cyb_Cohort = {
 
 /** aggregated selection of "cyb_cohort" */
 export type Cyb_Cohort_Aggregate = {
-  __typename?: 'cyb_cohort_aggregate';
   aggregate?: Maybe<Cyb_Cohort_Aggregate_Fields>;
   nodes: Array<Cyb_Cohort>;
 };
 
 /** aggregate fields of "cyb_cohort" */
 export type Cyb_Cohort_Aggregate_Fields = {
-  __typename?: 'cyb_cohort_aggregate_fields';
   avg?: Maybe<Cyb_Cohort_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyb_Cohort_Max_Fields>;
@@ -1511,7 +1438,6 @@ export type Cyb_Cohort_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Cyb_Cohort_Avg_Fields = {
-  __typename?: 'cyb_cohort_avg_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1542,7 +1468,6 @@ export type Cyb_Cohort_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyb_Cohort_Max_Fields = {
-  __typename?: 'cyb_cohort_max_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1557,7 +1482,6 @@ export type Cyb_Cohort_Max_Fields = {
 
 /** aggregate min on columns */
 export type Cyb_Cohort_Min_Fields = {
-  __typename?: 'cyb_cohort_min_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1610,7 +1534,6 @@ export enum Cyb_Cohort_Select_Column {
 
 /** aggregate stddev on columns */
 export type Cyb_Cohort_Stddev_Fields = {
-  __typename?: 'cyb_cohort_stddev_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1624,7 +1547,6 @@ export type Cyb_Cohort_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type Cyb_Cohort_Stddev_Pop_Fields = {
-  __typename?: 'cyb_cohort_stddev_pop_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1638,7 +1560,6 @@ export type Cyb_Cohort_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type Cyb_Cohort_Stddev_Samp_Fields = {
-  __typename?: 'cyb_cohort_stddev_samp_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1652,7 +1573,6 @@ export type Cyb_Cohort_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type Cyb_Cohort_Sum_Fields = {
-  __typename?: 'cyb_cohort_sum_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1666,7 +1586,6 @@ export type Cyb_Cohort_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type Cyb_Cohort_Var_Pop_Fields = {
-  __typename?: 'cyb_cohort_var_pop_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1680,7 +1599,6 @@ export type Cyb_Cohort_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type Cyb_Cohort_Var_Samp_Fields = {
-  __typename?: 'cyb_cohort_var_samp_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1694,7 +1612,6 @@ export type Cyb_Cohort_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type Cyb_Cohort_Variance_Fields = {
-  __typename?: 'cyb_cohort_variance_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1708,7 +1625,6 @@ export type Cyb_Cohort_Variance_Fields = {
 
 /** columns and relationships of "cyb_new_cohort" */
 export type Cyb_New_Cohort = {
-  __typename?: 'cyb_new_cohort';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1721,14 +1637,12 @@ export type Cyb_New_Cohort = {
 
 /** aggregated selection of "cyb_new_cohort" */
 export type Cyb_New_Cohort_Aggregate = {
-  __typename?: 'cyb_new_cohort_aggregate';
   aggregate?: Maybe<Cyb_New_Cohort_Aggregate_Fields>;
   nodes: Array<Cyb_New_Cohort>;
 };
 
 /** aggregate fields of "cyb_new_cohort" */
 export type Cyb_New_Cohort_Aggregate_Fields = {
-  __typename?: 'cyb_new_cohort_aggregate_fields';
   avg?: Maybe<Cyb_New_Cohort_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyb_New_Cohort_Max_Fields>;
@@ -1751,7 +1665,6 @@ export type Cyb_New_Cohort_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Cyb_New_Cohort_Avg_Fields = {
-  __typename?: 'cyb_new_cohort_avg_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1778,7 +1691,6 @@ export type Cyb_New_Cohort_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyb_New_Cohort_Max_Fields = {
-  __typename?: 'cyb_new_cohort_max_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1791,7 +1703,6 @@ export type Cyb_New_Cohort_Max_Fields = {
 
 /** aggregate min on columns */
 export type Cyb_New_Cohort_Min_Fields = {
-  __typename?: 'cyb_new_cohort_min_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1836,7 +1747,6 @@ export enum Cyb_New_Cohort_Select_Column {
 
 /** aggregate stddev on columns */
 export type Cyb_New_Cohort_Stddev_Fields = {
-  __typename?: 'cyb_new_cohort_stddev_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1848,7 +1758,6 @@ export type Cyb_New_Cohort_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type Cyb_New_Cohort_Stddev_Pop_Fields = {
-  __typename?: 'cyb_new_cohort_stddev_pop_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1860,7 +1769,6 @@ export type Cyb_New_Cohort_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type Cyb_New_Cohort_Stddev_Samp_Fields = {
-  __typename?: 'cyb_new_cohort_stddev_samp_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1872,7 +1780,6 @@ export type Cyb_New_Cohort_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type Cyb_New_Cohort_Sum_Fields = {
-  __typename?: 'cyb_new_cohort_sum_fields';
   cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
   cyberlink_percent?: Maybe<Scalars['float8']['output']>;
@@ -1884,7 +1791,6 @@ export type Cyb_New_Cohort_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type Cyb_New_Cohort_Var_Pop_Fields = {
-  __typename?: 'cyb_new_cohort_var_pop_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1896,7 +1802,6 @@ export type Cyb_New_Cohort_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type Cyb_New_Cohort_Var_Samp_Fields = {
-  __typename?: 'cyb_new_cohort_var_samp_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1908,7 +1813,6 @@ export type Cyb_New_Cohort_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type Cyb_New_Cohort_Variance_Fields = {
-  __typename?: 'cyb_new_cohort_variance_fields';
   cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
   cyberlink_percent?: Maybe<Scalars['Float']['output']>;
@@ -1920,7 +1824,6 @@ export type Cyb_New_Cohort_Variance_Fields = {
 
 /** columns and relationships of "cyber_gift" */
 export type Cyber_Gift = {
-  __typename?: 'cyber_gift';
   address: Scalars['String']['output'];
   audience: Scalars['String']['output'];
   gift: Scalars['numeric']['output'];
@@ -1930,14 +1833,12 @@ export type Cyber_Gift = {
 
 /** aggregated selection of "cyber_gift" */
 export type Cyber_Gift_Aggregate = {
-  __typename?: 'cyber_gift_aggregate';
   aggregate?: Maybe<Cyber_Gift_Aggregate_Fields>;
   nodes: Array<Cyber_Gift>;
 };
 
 /** aggregate fields of "cyber_gift" */
 export type Cyber_Gift_Aggregate_Fields = {
-  __typename?: 'cyber_gift_aggregate_fields';
   avg?: Maybe<Cyber_Gift_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyber_Gift_Max_Fields>;
@@ -1960,7 +1861,6 @@ export type Cyber_Gift_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Cyber_Gift_Avg_Fields = {
-  __typename?: 'cyber_gift_avg_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
@@ -1979,7 +1879,6 @@ export type Cyber_Gift_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyber_Gift_Max_Fields = {
-  __typename?: 'cyber_gift_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   audience?: Maybe<Scalars['String']['output']>;
   gift?: Maybe<Scalars['numeric']['output']>;
@@ -1989,7 +1888,6 @@ export type Cyber_Gift_Max_Fields = {
 
 /** aggregate min on columns */
 export type Cyber_Gift_Min_Fields = {
-  __typename?: 'cyber_gift_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   audience?: Maybe<Scalars['String']['output']>;
   gift?: Maybe<Scalars['numeric']['output']>;
@@ -2008,7 +1906,6 @@ export type Cyber_Gift_Order_By = {
 
 /** columns and relationships of "cyber_gift_proofs" */
 export type Cyber_Gift_Proofs = {
-  __typename?: 'cyber_gift_proofs';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   details?: Maybe<Scalars['json']['output']>;
@@ -2023,14 +1920,12 @@ export type Cyber_Gift_ProofsDetailsArgs = {
 
 /** aggregated selection of "cyber_gift_proofs" */
 export type Cyber_Gift_Proofs_Aggregate = {
-  __typename?: 'cyber_gift_proofs_aggregate';
   aggregate?: Maybe<Cyber_Gift_Proofs_Aggregate_Fields>;
   nodes: Array<Cyber_Gift_Proofs>;
 };
 
 /** aggregate fields of "cyber_gift_proofs" */
 export type Cyber_Gift_Proofs_Aggregate_Fields = {
-  __typename?: 'cyber_gift_proofs_aggregate_fields';
   avg?: Maybe<Cyber_Gift_Proofs_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyber_Gift_Proofs_Max_Fields>;
@@ -2053,7 +1948,6 @@ export type Cyber_Gift_Proofs_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Cyber_Gift_Proofs_Avg_Fields = {
-  __typename?: 'cyber_gift_proofs_avg_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -2070,7 +1964,6 @@ export type Cyber_Gift_Proofs_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyber_Gift_Proofs_Max_Fields = {
-  __typename?: 'cyber_gift_proofs_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   proof?: Maybe<Scalars['String']['output']>;
@@ -2078,7 +1971,6 @@ export type Cyber_Gift_Proofs_Max_Fields = {
 
 /** aggregate min on columns */
 export type Cyber_Gift_Proofs_Min_Fields = {
-  __typename?: 'cyber_gift_proofs_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   proof?: Maybe<Scalars['String']['output']>;
@@ -2106,43 +1998,36 @@ export enum Cyber_Gift_Proofs_Select_Column {
 
 /** aggregate stddev on columns */
 export type Cyber_Gift_Proofs_Stddev_Fields = {
-  __typename?: 'cyber_gift_proofs_stddev_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Cyber_Gift_Proofs_Stddev_Pop_Fields = {
-  __typename?: 'cyber_gift_proofs_stddev_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Cyber_Gift_Proofs_Stddev_Samp_Fields = {
-  __typename?: 'cyber_gift_proofs_stddev_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Cyber_Gift_Proofs_Sum_Fields = {
-  __typename?: 'cyber_gift_proofs_sum_fields';
   amount?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Cyber_Gift_Proofs_Var_Pop_Fields = {
-  __typename?: 'cyber_gift_proofs_var_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Cyber_Gift_Proofs_Var_Samp_Fields = {
-  __typename?: 'cyber_gift_proofs_var_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Cyber_Gift_Proofs_Variance_Fields = {
-  __typename?: 'cyber_gift_proofs_variance_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -2162,56 +2047,48 @@ export enum Cyber_Gift_Select_Column {
 
 /** aggregate stddev on columns */
 export type Cyber_Gift_Stddev_Fields = {
-  __typename?: 'cyber_gift_stddev_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Cyber_Gift_Stddev_Pop_Fields = {
-  __typename?: 'cyber_gift_stddev_pop_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Cyber_Gift_Stddev_Samp_Fields = {
-  __typename?: 'cyber_gift_stddev_samp_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Cyber_Gift_Sum_Fields = {
-  __typename?: 'cyber_gift_sum_fields';
   gift?: Maybe<Scalars['numeric']['output']>;
   grade?: Maybe<Scalars['Int']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Cyber_Gift_Var_Pop_Fields = {
-  __typename?: 'cyber_gift_var_pop_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Cyber_Gift_Var_Samp_Fields = {
-  __typename?: 'cyber_gift_var_samp_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Cyber_Gift_Variance_Fields = {
-  __typename?: 'cyber_gift_variance_fields';
   gift?: Maybe<Scalars['Float']['output']>;
   grade?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "cyberlinks" */
 export type Cyberlinks = {
-  __typename?: 'cyberlinks';
   /** An object relationship */
   account: Account;
   /** An object relationship */
@@ -2233,14 +2110,12 @@ export type Cyberlinks = {
 
 /** aggregated selection of "cyberlinks" */
 export type Cyberlinks_Aggregate = {
-  __typename?: 'cyberlinks_aggregate';
   aggregate?: Maybe<Cyberlinks_Aggregate_Fields>;
   nodes: Array<Cyberlinks>;
 };
 
 /** aggregate fields of "cyberlinks" */
 export type Cyberlinks_Aggregate_Fields = {
-  __typename?: 'cyberlinks_aggregate_fields';
   avg?: Maybe<Cyberlinks_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyberlinks_Max_Fields>;
@@ -2278,7 +2153,6 @@ export type Cyberlinks_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Cyberlinks_Avg_Fields = {
-  __typename?: 'cyberlinks_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2310,7 +2184,6 @@ export type Cyberlinks_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyberlinks_Max_Fields = {
-  __typename?: 'cyberlinks_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
@@ -2333,7 +2206,6 @@ export type Cyberlinks_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Cyberlinks_Min_Fields = {
-  __typename?: 'cyberlinks_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
@@ -2390,7 +2262,6 @@ export enum Cyberlinks_Select_Column {
 
 /** columns and relationships of "cyberlinks_stats" */
 export type Cyberlinks_Stats = {
-  __typename?: 'cyberlinks_stats';
   cyberlinks?: Maybe<Scalars['numeric']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
@@ -2398,14 +2269,12 @@ export type Cyberlinks_Stats = {
 
 /** aggregated selection of "cyberlinks_stats" */
 export type Cyberlinks_Stats_Aggregate = {
-  __typename?: 'cyberlinks_stats_aggregate';
   aggregate?: Maybe<Cyberlinks_Stats_Aggregate_Fields>;
   nodes: Array<Cyberlinks_Stats>;
 };
 
 /** aggregate fields of "cyberlinks_stats" */
 export type Cyberlinks_Stats_Aggregate_Fields = {
-  __typename?: 'cyberlinks_stats_aggregate_fields';
   avg?: Maybe<Cyberlinks_Stats_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Cyberlinks_Stats_Max_Fields>;
@@ -2428,7 +2297,6 @@ export type Cyberlinks_Stats_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Cyberlinks_Stats_Avg_Fields = {
-  __typename?: 'cyberlinks_stats_avg_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
@@ -2445,7 +2313,6 @@ export type Cyberlinks_Stats_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Cyberlinks_Stats_Max_Fields = {
-  __typename?: 'cyberlinks_stats_max_fields';
   cyberlinks?: Maybe<Scalars['numeric']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
@@ -2453,7 +2320,6 @@ export type Cyberlinks_Stats_Max_Fields = {
 
 /** aggregate min on columns */
 export type Cyberlinks_Stats_Min_Fields = {
-  __typename?: 'cyberlinks_stats_min_fields';
   cyberlinks?: Maybe<Scalars['numeric']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
@@ -2478,56 +2344,48 @@ export enum Cyberlinks_Stats_Select_Column {
 
 /** aggregate stddev on columns */
 export type Cyberlinks_Stats_Stddev_Fields = {
-  __typename?: 'cyberlinks_stats_stddev_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Cyberlinks_Stats_Stddev_Pop_Fields = {
-  __typename?: 'cyberlinks_stats_stddev_pop_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Cyberlinks_Stats_Stddev_Samp_Fields = {
-  __typename?: 'cyberlinks_stats_stddev_samp_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Cyberlinks_Stats_Sum_Fields = {
-  __typename?: 'cyberlinks_stats_sum_fields';
   cyberlinks?: Maybe<Scalars['numeric']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Cyberlinks_Stats_Var_Pop_Fields = {
-  __typename?: 'cyberlinks_stats_var_pop_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Cyberlinks_Stats_Var_Samp_Fields = {
-  __typename?: 'cyberlinks_stats_var_samp_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Cyberlinks_Stats_Variance_Fields = {
-  __typename?: 'cyberlinks_stats_variance_fields';
   cyberlinks?: Maybe<Scalars['Float']['output']>;
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev on columns */
 export type Cyberlinks_Stddev_Fields = {
-  __typename?: 'cyberlinks_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2540,7 +2398,6 @@ export type Cyberlinks_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Cyberlinks_Stddev_Pop_Fields = {
-  __typename?: 'cyberlinks_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2553,7 +2410,6 @@ export type Cyberlinks_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Cyberlinks_Stddev_Samp_Fields = {
-  __typename?: 'cyberlinks_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2566,7 +2422,6 @@ export type Cyberlinks_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Cyberlinks_Sum_Fields = {
-  __typename?: 'cyberlinks_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
 };
@@ -2579,7 +2434,6 @@ export type Cyberlinks_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Cyberlinks_Var_Pop_Fields = {
-  __typename?: 'cyberlinks_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2592,7 +2446,6 @@ export type Cyberlinks_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Cyberlinks_Var_Samp_Fields = {
-  __typename?: 'cyberlinks_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2605,7 +2458,6 @@ export type Cyberlinks_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Cyberlinks_Variance_Fields = {
-  __typename?: 'cyberlinks_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -2618,21 +2470,18 @@ export type Cyberlinks_Variance_Order_By = {
 
 /** columns and relationships of "daily_amount_of_active_neurons" */
 export type Daily_Amount_Of_Active_Neurons = {
-  __typename?: 'daily_amount_of_active_neurons';
   count?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
 };
 
 /** aggregated selection of "daily_amount_of_active_neurons" */
 export type Daily_Amount_Of_Active_Neurons_Aggregate = {
-  __typename?: 'daily_amount_of_active_neurons_aggregate';
   aggregate?: Maybe<Daily_Amount_Of_Active_Neurons_Aggregate_Fields>;
   nodes: Array<Daily_Amount_Of_Active_Neurons>;
 };
 
 /** aggregate fields of "daily_amount_of_active_neurons" */
 export type Daily_Amount_Of_Active_Neurons_Aggregate_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_aggregate_fields';
   avg?: Maybe<Daily_Amount_Of_Active_Neurons_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Daily_Amount_Of_Active_Neurons_Max_Fields>;
@@ -2655,7 +2504,6 @@ export type Daily_Amount_Of_Active_Neurons_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Daily_Amount_Of_Active_Neurons_Avg_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -2670,14 +2518,12 @@ export type Daily_Amount_Of_Active_Neurons_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Daily_Amount_Of_Active_Neurons_Max_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_max_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
 };
 
 /** aggregate min on columns */
 export type Daily_Amount_Of_Active_Neurons_Min_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_min_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
 };
@@ -2698,49 +2544,41 @@ export enum Daily_Amount_Of_Active_Neurons_Select_Column {
 
 /** aggregate stddev on columns */
 export type Daily_Amount_Of_Active_Neurons_Stddev_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Daily_Amount_Of_Active_Neurons_Stddev_Pop_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Daily_Amount_Of_Active_Neurons_Stddev_Samp_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Daily_Amount_Of_Active_Neurons_Sum_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_sum_fields';
   count?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Daily_Amount_Of_Active_Neurons_Var_Pop_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Daily_Amount_Of_Active_Neurons_Var_Samp_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Daily_Amount_Of_Active_Neurons_Variance_Fields = {
-  __typename?: 'daily_amount_of_active_neurons_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "daily_amount_of_used_gas" */
 export type Daily_Amount_Of_Used_Gas = {
-  __typename?: 'daily_amount_of_used_gas';
   daily_gas?: Maybe<Scalars['numeric']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   gas_total?: Maybe<Scalars['numeric']['output']>;
@@ -2748,14 +2586,12 @@ export type Daily_Amount_Of_Used_Gas = {
 
 /** aggregated selection of "daily_amount_of_used_gas" */
 export type Daily_Amount_Of_Used_Gas_Aggregate = {
-  __typename?: 'daily_amount_of_used_gas_aggregate';
   aggregate?: Maybe<Daily_Amount_Of_Used_Gas_Aggregate_Fields>;
   nodes: Array<Daily_Amount_Of_Used_Gas>;
 };
 
 /** aggregate fields of "daily_amount_of_used_gas" */
 export type Daily_Amount_Of_Used_Gas_Aggregate_Fields = {
-  __typename?: 'daily_amount_of_used_gas_aggregate_fields';
   avg?: Maybe<Daily_Amount_Of_Used_Gas_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Daily_Amount_Of_Used_Gas_Max_Fields>;
@@ -2778,7 +2614,6 @@ export type Daily_Amount_Of_Used_Gas_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Daily_Amount_Of_Used_Gas_Avg_Fields = {
-  __typename?: 'daily_amount_of_used_gas_avg_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
@@ -2795,7 +2630,6 @@ export type Daily_Amount_Of_Used_Gas_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Daily_Amount_Of_Used_Gas_Max_Fields = {
-  __typename?: 'daily_amount_of_used_gas_max_fields';
   daily_gas?: Maybe<Scalars['numeric']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   gas_total?: Maybe<Scalars['numeric']['output']>;
@@ -2803,7 +2637,6 @@ export type Daily_Amount_Of_Used_Gas_Max_Fields = {
 
 /** aggregate min on columns */
 export type Daily_Amount_Of_Used_Gas_Min_Fields = {
-  __typename?: 'daily_amount_of_used_gas_min_fields';
   daily_gas?: Maybe<Scalars['numeric']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   gas_total?: Maybe<Scalars['numeric']['output']>;
@@ -2828,56 +2661,48 @@ export enum Daily_Amount_Of_Used_Gas_Select_Column {
 
 /** aggregate stddev on columns */
 export type Daily_Amount_Of_Used_Gas_Stddev_Fields = {
-  __typename?: 'daily_amount_of_used_gas_stddev_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Daily_Amount_Of_Used_Gas_Stddev_Pop_Fields = {
-  __typename?: 'daily_amount_of_used_gas_stddev_pop_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Daily_Amount_Of_Used_Gas_Stddev_Samp_Fields = {
-  __typename?: 'daily_amount_of_used_gas_stddev_samp_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Daily_Amount_Of_Used_Gas_Sum_Fields = {
-  __typename?: 'daily_amount_of_used_gas_sum_fields';
   daily_gas?: Maybe<Scalars['numeric']['output']>;
   gas_total?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Daily_Amount_Of_Used_Gas_Var_Pop_Fields = {
-  __typename?: 'daily_amount_of_used_gas_var_pop_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Daily_Amount_Of_Used_Gas_Var_Samp_Fields = {
-  __typename?: 'daily_amount_of_used_gas_var_samp_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Daily_Amount_Of_Used_Gas_Variance_Fields = {
-  __typename?: 'daily_amount_of_used_gas_variance_fields';
   daily_gas?: Maybe<Scalars['Float']['output']>;
   gas_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "daily_number_of_transactions" */
 export type Daily_Number_Of_Transactions = {
-  __typename?: 'daily_number_of_transactions';
   date?: Maybe<Scalars['date']['output']>;
   txs_per_day?: Maybe<Scalars['bigint']['output']>;
   txs_total?: Maybe<Scalars['numeric']['output']>;
@@ -2885,14 +2710,12 @@ export type Daily_Number_Of_Transactions = {
 
 /** aggregated selection of "daily_number_of_transactions" */
 export type Daily_Number_Of_Transactions_Aggregate = {
-  __typename?: 'daily_number_of_transactions_aggregate';
   aggregate?: Maybe<Daily_Number_Of_Transactions_Aggregate_Fields>;
   nodes: Array<Daily_Number_Of_Transactions>;
 };
 
 /** aggregate fields of "daily_number_of_transactions" */
 export type Daily_Number_Of_Transactions_Aggregate_Fields = {
-  __typename?: 'daily_number_of_transactions_aggregate_fields';
   avg?: Maybe<Daily_Number_Of_Transactions_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Daily_Number_Of_Transactions_Max_Fields>;
@@ -2915,7 +2738,6 @@ export type Daily_Number_Of_Transactions_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Daily_Number_Of_Transactions_Avg_Fields = {
-  __typename?: 'daily_number_of_transactions_avg_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
@@ -2932,7 +2754,6 @@ export type Daily_Number_Of_Transactions_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Daily_Number_Of_Transactions_Max_Fields = {
-  __typename?: 'daily_number_of_transactions_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   txs_per_day?: Maybe<Scalars['bigint']['output']>;
   txs_total?: Maybe<Scalars['numeric']['output']>;
@@ -2940,7 +2761,6 @@ export type Daily_Number_Of_Transactions_Max_Fields = {
 
 /** aggregate min on columns */
 export type Daily_Number_Of_Transactions_Min_Fields = {
-  __typename?: 'daily_number_of_transactions_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   txs_per_day?: Maybe<Scalars['bigint']['output']>;
   txs_total?: Maybe<Scalars['numeric']['output']>;
@@ -2965,49 +2785,42 @@ export enum Daily_Number_Of_Transactions_Select_Column {
 
 /** aggregate stddev on columns */
 export type Daily_Number_Of_Transactions_Stddev_Fields = {
-  __typename?: 'daily_number_of_transactions_stddev_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Daily_Number_Of_Transactions_Stddev_Pop_Fields = {
-  __typename?: 'daily_number_of_transactions_stddev_pop_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Daily_Number_Of_Transactions_Stddev_Samp_Fields = {
-  __typename?: 'daily_number_of_transactions_stddev_samp_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Daily_Number_Of_Transactions_Sum_Fields = {
-  __typename?: 'daily_number_of_transactions_sum_fields';
   txs_per_day?: Maybe<Scalars['bigint']['output']>;
   txs_total?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Daily_Number_Of_Transactions_Var_Pop_Fields = {
-  __typename?: 'daily_number_of_transactions_var_pop_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Daily_Number_Of_Transactions_Var_Samp_Fields = {
-  __typename?: 'daily_number_of_transactions_var_samp_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Daily_Number_Of_Transactions_Variance_Fields = {
-  __typename?: 'daily_number_of_transactions_variance_fields';
   txs_per_day?: Maybe<Scalars['Float']['output']>;
   txs_total?: Maybe<Scalars['Float']['output']>;
 };
@@ -3040,7 +2853,6 @@ export type Float8_Comparison_Exp = {
 
 /** columns and relationships of "follow_stats" */
 export type Follow_Stats = {
-  __typename?: 'follow_stats';
   date?: Maybe<Scalars['date']['output']>;
   follow_total?: Maybe<Scalars['numeric']['output']>;
   follows_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -3048,14 +2860,12 @@ export type Follow_Stats = {
 
 /** aggregated selection of "follow_stats" */
 export type Follow_Stats_Aggregate = {
-  __typename?: 'follow_stats_aggregate';
   aggregate?: Maybe<Follow_Stats_Aggregate_Fields>;
   nodes: Array<Follow_Stats>;
 };
 
 /** aggregate fields of "follow_stats" */
 export type Follow_Stats_Aggregate_Fields = {
-  __typename?: 'follow_stats_aggregate_fields';
   avg?: Maybe<Follow_Stats_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Follow_Stats_Max_Fields>;
@@ -3078,7 +2888,6 @@ export type Follow_Stats_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Follow_Stats_Avg_Fields = {
-  __typename?: 'follow_stats_avg_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
@@ -3095,7 +2904,6 @@ export type Follow_Stats_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Follow_Stats_Max_Fields = {
-  __typename?: 'follow_stats_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   follow_total?: Maybe<Scalars['numeric']['output']>;
   follows_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -3103,7 +2911,6 @@ export type Follow_Stats_Max_Fields = {
 
 /** aggregate min on columns */
 export type Follow_Stats_Min_Fields = {
-  __typename?: 'follow_stats_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   follow_total?: Maybe<Scalars['numeric']['output']>;
   follows_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -3128,70 +2935,60 @@ export enum Follow_Stats_Select_Column {
 
 /** aggregate stddev on columns */
 export type Follow_Stats_Stddev_Fields = {
-  __typename?: 'follow_stats_stddev_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Follow_Stats_Stddev_Pop_Fields = {
-  __typename?: 'follow_stats_stddev_pop_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Follow_Stats_Stddev_Samp_Fields = {
-  __typename?: 'follow_stats_stddev_samp_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Follow_Stats_Sum_Fields = {
-  __typename?: 'follow_stats_sum_fields';
   follow_total?: Maybe<Scalars['numeric']['output']>;
   follows_per_day?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Follow_Stats_Var_Pop_Fields = {
-  __typename?: 'follow_stats_var_pop_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Follow_Stats_Var_Samp_Fields = {
-  __typename?: 'follow_stats_var_samp_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Follow_Stats_Variance_Fields = {
-  __typename?: 'follow_stats_variance_fields';
   follow_total?: Maybe<Scalars['Float']['output']>;
   follows_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "genesis_neurons_activation" */
 export type Genesis_Neurons_Activation = {
-  __typename?: 'genesis_neurons_activation';
   count?: Maybe<Scalars['float8']['output']>;
   neurons?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "genesis_neurons_activation" */
 export type Genesis_Neurons_Activation_Aggregate = {
-  __typename?: 'genesis_neurons_activation_aggregate';
   aggregate?: Maybe<Genesis_Neurons_Activation_Aggregate_Fields>;
   nodes: Array<Genesis_Neurons_Activation>;
 };
 
 /** aggregate fields of "genesis_neurons_activation" */
 export type Genesis_Neurons_Activation_Aggregate_Fields = {
-  __typename?: 'genesis_neurons_activation_aggregate_fields';
   avg?: Maybe<Genesis_Neurons_Activation_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Genesis_Neurons_Activation_Max_Fields>;
@@ -3214,7 +3011,6 @@ export type Genesis_Neurons_Activation_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Genesis_Neurons_Activation_Avg_Fields = {
-  __typename?: 'genesis_neurons_activation_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3229,14 +3025,12 @@ export type Genesis_Neurons_Activation_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Genesis_Neurons_Activation_Max_Fields = {
-  __typename?: 'genesis_neurons_activation_max_fields';
   count?: Maybe<Scalars['float8']['output']>;
   neurons?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Genesis_Neurons_Activation_Min_Fields = {
-  __typename?: 'genesis_neurons_activation_min_fields';
   count?: Maybe<Scalars['float8']['output']>;
   neurons?: Maybe<Scalars['String']['output']>;
 };
@@ -3257,49 +3051,41 @@ export enum Genesis_Neurons_Activation_Select_Column {
 
 /** aggregate stddev on columns */
 export type Genesis_Neurons_Activation_Stddev_Fields = {
-  __typename?: 'genesis_neurons_activation_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Genesis_Neurons_Activation_Stddev_Pop_Fields = {
-  __typename?: 'genesis_neurons_activation_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Genesis_Neurons_Activation_Stddev_Samp_Fields = {
-  __typename?: 'genesis_neurons_activation_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Genesis_Neurons_Activation_Sum_Fields = {
-  __typename?: 'genesis_neurons_activation_sum_fields';
   count?: Maybe<Scalars['float8']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Genesis_Neurons_Activation_Var_Pop_Fields = {
-  __typename?: 'genesis_neurons_activation_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Genesis_Neurons_Activation_Var_Samp_Fields = {
-  __typename?: 'genesis_neurons_activation_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Genesis_Neurons_Activation_Variance_Fields = {
-  __typename?: 'genesis_neurons_activation_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "investmints" */
 export type Investmints = {
-  __typename?: 'investmints';
   /** An object relationship */
   account: Account;
   amount: Scalars['coin']['output'];
@@ -3318,14 +3104,12 @@ export type Investmints = {
 
 /** aggregated selection of "investmints" */
 export type Investmints_Aggregate = {
-  __typename?: 'investmints_aggregate';
   aggregate?: Maybe<Investmints_Aggregate_Fields>;
   nodes: Array<Investmints>;
 };
 
 /** aggregate fields of "investmints" */
 export type Investmints_Aggregate_Fields = {
-  __typename?: 'investmints_aggregate_fields';
   avg?: Maybe<Investmints_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Investmints_Max_Fields>;
@@ -3363,7 +3147,6 @@ export type Investmints_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Investmints_Avg_Fields = {
-  __typename?: 'investmints_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3396,7 +3179,6 @@ export type Investmints_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Investmints_Max_Fields = {
-  __typename?: 'investmints_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   length?: Maybe<Scalars['bigint']['output']>;
@@ -3419,7 +3201,6 @@ export type Investmints_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Investmints_Min_Fields = {
-  __typename?: 'investmints_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   length?: Maybe<Scalars['bigint']['output']>;
@@ -3477,7 +3258,6 @@ export enum Investmints_Select_Column {
 
 /** aggregate stddev on columns */
 export type Investmints_Stddev_Fields = {
-  __typename?: 'investmints_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3492,7 +3272,6 @@ export type Investmints_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Investmints_Stddev_Pop_Fields = {
-  __typename?: 'investmints_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3507,7 +3286,6 @@ export type Investmints_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Investmints_Stddev_Samp_Fields = {
-  __typename?: 'investmints_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3522,7 +3300,6 @@ export type Investmints_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Investmints_Sum_Fields = {
-  __typename?: 'investmints_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   length?: Maybe<Scalars['bigint']['output']>;
@@ -3537,7 +3314,6 @@ export type Investmints_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Investmints_Var_Pop_Fields = {
-  __typename?: 'investmints_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3552,7 +3328,6 @@ export type Investmints_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Investmints_Var_Samp_Fields = {
-  __typename?: 'investmints_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3567,7 +3342,6 @@ export type Investmints_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Investmints_Variance_Fields = {
-  __typename?: 'investmints_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
   length?: Maybe<Scalars['Float']['output']>;
@@ -3618,7 +3392,6 @@ export type Jsonb_Comparison_Exp = {
 
 /** columns and relationships of "message" */
 export type Message = {
-  __typename?: 'message';
   index: Scalars['bigint']['output'];
   involved_accounts_addresses?: Maybe<Scalars['_text']['output']>;
   /** An object relationship */
@@ -3636,14 +3409,12 @@ export type MessageValueArgs = {
 
 /** aggregated selection of "message" */
 export type Message_Aggregate = {
-  __typename?: 'message_aggregate';
   aggregate?: Maybe<Message_Aggregate_Fields>;
   nodes: Array<Message>;
 };
 
 /** aggregate fields of "message" */
 export type Message_Aggregate_Fields = {
-  __typename?: 'message_aggregate_fields';
   avg?: Maybe<Message_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Message_Max_Fields>;
@@ -3681,7 +3452,6 @@ export type Message_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Message_Avg_Fields = {
-  __typename?: 'message_avg_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3705,7 +3475,6 @@ export type Message_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Message_Max_Fields = {
-  __typename?: 'message_max_fields';
   index?: Maybe<Scalars['bigint']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
@@ -3720,7 +3489,6 @@ export type Message_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Message_Min_Fields = {
-  __typename?: 'message_min_fields';
   index?: Maybe<Scalars['bigint']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
@@ -3759,7 +3527,6 @@ export enum Message_Select_Column {
 
 /** aggregate stddev on columns */
 export type Message_Stddev_Fields = {
-  __typename?: 'message_stddev_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3770,7 +3537,6 @@ export type Message_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Message_Stddev_Pop_Fields = {
-  __typename?: 'message_stddev_pop_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3781,7 +3547,6 @@ export type Message_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Message_Stddev_Samp_Fields = {
-  __typename?: 'message_stddev_samp_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3792,7 +3557,6 @@ export type Message_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Message_Sum_Fields = {
-  __typename?: 'message_sum_fields';
   index?: Maybe<Scalars['bigint']['output']>;
 };
 
@@ -3803,7 +3567,6 @@ export type Message_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Message_Var_Pop_Fields = {
-  __typename?: 'message_var_pop_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3814,7 +3577,6 @@ export type Message_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Message_Var_Samp_Fields = {
-  __typename?: 'message_var_samp_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3825,7 +3587,6 @@ export type Message_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Message_Variance_Fields = {
-  __typename?: 'message_variance_fields';
   index?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -3843,20 +3604,17 @@ export type Messages_By_Address_Args = {
 
 /** columns and relationships of "modules" */
 export type Modules = {
-  __typename?: 'modules';
   module_name: Scalars['String']['output'];
 };
 
 /** aggregated selection of "modules" */
 export type Modules_Aggregate = {
-  __typename?: 'modules_aggregate';
   aggregate?: Maybe<Modules_Aggregate_Fields>;
   nodes: Array<Modules>;
 };
 
 /** aggregate fields of "modules" */
 export type Modules_Aggregate_Fields = {
-  __typename?: 'modules_aggregate_fields';
   count: Scalars['Int']['output'];
   max?: Maybe<Modules_Max_Fields>;
   min?: Maybe<Modules_Min_Fields>;
@@ -3879,13 +3637,11 @@ export type Modules_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Modules_Max_Fields = {
-  __typename?: 'modules_max_fields';
   module_name?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Modules_Min_Fields = {
-  __typename?: 'modules_min_fields';
   module_name?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3902,7 +3658,6 @@ export enum Modules_Select_Column {
 
 /** columns and relationships of "neuron_activation_source" */
 export type Neuron_Activation_Source = {
-  __typename?: 'neuron_activation_source';
   genesis_percent?: Maybe<Scalars['float8']['output']>;
   ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
   neuron_activated?: Maybe<Scalars['bigint']['output']>;
@@ -3912,14 +3667,12 @@ export type Neuron_Activation_Source = {
 
 /** aggregated selection of "neuron_activation_source" */
 export type Neuron_Activation_Source_Aggregate = {
-  __typename?: 'neuron_activation_source_aggregate';
   aggregate?: Maybe<Neuron_Activation_Source_Aggregate_Fields>;
   nodes: Array<Neuron_Activation_Source>;
 };
 
 /** aggregate fields of "neuron_activation_source" */
 export type Neuron_Activation_Source_Aggregate_Fields = {
-  __typename?: 'neuron_activation_source_aggregate_fields';
   avg?: Maybe<Neuron_Activation_Source_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Neuron_Activation_Source_Max_Fields>;
@@ -3942,7 +3695,6 @@ export type Neuron_Activation_Source_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Neuron_Activation_Source_Avg_Fields = {
-  __typename?: 'neuron_activation_source_avg_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -3963,7 +3715,6 @@ export type Neuron_Activation_Source_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Neuron_Activation_Source_Max_Fields = {
-  __typename?: 'neuron_activation_source_max_fields';
   genesis_percent?: Maybe<Scalars['float8']['output']>;
   ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
   neuron_activated?: Maybe<Scalars['bigint']['output']>;
@@ -3973,7 +3724,6 @@ export type Neuron_Activation_Source_Max_Fields = {
 
 /** aggregate min on columns */
 export type Neuron_Activation_Source_Min_Fields = {
-  __typename?: 'neuron_activation_source_min_fields';
   genesis_percent?: Maybe<Scalars['float8']['output']>;
   ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
   neuron_activated?: Maybe<Scalars['bigint']['output']>;
@@ -4006,7 +3756,6 @@ export enum Neuron_Activation_Source_Select_Column {
 
 /** aggregate stddev on columns */
 export type Neuron_Activation_Source_Stddev_Fields = {
-  __typename?: 'neuron_activation_source_stddev_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4015,7 +3764,6 @@ export type Neuron_Activation_Source_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type Neuron_Activation_Source_Stddev_Pop_Fields = {
-  __typename?: 'neuron_activation_source_stddev_pop_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4024,7 +3772,6 @@ export type Neuron_Activation_Source_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type Neuron_Activation_Source_Stddev_Samp_Fields = {
-  __typename?: 'neuron_activation_source_stddev_samp_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4033,7 +3780,6 @@ export type Neuron_Activation_Source_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type Neuron_Activation_Source_Sum_Fields = {
-  __typename?: 'neuron_activation_source_sum_fields';
   genesis_percent?: Maybe<Scalars['float8']['output']>;
   ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
   neuron_activated?: Maybe<Scalars['bigint']['output']>;
@@ -4042,7 +3788,6 @@ export type Neuron_Activation_Source_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type Neuron_Activation_Source_Var_Pop_Fields = {
-  __typename?: 'neuron_activation_source_var_pop_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4051,7 +3796,6 @@ export type Neuron_Activation_Source_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type Neuron_Activation_Source_Var_Samp_Fields = {
-  __typename?: 'neuron_activation_source_var_samp_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4060,7 +3804,6 @@ export type Neuron_Activation_Source_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type Neuron_Activation_Source_Variance_Fields = {
-  __typename?: 'neuron_activation_source_variance_fields';
   genesis_percent?: Maybe<Scalars['Float']['output']>;
   ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
   neuron_activated?: Maybe<Scalars['Float']['output']>;
@@ -4069,7 +3812,6 @@ export type Neuron_Activation_Source_Variance_Fields = {
 
 /** columns and relationships of "number_of_new_neurons" */
 export type Number_Of_New_Neurons = {
-  __typename?: 'number_of_new_neurons';
   date?: Maybe<Scalars['date']['output']>;
   new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
   new_neurons_total?: Maybe<Scalars['numeric']['output']>;
@@ -4077,14 +3819,12 @@ export type Number_Of_New_Neurons = {
 
 /** aggregated selection of "number_of_new_neurons" */
 export type Number_Of_New_Neurons_Aggregate = {
-  __typename?: 'number_of_new_neurons_aggregate';
   aggregate?: Maybe<Number_Of_New_Neurons_Aggregate_Fields>;
   nodes: Array<Number_Of_New_Neurons>;
 };
 
 /** aggregate fields of "number_of_new_neurons" */
 export type Number_Of_New_Neurons_Aggregate_Fields = {
-  __typename?: 'number_of_new_neurons_aggregate_fields';
   avg?: Maybe<Number_Of_New_Neurons_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Number_Of_New_Neurons_Max_Fields>;
@@ -4107,7 +3847,6 @@ export type Number_Of_New_Neurons_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Number_Of_New_Neurons_Avg_Fields = {
-  __typename?: 'number_of_new_neurons_avg_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
@@ -4124,7 +3863,6 @@ export type Number_Of_New_Neurons_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Number_Of_New_Neurons_Max_Fields = {
-  __typename?: 'number_of_new_neurons_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
   new_neurons_total?: Maybe<Scalars['numeric']['output']>;
@@ -4132,7 +3870,6 @@ export type Number_Of_New_Neurons_Max_Fields = {
 
 /** aggregate min on columns */
 export type Number_Of_New_Neurons_Min_Fields = {
-  __typename?: 'number_of_new_neurons_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
   new_neurons_total?: Maybe<Scalars['numeric']['output']>;
@@ -4157,49 +3894,42 @@ export enum Number_Of_New_Neurons_Select_Column {
 
 /** aggregate stddev on columns */
 export type Number_Of_New_Neurons_Stddev_Fields = {
-  __typename?: 'number_of_new_neurons_stddev_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Number_Of_New_Neurons_Stddev_Pop_Fields = {
-  __typename?: 'number_of_new_neurons_stddev_pop_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Number_Of_New_Neurons_Stddev_Samp_Fields = {
-  __typename?: 'number_of_new_neurons_stddev_samp_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Number_Of_New_Neurons_Sum_Fields = {
-  __typename?: 'number_of_new_neurons_sum_fields';
   new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
   new_neurons_total?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Number_Of_New_Neurons_Var_Pop_Fields = {
-  __typename?: 'number_of_new_neurons_var_pop_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Number_Of_New_Neurons_Var_Samp_Fields = {
-  __typename?: 'number_of_new_neurons_var_samp_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Number_Of_New_Neurons_Variance_Fields = {
-  __typename?: 'number_of_new_neurons_variance_fields';
   new_neurons_daily?: Maybe<Scalars['Float']['output']>;
   new_neurons_total?: Maybe<Scalars['Float']['output']>;
 };
@@ -4219,7 +3949,6 @@ export type Numeric_Comparison_Exp = {
 
 /** columns and relationships of "old_precommits" */
 export type Old_Precommits = {
-  __typename?: 'old_precommits';
   consensus_address: Scalars['String']['output'];
   consensus_pubkey: Scalars['String']['output'];
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -4227,14 +3956,12 @@ export type Old_Precommits = {
 
 /** aggregated selection of "old_precommits" */
 export type Old_Precommits_Aggregate = {
-  __typename?: 'old_precommits_aggregate';
   aggregate?: Maybe<Old_Precommits_Aggregate_Fields>;
   nodes: Array<Old_Precommits>;
 };
 
 /** aggregate fields of "old_precommits" */
 export type Old_Precommits_Aggregate_Fields = {
-  __typename?: 'old_precommits_aggregate_fields';
   avg?: Maybe<Old_Precommits_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Old_Precommits_Max_Fields>;
@@ -4257,7 +3984,6 @@ export type Old_Precommits_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Old_Precommits_Avg_Fields = {
-  __typename?: 'old_precommits_avg_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -4273,7 +3999,6 @@ export type Old_Precommits_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Old_Precommits_Max_Fields = {
-  __typename?: 'old_precommits_max_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -4281,7 +4006,6 @@ export type Old_Precommits_Max_Fields = {
 
 /** aggregate min on columns */
 export type Old_Precommits_Min_Fields = {
-  __typename?: 'old_precommits_min_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -4306,43 +4030,36 @@ export enum Old_Precommits_Select_Column {
 
 /** aggregate stddev on columns */
 export type Old_Precommits_Stddev_Fields = {
-  __typename?: 'old_precommits_stddev_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Old_Precommits_Stddev_Pop_Fields = {
-  __typename?: 'old_precommits_stddev_pop_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Old_Precommits_Stddev_Samp_Fields = {
-  __typename?: 'old_precommits_stddev_samp_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Old_Precommits_Sum_Fields = {
-  __typename?: 'old_precommits_sum_fields';
   precommits?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Old_Precommits_Var_Pop_Fields = {
-  __typename?: 'old_precommits_var_pop_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Old_Precommits_Var_Samp_Fields = {
-  __typename?: 'old_precommits_var_samp_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Old_Precommits_Variance_Fields = {
-  __typename?: 'old_precommits_variance_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -4364,7 +4081,6 @@ export enum Order_By {
 
 /** columns and relationships of "particles" */
 export type Particles = {
-  __typename?: 'particles';
   /** An object relationship */
   account: Account;
   /** An object relationship */
@@ -4429,14 +4145,12 @@ export type ParticlesOut_AggregateArgs = {
 
 /** aggregated selection of "particles" */
 export type Particles_Aggregate = {
-  __typename?: 'particles_aggregate';
   aggregate?: Maybe<Particles_Aggregate_Fields>;
   nodes: Array<Particles>;
 };
 
 /** aggregate fields of "particles" */
 export type Particles_Aggregate_Fields = {
-  __typename?: 'particles_aggregate_fields';
   avg?: Maybe<Particles_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Particles_Max_Fields>;
@@ -4474,7 +4188,6 @@ export type Particles_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Particles_Avg_Fields = {
-  __typename?: 'particles_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4505,7 +4218,6 @@ export type Particles_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Particles_Max_Fields = {
-  __typename?: 'particles_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
@@ -4526,7 +4238,6 @@ export type Particles_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Particles_Min_Fields = {
-  __typename?: 'particles_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
@@ -4578,7 +4289,6 @@ export enum Particles_Select_Column {
 
 /** aggregate stddev on columns */
 export type Particles_Stddev_Fields = {
-  __typename?: 'particles_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4591,7 +4301,6 @@ export type Particles_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Particles_Stddev_Pop_Fields = {
-  __typename?: 'particles_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4604,7 +4313,6 @@ export type Particles_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Particles_Stddev_Samp_Fields = {
-  __typename?: 'particles_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4617,7 +4325,6 @@ export type Particles_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Particles_Sum_Fields = {
-  __typename?: 'particles_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
 };
@@ -4630,7 +4337,6 @@ export type Particles_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Particles_Var_Pop_Fields = {
-  __typename?: 'particles_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4643,7 +4349,6 @@ export type Particles_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Particles_Var_Samp_Fields = {
-  __typename?: 'particles_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4656,7 +4361,6 @@ export type Particles_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Particles_Variance_Fields = {
-  __typename?: 'particles_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -4669,7 +4373,6 @@ export type Particles_Variance_Order_By = {
 
 /** columns and relationships of "pre_commit" */
 export type Pre_Commit = {
-  __typename?: 'pre_commit';
   height: Scalars['bigint']['output'];
   proposer_priority: Scalars['bigint']['output'];
   timestamp: Scalars['timestamp']['output'];
@@ -4681,14 +4384,12 @@ export type Pre_Commit = {
 
 /** aggregated selection of "pre_commit" */
 export type Pre_Commit_Aggregate = {
-  __typename?: 'pre_commit_aggregate';
   aggregate?: Maybe<Pre_Commit_Aggregate_Fields>;
   nodes: Array<Pre_Commit>;
 };
 
 /** aggregate fields of "pre_commit" */
 export type Pre_Commit_Aggregate_Fields = {
-  __typename?: 'pre_commit_aggregate_fields';
   avg?: Maybe<Pre_Commit_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pre_Commit_Max_Fields>;
@@ -4726,7 +4427,6 @@ export type Pre_Commit_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Pre_Commit_Avg_Fields = {
-  __typename?: 'pre_commit_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4754,7 +4454,6 @@ export type Pre_Commit_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pre_Commit_Max_Fields = {
-  __typename?: 'pre_commit_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   proposer_priority?: Maybe<Scalars['bigint']['output']>;
   timestamp?: Maybe<Scalars['timestamp']['output']>;
@@ -4773,7 +4472,6 @@ export type Pre_Commit_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Pre_Commit_Min_Fields = {
-  __typename?: 'pre_commit_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   proposer_priority?: Maybe<Scalars['bigint']['output']>;
   timestamp?: Maybe<Scalars['timestamp']['output']>;
@@ -4816,7 +4514,6 @@ export enum Pre_Commit_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pre_Commit_Stddev_Fields = {
-  __typename?: 'pre_commit_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4831,7 +4528,6 @@ export type Pre_Commit_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Pre_Commit_Stddev_Pop_Fields = {
-  __typename?: 'pre_commit_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4846,7 +4542,6 @@ export type Pre_Commit_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Pre_Commit_Stddev_Samp_Fields = {
-  __typename?: 'pre_commit_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4861,7 +4556,6 @@ export type Pre_Commit_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Pre_Commit_Sum_Fields = {
-  __typename?: 'pre_commit_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   proposer_priority?: Maybe<Scalars['bigint']['output']>;
   voting_power?: Maybe<Scalars['bigint']['output']>;
@@ -4876,7 +4570,6 @@ export type Pre_Commit_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Pre_Commit_Var_Pop_Fields = {
-  __typename?: 'pre_commit_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4891,7 +4584,6 @@ export type Pre_Commit_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Pre_Commit_Var_Samp_Fields = {
-  __typename?: 'pre_commit_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4906,7 +4598,6 @@ export type Pre_Commit_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Pre_Commit_Variance_Fields = {
-  __typename?: 'pre_commit_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   proposer_priority?: Maybe<Scalars['Float']['output']>;
   voting_power?: Maybe<Scalars['Float']['output']>;
@@ -4921,7 +4612,6 @@ export type Pre_Commit_Variance_Order_By = {
 
 /** columns and relationships of "pre_commits_rewards_view" */
 export type Pre_Commits_Rewards_View = {
-  __typename?: 'pre_commits_rewards_view';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   max_block?: Maybe<Scalars['bigint']['output']>;
   pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
@@ -4931,14 +4621,12 @@ export type Pre_Commits_Rewards_View = {
 
 /** aggregated selection of "pre_commits_rewards_view" */
 export type Pre_Commits_Rewards_View_Aggregate = {
-  __typename?: 'pre_commits_rewards_view_aggregate';
   aggregate?: Maybe<Pre_Commits_Rewards_View_Aggregate_Fields>;
   nodes: Array<Pre_Commits_Rewards_View>;
 };
 
 /** aggregate fields of "pre_commits_rewards_view" */
 export type Pre_Commits_Rewards_View_Aggregate_Fields = {
-  __typename?: 'pre_commits_rewards_view_aggregate_fields';
   avg?: Maybe<Pre_Commits_Rewards_View_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pre_Commits_Rewards_View_Max_Fields>;
@@ -4961,7 +4649,6 @@ export type Pre_Commits_Rewards_View_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Pre_Commits_Rewards_View_Avg_Fields = {
-  __typename?: 'pre_commits_rewards_view_avg_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -4982,7 +4669,6 @@ export type Pre_Commits_Rewards_View_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pre_Commits_Rewards_View_Max_Fields = {
-  __typename?: 'pre_commits_rewards_view_max_fields';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   max_block?: Maybe<Scalars['bigint']['output']>;
   pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
@@ -4992,7 +4678,6 @@ export type Pre_Commits_Rewards_View_Max_Fields = {
 
 /** aggregate min on columns */
 export type Pre_Commits_Rewards_View_Min_Fields = {
-  __typename?: 'pre_commits_rewards_view_min_fields';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   max_block?: Maybe<Scalars['bigint']['output']>;
   pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
@@ -5025,7 +4710,6 @@ export enum Pre_Commits_Rewards_View_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pre_Commits_Rewards_View_Stddev_Fields = {
-  __typename?: 'pre_commits_rewards_view_stddev_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5034,7 +4718,6 @@ export type Pre_Commits_Rewards_View_Stddev_Fields = {
 
 /** aggregate stddev_pop on columns */
 export type Pre_Commits_Rewards_View_Stddev_Pop_Fields = {
-  __typename?: 'pre_commits_rewards_view_stddev_pop_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5043,7 +4726,6 @@ export type Pre_Commits_Rewards_View_Stddev_Pop_Fields = {
 
 /** aggregate stddev_samp on columns */
 export type Pre_Commits_Rewards_View_Stddev_Samp_Fields = {
-  __typename?: 'pre_commits_rewards_view_stddev_samp_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5052,7 +4734,6 @@ export type Pre_Commits_Rewards_View_Stddev_Samp_Fields = {
 
 /** aggregate sum on columns */
 export type Pre_Commits_Rewards_View_Sum_Fields = {
-  __typename?: 'pre_commits_rewards_view_sum_fields';
   max_block?: Maybe<Scalars['bigint']['output']>;
   pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -5061,7 +4742,6 @@ export type Pre_Commits_Rewards_View_Sum_Fields = {
 
 /** aggregate var_pop on columns */
 export type Pre_Commits_Rewards_View_Var_Pop_Fields = {
-  __typename?: 'pre_commits_rewards_view_var_pop_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5070,7 +4750,6 @@ export type Pre_Commits_Rewards_View_Var_Pop_Fields = {
 
 /** aggregate var_samp on columns */
 export type Pre_Commits_Rewards_View_Var_Samp_Fields = {
-  __typename?: 'pre_commits_rewards_view_var_samp_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5079,7 +4758,6 @@ export type Pre_Commits_Rewards_View_Var_Samp_Fields = {
 
 /** aggregate variance on columns */
 export type Pre_Commits_Rewards_View_Variance_Fields = {
-  __typename?: 'pre_commits_rewards_view_variance_fields';
   max_block?: Maybe<Scalars['Float']['output']>;
   pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
   precommits?: Maybe<Scalars['Float']['output']>;
@@ -5088,21 +4766,18 @@ export type Pre_Commits_Rewards_View_Variance_Fields = {
 
 /** columns and relationships of "pre_commits_total" */
 export type Pre_Commits_Total = {
-  __typename?: 'pre_commits_total';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregated selection of "pre_commits_total" */
 export type Pre_Commits_Total_Aggregate = {
-  __typename?: 'pre_commits_total_aggregate';
   aggregate?: Maybe<Pre_Commits_Total_Aggregate_Fields>;
   nodes: Array<Pre_Commits_Total>;
 };
 
 /** aggregate fields of "pre_commits_total" */
 export type Pre_Commits_Total_Aggregate_Fields = {
-  __typename?: 'pre_commits_total_aggregate_fields';
   avg?: Maybe<Pre_Commits_Total_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pre_Commits_Total_Max_Fields>;
@@ -5125,7 +4800,6 @@ export type Pre_Commits_Total_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Pre_Commits_Total_Avg_Fields = {
-  __typename?: 'pre_commits_total_avg_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -5140,14 +4814,12 @@ export type Pre_Commits_Total_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pre_Commits_Total_Max_Fields = {
-  __typename?: 'pre_commits_total_max_fields';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate min on columns */
 export type Pre_Commits_Total_Min_Fields = {
-  __typename?: 'pre_commits_total_min_fields';
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['numeric']['output']>;
 };
@@ -5168,49 +4840,41 @@ export enum Pre_Commits_Total_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pre_Commits_Total_Stddev_Fields = {
-  __typename?: 'pre_commits_total_stddev_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Pre_Commits_Total_Stddev_Pop_Fields = {
-  __typename?: 'pre_commits_total_stddev_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Pre_Commits_Total_Stddev_Samp_Fields = {
-  __typename?: 'pre_commits_total_stddev_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Pre_Commits_Total_Sum_Fields = {
-  __typename?: 'pre_commits_total_sum_fields';
   pre_commits?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Pre_Commits_Total_Var_Pop_Fields = {
-  __typename?: 'pre_commits_total_var_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Pre_Commits_Total_Var_Samp_Fields = {
-  __typename?: 'pre_commits_total_var_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Pre_Commits_Total_Variance_Fields = {
-  __typename?: 'pre_commits_total_variance_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "pre_commits_view" */
 export type Pre_Commits_View = {
-  __typename?: 'pre_commits_view';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -5218,14 +4882,12 @@ export type Pre_Commits_View = {
 
 /** aggregated selection of "pre_commits_view" */
 export type Pre_Commits_View_Aggregate = {
-  __typename?: 'pre_commits_view_aggregate';
   aggregate?: Maybe<Pre_Commits_View_Aggregate_Fields>;
   nodes: Array<Pre_Commits_View>;
 };
 
 /** aggregate fields of "pre_commits_view" */
 export type Pre_Commits_View_Aggregate_Fields = {
-  __typename?: 'pre_commits_view_aggregate_fields';
   avg?: Maybe<Pre_Commits_View_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pre_Commits_View_Max_Fields>;
@@ -5248,7 +4910,6 @@ export type Pre_Commits_View_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Pre_Commits_View_Avg_Fields = {
-  __typename?: 'pre_commits_view_avg_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -5264,7 +4925,6 @@ export type Pre_Commits_View_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pre_Commits_View_Max_Fields = {
-  __typename?: 'pre_commits_view_max_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -5272,7 +4932,6 @@ export type Pre_Commits_View_Max_Fields = {
 
 /** aggregate min on columns */
 export type Pre_Commits_View_Min_Fields = {
-  __typename?: 'pre_commits_view_min_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   precommits?: Maybe<Scalars['numeric']['output']>;
@@ -5297,62 +4956,52 @@ export enum Pre_Commits_View_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pre_Commits_View_Stddev_Fields = {
-  __typename?: 'pre_commits_view_stddev_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Pre_Commits_View_Stddev_Pop_Fields = {
-  __typename?: 'pre_commits_view_stddev_pop_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Pre_Commits_View_Stddev_Samp_Fields = {
-  __typename?: 'pre_commits_view_stddev_samp_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Pre_Commits_View_Sum_Fields = {
-  __typename?: 'pre_commits_view_sum_fields';
   precommits?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Pre_Commits_View_Var_Pop_Fields = {
-  __typename?: 'pre_commits_view_var_pop_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Pre_Commits_View_Var_Samp_Fields = {
-  __typename?: 'pre_commits_view_var_samp_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Pre_Commits_View_Variance_Fields = {
-  __typename?: 'pre_commits_view_variance_fields';
   precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "pruning" */
 export type Pruning = {
-  __typename?: 'pruning';
   last_pruned_height: Scalars['bigint']['output'];
 };
 
 /** aggregated selection of "pruning" */
 export type Pruning_Aggregate = {
-  __typename?: 'pruning_aggregate';
   aggregate?: Maybe<Pruning_Aggregate_Fields>;
   nodes: Array<Pruning>;
 };
 
 /** aggregate fields of "pruning" */
 export type Pruning_Aggregate_Fields = {
-  __typename?: 'pruning_aggregate_fields';
   avg?: Maybe<Pruning_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pruning_Max_Fields>;
@@ -5375,7 +5024,6 @@ export type Pruning_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Pruning_Avg_Fields = {
-  __typename?: 'pruning_avg_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -5389,13 +5037,11 @@ export type Pruning_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pruning_Max_Fields = {
-  __typename?: 'pruning_max_fields';
   last_pruned_height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate min on columns */
 export type Pruning_Min_Fields = {
-  __typename?: 'pruning_min_fields';
   last_pruned_height?: Maybe<Scalars['bigint']['output']>;
 };
 
@@ -5412,49 +5058,41 @@ export enum Pruning_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pruning_Stddev_Fields = {
-  __typename?: 'pruning_stddev_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Pruning_Stddev_Pop_Fields = {
-  __typename?: 'pruning_stddev_pop_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Pruning_Stddev_Samp_Fields = {
-  __typename?: 'pruning_stddev_samp_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Pruning_Sum_Fields = {
-  __typename?: 'pruning_sum_fields';
   last_pruned_height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Pruning_Var_Pop_Fields = {
-  __typename?: 'pruning_var_pop_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Pruning_Var_Samp_Fields = {
-  __typename?: 'pruning_var_samp_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Pruning_Variance_Fields = {
-  __typename?: 'pruning_variance_fields';
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "pussy_gift_proofs" */
 export type Pussy_Gift_Proofs = {
-  __typename?: 'pussy_gift_proofs';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   details?: Maybe<Scalars['String']['output']>;
@@ -5463,14 +5101,12 @@ export type Pussy_Gift_Proofs = {
 
 /** aggregated selection of "pussy_gift_proofs" */
 export type Pussy_Gift_Proofs_Aggregate = {
-  __typename?: 'pussy_gift_proofs_aggregate';
   aggregate?: Maybe<Pussy_Gift_Proofs_Aggregate_Fields>;
   nodes: Array<Pussy_Gift_Proofs>;
 };
 
 /** aggregate fields of "pussy_gift_proofs" */
 export type Pussy_Gift_Proofs_Aggregate_Fields = {
-  __typename?: 'pussy_gift_proofs_aggregate_fields';
   avg?: Maybe<Pussy_Gift_Proofs_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Pussy_Gift_Proofs_Max_Fields>;
@@ -5493,7 +5129,6 @@ export type Pussy_Gift_Proofs_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Pussy_Gift_Proofs_Avg_Fields = {
-  __typename?: 'pussy_gift_proofs_avg_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -5510,7 +5145,6 @@ export type Pussy_Gift_Proofs_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Pussy_Gift_Proofs_Max_Fields = {
-  __typename?: 'pussy_gift_proofs_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   details?: Maybe<Scalars['String']['output']>;
@@ -5519,7 +5153,6 @@ export type Pussy_Gift_Proofs_Max_Fields = {
 
 /** aggregate min on columns */
 export type Pussy_Gift_Proofs_Min_Fields = {
-  __typename?: 'pussy_gift_proofs_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   details?: Maybe<Scalars['String']['output']>;
@@ -5548,48 +5181,40 @@ export enum Pussy_Gift_Proofs_Select_Column {
 
 /** aggregate stddev on columns */
 export type Pussy_Gift_Proofs_Stddev_Fields = {
-  __typename?: 'pussy_gift_proofs_stddev_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Pussy_Gift_Proofs_Stddev_Pop_Fields = {
-  __typename?: 'pussy_gift_proofs_stddev_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Pussy_Gift_Proofs_Stddev_Samp_Fields = {
-  __typename?: 'pussy_gift_proofs_stddev_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Pussy_Gift_Proofs_Sum_Fields = {
-  __typename?: 'pussy_gift_proofs_sum_fields';
   amount?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Pussy_Gift_Proofs_Var_Pop_Fields = {
-  __typename?: 'pussy_gift_proofs_var_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Pussy_Gift_Proofs_Var_Samp_Fields = {
-  __typename?: 'pussy_gift_proofs_var_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Pussy_Gift_Proofs_Variance_Fields = {
-  __typename?: 'pussy_gift_proofs_variance_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 export type Query_Root = {
-  __typename?: 'query_root';
   /** fetch data from the table: "_transaction" */
   _transaction: Array<_Transaction>;
   /** fetch aggregated fields from the table: "_transaction" */
@@ -6710,7 +6335,6 @@ export type Query_RootVolts_Stats_AggregateArgs = {
 
 /** columns and relationships of "routes" */
 export type Routes = {
-  __typename?: 'routes';
   /** An object relationship */
   account: Account;
   /** An object relationship */
@@ -6731,14 +6355,12 @@ export type Routes = {
 
 /** aggregated selection of "routes" */
 export type Routes_Aggregate = {
-  __typename?: 'routes_aggregate';
   aggregate?: Maybe<Routes_Aggregate_Fields>;
   nodes: Array<Routes>;
 };
 
 /** aggregate fields of "routes" */
 export type Routes_Aggregate_Fields = {
-  __typename?: 'routes_aggregate_fields';
   avg?: Maybe<Routes_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Routes_Max_Fields>;
@@ -6776,7 +6398,6 @@ export type Routes_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Routes_Avg_Fields = {
-  __typename?: 'routes_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6808,7 +6429,6 @@ export type Routes_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Routes_Max_Fields = {
-  __typename?: 'routes_max_fields';
   alias?: Maybe<Scalars['String']['output']>;
   destination?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
@@ -6831,7 +6451,6 @@ export type Routes_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Routes_Min_Fields = {
-  __typename?: 'routes_min_fields';
   alias?: Maybe<Scalars['String']['output']>;
   destination?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
@@ -6890,7 +6509,6 @@ export enum Routes_Select_Column {
 
 /** aggregate stddev on columns */
 export type Routes_Stddev_Fields = {
-  __typename?: 'routes_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6903,7 +6521,6 @@ export type Routes_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Routes_Stddev_Pop_Fields = {
-  __typename?: 'routes_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6916,7 +6533,6 @@ export type Routes_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Routes_Stddev_Samp_Fields = {
-  __typename?: 'routes_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6929,7 +6545,6 @@ export type Routes_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Routes_Sum_Fields = {
-  __typename?: 'routes_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
 };
@@ -6942,7 +6557,6 @@ export type Routes_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Routes_Var_Pop_Fields = {
-  __typename?: 'routes_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6955,7 +6569,6 @@ export type Routes_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Routes_Var_Samp_Fields = {
-  __typename?: 'routes_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6968,7 +6581,6 @@ export type Routes_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Routes_Variance_Fields = {
-  __typename?: 'routes_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
 };
@@ -6980,7 +6592,6 @@ export type Routes_Variance_Order_By = {
 };
 
 export type Subscription_Root = {
-  __typename?: 'subscription_root';
   /** fetch data from the table: "_transaction" */
   _transaction: Array<_Transaction>;
   /** fetch aggregated fields from the table: "_transaction" */
@@ -8101,7 +7712,6 @@ export type Subscription_RootVolts_Stats_AggregateArgs = {
 
 /** columns and relationships of "supply" */
 export type Supply = {
-  __typename?: 'supply';
   coins: Scalars['_coin']['output'];
   height: Scalars['bigint']['output'];
   one_row_id: Scalars['Boolean']['output'];
@@ -8109,14 +7719,12 @@ export type Supply = {
 
 /** aggregated selection of "supply" */
 export type Supply_Aggregate = {
-  __typename?: 'supply_aggregate';
   aggregate?: Maybe<Supply_Aggregate_Fields>;
   nodes: Array<Supply>;
 };
 
 /** aggregate fields of "supply" */
 export type Supply_Aggregate_Fields = {
-  __typename?: 'supply_aggregate_fields';
   avg?: Maybe<Supply_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Supply_Max_Fields>;
@@ -8139,7 +7747,6 @@ export type Supply_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Supply_Avg_Fields = {
-  __typename?: 'supply_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8155,13 +7762,11 @@ export type Supply_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Supply_Max_Fields = {
-  __typename?: 'supply_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate min on columns */
 export type Supply_Min_Fields = {
-  __typename?: 'supply_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
@@ -8184,49 +7789,41 @@ export enum Supply_Select_Column {
 
 /** aggregate stddev on columns */
 export type Supply_Stddev_Fields = {
-  __typename?: 'supply_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Supply_Stddev_Pop_Fields = {
-  __typename?: 'supply_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Supply_Stddev_Samp_Fields = {
-  __typename?: 'supply_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Supply_Sum_Fields = {
-  __typename?: 'supply_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Supply_Var_Pop_Fields = {
-  __typename?: 'supply_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Supply_Var_Samp_Fields = {
-  __typename?: 'supply_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Supply_Variance_Fields = {
-  __typename?: 'supply_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "test_gift" */
 export type Test_Gift = {
-  __typename?: 'test_gift';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   details?: Maybe<Scalars['json']['output']>;
@@ -8241,14 +7838,12 @@ export type Test_GiftDetailsArgs = {
 
 /** aggregated selection of "test_gift" */
 export type Test_Gift_Aggregate = {
-  __typename?: 'test_gift_aggregate';
   aggregate?: Maybe<Test_Gift_Aggregate_Fields>;
   nodes: Array<Test_Gift>;
 };
 
 /** aggregate fields of "test_gift" */
 export type Test_Gift_Aggregate_Fields = {
-  __typename?: 'test_gift_aggregate_fields';
   avg?: Maybe<Test_Gift_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Test_Gift_Max_Fields>;
@@ -8271,7 +7866,6 @@ export type Test_Gift_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Test_Gift_Avg_Fields = {
-  __typename?: 'test_gift_avg_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8288,7 +7882,6 @@ export type Test_Gift_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Test_Gift_Max_Fields = {
-  __typename?: 'test_gift_max_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   proof?: Maybe<Scalars['String']['output']>;
@@ -8296,7 +7889,6 @@ export type Test_Gift_Max_Fields = {
 
 /** aggregate min on columns */
 export type Test_Gift_Min_Fields = {
-  __typename?: 'test_gift_min_fields';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['bigint']['output']>;
   proof?: Maybe<Scalars['String']['output']>;
@@ -8324,43 +7916,36 @@ export enum Test_Gift_Select_Column {
 
 /** aggregate stddev on columns */
 export type Test_Gift_Stddev_Fields = {
-  __typename?: 'test_gift_stddev_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Test_Gift_Stddev_Pop_Fields = {
-  __typename?: 'test_gift_stddev_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Test_Gift_Stddev_Samp_Fields = {
-  __typename?: 'test_gift_stddev_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Test_Gift_Sum_Fields = {
-  __typename?: 'test_gift_sum_fields';
   amount?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Test_Gift_Var_Pop_Fields = {
-  __typename?: 'test_gift_var_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Test_Gift_Var_Samp_Fields = {
-  __typename?: 'test_gift_var_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Test_Gift_Variance_Fields = {
-  __typename?: 'test_gift_variance_fields';
   amount?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8379,21 +7964,18 @@ export type Timestamp_Comparison_Exp = {
 
 /** columns and relationships of "today_top_txs" */
 export type Today_Top_Txs = {
-  __typename?: 'today_top_txs';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "today_top_txs" */
 export type Today_Top_Txs_Aggregate = {
-  __typename?: 'today_top_txs_aggregate';
   aggregate?: Maybe<Today_Top_Txs_Aggregate_Fields>;
   nodes: Array<Today_Top_Txs>;
 };
 
 /** aggregate fields of "today_top_txs" */
 export type Today_Top_Txs_Aggregate_Fields = {
-  __typename?: 'today_top_txs_aggregate_fields';
   avg?: Maybe<Today_Top_Txs_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Today_Top_Txs_Max_Fields>;
@@ -8416,7 +7998,6 @@ export type Today_Top_Txs_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Today_Top_Txs_Avg_Fields = {
-  __typename?: 'today_top_txs_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8431,14 +8012,12 @@ export type Today_Top_Txs_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Today_Top_Txs_Max_Fields = {
-  __typename?: 'today_top_txs_max_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Today_Top_Txs_Min_Fields = {
-  __typename?: 'today_top_txs_min_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
@@ -8459,63 +8038,53 @@ export enum Today_Top_Txs_Select_Column {
 
 /** aggregate stddev on columns */
 export type Today_Top_Txs_Stddev_Fields = {
-  __typename?: 'today_top_txs_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Today_Top_Txs_Stddev_Pop_Fields = {
-  __typename?: 'today_top_txs_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Today_Top_Txs_Stddev_Samp_Fields = {
-  __typename?: 'today_top_txs_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Today_Top_Txs_Sum_Fields = {
-  __typename?: 'today_top_txs_sum_fields';
   count?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Today_Top_Txs_Var_Pop_Fields = {
-  __typename?: 'today_top_txs_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Today_Top_Txs_Var_Samp_Fields = {
-  __typename?: 'today_top_txs_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Today_Top_Txs_Variance_Fields = {
-  __typename?: 'today_top_txs_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "top_10_of_active_neurons_week" */
 export type Top_10_Of_Active_Neurons_Week = {
-  __typename?: 'top_10_of_active_neurons_week';
   count?: Maybe<Scalars['bigint']['output']>;
   pubkey?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "top_10_of_active_neurons_week" */
 export type Top_10_Of_Active_Neurons_Week_Aggregate = {
-  __typename?: 'top_10_of_active_neurons_week_aggregate';
   aggregate?: Maybe<Top_10_Of_Active_Neurons_Week_Aggregate_Fields>;
   nodes: Array<Top_10_Of_Active_Neurons_Week>;
 };
 
 /** aggregate fields of "top_10_of_active_neurons_week" */
 export type Top_10_Of_Active_Neurons_Week_Aggregate_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_aggregate_fields';
   avg?: Maybe<Top_10_Of_Active_Neurons_Week_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Top_10_Of_Active_Neurons_Week_Max_Fields>;
@@ -8538,7 +8107,6 @@ export type Top_10_Of_Active_Neurons_Week_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Top_10_Of_Active_Neurons_Week_Avg_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8553,14 +8121,12 @@ export type Top_10_Of_Active_Neurons_Week_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Top_10_Of_Active_Neurons_Week_Max_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_max_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   pubkey?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Top_10_Of_Active_Neurons_Week_Min_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_min_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   pubkey?: Maybe<Scalars['String']['output']>;
 };
@@ -8581,63 +8147,53 @@ export enum Top_10_Of_Active_Neurons_Week_Select_Column {
 
 /** aggregate stddev on columns */
 export type Top_10_Of_Active_Neurons_Week_Stddev_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Top_10_Of_Active_Neurons_Week_Stddev_Pop_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Top_10_Of_Active_Neurons_Week_Stddev_Samp_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Top_10_Of_Active_Neurons_Week_Sum_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_sum_fields';
   count?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Top_10_Of_Active_Neurons_Week_Var_Pop_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Top_10_Of_Active_Neurons_Week_Var_Samp_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Top_10_Of_Active_Neurons_Week_Variance_Fields = {
-  __typename?: 'top_10_of_active_neurons_week_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "top_first_txs" */
 export type Top_First_Txs = {
-  __typename?: 'top_first_txs';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "top_first_txs" */
 export type Top_First_Txs_Aggregate = {
-  __typename?: 'top_first_txs_aggregate';
   aggregate?: Maybe<Top_First_Txs_Aggregate_Fields>;
   nodes: Array<Top_First_Txs>;
 };
 
 /** aggregate fields of "top_first_txs" */
 export type Top_First_Txs_Aggregate_Fields = {
-  __typename?: 'top_first_txs_aggregate_fields';
   avg?: Maybe<Top_First_Txs_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Top_First_Txs_Max_Fields>;
@@ -8660,7 +8216,6 @@ export type Top_First_Txs_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Top_First_Txs_Avg_Fields = {
-  __typename?: 'top_first_txs_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8675,14 +8230,12 @@ export type Top_First_Txs_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Top_First_Txs_Max_Fields = {
-  __typename?: 'top_first_txs_max_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Top_First_Txs_Min_Fields = {
-  __typename?: 'top_first_txs_min_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
@@ -8703,49 +8256,41 @@ export enum Top_First_Txs_Select_Column {
 
 /** aggregate stddev on columns */
 export type Top_First_Txs_Stddev_Fields = {
-  __typename?: 'top_first_txs_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Top_First_Txs_Stddev_Pop_Fields = {
-  __typename?: 'top_first_txs_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Top_First_Txs_Stddev_Samp_Fields = {
-  __typename?: 'top_first_txs_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Top_First_Txs_Sum_Fields = {
-  __typename?: 'top_first_txs_sum_fields';
   count?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Top_First_Txs_Var_Pop_Fields = {
-  __typename?: 'top_first_txs_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Top_First_Txs_Var_Samp_Fields = {
-  __typename?: 'top_first_txs_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Top_First_Txs_Variance_Fields = {
-  __typename?: 'top_first_txs_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "top_leaders" */
 export type Top_Leaders = {
-  __typename?: 'top_leaders';
   count?: Maybe<Scalars['bigint']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
 };
@@ -8775,21 +8320,18 @@ export enum Top_Leaders_Select_Column {
 
 /** columns and relationships of "top_txs" */
 export type Top_Txs = {
-  __typename?: 'top_txs';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregated selection of "top_txs" */
 export type Top_Txs_Aggregate = {
-  __typename?: 'top_txs_aggregate';
   aggregate?: Maybe<Top_Txs_Aggregate_Fields>;
   nodes: Array<Top_Txs>;
 };
 
 /** aggregate fields of "top_txs" */
 export type Top_Txs_Aggregate_Fields = {
-  __typename?: 'top_txs_aggregate_fields';
   avg?: Maybe<Top_Txs_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Top_Txs_Max_Fields>;
@@ -8812,7 +8354,6 @@ export type Top_Txs_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Top_Txs_Avg_Fields = {
-  __typename?: 'top_txs_avg_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -8827,14 +8368,12 @@ export type Top_Txs_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Top_Txs_Max_Fields = {
-  __typename?: 'top_txs_max_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Top_Txs_Min_Fields = {
-  __typename?: 'top_txs_min_fields';
   count?: Maybe<Scalars['bigint']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
@@ -8855,49 +8394,41 @@ export enum Top_Txs_Select_Column {
 
 /** aggregate stddev on columns */
 export type Top_Txs_Stddev_Fields = {
-  __typename?: 'top_txs_stddev_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Top_Txs_Stddev_Pop_Fields = {
-  __typename?: 'top_txs_stddev_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Top_Txs_Stddev_Samp_Fields = {
-  __typename?: 'top_txs_stddev_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Top_Txs_Sum_Fields = {
-  __typename?: 'top_txs_sum_fields';
   count?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Top_Txs_Var_Pop_Fields = {
-  __typename?: 'top_txs_var_pop_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Top_Txs_Var_Samp_Fields = {
-  __typename?: 'top_txs_var_samp_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Top_Txs_Variance_Fields = {
-  __typename?: 'top_txs_variance_fields';
   count?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "transaction" */
 export type Transaction = {
-  __typename?: 'transaction';
   /** An object relationship */
   block: Block;
   /** fetch data from the table: "cyberlinks" */
@@ -9060,14 +8591,12 @@ export type TransactionSigner_InfosArgs = {
 
 /** aggregated selection of "transaction" */
 export type Transaction_Aggregate = {
-  __typename?: 'transaction_aggregate';
   aggregate?: Maybe<Transaction_Aggregate_Fields>;
   nodes: Array<Transaction>;
 };
 
 /** aggregate fields of "transaction" */
 export type Transaction_Aggregate_Fields = {
-  __typename?: 'transaction_aggregate_fields';
   avg?: Maybe<Transaction_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Transaction_Max_Fields>;
@@ -9105,7 +8634,6 @@ export type Transaction_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Transaction_Avg_Fields = {
-  __typename?: 'transaction_avg_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9145,7 +8673,6 @@ export type Transaction_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Transaction_Max_Fields = {
-  __typename?: 'transaction_max_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   hash?: Maybe<Scalars['String']['output']>;
@@ -9166,7 +8693,6 @@ export type Transaction_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Transaction_Min_Fields = {
-  __typename?: 'transaction_min_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   hash?: Maybe<Scalars['String']['output']>;
@@ -9237,7 +8763,6 @@ export enum Transaction_Select_Column {
 
 /** aggregate stddev on columns */
 export type Transaction_Stddev_Fields = {
-  __typename?: 'transaction_stddev_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9252,7 +8777,6 @@ export type Transaction_Stddev_Order_By = {
 
 /** aggregate stddev_pop on columns */
 export type Transaction_Stddev_Pop_Fields = {
-  __typename?: 'transaction_stddev_pop_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9267,7 +8791,6 @@ export type Transaction_Stddev_Pop_Order_By = {
 
 /** aggregate stddev_samp on columns */
 export type Transaction_Stddev_Samp_Fields = {
-  __typename?: 'transaction_stddev_samp_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9282,7 +8805,6 @@ export type Transaction_Stddev_Samp_Order_By = {
 
 /** aggregate sum on columns */
 export type Transaction_Sum_Fields = {
-  __typename?: 'transaction_sum_fields';
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
@@ -9297,7 +8819,6 @@ export type Transaction_Sum_Order_By = {
 
 /** aggregate var_pop on columns */
 export type Transaction_Var_Pop_Fields = {
-  __typename?: 'transaction_var_pop_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9312,7 +8833,6 @@ export type Transaction_Var_Pop_Order_By = {
 
 /** aggregate var_samp on columns */
 export type Transaction_Var_Samp_Fields = {
-  __typename?: 'transaction_var_samp_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9327,7 +8847,6 @@ export type Transaction_Var_Samp_Order_By = {
 
 /** aggregate variance on columns */
 export type Transaction_Variance_Fields = {
-  __typename?: 'transaction_variance_fields';
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
@@ -9342,7 +8861,6 @@ export type Transaction_Variance_Order_By = {
 
 /** columns and relationships of "tweets_stats" */
 export type Tweets_Stats = {
-  __typename?: 'tweets_stats';
   date?: Maybe<Scalars['date']['output']>;
   tweets?: Maybe<Scalars['numeric']['output']>;
   tweets_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -9350,14 +8868,12 @@ export type Tweets_Stats = {
 
 /** aggregated selection of "tweets_stats" */
 export type Tweets_Stats_Aggregate = {
-  __typename?: 'tweets_stats_aggregate';
   aggregate?: Maybe<Tweets_Stats_Aggregate_Fields>;
   nodes: Array<Tweets_Stats>;
 };
 
 /** aggregate fields of "tweets_stats" */
 export type Tweets_Stats_Aggregate_Fields = {
-  __typename?: 'tweets_stats_aggregate_fields';
   avg?: Maybe<Tweets_Stats_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Tweets_Stats_Max_Fields>;
@@ -9380,7 +8896,6 @@ export type Tweets_Stats_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Tweets_Stats_Avg_Fields = {
-  __typename?: 'tweets_stats_avg_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
@@ -9397,7 +8912,6 @@ export type Tweets_Stats_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Tweets_Stats_Max_Fields = {
-  __typename?: 'tweets_stats_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   tweets?: Maybe<Scalars['numeric']['output']>;
   tweets_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -9405,7 +8919,6 @@ export type Tweets_Stats_Max_Fields = {
 
 /** aggregate min on columns */
 export type Tweets_Stats_Min_Fields = {
-  __typename?: 'tweets_stats_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   tweets?: Maybe<Scalars['numeric']['output']>;
   tweets_per_day?: Maybe<Scalars['bigint']['output']>;
@@ -9430,56 +8943,48 @@ export enum Tweets_Stats_Select_Column {
 
 /** aggregate stddev on columns */
 export type Tweets_Stats_Stddev_Fields = {
-  __typename?: 'tweets_stats_stddev_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Tweets_Stats_Stddev_Pop_Fields = {
-  __typename?: 'tweets_stats_stddev_pop_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Tweets_Stats_Stddev_Samp_Fields = {
-  __typename?: 'tweets_stats_stddev_samp_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Tweets_Stats_Sum_Fields = {
-  __typename?: 'tweets_stats_sum_fields';
   tweets?: Maybe<Scalars['numeric']['output']>;
   tweets_per_day?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Tweets_Stats_Var_Pop_Fields = {
-  __typename?: 'tweets_stats_var_pop_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Tweets_Stats_Var_Samp_Fields = {
-  __typename?: 'tweets_stats_var_samp_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Tweets_Stats_Variance_Fields = {
-  __typename?: 'tweets_stats_variance_fields';
   tweets?: Maybe<Scalars['Float']['output']>;
   tweets_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "txs_ranked" */
 export type Txs_Ranked = {
-  __typename?: 'txs_ranked';
   height?: Maybe<Scalars['bigint']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
   rank?: Maybe<Scalars['bigint']['output']>;
@@ -9489,14 +8994,12 @@ export type Txs_Ranked = {
 
 /** aggregated selection of "txs_ranked" */
 export type Txs_Ranked_Aggregate = {
-  __typename?: 'txs_ranked_aggregate';
   aggregate?: Maybe<Txs_Ranked_Aggregate_Fields>;
   nodes: Array<Txs_Ranked>;
 };
 
 /** aggregate fields of "txs_ranked" */
 export type Txs_Ranked_Aggregate_Fields = {
-  __typename?: 'txs_ranked_aggregate_fields';
   avg?: Maybe<Txs_Ranked_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Txs_Ranked_Max_Fields>;
@@ -9519,7 +9022,6 @@ export type Txs_Ranked_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Txs_Ranked_Avg_Fields = {
-  __typename?: 'txs_ranked_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
@@ -9538,7 +9040,6 @@ export type Txs_Ranked_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Txs_Ranked_Max_Fields = {
-  __typename?: 'txs_ranked_max_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
   rank?: Maybe<Scalars['bigint']['output']>;
@@ -9548,7 +9049,6 @@ export type Txs_Ranked_Max_Fields = {
 
 /** aggregate min on columns */
 export type Txs_Ranked_Min_Fields = {
-  __typename?: 'txs_ranked_min_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   neuron?: Maybe<Scalars['String']['output']>;
   rank?: Maybe<Scalars['bigint']['output']>;
@@ -9581,56 +9081,48 @@ export enum Txs_Ranked_Select_Column {
 
 /** aggregate stddev on columns */
 export type Txs_Ranked_Stddev_Fields = {
-  __typename?: 'txs_ranked_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Txs_Ranked_Stddev_Pop_Fields = {
-  __typename?: 'txs_ranked_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Txs_Ranked_Stddev_Samp_Fields = {
-  __typename?: 'txs_ranked_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Txs_Ranked_Sum_Fields = {
-  __typename?: 'txs_ranked_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   rank?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Txs_Ranked_Var_Pop_Fields = {
-  __typename?: 'txs_ranked_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Txs_Ranked_Var_Samp_Fields = {
-  __typename?: 'txs_ranked_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Txs_Ranked_Variance_Fields = {
-  __typename?: 'txs_ranked_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "txs_stats" */
 export type Txs_Stats = {
-  __typename?: 'txs_stats';
   date?: Maybe<Scalars['date']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   msg_type?: Maybe<Scalars['String']['output']>;
@@ -9646,14 +9138,12 @@ export type Txs_StatsPubkeyArgs = {
 
 /** aggregated selection of "txs_stats" */
 export type Txs_Stats_Aggregate = {
-  __typename?: 'txs_stats_aggregate';
   aggregate?: Maybe<Txs_Stats_Aggregate_Fields>;
   nodes: Array<Txs_Stats>;
 };
 
 /** aggregate fields of "txs_stats" */
 export type Txs_Stats_Aggregate_Fields = {
-  __typename?: 'txs_stats_aggregate_fields';
   avg?: Maybe<Txs_Stats_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Txs_Stats_Max_Fields>;
@@ -9676,7 +9166,6 @@ export type Txs_Stats_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Txs_Stats_Avg_Fields = {
-  __typename?: 'txs_stats_avg_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
@@ -9695,7 +9184,6 @@ export type Txs_Stats_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Txs_Stats_Max_Fields = {
-  __typename?: 'txs_stats_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   msg_type?: Maybe<Scalars['String']['output']>;
@@ -9704,7 +9192,6 @@ export type Txs_Stats_Max_Fields = {
 
 /** aggregate min on columns */
 export type Txs_Stats_Min_Fields = {
-  __typename?: 'txs_stats_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   msg_type?: Maybe<Scalars['String']['output']>;
@@ -9736,56 +9223,48 @@ export enum Txs_Stats_Select_Column {
 
 /** aggregate stddev on columns */
 export type Txs_Stats_Stddev_Fields = {
-  __typename?: 'txs_stats_stddev_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Txs_Stats_Stddev_Pop_Fields = {
-  __typename?: 'txs_stats_stddev_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Txs_Stats_Stddev_Samp_Fields = {
-  __typename?: 'txs_stats_stddev_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Txs_Stats_Sum_Fields = {
-  __typename?: 'txs_stats_sum_fields';
   height?: Maybe<Scalars['bigint']['output']>;
   rank?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Txs_Stats_Var_Pop_Fields = {
-  __typename?: 'txs_stats_var_pop_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Txs_Stats_Var_Samp_Fields = {
-  __typename?: 'txs_stats_var_samp_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Txs_Stats_Variance_Fields = {
-  __typename?: 'txs_stats_variance_fields';
   height?: Maybe<Scalars['Float']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "uptime" */
 export type Uptime = {
-  __typename?: 'uptime';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['bigint']['output']>;
@@ -9794,14 +9273,12 @@ export type Uptime = {
 
 /** aggregated selection of "uptime" */
 export type Uptime_Aggregate = {
-  __typename?: 'uptime_aggregate';
   aggregate?: Maybe<Uptime_Aggregate_Fields>;
   nodes: Array<Uptime>;
 };
 
 /** aggregate fields of "uptime" */
 export type Uptime_Aggregate_Fields = {
-  __typename?: 'uptime_aggregate_fields';
   avg?: Maybe<Uptime_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Uptime_Max_Fields>;
@@ -9824,7 +9301,6 @@ export type Uptime_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Uptime_Avg_Fields = {
-  __typename?: 'uptime_avg_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
@@ -9842,7 +9318,6 @@ export type Uptime_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Uptime_Max_Fields = {
-  __typename?: 'uptime_max_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['bigint']['output']>;
@@ -9851,7 +9326,6 @@ export type Uptime_Max_Fields = {
 
 /** aggregate min on columns */
 export type Uptime_Min_Fields = {
-  __typename?: 'uptime_min_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
   pre_commits?: Maybe<Scalars['bigint']['output']>;
@@ -9880,56 +9354,48 @@ export enum Uptime_Select_Column {
 
 /** aggregate stddev on columns */
 export type Uptime_Stddev_Fields = {
-  __typename?: 'uptime_stddev_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Uptime_Stddev_Pop_Fields = {
-  __typename?: 'uptime_stddev_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Uptime_Stddev_Samp_Fields = {
-  __typename?: 'uptime_stddev_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Uptime_Sum_Fields = {
-  __typename?: 'uptime_sum_fields';
   pre_commits?: Maybe<Scalars['bigint']['output']>;
   uptime?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Uptime_Var_Pop_Fields = {
-  __typename?: 'uptime_var_pop_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Uptime_Var_Samp_Fields = {
-  __typename?: 'uptime_var_samp_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Uptime_Variance_Fields = {
-  __typename?: 'uptime_variance_fields';
   pre_commits?: Maybe<Scalars['Float']['output']>;
   uptime?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "validator" */
 export type Validator = {
-  __typename?: 'validator';
   /** An array relationship */
   blocks: Array<Block>;
   /** An aggregate relationship */
@@ -9984,14 +9450,12 @@ export type ValidatorPre_Commits_AggregateArgs = {
 
 /** aggregated selection of "validator" */
 export type Validator_Aggregate = {
-  __typename?: 'validator_aggregate';
   aggregate?: Maybe<Validator_Aggregate_Fields>;
   nodes: Array<Validator>;
 };
 
 /** aggregate fields of "validator" */
 export type Validator_Aggregate_Fields = {
-  __typename?: 'validator_aggregate_fields';
   count: Scalars['Int']['output'];
   max?: Maybe<Validator_Max_Fields>;
   min?: Maybe<Validator_Min_Fields>;
@@ -10017,14 +9481,12 @@ export type Validator_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Validator_Max_Fields = {
-  __typename?: 'validator_max_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
 export type Validator_Min_Fields = {
-  __typename?: 'validator_min_fields';
   consensus_address?: Maybe<Scalars['String']['output']>;
   consensus_pubkey?: Maybe<Scalars['String']['output']>;
 };
@@ -10047,7 +9509,6 @@ export enum Validator_Select_Column {
 
 /** columns and relationships of "volts_demand" */
 export type Volts_Demand = {
-  __typename?: 'volts_demand';
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
@@ -10055,14 +9516,12 @@ export type Volts_Demand = {
 
 /** aggregated selection of "volts_demand" */
 export type Volts_Demand_Aggregate = {
-  __typename?: 'volts_demand_aggregate';
   aggregate?: Maybe<Volts_Demand_Aggregate_Fields>;
   nodes: Array<Volts_Demand>;
 };
 
 /** aggregate fields of "volts_demand" */
 export type Volts_Demand_Aggregate_Fields = {
-  __typename?: 'volts_demand_aggregate_fields';
   avg?: Maybe<Volts_Demand_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Volts_Demand_Max_Fields>;
@@ -10085,7 +9544,6 @@ export type Volts_Demand_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Volts_Demand_Avg_Fields = {
-  __typename?: 'volts_demand_avg_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
@@ -10102,7 +9560,6 @@ export type Volts_Demand_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Volts_Demand_Max_Fields = {
-  __typename?: 'volts_demand_max_fields';
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
@@ -10110,7 +9567,6 @@ export type Volts_Demand_Max_Fields = {
 
 /** aggregate min on columns */
 export type Volts_Demand_Min_Fields = {
-  __typename?: 'volts_demand_min_fields';
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
@@ -10135,56 +9591,48 @@ export enum Volts_Demand_Select_Column {
 
 /** aggregate stddev on columns */
 export type Volts_Demand_Stddev_Fields = {
-  __typename?: 'volts_demand_stddev_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Volts_Demand_Stddev_Pop_Fields = {
-  __typename?: 'volts_demand_stddev_pop_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Volts_Demand_Stddev_Samp_Fields = {
-  __typename?: 'volts_demand_stddev_samp_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Volts_Demand_Sum_Fields = {
-  __typename?: 'volts_demand_sum_fields';
   cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Volts_Demand_Var_Pop_Fields = {
-  __typename?: 'volts_demand_var_pop_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Volts_Demand_Var_Samp_Fields = {
-  __typename?: 'volts_demand_var_samp_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Volts_Demand_Variance_Fields = {
-  __typename?: 'volts_demand_variance_fields';
   cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
   volts?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "volts_stats" */
 export type Volts_Stats = {
-  __typename?: 'volts_stats';
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
   volts_per_day?: Maybe<Scalars['float8']['output']>;
@@ -10192,14 +9640,12 @@ export type Volts_Stats = {
 
 /** aggregated selection of "volts_stats" */
 export type Volts_Stats_Aggregate = {
-  __typename?: 'volts_stats_aggregate';
   aggregate?: Maybe<Volts_Stats_Aggregate_Fields>;
   nodes: Array<Volts_Stats>;
 };
 
 /** aggregate fields of "volts_stats" */
 export type Volts_Stats_Aggregate_Fields = {
-  __typename?: 'volts_stats_aggregate_fields';
   avg?: Maybe<Volts_Stats_Avg_Fields>;
   count: Scalars['Int']['output'];
   max?: Maybe<Volts_Stats_Max_Fields>;
@@ -10222,7 +9668,6 @@ export type Volts_Stats_Aggregate_FieldsCountArgs = {
 
 /** aggregate avg on columns */
 export type Volts_Stats_Avg_Fields = {
-  __typename?: 'volts_stats_avg_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
@@ -10239,7 +9684,6 @@ export type Volts_Stats_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Volts_Stats_Max_Fields = {
-  __typename?: 'volts_stats_max_fields';
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
   volts_per_day?: Maybe<Scalars['float8']['output']>;
@@ -10247,7 +9691,6 @@ export type Volts_Stats_Max_Fields = {
 
 /** aggregate min on columns */
 export type Volts_Stats_Min_Fields = {
-  __typename?: 'volts_stats_min_fields';
   date?: Maybe<Scalars['date']['output']>;
   volts?: Maybe<Scalars['float8']['output']>;
   volts_per_day?: Maybe<Scalars['float8']['output']>;
@@ -10272,49 +9715,42 @@ export enum Volts_Stats_Select_Column {
 
 /** aggregate stddev on columns */
 export type Volts_Stats_Stddev_Fields = {
-  __typename?: 'volts_stats_stddev_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Volts_Stats_Stddev_Pop_Fields = {
-  __typename?: 'volts_stats_stddev_pop_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Volts_Stats_Stddev_Samp_Fields = {
-  __typename?: 'volts_stats_stddev_samp_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate sum on columns */
 export type Volts_Stats_Sum_Fields = {
-  __typename?: 'volts_stats_sum_fields';
   volts?: Maybe<Scalars['float8']['output']>;
   volts_per_day?: Maybe<Scalars['float8']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Volts_Stats_Var_Pop_Fields = {
-  __typename?: 'volts_stats_var_pop_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Volts_Stats_Var_Samp_Fields = {
-  __typename?: 'volts_stats_var_samp_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Volts_Stats_Variance_Fields = {
-  __typename?: 'volts_stats_variance_fields';
   volts?: Maybe<Scalars['Float']['output']>;
   volts_per_day?: Maybe<Scalars['Float']['output']>;
 };
@@ -10322,19 +9758,19 @@ export type Volts_Stats_Variance_Fields = {
 export type TransactionsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TransactionsSubscription = { __typename?: 'subscription_root', transaction: Array<{ __typename?: 'transaction', success: boolean, messages: any, height: any, hash: string }> };
+export type TransactionsSubscription = { transaction: Array<{ success: boolean, messages: any, height: any, hash: string }> };
 
 export type AccountCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AccountCountQuery = { __typename?: 'query_root', account_aggregate: { __typename?: 'account_aggregate', aggregate?: { __typename?: 'account_aggregate_fields', count: number } | null } };
+export type AccountCountQuery = { account_aggregate: { aggregate?: { count: number } | null } };
 
 export type BlockByHeightQueryVariables = Exact<{
   blockId?: InputMaybe<Scalars['bigint']['input']>;
 }>;
 
 
-export type BlockByHeightQuery = { __typename?: 'query_root', block: Array<{ __typename?: 'block', hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions: Array<{ __typename?: 'transaction', messages: any, hash: string, height: any, success: boolean }> }> };
+export type BlockByHeightQuery = { block: Array<{ hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions: Array<{ messages: any, hash: string, height: any, success: boolean }> }> };
 
 export type BlocksQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -10343,12 +9779,12 @@ export type BlocksQueryVariables = Exact<{
 }>;
 
 
-export type BlocksQuery = { __typename?: 'query_root', block: Array<{ __typename?: 'block', hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions_aggregate: { __typename?: 'transaction_aggregate', aggregate?: { __typename?: 'transaction_aggregate_fields', count: number } | null } }> };
+export type BlocksQuery = { block: Array<{ hash: string, height: any, proposer_address?: string | null, timestamp: any, transactions_aggregate: { aggregate?: { count: number } | null } }> };
 
 export type ContractsCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ContractsCountQuery = { __typename?: 'query_root', contracts_aggregate: { __typename?: 'contracts_aggregate', aggregate?: { __typename?: 'contracts_aggregate_fields', count: number } | null } };
+export type ContractsCountQuery = { contracts_aggregate: { aggregate?: { count: number } | null } };
 
 export type CyberlinksByParticleQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -10358,7 +9794,7 @@ export type CyberlinksByParticleQueryVariables = Exact<{
 }>;
 
 
-export type CyberlinksByParticleQuery = { __typename?: 'query_root', cyberlinks: Array<{ __typename?: 'cyberlinks', timestamp: any, neuron: string, transaction_hash: string, from: string, to: string }> };
+export type CyberlinksByParticleQuery = { cyberlinks: Array<{ timestamp: any, neuron: string, transaction_hash: string, from: string, to: string }> };
 
 export type CyberlinksCountByNeuronQueryVariables = Exact<{
   address?: InputMaybe<Scalars['String']['input']>;
@@ -10367,7 +9803,7 @@ export type CyberlinksCountByNeuronQueryVariables = Exact<{
 }>;
 
 
-export type CyberlinksCountByNeuronQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
+export type CyberlinksCountByNeuronQuery = { cyberlinks_aggregate: { aggregate?: { count: number } | null } };
 
 export type CyberlinksCountByParticleQueryVariables = Exact<{
   cid?: InputMaybe<Scalars['String']['input']>;
@@ -10375,7 +9811,7 @@ export type CyberlinksCountByParticleQueryVariables = Exact<{
 }>;
 
 
-export type CyberlinksCountByParticleQuery = { __typename?: 'query_root', cyberlinks_aggregate: { __typename?: 'cyberlinks_aggregate', aggregate?: { __typename?: 'cyberlinks_aggregate_fields', count: number } | null } };
+export type CyberlinksCountByParticleQuery = { cyberlinks_aggregate: { aggregate?: { count: number } | null } };
 
 export type MessagesByAddressCountQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
@@ -10383,7 +9819,7 @@ export type MessagesByAddressCountQueryVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressCountQuery = { __typename?: 'query_root', messages_by_address_aggregate: { __typename?: 'message_aggregate', aggregate?: { __typename?: 'message_aggregate_fields', count: number } | null } };
+export type MessagesByAddressCountQuery = { messages_by_address_aggregate: { aggregate?: { count: number } | null } };
 
 export type MessagesByAddressSenseQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
@@ -10395,7 +9831,7 @@ export type MessagesByAddressSenseQueryVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressSenseQuery = { __typename?: 'query_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, index: any, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, memo?: string | null, block: { __typename?: 'block', timestamp: any, height: any } } }> };
+export type MessagesByAddressSenseQuery = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } }> };
 
 export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
@@ -10407,19 +9843,19 @@ export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressSenseWsSubscription = { __typename?: 'subscription_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, index: any, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, memo?: string | null, block: { __typename?: 'block', timestamp: any, height: any } } }> };
+export type MessagesByAddressSenseWsSubscription = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } }> };
 
 export type TransactionCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TransactionCountQuery = { __typename?: 'query_root', transaction_aggregate: { __typename?: 'transaction_aggregate', aggregate?: { __typename?: 'transaction_aggregate_fields', count: number } | null } };
+export type TransactionCountQuery = { transaction_aggregate: { aggregate?: { count: number } | null } };
 
 export type UptimeByAddressQueryVariables = Exact<{
   address?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UptimeByAddressQuery = { __typename?: 'query_root', uptime: Array<{ __typename?: 'uptime', uptime?: any | null }> };
+export type UptimeByAddressQuery = { uptime: Array<{ uptime?: any | null }> };
 
 export type WasmDashboardPageQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10427,7 +9863,7 @@ export type WasmDashboardPageQueryVariables = Exact<{
 }>;
 
 
-export type WasmDashboardPageQuery = { __typename?: 'query_root', contracts: Array<{ __typename?: 'contracts', address: string, admin: string, code_id: any, creator: string, fees: any, gas: any, label: string, tx: any }>, contracts_aggregate: { __typename?: 'contracts_aggregate', aggregate?: { __typename?: 'contracts_aggregate_fields', count: number, sum?: { __typename?: 'contracts_sum_fields', gas?: any | null, fees?: any | null, tx?: any | null } | null } | null } };
+export type WasmDashboardPageQuery = { contracts: Array<{ address: string, admin: string, code_id: any, creator: string, fees: any, gas: any, label: string, tx: any }>, contracts_aggregate: { aggregate?: { count: number, sum?: { gas?: any | null, fees?: any | null, tx?: any | null } | null } | null } };
 
 export type MessagesByAddressQueryVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
@@ -10437,7 +9873,7 @@ export type MessagesByAddressQueryVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressQuery = { __typename?: 'query_root', messages_by_address: Array<{ __typename?: 'message', transaction_hash: string, value: any, type: string, transaction: { __typename?: 'transaction', success: boolean, height: any, logs?: any | null, memo?: string | null, block: { __typename?: 'block', timestamp: any } } }> };
+export type MessagesByAddressQuery = { messages_by_address: Array<{ transaction_hash: string, value: any, type: string, transaction: { success: boolean, height: any, logs?: any | null, memo?: string | null, block: { timestamp: any } } }> };
 
 
 export const TransactionsDocument = gql`
