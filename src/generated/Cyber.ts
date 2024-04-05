@@ -9,6 +9,38 @@
  * ---------------------------------------------------------------
  */
 
+import {
+  BacklinksData,
+  BandwidthParamsData,
+  DestinationRoutedEnergyData,
+  DestinationRoutesData,
+  DmnParamsData,
+  GraphStatsData,
+  GridParamsData,
+  InvestmintData,
+  IsAnyLinkExistData,
+  IsLinkExistData,
+  KarmaData,
+  LoadData,
+  NegentropyData,
+  NeuronBandwidthData,
+  ParticleNegentropyData,
+  PriceData,
+  RankData,
+  RankParamsData,
+  ResourcesParamsData,
+  RouteData,
+  RoutesData,
+  SearchData,
+  SourceRoutedEnergyData,
+  SourceRoutesData,
+  ThoughtData,
+  ThoughtStatsData,
+  ThoughtsData,
+  ThoughtsStatsData,
+  TopData,
+  TotalBandwidthData,
+} from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -21,12 +53,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   graphStats = (params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        cyberlinks?: string;
-        /** @format uint64 */
-        particles?: string;
-      },
+      GraphStatsData,
       {
         error?: string;
         /** @format int32 */
@@ -58,10 +85,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        /** @format boolean */
-        exist?: boolean;
-      },
+      IsAnyLinkExistData,
       {
         error?: string;
         /** @format int32 */
@@ -95,10 +119,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        /** @format boolean */
-        exist?: boolean;
-      },
+      IsLinkExistData,
       {
         error?: string;
         /** @format int32 */
@@ -125,10 +146,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   karma = (neuron: string, params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        karma?: string;
-      },
+      KarmaData,
       {
         error?: string;
         /** @format int32 */
@@ -154,10 +172,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   negentropy = (params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        negentropy?: string;
-      },
+      NegentropyData,
       {
         error?: string;
         /** @format int32 */
@@ -183,10 +198,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   particleNegentropy = (particle: string, params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        entropy?: string;
-      },
+      ParticleNegentropyData,
       {
         error?: string;
         /** @format int32 */
@@ -221,17 +233,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        result?: {
-          particle?: string;
-          /** @format uint64 */
-          rank?: string;
-        }[];
-        pagination?: {
-          /** @format int64 */
-          total?: number;
-        };
-      },
+      BacklinksData,
       {
         error?: string;
         /** @format int32 */
@@ -258,14 +260,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   rankParams = (params: RequestParams = {}) =>
     this.request<
-      {
-        params?: {
-          /** @format int64 */
-          calculation_period?: string;
-          damping_factor?: string;
-          tolerance?: string;
-        };
-      },
+      RankParamsData,
       {
         error?: string;
         /** @format int32 */
@@ -291,10 +286,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   rank = (particle: string, params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        rank?: string;
-      },
+      RankData,
       {
         error?: string;
         /** @format int32 */
@@ -329,17 +321,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        result?: {
-          particle?: string;
-          /** @format uint64 */
-          rank?: string;
-        }[];
-        pagination?: {
-          /** @format int64 */
-          total?: number;
-        };
-      },
+      SearchData,
       {
         error?: string;
         /** @format int32 */
@@ -374,17 +356,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        result?: {
-          particle?: string;
-          /** @format uint64 */
-          rank?: string;
-        }[];
-        pagination?: {
-          /** @format int64 */
-          total?: number;
-        };
-      },
+      TopData,
       {
         error?: string;
         /** @format int32 */
@@ -411,12 +383,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   load = (params: RequestParams = {}) =>
     this.request<
-      {
-        /** DecProto defines a Protobuf wrapper around a Dec object. */
-        load?: {
-          dec?: string;
-        };
-      },
+      LoadData,
       {
         error?: string;
         /** @format int32 */
@@ -442,17 +409,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   neuronBandwidth = (neuron: string, params: RequestParams = {}) =>
     this.request<
-      {
-        neuron_bandwidth?: {
-          neuron?: string;
-          /** @format uint64 */
-          remained_value?: string;
-          /** @format uint64 */
-          last_updated_block?: string;
-          /** @format uint64 */
-          max_value?: string;
-        };
-      },
+      NeuronBandwidthData,
       {
         error?: string;
         /** @format int32 */
@@ -478,18 +435,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   bandwidthParams = (params: RequestParams = {}) =>
     this.request<
-      {
-        params?: {
-          /** @format uint64 */
-          recovery_period?: string;
-          /** @format uint64 */
-          adjust_price_period?: string;
-          base_price?: string;
-          base_load?: string;
-          /** @format uint64 */
-          max_block_bandwidth?: string;
-        };
-      },
+      BandwidthParamsData,
       {
         error?: string;
         /** @format int32 */
@@ -515,12 +461,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   price = (params: RequestParams = {}) =>
     this.request<
-      {
-        /** DecProto defines a Protobuf wrapper around a Dec object. */
-        price?: {
-          dec?: string;
-        };
-      },
+      PriceData,
       {
         error?: string;
         /** @format int32 */
@@ -546,10 +487,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   totalBandwidth = (params: RequestParams = {}) =>
     this.request<
-      {
-        /** @format uint64 */
-        total_bandwidth?: string;
-      },
+      TotalBandwidthData,
       {
         error?: string;
         /** @format int32 */
@@ -580,12 +518,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        value?: {
-          denom?: string;
-          amount?: string;
-        }[];
-      },
+      DestinationRoutedEnergyData,
       {
         error?: string;
         /** @format int32 */
@@ -617,40 +550,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        routes?: {
-          source?: string;
-          destination?: string;
-          name?: string;
-          value?: {
-            denom?: string;
-            amount?: string;
-          }[];
-        }[];
-        /**
-         * PageResponse is to be embedded in gRPC response messages where the
-         * corresponding request message has used PageRequest.
-         *
-         *  message SomeResponse {
-         *          repeated Bar results = 1;
-         *          PageResponse page = 2;
-         *  }
-         */
-        pagination?: {
-          /**
-           * next_key is the key to be passed to PageRequest.key to
-           * query the next page most efficiently
-           * @format byte
-           */
-          next_key?: string;
-          /**
-           * total is total number of results available if PageRequest.count_total
-           * was set, its value is undefined otherwise
-           * @format uint64
-           */
-          total?: string;
-        };
-      },
+      DestinationRoutesData,
       {
         error?: string;
         /** @format int32 */
@@ -677,12 +577,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   gridParams = (params: RequestParams = {}) =>
     this.request<
-      {
-        params?: {
-          /** @format int64 */
-          max_routes?: number;
-        };
-      },
+      GridParamsData,
       {
         error?: string;
         /** @format int32 */
@@ -714,17 +609,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        route?: {
-          source?: string;
-          destination?: string;
-          name?: string;
-          value?: {
-            denom?: string;
-            amount?: string;
-          }[];
-        };
-      },
+      RouteData,
       {
         error?: string;
         /** @format int32 */
@@ -788,40 +673,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        routes?: {
-          source?: string;
-          destination?: string;
-          name?: string;
-          value?: {
-            denom?: string;
-            amount?: string;
-          }[];
-        }[];
-        /**
-         * PageResponse is to be embedded in gRPC response messages where the
-         * corresponding request message has used PageRequest.
-         *
-         *  message SomeResponse {
-         *          repeated Bar results = 1;
-         *          PageResponse page = 2;
-         *  }
-         */
-        pagination?: {
-          /**
-           * next_key is the key to be passed to PageRequest.key to
-           * query the next page most efficiently
-           * @format byte
-           */
-          next_key?: string;
-          /**
-           * total is total number of results available if PageRequest.count_total
-           * was set, its value is undefined otherwise
-           * @format uint64
-           */
-          total?: string;
-        };
-      },
+      RoutesData,
       {
         error?: string;
         /** @format int32 */
@@ -853,12 +705,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        value?: {
-          denom?: string;
-          amount?: string;
-        }[];
-      },
+      SourceRoutedEnergyData,
       {
         error?: string;
         /** @format int32 */
@@ -890,40 +737,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        routes?: {
-          source?: string;
-          destination?: string;
-          name?: string;
-          value?: {
-            denom?: string;
-            amount?: string;
-          }[];
-        }[];
-        /**
-         * PageResponse is to be embedded in gRPC response messages where the
-         * corresponding request message has used PageRequest.
-         *
-         *  message SomeResponse {
-         *          repeated Bar results = 1;
-         *          PageResponse page = 2;
-         *  }
-         */
-        pagination?: {
-          /**
-           * next_key is the key to be passed to PageRequest.key to
-           * query the next page most efficiently
-           * @format byte
-           */
-          next_key?: string;
-          /**
-           * total is total number of results available if PageRequest.count_total
-           * was set, its value is undefined otherwise
-           * @format uint64
-           */
-          total?: string;
-        };
-      },
+      SourceRoutesData,
       {
         error?: string;
         /** @format int32 */
@@ -959,18 +773,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        /**
-         * Coin defines a token with a denomination and an amount.
-         *
-         * NOTE: The amount field is an Int which implements the custom method
-         * signatures required by gogoproto.
-         */
-        amount?: {
-          denom?: string;
-          amount?: string;
-        };
-      },
+      InvestmintData,
       {
         error?: string;
         /** @format int32 */
@@ -997,42 +800,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   resourcesParams = (params: RequestParams = {}) =>
     this.request<
-      {
-        params?: {
-          /** @format int64 */
-          max_slots?: number;
-          /** @format int64 */
-          halving_period_volt_blocks?: number;
-          /** @format int64 */
-          halving_period_ampere_blocks?: number;
-          /** @format int64 */
-          base_investmint_period_volt?: number;
-          /** @format int64 */
-          base_investmint_period_ampere?: number;
-          /** @format int64 */
-          min_investmint_period?: number;
-          /**
-           * Coin defines a token with a denomination and an amount.
-           *
-           * NOTE: The amount field is an Int which implements the custom method
-           * signatures required by gogoproto.
-           */
-          base_investmint_amount_volt?: {
-            denom?: string;
-            amount?: string;
-          };
-          /**
-           * Coin defines a token with a denomination and an amount.
-           *
-           * NOTE: The amount field is an Int which implements the custom method
-           * signatures required by gogoproto.
-           */
-          base_investmint_amount_ampere?: {
-            denom?: string;
-            amount?: string;
-          };
-        };
-      },
+      ResourcesParamsData,
       {
         error?: string;
         /** @format int32 */
@@ -1058,16 +826,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   dmnParams = (params: RequestParams = {}) =>
     this.request<
-      {
-        params?: {
-          /** @format int64 */
-          max_slots?: number;
-          /** @format int64 */
-          max_gas?: number;
-          /** @format int64 */
-          fee_ttl?: number;
-        };
-      },
+      DmnParamsData,
       {
         error?: string;
         /** @format int32 */
@@ -1099,32 +858,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        thought?: {
-          program?: string;
-          trigger?: {
-            /** @format uint64 */
-            period?: string;
-            /** @format uint64 */
-            block?: string;
-          };
-          load?: {
-            input?: string;
-            /**
-             * Coin defines a token with a denomination and an amount.
-             *
-             * NOTE: The amount field is an Int which implements the custom method
-             * signatures required by gogoproto.
-             */
-            gas_price?: {
-              denom?: string;
-              amount?: string;
-            };
-          };
-          name?: string;
-          particle?: string;
-        };
-      },
+      ThoughtData,
       {
         error?: string;
         /** @format int32 */
@@ -1157,20 +891,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     params: RequestParams = {}
   ) =>
     this.request<
-      {
-        thought_stats?: {
-          program?: string;
-          name?: string;
-          /** @format uint64 */
-          calls?: string;
-          /** @format uint64 */
-          fees?: string;
-          /** @format uint64 */
-          gas?: string;
-          /** @format uint64 */
-          last_block?: string;
-        };
-      },
+      ThoughtStatsData,
       {
         error?: string;
         /** @format int32 */
@@ -1197,32 +918,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   thoughts = (params: RequestParams = {}) =>
     this.request<
-      {
-        thoughts?: {
-          program?: string;
-          trigger?: {
-            /** @format uint64 */
-            period?: string;
-            /** @format uint64 */
-            block?: string;
-          };
-          load?: {
-            input?: string;
-            /**
-             * Coin defines a token with a denomination and an amount.
-             *
-             * NOTE: The amount field is an Int which implements the custom method
-             * signatures required by gogoproto.
-             */
-            gas_price?: {
-              denom?: string;
-              amount?: string;
-            };
-          };
-          name?: string;
-          particle?: string;
-        }[];
-      },
+      ThoughtsData,
       {
         error?: string;
         /** @format int32 */
@@ -1248,20 +944,7 @@ export class Cyber<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    */
   thoughtsStats = (params: RequestParams = {}) =>
     this.request<
-      {
-        thoughts_stats?: {
-          program?: string;
-          name?: string;
-          /** @format uint64 */
-          calls?: string;
-          /** @format uint64 */
-          fees?: string;
-          /** @format uint64 */
-          gas?: string;
-          /** @format uint64 */
-          last_block?: string;
-        }[];
-      },
+      ThoughtsStatsData,
       {
         error?: string;
         /** @format int32 */

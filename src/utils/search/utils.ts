@@ -13,7 +13,6 @@ import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
 const lcdCyber = new Cyber({ url: LCD_URL });
 const lcdCosmos = new Cosmos({ url: LCD_URL });
-
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
 

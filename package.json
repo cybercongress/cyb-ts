@@ -23,7 +23,7 @@
     "build-storybook": "storybook build",
     "test": "jest --transformIgnorePatterns --verbose",
     "generate-graphql-types": "yarn graphql-codegen --config ./codegen.ts",
-    "generate-lcd-types": "npx swagger-typescript-api -p https://lcd.bostrom.cybernode.ai/swagger/swagger.yaml -o ./src/generated -n lcd.ts --axios --modular --unwrap-response-data"
+    "generate-lcd-types": "npx swagger-typescript-api -p https://lcd.bostrom.cybernode.ai/swagger/swagger.yaml -o ./src/generated -n lcd.ts --axios --modular  --extract-response-body "
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "license": "ISC",
