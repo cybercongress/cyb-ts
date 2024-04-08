@@ -113,7 +113,7 @@ const fetchIPFSContentFromNode = async (
         const textPreview = createTextPreview(firstChunk, mime);
 
         if (fullyDownloaded) {
-          await ipfsCacheDb.add(cid, uint8ArrayConcat(firstChunk));
+          await ipfsCacheDb.add(cid, uint8ArrayConcat([firstChunk]));
         }
 
         // If all content fits in first chunk return byte-array instead iterable
