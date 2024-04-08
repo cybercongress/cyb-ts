@@ -99,10 +99,8 @@ function DetailsNetwork() {
               />
               <ValueItem
                 text="prefix"
-                value={customConfig.BECH32_PREFIX_ACC_ADDR_CYBER}
-                onChange={(e) =>
-                  onChangeValue(e, 'BECH32_PREFIX_ACC_ADDR_CYBER')
-                }
+                value={customConfig.BECH32_PREFIX}
+                onChange={(e) => onChangeValue(e, 'BECH32_PREFIX')}
               />
               <ValueItem
                 text="denom"
@@ -116,28 +114,28 @@ function DetailsNetwork() {
               />
               <ValueItem
                 text="rpc"
-                value={customConfig.CYBER_NODE_URL_API}
-                onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_API')}
+                value={customConfig.RPC_URL}
+                onChange={(e) => onChangeValue(e, 'RPC_URL')}
               />
               <ValueItem
                 text="wss"
-                value={customConfig.CYBER_WEBSOCKET_URL}
-                onChange={(e) => onChangeValue(e, 'CYBER_WEBSOCKET_URL')}
+                value={customConfig.WEBSOCKET_URL}
+                onChange={(e) => onChangeValue(e, 'WEBSOCKET_URL')}
               />
               <ValueItem
                 text="lcd"
-                value={customConfig.CYBER_NODE_URL_LCD}
-                onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_LCD')}
+                value={customConfig.LCD_URL}
+                onChange={(e) => onChangeValue(e, 'LCD_URL')}
               />
               <ValueItem
                 text="index"
-                value={customConfig.CYBER_INDEX_HTTPS}
-                onChange={(e) => onChangeValue(e, 'CYBER_INDEX_HTTPS')}
+                value={customConfig.INDEX_HTTPS}
+                onChange={(e) => onChangeValue(e, 'INDEX_HTTPS')}
               />
               <ValueItem
                 text="index wss"
-                value={customConfig.CYBER_INDEX_WEBSOCKET}
-                onChange={(e) => onChangeValue(e, 'CYBER_INDEX_WEBSOCKET')}
+                value={customConfig.INDEX_WEBSOCKET}
+                onChange={(e) => onChangeValue(e, 'INDEX_WEBSOCKET')}
               />
             </div>
           )}

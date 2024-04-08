@@ -9,6 +9,7 @@ import {
   MainContainer,
 } from '../../components';
 import { useAdviser } from 'src/features/adviser/context';
+import { NetworkConfig } from 'src/types/networks';
 
 function ValueItem({ text, value, onChange }) {
   return (
@@ -29,15 +30,14 @@ const initValue = {
   CHAIN_ID: 'bostrom',
   BASE_DENOM: 'boot',
   DENOM_LIQUID: 'hydrogen',
-  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
-  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
+  RPC_URL: 'https://rpc.bostrom.cybernode.ai',
+  WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
+  LCD_URL: 'https://lcd.bostrom.cybernode.ai',
+  INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
+  INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  BECH32_PREFIX: 'bostrom',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
-};
+} as NetworkConfig;
 
 function CustomNetwork() {
   const navigate = useNavigate();
@@ -60,14 +60,6 @@ function CustomNetwork() {
           MEMO_KEPLR: `[${value}]cyb.ai, using keplr`,
         }));
         break;
-      case 'BECH32_PREFIX_ACC_ADDR_CYBER':
-        setCustomConfig((item) => ({
-          ...item,
-          [key]: value,
-          BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `${value}valoper`,
-        }));
-        break;
-
       case 'BASE_DENOM':
         setCustomConfig((item) => ({
           ...item,
@@ -110,8 +102,8 @@ function CustomNetwork() {
             />
             <ValueItem
               text="prefix"
-              value={customConfig.BECH32_PREFIX_ACC_ADDR_CYBER}
-              onChange={(e) => onChangeValue(e, 'BECH32_PREFIX_ACC_ADDR_CYBER')}
+              value={customConfig.BECH32_PREFIX}
+              onChange={(e) => onChangeValue(e, 'BECH32_PREFIX')}
             />
             <ValueItem
               text="denom"
@@ -125,28 +117,28 @@ function CustomNetwork() {
             />
             <ValueItem
               text="rpc"
-              value={customConfig.CYBER_NODE_URL_API}
-              onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_API')}
+              value={customConfig.RPC_URL}
+              onChange={(e) => onChangeValue(e, 'RPC_URL')}
             />
             <ValueItem
               text="wss"
-              value={customConfig.CYBER_WEBSOCKET_URL}
-              onChange={(e) => onChangeValue(e, 'CYBER_WEBSOCKET_URL')}
+              value={customConfig.WEBSOCKET_URL}
+              onChange={(e) => onChangeValue(e, 'WEBSOCKET_URL')}
             />
             <ValueItem
               text="lcd"
-              value={customConfig.CYBER_NODE_URL_LCD}
-              onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_LCD')}
+              value={customConfig.LCD_URL}
+              onChange={(e) => onChangeValue(e, 'LCD_URL')}
             />
             <ValueItem
               text="index"
-              value={customConfig.CYBER_INDEX_HTTPS}
-              onChange={(e) => onChangeValue(e, 'CYBER_INDEX_HTTPS')}
+              value={customConfig.INDEX_HTTPS}
+              onChange={(e) => onChangeValue(e, 'INDEX_HTTPS')}
             />
             <ValueItem
               text="ndex wss"
-              value={customConfig.CYBER_INDEX_WEBSOCKET}
-              onChange={(e) => onChangeValue(e, 'CYBER_INDEX_WEBSOCKET')}
+              value={customConfig.INDEX_WEBSOCKET}
+              onChange={(e) => onChangeValue(e, 'INDEX_WEBSOCKET')}
             />
           </div>
         </ContainerGradientText>
