@@ -140,9 +140,9 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   );
 
   // TODO refactor
-  if (!poolsData || !ibcDenoms) {
-    return null;
-  }
+  // if (!poolsData || !ibcDenoms) {
+  //   return null;
+  // }
 
   return (
     <IbcDenomContext.Provider value={value}>

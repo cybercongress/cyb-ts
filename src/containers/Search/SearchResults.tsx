@@ -1,36 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import { useParams } from 'react-router-dom';
+import Display from 'src/components/containerGradient/Display/Display';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { useDevice } from 'src/contexts/device';
+import { IpfsContentType } from 'src/services/ipfs/types';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
+
+import useIsOnline from 'src/hooks/useIsOnline';
 import { encodeSlash } from '../../utils/utils';
-import { NoItems } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
-import { MainContainer } from '../portal/components';
+import Filters from './Filters/Filters';
+import styles from './SearchResults.module.scss';
 import FirstItems from './_FirstItems.refactor';
+import { initialContentTypeFilterState } from './constants';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
-import Filters from './Filters/Filters';
-import Display from 'src/components/containerGradient/Display/Display';
-import styles from './SearchResults.module.scss';
-
-export const initialContentTypeFilterState = {
-  text: false,
-  image: false,
-  video: false,
-  pdf: false,
-  link: false,
-  // audio: false,
-};
 
 const sortByLSKey = 'search-sort';
 
 function SearchResults() {
   const { query: q, cid } = useParams();
+  const isOnline = useIsOnline();
+  const defaultMessage = isOnline
+    ? 'there are no answers or questions to this particle <br /> be the first and create one'
+    : "ther's nothing to show, wait until you're online";
 
   const query = q || cid || '';
 
@@ -165,10 +161,7 @@ function SearchResults() {
             <p>{error.message}</p>
           </Display>
         ) : (
-          <Display color="white">
-            there are no answers or questions to this particle <br /> be the
-            first and create one
-          </Display>
+          <Display color="white">{defaultMessage}</Display>
         )}
       </div>
 

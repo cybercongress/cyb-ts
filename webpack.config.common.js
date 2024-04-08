@@ -6,6 +6,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const WorkerUrlPlugin = require('worker-url/plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 require('dotenv').config();
 
@@ -117,6 +118,11 @@ const config = {
     new webpack.ProvidePlugin({
       // ProvidePlugin configuration
       cyblog: ['src/utils/logging/cyblog.ts', 'default'],
+    }),
+    new WorkboxPlugin.InjectManifest({
+      swSrc: 'src/services/service-worker/service-worker.ts',
+      swDest: 'service-worker.js',
+      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
     }),
   ],
   module: {

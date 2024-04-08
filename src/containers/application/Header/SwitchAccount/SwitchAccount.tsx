@@ -1,24 +1,25 @@
-import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useMemo, useRef } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
+import { Link, useLocation } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import Pill from 'src/components/Pill/Pill';
+import { useBackend } from 'src/contexts/backend/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
-import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
-import styles from './SwitchAccount.module.scss';
-import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
+import useIsOnline from 'src/hooks/useIsOnline';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
-import Karma from '../../Karma/Karma';
 import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend/backend';
+import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
+import Karma from '../../Karma/Karma';
+import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
+import styles from './SwitchAccount.module.scss';
 
 // should be refactored
 function AccountItem({
@@ -91,6 +92,8 @@ function AccountItem({
 function SwitchAccount() {
   const { signerReady } = useSigningClient();
   const { isIpfsInitialized } = useBackend();
+  const isOnline = useIsOnline();
+
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -186,6 +189,7 @@ function SwitchAccount() {
             {!isReadOnly && !signerReady && (
               <Pill color="red" text="switch keplr" />
             )}
+            {!isOnline && <Pill color="red" text="offline" />}
             <Karma address={useGetAddress} />
           </div>
         )}
@@ -199,8 +203,10 @@ function SwitchAccount() {
         >
           <div
             className={cx(styles.containerAvatarConnect, {
-              [styles.containerAvatarConnectFalse]: !isIpfsInitialized,
-              [styles.containerAvatarConnectTrueGreen]: isIpfsInitialized,
+              [styles.containerAvatarConnectFalse]:
+                !isIpfsInitialized || !isOnline,
+              [styles.containerAvatarConnectTrueGreen]:
+                isIpfsInitialized && isOnline,
             })}
           >
             <AvataImgIpfs

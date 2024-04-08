@@ -3,6 +3,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { OperationDefinitionNode } from 'graphql';
 
+import { Helmet } from 'react-helmet';
 import { createRoot } from 'react-dom/client';
 
 import {
@@ -41,8 +42,24 @@ import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
 
-import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
+
+if ('serviceWorker' in navigator) {
+  console.log('Going to install service worker');
+  window.addEventListener('load', () => {
+    console.log('Starting to load service worker');
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('service worker registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('service worker registration failed: ', registrationError);
+      });
+  });
+} else {
+  console.log('No service worker is available');
+}
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,

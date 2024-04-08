@@ -7,7 +7,7 @@ const commonConfig = require('./webpack.config.common');
 module.exports = merge(commonConfig, {
   mode: 'development',
   devServer: {
-    https: true,
+    // https: true,
     host: 'localhost',
     port: process.env.PORT_APP || '3001',
     hot: true,

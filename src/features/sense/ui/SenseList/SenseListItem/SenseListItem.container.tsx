@@ -1,22 +1,20 @@
-import useParticleDetails from '../../../../particle/useParticleDetails';
+import { Dots } from 'src/components';
+import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
+import { isParticle } from 'src/features/particle/utils';
+import { SenseItemId } from 'src/features/sense/types/sense';
+import useIsOnline from 'src/hooks/useIsOnline';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
-import { Account, Dots } from 'src/components';
-import SenseListItem from './SenseListItem';
+import useParticleDetails from '../../../../particle/useParticleDetails';
 import { formatSenseItemDataToUI } from '../../utils/format';
-import { SenseItemId } from 'src/features/sense/types/sense';
-import CoinsAmount, {
-  CoinAction,
-} from '../../components/CoinAmount/CoinAmount';
-import { isParticle } from 'src/features/particle/utils';
-import { cutSenseItem } from '../../utils';
+import SenseListItem from './SenseListItem';
 
 type Props = {
   senseItemId: SenseItemId;
 };
 
 function SenseListItemContainer({ senseItemId }: Props) {
+  const isOnline = useIsOnline();
   const { senseData, unreadCount } = useAppSelector((store) => {
     const chat = store.sense.chats[senseItemId]!;
 
@@ -53,10 +51,12 @@ function SenseListItemContainer({ senseItemId }: Props) {
 
   if (cid) {
     if (loading) {
-      content = (
+      content = isOnline ? (
         <span>
           resolving particle <Dots />
         </span>
+      ) : (
+        <span>{`can't resolve particles since you're offline`}</span>
       );
     } else if (data) {
       if (isFollow) {

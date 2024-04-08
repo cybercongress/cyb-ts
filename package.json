@@ -97,6 +97,7 @@
     "postcss-media-minmax": "^5.0.0",
     "postcss-preset-env": "^8.0.1",
     "prettier": "^2.5.1",
+    "prettier-eslint": "^16.3.0",
     "prop-types": "^15.6.2",
     "react-iframe": "^1.8.0",
     "react-infinite-scroll-component": "^6.1.0",
@@ -132,7 +133,8 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "workbox-webpack-plugin": "^7.0.0"
   },
   "dependencies": {
     "@apollo/client": "^3.9.4",
@@ -244,6 +246,10 @@
     "videostream": "^3.2.2",
     "web3": "1.2.4",
     "web3-utils": "^1.2.4",
+    "workbox-core": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0",
     "worker-url": "^1.1.0"
   },
   "prec-commit": [
