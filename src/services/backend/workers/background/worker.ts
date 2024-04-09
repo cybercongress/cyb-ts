@@ -6,7 +6,7 @@ import {
   CybIpfsNode,
   IpfsContentType,
   IpfsOptsType,
-} from 'src/services/ipfs/ipfs';
+} from 'src/services/ipfs/types';
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 

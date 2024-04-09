@@ -8,6 +8,7 @@ const config: CodegenConfig = {
   documents: ['src/**/*.graphql'],
   config: {
     withHooks: true,
+    skipTypename: true,
   },
   generates: {
     'src/generated/graphql.ts': {

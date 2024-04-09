@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode } from 'src/services/ipfs/types';
 
 import DbApi, {
   mockPutSyncQueue,

@@ -10,7 +10,7 @@ import {
   IpfsFileStats,
   IpfsNode,
   IpfsNodePrperties,
-} from '../../ipfs';
+} from '../../types';
 import { CYBER_GATEWAY_URL } from '../../config';
 
 class KuboNode implements IpfsNode {

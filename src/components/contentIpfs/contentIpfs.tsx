@@ -1,4 +1,4 @@
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
 import { CYBER_GATEWAY } from 'src/constants/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';

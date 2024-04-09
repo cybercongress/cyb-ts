@@ -57,16 +57,11 @@ function ListNetwork() {
       const item = networks[key];
       return (
         <ContainerGradientText status={statusCard(key)} key={key}>
-          {key !== 'bostrom' &&
-            key !== 'space-pussy' &&
-            key !== CHAIN_ID && (
-              <BtnPasport
-                onClick={() => onClickDeleteAddress(key)}
-                typeBtn="red"
-              >
-                X
-              </BtnPasport>
-            )}
+          {key !== 'bostrom' && key !== 'space-pussy' && key !== CHAIN_ID && (
+            <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
+              X
+            </BtnPasport>
+          )}
           <Link to={`/networks/${key}`}>
             <div style={{ gap: '5px', display: 'grid' }}>
               <ValueItem>
@@ -75,7 +70,7 @@ function ListNetwork() {
               </ValueItem>
               <ValueItem>
                 <div>prefix</div>
-                <div>{item.BECH32_PREFIX_ACC_ADDR_CYBER}</div>
+                <div>{item.BECH32_PREFIX}</div>
               </ValueItem>
               <ValueItem>
                 <div>denom</div>
@@ -87,15 +82,15 @@ function ListNetwork() {
               </ValueItem>
               <ValueItem>
                 <div>rpc</div>
-                <div>{item.CYBER_NODE_URL_API}</div>
+                <div>{item.RPC_URL}</div>
               </ValueItem>
               <ValueItem>
                 <div>lcd</div>
-                <div>{item.CYBER_NODE_URL_LCD}</div>
+                <div>{item.LCD_URL}</div>
               </ValueItem>
               <ValueItem>
                 <div>index</div>
-                <div>{item.CYBER_INDEX_HTTPS}</div>
+                <div>{item.INDEX_HTTPS}</div>
               </ValueItem>
             </div>
           </Link>

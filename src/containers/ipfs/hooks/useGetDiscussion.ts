@@ -4,21 +4,17 @@ import {
   useCyberlinksByParticleQuery,
 } from 'src/generated/graphql';
 import { useEffect, useState } from 'react';
-
-export enum LinkType {
-  to = 'to',
-  from = 'from',
-}
+import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
 const limit = 15;
 
 type Props = {
   hash: string;
-  type: LinkType;
+  type: LinksType;
 };
 
 function useGetLinks(
-  { hash, type = LinkType.from }: Props,
+  { hash, type = LinksTypeFilter.from }: Props,
   { skip = false } = {}
 ) {
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -33,7 +29,7 @@ function useGetLinks(
   } = useCyberlinksByParticleQuery({
     variables: {
       where:
-        type === LinkType.from
+        type === LinksTypeFilter.from
           ? { particle_from: { _eq: hash } }
           : { particle_to: { _eq: hash } },
       orderBy: { timestamp: OrderBy.Desc },

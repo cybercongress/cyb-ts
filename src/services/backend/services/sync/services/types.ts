@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode } from 'src/services/ipfs/types';
 import DbApi from '../../DbApi/DbApi';
 import { FetchIpfsFunc, SyncServiceParams } from '../types';
 import { NeuronAddress } from 'src/types/base';

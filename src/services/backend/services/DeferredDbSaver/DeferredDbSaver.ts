@@ -8,7 +8,7 @@ import {
   tap,
 } from 'rxjs';
 import { IDeferredDbSaver } from 'src/services/QueueManager/types';
-import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
+import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/types';
 
 import { v4 as uuidv4 } from 'uuid';
 import { ParticleCid } from 'src/types/base';
