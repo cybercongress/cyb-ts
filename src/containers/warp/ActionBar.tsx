@@ -61,7 +61,7 @@ function ActionBar({ stateActionBar }: Props) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -117,8 +117,8 @@ function ActionBar({ stateActionBar }: Props) {
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
 
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
       const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
@@ -216,10 +216,10 @@ function ActionBar({ stateActionBar }: Props) {
         [tokenB]: amountY,
       };
 
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(
         arrangedReserveCoinDenoms[0]
       );
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(
         arrangedReserveCoinDenoms[1]
       );
 

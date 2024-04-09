@@ -14,9 +14,9 @@ type Props = {
 };
 
 function TableSlots({ data }: Props) {
-  const { traseDenom } = useIbcDenom();
-  const [{ coinDecimals: coinDecimalsA }] = traseDenom('milliampere');
-  const [{ coinDecimals: coinDecimalsV }] = traseDenom('millivolt');
+  const { tracesDenom } = useIbcDenom();
+  const [{ coinDecimals: coinDecimalsA }] = tracesDenom('milliampere');
+  const [{ coinDecimals: coinDecimalsV }] = tracesDenom('millivolt');
 
   return (
     <Table

@@ -38,7 +38,7 @@ const tokenBDefaultValue = DENOM_LIQUID;
 
 function Warp() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
@@ -189,8 +189,8 @@ function Warp() {
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
     if (accountBalances !== null) {
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
       const validTokensAB =
         Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&

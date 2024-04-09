@@ -44,7 +44,7 @@ const tokenDefaultValue = BASE_DENOM;
 
 function Send() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -108,9 +108,9 @@ function Send() {
   }, [tokenSelect, recipient, setSearchParams, searchParams, tokenAmount]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenSelect);
+    const [{ coinDecimals }] = tracesDenom(tokenSelect);
     setTokenACoinDecimals(coinDecimals);
-  }, [tokenSelect, traseDenom]);
+  }, [tokenSelect, tracesDenom]);
 
   // setTokenABalance
   useEffect(() => {

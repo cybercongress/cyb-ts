@@ -30,7 +30,7 @@ const tokenADefaultValue = BASE_DENOM;
 const tokenBDefaultValue = DENOM_LIQUID;
 
 function Swap() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const {
     totalSupplyProofList: totalSupply,
     accountBalances,
@@ -70,14 +70,14 @@ function Swap() {
   const [tokenBCoinDecimals, setTokenBCoinDecimals] = useState<number>(0);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenA);
+    const [{ coinDecimals }] = tracesDenom(tokenA);
     setTokenACoinDecimals(coinDecimals);
-  }, [traseDenom, tokenA]);
+  }, [tracesDenom, tokenA]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenB);
+    const [{ coinDecimals }] = tracesDenom(tokenB);
     setTokenBCoinDecimals(coinDecimals);
-  }, [traseDenom, tokenB]);
+  }, [tracesDenom, tokenB]);
 
   useEffect(() => {
     const balance = accountBalances ? accountBalances[tokenA] || 0 : 0;

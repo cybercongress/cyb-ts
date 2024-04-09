@@ -6,7 +6,7 @@ import RowItem from './RowItem';
 import styles from './styles.module.scss';
 
 function DetailsBalance({ data }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { price } = data;
 
   return (
@@ -19,7 +19,7 @@ function DetailsBalance({ data }) {
         .map((key) => {
           const { amount, denom } = data[key];
           const value = { amount, denom };
-          const [{ coinDecimals }] = traseDenom(denom);
+          const [{ coinDecimals }] = tracesDenom(denom);
           value.amount = convertAmount(amount, coinDecimals);
           const cap = new BigNumber(value.amount)
             .multipliedBy(price.amount)

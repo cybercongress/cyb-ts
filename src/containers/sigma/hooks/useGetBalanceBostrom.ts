@@ -21,7 +21,7 @@ const usePrevious = (value: any) => {
 
 function useGetBalanceBostrom(address: Nullable<string>) {
   const { marketData } = useAppData();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
@@ -47,7 +47,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
           const { total } = data[key];
           if (total.amount > 0) {
             const { amount, denom } = total;
-            const [{ coinDecimals }] = traseDenom(denom);
+            const [{ coinDecimals }] = tracesDenom(denom);
             const amountReduce = convertAmount(amount, coinDecimals);
 
             if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
@@ -73,7 +73,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
       }
       return {};
     },
-    [marketData, traseDenom]
+    [marketData, tracesDenom]
   );
 
   useEffect(() => {

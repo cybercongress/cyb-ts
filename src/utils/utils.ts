@@ -377,7 +377,7 @@ function isNative(denom) {
 }
 
 const findDenomInTokenList = (baseDenom) => {
-  let demonInfo = null;
+  let demonInfo;
 
   const findObj = tokenList.find((item) => item.coinMinimalDenom === baseDenom);
 

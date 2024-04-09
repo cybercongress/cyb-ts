@@ -23,11 +23,11 @@ const findChainIdInNetworkList = (
   return undefined;
 };
 
-export const useTraseNetworks = (chainIdTrase: string) => {
+export const useTracesNetworks = (chainIdTraces: string) => {
   const { networks } = useNetworks();
   const [chainInfo, setChainInfo] = useState({
-    chainId: chainIdTrase,
-    chainName: chainIdTrase,
+    chainId: chainIdTraces,
+    chainName: chainIdTraces,
     chainIdImageCid: '',
   });
 
@@ -35,7 +35,7 @@ export const useTraseNetworks = (chainIdTrase: string) => {
     if (networks) {
       let infoTemp = {};
       const chainInfoFromList = findChainIdInNetworkList(
-        chainIdTrase,
+        chainIdTraces,
         networks
       );
 
@@ -57,13 +57,13 @@ export const useTraseNetworks = (chainIdTrase: string) => {
       }
     } else {
       const infoTemp = {
-        chainId: chainIdTrase,
-        chainName: chainIdTrase,
+        chainId: chainIdTraces,
+        chainName: chainIdTraces,
         chainIdImageCid: '',
       };
       setChainInfo((item) => ({ ...item, ...infoTemp }));
     }
-  }, [chainIdTrase, networks]);
+  }, [chainIdTraces, networks]);
 
   return { chainInfo };
 };

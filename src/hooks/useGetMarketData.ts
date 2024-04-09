@@ -15,12 +15,12 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const calculatePrice = (coinsPair, balances, traseDenom) => {
+const calculatePrice = (coinsPair, balances, tracesDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
-  const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-  const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+  const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+  const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
   const amountA = new BigNumber(convertAmount(balances[tokenA], coinDecimalsA));
   const amountB = new BigNumber(convertAmount(balances[tokenB], coinDecimalsB));
@@ -32,7 +32,7 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
   return price;
 };
 
-const getPoolPrice = (data, traseDenom) => {
+const getPoolPrice = (data, tracesDenom) => {
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -45,12 +45,12 @@ const getPoolPrice = (data, traseDenom) => {
         coinsPair[1] === DENOM_LIQUID
       ) {
         if (coinsPair[0] === DENOM_LIQUID) {
-          price = calculatePrice(coinsPair, balances, traseDenom);
+          price = calculatePrice(coinsPair, balances, tracesDenom);
         } else {
-          price = calculatePrice(coinsPair.reverse(), balances, traseDenom);
+          price = calculatePrice(coinsPair.reverse(), balances, tracesDenom);
         }
       } else {
-        price = calculatePrice(coinsPair, balances, traseDenom);
+        price = calculatePrice(coinsPair, balances, tracesDenom);
       }
       element.price = price;
     }
@@ -76,7 +76,7 @@ const getPoolsBalance = async (data, client) => {
 
 function useGetMarketData() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
@@ -119,7 +119,7 @@ function useGetMarketData() {
             {}
           );
           const poolsBalance = await getPoolsBalance(reduceObj, queryClient);
-          const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
+          const poolPriceObj = getPoolPrice(poolsBalance, tracesDenom);
           setPoolsTotal(poolPriceObj);
         }
       } catch (error) {
@@ -128,7 +128,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-  }, [dataPools, queryClient, traseDenom]);
+  }, [dataPools, queryClient, tracesDenom]);
 
   useEffect(() => {
     try {
@@ -187,7 +187,7 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const [{ coinDecimals }] = traseDenom(itemJ);
+                    const [{ coinDecimals }] = tracesDenom(itemJ);
                     const balancesConvert = convertAmount(
                       balances[itemJ],
                       coinDecimals

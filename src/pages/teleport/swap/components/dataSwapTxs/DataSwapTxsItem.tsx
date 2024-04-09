@@ -36,7 +36,7 @@ function DataSwapTxsItem({
 }: {
   item: ArrayElement<MessagesByAddressQuery['messages_by_address']>;
 }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const dataResultSwap = useGetResultSwap(
     item.transaction.height,
     item.transaction.logs
@@ -48,7 +48,7 @@ function DataSwapTxsItem({
   const tokenAAmount = value.offer_coin.amount;
   const tokenB = value.demand_coin_denom;
 
-  const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+  const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
   const { counterPairAmount } = getDataOrder(value, coinDecimalsA);
 
   return (

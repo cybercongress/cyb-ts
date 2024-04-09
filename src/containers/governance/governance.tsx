@@ -43,11 +43,11 @@ function Statistics({ communityPoolCyber, staked }) {
 
 function Governance() {
   const queryClient = useQueryClient();
+  const [update, setUpdate] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
-
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
@@ -92,22 +92,13 @@ function Governance() {
   }, [queryClient]);
 
   useEffect(() => {
-    feachProposals();
-  }, []);
-
-  const feachProposals = async () => {
-    // if (queryClient !== null) {
-    const responseProposals = await getProposals();
-    // const responseProposals = await queryClient.proposals(
-    //   ProposalStatus.PROPOSAL_STATUS_PASSED,
-    //   '',
-    //   ''
-    // );
-    if (responseProposals !== null) {
-      setTableData(responseProposals);
-    }
-    // }
-  };
+    getProposals().then((response) => {
+      if (!response) {
+        return;
+      }
+      setTableData(response.proposals || []);
+    });
+  }, [update]);
 
   const feachMinDeposit = async () => {
     const responseMinDeposit = await getMinDeposit();
@@ -117,7 +108,10 @@ function Governance() {
     }
   };
 
-  console.log('tableData', tableData);
+  const updateFunc = () => {
+    setUpdate((item) => item + 1);
+  };
+
   const active = tableData
     .reverse()
     .filter(
@@ -219,7 +213,7 @@ function Governance() {
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
       </main>
-      <ActionBar update={feachProposals} />
+      <ActionBar update={updateFunc} />
     </div>
   );
 }

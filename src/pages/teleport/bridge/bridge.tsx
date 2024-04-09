@@ -39,7 +39,7 @@ export const ibcDenomAtom =
 const isCyberChain = (chainId: string) => chainId === CHAIN_ID;
 
 function Bridge() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { channels } = useChannels();
   const { totalSupplyProofList, accountBalances, refreshBalances } =
     useTeleport();
@@ -238,9 +238,9 @@ function Bridge() {
   useEffect(() => {
     const token = getDenomToken(networkA);
     setTokenA(token);
-    const [{ coinDecimals }] = traseDenom(token);
+    const [{ coinDecimals }] = tracesDenom(token);
     setTokenACoinDecimals(coinDecimals);
-  }, [networkA, traseDenom, getDenomToken]);
+  }, [networkA, tracesDenom, getDenomToken]);
 
   useEffect(() => {
     const token = getDenomToken(networkB);

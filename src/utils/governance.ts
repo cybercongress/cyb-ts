@@ -2,26 +2,21 @@ import axios from 'axios';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
 import { LCD_URL } from 'src/constants/config';
 
-export const getProposals = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals`,
-    });
+import { Cosmos as CosmosApi } from 'src/generated/Cosmos';
+import { dataOrNull } from './axios';
 
-    return response.data.proposals;
-  } catch (error) {
-    console.log('getProposals error', error);
-    return [];
-  }
+const lcdCosmosApi = new CosmosApi({ baseURL: LCD_URL });
+
+export const getProposals = async () => {
+  const response = await lcdCosmosApi.proposals();
+
+  return dataOrNull(response);
 };
 
-export const getProposalsDetail = (id) =>
+export const getProposalsDetail = (id: string) =>
   new Promise((resolve) => {
-    axios({
-      method: 'get',
-      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals/${id}`,
-    })
+    lcdCosmosApi
+      .proposal(id)
       .then((response) => {
         resolve(response.data.proposal);
       })
@@ -32,12 +27,10 @@ export const getProposalsDetail = (id) =>
 
 export const getStakingPool = () =>
   new Promise((resolve) => {
-    axios({
-      method: 'get',
-      url: `${LCD_URL}/staking/pool`,
-    })
+    lcdCosmosApi
+      .pool()
       .then((response) => {
-        resolve(response.data.result);
+        resolve(response.data);
       })
       .catch((e) => {
         console.error(e);
@@ -46,12 +39,10 @@ export const getStakingPool = () =>
 
 export const getTallying = () =>
   new Promise((resolve) => {
-    axios({
-      method: 'get',
-      url: `${LCD_URL}/gov/parameters/tallying`,
-    })
+    lcdCosmosApi
+      .govParams('tallying')
       .then((response) => {
-        resolve(response.data.result);
+        resolve(response.data);
       })
       .catch((e) => {
         console.error(e);
@@ -71,18 +62,17 @@ export const getProposer = async (id) => {
   }
 };
 
-export const getMinDeposit = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/gov/parameters/deposit`,
-    });
-    return response.data.result;
-  } catch (error) {
-    console.log('error :>> ', error);
-    return null;
-  }
-};
+export const getMinDeposit = async () =>
+  new Promise((resolve) => {
+    lcdCosmosApi
+      .govParams('deposit')
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  });
 
 export const getTableVoters = async (id, offset = 0, limit = 20) => {
   try {
@@ -102,18 +92,17 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
   }
 };
 
-export const getTallyingProposals = async (id) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/gov/proposals/${id}/tally`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
+export const getTallyingProposals = async (id: string) =>
+  new Promise((resolve) => {
+    lcdCosmosApi
+      .tallyResult(id)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  });
 
 export const reduceTxsVoters = (txs) => {
   return txs.reduce((prevObj, item) => {

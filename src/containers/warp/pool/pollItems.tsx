@@ -8,7 +8,7 @@ import { DENOM_LIQUID } from 'src/constants/config';
 import { replaceSlash } from '../../../utils/utils';
 
 function PoolItemsList({ assets, token }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { marketData } = useAppData();
 
   const amounToken = useMemo(() => {
@@ -41,7 +41,7 @@ function PoolItemsList({ assets, token }) {
   }, [amounToken, usePrice]);
 
   const getTypeDenomKey = (key: string) => {
-    const [{ denom }] = traseDenom(key);
+    const [{ denom }] = tracesDenom(key);
 
     if (denom.includes('ibc')) {
       return replaceSlash(denom);

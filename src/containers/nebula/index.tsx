@@ -42,7 +42,7 @@ function Title({
 }
 
 function Nebula() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
@@ -57,7 +57,7 @@ function Nebula() {
       let cap = 0;
       Object.keys(dataTotalSupply).forEach((key) => {
         const amount = dataTotalSupply[key];
-        const [{ coinDecimals }] = traseDenom(key);
+        const [{ coinDecimals }] = tracesDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
@@ -98,7 +98,7 @@ function Nebula() {
         const amount = dataTotalSupply[key];
         let price = 0;
         let cap = 0;
-        const [{ coinDecimals }] = traseDenom(key);
+        const [{ coinDecimals }] = tracesDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
@@ -130,7 +130,7 @@ function Nebula() {
   }, [dataTotalSupply, marketData]);
 
   const getTypeDenomKey = (key) => {
-    const denom = traseDenom(key);
+    const denom = tracesDenom(key);
 
     if (denom[0].denom.includes('ibc')) {
       return replaceSlash(denom[0].denom);

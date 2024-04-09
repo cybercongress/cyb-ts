@@ -46,7 +46,7 @@ const returnColorDot = (marks) => {
 
 function Mint() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [updateAddress, setUpdateAddress] = useState(0);
   const [selected, setSelected] = useState<SelectedState>(
     SelectedState.milliampere
@@ -144,25 +144,25 @@ function Mint() {
       return 0;
     }
 
-    const [{ coinDecimals }] = traseDenom(SelectedState.milliampere);
+    const [{ coinDecimals }] = tracesDenom(SelectedState.milliampere);
     const amount = new BigNumber(originalVesting.milliampere)
       .minus(vested.milliampere)
       .toNumber();
 
     return getDisplayAmount(amount, coinDecimals);
-  }, [vested, originalVesting, traseDenom]);
+  }, [vested, originalVesting, tracesDenom]);
 
   const vestedV = useMemo(() => {
     if (originalVesting.millivolt <= 0) {
       return 0;
     }
 
-    const [{ coinDecimals }] = traseDenom(SelectedState.millivolt);
+    const [{ coinDecimals }] = tracesDenom(SelectedState.millivolt);
     const amount = new BigNumber(originalVesting.millivolt)
       .minus(vested.millivolt)
       .toNumber();
     return getDisplayAmount(amount, coinDecimals);
-  }, [vested, originalVesting, traseDenom]);
+  }, [vested, originalVesting, tracesDenom]);
 
   const onChangeValue = (amountH: number) => setValue(amountH);
 

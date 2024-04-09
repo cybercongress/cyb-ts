@@ -46,18 +46,18 @@ export function AmountSend({
   coin: Coin;
   sourceChainId: string;
 }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const typeTxs =
     sourceChainId === CHAIN_ID ? TxsType.Withdraw : TxsType.Deposit;
   const amountDenom = useMemo(() => {
-    if (traseDenom) {
-      const [{ coinDecimals }] = traseDenom(coin.denom);
+    if (tracesDenom) {
+      const [{ coinDecimals }] = tracesDenom(coin.denom);
       const amount = getDisplayAmount(coin.amount, coinDecimals);
       return amount;
     }
 
     return 0;
-  }, [coin, traseDenom]);
+  }, [coin, tracesDenom]);
 
   return (
     <FormatNumberTokens

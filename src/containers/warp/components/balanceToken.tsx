@@ -11,15 +11,15 @@ type BalanceTokenProps = {
 };
 
 function BalanceToken({ token, data }: BalanceTokenProps) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
 
   const balance = useMemo(() => {
     if (token.length > 0 && data?.[token]) {
-      const [{ coinDecimals }] = traseDenom(token);
+      const [{ coinDecimals }] = tracesDenom(token);
       return getDisplayAmount(data[token], coinDecimals);
     }
     return 0;
-  }, [data, token, traseDenom]);
+  }, [data, token, tracesDenom]);
 
   return (
     <Pane
