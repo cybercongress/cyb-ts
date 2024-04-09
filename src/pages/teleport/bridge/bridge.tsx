@@ -20,7 +20,7 @@ import {
 } from '../components/containers/Containers';
 import { TypeTxsT } from '../type';
 import ActionBar from './actionBar.bridge';
-import HistoryContextProvider from '../../../services/ibc-history/historyContext';
+import HistoryContextProvider from '../../../features/ibc-history/historyContext';
 import DataIbcHistory from './components/dataIbcHistory/DataIbcHistory';
 import InputNumberDecimalScale from '../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';

@@ -16,7 +16,7 @@ import cx from 'classnames';
 import {
   HistoriesItem,
   StatusTx,
-} from 'src/services/ibc-history/HistoriesItem';
+} from 'src/features/ibc-history/HistoriesItem';
 import { CHAIN_ID } from 'src/constants/config';
 import { TxsType } from '../../../type';
 import styles from './DataHistoryItems.module.scss';

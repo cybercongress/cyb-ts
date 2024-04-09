@@ -32,7 +32,7 @@ import networks from '../../../utils/networkListIbc';
 
 import { TxsType, TypeTxsT } from '../type';
 import ActionBarPingTxs from '../components/actionBarPingTxs';
-import { useIbcHistory } from '../../../services/ibc-history/historyContext';
+import { useIbcHistory } from '../../../features/ibc-history/historyContext';
 
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
