@@ -45,8 +45,4 @@ function convertTimestampToString(timestamp: number): string {
   return `${days} ${pluralizeUnit(days, 'day')}`;
 }
 
-export {
-  roundMilliseconds,
-  numberToDateWithTimezone,
-  convertTimestampToString,
-};
+export { roundMilliseconds, convertTimestampToString };

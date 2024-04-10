@@ -374,3 +374,16 @@ input:focus:-ms-input-placeholder {
 .padded-text {
   padding: 0.5rem;
 }
+
+select {
+  width: 200px;
+  height: 32px;
+  background-color: #000;
+  color: #38d6ae;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  box-shadow: 0 0 2px #38d6ae;
+  padding: 0 10px;
+  margin: 0 15px;
+}

@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { deleteAddress, setDefaultAccount } from 'src/redux/features/pocket';
 import ActionBarConnect from './actionBarConnect';
-import ActionBarUser from './actionBarUser';
 import ActionBarKeplr from './actionBarKeplr';
 
 const STAGE_INIT = 1;
@@ -282,15 +281,6 @@ function ActionBar({
         updateAddress={updateFuncActionBar}
         updateBalance={updateAddress}
         onClickBack={() => setStage(STAGE_INIT)}
-      />
-    );
-  }
-
-  if (stage === STAGE_SEND_READ_ONLY) {
-    return (
-      <ActionBarUser
-        selectAccount={selectAccount}
-        updateAddress={updateFuncActionBar}
       />
     );
   }
