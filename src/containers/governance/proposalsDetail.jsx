@@ -1,7 +1,7 @@
 /* eslint-disable react/no-children-prop */
 import { useEffect, useState } from 'react';
 import { Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Link, useParams, Routes, Route } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -180,9 +180,6 @@ function ProposalsDetail({ defaultAccount }) {
     }
     return string;
   };
-
-  console.log(`proposals`, proposals);
-  console.log(`addressActive`, addressActive);
 
   const location = useLocation();
   const navigate = useNavigate();

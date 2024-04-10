@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import ProposalsDetailTableComments from './proposalsDetailTableComments';
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import Layout from './Layout';
+import Layout from './tabsLayout';
 
 function ProposalsRoutes({
   proposalId,
