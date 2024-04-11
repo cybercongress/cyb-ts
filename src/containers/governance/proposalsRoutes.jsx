@@ -20,10 +20,7 @@ function ProposalsRoutes({
           index
           element={<ProposalsDetailTableComments proposalId={proposalId} />}
         />
-        <Route
-          path="comments"
-          element={<ProposalsDetailTableComments proposalId={proposalId} />}
-        />
+        <Route path="comments" element={<ProposalsDetailTableComments />} />
         <Route
           path="meta"
           element={

@@ -298,7 +298,9 @@ function ProposalsDetail({ defaultAccount }) {
           proposalStatus={PROPOSAL_STATUS}
         />
       </MainContainer>
-      {addressActive !== null && addressActive.keys === 'keplr' ? (
+      {addressActive !== null &&
+      addressActive.keys === 'keplr' &&
+      location.pathname === `/senate/${proposalId}/voters` ? (
         <ActionBarDetail
           id={proposalId}
           proposals={proposals}
@@ -307,7 +309,7 @@ function ProposalsDetail({ defaultAccount }) {
           update={() => setUpdateFunc((item) => item + 1)}
           addressActive={addressActive}
         />
-      ) : (
+      ) : addressActive === null ? (
         <ActionBar>
           <Pane>
             <Link
@@ -323,7 +325,7 @@ function ProposalsDetail({ defaultAccount }) {
             </Link>
           </Pane>
         </ActionBar>
-      )}
+      ) : null}
     </>
   );
 }
