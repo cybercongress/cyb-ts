@@ -5,7 +5,7 @@ import { Account, DenomArr, AmountDenom, Cid } from 'src/components';
 import { BASE_DENOM } from 'src/constants/config';
 import { formatNumber } from '../../utils/search/utils';
 import { timeSince } from '../../utils/utils';
-import Row from './components/Row';
+import Row from '../../components/Row/Row';
 import ContainerMsgsType from './components/ContainerMsgsType';
 
 const S_TO_MS = 1 * 10 ** 3;

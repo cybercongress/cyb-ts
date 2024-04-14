@@ -16,7 +16,6 @@ import {
   TransactionError,
   ActionBarContentText,
   Dots,
-  CheckAddressInfo,
   ButtonImgText,
   Account,
   Input,
@@ -37,7 +36,6 @@ const {
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
-const LEDGER_TX_ACOUNT_INFO = 10;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
   const queryClient = useQueryClient();
@@ -245,9 +243,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     );
   }
 
-  if (stage === LEDGER_TX_ACOUNT_INFO) {
-    return <CheckAddressInfo />;
-  }
 
   if (stage === STAGE_SUBMITTED) {
     return (

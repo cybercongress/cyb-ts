@@ -27,6 +27,7 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { MainContainer } from '../portal/components';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import styles from './proposalsDetail.module.scss';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -238,7 +239,7 @@ function ProposalsDetail({ defaultAccount }) {
             <Item
               title="Description"
               value={
-                <Pane className="container-description">
+                <Pane className={styles.containerDescription}>
                   <ReactMarkdown
                     children={proposals.description.replace(/\\n/g, '\n')}
                     rehypePlugins={[rehypeSanitize]}
@@ -252,7 +253,7 @@ function ProposalsDetail({ defaultAccount }) {
             <Item
               title="Changes"
               value={
-                <Pane className="container-description">
+                <Pane className={styles.containerDescription}>
                   {proposals.changes.map((item) => (
                     <Pane key={item.key}>
                       {item.subspace}: {item.key} {item.value}
@@ -266,7 +267,7 @@ function ProposalsDetail({ defaultAccount }) {
             <Item
               title="Plan"
               value={
-                <Pane className="container-description">
+                <Pane className={styles.containerDescription}>
                   <Pane>name: {proposals.plan.name}</Pane>
                   <Pane>height: {proposals.plan.height}</Pane>
                 </Pane>

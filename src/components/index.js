@@ -54,27 +54,21 @@ import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
+import Row, { RowsContainer } from './Row/Row';
 
 const BtnGrd = Button;
 
 // eslint-disable-next-line import/no-unused-modules
 export {
-  GovernanceChangeParam,
   Account,
   CardTemplate,
   StatusTooltip,
   MsgType,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
-  ConnectLadger,
-  Cyberlink,
   StartStageSearchActionBar,
   Delegate,
   ActionBarSend,
-  GovernanceStartStageActionBar,
-  CommunityPool,
-  TextProposal,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
@@ -82,8 +76,6 @@ export {
   Vitalik,
   BandwidthBar,
   ActionBarContentText,
-  CheckAddressInfo,
-  GovernanceSoftwareUpgrade,
   ConnectAddress,
   ButtonImgText,
   Rank,
@@ -114,6 +106,8 @@ export {
   Slider,
   CreatedAt,
   Tabs,
+  Row,
+  RowsContainer,
 };
 
 export { Dots } from './ui/Dots';

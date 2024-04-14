@@ -2,49 +2,11 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Display from 'src/components/containerGradient/Display/Display';
 import { BASE_DENOM, DIVISOR_CYBER_G } from 'src/constants/config';
-import { FormatNumber } from '../../components';
+import { FormatNumber, Row, RowsContainer } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseCheck from './keybaseCheck';
 
 const dateFormat = require('dateformat');
-
-function Row({ value, title, marginBottom }) {
-  return (
-    <Pane
-      key={`${value}-container`}
-      style={{ marginBottom: marginBottom || 0 }}
-      className="txs-contaiter-row"
-      display="flex"
-    >
-      <Text
-        key={`${title}-title`}
-        display="flex"
-        fontSize="16px"
-        textTransform="capitalize"
-        color="#fff"
-        whiteSpace="nowrap"
-        width="240px"
-        marginBottom="5px"
-        lineHeight="20px"
-      >
-        {title} :
-      </Text>
-      <Text
-        key={`${value}-value`}
-        display="flex"
-        color="#fff"
-        fontSize="16px"
-        wordBreak="break-all"
-        lineHeight="20px"
-        marginBottom="5px"
-        flexDirection="column"
-        alignItems="flex-start"
-      >
-        {value}
-      </Text>
-    </Pane>
-  );
-}
 
 function Delegated({ data, marginBottom }) {
   const {
@@ -64,12 +26,8 @@ function Delegated({ data, marginBottom }) {
   } = data.commission.commission_rates;
 
   return (
-    <Pane
-      marginBottom={marginBottom || 0}
-      // className="ValidatorInfo__Delegated-MissedBlocks-wrapper"
-    >
-      <Display>
-        {/* <CardTemplate paddingLeftChild={10} paddingBottom={20}> */}
+    <Display>
+      <RowsContainer>
         <Row title="Operator Address" value={data.operator_address} />
         <Row
           title="Address"
@@ -93,7 +51,9 @@ function Delegated({ data, marginBottom }) {
         />
         <Row
           title="Token"
-          value={`${formatNumber(Math.floor(total))} ${BASE_DENOM.toUpperCase()}`}
+          value={`${formatNumber(
+            Math.floor(total)
+          )} ${BASE_DENOM.toUpperCase()}`}
         />
         <Row
           title="Commission Rate"
@@ -122,7 +82,7 @@ function Delegated({ data, marginBottom }) {
           <Row title="Details" value={data.description.details} />
         )}
         {jailed && (
-          <Pane>
+          <>
             <Row
               title="Unbonding Height"
               value={formatNumber(parseFloat(unbondingHeight))}
@@ -131,11 +91,10 @@ function Delegated({ data, marginBottom }) {
               title="Unbonding Time"
               value={dateFormat(unbondingTime, 'dd/mm/yy hh:mm tt')}
             />
-          </Pane>
+          </>
         )}
-        {/* </CardTemplate> */}
-      </Display>
-    </Pane>
+      </RowsContainer>
+    </Display>
   );
 }
 

@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import withRouter from 'src/components/helpers/withRouter';
 import { useBlockByHeightQuery } from 'src/generated/graphql';
 import InformationBlock from './informationBlock';
-import { CardTemplate, TextTable } from '../../components';
+import { CardTemplate, MainContainer, TextTable } from '../../components';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import Table from 'src/components/Table/Table';
 import StatusTxs from 'src/components/TableTxsInfinite/component/StatusTxs';
 import TxHash from 'src/components/TableTxsInfinite/component/txHash';
+import Display from 'src/components/containerGradient/Display/Display';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
 const initialState = {
   height: null,
@@ -24,11 +26,12 @@ enum ColumnsTable {
 function BlockDetails({ router }) {
   const { idBlock } = router.params;
   const [blockInfo, setBlockInfo] = useState(initialState);
-  const { loading, error, data } = useBlockByHeightQuery({
+  const { data } = useBlockByHeightQuery({
     variables: {
       blockId: idBlock,
     },
   });
+
   useEffect(() => {
     if (data && data.block && Object.keys(data.block).length > 0) {
       setBlockInfo(data.block[0]);
@@ -37,14 +40,6 @@ function BlockDetails({ router }) {
     }
     return () => setBlockInfo(initialState);
   }, [data, idBlock]);
-
-  if (loading) {
-    return <div>loading...</div>;
-  }
-
-  if (error) {
-    console.log(`Error!`, `Error! ${error.message}`);
-  }
 
   const tableData = useMemo(() => {
     return data?.block[0].transactions.map((item) => {
@@ -55,9 +50,7 @@ function BlockDetails({ router }) {
           </TextTable>
         ),
         [ColumnsTable.messages]: (
-          <TextTable>
-            {item.messages.length || 0}
-          </TextTable>
+          <TextTable>{item.messages.length || 0}</TextTable>
         ),
 
         [ColumnsTable.tx]: (
@@ -71,13 +64,9 @@ function BlockDetails({ router }) {
 
   return (
     <div>
-      <main className="block-body">
-        <InformationBlock
-          numbTx={blockInfo.transactions}
-          marginBottom={20}
-          data={blockInfo}
-        />
-        <CardTemplate title="Transactions">
+      <MainContainer width="100%">
+        <InformationBlock numbTx={blockInfo.transactions} data={blockInfo} />
+        <Display color="blue" title={<DisplayTitle title="Transactions" />}>
           <Table
             data={tableData || []}
             columns={Object.values(ColumnsTable).map((item) => ({
@@ -86,8 +75,8 @@ function BlockDetails({ router }) {
               cell: (info) => info.getValue(),
             }))}
           />
-        </CardTemplate>
-      </main>
+        </Display>
+      </MainContainer>
       <ActionBarContainer valueSearchInput={idBlock} keywordHash={idBlock} />
     </div>
   );

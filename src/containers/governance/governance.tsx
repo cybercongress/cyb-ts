@@ -5,11 +5,10 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
-import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { CardStatisics } from '../../components';
+import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 
 const dateFormat = require('dateformat');
@@ -199,8 +198,8 @@ function Governance() {
     ));
 
   return (
-    <div>
-      <main className="block-body">
+    <>
+      <MainContainer width='100%'>
         <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
         <Pane
           display="grid"
@@ -212,9 +211,8 @@ function Governance() {
           <Columns title="Accepted">{accepted}</Columns>
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
-      </main>
-      <ActionBar update={updateFunc} />
-    </div>
+      </MainContainer>
+    </>
   );
 }
 

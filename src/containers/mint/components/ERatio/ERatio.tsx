@@ -16,17 +16,17 @@ function ERatio({ eRatio }: { eRatio: number }) {
           </Tooltip>
         </div>
       </div>
-      <div className="svg_wrap">
+      <div className={styles.svgWrap}>
         <svg viewBox="0 0 40 40">
-          <circle className="svg_background" />
+          <circle className={styles.svgBackground} />
           <circle
-            className="svg_calc"
+            className={styles.svgCalc}
             strokeDasharray={`${eRatio * 1.27} 127`}
             strokeLinecap="round"
             strokeWidth="8"
           />
         </svg>
-        <div className="svg_value">{eRatio}</div>
+        <div className={styles.svgValue}>{eRatio}</div>
       </div>
     </div>
   );

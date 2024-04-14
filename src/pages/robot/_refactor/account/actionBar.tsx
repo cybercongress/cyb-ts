@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { ActionBar } from '@cybercongress/gravity';
 import {
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   RewardsDelegators,
@@ -30,7 +29,6 @@ import { DIVISOR_CYBER_G, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 const {
   STAGE_INIT,
   STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
@@ -359,19 +357,7 @@ class ActionBarContainer extends Component<Props> {
           />
         );
       }
-      if (type === 'mentions') {
-        return (
-          <Cyberlink
-            onClickBtnClose={this.clearState}
-            query={addressSend}
-            onClickBtn={this.generateTx}
-            bandwidth={bandwidth}
-            address={address.bech32}
-            contentHash={contentHash}
-            disabledBtn={parseFloat(bandwidth.max_value) === 0}
-          />
-        );
-      }
+
       if (type === 'log') {
         return (
           <ActionBar>
@@ -381,12 +367,6 @@ class ActionBarContainer extends Component<Props> {
           </ActionBar>
         );
       }
-    }
-
-    if (stage === STAGE_WAIT) {
-      return (
-        <JsonTransaction txMsg={txMsg} onClickBtnClose={this.clearState} />
-      );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {

@@ -1,7 +1,7 @@
 import { MsgType } from 'src/components';
 import { ReactNode } from 'react';
 import styles from './ContainerMsgsType.module.scss';
-import { RowsContainer } from './Row';
+import { RowsContainer } from '../../../components/Row/Row';
 
 function ContainerMsgsType({
   type,

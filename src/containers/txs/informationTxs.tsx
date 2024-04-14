@@ -8,7 +8,7 @@ import { Color } from 'src/components/LinearGradientContainer/LinearGradientCont
 import { trimString } from 'src/utils/utils';
 import StatusTxs from 'src/components/TableTxsInfinite/component/StatusTxs';
 import { routes } from 'src/routes';
-import Raw, { RowsContainer } from './components/Row';
+import Raw, { RowsContainer } from '../../components/Row/Row';
 
 type Props = {
   data: ValueInformation | undefined;
