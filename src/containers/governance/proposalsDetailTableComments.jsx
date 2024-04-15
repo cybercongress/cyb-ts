@@ -11,6 +11,10 @@ import ActionBarContainer from 'src/containers/Search/ActionBarContainer';
 import Filters from 'src/containers/Search/Filters/Filters';
 import { useBackend } from 'src/contexts/backend/backend';
 import { useDevice } from 'src/contexts/device';
+import { useParams } from 'react-router-dom';
+
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
+import { encodeSlash } from '../../utils/utils';
 
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 
@@ -25,8 +29,11 @@ export const initialContentTypeFilterState = {
 
 const sortByLSKey = 'search-sort';
 
-function ProposalsDetailTableComments({ proposalId }) {
+function ProposalsDetailTableComments() {
+  const { proposalId } = useParams();
+  
   const { ipfsApi } = useBackend();
+  
   const query = `bostrom proposal ${proposalId}`;
   
   const [proposalHash, setproposalHash] = useState('');
@@ -40,33 +47,10 @@ function ProposalsDetailTableComments({ proposalId }) {
     initialContentTypeFilterState
   );
   const [sortBy, setSortBy] = useState(
-    localStorage.getItem(sortByLSKey) || SortBy.rank
+    localStorage.getItem(sortByLSKey) || SortBy.date
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
-
-  const { isMobile: mobile } = useDevice();
-
-  useEffect(() => {
-    setContentTypeFilter(initialContentTypeFilterState);
-    setContentType({});
-
-    (async () => {
-      let keywordHashTemp = '';
-
-      keywordHashTemp = await ipfsApi.addContent(query);
-
-      setproposalHash(keywordHashTemp);
-    })();
-  }, [query]);
-
-  const onClickRank = async (key) => {
-  if (rankLink === key) {
-    setRankLink(null);
-  } else {
-    setRankLink(key);
-  }
-};
-
+  
   const {
     data: items,
     total,
@@ -79,6 +63,45 @@ function ProposalsDetailTableComments({ proposalId }) {
     sortBy,
     linksType: linksTypeFilter,
   });
+  const { isMobile: mobile } = useDevice();
+
+  useEffect(() => {
+    setContentTypeFilter(initialContentTypeFilterState);
+    setContentType({});
+
+(async () => {
+    try {
+      let keywordHashTemp = '';
+      keywordHashTemp = await getIpfsHash(encodeSlash(query));
+      setproposalHash(keywordHashTemp);
+    } catch (error) {
+      console.error("Error getting hash from getIpfsHash:", error);
+      try {
+        keywordHashTemp = await ipfsApi.addContent(query);
+        setproposalHash(keywordHashTemp);
+      } catch (error) {
+        console.error("Error adding content using ipfsApi:", error);
+      }
+    }
+  })();
+}, [query]);
+
+  const updateComments = async () => {
+  try {
+    await refetch();
+    setRankLink(null);
+  } finally {
+    console.error('Error updating comments:', error);
+  }
+};
+  
+  const onClickRank = async (key) => {
+  if (rankLink === key) {
+    setRankLink(null);
+  } else {
+    setRankLink(key);
+  }
+};
 
   const renderItems = items
     .filter((item) => {
@@ -160,10 +183,7 @@ function ProposalsDetailTableComments({ proposalId }) {
           <ActionBarContainer
             textBtn={'Comment'}
             keywordHash={proposalHash}
-            update={() => {
-              refetch();
-              setRankLink(null);
-            }}
+            update={updateComments}
             rankLink={rankLink}
           />
         </div>
