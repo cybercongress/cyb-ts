@@ -149,7 +149,7 @@ function Governance() {
       if (!response) {
         return;
       }
-      setTableData(response.proposals || []);
+      setTableData(response || []);
     });
   }, []);
 
@@ -163,11 +163,13 @@ function Governance() {
     }
   };
 
+  console.log('tableData', tableData)
+
   const active = (tableData || [])
     .reverse()
     .filter(
       (item) =>
-        ProposalStatus[item.status as KeyOfProposalStatus] ===
+        ProposalStatus[item.status as KeyOfProposalStatus] <
         ProposalStatus.PROPOSAL_STATUS_PASSED
     )
     .map(mapProposalToCard)
