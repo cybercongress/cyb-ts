@@ -40,10 +40,7 @@ const getPoolPrice = (data, tracesDenom) => {
       const coinsPair = element.reserveCoinDenoms;
       const { balances } = element;
       let price = 0;
-      if (
-        coinsPair[0] === DENOM_LIQUID ||
-        coinsPair[1] === DENOM_LIQUID
-      ) {
+      if (coinsPair[0] === DENOM_LIQUID || coinsPair[1] === DENOM_LIQUID) {
         if (coinsPair[0] === DENOM_LIQUID) {
           price = calculatePrice(coinsPair, balances, tracesDenom);
         } else {
@@ -108,7 +105,7 @@ function useGetMarketData() {
   useEffect(() => {
     const getPpools = async () => {
       try {
-        if (dataPools && Object.keys(dataPools).length > 0) {
+        if (dataPools && dataPools.length > 0) {
           const reduceObj = dataPools.reduce(
             (obj, item) => ({
               ...obj,

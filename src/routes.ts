@@ -7,7 +7,7 @@ export const routes = {
     path: '/temple',
   },
   senateProposal: {
-    path: '/senate/:proposalId',
+    path: '/senate/:proposalId/*',
     getLink: (proposalId: number) => `/senate/${proposalId}`,
   },
   sphere: {

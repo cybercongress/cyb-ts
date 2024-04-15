@@ -37,28 +37,28 @@ function Messages({ messages, currentChatId }: Props) {
     );
   }
 
-  const messagesByDate = useMemo(() => {
-    const msgs = [...messages].reverse().slice(0, showItemsLength);
+  const messagesByDateAll = useMemo(() => {
+    return Object.entries(
+      [...messages].reverse().reduce<{
+        [date: string]: SenseItem[];
+      }>((acc, senseItem) => {
+        const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
 
-    const messagesByDate = msgs.reduce<{
-      [date: string]: SenseItem[];
-    }>((acc, senseItem) => {
-      const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
+        if (!acc[date]) {
+          acc[date] = [];
+        }
 
-      if (!acc[date]) {
-        acc[date] = [];
-      }
+        acc[date].push(senseItem);
 
-      acc[date].push(senseItem);
+        return acc;
+      }, {})
+    );
+  }, [messages]);
 
-      return acc;
-    }, {});
-
-    // maybe need order?
-    const arr = Object.entries(messagesByDate);
-
-    return arr;
-  }, [messages, showItemsLength]);
+  const messagesByDate = useMemo(
+    () => messagesByDateAll.slice(0, showItemsLength),
+    [messagesByDateAll, showItemsLength]
+  );
 
   return (
     // wrappers for correct scroll

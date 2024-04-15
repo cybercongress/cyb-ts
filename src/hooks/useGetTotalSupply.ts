@@ -69,7 +69,7 @@ function useGetTotalSupply(
                 const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
                   ibcDataDenom[key];
                 const denomInfoFromList = findDenomInTokenList(baseDenom);
-                if (denomInfoFromList !== null) {
+                if (denomInfoFromList) {
                   if (
                     Object.prototype.hasOwnProperty.call(
                       denomInfoFromList,
