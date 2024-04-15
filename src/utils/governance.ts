@@ -62,17 +62,10 @@ export const getProposer = async (id) => {
   }
 };
 
-export const getMinDeposit = async () =>
-  new Promise((resolve) => {
-    lcdCosmosApi
-      .govParams('deposit')
-      .then((response) => {
-        resolve(response.data);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  });
+export const getMinDeposit = async () => {
+  const response = await lcdCosmosApi.govParams('deposit');
+  return response.data;
+};
 
 export const getTableVoters = async (id, offset = 0, limit = 20) => {
   try {
@@ -82,7 +75,7 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
         offset * limit
       }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
     });
-    let r: Omit<GetTxsEventResponse, 'txResponses'> & {
+    const r: Omit<GetTxsEventResponse, 'txResponses'> & {
       tx_responses: GetTxsEventResponse['txResponses'];
     } = response.data;
 

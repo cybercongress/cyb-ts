@@ -79,12 +79,12 @@ export const mapIndexerTransactionToEntity = (
 //   };
 // };
 
-export const mapLinkToEntity = (
+export const mapLinkToLinkDto = (
   from: ParticleCid,
   to: ParticleCid,
   neuron: NeuronAddress = '',
   timestamp: number = 0
-): LinkDbEntity => ({
+): LinkDto => ({
   from,
   to,
   neuron,

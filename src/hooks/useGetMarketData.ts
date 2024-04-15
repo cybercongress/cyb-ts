@@ -44,7 +44,11 @@ const getPoolPrice = (data, tracesDenom) => {
         if (coinsPair[0] === DENOM_LIQUID) {
           price = calculatePrice(coinsPair, balances, tracesDenom);
         } else {
-          price = calculatePrice(coinsPair.reverse(), balances, tracesDenom);
+          price = calculatePrice(
+            [...coinsPair].reverse(),
+            balances,
+            tracesDenom
+          );
         }
       } else {
         price = calculatePrice(coinsPair, balances, tracesDenom);

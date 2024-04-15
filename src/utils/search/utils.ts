@@ -1,17 +1,13 @@
 import axios from 'axios';
 
 import { CyberClient } from '@cybercongress/cyber-js';
-import { QueryDelegatorDelegationsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
-import { INDEX_HTTPS, LCD_URL } from 'src/constants/config';
-import { Cyber } from 'src/generated/Cyber';
+import { LCD_URL } from 'src/constants/config';
 import { Cosmos } from 'src/generated/Cosmos';
 
-import { QuerySearchResponse } from '@cybercongress/cyber-js/build/codec/cyber/rank/v1beta1/query';
 import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
-const lcdCyber = new Cyber({ url: LCD_URL });
 const lcdCosmos = new Cosmos({ url: LCD_URL });
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -727,7 +723,7 @@ export const searchByHash = async (
   page: number
 ) => {
   try {
-    const results = (await client.search(hash, page)) as QuerySearchResponse;
+    const results = await client.search(hash, page);
 
     return results;
   } catch (error) {
@@ -747,10 +743,10 @@ export const getDelegatorDelegations = async (
   let done = false;
   while (!done) {
     // eslint-disable-next-line no-await-in-loop
-    const responsedelegatorDelegations = (await client.delegatorDelegations(
+    const responsedelegatorDelegations = await client.delegatorDelegations(
       addressBech32,
       nextKey
-    )) as QueryDelegatorDelegationsResponse;
+    );
 
     delegationData.push(...responsedelegatorDelegations.delegationResponses);
 

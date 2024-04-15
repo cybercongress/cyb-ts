@@ -228,7 +228,7 @@ class HeliaNode implements IpfsNode {
       const data = new TextEncoder().encode(content);
       cid = await this.fs!.addBytes(data, optionsV0);
     }
-    console.log('----added to helia', cid.toString());
+    // console.log('----added to helia', cid.toString());
     this.pin(cid.toString(), options);
     return cid.toString();
   }

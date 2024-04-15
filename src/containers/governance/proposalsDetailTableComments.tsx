@@ -14,18 +14,11 @@ import { useDevice } from 'src/contexts/device';
 import { useParams } from 'react-router-dom';
 
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { encodeSlash } from '../../utils/utils';
-
 import { IpfsContentType } from 'src/utils/ipfs/ipfs';
 
-export const initialContentTypeFilterState = {
-  text: false,
-  image: false,
-  video: false,
-  pdf: false,
-  link: false,
-  // audio: false,
-};
+import { encodeSlash } from '../../utils/utils';
+
+import { initialContentTypeFilterState } from '../Search/constants';
 
 const sortByLSKey = 'search-sort';
 
@@ -63,6 +56,7 @@ function ProposalsDetailTableComments() {
     sortBy,
     linksType: linksTypeFilter,
   });
+
   const { isMobile: mobile } = useDevice();
   useEffect(() => {
     setContentTypeFilter(initialContentTypeFilterState);

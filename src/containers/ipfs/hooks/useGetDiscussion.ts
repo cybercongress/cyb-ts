@@ -17,7 +17,8 @@ function useGetLinks(
   { hash, type = LinksTypeFilter.from }: Props,
   { skip = false } = {}
 ) {
-  const [hasNextPage, setHasNextPage] = useState(true);
+  // always no next page when skip
+  const [hasNextPage, setHasNextPage] = useState(!skip);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
     loading: isFetching,
@@ -39,6 +40,12 @@ function useGetLinks(
   });
 
   useEffect(() => {
+    if (!skip) {
+      setHasNextPage(true);
+    }
+  }, [skip]);
+
+  useEffect(() => {
     isInitialLoading && setIsInitialLoading(false);
   }, [isFetching, isInitialLoading]);
 
@@ -49,9 +56,11 @@ function useGetLinks(
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
+          setHasNextPage(false);
           return prev;
         }
-        setHasNextPage(fetchMoreResult.cyberlinks.length > 0);
+
+        setHasNextPage(fetchMoreResult?.cyberlinks.length >= limit);
 
         return {
           ...prev,
@@ -65,7 +74,6 @@ function useGetLinks(
   const total = cyberlinksCountQuery.data[type];
   const particles = (data?.cyberlinks || []).map((item) => {
     return {
-      // ...item,
       cid: item[type === 'from' ? 'to' : 'from'],
       type,
       timestamp: item.timestamp,

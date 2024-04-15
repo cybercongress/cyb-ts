@@ -91,7 +91,7 @@ function TypeProps({ type }) {
   );
 }
 
-function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
+function AcceptedCard({ id, name, votes, type, timeEnd }) {
   return (
     <Display>
       <Pane position="absolute" right="5px" top="5px">
@@ -112,7 +112,7 @@ function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
   );
 }
 
-function RejectedCard({ id, name, votes, type, amount, timeEnd }) {
+function RejectedCard({ id, name, votes, type, timeEnd }) {
   return (
     <Display color="red">
       <Pane position="absolute" right="5px" top="5px">
@@ -137,13 +137,9 @@ function ActiveCard({
   id,
   name,
   state,
-  votes,
   type = '',
-  amount = 0,
   timeEndDeposit,
   timeEndVoting,
-  totalDeposit,
-  minDeposit,
 }) {
   return (
     <Display color="blue">

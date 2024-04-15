@@ -85,11 +85,18 @@ export const createSenseApi = (
   myAddress?: NeuronAddress,
   followingAddresses = [] as NeuronAddress[]
 ) => ({
-  getList: () => dbApi.getSenseList(myAddress),
+  getList: async () => {
+    const result = await dbApi.getSenseList(myAddress);
+    console.log(
+      '--- getList unread',
+      result.filter((r) => r.unreadCount > 0)
+    );
+  },
   markAsRead: async (
     id: NeuronAddress | ParticleCid,
     lastTimestampRead?: number
   ) => {
+    console.time(`--- senseMarkAsRead done ${id}`);
     const syncItem = await dbApi.getSyncStatus(myAddress!, id);
 
     let unreadCount = 0;
@@ -125,8 +132,8 @@ export const createSenseApi = (
       timestampRead, //  conditional or read all
       unreadCount,
     });
-    // console.log('------senseMarkAsRead', syncItem, res, timestampRead);
-    // console.timeEnd(`---senseMarkAsRead done ${id}`);
+    console.log('---  - senseMarkAsReadres', syncItem, res, timestampRead);
+    console.timeEnd(`--- senseMarkAsRead done ${id}`);
     return res;
   },
   getAllParticles: (fields: string[]) => dbApi.getParticlesRaw(fields),
