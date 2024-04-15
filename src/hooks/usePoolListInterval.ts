@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/codec/tendermint/liquidity/v1beta1/query';
+import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
 import { Option } from 'src/types';
 import { useEffect, useState } from 'react';
 import { setPools } from 'src/redux/features/warp';
