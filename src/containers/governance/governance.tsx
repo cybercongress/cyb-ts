@@ -163,8 +163,6 @@ function Governance() {
     }
   };
 
-  console.log('tableData', tableData)
-
   const active = (tableData || [])
     .reverse()
     .filter(
