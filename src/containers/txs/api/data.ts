@@ -1,15 +1,12 @@
 import { LCD_URL } from 'src/constants/config';
 import { dataOrNull } from 'src/utils/axios';
 
-import { Cosmos as CosmosLcdApi } from 'src/generated/Cosmos';
-
-import { AxiosResponse } from 'axios';
-
-const lcdCosmosApi = new CosmosLcdApi({ baseURL: LCD_URL });
-
-// type ProposalType = ReturnType<typeof lcdCosmosApi.proposal> extends Promise<AxiosResponse<infer R>> ? R : never;
+import axios from 'axios';
 
 export const getTxs = async (txHash: string) => {
-  const response = await lcdCosmosApi.getTx(txHash);
+  const response = await axios({
+    method: 'get',
+    url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txHash}`,
+  });
   return dataOrNull(response);
 };

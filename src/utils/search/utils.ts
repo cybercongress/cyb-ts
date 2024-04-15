@@ -4,11 +4,8 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { CID_TWEET } from 'src/constants/app';
 import { LCD_URL } from 'src/constants/config';
-import { Cosmos } from 'src/generated/Cosmos';
-
 import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
-const lcdCosmos = new Cosmos({ url: LCD_URL });
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
 
@@ -576,24 +573,17 @@ export async function getTransactions({
 //     ],
 //   });
 // }
-export async function getCyberlinksTotal(address) {
+export async function getCyberlinksTotal(address: string) {
   try {
-    // const response = await axios({
-    //   method: 'get',
-    //   url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=message.action='/cyber.graph.v1beta1.MsgCyberlink'&events=cyberlink.neuron='${address}'`,
-    // });
-
-    const response = await lcdCosmos.getTxsEvent({
-      paginationOffset: 0,
-      paginationLimit: 5,
-      order_by: 'ORDER_BY_ASC',
+    const response = await getTransactions({
       events: [
-        "message.action='/cyber.graph.v1beta1.MsgCyberlink'",
-        `cyberlink.neuron='${address}'`,
+        { key: 'message.action', value: '/cyber.graph.v1beta1.MsgCyberlink' },
+        { key: 'cyberlink.neuron', value: address },
       ],
+      pagination: { limit: 5, offset: 0 },
     });
 
-    return response.data.pagination?.total;
+    return response.data?.pagination?.total;
   } catch (error) {
     console.log(error);
     return undefined;

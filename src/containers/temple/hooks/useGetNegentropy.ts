@@ -1,21 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { LCD_URL } from 'src/constants/config';
-
-import { Cyber as CyberLcdApi } from 'src/generated/Cyber';
-import { dataOrNull } from 'src/utils/axios';
-
-const lcdCyberApi = new CyberLcdApi({ baseURL: LCD_URL });
-
-const getNegentropy = async () => {
-  const response = await lcdCyberApi.negentropy();
-  return dataOrNull(response);
-};
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const keyQuery = 'negentropy';
 
 function useGetNegentropy(refetchInterval: number | undefined) {
+  const queryClient = useQueryClient();
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     amount: 0,
     time: 0,
@@ -24,9 +15,10 @@ function useGetNegentropy(refetchInterval: number | undefined) {
   const { data, status } = useQuery({
     queryKey: [keyQuery],
     queryFn: async () => {
-      const result = await getNegentropy();
+      const result = await queryClient?.negentropy();
       return { negentropy: result?.negentropy || 0, timestamp: Date.now() };
     },
+    enabled: Boolean(queryClient),
     refetchInterval,
   });
 

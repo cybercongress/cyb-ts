@@ -1,4 +1,16 @@
-import { CosmosTxV1Beta1GetTxResponse } from 'src/generated/data-contracts';
+type CosmosTxV1Beta1GetTxResponse = {
+  tx_response?: {
+    txhash: string;
+    raw_log: string;
+    height: string;
+    code: number;
+    timestamp: string;
+    body?: {
+      memo: string;
+      messages: object[];
+    };
+  };
+};
 
 export const mapResponseDataGetTxs = (
   dataTxs: CosmosTxV1Beta1GetTxResponse

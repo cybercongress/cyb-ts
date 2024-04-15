@@ -8,13 +8,12 @@ import { MainContainer } from '../portal/components';
 import { getTxs } from './api/data';
 import { ValueInformation } from './type';
 import { mapResponseDataGetTxs } from './api/mapping';
-import { CosmosTxV1Beta1TxBody } from 'src/generated/data-contracts';
 import { useAdviser } from 'src/features/adviser/context';
 
 function TxsDetails() {
   const { isMobile: mobile } = useDevice();
   const { txHash } = useParams();
-  const [msgs, setMsgs] = useState<CosmosTxV1Beta1TxBody['messages']>();
+  const [msgs, setMsgs] = useState();
   const [information, setInformation] = useState<ValueInformation>();
   const { setAdviser } = useAdviser();
 

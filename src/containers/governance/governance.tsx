@@ -6,7 +6,6 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
-import { ProposalsData } from 'src/generated/data-contracts';
 import dateFormat from 'dateformat';
 
 import { getProposals, getMinDeposit } from '../../utils/governance';
@@ -68,9 +67,8 @@ function ProposalWrapper({
   );
 }
 
-const mapProposalToCard = (
-  proposal: ProposalsData['proposals'] extends (infer U)[] ? U : never
-) => {
+//  ProposalsData['proposals'] extends (infer U)[] ? U : never
+const mapProposalToCard = (proposal: any) => {
   const {
     proposal_id,
     content,
@@ -99,7 +97,7 @@ const mapProposalToCard = (
 
 function Governance() {
   const queryClient = useQueryClient();
-  const [tableData, setTableData] = useState<ProposalsData['proposals']>([]);
+  const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
