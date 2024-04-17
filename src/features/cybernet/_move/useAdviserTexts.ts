@@ -13,7 +13,7 @@ function useAdviserTexts({ isLoading, error, defaultText }: Props) {
 
   useEffect(() => {
     let adviserText = '';
-    let color = '';
+    let color;
 
     if (error) {
       adviserText = error;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, InputNumber } from 'src/components';
 import styles from './WeightsSetter.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
-import useExecuteCybernetContract from '../../../../useExecuteCybernetContract';
+import useExecuteCybernetContract from '../../../../../useExecuteCybernetContract';
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { Link } from 'react-router-dom';
@@ -12,8 +12,7 @@ type Props = {
   netuid: number;
   callback: () => void;
   neurons: SubnetNeuron[];
-
-  max_weights_limit: number;
+  maxWeightsLimit: number;
 };
 
 function WeightsSetter({
@@ -21,9 +20,9 @@ function WeightsSetter({
   netuid,
   callback,
   neurons,
-  max_weights_limit,
+  maxWeightsLimit,
 }: Props) {
-  const [weights, setWeights] = useState(new Array(length).fill(0));
+  const [weights, setWeights] = useState(new Array(length).fill(10));
 
   const { setAdviser } = useAdviser();
 
@@ -32,9 +31,7 @@ function WeightsSetter({
       set_weights: {
         dests: new Array(length).fill(0).map((_, i) => i),
         netuid,
-        weights: weights.map(
-          (w) => +((max_weights_limit * w) / 100).toFixed(0)
-        ),
+        weights: weights.map((w) => +((maxWeightsLimit * w) / 100).toFixed(0)),
         version_key: 0,
       },
     },
@@ -45,17 +42,10 @@ function WeightsSetter({
     },
   });
 
-  const sum = weights.reduce((acc, w) => acc + w, 0);
-
   return (
     <div>
-      <br />
-      {/* <p>Set weights for operators. Max weights limit: {max_weights_limit}</p> */}
-
-      <p>Set weights for operators</p>
-      <p>Sum: {sum}% (max 100%)</p>
-
-      <br />
+      {/* <p>Set weights for operators</p>
+      <br /> */}
 
       <div className={styles.group}>
         {new Array(length).fill(null).map((_, i) => {
@@ -64,6 +54,7 @@ function WeightsSetter({
             <div key={i}>
               <Link to={cybernetRoutes.delegator.getLink(hotkey)}>{uid}</Link>
               <InputNumber
+                maxValue={100}
                 value={weights[i]}
                 onChange={(e) => {
                   const newWeights = [...weights];
@@ -77,7 +68,7 @@ function WeightsSetter({
       </div>
 
       <br />
-      <Button onClick={submit} disabled={sum > 100 || sum === 0}>
+      <Button onClick={submit} disabled={false}>
         Submit
       </Button>
     </div>

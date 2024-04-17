@@ -7,6 +7,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import { DenomArr } from 'src/components';
 import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
+import useQueryCybernetContract from '../../../useQueryCybernetContract.refactor';
 
 type Props = {
   netuid: number;
@@ -24,6 +25,17 @@ function SubnetActionBar({ netuid, burn }: Props) {
   const address = useAppSelector(selectCurrentAddress);
 
   const { setAdviser } = useAdviser();
+
+  const { data: addressUid } = useQueryCybernetContract({
+    query: {
+      get_uid_for_hotkey_on_subnet: {
+        netuid,
+        hotkey: address,
+      },
+    },
+  });
+
+  const canRegister = addressUid === null;
 
   const { mutate: register } = useExecuteCybernetContract({
     query: {
@@ -62,6 +74,9 @@ function SubnetActionBar({ netuid, burn }: Props) {
 
   switch (step) {
     case Steps.INITIAL:
+      if (!canRegister) {
+        break;
+      }
       button = {
         text: 'Register to subnet',
         onClick: register,

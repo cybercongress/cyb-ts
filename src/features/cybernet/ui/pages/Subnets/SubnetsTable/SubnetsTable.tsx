@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
 import { Account, Cid } from 'src/components';
 import NProvider from './NProvider/NProvider';
+import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 
 type Props = {
   data: SubnetInfo[];
@@ -13,7 +14,7 @@ type Props = {
 
 const columnHelper = createColumnHelper<any>();
 
-function RootSubnetsTable({ data }: Props) {
+function SubnetsTable({ data }: Props) {
   const navigate = useNavigate();
 
   return (
@@ -33,8 +34,8 @@ function RootSubnetsTable({ data }: Props) {
               cell: (info) => info.getValue(),
             }),
             columnHelper.accessor('emission_values', {
-              header: 'Emission',
-              cell: (info) => info.getValue() / 10000000 + '%',
+              header: 'Emission block',
+              cell: (info) => (info.getValue() / BLOCK_REWARD).toFixed(2) + '%',
             }),
             columnHelper.accessor('owner', {
               header: 'owner',
@@ -84,4 +85,4 @@ function RootSubnetsTable({ data }: Props) {
   );
 }
 
-export default RootSubnetsTable;
+export default SubnetsTable;

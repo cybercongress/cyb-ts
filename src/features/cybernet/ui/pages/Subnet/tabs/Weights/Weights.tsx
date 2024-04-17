@@ -4,19 +4,19 @@ import WeightsSetter from './WeightsSetter/WeightsSetter';
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import Display from 'src/components/containerGradient/Display/Display';
-import useQueryCybernetContract from '../../../useQueryCybernetContract.refactor';
+import useQueryCybernetContract from '../../../../useQueryCybernetContract.refactor';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 
 type Props = {
   neurons: SubnetNeuron[];
   netuid: number;
-  max_weights_limit: number;
+  maxWeightsLimit: number;
 };
 
-function Weights({ neurons, netuid, max_weights_limit }: Props) {
+function Weights({ neurons, netuid, maxWeightsLimit }: Props) {
   const weightsQuery = useQueryCybernetContract<any[]>({
     query: {
-      get_weights: {
+      get_weights_sparse: {
         netuid,
       },
     },
@@ -41,10 +41,16 @@ function Weights({ neurons, netuid, max_weights_limit }: Props) {
   return (
     <div>
       <Display title={<DisplayTitle title="Weights" />}>
-        <WeightsTable data={weightsQuery.data!} neurons={neurons} />
+        <WeightsTable
+          data={weightsQuery.data!}
+          neurons={neurons}
+          maxWeightsLimit={maxWeightsLimit}
+        />
       </Display>
 
-      <Display title={<DisplayTitle title="Weights" />}>
+      <br />
+
+      <Display title={<DisplayTitle title="Weights setting" />}>
         <WeightsSetter
           netuid={netuid}
           length={length}
@@ -52,7 +58,7 @@ function Weights({ neurons, netuid, max_weights_limit }: Props) {
           callback={() => {
             weightsQuery.refetch();
           }}
-          max_weights_limit={max_weights_limit}
+          maxWeightsLimit={maxWeightsLimit}
         />
       </Display>
     </div>

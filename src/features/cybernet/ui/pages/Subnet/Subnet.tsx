@@ -1,23 +1,35 @@
-import { Link, useParams } from 'react-router-dom';
-import { MainContainer } from 'src/components';
+import { Link, Route, Routes, useParams } from 'react-router-dom';
+import { MainContainer, Tabs } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import {
   SubnetHyperParameters,
-  SubnetInfo,
+  SubnetInfo as SubnetInfoType,
   SubnetNeuron,
 } from 'src/features/cybernet/types';
 import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { routes } from 'src/routes';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
-import Weights from './Weights/Weights';
+import Weights from './tabs/Weights/Weights';
 import { cybernetRoutes } from '../../routes';
 import SubnetNeurons from './SubnetNeurons/SubnetNeurons';
 import styles from './Subnet.module.scss';
+import SubnetHyperParams from './tabs/SubnetHyperParams/SubnetHyperParams';
+import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
 
 function Subnet() {
-  const { id } = useParams();
+  const { id, ...rest } = useParams();
+  const tab = rest['*'];
+
   const netuid = Number(id!);
+
+  const subnetQuery = useCybernetContract<SubnetInfoType>({
+    query: {
+      get_subnet_info: {
+        netuid,
+      },
+    },
+  });
 
   const neuronsQuery = useCybernetContract<SubnetNeuron[]>({
     query: {
@@ -27,82 +39,55 @@ function Subnet() {
     },
   });
 
-  const subnetQuery = useCybernetContract<SubnetInfo>({
-    query: {
-      get_subnet_info: {
-        netuid,
-      },
-    },
-  });
-
-  const hyperparamsQuery = useCybernetContract<SubnetHyperParameters>({
-    query: {
-      get_subnet_hyperparams: {
-        netuid,
-      },
-    },
-  });
-
-  console.info('info', subnetQuery.data);
-  console.info('hyperparams', hyperparamsQuery);
-
-  const subnetNeurons = neuronsQuery.data;
+  console.info('subnet info', subnetQuery.data);
 
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title={'Subnet: ' + id} />}>
-        <ul className={styles.list}>
-          {subnetQuery.data &&
-            Object.keys(subnetQuery.data).map((item) => {
-              const value = subnetQuery.data[item];
-              let content = value;
+      <Tabs
+        options={[
+          {
+            to: './',
+            key: 'info',
+            text: 'info',
+          },
+          {
+            to: './hyperparams',
+            key: 'hyperparams',
+            text: 'hyperparams',
+          },
+          {
+            to: './weights',
+            key: 'weights',
+            text: 'weights',
+          },
+        ]}
+        selected={tab || 'info'}
+      />
 
-              if (item === 'owner') {
-                content = (
-                  <Link to={routes.neuron.getLink(value)}>{value}</Link>
-                );
-              }
+      <Routes>
+        <Route path="/hyperparams" element={<SubnetHyperParams />} />
 
-              if (item === 'metadata') {
-                content = (
-                  <Link to={routes.oracle.ask.getLink(value)}>{value}</Link>
-                );
-              }
+        {subnetQuery.data?.subnetwork_n > 0 && (
+          <Route
+            path="/weights"
+            element={
+              <Weights
+                neurons={neuronsQuery.data || []}
+                netuid={netuid}
+                maxWeightsLimit={subnetQuery.data.max_weights_limit}
+              />
+            }
+          />
+        )}
 
-              return (
-                <li key={item}>
-                  {item}: <div>{content}</div>
-                </li>
-              );
-            })}
-        </ul>
-      </Display>
-
-      <Display title={<DisplayTitle title="Hyperparams" />}>
-        <ul className={styles.list}>
-          {hyperparamsQuery.data &&
-            Object.keys(hyperparamsQuery.data).map((item) => {
-              const value = hyperparamsQuery.data[item];
-              let content = value;
-
-              return (
-                <li key={item}>
-                  {item}: <div>{content}</div>
-                </li>
-              );
-            })}
-        </ul>
-      </Display>
-
-      {subnetNeurons && <SubnetNeurons neurons={subnetNeurons} />}
-
-      {subnetQuery.data?.subnetwork_n > 0 && (
-        <Weights
-          neurons={neuronsQuery.data || []}
-          netuid={netuid}
-          max_weights_limit={subnetQuery.data.max_weights_limit}
+        <Route
+          path="/"
+          element={
+            <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
+          }
         />
-      )}
+      </Routes>
+
       <ActionBar netuid={netuid} burn={subnetQuery.data?.burn} />
     </MainContainer>
   );
