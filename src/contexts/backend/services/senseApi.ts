@@ -91,6 +91,7 @@ export const createSenseApi = (
       '--- getList unread',
       result.filter((r) => r.unreadCount > 0)
     );
+    return result;
   },
   markAsRead: async (
     id: NeuronAddress | ParticleCid,
