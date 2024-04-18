@@ -5,6 +5,7 @@ import Table from 'src/components/Table/Table';
 import { Link, useNavigate } from 'react-router-dom';
 import { Delegator } from 'src/features/cybernet/types';
 import { routes } from 'src/routes';
+import { Account } from 'src/components';
 
 type Props = {
   data: Delegator[];
@@ -23,9 +24,10 @@ function DelegatorsTable({ data }: Props) {
             columnHelper.accessor('delegate', {
               header: 'delegate',
               cell: (info) => (
-                <Link to={'../delegators/' + info.getValue()}>
-                  {info.getValue()}
-                </Link>
+                // <Link to={'../delegators/' + info.getValue()}>
+                <Account address={info.getValue()} />
+                // {info.getValue()}
+                // </Link>
               ),
             }),
 
