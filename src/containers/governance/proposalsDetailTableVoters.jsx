@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-
+import styles from './styles.scss';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
@@ -101,7 +101,14 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
   };
 
   if (loading) {
-    return <Dots />;
+    return (
+      <div className={styles.loader}>
+        <h4>
+          Loading
+          <Dots />
+        </h4>
+      </div>
+    );
   }
 
   const rowsTable = items.map((item) => {

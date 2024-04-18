@@ -309,23 +309,25 @@ function ProposalsDetail({ defaultAccount }) {
           update={() => setUpdateFunc((item) => item + 1)}
           addressActive={addressActive}
         />
-      ) : addressActive === null ? (
-        <ActionBar>
-          <Pane>
-            <Link
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                display: 'block',
-              }}
-              className="btn"
-              to="/keys"
-            >
-              connect
-            </Link>
-          </Pane>
-        </ActionBar>
-      ) : null}
+      ) : (
+        !addressActive && (
+          <ActionBar>
+            <Pane>
+              <Link
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  display: 'block',
+                }}
+                className="btn"
+                to="/keys"
+              >
+                connect
+              </Link>
+            </Pane>
+          </ActionBar>
+        )
+      )}
     </>
   );
 }

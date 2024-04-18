@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
-import ProposalsDetailTableComments from './proposalsDetailTableComments';
+import ProposalsDetailTableComments from './ProposalsDetailTableComments';
 import ProposalsIdDetail from './proposalsIdDetail';
+import styles from './styles.scss';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import Layout from './tabsLayout';
 
@@ -24,12 +25,14 @@ function ProposalsRoutes({
         <Route
           path="meta"
           element={
-            <ProposalsIdDetail
-              proposals={proposals}
-              tallying={tallying}
-              tally={tally}
-              totalDeposit={totalDeposit}
-            />
+            <div className={styles.meta}>
+              <ProposalsIdDetail
+                proposals={proposals}
+                tallying={tallying}
+                tally={tally}
+                totalDeposit={totalDeposit}
+              />
+            </div>
           }
         />
         <Route
