@@ -44,6 +44,7 @@ const setupStoragePersistence = async () => {
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: SenseApi;
+  mlApi: Remote<BackgroundWorker['mlApi']> | null;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
   dbApi: DbApiWrapper | null;
@@ -219,6 +220,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         // backgroundWorker: backgroundWorkerInstance,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi: backgroundWorkerInstance.ipfsApi,
+        mlApi: backgroundWorkerInstance.mlApi,
         defferedDbApi: backgroundWorkerInstance.defferedDbApi,
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()

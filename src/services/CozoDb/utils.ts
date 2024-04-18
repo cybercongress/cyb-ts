@@ -89,6 +89,10 @@ export const entityToArray = (
     .map((col) => {
       const key = col.column as keyof DbEntity;
       const value = obj[key];
+
+      if (/<[a-z]+\d*;\d+>/i.test(col.type)) {
+        return `[${value}]`;
+      }
       return col.type === 'Json'
         ? `parse_json('${JSON.stringify(value)}')`
         : col.type === 'String'

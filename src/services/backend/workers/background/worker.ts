@@ -20,6 +20,7 @@ import {
 import { ParticleCid } from 'src/types/base';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { PipelineType, pipeline } from '@xenova/transformers';
 
 import { exposeWorkerApi } from '../factoryMethods';
 
@@ -32,6 +33,20 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
 
+type MlModelParams = {
+  name: PipelineType;
+  model: string;
+};
+const mlModelMap: Record<string, MlModelParams> = {
+  featureExtractor: {
+    name: 'feature-extraction',
+    model: 'Xenova/all-MiniLM-L6-v2',
+  },
+  summarization: {
+    name: 'summarization',
+    model: 'ahmedaeb/distilbart-cnn-6-6-optimised',
+  },
+};
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
 
@@ -44,10 +59,48 @@ const createBackgroundWorkerApi = () => {
   let ipfsNode: CybIpfsNode | undefined;
   const defferedDbSaver = new DeferredDbSaver(dbInstance$);
 
+  const mlInstances: Record<keyof typeof mlModelMap, any> = {};
+
   const ipfsQueue = new QueueManager(ipfsInstance$, {
     defferedDbSaver,
   });
   const broadcastApi = new BroadcastChannelSender();
+
+  //   const generator = await pipeline('summarization', 'ahmedaeb/distilbart-cnn-6-6-optimised');
+  // const text = 'The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, ' +
+  //   'and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. ' +
+  //   'During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest ' +
+  //   'man-made structure in the world, a title it held for 41 years until the Chrysler Building in New ' +
+  //   'York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to ' +
+  //   'the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the ' +
+  //   'Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second ' +
+  //   'tallest free-standing structure in France after the Millau Viaduct.';
+  // const output = await generator(text, {
+  //   max_new_tokens: 100,
+  // });
+
+  const initMlInstance = async (name: keyof typeof mlModelMap) => {
+    if (!mlInstances[name]) {
+      broadcastApi.postServiceStatus('ml', 'starting');
+      const model = mlModelMap[name];
+      mlInstances[name] = await pipeline(model.name, model.model, {
+        progress_callback: (progress: any) => {
+          console.log('progress_callback', name, progress);
+        },
+        // if (progress.status === "ready") {
+        //   broadcastApi.postServiceStatus('ml', 'started')
+        //   }
+      })
+        .then((result) => {
+          broadcastApi.postServiceStatus('ml', 'started');
+          return result;
+        })
+        .catch((e) =>
+          broadcastApi.postServiceStatus('ml', 'error', e.toString())
+        );
+      console.log('----mlInstances', mlInstances);
+    }
+  };
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,6 +116,7 @@ const createBackgroundWorkerApi = () => {
 
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     dbInstance$.next(dbApiProxy);
+    initMlInstance('featureExtractor');
   };
 
   const stopIpfs = async () => {
@@ -100,6 +154,17 @@ const createBackgroundWorkerApi = () => {
     },
   };
 
+  const mlApi = {
+    getEmbedding: async (text: string) => {
+      const output = await mlInstances.featureExtractor(text, {
+        pooling: 'mean',
+        normalize: true,
+      });
+
+      return output.data;
+    },
+  };
+
   const ipfsApi = {
     start: startIpfs,
     stop: stopIpfs,
@@ -127,6 +192,7 @@ const createBackgroundWorkerApi = () => {
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     defferedDbApi: proxy(defferedDbApi),
+    mlApi: proxy(mlApi),
     ipfsQueue: proxy(ipfsQueue),
     restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
@@ -135,7 +201,9 @@ const createBackgroundWorkerApi = () => {
 };
 
 const backgroundWorker = createBackgroundWorkerApi();
+
 export type IpfsApi = Remote<typeof backgroundWorker.ipfsApi>;
+
 export type BackgroundWorker = typeof backgroundWorker;
 
 // Expose the API to the main thread as shared/regular worker

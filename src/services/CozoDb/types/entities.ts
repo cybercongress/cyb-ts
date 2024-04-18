@@ -107,9 +107,15 @@ export type CommunityDbEntity = {
   follower: boolean;
 };
 
+export type EmbeddinsDbEntity = {
+  cid: ParticleCid;
+  vec: number[];
+};
+
 export type DbEntity =
   | TransactionDbEntity
   | ParticleDbEntity
   | SyncStatusDbEntity
   | ConfigDbEntity
-  | SyncQueueDbEntity;
+  | SyncQueueDbEntity
+  | EmbeddinsDbEntity;

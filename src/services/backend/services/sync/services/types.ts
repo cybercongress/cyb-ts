@@ -8,6 +8,6 @@ export type ServiceDeps = {
   dbInstance$: Observable<DbApi | undefined>;
   ipfsInstance$: Observable<CybIpfsNode | undefined>;
   params$: Observable<SyncServiceParams> | undefined;
-  followings$: Observable<NeuronAddress[]> | undefined;
+  followings$?: Observable<NeuronAddress[]> | undefined;
   waitForParticleResolve?: FetchIpfsFunc;
 };
