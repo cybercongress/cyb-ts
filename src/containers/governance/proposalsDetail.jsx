@@ -289,7 +289,6 @@ function ProposalsDetail({ defaultAccount }) {
         />
 
         <ProposalsRoutes
-          proposalId={proposalId}
           proposals={proposals}
           tallying={tallying}
           tally={tally}

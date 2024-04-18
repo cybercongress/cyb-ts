@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './styles.scss';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
@@ -50,11 +50,13 @@ const optionTextColor = (option) => {
   }
 };
 
-function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
+function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
+  const { proposalId } = useParams();
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [allPage, setAllPage] = useState(0);
+  const [hoveredTime, setHoveredRow] = useState(null);
 
   useEffect(() => {
     getFirstItem();
@@ -102,12 +104,10 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
 
   if (loading) {
     return (
-      <div className={styles.loader}>
-        <h4>
-          Loading
-          <Dots />
-        </h4>
-      </div>
+      <h4 className={styles.loader}>
+        Loading
+        <Dots />
+      </h4>
     );
   }
 
@@ -122,7 +122,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
     }
 
     return (
-      <ContainerGradientText status={optionTextColor(item.option)} key={d}>
+      <ContainerGradientText status={optionTextColor(item.option)} key={key}>
         <Table.Row
           borderBottom="none"
           paddingLeft={20}
@@ -148,8 +148,16 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
               {optionText(item.option)}
             </Text>
           </Table.TextCell>
-          <Table.TextCell textAlign="end">
-            <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
+          <Table.TextCell
+            textAlign="end"
+            onMouseEnter={() => setHoveredRow(item.voter)}
+            onMouseLeave={() => setHoveredRow(null)}
+          >
+            {hoveredTime === item.voter ? (
+              <TextTable>{new Date(item.timestamp).toLocaleString()}</TextTable>
+            ) : (
+              <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
+            )}
           </Table.TextCell>
         </Table.Row>
       </ContainerGradientText>

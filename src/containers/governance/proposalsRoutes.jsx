@@ -6,7 +6,6 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import Layout from './tabsLayout';
 
 function ProposalsRoutes({
-  proposalId,
   proposals,
   tallying,
   tally,
@@ -17,10 +16,7 @@ function ProposalsRoutes({
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route
-          index
-          element={<ProposalsDetailTableComments proposalId={proposalId} />}
-        />
+        <Route index element={<ProposalsDetailTableComments />} />
         <Route path="comments" element={<ProposalsDetailTableComments />} />
         <Route
           path="meta"
@@ -39,10 +35,7 @@ function ProposalsRoutes({
           path="voters"
           element={
             proposals.status > proposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ? (
-              <ProposalsIdDetailTableVoters
-                proposalId={proposalId}
-                updateFunc={updateFunc}
-              />
+              <ProposalsIdDetailTableVoters updateFunc={updateFunc} />
             ) : null
           }
         />
