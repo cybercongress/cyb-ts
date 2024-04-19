@@ -47,11 +47,14 @@ function Drive() {
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [searchEmbedding, setSearchEmbedding] = useState('');
+  const [summarizeCid, setSummarizeCid] = useState('');
+  const [outputText, setOutputText] = useState('');
+  const [questionText, setQuestionText] = useState('');
   const [embeddingsProcessStatus, setEmbeddingsProcessStatus] = useState('');
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { cozoDbRemote, mlApi, isReady } = useBackend();
+  const { cozoDbRemote, mlApi, isReady, ipfsApi } = useBackend();
 
   // console.log('-----syncStatus', syncState, dbPendingWrites);
 
@@ -204,9 +207,46 @@ function Drive() {
     runQuery(queryText);
   };
 
+  const summarizeClick = async () => {
+    const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+      ?.content;
+    const output = await mlApi?.getSummary(text!);
+    setOutputText(output);
+
+    // const queryText = `
+    // e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
+    // ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
+    // `;
+    // setQueryText(queryText);
+    // runQuery(queryText);
+  };
+
+  const questionClick = async () => {
+    const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+      ?.content;
+    const output = await mlApi?.getQA(questionText, text!);
+    setOutputText(output);
+    // const vec = await mlApi?.getEmbedding(searchEmbedding);
+    // const queryText = `
+    // e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
+    // ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
+    // `;
+    // setQueryText(queryText);
+    // runQuery(queryText);
+  };
   function onSearchEmbeddingChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
     setSearchEmbedding(value);
+  }
+
+  function onSummarizeCidChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+    setSummarizeCid(value);
+  }
+
+  function onQuestionChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+    setQuestionText(value);
   }
 
   return (
@@ -246,6 +286,28 @@ function Drive() {
             </Button>
             <div>{embeddingsProcessStatus}</div>
           </div>
+
+          <div className={styles.buttonPanel}>
+            <Input
+              value={summarizeCid}
+              onChange={(e) => onSummarizeCidChange(e)}
+              placeholder="enter cid:<tokens>"
+            />
+            <Button small onClick={summarizeClick}>
+              🔖 Summarize CID content
+            </Button>
+          </div>
+          <div className={styles.buttonPanel}>
+            <Input
+              value={questionText}
+              onChange={(e) => onQuestionChange(e)}
+              placeholder="enter question..."
+            />
+            <Button small onClick={questionClick}>
+              🔮 Ask question about CID content
+            </Button>
+          </div>
+          <div>{outputText}</div>
           <div className={styles.buttonPanel}>
             <Input
               value={searchEmbedding}

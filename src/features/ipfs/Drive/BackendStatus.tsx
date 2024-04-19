@@ -18,6 +18,7 @@ import { Button } from 'src/components';
 import { downloadJson } from 'src/utils/json';
 import { useBackend } from 'src/contexts/backend/backend';
 import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
+import { isObject } from 'lodash';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {
@@ -54,12 +55,18 @@ function EntrySatus({
 }) {
   const msg = progress.error || progress.message ? `- ${progress.message}` : '';
   const text = `${syncEntryNameToReadable(name)}: ${progress.status} ${msg}
-  ${getProgressTrackingInfo(progress.progress)}`;
+  ${
+    !isObject(progress.progress)
+      ? progress.progress
+        ? `(${progress.progress}%)`
+        : ''
+      : getProgressTrackingInfo(progress.progress)
+  }`;
   return <div className={styles.tabbed}>{text}</div>;
 }
 
 function BackendStatus() {
-  const { syncState, dbPendingWrites, services } = useAppSelector(
+  const { syncState, dbPendingWrites, services, mlState } = useAppSelector(
     (store) => store.backend
   );
 
@@ -87,6 +94,13 @@ function BackendStatus() {
           status={services.sync.status}
           message={services.sync.error || services.sync.message}
         />
+        {Object.keys(mlState.entryStatus).map((name) => (
+          <EntrySatus
+            key={`ml_log_${name}`}
+            name={name}
+            progress={mlState.entryStatus[name]}
+          />
+        ))}
         <ServiceStatusInfo
           name="sync"
           status={services.sync.status}

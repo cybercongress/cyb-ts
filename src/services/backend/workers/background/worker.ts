@@ -46,6 +46,10 @@ const mlModelMap: Record<string, MlModelParams> = {
     name: 'summarization',
     model: 'ahmedaeb/distilbart-cnn-6-6-optimised',
   },
+  qa: {
+    name: 'question-answering',
+    model: 'Xenova/distilbert-base-uncased-distilled-squad',
+  },
 };
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
@@ -84,22 +88,35 @@ const createBackgroundWorkerApi = () => {
       broadcastApi.postServiceStatus('ml', 'starting');
       const model = mlModelMap[name];
       mlInstances[name] = await pipeline(model.name, model.model, {
-        progress_callback: (progress: any) => {
-          console.log('progress_callback', name, progress);
+        progress_callback: (progressData: any) => {
+          console.log('progress_callback', name, progressData);
+          const {
+            status,
+            progress,
+            // name: modelName,
+            loaded,
+            total,
+          } = progressData;
+
+          const message = loaded
+            ? `${model.model} - ${loaded}/${total} bytes`
+            : model.model;
+          const progressItem = {
+            status,
+            message,
+            done: ['done', 'ready', 'error'].some((s) => s === status),
+          };
+
+          if (progress) {
+            progressItem.progress = Math.round(progress);
+          }
+
+          broadcastApi.postMlSyncEntryProgress(name, progressItem);
         },
-        // if (progress.status === "ready") {
-        //   broadcastApi.postServiceStatus('ml', 'started')
-        //   }
-      })
-        .then((result) => {
-          broadcastApi.postServiceStatus('ml', 'started');
-          return result;
-        })
-        .catch((e) =>
-          broadcastApi.postServiceStatus('ml', 'error', e.toString())
-        );
-      console.log('----mlInstances', mlInstances);
+      });
     }
+
+    return mlInstances[name];
   };
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
@@ -116,7 +133,18 @@ const createBackgroundWorkerApi = () => {
 
   const init = async (dbApiProxy: DbApi & ProxyMarked) => {
     dbInstance$.next(dbApiProxy);
-    initMlInstance('featureExtractor');
+    Promise.all([
+      initMlInstance('featureExtractor'),
+      initMlInstance('summarization'),
+      initMlInstance('qa'),
+    ])
+      .then((result) => {
+        broadcastApi.postServiceStatus('ml', 'started');
+        return result;
+      })
+      .catch((e) =>
+        broadcastApi.postServiceStatus('ml', 'error', e.toString())
+      );
   };
 
   const stopIpfs = async () => {
@@ -160,8 +188,21 @@ const createBackgroundWorkerApi = () => {
         pooling: 'mean',
         normalize: true,
       });
+      console.log('---- getEmbedding output', output);
 
       return output.data;
+    },
+    getQA: async (question: string, context: string) => {
+      const output = await mlInstances.qa(question, context);
+      console.log('---- getQA output', output);
+      return output.answer;
+    },
+    getSummary: async (context: string, maxTokens = 100) => {
+      const output = await mlInstances.summarization(context, {
+        max_new_tokens: maxTokens,
+      });
+      console.log('---- getSummary output', output);
+      return output[0].summary_text;
     },
   };
 

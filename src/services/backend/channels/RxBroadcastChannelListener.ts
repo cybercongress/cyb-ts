@@ -10,9 +10,13 @@ import {
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 const shouldTrottle = (msg: MessageEvent<BroadcastChannelMessage>) =>
-  ['sync_entry', 'service_status', 'sync_status', 'indexeddb_write'].some(
-    (name) => name === msg.data.type
-  );
+  [
+    'sync_entry',
+    'service_status',
+    'sync_status',
+    'indexeddb_write',
+    'sync_ml_entry',
+  ].some((name) => name === msg.data.type);
 
 class RxBroadcastChannelListener {
   private subscription: Subscription;

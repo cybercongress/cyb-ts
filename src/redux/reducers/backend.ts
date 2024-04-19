@@ -3,6 +3,7 @@ import {
   SyncState,
   ServiceStatus,
   BroadcastChannelMessage,
+  MlSyncState,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
@@ -18,6 +19,7 @@ export const RESET_SYNC_STATE_ACTION_NAME = 'reset_sync_entry';
 type BackendState = {
   dbPendingWrites: number;
   syncState: SyncState;
+  mlState: MlSyncState;
   community: {
     isLoaded: boolean;
     raw: CommunityDto[];
@@ -54,10 +56,12 @@ const initialState: BackendState = {
     friends: [],
   },
   syncState: initialSyncState,
+  mlState: { entryStatus: {} },
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
     sync: { status: 'inactive' },
+    ml: { status: 'inactive' },
   },
 };
 
@@ -176,6 +180,18 @@ function backendReducer(
       };
 
       return { ...state, community };
+    }
+
+    case 'sync_ml_entry': {
+      const { entry, state: entryState } = action.value;
+
+      console.log('------sync_ml_entry', action, entryState);
+      const newState = assocPath(
+        ['mlState', 'entryStatus', entry],
+        entryState,
+        state
+      );
+      return newState;
     }
 
     default:

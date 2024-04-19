@@ -82,6 +82,8 @@ h3 {
 
 .centerPanel {
   padding: 16px;
-  justify-content: center;
+  // justify-content: center;
+  align-items: center;
   display: flex;
+  flex-direction: column;
 }
