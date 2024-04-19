@@ -1,10 +1,9 @@
 import { NumericFormat } from 'react-number-format';
-import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import Input from '../Input';
 
-export type Props = {
+type Props = {
   value: string | number;
   width?: string;
   onChange: Props['onValueChange'];

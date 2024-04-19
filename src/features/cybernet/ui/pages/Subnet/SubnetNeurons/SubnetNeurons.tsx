@@ -15,8 +15,6 @@ type Props = {
 const columnHelper = createColumnHelper<any>();
 
 function SubnetNeurons({ neurons, subnetType }: Props) {
-  console.log(neurons);
-
   return (
     <div>
       <Display
@@ -36,8 +34,6 @@ function SubnetNeurons({ neurons, subnetType }: Props) {
               header: 'hotkey',
               cell: (info) => {
                 const hotkey = info.getValue();
-
-                console.log('hotkey', hotkey);
 
                 return (
                   <Link to={cybernetRoutes.delegator.getLink(hotkey)}>

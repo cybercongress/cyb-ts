@@ -9,7 +9,7 @@ import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 
 function Main() {
   useAdviserTexts({
-    defaultText: 'welcome to Cybernet',
+    defaultText: 'welcome to Cybernet 🤖',
   });
 
   const address = useCurrentAddress();
@@ -19,21 +19,19 @@ function Main() {
       <Display title={<DisplayTitle title="Cybernet" />}>
         <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
         <br />
+        <Link to={cybernetRoutes.subnet.getLink(0)}>Root subnet</Link>
+        <br />
+        <br />
         <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
+      </Display>
 
-        <br />
-        <br />
-        <br />
-
-        <h3>My</h3>
-        <br />
-
+      <Display title={<DisplayTitle title="My" />}>
         <Link to="./staking/my">Stake</Link>
         <br />
         <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
 
-      <Display title={<DisplayTitle title="Settings" />}>
+      <Display title={<DisplayTitle title="Settings (WIP)" />}>
         <Select
           disabled
           title="Chain"

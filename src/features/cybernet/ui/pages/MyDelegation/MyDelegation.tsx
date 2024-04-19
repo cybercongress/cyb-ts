@@ -9,8 +9,13 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { StakeInfo } from 'src/features/cybernet/types';
 import { routes as cybernetRoutes } from '../../routes';
 import styles from './MyDelegation.module.scss';
+import { data } from '../../../../ipfs/Drive/index';
+import Table from 'src/components/Table/Table';
+import { createColumnHelper } from '@tanstack/react-table';
 
 // mixed with my delegation, refactor
+
+const columnHelper = createColumnHelper<any>();
 
 function MyDelegation() {
   const currentAddress = useAppSelector(selectCurrentAddress);
@@ -41,21 +46,49 @@ function MyDelegation() {
     content = (
       <>
         {/* TODO: need table */}
-        <ul className={styles.list}>
-          {data?.map(({ hotkey, stake }) => {
-            return (
-              <li key={hotkey}>
-                <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                  {hotkey}
-                </Link>{' '}
-                {stake} <DenomArr denomValue="pussy" onlyImg />
-                {stake !== 0 && (
-                  <>{Number((stake / total).toFixed(2)) * 100}%</>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+
+        <Table
+          columns={[
+            columnHelper.accessor('hotkey', {
+              header: 'hotkey',
+              cell: (info) => {
+                const hotkey = info.getValue();
+                return (
+                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
+                    {hotkey.slice(0, 6)}...{hotkey.slice(-6)}
+                  </Link>
+                );
+              },
+            }),
+            columnHelper.accessor('stake', {
+              header: 'stake',
+              cell: (info) => {
+                const stake = info.getValue();
+                return (
+                  <>
+                    {stake.toLocaleString()} 🟣
+                    {/* <DenomArr denomValue="pussy" onlyImg /> */}
+                  </>
+                );
+              },
+            }),
+            columnHelper.accessor('stake', {
+              header: '%',
+              cell: (info) => {
+                const stake = info.getValue();
+                return (
+                  <>
+                    {' '}
+                    {stake !== 0 && (
+                      <>{Number((stake / total).toFixed(2)) * 100}%</>
+                    )}
+                  </>
+                );
+              },
+            }),
+          ]}
+          data={data}
+        />
       </>
     );
   } else if (!loading) {
@@ -64,7 +97,9 @@ function MyDelegation() {
 
   return (
     <MainContainer>
-      <Display title={<DisplayTitle title="My stake" />}>{content}</Display>
+      <Display noPaddingX title={<DisplayTitle title="My stake" />}>
+        {content}
+      </Display>
     </MainContainer>
   );
 }
