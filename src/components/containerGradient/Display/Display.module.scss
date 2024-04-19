@@ -51,4 +51,8 @@
 .header {
   position: relative;
   top: -$display-padding-top;
+
+  &.withPaddingX {
+    padding-left: $display-padding-x;
+  }
 }

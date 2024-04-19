@@ -17,6 +17,23 @@ function Main() {
   return (
     <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title="Cybernet" />}>
+        <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
+        <br />
+        <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
+
+        <br />
+        <br />
+        <br />
+
+        <h3>My</h3>
+        <br />
+
+        <Link to="./staking/my">Stake</Link>
+        <br />
+        <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
+      </Display>
+
+      <Display title={<DisplayTitle title="Settings" />}>
         <Select
           disabled
           title="Chain"
@@ -38,23 +55,6 @@ function Main() {
           title="Contract address"
           onChange={undefined}
         />
-
-        <br />
-
-        <Link to={cybernetRoutes.subnets.getLink()}>Subnets</Link>
-        <br />
-        <Link to={cybernetRoutes.delegators.getLink()}>Delegators</Link>
-
-        <br />
-        <br />
-        <br />
-
-        <h3>My</h3>
-        <br />
-
-        <Link to="./staking/my">Stake</Link>
-        <br />
-        <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
     </MainContainer>
   );

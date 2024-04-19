@@ -12,30 +12,27 @@ import useQueryCybernetContract from '../../../useQueryCybernetContract.refactor
 type Props = {
   netuid: number;
   burn: number | undefined;
+  addressSubnetRegistrationStatus: number | undefined | null;
 };
 
 enum Steps {
   INITIAL,
+  REGISTER_CONFIRM,
   // maybe be more steps
 }
 
-function SubnetActionBar({ netuid, burn }: Props) {
+function SubnetActionBar({
+  netuid,
+  burn,
+  addressSubnetRegistrationStatus,
+}: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
 
   const address = useAppSelector(selectCurrentAddress);
 
   const { setAdviser } = useAdviser();
 
-  const { data: addressUid } = useQueryCybernetContract({
-    query: {
-      get_uid_for_hotkey_on_subnet: {
-        netuid,
-        hotkey: address,
-      },
-    },
-  });
-
-  const canRegister = addressUid === null;
+  const canRegister = addressSubnetRegistrationStatus === null;
 
   const { mutate: register } = useExecuteCybernetContract({
     query: {
@@ -58,8 +55,9 @@ function SubnetActionBar({ netuid, burn }: Props) {
 
   let button;
   let content;
+  let onClickBack: undefined | (() => void);
 
-  if (netuid === 0) {
+  if (canRegister && netuid === 0) {
     return (
       <ActionBar
         button={{
@@ -79,12 +77,23 @@ function SubnetActionBar({ netuid, burn }: Props) {
       }
       button = {
         text: 'Register to subnet',
+        onClick: () => setStep(Steps.REGISTER_CONFIRM),
+      };
+
+      break;
+
+    case Steps.REGISTER_CONFIRM:
+      button = {
+        text: 'Confirm registration',
         onClick: register,
       };
 
+      onClickBack = () => setStep(Steps.INITIAL);
+
       content = (
         <>
-          fee is {burn} <DenomArr onlyImg denomValue="pussy" />
+          fee is {burn?.toLocaleString()} 🟣
+          {/* <DenomArr onlyImg denomValue="pussy" /> */}
         </>
       );
 
@@ -94,7 +103,11 @@ function SubnetActionBar({ netuid, burn }: Props) {
       break;
   }
 
-  return <ActionBar button={button}>{content}</ActionBar>;
+  return (
+    <ActionBar onClickBack={onClickBack} button={button}>
+      {content}
+    </ActionBar>
+  );
 }
 
 export default SubnetActionBar;

@@ -9,10 +9,14 @@ import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './tabs/Weights/Weights';
 import SubnetHyperParams from './tabs/SubnetHyperParams/SubnetHyperParams';
 import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
+import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
+import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 function Subnet() {
   const { id, ...rest } = useParams();
   const tab = rest['*'];
+
+  const address = useCurrentAddress();
 
   const netuid = Number(id!);
 
@@ -31,6 +35,19 @@ function Subnet() {
       },
     },
   });
+
+  const { data: addressSubnetRegistrationStatus } = useQueryCybernetContract<
+    number | null
+  >({
+    query: {
+      get_uid_for_hotkey_on_subnet: {
+        netuid,
+        hotkey: address,
+      },
+    },
+  });
+
+  console.log(addressSubnetRegistrationStatus);
 
   console.info('subnet info', subnetQuery.data);
 
@@ -68,6 +85,7 @@ function Subnet() {
                 neurons={neuronsQuery.data || []}
                 netuid={netuid}
                 maxWeightsLimit={subnetQuery.data.max_weights_limit}
+                addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
               />
             }
           />
@@ -81,7 +99,11 @@ function Subnet() {
         />
       </Routes>
 
-      <ActionBar netuid={netuid} burn={subnetQuery.data?.burn} />
+      <ActionBar
+        netuid={netuid}
+        burn={subnetQuery.data?.burn}
+        addressSubnetRegistrationStatus={addressSubnetRegistrationStatus}
+      />
     </MainContainer>
   );
 }

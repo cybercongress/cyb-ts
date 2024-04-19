@@ -37,11 +37,7 @@ function Subnets() {
       {rootSubnet && (
         <Display
           noPaddingX
-          title={
-            <DisplayTitle
-              title={<header style={{ marginLeft: 15 }}>Root subnet</header>}
-            />
-          }
+          title={<DisplayTitle title={<header>Root subnet</header>} />}
         >
           <SubnetsTable data={[rootSubnet] || []} />
         </Display>
@@ -50,11 +46,7 @@ function Subnets() {
       {!!graphSubnets?.length && (
         <Display
           noPaddingX
-          title={
-            <DisplayTitle
-              title={<header style={{ marginLeft: 15 }}>Graph subnets</header>}
-            />
-          }
+          title={<DisplayTitle title={<header>Graph subnets</header>} />}
         >
           <SubnetsTable data={graphSubnets} />
         </Display>
@@ -63,11 +55,7 @@ function Subnets() {
       {!!p2pSubnets?.length && (
         <Display
           noPaddingX
-          title={
-            <DisplayTitle
-              title={<header style={{ marginLeft: 15 }}>p2p subnets</header>}
-            />
-          }
+          title={<DisplayTitle title={<header>p2p subnets</header>} />}
         >
           <SubnetsTable data={p2pSubnets} />
         </Display>

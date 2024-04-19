@@ -21,11 +21,7 @@ function SubnetNeurons({ neurons, subnetType }: Props) {
     <div>
       <Display
         noPaddingX
-        title={
-          <DisplayTitle
-            title={<header style={{ marginLeft: 15 }}>Neurons</header>}
-          />
-        }
+        title={<DisplayTitle title={<header>Neurons</header>} />}
       >
         <Table
           columns={[

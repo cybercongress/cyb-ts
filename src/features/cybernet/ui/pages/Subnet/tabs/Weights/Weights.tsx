@@ -11,9 +11,15 @@ type Props = {
   neurons: SubnetNeuron[];
   netuid: number;
   maxWeightsLimit: number;
+  addressRegisteredInSubnet: boolean;
 };
 
-function Weights({ neurons, netuid, maxWeightsLimit }: Props) {
+function Weights({
+  neurons,
+  netuid,
+  maxWeightsLimit,
+  addressRegisteredInSubnet,
+}: Props) {
   const weightsQuery = useQueryCybernetContract<any[]>({
     query: {
       get_weights_sparse: {
@@ -25,6 +31,7 @@ function Weights({ neurons, netuid, maxWeightsLimit }: Props) {
   useAdviserTexts({
     isLoading: weightsQuery.loading,
     error: weightsQuery.error,
+    defaultText: 'Subnet weights',
   });
 
   const { length } = weightsQuery.data || [];
@@ -50,17 +57,19 @@ function Weights({ neurons, netuid, maxWeightsLimit }: Props) {
 
       <br />
 
-      <Display title={<DisplayTitle title="Weights setting" />}>
-        <WeightsSetter
-          netuid={netuid}
-          length={length}
-          neurons={neurons}
-          callback={() => {
-            weightsQuery.refetch();
-          }}
-          maxWeightsLimit={maxWeightsLimit}
-        />
-      </Display>
+      {addressRegisteredInSubnet && (
+        <Display title={<DisplayTitle title="Weights setting" />}>
+          <WeightsSetter
+            netuid={netuid}
+            length={length}
+            neurons={neurons}
+            callback={() => {
+              weightsQuery.refetch();
+            }}
+            maxWeightsLimit={maxWeightsLimit}
+          />
+        </Display>
+      )}
     </div>
   );
 }

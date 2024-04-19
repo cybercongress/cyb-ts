@@ -24,10 +24,10 @@ function DelegatorsTable({ data }: Props) {
             columnHelper.accessor('delegate', {
               header: 'delegate',
               cell: (info) => (
-                // <Link to={'../delegators/' + info.getValue()}>
-                <Account address={info.getValue()} />
-                // {info.getValue()}
-                // </Link>
+                <Link to={'../delegators/' + info.getValue()}>
+                  {/* <Account address={info.getValue()} /> */}
+                  {info.getValue()}
+                </Link>
               ),
             }),
 

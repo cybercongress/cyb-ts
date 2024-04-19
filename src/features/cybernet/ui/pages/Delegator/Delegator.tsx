@@ -64,8 +64,14 @@ function Delegator() {
 
   return (
     <MainContainer>
+      {myStake && (
+        <Display title={<DisplayTitle title="My stake" />}>
+          {myStake.toLocaleString()} 🟣
+        </Display>
+      )}
+
       <Display
-        // noPaddingX
+        noPaddingX
         title={
           <DisplayTitle
             inDisplay={false}
@@ -129,11 +135,7 @@ function Delegator() {
       {!!nominators?.length && (
         <Display
           noPaddingX
-          title={
-            <DisplayTitle
-              title={<header style={{ marginLeft: 15 }}>Nominators</header>}
-            />
-          }
+          title={<DisplayTitle title={<header>Nominators</header>} />}
         >
           <Table
             columns={[
@@ -159,10 +161,6 @@ function Delegator() {
             })}
           />
         </Display>
-      )}
-
-      {myStake && (
-        <Display title={<DisplayTitle title="My stake" />}>{myStake}</Display>
       )}
 
       <DelegatorActionBar

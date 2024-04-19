@@ -41,7 +41,12 @@ function Display({
       })}
     >
       {title && (
-        <header className={styles.header}>
+        <header
+          className={cx(styles.header, {
+            // add padding that was reset by prop
+            [styles.withPaddingX]: noPaddingX,
+          })}
+        >
           {React.cloneElement(title, { inDisplay: true })}
         </header>
       )}
