@@ -5,7 +5,6 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { Option } from 'src/types';
 import { Channel, Network, Token } from 'src/types/hub';
 import { CYBER, HUB_CONTRACTS } from 'src/utils/config';
-import networkList, { NetworkCons } from 'src/utils/networkListIbc';
 
 type ObjectKey<T> = {
   [key: string]: T;

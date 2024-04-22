@@ -19,7 +19,7 @@ import {
   getDenomHash,
   isNative,
 } from 'src/utils/utils';
-// import { useTokens } from 'src/hooks/useHub';
+import { useHub } from './hub';
 
 type IbcDenomContextContextType = {
   ibcDenoms: Option<IbcDenomsArr>;
@@ -41,7 +41,7 @@ export function useIbcDenom() {
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const poolsData = usePoolListInterval();
-  // const { tokens } = useTokens();
+  const { tokens } = useHub();
   const [ibcDenoms, setIbcDenoms] = useState<IbcDenomsArr>();
 
   useEffect(() => {

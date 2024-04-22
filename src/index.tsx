@@ -43,6 +43,7 @@ import BackendProvider from './contexts/backend/backend';
 
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
+import HubProvider from './contexts/hub';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -104,22 +105,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
             <SigningClientProvider>
-              <IbcDenomProvider>
-                <WebsocketsProvider>
-                  <DataProvider>
-                    <ApolloProvider client={client}>
-                      <BackendProvider>
-                        <DeviceProvider>
-                          <AdviserProvider>
-                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                            {children}
-                          </AdviserProvider>
-                        </DeviceProvider>
-                      </BackendProvider>
-                    </ApolloProvider>
-                  </DataProvider>
-                </WebsocketsProvider>
-              </IbcDenomProvider>
+              <HubProvider>
+                <IbcDenomProvider>
+                  <WebsocketsProvider>
+                    <DataProvider>
+                      <ApolloProvider client={client}>
+                        <BackendProvider>
+                          <DeviceProvider>
+                            <AdviserProvider>
+                              {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                              {children}
+                            </AdviserProvider>
+                          </DeviceProvider>
+                        </BackendProvider>
+                      </ApolloProvider>
+                    </DataProvider>
+                  </WebsocketsProvider>
+                </IbcDenomProvider>
+              </HubProvider>
             </SigningClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>
