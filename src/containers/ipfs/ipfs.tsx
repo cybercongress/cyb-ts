@@ -4,11 +4,11 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useMemo, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
 import { encodeSlash } from 'src/utils/utils';
-import { PATTERN_IPFS_HASH } from 'src/utils/config';
-import { getIpfsHash } from 'src/utils/search/utils';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
@@ -20,24 +20,24 @@ function Ipfs() {
   const [cid, setCid] = useState<string>('');
 
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
-  const { ipfsNode } = useBackend();
+  const { ipfsApi, isIpfsInitialized } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
   const { setAdviser } = useAdviser();
 
   const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
-
   useEffect(() => {
     if (!isText) {
       setCid(query);
-    } else {
+    } else if (isIpfsInitialized) {
       (async () => {
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
-        await ipfsNode?.addContent(query);
+        // console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
+        await ipfsApi!.addContent(query);
         setCid(cidFromQuery);
       })();
     }
-  }, [isText, query, ipfsNode]);
+  }, [isText, query, ipfsApi, isIpfsInitialized]);
 
   useEffect(() => {
     (async () => {

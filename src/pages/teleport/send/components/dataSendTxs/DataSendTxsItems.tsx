@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/launchpad';
 import { AmountDenom, Cid } from 'src/components';
-import { PATTERN_IPFS_HASH } from 'src/utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/app';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
@@ -14,6 +14,7 @@ function MemoIpfsContent({ cid }: { cid: string }) {
   const { status, content, fetchParticle } = useQueueIpfsContent(cid);
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
 
+  // FIXME: use useParticleDetails hook
   useEffect(() => {
     (async () => {
       cid && fetchParticle && (await fetchParticle(cid));

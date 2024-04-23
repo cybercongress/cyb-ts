@@ -11,19 +11,15 @@ import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
-import { useBackend } from 'src/contexts/backend';
-import {
-  SyncEntry,
-  SyncProgress,
-  WorkerState,
-} from 'src/services/backend/types';
+import { useBackend } from 'src/contexts/backend/backend';
 
-import styles from './drive.scss';
-
-import cozoPresets from './cozo_presets.json';
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
 import classNames from 'classnames';
+import BackendStatus from './BackendStatus';
+import cozoPresets from './cozo_presets.json';
+
+import styles from './drive.scss';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -37,55 +33,6 @@ const presetsAsSelectOptions = [
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
-function SyncEntryStatus({
-  entry,
-  status,
-}: {
-  entry: SyncEntry;
-  status: SyncProgress;
-}) {
-  if (status.progress === 0) {
-    return (
-      <div>
-        {`▫️ ${entry} items pending`}
-        <Dots />
-      </div>
-    );
-  }
-  if (status.done) {
-    return <div>{`☑️ ${entry} items synchronized.`}</div>;
-  }
-  if (status.error) {
-    return (
-      <div>{`❌ ${entry} items syncronization failed - ${status.error}`}</div>
-    );
-  }
-  return (
-    <div>
-      {`⏳ ${status.progress} ${entry} items syncronized`}
-      <Dots />
-    </div>
-  );
-}
-function SyncInfo({ syncState }: { syncState: WorkerState }) {
-  return (
-    <div>
-      <div className={styles.logs}>
-        <div>sync db in progress:</div>
-        <div className={styles.logItems}>
-          {Object.keys(syncState.entryStatus).map((name) => (
-            <SyncEntryStatus
-              key={`log_${name}`}
-              entry={name}
-              status={syncState.entryStatus[name]}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Drive() {
   const [queryText, setQueryText] = useState('');
   const [isLoaded, setIsLoaded] = useState(true);
@@ -93,12 +40,12 @@ function Drive() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { startSyncTask, dbApi, isReady } = useBackend();
-  const { syncState, dbPendingWrites } = useAppSelector(
+  const { cozoDbRemote, isReady } = useBackend();
+  const { syncState, dbPendingWrites, services } = useAppSelector(
     (store) => store.backend
   );
 
-  console.log('-----syncStatus', syncState, dbPendingWrites);
+  // console.log('-----syncStatus', syncState, dbPendingWrites);
 
   function runQuery(queryArg?: string) {
     const query = queryArg || queryText.trim();
@@ -111,10 +58,10 @@ function Drive() {
         setTimeout(async () => {
           try {
             const t0 = performance.now();
-            const result = await dbApi!.runCommand(query);
+            const result = await cozoDbRemote!.runCommand(query);
             const t1 = performance.now();
 
-            if (result.ok === true) {
+            try {
               setStatusMessage(
                 `finished with ${result.rows.length} rows in ${diffMs(t0, t1)}`
               );
@@ -161,11 +108,11 @@ function Drive() {
               });
 
               setQueryResults({ rows: rowsNormalized, cols });
-            } else {
-              console.error('Query failed', result);
+            } catch (e: DBResultError | any) {
+              console.error('Query failed', e);
               setStatusMessage(`finished with errors`);
-              if (result.display) {
-                setErrorMessage(result.display);
+              if (e.display) {
+                setErrorMessage(e.display);
               }
             }
           } catch (e) {
@@ -180,25 +127,27 @@ function Drive() {
     }
   }
 
-  const importIpfs = async () => startSyncTask!();
-
   const exportReations = async () => {
-    const result = await dbApi!.exportRelations(['pin', 'particle', 'link']);
+    const result = await cozoDbRemote!.exportRelations([
+      'pin',
+      'particle',
+      'link',
+    ]);
     console.log('---export data', result);
-    if (result.ok) {
+    try {
       const blob = new Blob([JSON.stringify(result.data)], {
         type: 'text/plain;charset=utf-8',
       });
       saveAs(blob, 'export.json');
-    } else {
-      console.log('CozoDb: Failed to import', result);
+    } catch (e) {
+      console.log('CozoDb: Failed to import', e);
     }
   };
 
   const importReations = async (file: any) => {
     const content = await file.text();
 
-    const res = await dbApi!.importRelations(content);
+    const res = await cozoDbRemote!.importRelations(content);
     console.log('----import result', res);
   };
 
@@ -236,30 +185,7 @@ function Drive() {
             <Link to="/search/brain%20feedback">brain feedback</Link>
           </p>
         </Display>
-        <Pane
-          width="100%"
-          display="flex"
-          marginBottom={20}
-          padding={10}
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-        >
-          {syncState?.status && (
-            <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-              backend status - {syncState?.status}{' '}
-              {syncState.lastError && `(${syncState.lastError})`}
-            </Text>
-          )}
-          {syncState?.status === 'syncing' && (
-            <SyncInfo syncState={syncState} />
-          )}
-          {(syncState?.status === 'idle' || syncState?.status === 'error') && (
-            <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
-              sync drive
-            </CybButton>
-          )}
-        </Pane>
+        <BackendStatus />
 
         <Pane width="100%">
           <textarea

@@ -7,9 +7,14 @@ import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import { useAppSelector } from 'src/redux/hooks';
-import { Account, ActionBar as ActionBarCenter } from '../../../components';
-import { LEDGER } from '../../../utils/config';
+import { useBackend } from 'src/contexts/backend/backend';
+import { sendTokensWithMessage } from 'src/services/neuron/neuronApi';
+import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import { convertAmountReverce } from '../../../utils/utils';
+
+import { LEDGER } from '../../../utils/config';
+
+import { Account, ActionBar as ActionBarCenter } from '../../../components';
 
 import ActionBarPingTxs from '../components/actionBarPingTxs';
 
@@ -37,6 +42,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [errorMessage, setErrorMessage] =
     useState<Option<string | JSX.Element>>(undefined);
+  const { senseApi, ipfsApi } = useBackend();
 
   const {
     tokenAmount,
@@ -60,28 +66,19 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const offerCoin = [coinFunc(amountTokenA, tokenSelect)];
 
       if (addressActive !== null && addressActive.bech32 === address) {
-        try {
-          const response = await signingClient.sendTokens(
-            address,
-            recipient,
-            offerCoin,
-            'auto',
-            memoValue
-          );
-
-          if (response.code === 0) {
-            setTxHash(response.transactionHash);
-          } else {
+        const memo = await addIfpsMessageOrCid(memoValue, { ipfsApi });
+        await sendTokensWithMessage(address, recipient, offerCoin, memo, {
+          senseApi,
+          signingClient,
+        })
+          .then((txHash) => {
+            setTxHash(txHash);
+          })
+          .catch((e) => {
             setTxHash(undefined);
             setStage(STAGE_ERROR);
-            setErrorMessage(response.rawLog.toString());
-          }
-        } catch (error) {
-          setTxHash(undefined);
-          setStage(STAGE_ERROR);
-
-          setErrorMessage(error.toString());
-        }
+            setErrorMessage(e.toString());
+          });
       } else {
         setStage(STAGE_ERROR);
         setErrorMessage(

@@ -42,7 +42,7 @@ type Props = {
   onlyAvatar?: boolean;
   avatar?: boolean;
   margin?: string;
-  sizeAvatar?: string;
+  sizeAvatar?: string | number;
   styleUser?: object;
   trimAddressParam?: [number, number];
   disabled?: boolean;
@@ -77,7 +77,7 @@ function Account({
   }, [address, trimAddressParam]);
 
   const linkAddress = useMemo(() => {
-    if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
+    if (address?.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
 
@@ -104,7 +104,8 @@ function Account({
       }}
     >
       {avatar && (
-        <div
+        <Link
+          to={linkAddress}
           className={cx(styles.avatar, avatarClassName)}
           style={{
             width: sizeAvatar,
@@ -112,7 +113,7 @@ function Account({
           }}
         >
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
-        </div>
+        </Link>
       )}
       {!onlyAvatar && (
         <Link

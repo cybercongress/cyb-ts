@@ -7,7 +7,7 @@ export const routes = {
     path: '/temple',
   },
   senateProposal: {
-    path: '/senate/:proposalId',
+    path: '/senate/:proposalId/*',
     getLink: (proposalId: number) => `/senate/${proposalId}`,
   },
   sphere: {
@@ -38,6 +38,9 @@ export const routes = {
       },
       drive: {
         path: '/robot/drive',
+      },
+      sense: {
+        path: '/robot/sense',
       },
     },
   },
@@ -89,5 +92,9 @@ export const routes = {
   },
   brain: {
     path: '/brain',
+  },
+  txExplorer: {
+    path: '/tx/:hash',
+    getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
   },
 };

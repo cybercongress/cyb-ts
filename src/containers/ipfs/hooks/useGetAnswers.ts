@@ -3,9 +3,12 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useState } from 'react';
 import { reduceParticleArr } from './useGetBackLink';
 import { searchByHash } from 'src/utils/search/utils';
+import { useBackend } from 'src/contexts/backend/backend';
+import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
 
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
+  const { defferedDbApi } = useBackend();
   const [total, setTotal] = useState(0);
   const {
     status,
@@ -18,13 +21,15 @@ function useGetAnswers(hash) {
   } = useInfiniteQuery(
     ['useGetAnswers', hash],
     async ({ pageParam = 0 }) => {
-      const response = await searchByHash(queryClient, hash, pageParam, {
-        storeToCozo: true,
-        callback: setTotal,
-      });
+      const response = await searchByHash(queryClient, hash, pageParam);
       const reduceArr = response.result
         ? reduceParticleArr(response.result)
         : [];
+      setTotal(pageParam === 0 && response.pagination.total);
+
+      defferedDbApi?.importCyberlinks(
+        response.result.map((l) => mapLinkToEntity(hash, l.particle))
+      );
 
       return { data: reduceArr, page: pageParam };
     },

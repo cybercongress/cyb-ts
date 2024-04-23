@@ -21,12 +21,12 @@ import ActionBarDetail from './actionBarDatail';
 
 import { formatNumber } from '../../utils/utils';
 
-import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
-import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { MainContainer } from '../portal/components';
+import ProposalsRoutes from './proposalsRoutes';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -181,8 +181,14 @@ function ProposalsDetail({ defaultAccount }) {
     return string;
   };
 
-  console.log(`proposals`, proposals);
-  console.log(`addressActive`, addressActive);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === `/senate/${proposalId}`) {
+      navigate(`/senate/${proposalId}/comments`);
+    }
+  }, [location.pathname]);
 
   return (
     <>
@@ -192,7 +198,6 @@ function ProposalsDetail({ defaultAccount }) {
             {proposals.title && ` #${proposalId} ${proposals.title}`}
           </Text>
         </Pane>
-
         {proposals.status && (
           <Pane>
             <IconStatus status={proposals.status} text marginRight={8} />
@@ -275,15 +280,6 @@ function ProposalsDetail({ defaultAccount }) {
             />
           )}
         </ContainerGradientText>
-
-        <ProposalsIdDetail
-          proposals={proposals}
-          tallying={tallying}
-          tally={tally}
-          totalDeposit={totalDeposit}
-          marginBottom={20}
-        />
-
         <ProposalsDetailProgressBar
           proposals={proposals}
           totalDeposit={totalDeposit}
@@ -292,14 +288,19 @@ function ProposalsDetail({ defaultAccount }) {
           tally={tally}
         />
 
-        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
-          <ProposalsIdDetailTableVoters
-            proposalId={proposalId}
-            updateFunc={updateFunc}
-          />
-        )}
+        <ProposalsRoutes
+          proposalId={proposalId}
+          proposals={proposals}
+          tallying={tallying}
+          tally={tally}
+          totalDeposit={totalDeposit}
+          updateFunc={updateFunc}
+          proposalStatus={PROPOSAL_STATUS}
+        />
       </MainContainer>
-      {addressActive !== null && addressActive.keys === 'keplr' ? (
+      {addressActive !== null &&
+      addressActive.keys === 'keplr' &&
+      location.pathname === `/senate/${proposalId}/voters` ? (
         <ActionBarDetail
           id={proposalId}
           proposals={proposals}
@@ -308,7 +309,7 @@ function ProposalsDetail({ defaultAccount }) {
           update={() => setUpdateFunc((item) => item + 1)}
           addressActive={addressActive}
         />
-      ) : (
+      ) : addressActive === null ? (
         <ActionBar>
           <Pane>
             <Link
@@ -318,13 +319,13 @@ function ProposalsDetail({ defaultAccount }) {
                 display: 'block',
               }}
               className="btn"
-              to="/"
+              to="/keys"
             >
-              add address to your pocket from keplr
+              connect
             </Link>
           </Pane>
         </ActionBar>
-      )}
+      ) : null}
     </>
   );
 }

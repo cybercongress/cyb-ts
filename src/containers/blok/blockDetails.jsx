@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
+
 import withRouter from 'src/components/helpers/withRouter';
 
 import InformationBlock from './informationBlock';

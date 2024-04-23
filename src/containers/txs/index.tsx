@@ -1,6 +1,7 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { v4 as uuidv4 } from 'uuid';
-import { useSubscription } from '@apollo/react-hooks';
+import { useSubscription } from '@apollo/client';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { trimString, formatNumber } from '../../utils/utils';

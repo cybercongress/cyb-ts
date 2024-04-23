@@ -75,9 +75,7 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
-const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
-
-const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
+const LOCALSTORAGE_CHAIN_ID = Networks.BOSTROM;
 
 let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
@@ -118,13 +116,6 @@ if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
     BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `pussyvaloper`,
     MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
   };
-}
-
-if (CHAIN_PARAMS_LOCALSTORAGE !== null && LOCALSTORAGE_CHAIN_ID !== null) {
-  const CHAIN_PARAMS_LOCALSTORAGE_DATA = JSON.parse(CHAIN_PARAMS_LOCALSTORAGE);
-  if (CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID]) {
-    CHAIN_PARAMS = { ...CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID] };
-  }
 }
 
 const CYBER = {
@@ -262,15 +253,8 @@ const BOND_STATUS = {
   BOND_STATUS_BONDED: 3,
 };
 
-const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
-const CID_TWEET = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
-
 const PATTERN = new RegExp(
   `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
-  'g'
-);
-const PATTERN_CYBER = new RegExp(
-  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
   'g'
 );
 const PATTERN_CYBER_CONTRACT = new RegExp(
@@ -286,7 +270,6 @@ const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
 const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
-const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
 const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 const PATTERN_HTML = /<\/?[\w\d]+>/gi;
@@ -302,11 +285,9 @@ export {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
-  PATTERN_CYBER,
   PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
-  PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
   PATTERN_TERRA,
@@ -325,8 +306,6 @@ export {
   PROPOSAL_STATUS,
   VOTE_OPTION,
   BOND_STATUS,
-  CID_AVATAR,
-  CID_TWEET,
   PATTERN_HTML,
   HUB_CONTRACTS,
 };

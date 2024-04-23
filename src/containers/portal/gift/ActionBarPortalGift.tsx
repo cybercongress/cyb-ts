@@ -12,7 +12,7 @@ import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
-import { useBackend } from 'src/contexts/backend';
+import { useBackend } from 'src/contexts/backend/backend';
 import txs from '../../../utils/txs';
 import {
   Dots,
@@ -20,11 +20,8 @@ import {
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import {
-  CYBER,
-  DEFAULT_GAS_LIMITS,
-  PATTERN_CYBER,
-} from '../../../utils/config';
+import { CYBER, DEFAULT_GAS_LIMITS } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
@@ -121,7 +118,7 @@ function ActionBarPortalGift({
   progressClaim,
   currentBonus,
 }: Props) {
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const navigate = useNavigate();
   const { signer, signingClient, initSigner } = useSigningClient();
@@ -320,7 +317,7 @@ function ActionBarPortalGift({
           });
         }
         if (isIpfsInitialized) {
-          ipfsNode?.addContent(signedMessageKeplr.address);
+          ipfsApi?.addContent(signedMessageKeplr.address);
         }
       } catch (error) {
         console.log('error', error);
@@ -333,7 +330,7 @@ function ActionBarPortalGift({
     citizenship,
     signedMessageKeplr,
     isIpfsInitialized,
-    ipfsNode,
+    ipfsApi,
   ]);
 
   const claim = useCallback(async () => {

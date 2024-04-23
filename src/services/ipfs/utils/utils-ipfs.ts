@@ -118,7 +118,7 @@ const fetchIPFSContentFromNode = async (
     const meta = await fetchIPFSContentMeta(cid, node, signal);
     const statsDoneTime = Date.now();
     meta.statsTime = statsDoneTime - startTime;
-    const allowedSize = meta.size < FILE_SIZE_DOWNLOAD;
+    const allowedSize = meta.size ? meta.size < FILE_SIZE_DOWNLOAD : false;
     timer && clearTimeout(timer);
 
     switch (meta.type) {
@@ -135,9 +135,13 @@ const fetchIPFSContentFromNode = async (
 
         const mime = await getMimeFromUint8Array(firstChunk);
         const fullyDownloaded =
-          meta.size > -1 && firstChunk.length >= meta.size;
+          meta.size && meta.size > -1 && firstChunk.length >= meta.size;
 
         const textPreview = createTextPreview(firstChunk, mime);
+
+        if (fullyDownloaded) {
+          await ipfsCacheDb.add(cid, uint8ArrayConcat(firstChunk));
+        }
 
         // If all content fits in first chunk return byte-array instead iterable
         const stream = fullyDownloaded
@@ -169,7 +173,7 @@ const fetchIPFSContentFromNode = async (
       }
     }
   } catch (error) {
-    console.log('error fetchIPFSContentFromNode', error);
+    console.debug('error fetchIPFSContentFromNode', error);
     return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
   }
 };
@@ -238,21 +242,21 @@ type fetchContentOptions = {
   node?: IpfsNode;
 };
 
-async function fetchIpfsContent<T>(
+async function fetchIpfsContent(
   cid: string,
   source: IpfsContentSource,
   options: fetchContentOptions
-): Promise<T | undefined> {
+): Promise<IPFSContentMaybe> {
   const { node, controller } = options;
 
   try {
     switch (source) {
       case 'db':
-        return loadIPFSContentFromDb(cid) as T;
+        return loadIPFSContentFromDb(cid);
       case 'node':
-        return fetchIPFSContentFromNode(cid, node, controller) as T;
+        return fetchIPFSContentFromNode(cid, node, controller);
       case 'gateway':
-        return fetchIPFSContentFromGateway(cid, node, controller) as T;
+        return fetchIPFSContentFromGateway(cid, node, controller);
       default:
         return undefined;
     }

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import request from 'graphql-request';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
+
 import { useEffect, useState } from 'react';
 import { CYBER } from '../../../utils/config';
 

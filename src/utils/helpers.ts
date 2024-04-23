@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
  * @param abortController trigger abort
  * @returns
  */
-export async function withTimeout<T>(
+async function withTimeout<T>(
   promise: Promise<T>,
   timeout: number,
   abortController?: AbortController
@@ -38,7 +38,7 @@ export function promiseToObservable<T>(promiseFactory: () => Promise<T>) {
         observer.complete();
       })
       .catch((error) => {
-        console.log('----promiseToObservable error', error); //, error
+        console.debug('----promiseToObservable error', error); //, error
         observer.error(error);
       });
   });

@@ -9,7 +9,8 @@ import BigNumber from 'bignumber.js';
 import Soft3MessageFactory from 'src/soft.js/api/msgs';
 import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
-import { PATTERN_CYBER, CYBER } from '../../../utils/config';
+import { CYBER } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
@@ -23,7 +24,6 @@ const releaseMsg = (giftAddress: string) => {
     },
   };
 };
-
 
 const STEP_INIT = 0;
 const STEP_CHECK_ACC = 1;

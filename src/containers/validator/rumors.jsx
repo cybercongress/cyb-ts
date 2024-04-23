@@ -1,5 +1,6 @@
-import gql from 'graphql-tag';
-import { useSubscription } from '@apollo/react-hooks';
+import { gql } from '@apollo/client';
+
+import { useSubscription } from '@apollo/client';
 import TableTxs from '../../pages/robot/_refactor/account/component/tableTxs';
 import { Loading, NoItems } from '../../components';
 

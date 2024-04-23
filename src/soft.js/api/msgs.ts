@@ -95,7 +95,7 @@ class Soft3MessageFactory {
       }
     });
 
-    if (slotData.length === HALF_MAX_SLOTS) {
+    if (slotData.length >= HALF_MAX_SLOTS) {
       return false;
     }
 

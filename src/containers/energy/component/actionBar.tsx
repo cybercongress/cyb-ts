@@ -17,10 +17,10 @@ import {
 } from '../../../components';
 import {
   LEDGER,
-  PATTERN_CYBER,
   PATTERN_CYBER_CONTRACT,
   DEFAULT_GAS_LIMITS,
 } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';

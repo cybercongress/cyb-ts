@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
 import { getFollows, getGraphQLQuery } from '../../../utils/search/utils';
-import { CID_TWEET, PATTERN_CYBER } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/app';
+import { CID_TWEET } from 'src/constants/app';
 
 const dateFormat = require('dateformat');
 
