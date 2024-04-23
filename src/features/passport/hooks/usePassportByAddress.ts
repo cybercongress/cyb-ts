@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { PATTERN_CYBER } from 'src/constants/app';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getPassport } from '../passports.redux';
+import { fromBech32 } from 'src/utils/utils';
 
 type Props = {
   address: string | null | undefined;
@@ -19,29 +19,34 @@ function usePassportByAddress(
 ) {
   const queryClient = useQueryClient();
 
+  let bostromAddress: string | undefined;
+  if (address) {
+    if (address.includes('bostrom')) {
+      bostromAddress = address;
+    } else {
+      bostromAddress = fromBech32(address, 'bostrom');
+    }
+  }
+
   const currentPassport = useAppSelector((state) =>
-    address ? state.passports[address] : null
+    bostromAddress ? state.passports[bostromAddress] : null
   );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (
       !queryClient ||
-      !address ||
+      !bostromAddress ||
       skip ||
       (currentPassport && currentPassport.loading)
     ) {
       return;
     }
 
-    if (!address.match(PATTERN_CYBER)) {
-      return;
-    }
-
     if (!currentPassport || currentPassport.data === undefined) {
-      dispatch(getPassport({ address, queryClient }));
+      dispatch(getPassport({ address: bostromAddress, queryClient }));
     }
-  }, [address, queryClient, dispatch, currentPassport, skip]);
+  }, [bostromAddress, queryClient, dispatch, currentPassport, skip]);
 
   const data = currentPassport?.data;
 

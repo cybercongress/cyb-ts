@@ -3,6 +3,9 @@ import { CYBER_NODE_URL_LCD } from 'src/constants/config';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
+import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import { toAscii, toBase64 } from '@cosmjs/encoding';
+import { PassportContractQuery } from 'src/soft.js/api/passport';
 
 export const getFollowsAsCid = async (
   address: NeuronAddress,
@@ -50,4 +53,14 @@ export async function getTransaction(txHash: string) {
     `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs/${txHash}`
   );
   return response;
+}
+
+// need this request to query passports with any queryClient chain
+export async function getPassport(query: PassportContractQuery) {
+  const response = await axios.get(
+    `${CYBER_NODE_URL_LCD}/cosmwasm/wasm/v1/contract/${CONTRACT_ADDRESS_PASSPORT}/smart/${toBase64(
+      toAscii(JSON.stringify(query))
+    )}`
+  );
+  return response.data.data;
 }

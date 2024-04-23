@@ -4,7 +4,6 @@ import {
   createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
-import { queryPassportContract } from 'src/soft.js/api/passport';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { RootState } from 'src/redux/store';
@@ -12,6 +11,7 @@ import { AppThunk } from 'src/redux/types';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
 import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
+import { getPassport as getPassportQuery } from 'src/services/backend/services/lcd/lcd';
 
 export type SliceState = {
   // address
@@ -61,21 +61,13 @@ export function getAccountsPassports(queryClient: CyberClient): AppThunk {
 
 const getPassport = createAsyncThunk(
   'passports/getPassport',
-  async ({
-    address,
-    queryClient,
-  }: {
-    address: string;
-    queryClient: CyberClient;
-  }) => {
-    const response = await queryPassportContract(
-      {
-        active_passport: {
-          address,
-        },
+  async ({ address }: { address: string }) => {
+    const response = await getPassportQuery({
+      active_passport: {
+        address,
       },
-      queryClient
-    );
+    });
+
     return response;
   }
 );

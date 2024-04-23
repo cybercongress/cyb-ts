@@ -75,7 +75,16 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
-const LOCALSTORAGE_CHAIN_ID = Networks.BOSTROM;
+// seems temp
+function isWorker() {
+  return (
+    typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope
+  );
+}
+
+const LOCALSTORAGE_CHAIN_ID =
+  (!isWorker && localStorage.getItem('chainId')) || Networks.BOSTROM;
 
 let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
@@ -273,6 +282,7 @@ const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
 const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 const PATTERN_HTML = /<\/?[\w\d]+>/gi;
+const PATTERN_SPACE_PUSSY = /^pussy[a-zA-Z0-9]{39}$/g;
 
 export {
   TAKEOFF,
@@ -285,6 +295,7 @@ export {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
+  PATTERN_SPACE_PUSSY,
   PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
