@@ -4,6 +4,7 @@ import { bufferTime, filter } from 'rxjs/operators';
 
 import {
   BC_MSG_LOAD_COMMUNITY,
+  BC_MSG_SET_DEFAULT_ACCOUNT,
   BroadcastChannelMessage,
   getBroadcastChannemMessageKey,
 } from '../types/services';
@@ -24,7 +25,10 @@ class RxBroadcastChannelListener {
       const channel = new BroadcastChannel(CYB_BROADCAST_CHANNEL);
 
       channel.onmessage = (msg: MessageEvent<BroadcastChannelMessage>) => {
-        if (msg.data.type === BC_MSG_LOAD_COMMUNITY) {
+        if (
+          msg.data.type === BC_MSG_LOAD_COMMUNITY ||
+          msg.data.type === BC_MSG_SET_DEFAULT_ACCOUNT
+        ) {
           dispatch(msg.data);
           return;
         }
