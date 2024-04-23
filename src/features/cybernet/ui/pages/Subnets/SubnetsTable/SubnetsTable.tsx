@@ -35,7 +35,10 @@ function SubnetsTable({ data }: Props) {
             }),
             columnHelper.accessor('emission_values', {
               header: 'Emission block',
-              cell: (info) => (info.getValue() / BLOCK_REWARD).toFixed(2) + '%',
+              cell: (info) =>
+                `${parseFloat(
+                  ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
+                )}%`,
             }),
             columnHelper.accessor('owner', {
               header: 'owner',
@@ -69,12 +72,15 @@ function SubnetsTable({ data }: Props) {
 
             columnHelper.accessor('metadata', {
               header: 'metadata',
-              cell: (info) => (
-                <Link to={routes.oracle.ask.getLink(info.getValue())}>
-                  {/* <Cid cid={info.getValue()} /> */}
-                  {info.getValue().substr(0, 10) + '...'}
-                </Link>
-              ),
+              cell: (info) => {
+                const cid = info.getValue();
+
+                return (
+                  <Cid cid={info.getValue()}>
+                    {`${cid.substr(0, 6)}...${cid.substr(-6)}`}
+                  </Cid>
+                );
+              },
             }),
           ],
           []

@@ -101,7 +101,7 @@ function useMenuCounts(address: string | null) {
       const addressHash = await getIpfsHash(address);
       const response = await getFollowers(addressHash);
 
-      if (response.total_count) {
+      if (response?.total_count) {
         setFollowers(response.total_count);
       }
     } catch (error) {

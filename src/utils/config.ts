@@ -84,7 +84,7 @@ function isWorker() {
 }
 
 const LOCALSTORAGE_CHAIN_ID =
-  (!isWorker && localStorage.getItem('chainId')) || Networks.BOSTROM;
+  (!isWorker() && localStorage.getItem('chainId')) || Networks.BOSTROM;
 
 let CHAIN_PARAMS = {
   CHAIN_ID: process.env.CHAIN_ID || Networks.BOSTROM,
