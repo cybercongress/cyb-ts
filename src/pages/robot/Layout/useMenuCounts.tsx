@@ -31,7 +31,7 @@ function useMenuCounts(address: string | null) {
   async function getTweetCount() {
     try {
       const response = await getTweet(address);
-      setTweetsCount(response.total_count);
+      setTweetsCount(response?.total_count);
     } catch (error) {
       console.error(error);
     }

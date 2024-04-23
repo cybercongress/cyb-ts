@@ -8,6 +8,9 @@ import { useAppSelector } from 'src/redux/hooks';
 import { RootState } from 'src/redux/store';
 import { routes } from 'src/routes';
 import { Citizenship } from 'src/types/citizenship';
+import { Networks } from 'src/types/networks';
+import { CYBER } from 'src/utils/config';
+import { fromBech32 } from 'src/utils/utils';
 
 const RobotContext = React.createContext<{
   address: string | null;
@@ -133,7 +136,12 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   });
 
   const currentPassport = isOwner ? currentUserPassport : passportContract;
-  const currentRobotAddress = address || currentPassport.data?.owner || null;
+  let currentRobotAddress = address || currentPassport.data?.owner || null;
+
+  if (CYBER.CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
+    currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
+  }
+
   const isLoading = currentPassport.loading;
 
   // redirect from /robot to /@nickname
