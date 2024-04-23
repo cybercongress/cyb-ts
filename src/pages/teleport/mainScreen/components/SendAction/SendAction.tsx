@@ -4,7 +4,7 @@ import { Account } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import { selectCommunityPassports } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
-import { CYBER } from 'src/utils/config';
+import { BASE_DENOM } from 'src/constants/config';
 import TitleAction from '../TitleAction/TitleAction';
 import styles from './SendAction.module.scss';
 import TotalCount from '../TotalCount/TotalCount';
@@ -47,7 +47,7 @@ function SendAction() {
             pathname: 'send',
             search: createSearchParams({
               recipient: key,
-              token: CYBER.DENOM_CYBER,
+              token: BASE_DENOM,
             }).toString(),
           }}
         >

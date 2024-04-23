@@ -1,6 +1,7 @@
 import styles from './styles.module.scss';
 import Status, { StatusType } from './status';
 import Display from '../containerGradient/Display/Display';
+import { LinksType } from 'src/containers/Search/types';
 
 const gradeColorRank = (grade) => {
   let classColor = 'grey';
@@ -34,6 +35,7 @@ type Props = {
   grade?: {
     value: number;
   };
+  linkType: LinksType;
   children: React.ReactNode;
 };
 

@@ -7,7 +7,7 @@ import {
   SenseListItemtMeta,
   SenseTransactionMeta,
 } from 'src/services/backend/types/sense';
-import { IpfsContentType } from 'src/services/ipfs/ipfs';
+import { IpfsContentType } from 'src/services/ipfs/types';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { DtoToEntity } from 'src/types/dto';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Filters.module.scss';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import { LinksTypeFilter, SortBy } from '../types';
-import { initialContentTypeFilterState } from '../SearchResults';
+import { initialContentTypeFilterState } from '../constants';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { Tooltip } from 'src/components';
 
@@ -65,7 +65,6 @@ function Filters({
   linksFilter,
   setLinksFilter,
   total,
-  total2,
   contentType,
 }: Props) {
   return (

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useIbcHistory } from '../../../../../services/ibc-history/historyContext';
+import { useIbcHistory } from '../../../../../features/ibc-history/historyContext';
 import InfiniteScrollDataTsx from '../../../components/InfiniteScrollDataTxs/InfiniteScrollDataTsx';
 import DataHistoryRow from './DataHistoryRow';
 

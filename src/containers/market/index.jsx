@@ -15,7 +15,7 @@ import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useBackend } from 'src/contexts/backend/backend';
-import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
+import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
 
 function ContainerGrid({ children }) {
   return (
@@ -83,7 +83,7 @@ function Market({ defaultAccount }) {
           setAllPage(Math.ceil(parseFloat(response.pagination.total) / 10));
           setPage((item) => item + 1);
           defferedDbApi?.importCyberlinks(
-            response.result.map((l) => mapLinkToEntity(hash, l.particle))
+            response.result.map((l) => mapLinkToLinkDto(hash, l.particle))
           );
         } else {
           setResultSearch([]);
@@ -105,7 +105,7 @@ function Market({ defaultAccount }) {
     if (response.result) {
       links = reduceSearchResults(response, tab);
       defferedDbApi?.importCyberlinks(
-        response.result.map((l) => mapLinkToEntity(keywordHash, l.particle))
+        response.result.map((l) => mapLinkToLinkDto(keywordHash, l.particle))
       );
     }
 

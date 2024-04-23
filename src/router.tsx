@@ -188,11 +188,6 @@ function AppRouter() {
 
           <Route path="/teleport/*" element={<Teleport />} />
 
-          {/* <Route path="/teleport" element={<TeleportMainScreen />} />
-          <Route path="/teleport/swap" element={<Swap />} />
-          <Route path="/teleport/send" element={<Send />} />
-          <Route path="/teleport/bridge" element={<Bridge />} /> */}
-
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
@@ -208,10 +203,7 @@ function AppRouter() {
             path="/contracts/:contractAddress"
             element={<ContractPage />}
           />
-          {/* network */}
-          {/* <Route path="/networks" element={<ListNetwork />} />
-          <Route path="/networks/add" element={<CustomNetwork />} />
-          <Route path="/networks/:networkId" element={<DetailsNetwork />} /> */}
+
           <Route path="/help" element={<Help />} />
 
           <Route path="/sigma" element={<SigmaWrapper />} />

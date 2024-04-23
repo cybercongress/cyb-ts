@@ -3,7 +3,6 @@ import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { useNetworks } from 'src/contexts/networks';
-import { CYBER } from '../../../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
 import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
@@ -18,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { initPocket } from 'src/redux/features/pocket';
 import { Networks } from 'src/types/networks';
 import { routes } from 'src/routes';
+import { CHAIN_ID } from 'src/constants/config';
 
 export const menuButtonId = 'menu-button';
 
@@ -99,22 +99,13 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   const renderItemChain =
     networks &&
     Object.keys(networks)
-      .filter((itemKey) => itemKey !== CYBER.CHAIN_ID)
+      .filter((itemKey) => itemKey !== CHAIN_ID)
       .map((key) => (
-        // <ButtonNetwork
-        //   // disabled={CYBER.CHAIN_ID === key}
-        //   onClick={() =>
-        //     onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-        //   }
-        //   network={key}
-        // />
         <button
           key={key}
           type="button"
           className={styles.containerBtnItemSelect}
-          onClick={() =>
-            onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-          }
+          onClick={() => onClickChain(key, networks[key].BECH32_PREFIX)}
         >
           <div className={styles.networkBtn}>
             <img
@@ -160,7 +151,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         >
           <img
             alt="cyb"
-            src={selectNetworkImg(CYBER.CHAIN_ID)}
+            src={selectNetworkImg(CHAIN_ID)}
             className={styles.networkBtnImg}
           />
           <div
@@ -181,7 +172,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
               style={{ fontSize: '20px' }}
               onClick={() => setControlledVisible((item) => !item)}
             >
-              {CYBER.CHAIN_ID}
+              {CHAIN_ID}
             </button>
             <div className={styles.containerBandwidthBar}>
               <BandwidthBar />

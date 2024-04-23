@@ -1,5 +1,5 @@
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
-import { CYBER } from 'src/utils/config';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
+import { CYBER_GATEWAY } from 'src/constants/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
 import TextMarkdown from '../TextMarkdown';
@@ -22,14 +22,14 @@ function OtherItem({
       <TextMarkdown preview={search}>{content || `${cid} (n/a)`}</TextMarkdown>
     );
   }
-  return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
+  return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
 }
 
 function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
   if (search) {
     return <div>{`${cid} (gateway)`}</div>;
   }
-  return <GatewayContent url={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`} />;
+  return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
 }
 
 type ContentTabProps = {

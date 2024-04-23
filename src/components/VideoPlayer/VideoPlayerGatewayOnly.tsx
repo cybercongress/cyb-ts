@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import { useEffect, useState } from 'react';
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/ipfs';
+import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
 

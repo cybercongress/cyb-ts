@@ -20,8 +20,8 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import AppRouter from './router';
-import { CYBER } from './utils/config';
 import store from './redux/store';
 
 import './style/main.css';
@@ -40,13 +40,13 @@ import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
-
-import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
 
+import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
+
 const httpLink = new HttpLink({
-  uri: CYBER.CYBER_INDEX_HTTPS,
+  uri: INDEX_HTTPS,
   headers: {
     'content-type': 'application/json',
     authorization: '',
@@ -55,7 +55,7 @@ const httpLink = new HttpLink({
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: CYBER.CYBER_INDEX_WEBSOCKET,
+    url: INDEX_WEBSOCKET,
   })
 );
 

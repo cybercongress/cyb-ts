@@ -71,12 +71,12 @@ const testFunc = (responseDataPools, jsCyber) => {
     return tokenIndexer;
   };
 
-  const calculatePrice = (coinsPair, balances, traseDenom) => {
+  const calculatePrice = (coinsPair, balances, tracesDenom) => {
     let price = 0;
     const tokenA = coinsPair[0];
     const tokenB = coinsPair[1];
-    const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-    const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+    const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+    const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
     const amountA = new BigNumber(
       convertAmount(balances[tokenA], coinDecimalsA)

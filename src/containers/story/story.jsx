@@ -4,6 +4,7 @@ import { Pane } from '@cybercongress/gravity';
 import { i18n } from '../../i18n/en';
 import styles from './story.module.scss';
 import cx from 'classnames';
+import { Button } from 'src/components';
 
 const mp3 = require('./starwars.mp3');
 const cyberImg = require('../../image/cyber.png');
@@ -116,7 +117,7 @@ class Story extends React.Component {
           {!story && (
             <div
               style={{ display: 'flex', justifyContent: 'space-between' }}
-              className="container-distribution"
+              className={styles.containerStory}
             >
               <Pane
                 width={50}
@@ -168,14 +169,7 @@ class Story extends React.Component {
           </audio>
         </div>
         {btnPlay && (
-          <button
-            type="button"
-            style={{ zIndex: 3 }}
-            className="btn-home"
-            onClick={() => this.Play()}
-          >
-            Play story
-          </button>
+          <Button text="Play story" onClick={this.Play} style={{ zIndex: 3 }} />
         )}
       </div>
     );

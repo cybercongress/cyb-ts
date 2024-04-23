@@ -1,4 +1,4 @@
-import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../ipfs';
+import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../types';
 import { parseArrayLikeToDetails } from '../../utils/content';
 import { addContenToIpfs, getIPFSContent } from '../../utils/utils-ipfs';
 

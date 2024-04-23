@@ -1,27 +1,20 @@
 import { NeuronAddress } from 'src/types/base';
-import { GqlType, Transaction } from './types';
-
-import { gql } from '@apollo/client';
-
 import { numberToUtcDate } from 'src/utils/date';
+import { fetchIterableByOffset } from 'src/utils/async/iterable';
 import {
-  MessagesByAddressVariables,
-  gqlMessagesByAddress,
-} from '../../indexer/transactions';
-import {
-  TransactionsByAddressResponse,
-  fetchTransactions,
-} from './transactions';
-import { createIndexerClient } from './utils';
-import {
-  MessagesByAddressVariables,
-  gqlMessagesByAddress,
-} from './transactions';
-import { camelToSnake } from 'src/utils/dto';
-import { fetchIterable } from '../dataSource/blockchain/utils/fetch';
+  MessagesByAddressCountDocument,
+  MessagesByAddressCountQuery,
+  MessagesByAddressCountQueryVariables,
+  MessagesByAddressSenseDocument,
+  MessagesByAddressSenseQuery,
+  MessagesByAddressSenseQueryVariables,
+} from 'src/generated/graphql';
+
+import { createIndexerClient } from './utils/graphqlClient';
+import { Transaction } from './types';
 
 type OrderDirection = 'desc' | 'asc';
-type Abortable = { abortSignal?: AbortSignal };
+type Abortable = { abortSignal: AbortSignal };
 
 export type MessagesByAddressVariables = {
   neuron: NeuronAddress;
@@ -39,7 +32,6 @@ export const mapMessagesByAddressVariables = ({
   types = [],
   orderDirection = 'desc',
   limit,
-  abortSignal,
 }: MessagesByAddressVariables) => ({
   address: `{${neuron}}`,
   limit,
@@ -48,30 +40,6 @@ export const mapMessagesByAddressVariables = ({
   types: `{${types.map((t) => `"${t}"`).join(' ,')}}`,
   order_direction: orderDirection,
 });
-
-export const gqlMessagesByAddress = (type: GqlType) =>
-  gql(`
-${type} MyQuery($address: _text, $limit: bigint, $offset: bigint, $timestamp_from: timestamp, $types: _text, $order_direction: order_by) {
-  messages_by_address(
-    args: {addresses: $address, limit: $limit, offset: $offset, types: $types},
-    order_by: {transaction: {block: {timestamp: $order_direction}}},
-    where: {transaction: {block: {timestamp: {_gt: $timestamp_from}}}}
-    ) {
-    transaction_hash
-    index
-    value
-    transaction {
-      success
-      block {
-        timestamp,
-        height
-      }
-      memo
-    }
-    type
-  }
-}
-`);
 
 const fetchTransactions = async ({
   neuron,
@@ -82,10 +50,11 @@ const fetchTransactions = async ({
   limit,
   abortSignal,
 }: MessagesByAddressVariables) => {
-  const res = await createIndexerClient(
-    abortSignal
-  ).request<TransactionsByAddressResponse>(
-    gqlMessagesByAddress('query'),
+  const res = await createIndexerClient(abortSignal).request<
+    MessagesByAddressSenseQuery,
+    MessagesByAddressSenseQueryVariables
+  >(
+    MessagesByAddressSenseDocument,
     mapMessagesByAddressVariables({
       neuron,
       timestampFrom,
@@ -94,46 +63,26 @@ const fetchTransactions = async ({
       orderDirection,
       limit,
       abortSignal,
-    })
+    }) as MessagesByAddressSenseQueryVariables
   );
 
-  return res?.messages_by_address;
+  return res?.messages_by_address as Transaction[];
 };
 
-export type TransactionsByAddressResponse = {
-  messages_by_address: Transaction[];
-};
-type MessagesCountResponse = {
-  messages_by_address_aggregate: {
-    aggregate: {
-      count: number;
-    };
-  };
-};
-const transactionsCountByNeuron = gql(`
-  query MyQuery($address: _text, $timestamp: timestamp) {
-    messages_by_address_aggregate(
-      args: {addresses: $address, limit: "100000000", offset: "0", types: "{}"},
-      where: {transaction: {block: {timestamp: {_gt: $timestamp}}}}) {
-        aggregate {
-          count
-        }
-      }
-  }
-  `);
 export const fetchTransactionMessagesCount = async (
   address: NeuronAddress,
   timestampFrom: number,
   abortSignal: AbortSignal
 ) => {
-  const res = await createIndexerClient(
-    abortSignal
-  ).request<MessagesCountResponse>(transactionsCountByNeuron, {
+  const res = await createIndexerClient(abortSignal).request<
+    MessagesByAddressCountQuery,
+    MessagesByAddressCountQueryVariables
+  >(MessagesByAddressCountDocument, {
     address: `{${address}}`,
     timestamp: numberToUtcDate(timestampFrom),
   });
 
-  return res?.messages_by_address_aggregate.aggregate.count;
+  return res?.messages_by_address_aggregate.aggregate?.count;
 };
 
 export const fetchTransactionsIterable = ({
@@ -144,7 +93,7 @@ export const fetchTransactionsIterable = ({
   limit,
   abortSignal,
 }: MessagesByAddressVariables) =>
-  fetchIterable(fetchTransactions, {
+  fetchIterableByOffset(fetchTransactions, {
     neuron,
     timestampFrom,
     types,

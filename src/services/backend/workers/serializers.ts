@@ -1,5 +1,5 @@
 import type { TransferHandler } from 'comlink';
-import { IPFSContent } from 'src/services/ipfs/ipfs';
+import { IPFSContent } from 'src/services/ipfs/types';
 
 type IPFSContentTransferable = Omit<IPFSContent, 'result'> & {
   port: MessagePort;
