@@ -6,6 +6,7 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
+import styles from './Main.module.scss';
 
 function Main() {
   useAdviserTexts({
@@ -31,28 +32,27 @@ function Main() {
         <Link to={cybernetRoutes.delegator.getLink(address)}>Delegator</Link>
       </Display>
 
-      <Display title={<DisplayTitle title="Settings (WIP)" />}>
-        <Select
-          disabled
-          title="Chain"
-          valueSelect="pussy"
-          onChangeSelect={undefined}
-          options={[
-            {
-              value: 'pussy',
-              text: 'pussy',
-            },
-          ]}
-        />
+      <Display title={<DisplayTitle title="Settings" />}>
+        <div className={styles.settings}>
+          <Select
+            disabled
+            title="Chain"
+            valueSelect="pussy"
+            options={[
+              {
+                value: 'pussy',
+                text: 'pussy',
+              },
+            ]}
+          />
 
-        <br />
-
-        <Input
-          value={CYBERNET_CONTRACT_ADDRESS}
-          disabled
-          title="Contract address"
-          onChange={undefined}
-        />
+          <Input
+            value={CYBERNET_CONTRACT_ADDRESS}
+            disabled
+            width="50%"
+            title="Contract address"
+          />
+        </div>
       </Display>
     </MainContainer>
   );
