@@ -19,7 +19,7 @@ import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-
+import { useAppDispatch } from 'src/redux/hooks';
 // should be refactored
 function AccountItem({
   data,
