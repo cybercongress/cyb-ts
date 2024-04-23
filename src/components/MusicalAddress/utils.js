@@ -6,6 +6,7 @@ import {
   PATTERN_OSMOS,
   PATTERN_TERRA,
   PATTERN_CYBER_VALOPER,
+  PATTERN_SPACE_PUSSY,
 } from '../../utils/config';
 import { PATTERN_CYBER } from 'src/constants/app';
 
@@ -150,6 +151,10 @@ const cutAddress = (address) => {
   }
 
   if (address.match(PATTERN_TERRA)) {
+    sliceAddress = parseAddress(address, 9);
+  }
+
+  if (address.match(PATTERN_SPACE_PUSSY)) {
     sliceAddress = parseAddress(address, 9);
   }
 

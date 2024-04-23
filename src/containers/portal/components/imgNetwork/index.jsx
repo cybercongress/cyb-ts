@@ -1,9 +1,14 @@
-import { PATTERN_COSMOS, PATTERN_ETH } from '../../../../utils/config';
+import {
+  PATTERN_COSMOS,
+  PATTERN_ETH,
+  PATTERN_SPACE_PUSSY,
+} from '../../../../utils/config';
 import { PATTERN_CYBER } from 'src/constants/app';
 
 import styles from './styles.scss';
 
 import { GIFT_ICON } from '../../utils';
+import imgSpacePussy from '../../../../image/space-pussy.svg';
 
 const classNames = require('classnames');
 
@@ -50,6 +55,10 @@ function ParseAddressesImg({ address, active, statusAddressGift, ...props }) {
 
   if (address.address.match(PATTERN_CYBER)) {
     img = imgBostrom;
+  }
+
+  if (address.address.match(PATTERN_SPACE_PUSSY)) {
+    img = imgSpacePussy;
   }
 
   return (
