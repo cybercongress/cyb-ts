@@ -8,12 +8,17 @@ import {
   HUB_TOKENS,
 } from 'src/constants/hubContracts';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { setChannels, setNetworks, setTokens } from 'src/redux/features/hub';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
-import { Channel, Network, Token } from 'src/types/hub';
-
-type ObjectKey<T> = {
-  [key: string]: T;
-};
+import {
+  Channel,
+  ChannelList,
+  Network,
+  NetworkList,
+  Token,
+  TokenList,
+} from 'src/types/hub';
 
 const enum TypeFetcher {
   NETWORKS = HUB_NETWORKS,
@@ -34,9 +39,11 @@ const fetcher = (client: Option<CyberClient>, type: TypeFetcher) => {
 };
 
 export function useNetworks() {
+  const dispatch = useAppDispatch();
+  const { networks: networksLS } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [networks, setNetworks] =
-    useState<Option<ObjectKey<Network>>>(undefined);
+  const [networksData, setNetworksData] =
+    useState<Option<NetworkList>>(networksLS);
   const { data } = useQuery(
     ['hub-networks'],
     () => fetcher(queryClient, TypeFetcher.NETWORKS),
@@ -46,23 +53,26 @@ export function useNetworks() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Network> = {};
+    const objectMappedResult: NetworkList = {};
     if (data) {
       data.entries.forEach((row: Network) => {
         objectMappedResult[row.chain_id] = row;
       });
     }
     if (Object.keys(objectMappedResult).length > 0) {
-      setNetworks(objectMappedResult);
+      setNetworksData(objectMappedResult);
+      dispatch(setNetworks(objectMappedResult));
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { networks };
+  return { networks: networksData };
 }
 
 export function useTokens() {
+  const dispatch = useAppDispatch();
+  const { tokens: tokensLS } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [tokens, setTokens] = useState<Option<ObjectKey<Token>>>(undefined);
+  const [tokensData, setTokensData] = useState<Option<TokenList>>(tokensLS);
   const { data } = useQuery(
     ['hub-tokens'],
     () => fetcher(queryClient, TypeFetcher.TOKENS),
@@ -72,7 +82,7 @@ export function useTokens() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Token> = {};
+    const objectMappedResult: TokenList = {};
     if (data) {
       data.entries.forEach((row: Token) => {
         if (row.chain_id === CHAIN_ID) {
@@ -86,18 +96,21 @@ export function useTokens() {
       });
 
       if (Object.keys(objectMappedResult).length > 0) {
-        setTokens(objectMappedResult);
+        setTokensData(objectMappedResult);
+        dispatch(setTokens(objectMappedResult));
       }
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { tokens };
+  return { tokens: tokensData };
 }
 
 export function useChannels() {
+  const dispatch = useAppDispatch();
+  const { channels: channelsLS } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [channels, setChannels] =
-    useState<Option<ObjectKey<Channel>>>(undefined);
+  const [channelsData, setChannelsData] =
+    useState<Option<ChannelList>>(channelsLS);
   const { data } = useQuery(
     ['hub-channels'],
     () => fetcher(queryClient, TypeFetcher.CHANNELS),
@@ -107,7 +120,7 @@ export function useChannels() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Channel> = {};
+    const objectMappedResult: ChannelList = {};
     if (data) {
       data.entries.forEach((row: Channel) => {
         if (row.active === 'true') {
@@ -116,10 +129,11 @@ export function useChannels() {
       });
 
       if (Object.keys(objectMappedResult).length > 0) {
-        setChannels(objectMappedResult);
+        setChannelsData(objectMappedResult);
+        dispatch(setChannels(objectMappedResult));
       }
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { channels };
+  return { channels: channelsData };
 }
