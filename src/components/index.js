@@ -55,6 +55,9 @@ import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
 import Row, { RowsContainer } from './Row/Row';
+import Display from './containerGradient/Display/Display';
+import DisplayTitle from './containerGradient/DisplayTitle/DisplayTitle';
+import { Color } from './LinearGradientContainer/LinearGradientContainer';
 
 const BtnGrd = Button;
 
@@ -108,6 +111,9 @@ export {
   Tabs,
   Row,
   RowsContainer,
+  Display,
+  DisplayTitle,
+  Color
 };
 
 export { Dots } from './ui/Dots';

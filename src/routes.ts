@@ -97,6 +97,13 @@ export const routes = {
     path: '/tx/:hash',
     getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
   },
+  contracts: {
+    path: '/contracts',
+    byAddress: {
+      path: '/contracts/:contractAddress',
+      getLink: (contractAddress: string) => `/contracts/${contractAddress}`,
+    },
+  },
   blocks: {
     path: '/blocks',
     getLink: () => `/network/bostrom/blocks`,

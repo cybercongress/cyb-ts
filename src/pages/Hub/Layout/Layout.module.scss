@@ -1,0 +1,5 @@
+.container {
+   & * {
+    text-transform: none !important;
+  }
+}

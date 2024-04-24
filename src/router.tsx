@@ -55,6 +55,7 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
+import Hub from './pages/Hub/hub';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -187,6 +188,8 @@ function AppRouter() {
           <Route path="/particles" element={<Objects />} />
 
           <Route path="/teleport/*" element={<Teleport />} />
+
+          <Route path="/hub/*" element={<Hub />} />
 
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
