@@ -56,6 +56,7 @@ import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
 import Hub from './pages/Hub/hub';
+import Settings from './pages/Settings/Settings';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -214,6 +215,8 @@ function AppRouter() {
           <Route path="/nebula" element={<Nebula />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
 

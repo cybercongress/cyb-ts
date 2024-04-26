@@ -5,45 +5,10 @@ import { useMemo } from 'react';
 import { EntityToDto } from 'src/types/dto';
 import { createColumnHelper } from '@tanstack/react-table';
 import { entityToDto } from 'src/utils/dto';
-import ImgDenom from 'src/components/valueImg/imgDenom';
-import { Cid } from 'src/components';
-import { trimString } from 'src/utils/utils';
 import DisplayHub from '../ui/DisplayHub';
+import renderRow from './map';
 
 const columnHelper = createColumnHelper<EntityToDto<Network>>();
-
-type RenderRow = {
-  id: number;
-  chainId: string;
-  name: string;
-  logo: string;
-  genesisHash: string;
-  prefix: string;
-};
-
-function renderRow({
-  id,
-  chainId,
-  name,
-  logo,
-  prefix,
-  genesisHash,
-}: RenderRow) {
-  return {
-    id,
-    chainId,
-    name,
-    logo: (
-      <ImgDenom
-        coinDenom=""
-        tooltipStatus={false}
-        infoDenom={{ coinImageCid: logo }}
-      />
-    ),
-    genesisHash: <Cid cid={genesisHash}>{trimString(genesisHash, 6, 6)}</Cid>,
-    prefix,
-  };
-}
 
 function Networks() {
   const { networks } = useHub();
