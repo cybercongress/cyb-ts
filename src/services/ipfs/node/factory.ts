@@ -1,5 +1,5 @@
 // import { getNodeAutoDialInterval } from './utils-ipfs';
-import { IpfsNodeType, IpfsNode, CybIpfsNode, IpfsOptsType } from '../ipfs';
+import { IpfsNodeType, IpfsNode, CybIpfsNode, IpfsOptsType } from '../types';
 import KuboNode from './impl/kubo';
 import HeliaNode from './impl/helia';
 import JsIpfsNode from './impl/js-ipfs';

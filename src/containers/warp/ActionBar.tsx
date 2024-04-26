@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
+import { CHAIN_ID, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { Account, ActionBar as ActionBarCenter } from '../../components';
-import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import { convertAmountReverce, selectNetworkImg } from '../../utils/utils';
 
 import ActionBarStaps from './actionBarSteps';
@@ -60,7 +61,7 @@ function ActionBar({ stateActionBar }: Props) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -116,8 +117,8 @@ function ActionBar({ stateActionBar }: Props) {
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
 
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
       const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
@@ -215,10 +216,10 @@ function ActionBar({ stateActionBar }: Props) {
         [tokenB]: amountY,
       };
 
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(
         arrangedReserveCoinDenoms[0]
       );
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(
         arrangedReserveCoinDenoms[1]
       );
 
@@ -301,8 +302,8 @@ function ActionBar({ stateActionBar }: Props) {
           price 1 000 000 000
           <img
             style={{ width: '20px', marginLeft: '5px' }}
-            src={selectNetworkImg(CYBER.CHAIN_ID)}
-            alt={CYBER.CHAIN_ID}
+            src={selectNetworkImg(CHAIN_ID)}
+            alt={CHAIN_ID}
           />
         </div>
       ),

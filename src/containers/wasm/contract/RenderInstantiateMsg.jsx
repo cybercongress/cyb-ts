@@ -4,7 +4,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import txs from '../../../utils/txs';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

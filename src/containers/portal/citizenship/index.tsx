@@ -8,8 +8,13 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
 import { Nullable } from 'src/types';
-import txs from '../../../utils/txs';
 
+import { useAdviser } from 'src/features/adviser/context';
+import { useBackend } from 'src/contexts/backend/backend';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { useAppDispatch } from 'src/redux/hooks';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import { BASE_DENOM, CHAIN_ID } from 'src/constants/config';
 import { MainContainer, MoonAnimation, Stars } from '../components';
 import {
   Rules,
@@ -28,16 +33,10 @@ import {
   getPassportByNickname,
   getNumTokens,
 } from '../utils';
-import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
-import { useAdviser } from 'src/features/adviser/context';
-import { useBackend } from 'src/contexts/backend/backend';
-import { getPassport } from 'src/features/passport/passports.redux';
-import { useAppDispatch } from 'src/redux/hooks';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
 const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
@@ -131,7 +130,7 @@ const calculatePriceNicname = (valueNickname) => {
     const exponent = 8 - valueNickname.length;
     const base = new BigNumber(10).pow(exponent);
     const priceName = new BigNumber(1000000).multipliedBy(base).toNumber();
-    funds = coins(priceName, CYBER.DENOM_CYBER);
+    funds = coins(priceName, BASE_DENOM);
   }
 
   return funds;
@@ -216,7 +215,7 @@ function GetCitizenship({ defaultAccount }) {
         if (window.keplr === undefined) {
           setStep(STEP_KEPLR_INIT_CHECK_FNC);
         } else {
-          const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
+          const offlineSigner = window.getOfflineSigner(CHAIN_ID);
           try {
             const [{ address }] = await offlineSigner.getAccounts();
             if (addressActive !== null) {
@@ -328,10 +327,7 @@ function GetCitizenship({ defaultAccount }) {
       if (usePriceNickname !== null) {
         const { amountPrice } = usePriceNickname;
         if (queryClient) {
-          const getBalance = await queryClient.getBalance(
-            bech32,
-            CYBER.DENOM_CYBER
-          );
+          const getBalance = await queryClient.getBalance(bech32, BASE_DENOM);
           const { amount } = getBalance;
           if (parseFloat(amount) === 0) {
             setRegisterDisabled(false);
@@ -371,16 +367,12 @@ function GetCitizenship({ defaultAccount }) {
     const keplrWindow = await getKeplr();
 
     if (keplrWindow) {
-      await keplrWindow.enable(CYBER.CHAIN_ID);
-      const signer = await keplrWindow.getOfflineSignerAuto(CYBER.CHAIN_ID);
+      await keplrWindow.enable(CHAIN_ID);
+      const signer = await keplrWindow.getOfflineSignerAuto(CHAIN_ID);
       const [{ address }] = await signer.getAccounts();
       const data = `${address}:${CONSTITUTION_HASH}`;
 
-      const res = await keplrWindow.signArbitrary(
-        CYBER.CHAIN_ID,
-        address,
-        data
-      );
+      const res = await keplrWindow.signArbitrary(CHAIN_ID, address, data);
       const proveData = {
         pub_key: res.pub_key.value,
         signature: res.signature,

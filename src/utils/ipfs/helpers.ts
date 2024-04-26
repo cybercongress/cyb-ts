@@ -3,7 +3,7 @@ import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { isString } from 'lodash';
 import { IpfsApi } from 'src/services/backend/workers/background/worker';
 import { ParticleCid } from 'src/types/base';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getIpfsHash = (string: string): Promise<ParticleCid> =>

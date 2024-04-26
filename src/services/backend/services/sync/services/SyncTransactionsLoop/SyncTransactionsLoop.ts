@@ -22,8 +22,14 @@ import { throwIfAborted } from 'src/utils/async/promise';
 import {
   createNodeWebsocketObservable,
   getIncomingTransfersQuery,
-} from 'src/services/blockchain/websocket';
-import { mapWebsocketTxToTransactions } from 'src/services/blockchain/utils/mapping';
+} from 'src/services/lcd/websocket';
+import {
+  MessagesByAddressSenseQueryVariables,
+  MessagesByAddressSenseWsDocument,
+  MessagesByAddressSenseWsSubscription,
+} from 'src/generated/graphql';
+
+import { mapWebsocketTxToTransactions } from 'src/services/lcd/utils/mapping';
 
 import { ServiceDeps } from '../types';
 import { extractCybelinksFromTransaction } from '../utils/links';
@@ -32,13 +38,11 @@ import {
   fetchTransactionsIterable,
   mapMessagesByAddressVariables,
   fetchTransactionMessagesCount,
-  gqlMessagesByAddress,
-  TransactionsByAddressResponse,
 } from '../../../indexer/transactions';
 import { syncMyChats } from './services/chat';
-import { TRANSACTIONS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+import { TRANSACTIONS_BATCH_LIMIT } from '../../../indexer/consts';
 import BaseSyncClient from '../BaseSyncLoop/BaseSyncClient';
-import { createIndexerWebsocket } from '../../../indexer/utils';
+import { createIndexerWebsocket } from '../../../indexer/utils/graphqlClient';
 import { SyncServiceParams } from '../../types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
@@ -83,14 +87,14 @@ class SyncTransactionsLoop extends BaseSyncClient {
       types: [],
       orderDirection: 'desc',
       limit: 100,
-    });
+    }) as MessagesByAddressSenseQueryVariables;
 
     const indexerObservable$ =
-      createIndexerWebsocket<TransactionsByAddressResponse>(
-        gqlMessagesByAddress('subscription'),
+      createIndexerWebsocket<MessagesByAddressSenseWsSubscription>(
+        MessagesByAddressSenseWsDocument,
         variables
       ).pipe(
-        map((response: TransactionsByAddressResponse) => {
+        map((response: MessagesByAddressSenseWsSubscription) => {
           return {
             source: 'indexer',
             transactions: response.messages_by_address.map((i) =>
@@ -196,16 +200,13 @@ class SyncTransactionsLoop extends BaseSyncClient {
     // to prevent missing of other msg types let's avoid to change ts
     const shouldUpdateTimestamp = source !== 'node';
 
-    this.cyblogCh.info('--------syncTransactions batch ', {
-      data: [
-        myAddress,
-        address,
-        transactions.length,
-        transactions.at(0)?.timestamp,
-        transactions.at(-1)?.timestamp,
-        source,
-      ],
-    });
+    this.cyblogCh.info(
+      `   syncTransactions - process ${address}[${source}],  count: ${
+        transactions.length
+      }, from: ${transactions.at(0)?.timestamp}, to: ${
+        transactions.at(-1)?.timestamp
+      }`
+    );
 
     // save transaction
     await throwIfAborted(this.db!.putTransactions, signal)(transactions);

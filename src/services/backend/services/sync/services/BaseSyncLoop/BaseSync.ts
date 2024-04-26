@@ -13,7 +13,7 @@ import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { SyncEntryName } from 'src/services/backend/types/services';
 import { CyblogChannel, createCyblogChannel } from 'src/utils/logging/cyblog';
 
-import DbApiWrapper from '../../../dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from '../../../DbApi/DbApi';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
 import { ProgressTracker } from '../ProgressTracker/ProgressTracker';
 import { ServiceDeps } from '../types';

@@ -25,7 +25,7 @@ function PoolCard({
   accountBalances,
   vol24,
 }: PoolCardProps) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
 
   const [sharesToken, setSharesToken] = useState(null);
 
@@ -55,7 +55,7 @@ function PoolCard({
       if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
         reserveCoinDenoms.forEach((itemCoin) => {
           if (itemCoin.includes('ibc')) {
-            const [{ denom, path }] = traseDenom(itemCoin);
+            const [{ denom, path }] = tracesDenom(itemCoin);
             const result = tokenList.find((item) => item.denom === denom);
             if (result !== undefined) {
               const { counterpartyChainId, destChannelId } = result;

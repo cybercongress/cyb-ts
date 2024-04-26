@@ -6,7 +6,7 @@ import {
   CybIpfsNode,
   IpfsContentType,
   IpfsOptsType,
-} from 'src/services/ipfs/ipfs';
+} from 'src/services/ipfs/types';
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 
@@ -26,7 +26,7 @@ import { exposeWorkerApi } from '../factoryMethods';
 import { SyncService } from '../../services/sync/sync';
 import { SyncServiceParams } from '../../services/sync/types';
 
-import DbApi from '../../services/dataSource/indexedDb/dbApiWrapper';
+import DbApi from '../../services/DbApi/DbApi';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';

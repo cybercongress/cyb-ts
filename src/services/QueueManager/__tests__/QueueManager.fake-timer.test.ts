@@ -1,6 +1,6 @@
 import QueueManager from '../QueueManager';
 import { of } from 'rxjs';
-import { CybIpfsNode } from '../../ipfs/ipfs';
+import { CybIpfsNode } from '../../ipfs/types';
 import { QueueStrategy } from '../QueueStrategy';
 import { IDeferredDbSaver } from '../types';
 import { valuesExpected } from 'src/utils/test-utils/test-utils';
