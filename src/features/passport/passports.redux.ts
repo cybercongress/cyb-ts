@@ -11,7 +11,7 @@ import { AppThunk } from 'src/redux/types';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
 import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
-import { getPassport as getPassportQuery } from 'src/services/backend/services/lcd/lcd';
+import { getPassport as getPassportQuery } from 'src/services/passports/lcd';
 
 export type SliceState = {
   // address

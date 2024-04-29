@@ -1,5 +1,5 @@
 import { useSigningClient } from 'src/contexts/signerClient';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { Coin } from '@cosmjs/launchpad';
 import { useMutation } from '@tanstack/react-query';
 

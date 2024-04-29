@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { CHAIN_ID } from 'src/constants/config';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import usePassportContract from 'src/features/passport/usePassportContract';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { RootState } from 'src/redux/store';
 import { routes } from 'src/routes';
 import { Citizenship } from 'src/types/citizenship';
 import { Networks } from 'src/types/networks';
-import { CYBER } from 'src/utils/config';
 import { fromBech32 } from 'src/utils/utils';
 
 const RobotContext = React.createContext<{
@@ -138,7 +136,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const currentPassport = isOwner ? currentUserPassport : passportContract;
   let currentRobotAddress = address || currentPassport.data?.owner || null;
 
-  if (CYBER.CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
+  if (CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
     currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
   }
 
