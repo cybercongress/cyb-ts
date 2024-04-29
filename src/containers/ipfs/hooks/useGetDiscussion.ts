@@ -14,9 +14,11 @@ type Props = {
 };
 
 function useGetLinks(
-  { hash, type = LinksTypeFilter.from }: Props,
+  { hash, type = LinksTypeFilter.from, neuron }: Props,
   { skip = false } = {}
 ) {
+  console.log(neuron);
+
   // always no next page when skip
   const [hasNextPage, setHasNextPage] = useState(!skip);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -31,8 +33,17 @@ function useGetLinks(
     variables: {
       where:
         type === LinksTypeFilter.from
-          ? { particle_from: { _eq: hash } }
-          : { particle_to: { _eq: hash } },
+          ? {
+              particle_from: { _eq: hash },
+              neuron: { _eq: neuron },
+              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
+            }
+          : {
+              particle_to: { _eq: hash },
+              neuron: { _eq: neuron },
+              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
+            },
+
       orderBy: { timestamp: OrderBy.Desc },
       limit,
     },
@@ -70,7 +81,7 @@ function useGetLinks(
     });
   };
 
-  const cyberlinksCountQuery = useCyberlinksCount(hash);
+  const cyberlinksCountQuery = useCyberlinksCount(hash, neuron);
   const total = cyberlinksCountQuery.data[type];
   const particles = (data?.cyberlinks || []).map((item) => {
     return {

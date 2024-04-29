@@ -90,6 +90,7 @@ function Subnet() {
                 netuid={netuid}
                 maxWeightsLimit={subnetQuery.data.max_weights_limit}
                 addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
+                metadata={subnetQuery.data.metadata}
               />
             }
           />

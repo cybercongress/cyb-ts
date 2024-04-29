@@ -6,6 +6,7 @@ import useExecuteCybernetContract from '../../../../../useExecuteCybernetContrac
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 
 type Props = {
   length: number;
@@ -19,6 +20,7 @@ function WeightsSetter({
   length,
   netuid,
   callback,
+  metadata,
   neurons,
   maxWeightsLimit,
 }: Props) {
@@ -53,6 +55,20 @@ function WeightsSetter({
           return (
             <div key={i}>
               <Link to={cybernetRoutes.delegator.getLink(hotkey)}>{uid}</Link>
+
+              <br />
+
+              <Link
+                to={
+                  routes.oracle.ask.getLink(metadata) +
+                  `?neuron=${hotkey}&subnet=${netuid}`
+                }
+              >
+                {/* <Cid cid={metadata}> */} metadata
+                {/* {`${metadata.substr(0, 6)}...${metadata.substr(-6)}`} */}
+                {/* </Cid> */}
+              </Link>
+
               <InputNumber
                 maxValue={100}
                 value={weights[i]}

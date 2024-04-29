@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/services/ipfs/types';
@@ -17,11 +17,19 @@ import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
 import { initialContentTypeFilterState } from './constants';
+import { AccountInput } from 'src/pages/teleport/components/Inputs';
+import { Slider } from 'src/components';
 
 const sortByLSKey = 'search-sort';
 
 function SearchResults() {
   const { query: q, cid } = useParams();
+
+  const [sParams] = useSearchParams();
+
+  const [neuron, setNeuron] = useState(sParams.get('neuron'));
+
+  const subnet = sParams.get('subnet');
 
   const query = q || cid || '';
 
@@ -37,8 +45,11 @@ function SearchResults() {
     initialContentTypeFilterState
   );
   const [sortBy, setSortBy] = useState(
-    localStorage.getItem(sortByLSKey) || SortBy.rank
+    neuron ? SortBy.date : localStorage.getItem(sortByLSKey) || SortBy.rank
   );
+
+  console.log(sortBy, 'sortBy');
+
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
 
   const {
@@ -49,7 +60,7 @@ function SearchResults() {
     isInitialLoading,
     refetch,
     fetchNextPage: next,
-  } = useSearchData(keywordHash, {
+  } = useSearchData(keywordHash, neuron, {
     sortBy,
     linksType: linksTypeFilter,
   });
@@ -134,7 +145,20 @@ function SearchResults() {
         total={total}
         total2={items.length}
         contentType={contentType}
+        neuron={neuron}
+        setNeuron={(v) => {
+          setNeuron(v);
+          setSortBy(SortBy.date);
+        }}
       />
+
+      {subnet && (
+        <div>
+          <p>subnet: {subnet}</p>
+
+          <Slider valuePercents={10} />
+        </div>
+      )}
 
       <div className={styles.search}>
         <FirstItems query={query} />

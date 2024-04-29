@@ -19,6 +19,7 @@ function Weights({
   netuid,
   maxWeightsLimit,
   addressRegisteredInSubnet,
+  metadata,
 }: Props) {
   const weightsQuery = useQueryCybernetContract<any[]>({
     query: {
@@ -62,6 +63,7 @@ function Weights({
           <WeightsSetter
             netuid={netuid}
             length={length}
+            metadata={metadata}
             neurons={neurons}
             callback={() => {
               weightsQuery.refetch();

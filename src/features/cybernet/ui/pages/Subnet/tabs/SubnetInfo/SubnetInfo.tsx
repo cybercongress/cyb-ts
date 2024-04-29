@@ -116,7 +116,12 @@ function SubnetInfo({ data: subnetInfoData, neurons }: Props) {
       </Display>
 
       {subnetNeurons && (
-        <SubnetNeurons neurons={subnetNeurons} subnetType={subnetType} />
+        <SubnetNeurons
+          neurons={subnetNeurons}
+          subnetType={subnetType}
+          netuid={netuid}
+          metadata={subnetInfoData.metadata}
+        />
       )}
     </>
   );

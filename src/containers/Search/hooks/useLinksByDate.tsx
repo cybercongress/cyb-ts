@@ -5,17 +5,18 @@ import { merge } from './shared';
 function useLinksByDate(
   hash: string,
   type: LinksTypeFilter,
+  neuron,
   { skip = false } = {}
 ) {
   const data = useGetDiscussion(
-    { hash, type: LinksTypeFilter.from },
+    { hash, type: LinksTypeFilter.from, neuron },
     {
       skip: skip || type === LinksTypeFilter.to,
     }
   );
 
   const dataBacklinks = useGetDiscussion(
-    { hash, type: LinksTypeFilter.to },
+    { hash, type: LinksTypeFilter.to, neuron },
     {
       skip: skip || type === LinksTypeFilter.from,
     }
