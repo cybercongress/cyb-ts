@@ -12,7 +12,7 @@ import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 const cx = require('classnames');
 
 function RowBalancesDetails({ balance }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [isOpen, setIsOpen] = useState(false);
 
   const onClickBtnArrow = () => {
@@ -36,7 +36,7 @@ function RowBalancesDetails({ balance }) {
     if (balance.total) {
       const { amount, denom } = balance.total;
 
-      const [{ coinDecimals }] = traseDenom(denom);
+      const [{ coinDecimals }] = tracesDenom(denom);
 
       return convertAmount(amount, coinDecimals);
     }
@@ -46,7 +46,7 @@ function RowBalancesDetails({ balance }) {
   }, [balance]);
 
   const getTypeDenomKey = (key) => {
-    const denom = traseDenom(key);
+    const denom = tracesDenom(key);
 
     // TODO: fix
     if (!denom[0]) {

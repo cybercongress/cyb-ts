@@ -1,12 +1,12 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
-import { IPFSContentDetails, IPFSContentMaybe, IpfsContentType } from '../ipfs';
+import { PATTERN_HTTP, PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import {
+  IPFSContentDetails,
+  IPFSContentMaybe,
+  IpfsContentType,
+} from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
-
-// TODO: fix to get working inside web worker, REFACTOR
-// import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../config';
-const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
-const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });

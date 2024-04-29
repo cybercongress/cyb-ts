@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { reduceParticleArr } from './useGetBackLink';
 import { searchByHash } from 'src/utils/search/utils';
 import { useBackend } from 'src/contexts/backend/backend';
-import { mapLinkToEntity } from 'src/services/CozoDb/mapping';
+import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
 
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
@@ -22,13 +22,12 @@ function useGetAnswers(hash) {
     ['useGetAnswers', hash],
     async ({ pageParam = 0 }) => {
       const response = await searchByHash(queryClient, hash, pageParam);
-      const reduceArr = response.result
-        ? reduceParticleArr(response.result)
-        : [];
+      const result = response?.result || [];
+      const reduceArr = result ? reduceParticleArr(result) : [];
       setTotal(pageParam === 0 && response.pagination.total);
 
       defferedDbApi?.importCyberlinks(
-        response.result.map((l) => mapLinkToEntity(hash, l.particle))
+        result.map((l) => mapLinkToLinkDto(hash, l.particle))
       );
 
       return { data: reduceArr, page: pageParam };

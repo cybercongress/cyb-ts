@@ -1,35 +1,12 @@
-import { request } from 'graphql-request';
-import { gql } from '@apollo/client';
-
-import { useInfiniteQuery } from '@tanstack/react-query';
-import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { AccountValue } from 'src/types/defaultAccount';
 import { Nullable, Option } from 'src/types';
 import { Log } from '@cosmjs/stargate/build/logs';
-import { CYBER } from '../../../utils/config';
 
-const { CYBER_INDEX_HTTPS } = CYBER;
-
-const messagesByAddress = gql(`
-  query MyQuery($address: _text, $limit: bigint, $offset: bigint, $type: _text) {
-  messages_by_address(args: {addresses: $address, limit: $limit, offset: $offset, types: $type},
-    order_by: {transaction: {block: {height: desc}}}) {
-    transaction_hash
-    value
-    transaction {
-        success
-        height
-        logs
-        block {
-          timestamp
-        }
-        memo
-      }
-      type
-  }
-}
-`);
+import {
+  MessagesByAddressQueryHookResult,
+  useMessagesByAddressQuery,
+} from 'src/generated/graphql';
 
 type Txs = {
   success: boolean;
@@ -48,47 +25,49 @@ export type ResponseTxsByType = {
   value: any;
 };
 
+export interface UseGetSendTxsByAddressByType
+  extends MessagesByAddressQueryHookResult {
+  hasMore: boolean;
+  fetchMoreData: () => void;
+}
+
 const limit = '5';
 
 function useGetSendTxsByAddressByType(
   address: Nullable<AccountValue>,
-  type: string
-) {
+  types: string
+): UseGetSendTxsByAddressByType {
+  const [hasMore, setHasMore] = useState(true);
   const [addressBech32, setAddressBech32] = useState<Option<string>>();
-  const {
-    status,
-    data,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-  } = useInfiniteQuery(
-    ['messagesByAddressGql', addressBech32, type],
-    async ({ pageParam = 0 }) => {
-      const res = await request(CYBER_INDEX_HTTPS, messagesByAddress, {
-        address: `{${addressBech32}}`,
-        limit,
-        offset: new BigNumber(limit).multipliedBy(pageParam).toString(),
-        type: `{${type}}`,
-      });
-      return {
-        data: res.messages_by_address as ResponseTxsByType[],
-        page: pageParam,
-      };
+  const result = useMessagesByAddressQuery({
+    variables: {
+      address: `{${addressBech32}}`,
+      limit,
+      offset: 0,
+      types: `{${types}}`,
     },
-    {
-      enabled: Boolean(addressBech32) && Boolean(type),
-      getNextPageParam: (lastPage) => {
-        if (lastPage.data && lastPage.data.length === 0) {
-          return undefined;
-        }
+  });
 
-        const nextPage = lastPage.page !== undefined ? lastPage.page + 1 : 0;
-        return nextPage;
+  const fetchMoreData = () => {
+    result.fetchMore({
+      variables: {
+        offset: result.data?.messages_by_address.length,
       },
-    }
-  );
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev;
+        }
+        setHasMore(fetchMoreResult.messages_by_address.length > 0);
+        return {
+          ...prev,
+          messages_by_address: [
+            ...prev.messages_by_address,
+            ...fetchMoreResult.messages_by_address,
+          ],
+        };
+      },
+    });
+  };
 
   useEffect(() => {
     if (address) {
@@ -97,13 +76,9 @@ function useGetSendTxsByAddressByType(
   }, [address]);
 
   return {
-    data,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    status,
-    refetch,
+    ...result,
+    fetchMoreData,
+    hasMore,
   };
 }
 

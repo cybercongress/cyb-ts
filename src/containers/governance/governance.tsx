@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable camelcase */
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { useQueryClient } from 'src/contexts/queryClient';
-import ActionBar from './actionBar';
+import { useAdviser } from 'src/features/adviser/context';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
+import dateFormat from 'dateformat';
+
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { CardStatisics } from '../../components';
-import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
+import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { useAdviser } from 'src/features/adviser/context';
 
-const dateFormat = require('dateformat');
+type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
-function Statistics({ communityPoolCyber, staked }) {
+function Statistics({
+  communityPoolCyber,
+  staked,
+}: {
+  communityPoolCyber: number;
+  staked: number;
+}) {
   return (
     <Pane
       marginTop={10}
@@ -23,7 +32,7 @@ function Statistics({ communityPoolCyber, staked }) {
       gridGap="20px"
     >
       <CardStatisics
-        title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        title={`Community pool, ${BASE_DENOM.toUpperCase()}`}
         value={formatNumber(Math.floor(communityPoolCyber))}
       />
       <Link to="/sphere">
@@ -40,13 +49,58 @@ function Statistics({ communityPoolCyber, staked }) {
   );
 }
 
+function ProposalWrapper({
+  proposalId,
+  children,
+}: {
+  proposalId: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      key={proposalId}
+      style={{ color: 'unset' }}
+      to={`/senate/${proposalId}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
+//  ProposalsData['proposals'] extends (infer U)[] ? U : never
+const mapProposalToCard = (proposal: any) => {
+  const {
+    proposal_id,
+    content,
+    total_deposit,
+    status,
+    deposit_end_time,
+    voting_end_time,
+    final_tally_result,
+  } = proposal;
+  return {
+    proposalId: proposal_id,
+    title: content.title || '<not set>',
+    totalDeposit: total_deposit,
+    state: ProposalStatus[status as KeyOfProposalStatus],
+    timeEndDeposit: deposit_end_time
+      ? dateFormat(new Date(deposit_end_time), 'dd/mm/yyyy, HH:MM:ss')
+      : undefined,
+    timeEndVoting: voting_end_time
+      ? dateFormat(new Date(voting_end_time), 'dd/mm/yyyy, HH:MM:ss')
+      : undefined,
+    amounts: total_deposit[0] || undefined,
+    votes: final_tally_result || undefined,
+    type: content['@type'] || undefined,
+  };
+};
+
 function Governance() {
   const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
-
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
@@ -65,7 +119,7 @@ function Governance() {
     const getStatistics = async () => {
       if (queryClient) {
         let communityPool = 0;
-        const totalCyb = {};
+        const totalCyb: Record<string, number> = {};
         let stakedBoot = 0;
 
         const dataCommunityPool = await queryClient.communityPool();
@@ -81,9 +135,8 @@ function Governance() {
             totalCyb[item.denom] = parseFloat(item.amount);
           });
         }
-        if (totalCyb[CYBER.DENOM_CYBER] && totalCyb[CYBER.DENOM_LIQUID_TOKEN]) {
-          stakedBoot =
-            totalCyb[CYBER.DENOM_LIQUID_TOKEN] / totalCyb[CYBER.DENOM_CYBER];
+        if (totalCyb[BASE_DENOM] && totalCyb[DENOM_LIQUID]) {
+          stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[BASE_DENOM];
         }
         setStaked(stakedBoot);
       }
@@ -92,135 +145,110 @@ function Governance() {
   }, [queryClient]);
 
   useEffect(() => {
-    feachProposals();
+    getProposals().then((response) => {
+      if (!response) {
+        return;
+      }
+      setTableData(response || []);
+    });
   }, []);
-
-  const feachProposals = async () => {
-    // if (queryClient !== null) {
-    const responseProposals = await getProposals();
-    // const responseProposals = await queryClient.proposals(
-    //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
-    //   '',
-    //   ''
-    // );
-    if (responseProposals !== null) {
-      setTableData(responseProposals);
-    }
-    // }
-  };
 
   const feachMinDeposit = async () => {
     const responseMinDeposit = await getMinDeposit();
 
-    if (responseMinDeposit !== null) {
-      setMinDeposit(parseFloat(responseMinDeposit.min_deposit[0].amount));
+    if (responseMinDeposit?.deposit_params?.min_deposit?.[0].amount) {
+      setMinDeposit(
+        parseFloat(responseMinDeposit.deposit_params.min_deposit[0].amount)
+      );
     }
   };
 
-  console.log('tableData', tableData);
-  const active = tableData
+  const active = (tableData || [])
     .reverse()
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status as KeyOfProposalStatus] <
+        ProposalStatus.PROPOSAL_STATUS_PASSED
     )
+    .map(mapProposalToCard)
     .map((item) => (
-      <Link
-        key={item.proposal_id}
-        style={{ color: 'unset' }}
-        to={`/senate/${item.proposal_id}`}
+      <ProposalWrapper
+        proposalId={item.proposalId!}
+        key={`active_${item.proposalId}`}
       >
         <ActiveCard
-          key={item.proposal_id}
-          id={item.proposal_id}
-          name={item.content.title}
-          minDeposit={minDeposit}
-          totalDeposit={item.total_deposit}
-          type={item.content['@type']}
-          state={PROPOSAL_STATUS[item.status]}
-          timeEndDeposit={dateFormat(
-            new Date(item.deposit_end_time),
-            'dd/mm/yyyy, HH:MM:ss'
-          )}
-          timeEndVoting={dateFormat(
-            new Date(item.voting_end_time),
-            'dd/mm/yyyy, HH:MM:ss'
-          )}
-          amount={item.total_deposit[0]}
+          key={item.proposalId}
+          id={item.proposalId}
+          name={item.title}
+          type={item.type}
+          state={item.state}
+          timeEndDeposit={item.timeEndDeposit}
+          timeEndVoting={item.timeEndVoting}
         />
-      </Link>
+      </ProposalWrapper>
     ));
 
-  const accepted = tableData
+  const accepted = (tableData || [])
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status as KeyOfProposalStatus] ===
+        ProposalStatus.PROPOSAL_STATUS_PASSED
     )
+    .map(mapProposalToCard)
     .map((item) => (
-      <Link
-        key={item.proposal_id}
-        style={{ color: 'unset' }}
-        to={`/senate/${item.proposal_id}`}
+      <ProposalWrapper
+        proposalId={item.proposalId}
+        key={`accepted_${item.proposalId}`}
       >
         <AcceptedCard
-          key={item.proposal_id}
-          id={item.proposal_id}
-          name={item.content.title}
-          votes={item.final_tally_result}
-          type={item.content['@type']}
-          amount={item.total_deposit[0]}
-          timeEnd={dateFormat(
-            new Date(item.voting_end_time),
-            'dd/mm/yyyy, HH:MM:ss'
-          )}
+          key={item.proposalId}
+          id={item.proposalId}
+          name={item.title}
+          votes={item.votes}
+          type={item.type}
+          timeEnd={item.timeEndDeposit}
         />
-      </Link>
+      </ProposalWrapper>
     ));
 
-  const rejected = tableData
+  const rejected = (tableData || [])
     .reverse()
     .filter(
       (item) =>
-        PROPOSAL_STATUS[item.status] > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+        ProposalStatus[item.status as KeyOfProposalStatus] >
+        ProposalStatus.PROPOSAL_STATUS_PASSED
     )
+    .map(mapProposalToCard)
     .map((item) => (
-      <Link
-        key={item.proposal_id}
-        style={{ color: 'unset' }}
-        to={`/senate/${item.proposal_id}`}
+      <ProposalWrapper
+        proposalId={item.proposalId}
+        key={`rejected_${item.proposalId}`}
       >
         <RejectedCard
-          key={item.proposal_id}
-          id={item.proposal_id}
-          name={item.content.title}
-          votes={item.final_tally_result}
-          type={item.content['@type']}
-          amount={item.total_deposit[0]}
-          timeEnd={dateFormat(
-            new Date(item.voting_end_time),
-            'dd/mm/yyyy, HH:MM:ss'
-          )}
+          key={item.proposalId}
+          id={item.proposalId}
+          name={item.title}
+          votes={item.votes}
+          type={item.type}
+          timeEnd={item.timeEndVoting}
         />
-      </Link>
+      </ProposalWrapper>
     ));
 
   return (
-    <div>
-      <main className="block-body">
-        <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
-        <Pane
-          display="grid"
-          justifyItems="center"
-          gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-          gridGap="20px"
-        >
-          <Columns title="Active">{active}</Columns>
-          <Columns title="Accepted">{accepted}</Columns>
-          <Columns title="Rejected">{rejected}</Columns>
-        </Pane>
-      </main>
-      <ActionBar update={feachProposals} />
-    </div>
+    <MainContainer width="100%">
+      <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+      <Pane
+        display="grid"
+        justifyItems="center"
+        gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+        gridGap="20px"
+      >
+        <Columns title="Active">{active}</Columns>
+        <Columns title="Accepted">{accepted}</Columns>
+        <Columns title="Rejected">{rejected}</Columns>
+      </Pane>
+    </MainContainer>
   );
 }
 

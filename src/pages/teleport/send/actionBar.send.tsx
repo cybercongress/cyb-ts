@@ -37,7 +37,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [errorMessage, setErrorMessage] =
@@ -54,10 +54,10 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   } = stateActionBar;
 
   const sendOnClick = async () => {
-    if (signer && signingClient && traseDenom && recipient) {
+    if (signer && signingClient && tracesDenom && recipient) {
       const [{ address }] = await signer.getAccounts();
 
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenSelect);
 
       const amountTokenA = convertAmountReverce(tokenAmount, coinDecimalsA);
 

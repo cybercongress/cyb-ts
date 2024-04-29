@@ -22,7 +22,7 @@ import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend/backend';
-import { IPFSNodes } from 'src/services/ipfs/ipfs.d.ts';
+import { IPFSNodes } from 'src/services/ipfs/types';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];

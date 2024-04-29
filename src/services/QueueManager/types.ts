@@ -1,4 +1,4 @@
-import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/ipfs';
+import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/types';
 import { LinkDbEntity } from '../CozoDb/types/entities';
 import { LinkDto } from '../CozoDb/types/dto';
 

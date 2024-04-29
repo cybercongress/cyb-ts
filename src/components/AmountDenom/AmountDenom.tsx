@@ -10,12 +10,12 @@ type Props = {
 };
 
 function AmountDenom({ amountValue, denom, styleValue }: Props) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
 
   let amount = 0;
 
   if (amountValue && amountValue > 0) {
-    const [{ coinDecimals }] = traseDenom(denom);
+    const [{ coinDecimals }] = tracesDenom(denom);
     amount = convertAmount(amountValue, coinDecimals);
   }
 

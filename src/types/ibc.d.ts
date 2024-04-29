@@ -8,7 +8,7 @@ export type IbcDenomsArr = {
   [key: string]: IbcDenoms;
 };
 
-export type TraseDenomFuncResponse = {
+export type TracesDenomFuncResponse = {
   denom: string;
   coinDecimals: number;
   path: string;
@@ -16,4 +16,4 @@ export type TraseDenomFuncResponse = {
   native: boolean;
 };
 
-export type TraseDenomFuncType = (denom: string) => TraseDenomFuncResponse[];
+export type TracesDenomFuncType = (denom: string) => TracesDenomFuncResponse[];

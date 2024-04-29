@@ -3,6 +3,8 @@ import { ActionBar as ActionBarContainer, Tab } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
+import { PATTERN_CYBER, PATTERN_CYBER_CONTRACT } from 'src/constants/patterns';
+import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import {
   Dots,
   ActionBarContentText,
@@ -15,12 +17,7 @@ import {
   ActionBar as ActionBarCenter,
   Input,
 } from '../../../components';
-import {
-  LEDGER,
-  PATTERN_CYBER_CONTRACT,
-  DEFAULT_GAS_LIMITS,
-} from '../../../utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { LEDGER } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';

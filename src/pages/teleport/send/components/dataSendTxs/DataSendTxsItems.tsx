@@ -1,10 +1,10 @@
 import { Coin } from '@cosmjs/launchpad';
 import { AmountDenom, Cid } from 'src/components';
-import { PATTERN_IPFS_HASH } from 'src/constants/app';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useState } from 'react';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { IPFSContentDetails } from 'src/services/ipfs/types';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import cx from 'classnames';
 import { trimString } from 'src/utils/utils';
