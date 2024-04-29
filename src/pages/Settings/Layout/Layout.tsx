@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import SettingsMenu from './SettingsMenu/SettingsMenu';
+import styles from './Layout.module.scss';
 
 function Layout() {
   return (
-    <div>
+    <div className={styles.wrapper}>
       <SettingsMenu />
 
       <Outlet />
