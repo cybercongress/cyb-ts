@@ -1,4 +1,4 @@
-import { MainContainer, DenomArr } from 'src/components';
+import { MainContainer, DenomArr, Loading } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import SubnetsTable from './SubnetsTable/SubnetsTable';
@@ -34,6 +34,8 @@ function Subnets() {
   });
   return (
     <MainContainer resetMaxWidth>
+      {loading && <Loading />}
+
       {rootSubnet && (
         <Display
           noPaddingX

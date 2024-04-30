@@ -12,6 +12,10 @@ import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import SubnetNeurons from './SubnetNeurons/SubnetNeurons';
+import Display from 'src/components/containerGradient/Display/Display';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import WeightsSetter from './tabs/Weights/WeightsSetter/WeightsSetter';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -55,19 +59,24 @@ function Subnet() {
 
   console.info('subnet info', subnetQuery.data);
 
+  const subnetType = subnetQuery.data?.network_modality;
+  const subnetNeurons = neuronsQuery.data;
+
+  const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
+
   return (
     <MainContainer resetMaxWidth>
       <Tabs
         options={[
           {
-            to: './',
+            to: './info',
             key: 'info',
             text: 'info',
           },
           {
-            to: './hyperparams',
-            key: 'hyperparams',
-            text: 'hyperparams',
+            to: './',
+            key: 'neurons',
+            text: 'neurons',
           },
           {
             to: './weights',
@@ -75,11 +84,40 @@ function Subnet() {
             text: 'weights',
           },
         ]}
-        selected={tab || 'info'}
+        selected={tab || 'neurons'}
       />
 
       <Routes>
-        <Route path="/hyperparams" element={<SubnetHyperParams />} />
+        <Route
+          path="/"
+          element={
+            <>
+              {subnetNeurons && (
+                <SubnetNeurons
+                  neurons={subnetNeurons}
+                  subnetType={subnetType}
+                  netuid={netuid}
+                  metadata={subnetQuery.data?.metadata}
+                />
+              )}
+
+              {addressRegisteredInSubnet && !!subnetNeurons?.length && (
+                <Display title={<DisplayTitle title="Weights setting (WIP)" />}>
+                  <WeightsSetter
+                    netuid={netuid}
+                    length={subnetQuery.data?.subnetwork_n}
+                    metadata={subnetQuery.data?.metadata}
+                    neurons={subnetNeurons}
+                    callback={() => {
+                      // weightsQuery.refetch();
+                    }}
+                    maxWeightsLimit={subnetQuery.data.max_weights_limit}
+                  />
+                </Display>
+              )}
+            </>
+          }
+        />
 
         {subnetQuery.data?.subnetwork_n > 0 && (
           <Route
@@ -97,7 +135,7 @@ function Subnet() {
         )}
 
         <Route
-          path="/"
+          path="/info"
           element={
             <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
           }

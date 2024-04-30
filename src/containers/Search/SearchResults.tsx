@@ -152,13 +152,13 @@ function SearchResults() {
         }}
       />
 
-      {subnet && (
+      {/* {subnet && (
         <div>
           <p>subnet: {subnet}</p>
 
           <Slider valuePercents={10} />
         </div>
-      )}
+      )} */}
 
       <div className={styles.search}>
         <FirstItems query={query} />

@@ -7,7 +7,7 @@ import { cybernetRoutes } from '../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Cid } from 'src/components';
+import { Account, Cid, Input } from 'src/components';
 
 type Props = {
   neurons: SubnetNeuron[];
@@ -39,9 +39,11 @@ function SubnetNeurons({ neurons, subnetType, metadata, netuid }: Props) {
                 const hotkey = info.getValue();
 
                 return (
-                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                    {hotkey}
-                  </Link>
+                  <Account
+                    address={hotkey}
+                    avatar
+                    link={cybernetRoutes.delegator.getLink(hotkey)}
+                  />
                 );
               },
             }),
@@ -62,6 +64,14 @@ function SubnetNeurons({ neurons, subnetType, metadata, netuid }: Props) {
                     {/* </Cid> */}
                   </Link>
                 );
+              },
+            }),
+            columnHelper.accessor('weight', {
+              header: 'weight',
+              cell: (info) => {
+                const hotkey = info.getValue();
+
+                return <Input disabled value="10" />;
               },
             }),
           ]}

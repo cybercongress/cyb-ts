@@ -47,6 +47,7 @@ type Props = {
   containerClassName?: string;
   avatarClassName?: string;
   monikerClassName?: string;
+  link?: string;
 };
 
 function Account({
@@ -56,6 +57,7 @@ function Account({
   onlyAvatar,
   avatar,
   margin,
+  link,
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
@@ -75,6 +77,10 @@ function Account({
   }, [address, trimAddressParam]);
 
   const linkAddress = useMemo(() => {
+    if (link) {
+      return link;
+    }
+
     if (address?.includes(BECH32_PREFIX_VALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
@@ -84,7 +90,7 @@ function Account({
     }
 
     return `/network/bostrom/contract/${address}`;
-  }, [address, moniker]);
+  }, [address, moniker, link]);
 
   const cidAvatar = useMemo(() => {
     if (dataPassport !== undefined && dataPassport !== null) {

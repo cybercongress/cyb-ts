@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import styles from './WeightsTable.module.scss';
+import { Account } from 'src/components';
 
 type Props = {
   data: any[];
@@ -37,9 +38,11 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                 const uid = neurons.find((n) => n.hotkey === hotkey)?.uid;
 
                 return (
-                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                    {uid}
-                  </Link>
+                  <Account
+                    address={hotkey}
+                    avatar
+                    link={cybernetRoutes.delegator.getLink(hotkey)}
+                  />
                 );
               },
             }),
@@ -53,9 +56,12 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
               const { hotkey, uid } = neurons[i];
               return columnHelper.accessor(String(i), {
                 header: (
-                  <Link to={cybernetRoutes.delegator.getLink(hotkey)}>
-                    {uid}
-                  </Link>
+                  <Account
+                    address={hotkey}
+                    avatar
+                    onlyAvatar
+                    link={cybernetRoutes.delegator.getLink(hotkey)}
+                  />
                 ),
                 cell: (info) => {
                   const val = info.getValue();

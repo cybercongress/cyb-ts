@@ -57,21 +57,6 @@ function Weights({
       </Display>
 
       <br />
-
-      {addressRegisteredInSubnet && (
-        <Display title={<DisplayTitle title="Weights setting" />}>
-          <WeightsSetter
-            netuid={netuid}
-            length={length}
-            metadata={metadata}
-            neurons={neurons}
-            callback={() => {
-              weightsQuery.refetch();
-            }}
-            maxWeightsLimit={maxWeightsLimit}
-          />
-        </Display>
-      )}
     </div>
   );
 }

@@ -27,6 +27,7 @@ const nativeImageMap = {
   lp: hydrogen,
   boot,
   pussy,
+  'space-pussy': pussy,
   tocyb,
   eth,
 };

@@ -9,6 +9,7 @@ import SubnetNeurons from '../../SubnetNeurons/SubnetNeurons';
 import { routes } from 'src/routes';
 import { Cid } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import SubnetHyperParams from '../SubnetHyperParams/SubnetHyperParams';
 
 type Props = {
   data: SubnetInfo;
@@ -69,12 +70,8 @@ const config: { [K in keyof SubnetInfo]: { text: string } } = {
   },
 };
 
-function SubnetInfo({ data: subnetInfoData, neurons }: Props) {
+function SubnetInfo({ data: subnetInfoData }: Props) {
   const { id } = useParams();
-  const netuid = Number(id!);
-
-  const subnetNeurons = neurons;
-  const subnetType = subnetInfoData?.network_modality;
 
   useAdviserTexts({
     defaultText: 'Subnet params',
@@ -115,14 +112,7 @@ function SubnetInfo({ data: subnetInfoData, neurons }: Props) {
         </ul>
       </Display>
 
-      {subnetNeurons && (
-        <SubnetNeurons
-          neurons={subnetNeurons}
-          subnetType={subnetType}
-          netuid={netuid}
-          metadata={subnetInfoData.metadata}
-        />
-      )}
+      <SubnetHyperParams />
     </>
   );
 }
