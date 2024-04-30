@@ -17,7 +17,6 @@ function DisplayHub({
 }) {
   return (
     <Display
-      color="blue"
       title={
         <DisplayTitle
           title={

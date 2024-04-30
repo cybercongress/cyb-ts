@@ -68,7 +68,7 @@ export const routes = {
     },
   },
   keys: {
-    path: '/keys',
+    path: '/settings/keys',
   },
   sigma: {
     path: '/sigma',
@@ -111,5 +111,8 @@ export const routes = {
       path: '/blocks/:idBlock',
       getLink: (idBlock: string) => `/network/bostrom/blocks/${idBlock}`,
     },
+  },
+  settings: {
+    path: '/settings',
   },
 };

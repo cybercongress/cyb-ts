@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
 import styles from './SettingsMenu.module.scss';
+import { Display } from 'src/components';
 
 type MenuItem = {
   text: string;
@@ -12,7 +13,7 @@ const links: Array<MenuItem[]> = [
   [
     {
       text: 'Drive',
-      link: './drive',
+      link: '.',
       icon: '🟥',
     },
   ],
@@ -45,10 +46,10 @@ const links: Array<MenuItem[]> = [
 function SettingsMenu() {
   const renderLinks = (links: Array<MenuItem[]>) => {
     return (
-      <ul>
-        {links.map((link) => {
+      <div className={styles.links}>
+        {links.map((link, indexUl) => {
           return (
-            <>
+            <ul key={indexUl}>
               {link.map((item, index) => {
                 return (
                   <li key={index}>
@@ -67,14 +68,18 @@ function SettingsMenu() {
                   </li>
                 );
               })}
-            </>
+            </ul>
           );
         })}
-      </ul>
+      </div>
     );
   };
 
-  return renderLinks(links);
+  return (
+    <div className={styles.wrapper}>
+      <Display>{renderLinks(links)}</Display>
+    </div>
+  );
 }
 
 export default SettingsMenu;
