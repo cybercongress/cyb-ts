@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { Uint8ArrayLike } from '../ipfs';
+import { Uint8ArrayLike } from '../types';
 
 type ResultWithMime = {
   result: Uint8ArrayLike;

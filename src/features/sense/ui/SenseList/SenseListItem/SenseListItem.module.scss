@@ -31,8 +31,13 @@
 
   .icon {
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     right: -5px;
+
+    background-color: rgba(97, 94, 94, 0.461);
+    border-radius: 50%;
+
+    filter: grayscale(20%);
   }
 }
 

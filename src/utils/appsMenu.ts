@@ -12,7 +12,7 @@ import hub from 'images/temple/hub.png';
 import congress from 'images/congress.png';
 import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
-import { CYBER } from './config';
+import { CHAIN_ID } from 'src/constants/config';
 
 const itemsMenu = () => {
   const listItemMenu = [
@@ -124,10 +124,7 @@ const itemsMenu = () => {
     // },
   ];
 
-  if (
-    CYBER.CHAIN_ID === Networks.BOSTROM ||
-    CYBER.CHAIN_ID === Networks.SPACE_PUSSY
-  ) {
+  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,

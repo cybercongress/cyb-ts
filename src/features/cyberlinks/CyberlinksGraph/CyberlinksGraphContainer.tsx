@@ -66,37 +66,3 @@ function CyberlinksGraphContainer({
 }
 
 export default CyberlinksGraphContainer;
-
-// old code
-
-// const handleNewLink = useCallback(subscription => {
-//   let link = subscription["subscriptionData"].data["cyberlink"][0]
-//     let { nodes, links } = data;
-//     let l = {
-//       source: link["object_from"],
-//       target: link["object_to"],
-//       name: link["txhash"]
-//     }
-
-//     if (!nodes.some(node => node["id"] == l["source"])) {
-//       nodes.push({id: l["source"]})
-//     }
-
-//     if (!nodes.some(node => node["id"] == l["target"])) {
-//       nodes.push({id: l["target"]})
-//     }
-
-//     setItems({
-//         nodes: [...nodes],
-//         links: [...links, {
-//           source: l["source"],
-//           target: l["target"],
-//           name: l["name"],
-//           curvative: getRandomInt(20,500)/1000
-//         }]
-//     })
-// }, [data])
-
-// const { loading: loadingLinks, data: dataNew } = useSubscription(CYBERLINK_SUBSCRIPTION, {
-//   onSubscriptionData: handleNewLink
-// });

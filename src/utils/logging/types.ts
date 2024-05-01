@@ -8,7 +8,7 @@ export type LogContext<T> = {
   unit?: string;
   data?: any;
   stacktrace?: any[];
-  error?: Error;
+  error?: Error | any;
   formatter?: (message: T) => string;
 };
 

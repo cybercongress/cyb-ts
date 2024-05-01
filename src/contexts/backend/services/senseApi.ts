@@ -1,13 +1,23 @@
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
+import { CID_TWEET } from 'src/constants/app';
 import { isParticle } from 'src/features/particle/utils';
-import { TransactionDto } from 'src/services/CozoDb/types/dto';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
 import {
+  LinkDto,
+  SyncStatusDto,
+  TransactionDto,
+} from 'src/services/CozoDb/types/dto';
+import { EntryType } from 'src/services/CozoDb/types/entities';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
+import {
+  CYBER_LINK_TRANSACTION_TYPE,
+  CyberLinkValue,
   MSG_SEND_TRANSACTION_TYPE,
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { syncMyChats } from 'src/services/backend/services/sync/services/SyncTransactionsLoop/services/chat';
 import { SENSE_FRIEND_PARTICLES } from 'src/services/backend/services/sync/services/consts';
+import { changeParticleSyncStatus } from 'src/services/backend/services/sync/utils';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
 import { EntityToDto } from 'src/types/dto';
 import { getNowUtcNumber } from 'src/utils/date';
@@ -20,7 +30,7 @@ type LocalSenseChatMessage = {
   memo: string;
 };
 
-const prepareSenseTransaction = ({
+const prepareSenseMsgSendTransaction = ({
   transactionHash,
   fromAddress,
   toAddress,
@@ -48,16 +58,46 @@ const prepareSenseTransaction = ({
   return transaction;
 };
 
+const prepareSenseCyberlinkTransaction = (link: LinkDto) => {
+  const { from, to, neuron, transactionHash, timestamp } = link;
+  const value = {
+    neuron,
+    links: [{ from, to }],
+  } as EntityToDto<CyberLinkValue>;
+
+  const transaction = {
+    hash: transactionHash,
+    type: CYBER_LINK_TRANSACTION_TYPE,
+    index: 0,
+    timestamp,
+    success: true,
+    value,
+    memo: '',
+    neuron,
+    blockHeight: -1,
+  } as TransactionDto;
+
+  return transaction;
+};
+
 export const createSenseApi = (
   dbApi: DbApiWrapper,
   myAddress?: NeuronAddress,
   followingAddresses = [] as NeuronAddress[]
 ) => ({
-  getList: () => dbApi.getSenseList(myAddress),
+  getList: async () => {
+    const result = await dbApi.getSenseList(myAddress);
+    console.log(
+      '--- getList unread',
+      result.filter((r) => r.unreadCount > 0)
+    );
+    return result;
+  },
   markAsRead: async (
     id: NeuronAddress | ParticleCid,
     lastTimestampRead?: number
   ) => {
+    console.time(`--- senseMarkAsRead done ${id}`);
     const syncItem = await dbApi.getSyncStatus(myAddress!, id);
 
     let unreadCount = 0;
@@ -93,8 +133,8 @@ export const createSenseApi = (
       timestampRead, //  conditional or read all
       unreadCount,
     });
-    // console.log('------senseMarkAsRead', syncItem, res, timestampRead);
-    // console.timeEnd(`---senseMarkAsRead done ${id}`);
+    console.log('---  - senseMarkAsReadres', syncItem, res, timestampRead);
+    console.timeEnd(`--- senseMarkAsRead done ${id}`);
     return res;
   },
   getAllParticles: (fields: string[]) => dbApi.getParticlesRaw(fields),
@@ -104,17 +144,57 @@ export const createSenseApi = (
     This function create syntetic transaction (blockHeight=-1)
     and create syncItem as well.
     */
-    const transaction = prepareSenseTransaction(msg);
+    const transaction = prepareSenseMsgSendTransaction(msg);
 
     await dbApi.putTransactions([transaction]);
-    await syncMyChats(
+    const items = await syncMyChats(
       dbApi,
       myAddress!,
       transaction.timestamp,
       new AbortController().signal,
       false
     );
+    new BroadcastChannelSender().postSenseUpdate(items);
   },
+  addCyberlinkLocal: async (link: LinkDto) => {
+    const syncItemLinkTo = await dbApi.getSyncStatus(myAddress!, link.to);
+    const syncItemLinkFrom = await dbApi.getSyncStatus(myAddress!, link.from);
+    let syncItemLink;
+
+    if (link.from === CID_TWEET) {
+      syncItemLink = syncItemLinkTo.id
+        ? syncItemLinkTo
+        : ({
+            ownerId: myAddress!,
+            id: link.to,
+            unreadCount: 0,
+            timestampRead: 0,
+            timestampUpdate: 0,
+            meta: { ...link },
+            entryType: EntryType.particle,
+            disabled: false,
+          } as SyncStatusDto);
+    } else {
+      syncItemLink = syncItemLinkFrom.id ? syncItemLinkFrom : syncItemLinkTo;
+    }
+
+    // Just cyberlink, no tweet no syncable item
+    if (!syncItemLink || !syncItemLink.id) {
+      return;
+    }
+
+    const transaction = prepareSenseCyberlinkTransaction(link);
+    await dbApi.putTransactions([transaction]);
+    const newItem = changeParticleSyncStatus(
+      syncItemLink,
+      [link],
+      myAddress!,
+      false
+    );
+    await dbApi.putSyncStatus(newItem);
+    new BroadcastChannelSender().postSenseUpdate([newItem]);
+  },
+  putCyberlinsks: (links: LinkDto | LinkDto[]) => dbApi.putCyberlinks(links),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getFriendItems: async (userAddress: NeuronAddress) => {
     if (!myAddress) {

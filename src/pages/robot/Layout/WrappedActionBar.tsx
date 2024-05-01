@@ -1,83 +1,58 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import ActionBarContainer from 'src/pages/robot/_refactor/account/actionBar';
 
-import { RootState } from 'src/redux/store';
-import { chekFollow } from 'src/utils/search/utils';
+import { chekFollow as checkFollow } from 'src/utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { useRobotContext } from '../robot.context';
 
 import { ActionBar } from 'src/components';
+import { useAppSelector } from 'src/redux/hooks';
 
 function WrappedActionBar() {
-  const { defaultAccount } = useSelector((state: RootState) => state.pocket);
-
-  const location = useLocation();
-  const tab = location.pathname.split('/')[2];
+  const { defaultAccount } = useAppSelector((state) => state.pocket);
+  const activeAddress = defaultAccount.account?.cyber.bech32;
+  const params = useParams();
+  const tab = params['*'];
 
   const { address, refetchData } = useRobotContext();
 
   const [tweets, setTweets] = useState(false);
   const [follow, setFollow] = useState(false);
 
-  const [activeAddress, setActiveAddress] = useState(null);
-
-  const chekFollowAddress = async () => {
-    if (!address) {
+  const checkFollowAddress = useCallback(async () => {
+    if (!address || !activeAddress || activeAddress === address) {
       return;
     }
+
     const addressFromIpfs = await getIpfsHash(address);
-    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
-      const response = await chekFollow(
-        defaultAccount.account.cyber.bech32,
-        addressFromIpfs
-      );
+    const response = await checkFollow(activeAddress, addressFromIpfs);
 
-      if (
-        response !== null &&
-        response.total_count > 0 &&
-        defaultAccount.account.cyber.bech32 !== address
-      ) {
-        setFollow(false);
-        setTweets(false);
-      }
+    if (response && Number(response.total_count) === 0) {
+      setFollow(true);
+      // setTweets(false);
+    } else {
+      setFollow(false);
     }
-  };
+  }, [activeAddress, address]);
 
   useEffect(() => {
-    chekFollowAddress();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount.name, address]);
+    checkFollowAddress();
+  }, [checkFollowAddress]);
 
   useEffect(() => {
-    const chekAddress = async () => {
-      const { account } = defaultAccount;
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
-      ) {
-        const { keys } = account.cyber;
-        if (keys !== 'read-only') {
-          if (account.cyber.bech32 === address) {
-            setFollow(false);
-            setTweets(true);
-            setActiveAddress({ ...account.cyber });
-          } else {
-            setFollow(true);
-            setTweets(false);
-            setActiveAddress({ ...account.cyber });
-          }
-        } else {
-          setActiveAddress(null);
-        }
-      } else {
-        setActiveAddress(null);
-      }
-    };
-    chekAddress();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultAccount.name, address]);
+    if (defaultAccount.account?.cyber.keys === 'read-only') {
+      return;
+    }
+
+    if (address === activeAddress) {
+      setTweets(true);
+    } else {
+      setTweets(false);
+    }
+
+    setFollow(false);
+  }, [defaultAccount, address, activeAddress]);
 
   return (
     <div
@@ -86,20 +61,20 @@ function WrappedActionBar() {
         position: 'fixed',
       }}
     >
-      {activeAddress !== null ? (
+      {activeAddress ? (
         <ActionBarContainer
           updateAddress={() => {
             refetchData();
 
             if (follow) {
-              chekFollowAddress();
+              checkFollowAddress();
             }
           }}
           addressSend={address}
           type={tab}
           follow={follow}
           tweets={tweets}
-          defaultAccount={activeAddress}
+          defaultAccount={defaultAccount.account?.cyber}
         />
       ) : (
         <ActionBar />

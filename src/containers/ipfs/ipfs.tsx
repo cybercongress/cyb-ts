@@ -4,10 +4,10 @@ import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useMemo, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
 import { encodeSlash } from 'src/utils/utils';
-import { PATTERN_IPFS_HASH } from 'src/utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import { IPFSContentDetails } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
@@ -32,7 +32,7 @@ function Ipfs() {
     } else if (isIpfsInitialized) {
       (async () => {
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
-        console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
+        // console.log('Ipfs()', isIpfsInitialized, ipfsApi, ipfsApi?.addContent);
         await ipfsApi!.addContent(query);
         setCid(cidFromQuery);
       })();

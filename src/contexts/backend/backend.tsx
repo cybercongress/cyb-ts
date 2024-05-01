@@ -1,21 +1,30 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
 import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
 import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcastChannelListener';
 
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode } from 'src/services/ipfs/types';
 import { getIpfsOpts } from 'src/services/ipfs/config';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
-import { SenseApi, createSenseApi } from './services/senseApi';
+
 import { SyncEntryName } from 'src/services/backend/types/services';
-// import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+// import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
+
+import { SenseApi, createSenseApi } from './services/senseApi';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -72,6 +81,7 @@ window.cyb.db = {
 };
 
 // const dbApi = new DbApiWrapper();
+const bcSender = new BroadcastChannelSender();
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
@@ -120,64 +130,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // const channel = new BroadcastChannelListener((msg) => {
-    // console.log('--------msg.data', msg.data);
-    //   dispatch(msg.data);
-    // });
-    const channel = new RxBroadcastChannelListener(dispatch);
+  const createDbApi = useCallback(() => {
+    const dbApi = new DbApiWrapper();
 
-    (async () => {
-      console.log(
-        process.env.IS_DEV
-          ? '🧪 Starting backend in DEV mode...'
-          : '🧬 Starting backend in PROD mode...'
-      );
-      await setupStoragePersistence();
-
-      const ipfsLoadPromise = async () => {
-        const isInitialized = await backgroundWorkerInstance.isInitialized();
-        if (isInitialized) {
-          console.log('🔋 Background worker already active.');
-          return Promise.resolve();
-        }
-        return loadIpfs();
-      };
-
-      const cozoDbLoadPromise = async () => {
-        const isInitialized = await cozoDbWorkerInstance.isInitialized();
-        if (isInitialized) {
-          console.log('🔋 CozoDb worker already active.');
-          return Promise.resolve();
-        }
-        return loadCozoDb();
-      };
-
-      // Loading non-blocking, when ready  state.backend.services.* should be changef
-      Promise.all([ipfsLoadPromise(), cozoDbLoadPromise()]);
-    })();
-
-    window.q = backgroundWorkerInstance.ipfsQueue;
-    return () => channel.close();
-  }, [dispatch]);
-
-  const loadCozoDb = async () => {
-    console.time('🔋 CozoDb worker started.');
-    await cozoDbWorkerInstance
-      .init()
-      .then(async () => {
-        // init dbApi
-        // TODO: refactor to use simple object instead of global instance
-        const dbApi = new DbApiWrapper();
-        dbApi.init(proxy(cozoDbWorkerInstance));
-        setDbApi(dbApi);
-
-        // pass dbApi into background worker
-        await backgroundWorkerInstance.init(proxy(dbApi));
-      })
-      .then(() => console.timeEnd('🔋 CozoDb worker started.'));
-  };
+    dbApi.init(proxy(cozoDbWorkerInstance));
+    setDbApi(dbApi);
+    return dbApi;
+  }, []);
 
   const loadIpfs = async () => {
     const ipfsOpts = getIpfsOpts();
@@ -195,6 +154,64 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         console.log(`☠️ Ipfs error: ${err}`);
       });
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // const channel = new BroadcastChannelListener((msg) => {
+    // console.log('--------msg.data', msg.data);
+    //   dispatch(msg.data);
+    // });
+    const channel = new RxBroadcastChannelListener(dispatch);
+
+    const loadCozoDb = async () => {
+      console.time('🔋 CozoDb worker started.');
+      await cozoDbWorkerInstance
+        .init()
+        .then(async () => {
+          const dbApi = createDbApi();
+          // pass dbApi into background worker
+          await backgroundWorkerInstance.init(proxy(dbApi));
+        })
+        .then(() => console.timeEnd('🔋 CozoDb worker started.'));
+    };
+
+    (async () => {
+      console.log(
+        process.env.IS_DEV
+          ? '🧪 Starting backend in DEV mode...'
+          : '🧬 Starting backend in PROD mode...'
+      );
+      await setupStoragePersistence();
+
+      const ipfsLoadPromise = async () => {
+        const isInitialized = await backgroundWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 Background worker already active.');
+          bcSender.postServiceStatus('ipfs', 'started');
+          bcSender.postServiceStatus('sync', 'started');
+          return Promise.resolve();
+        }
+        return loadIpfs();
+      };
+
+      const cozoDbLoadPromise = async () => {
+        const isInitialized = await cozoDbWorkerInstance.isInitialized();
+        if (isInitialized) {
+          console.log('🔋 CozoDb worker already active.');
+          bcSender.postServiceStatus('db', 'started');
+          createDbApi();
+          return Promise.resolve();
+        }
+        return loadCozoDb();
+      };
+
+      // Loading non-blocking, when ready  state.backend.services.* should be changef
+      Promise.all([ipfsLoadPromise(), cozoDbLoadPromise()]);
+    })();
+
+    window.q = backgroundWorkerInstance.ipfsQueue;
+    return () => channel.close();
+  }, [dispatch, createDbApi]);
 
   const valueMemo = useMemo(
     () =>

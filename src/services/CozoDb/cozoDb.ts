@@ -148,6 +148,7 @@ function createCozoDb() {
     // console.log('----> runCommand ', command, result);
 
     if (!result.ok) {
+      console.log('----> runCommand error ', command, result);
       throw new DBResultError(result);
     }
 

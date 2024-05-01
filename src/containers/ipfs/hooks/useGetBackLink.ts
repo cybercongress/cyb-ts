@@ -92,7 +92,6 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     }, []) || [];
 
   const backlinks = reduceParticleArr(d);
-
   return {
     backlinks,
     total: data?.pages[0].data.pagination.total || 0,

@@ -12,7 +12,7 @@ import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { isAbortException } from 'src/utils/exceptions/helpers';
 
-import { mapLinkFromIndexerToDbEntity } from 'src/services/CozoDb/mapping';
+import { mapLinkFromIndexerToDto } from 'src/services/CozoDb/mapping';
 import { throwIfAborted } from 'src/utils/async/promise';
 
 import { SyncEntryName } from 'src/services/backend/types/services';
@@ -20,8 +20,8 @@ import { SenseItemLinkMeta } from 'src/services/backend/types/sense';
 import { entityToDto } from 'src/utils/dto';
 import { ServiceDeps } from '../types';
 
-import { fetchCyberlinksByNerounIterable } from '../../../dataSource/blockchain/indexer';
-import { CYBERLINKS_BATCH_LIMIT } from '../../../dataSource/blockchain/consts';
+import { fetchCyberlinksByNerounIterable } from '../../../indexer/cyberlinks';
+import { CYBERLINKS_BATCH_LIMIT } from '../../../indexer/consts';
 import BaseSyncLoop from '../BaseSyncLoop/BaseSyncLoop';
 import { SyncServiceParams } from '../../types';
 import { getLastReadInfo } from '../../utils';
@@ -154,10 +154,10 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
           this.progressTracker.trackProgress(1)
         );
 
-        const links = linksBatch.map(mapLinkFromIndexerToDbEntity);
+        const links = linksBatch.map(mapLinkFromIndexerToDto);
 
         const { timestampRead: newTimestampRead, unreadCount: newUnreadCount } =
-          getLastReadInfo(linksBatch, myAddress, timestampRead, unreadCount);
+          getLastReadInfo(links, myAddress, timestampRead, unreadCount);
 
         // const unreadItemsCount = unreadCount + links.length;
 

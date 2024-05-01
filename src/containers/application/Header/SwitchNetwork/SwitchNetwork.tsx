@@ -3,7 +3,6 @@ import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { useNetworks } from 'src/contexts/networks';
-import { CYBER } from '../../../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
 import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
@@ -22,6 +21,7 @@ import { routes } from 'src/routes';
 import { renderSubItems } from 'src/components/appMenu/AppMenu';
 import itemsMenu from 'src/utils/appsMenu';
 import { MenuItem, MenuItems } from '../../AppMenu';
+import { CHAIN_ID } from 'src/constants/config';
 
 export const menuButtonId = 'menu-button';
 
@@ -49,7 +49,6 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
       }
       return acc;
     }, []);
-
     return findApp;
   }, [location]);
 
@@ -73,7 +72,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         >
           <img
             alt="cyb"
-            src={getRoute[0]?.icon || selectNetworkImg(CYBER.CHAIN_ID)}
+            src={getRoute[0]?.icon || selectNetworkImg(CHAIN_ID)}
             className={styles.networkBtnImg}
           />
           {/* <div
@@ -93,7 +92,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
               type="button"
               style={{ fontSize: '20px' }}
             >
-              {CYBER.CHAIN_ID}
+              {CHAIN_ID}
             </button>
             <div className={styles.containerBandwidthBar}>
               <BandwidthBar />

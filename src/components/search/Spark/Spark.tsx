@@ -1,6 +1,8 @@
 import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import type { IpfsContentType } from 'src/services/ipfs/types';
 import ContentItem from 'src/components/ContentItem/contentItem';
+import { LinksType } from 'src/containers/Search/types';
+
 import { useHover } from 'src/hooks/useHover';
 import cx from 'classnames';
 
@@ -15,6 +17,7 @@ type Props = {
   handleRankClick: (cid: string) => void;
   itemData: {};
   query: string;
+  linkType: LinksType;
 };
 
 function Spark({

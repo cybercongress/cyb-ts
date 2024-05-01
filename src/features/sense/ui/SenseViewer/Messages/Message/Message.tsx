@@ -64,10 +64,14 @@ function Message({
           <Date timestamp={date} timeOnly />
         </Link>
 
-        {fromLog && (
-          <Link to={routes.neuron.getLink(from)}>
-            <Account address={from} sizeAvatar="20px" avatar onlyAvatar />
-          </Link>
+        {fromLog && from && (
+          <>
+            {!myMessage && (
+              <Link to={routes.neuron.getLink(from)}>
+                <Account address={from} sizeAvatar="20px" avatar onlyAvatar />
+              </Link>
+            )}
+          </>
           // <Tooltip tooltip="message from log">
           // <span className={styles.icon}>🍀</span>
           // </Tooltip>
@@ -79,7 +83,11 @@ function Message({
       <div
         role="button"
         tabIndex={0}
-        onClick={() => {
+        onClick={(e) => {
+          // inner link clicked
+          if (e.target instanceof HTMLAnchorElement) {
+            return;
+          }
           // if text not selected
           // shouldn't be null
           if (window.getSelection().toString() === '') {

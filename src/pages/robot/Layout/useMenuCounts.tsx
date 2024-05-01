@@ -8,7 +8,11 @@ import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
 
-import { getCyberlinks, getFollowers, getTweet } from 'src/utils/search/utils';
+import {
+  getCyberlinksTotal,
+  getFollowers,
+  getTweet,
+} from 'src/utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
@@ -66,7 +70,7 @@ function useMenuCounts(address: string | null) {
 
   async function getCyberlinksCount() {
     try {
-      const response = await getCyberlinks(address);
+      const response = await getCyberlinksTotal(address);
       setCyberlinksCount(response);
     } catch (error) {
       console.error(error);

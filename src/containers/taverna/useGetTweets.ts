@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { Option } from 'src/types';
 import { getFollows, getTweet } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { fromBech32 } from '../../utils/utils';
+import { CYBER_CONGRESS_ADDRESS } from 'src/constants/app';
+import { BECH32_PREFIX } from 'src/constants/config';
 
 interface Tweet {
   status: string;
@@ -67,8 +68,8 @@ const useGetTweets = (addressActive: Option<string>) => {
         Number(responseFollows.total_count) === 0
       ) {
         const cyberCongressAddress = fromBech32(
-          CYBER.CYBER_CONGRESS_ADDRESS,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+          CYBER_CONGRESS_ADDRESS,
+          BECH32_PREFIX
         );
 
         const responseTwit = await getTweet(cyberCongressAddress);

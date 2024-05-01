@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { CyberClient } from '@cybercongress/cyber-js';
-import { CYBER } from 'src/utils/config';
 import { Option } from 'src/types';
 import { useQuery } from '@tanstack/react-query';
+import { RPC_URL } from 'src/constants/config';
 
 const QueryClientContext = React.createContext<Option<CyberClient>>(undefined);
 
@@ -14,7 +14,7 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
   const { data, error, isFetching } = useQuery({
     queryKey: ['cyberClient', 'connect'],
     queryFn: async () => {
-      return CyberClient.connect(CYBER.CYBER_NODE_URL_API);
+      return CyberClient.connect(RPC_URL);
     },
   });
 
@@ -23,7 +23,7 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
   }
 
   if (error) {
-    return <span>Error queryClient connect: {error.message}</span>;
+    console.error('Error queryClient connect: ', error.message);
   }
 
   return (

@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
-import { fetchPins } from 'src/services/backend/services/dataSource/ipfs/ipfsSource';
+import { CybIpfsNode } from 'src/services/ipfs/types';
+import { fetchPins } from 'src/services/backend/services/sync/services/SyncIpfsLoop/services';
 import DbApi, {
   mockGetPins,
   mockDeletePins,

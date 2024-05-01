@@ -1,19 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Pane, ActionBar as ActionBarGravity } from '@cybercongress/gravity';
 import { useSigningClient } from 'src/contexts/signerClient';
-import ActionBarKeplr from './actionBarKeplr';
-import ActionBarUser from './actionBarUser';
-import ActionBarConnect from './actionBarConnect';
-import waitForWeb3 from 'components/web3/waitForWeb3';
-import { NETWORKSIDS } from 'src/utils/config';
-
-import imgLedger from 'src/image/ledger.svg';
 import imgKeplr from 'src/image/keplr-icon.svg';
 import imgRead from 'src/image/duplicate-outline.svg';
 import Button from 'src/components/btnGrd';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import { deleteAddress, setDefaultAccount } from 'src/redux/features/pocket';
+import { deleteAddress } from 'src/redux/features/pocket';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import ActionBarConnect from './actionBarConnect';
+import ActionBarKeplr from './actionBarKeplr';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -44,7 +40,6 @@ type Props = {
   selectAccount: any;
 
   hoverCard?: string;
-  accountsETH: any;
   refreshTweet?: any;
   updateTweetFunc?: any;
   updateAddress: () => void;
@@ -63,8 +58,6 @@ function ActionBar({
   selectCard,
   selectAccount,
   hoverCard,
-  // actionBar web3
-  accountsETH,
   // actionBar tweet
   refreshTweet,
   updateTweetFunc,
@@ -79,25 +72,11 @@ function ActionBar({
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
-  const [web3, setWeb3] = useState(null);
 
   const dispatch = useDispatch();
   const { accounts, defaultAccount } = useSelector(
     (store: RootState) => store.pocket
   );
-
-  useEffect(() => {
-    //
-    const getWeb3 = async () => {
-      const web3response = await waitForWeb3();
-      web3response.eth.net.getId().then((id) => {
-        if (id === NETWORKSIDS.main) {
-          setWeb3(web3response);
-        }
-      });
-    };
-    getWeb3();
-  }, []);
 
   useEffect(() => {
     if (stage === STAGE_INIT) {
@@ -161,7 +140,8 @@ function ActionBar({
       )?.[0];
 
     if (accountName) {
-      dispatch(setDefaultAccount({ name: accountName }));
+      const broadcastChannel = new BroadcastChannelSender();
+      broadcastChannel.postSetDefaultAccount(accountName);
     }
   }
 
@@ -245,8 +225,6 @@ function ActionBar({
   if (stage === STAGE_CONNECT) {
     return (
       <ActionBarConnect
-        web3={web3}
-        accountsETH={accountsETH}
         updateAddress={updateAddress}
         updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}
@@ -301,20 +279,9 @@ function ActionBar({
   if (stage === STAGE_SEND_KEPLR) {
     return (
       <ActionBarKeplr
-        keplr={keplr}
-        selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
         updateBalance={updateAddress}
         onClickBack={() => setStage(STAGE_INIT)}
-      />
-    );
-  }
-
-  if (stage === STAGE_SEND_READ_ONLY) {
-    return (
-      <ActionBarUser
-        selectAccount={selectAccount}
-        updateAddress={updateFuncActionBar}
       />
     );
   }

@@ -8,14 +8,14 @@ function useLinksByDate(
   { skip = false } = {}
 ) {
   const data = useGetDiscussion(
-    { hash },
+    { hash, type: LinksTypeFilter.from },
     {
       skip: skip || type === LinksTypeFilter.to,
     }
   );
 
   const dataBacklinks = useGetDiscussion(
-    { hash, type: 'to' },
+    { hash, type: LinksTypeFilter.to },
     {
       skip: skip || type === LinksTypeFilter.from,
     }

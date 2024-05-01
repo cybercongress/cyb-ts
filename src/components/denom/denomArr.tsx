@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { TraseDenomFuncResponse } from 'src/types/ibc';
+import { TracesDenomFuncResponse } from 'src/types/ibc';
 import { Option } from 'src/types';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import Denom from './index';
@@ -41,18 +41,18 @@ function DenomArr({
   type,
   size,
 }: DenomArrProps) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
 
-  const [denom, setDenom] = useState<TraseDenomFuncResponse[]>();
+  const [denom, setDenom] = useState<TracesDenomFuncResponse[]>();
 
   useEffect(() => {
     if (type) {
       return;
     }
-    const denomTrase = traseDenom(denomValue);
+    const denomTraces = tracesDenom(denomValue);
 
-    setDenom(denomTrase);
-  }, [denomValue, traseDenom, type]);
+    setDenom(denomTraces);
+  }, [denomValue, tracesDenom, type]);
 
   if (type === 'network') {
     return (

@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import { useAdviser } from 'src/features/adviser/context';
 import { useEffect } from 'react';
-import { useBackend } from 'src/contexts/backend/backend';
 
 type CommunityEntityProps = {
   items: string[];

@@ -8,17 +8,17 @@ import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppSelector } from 'src/redux/hooks';
 import Pill from 'src/components/Pill/Pill';
 import { useSigningClient } from 'src/contexts/signerClient';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { useBackend } from 'src/contexts/backend/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend/backend';
 
 // should be refactored
 function AccountItem({
@@ -97,8 +97,6 @@ function SwitchAccount() {
 
   const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
 
-  const dispatch = useAppDispatch();
-
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
   const { passport } = usePassportByAddress(useGetAddress);
@@ -122,11 +120,8 @@ function SwitchAccount() {
   const isReadOnly = defaultAccount.account?.cyber.keys === 'read-only';
 
   const onClickChangeActiveAcc = async (key: string) => {
-    dispatch(
-      setDefaultAccount({
-        name: key,
-      })
-    );
+    const broadcastChannel = new BroadcastChannelSender();
+    broadcastChannel.postSetDefaultAccount(key);
     setControlledVisible(false);
   };
 

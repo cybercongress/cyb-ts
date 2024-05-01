@@ -1,49 +1,34 @@
-import { dateToUtcNumber } from 'src/utils/date';
-
-import { NeuronAddress, ParticleCid } from 'src/types/base';
-import { SyncStatusDto } from 'src/services/CozoDb/types/dto';
+import { NeuronAddress } from 'src/types/base';
+import { LinkDto, SyncStatusDto } from 'src/services/CozoDb/types/dto';
 import { EntryType } from 'src/services/CozoDb/types/entities';
 
-import { CyberlinksByParticleResponse } from '../dataSource/blockchain/indexer';
 import { findLastIndex } from 'lodash';
-import { SenseItemLinkMeta } from '../../types/sense';
 import { entityToDto } from 'src/utils/dto';
+
+import { SenseItemLinkMeta } from '../../types/sense';
 import { SyncEntryName } from '../../types/services';
 
-export function extractLinkData(
-  cid: ParticleCid,
-  links: CyberlinksByParticleResponse['cyberlinks']
-) {
-  return {
-    lastLink: links[0],
-    count: links.length,
-    lastTimestamp: dateToUtcNumber(links[0].timestamp),
-    firstTimestamp: dateToUtcNumber(links[links.length - 1].timestamp),
-  };
-}
-
 export function getLastReadInfo(
-  links: CyberlinksByParticleResponse['cyberlinks'],
+  links: LinkDto[],
   ownerId: NeuronAddress,
   prevTimestampRead = 0,
   prevUnreadCount = 0
 ) {
+  const lastUnreadLinks = links.filter(
+    (link) => link.timestamp > prevTimestampRead
+  );
   const lastMyLinkIndex = findLastIndex(
-    links,
-    (link) =>
-      link.neuron === ownerId &&
-      dateToUtcNumber(link.timestamp) > prevTimestampRead
+    lastUnreadLinks,
+    (link) => link.neuron === ownerId
   );
 
   const unreadCount =
     lastMyLinkIndex < 0
-      ? prevUnreadCount || 0
-      : links.length - lastMyLinkIndex - 1;
+      ? prevUnreadCount + lastUnreadLinks.length
+      : lastUnreadLinks.length - lastMyLinkIndex - 1;
 
   const timestampRead =
-    lastMyLinkIndex < 0
-      ? prevTimestampRead
-      : dateToUtcNumber(links[lastMyLinkIndex].timestamp);
+    lastMyLinkIndex < 0 ? prevTimestampRead : links[lastMyLinkIndex].timestamp;
 
   return {
     timestampRead,
@@ -51,23 +36,23 @@ export function getLastReadInfo(
   };
 }
 
-export function changeSyncStatus(
-  statusEntity: Partial<SyncStatusDto>,
-  links: CyberlinksByParticleResponse['cyberlinks'],
-  ownerId: NeuronAddress
+export function changeParticleSyncStatus(
+  syncStatus: Partial<SyncStatusDto>,
+  links: LinkDto[],
+  ownerId: NeuronAddress,
+  shouldUpdateTimestamp = true
 ) {
-  const timestampUpdate = dateToUtcNumber(links[0].timestamp);
   const { timestampRead, unreadCount } = getLastReadInfo(
     links,
     ownerId,
-    statusEntity.timestampRead,
-    statusEntity.unreadCount
+    syncStatus.timestampRead,
+    syncStatus.unreadCount
   );
 
-  const lastLink = entityToDto(links[0]);
-
+  const lastLink = entityToDto(links[links.length - 1]);
+  const timestampUpdate = lastLink.timestamp;
   return {
-    ...statusEntity,
+    ...syncStatus,
     ownerId,
     entryType: EntryType.particle,
     disabled: false,
@@ -77,7 +62,9 @@ export function changeSyncStatus(
       timestamp: timestampUpdate,
     } as SenseItemLinkMeta,
     timestampRead,
-    timestampUpdate,
+    timestampUpdate: shouldUpdateTimestamp
+      ? timestampUpdate
+      : syncStatus.timestampUpdate,
   } as SyncStatusDto;
 }
 
@@ -86,6 +73,8 @@ const mapSyncEntryReadable: Record<SyncEntryName, string> = {
   particles: 'log cyberlinks',
   resolver: 'particles',
   transactions: 'transactions',
+  pin: 'ipfs pins',
 };
+
 export const syncEntryNameToReadable = (name: SyncEntryName) =>
   mapSyncEntryReadable[name] || name;

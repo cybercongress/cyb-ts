@@ -1,11 +1,11 @@
 import { LsResult } from 'ipfs-core-types/src/pin';
 import { dateToUtcNumber } from 'src/utils/date';
 import { NeuronAddress, ParticleCid, TransactionHash } from 'src/types/base';
-import { IPFSContent } from '../ipfs/ipfs';
+import { IPFSContent } from '../ipfs/types';
 import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/indexer/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
-import { CyberlinksByParticleResponse } from '../backend/services/dataSource/blockchain/indexer';
+import { CyberlinksByParticleQuery } from 'src/generated/graphql';
 
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;
@@ -79,28 +79,28 @@ export const mapIndexerTransactionToEntity = (
 //   };
 // };
 
-export const mapLinkToEntity = (
+export const mapLinkToLinkDto = (
   from: ParticleCid,
   to: ParticleCid,
   neuron: NeuronAddress = '',
   timestamp: number = 0
-): LinkDbEntity => ({
+): LinkDto => ({
   from,
   to,
   neuron,
   timestamp,
 });
 
-export const mapLinkFromIndexerToDbEntity = ({
+export const mapLinkFromIndexerToDto = ({
   from,
   to,
   neuron,
   timestamp,
   transaction_hash,
-}: CyberlinksByParticleResponse['cyberlinks'][0]): LinkDbEntity => ({
+}: CyberlinksByParticleQuery['cyberlinks'][0]): LinkDto => ({
   from,
   to,
   neuron,
   timestamp: dateToUtcNumber(timestamp),
-  transaction_hash,
+  transactionHash: transaction_hash,
 });
