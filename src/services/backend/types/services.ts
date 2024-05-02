@@ -1,4 +1,5 @@
 import { SyncCommunityResult } from 'src/services/community/community';
+import { setDefaultAccount } from 'src/redux/features/pocket';
 import { IndexedDbWriteMessage } from '../../CozoDb/types/types';
 
 export type SyncEntryName =
@@ -84,6 +85,10 @@ export type LoadCommunityMessage = {
   value: SyncCommunityResult;
 };
 
+export const BC_MSG_SET_DEFAULT_ACCOUNT = setDefaultAccount.type;
+
+export type SetDefaultAccountMessage = typeof setDefaultAccount;
+
 // export type SenseListUpdate = {
 //   type: 'sense_list_update';
 //   list: SenseListItem[];
@@ -95,7 +100,8 @@ export type BroadcastChannelMessage =
   | IndexedDbWriteMessage
   | ServiceStatusMessage
   | LoadCommunityMessage
-  | SyncMlEntryMessage;
+  | SyncMlEntryMessage
+  | SetDefaultAccountMessage;
 // | SenseListUpdate
 // | SenseListRemove;
 

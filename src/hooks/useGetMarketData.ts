@@ -49,6 +49,7 @@ const getPoolPrice = (data, tracesDenom) => {
             balances,
             tracesDenom
           );
+          copyObj[key].reserveCoinDenoms = [...coinsPair].reverse();
         }
       } else {
         price = calculatePrice(coinsPair, balances, tracesDenom);
