@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import {
-  findDenomInTokenList,
-  getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
 import { BASE_DENOM } from 'src/constants/config';
+import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
+
 
 function useGetTotalCap() {
   const { marketData, dataTotalSupply } = useAppData();
@@ -85,9 +85,6 @@ function useGetTotalCap() {
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
-      const denomInfo = findDenomInTokenList('uatom');
-      const path = `transfer/${denomInfo.destChannelId}`;
-      const ibcDenomAtom = getDenomHash(path, denomInfo.coinMinimalDenom);
       if (
         Object.prototype.hasOwnProperty.call(marketData, ibcDenomAtom) &&
         Object.prototype.hasOwnProperty.call(marketData, BASE_DENOM)
