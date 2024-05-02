@@ -71,7 +71,7 @@ export type SyncMlEntryMessage = {
   };
 };
 
-export type ServiceName = 'db' | 'ipfs' | 'sync' | 'ml';
+export type ServiceName = 'db' | 'ipfs' | 'sync' | 'ml' | 'rune';
 
 export type ServiceStatusMessage = {
   type: 'service_status';

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { Coin, StdFee } from '@cosmjs/launchpad';
+import { Coin, OfflineSigner, StdFee } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
@@ -8,6 +8,7 @@ import { getNowUtcNumber } from 'src/utils/date';
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
+import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 
 const defaultFee = {
   amount: [],
@@ -93,4 +94,31 @@ export const investmint = async (
 
   const { transactionHash } = throwErrorOrResponse(response);
   return transactionHash;
+};
+
+export const updatePassportParticle = async (
+  nickname: string,
+  particle: ParticleCid,
+  {
+    signer,
+    signingClient,
+  }: {
+    signer: OfflineSigner;
+    signingClient: SigningCyberClient;
+  }
+) => {
+  const [{ address }] = await signer.getAccounts();
+
+  const msgObject = {
+    update_particle: {
+      nickname,
+      particle,
+    },
+  };
+  return signingClient.execute(
+    address,
+    CONTRACT_ADDRESS_PASSPORT,
+    msgObject,
+    'auto'
+  );
 };

@@ -17,6 +17,7 @@ import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
 import { initialContentTypeFilterState } from './constants';
+import { getSearchQuery } from 'src/utils/search/utils';
 
 const sortByLSKey = 'search-sort';
 
@@ -68,15 +69,9 @@ function SearchResults() {
     setContentType({});
 
     (async () => {
-      let keywordHashTemp = '';
+      const keywordHash = await getSearchQuery(query);
 
-      if (query.match(PATTERN_IPFS_HASH)) {
-        keywordHashTemp = query;
-      } else {
-        keywordHashTemp = await getIpfsHash(encodeSlash(query));
-      }
-
-      setKeywordHash(keywordHashTemp);
+      setKeywordHash(keywordHash);
     })();
   }, [query]);
 

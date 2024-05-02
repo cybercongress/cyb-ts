@@ -21,6 +21,7 @@ import { ParticleCid } from 'src/types/base';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PipelineType, pipeline } from '@xenova/transformers';
+import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
 
 import { exposeWorkerApi } from '../factoryMethods';
 
@@ -53,6 +54,7 @@ const mlModelMap: Record<string, MlModelParams> = {
 };
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
+  const runeInstance$ = new Subject<RuneEngine | undefined>();
 
   const ipfsInstance$ = new BehaviorSubject<CybIpfsNode | undefined>(undefined);
 
@@ -131,7 +133,7 @@ const createBackgroundWorkerApi = () => {
     params$,
   });
 
-  const init = async (dbApiProxy: DbApi & ProxyMarked) => {
+  const init = async (dbApiProxy: DbApi & ProxyMarked, params: LoadParams) => {
     dbInstance$.next(dbApiProxy);
     Promise.all([
       initMlInstance('featureExtractor'),
@@ -145,6 +147,15 @@ const createBackgroundWorkerApi = () => {
       .catch((e) =>
         broadcastApi.postServiceStatus('ml', 'error', e.toString())
       );
+    broadcastApi.postServiceStatus('rune', 'starting');
+    await rune
+      .load(params)
+      .then(() => broadcastApi.postServiceStatus('rune', 'started'))
+      .catch((err) =>
+        broadcastApi.postServiceStatus('rune', 'error', err.toString())
+      );
+
+    runeInstance$.next(rune);
   };
 
   const stopIpfs = async () => {
@@ -232,6 +243,7 @@ const createBackgroundWorkerApi = () => {
     isInitialized: () => !!ipfsInstance$.value,
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
+    rune: proxy(rune),
     defferedDbApi: proxy(defferedDbApi),
     mlApi: proxy(mlApi),
     ipfsQueue: proxy(ipfsQueue),

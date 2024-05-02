@@ -201,6 +201,10 @@ const config = {
         exclude: /node_modules/,
         use: 'graphql-tag/loader',
       },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
+      },
     ],
   },
 };

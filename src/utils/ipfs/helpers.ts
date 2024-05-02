@@ -5,6 +5,10 @@ import { IpfsApi } from 'src/services/backend/workers/background/worker';
 import { ParticleCid } from 'src/types/base';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 
+export const isCID = (cid: string): boolean => {
+  return cid.match(PATTERN_IPFS_HASH) !== null;
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const getIpfsHash = (string: string): Promise<ParticleCid> =>
   new Promise((resolve, reject) => {

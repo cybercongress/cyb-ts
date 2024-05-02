@@ -24,7 +24,13 @@ import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
+import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+import { setEntrypoint } from 'src/redux/reducers/scripting';
+import { RuneEngine } from 'src/services/scripting/engine';
+import runeDeps from 'src/services/scripting/runeDeps';
+
 import { SenseApi, createSenseApi } from './services/senseApi';
+import { useSigningClient } from '../signerClient';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -47,6 +53,7 @@ type BackendProviderContextType = {
   mlApi: Remote<BackgroundWorker['mlApi']> | null;
   ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
+  rune: Remote<RuneEngine> | null;
   dbApi: DbApiWrapper | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
@@ -62,6 +69,7 @@ const valueContext = {
   cozoDbRemote: null,
   senseApi: null,
   defferedDbApi: null,
+  rune: null,
   isIpfsInitialized: false,
   isDbInitialized: false,
   isSyncInitialized: false,
@@ -100,7 +108,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (state) => state.backend.services.sync.status === 'started'
   );
 
+  const isRuneInitialized = useAppSelector(
+    (state) => state.backend.services.rune.status === 'started'
+  );
+
   const myAddress = useAppSelector(selectCurrentAddress);
+  const passport = useAppSelector(selectCurrentPassport);
 
   const { friends, following } = useAppSelector(
     (state) => state.backend.community
@@ -119,10 +132,25 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [myAddress, dispatch]);
 
   useEffect(() => {
+    const particleCid = passport?.data?.extension.particle;
+    if (particleCid) {
+      (async () => {
+        const code =
+          (await backgroundWorkerInstance.ipfsApi
+            .fetchWithDetails(particleCid)
+            .then((res) => res?.text)) || '';
+        dispatch(setEntrypoint({ name: 'particle', code }));
+      })();
+    }
+  }, [passport, isRuneInitialized, dispatch]);
+
+  useEffect(() => {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
   const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
+
+  const { signer, signingClient } = useSigningClient();
 
   const senseApi = useMemo(() => {
     if (isDbInitialized && dbApi && myAddress) {
@@ -130,6 +158,26 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     }
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
+
+  useEffect(() => {
+    runeDeps.init({
+      mySigner: signer,
+      mySigningClient: signingClient,
+      mySenseApi: senseApi,
+      myAddress,
+      myIpfsApi: isIpfsInitialized
+        ? backgroundWorkerInstance.ipfsApi
+        : undefined,
+      myRune: isRuneInitialized ? backgroundWorkerInstance.rune : undefined,
+    });
+  }, [
+    senseApi,
+    signer,
+    signingClient,
+    myAddress,
+    isIpfsInitialized,
+    isRuneInitialized,
+  ]);
 
   const createDbApi = useCallback(() => {
     const dbApi = new DbApiWrapper();
@@ -171,7 +219,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         .then(async () => {
           const dbApi = createDbApi();
           // pass dbApi into background worker
-          await backgroundWorkerInstance.init(proxy(dbApi));
+          await backgroundWorkerInstance.init(proxy(dbApi), {
+            entrypoints: {},
+            secrets: {},
+          });
         })
         .then(() => console.timeEnd('🔋 CozoDb worker started.'));
     };
@@ -222,6 +273,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsApi: backgroundWorkerInstance.ipfsApi,
         mlApi: backgroundWorkerInstance.mlApi,
         defferedDbApi: backgroundWorkerInstance.defferedDbApi,
+        rune: backgroundWorkerInstance.rune,
         ipfsNode: isIpfsInitialized
           ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
           : null,
