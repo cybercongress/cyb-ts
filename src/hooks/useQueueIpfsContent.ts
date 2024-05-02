@@ -11,7 +11,7 @@ import {
   FetchWithDetailsFunc,
   IPFSContentMaybe,
   IpfsContentSource,
-} from 'src/services/ipfs/ipfs';
+} from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { proxy } from 'comlink';
 

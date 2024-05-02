@@ -6,7 +6,7 @@ import Loader2 from 'src/components/ui/Loader2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Dots, NoItems, SearchSnippet } from '../../../../../components';
 import useGetLog from '../hooks/useGetLog';
-import { RegistryTypes } from 'src/soft.js/types';
+import { RegistryTypes } from 'src/services/soft.js/types';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();

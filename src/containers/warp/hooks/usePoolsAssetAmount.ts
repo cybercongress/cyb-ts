@@ -16,7 +16,7 @@ import { convertAmount, reduceBalances } from '../../../utils/utils';
 const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
   const queryClient = useQueryClient();
   const { marketData } = useAppData();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [poolsBal, setPoolsBal] = useState<
     OptionNeverArray<PoolsWithAssetsType[]>
   >([]);
@@ -61,7 +61,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
         const dataReduceBalances = reduceBalances(getBalancePromise);
         Object.keys(dataReduceBalances).forEach((key) => {
           const amount = new BigNumber(dataReduceBalances[key]).toNumber();
-          const [{ coinDecimals }] = traseDenom(key);
+          const [{ coinDecimals }] = tracesDenom(key);
           const reduceAmoun = convertAmount(amount, coinDecimals);
           assetsData[key] = reduceAmoun;
         });
@@ -73,7 +73,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
       setPoolsBal(newArrPools);
       setLoading(false);
     })();
-  }, [queryClient, pools, traseDenom]);
+  }, [queryClient, pools, tracesDenom]);
 
   useEffect(() => {
     if (poolsBal.length > 0) {

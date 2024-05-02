@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { Loading } from '../../components';
+import styles from './Movie.module.scss';
 
 // const linkMovie =
 //   'http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/';
@@ -43,25 +44,9 @@ function Movie() {
   }, []);
 
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: 'calc(100vh - 70px)',
-        position: 'fixed',
-        top: '70px',
-      }}
-    >
+    <div className={styles.container}>
       {loading && (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
+        <div className={styles.containerLoading}>
           <Loading />
           <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
             rendering story
@@ -72,7 +57,7 @@ function Movie() {
         width="100%"
         height="100%"
         id="iframeCid"
-        className="iframe-SearchItem"
+        className={styles.iframeCid}
         src={linkMovie}
       />
     </div>

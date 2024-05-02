@@ -16,7 +16,6 @@ import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import useGetBalances from 'src/hooks/getBalances';
-import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
@@ -32,13 +31,14 @@ import {
   calculateCounterPairAmount,
 } from './utils';
 import { useAdviser } from 'src/features/adviser/context';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 
-const tokenADefaultValue = CYBER.DENOM_CYBER;
-const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
+const tokenADefaultValue = BASE_DENOM;
+const tokenBDefaultValue = DENOM_LIQUID;
 
 function Warp() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
@@ -189,8 +189,8 @@ function Warp() {
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
     if (accountBalances !== null) {
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
       const validTokensAB =
         Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
@@ -216,7 +216,7 @@ function Warp() {
         exceeded = false;
       }
 
-      //valid add-liquidity in empty pool
+      // valid add-liquidity in empty pool
       if (
         tab === 'add-liquidity' &&
         isEmptyPool &&

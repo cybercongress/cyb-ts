@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
+
 import ProposalsDetailTableComments from './ProposalsDetailTableComments';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+
 import ProposalsIdDetail from './proposalsIdDetail';
 import styles from './styles.scss';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
@@ -11,7 +14,6 @@ function ProposalsRoutes({
   tally,
   totalDeposit,
   updateFunc,
-  proposalStatus,
 }) {
   return (
     <Routes>
@@ -34,8 +36,10 @@ function ProposalsRoutes({
         <Route
           path="voters"
           element={
-            proposals.status > proposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ? (
-              <ProposalsIdDetailTableVoters updateFunc={updateFunc} />
+            proposals.status > ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ? (
+              <ProposalsIdDetailTableVoters
+                updateFunc={updateFunc}
+              />
             ) : null
           }
         />

@@ -1,12 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { CYBER } from '../../../../../utils/config';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.module.scss';
 
 function DetailsBalance({ data }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { price } = data;
 
   return (
@@ -19,7 +19,7 @@ function DetailsBalance({ data }) {
         .map((key) => {
           const { amount, denom } = data[key];
           const value = { amount, denom };
-          const [{ coinDecimals }] = traseDenom(denom);
+          const [{ coinDecimals }] = tracesDenom(denom);
           value.amount = convertAmount(amount, coinDecimals);
           const cap = new BigNumber(value.amount)
             .multipliedBy(price.amount)
@@ -31,7 +31,7 @@ function DetailsBalance({ data }) {
               key={key}
               value={value}
               text={key}
-              cap={{ amount: cap, denom: CYBER.DENOM_LIQUID_TOKEN }}
+              cap={{ amount: cap, denom: DENOM_LIQUID }}
             />
           );
         })}

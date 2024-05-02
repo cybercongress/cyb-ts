@@ -1,8 +1,7 @@
 import { Coin } from '@cosmjs/launchpad';
 import { useMemo } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { CYBER } from 'src/utils/config';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { getDisplayAmount, trimString } from 'src/utils/utils';
 import ImgArrow from 'images/fromToIbc.svg';
 import { Account, DenomArr, FormatNumberTokens } from 'src/components';
@@ -17,7 +16,8 @@ import cx from 'classnames';
 import {
   HistoriesItem,
   StatusTx,
-} from 'src/services/ibc-history/HistoriesItem';
+} from 'src/features/ibc-history/HistoriesItem';
+import { CHAIN_ID } from 'src/constants/config';
 import { TxsType } from '../../../type';
 import styles from './DataHistoryItems.module.scss';
 
@@ -29,7 +29,7 @@ const mapStatusTxImg = {
 };
 
 export function TypeTsx({ sourceChainId }: { sourceChainId: string }) {
-  const isCyberChain = sourceChainId === CYBER.CHAIN_ID;
+  const isCyberChain = sourceChainId === CHAIN_ID;
 
   return (
     <div className={styles.containerTypeTsx}>
@@ -46,18 +46,18 @@ export function AmountSend({
   coin: Coin;
   sourceChainId: string;
 }) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const typeTxs =
-    sourceChainId === CYBER.CHAIN_ID ? TxsType.Withdraw : TxsType.Deposit;
+    sourceChainId === CHAIN_ID ? TxsType.Withdraw : TxsType.Deposit;
   const amountDenom = useMemo(() => {
-    if (traseDenom) {
-      const [{ coinDecimals }] = traseDenom(coin.denom);
+    if (tracesDenom) {
+      const [{ coinDecimals }] = tracesDenom(coin.denom);
       const amount = getDisplayAmount(coin.amount, coinDecimals);
       return amount;
     }
 
     return 0;
-  }, [coin, traseDenom]);
+  }, [coin, tracesDenom]);
 
   return (
     <FormatNumberTokens

@@ -17,7 +17,7 @@ import {
   MoonAnimation,
 } from '../components';
 import useCheckGift from '../hook/useCheckGift';
-import { PATTERN_CYBER } from 'src/constants/app';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import Carousel from '../../../components/Tabs/Carousel/CarouselOld/CarouselOld';
 import STEP_INFO from './utils';
 import Info from './Info';

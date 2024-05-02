@@ -11,10 +11,10 @@ import { backgroundWorkerInstance } from 'src/services/backend/workers/backgroun
 import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
 import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcastChannelListener';
 
-import { CybIpfsNode } from 'src/services/ipfs/ipfs';
+import { CybIpfsNode } from 'src/services/ipfs/types';
 import { getIpfsOpts } from 'src/services/ipfs/config';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import DbApiWrapper from 'src/services/backend/services/dataSource/indexedDb/dbApiWrapper';
+import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 

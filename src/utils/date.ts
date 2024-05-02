@@ -6,10 +6,8 @@ export const numberToUtcDate = (timestamp: number) =>
 export const dateToUtcNumber = (isoString: string) =>
   Date.parse(isoString.endsWith('Z') ? isoString : `${isoString}Z`);
 
-export const getNowUtcNumber = (): number => {
-  return Date.now(); //dateToUtcNumber(new Date().toISOString());
-};
-//
+export const getNowUtcNumber = () => Date.now();
+
 function roundMilliseconds(dateTimeString: string) {
   const date = new Date(dateTimeString);
   const roundedMilliseconds = Math.round(date.getMilliseconds() / 1000) * 1000;
@@ -19,23 +17,6 @@ function roundMilliseconds(dateTimeString: string) {
 function getCurrentTimezoneOffset() {
   const now = new Date();
   return -now.getTimezoneOffset() / 60;
-}
-
-function numberToDateWithTimezone(timestamp: number, timezoneOffset?: number) {
-  // Convert timestamp from milliseconds to a Date object
-  const date = new Date(timestamp);
-
-  const tzOffset = timezoneOffset || getCurrentTimezoneOffset();
-  console.log('---tzOffset', tzOffset);
-  // Adjust the date for the timezone offset
-  // The timezoneOffset is in hours for the target timezone relative to UTC
-  const localTime = date.getTime();
-  const localOffset = date.getTimezoneOffset() * 60000; // in milliseconds
-  const utc = localTime + localOffset;
-  const timezoneDate = new Date(utc + 3600000 * tzOffset);
-
-  // Format the date using dateFormat
-  return dateFormat(timezoneDate, 'yyyy-mm-dd HH:MM:ss');
 }
 
 function pluralizeUnit(quantity: number, unit: string): string {
@@ -64,8 +45,4 @@ function convertTimestampToString(timestamp: number): string {
   return `${days} ${pluralizeUnit(days, 'day')}`;
 }
 
-export {
-  roundMilliseconds,
-  numberToDateWithTimezone,
-  convertTimestampToString,
-};
+export { roundMilliseconds, convertTimestampToString };
