@@ -94,8 +94,7 @@ function SubnetHyperParams() {
             }
 
             if (item === 'registration_allowed') {
-              // will be change to icons
-              content = <span>{value === true ? 'true' : 'false'}</span>;
+              content = <span>{value === true ? 'yes' : 'no'}</span>;
             }
 
             return (

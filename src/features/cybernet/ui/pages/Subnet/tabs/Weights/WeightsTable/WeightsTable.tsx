@@ -5,6 +5,7 @@ import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import styles from './WeightsTable.module.scss';
 import { Account } from 'src/components';
+import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 type Props = {
   data: any[];
@@ -15,6 +16,7 @@ type Props = {
 const columnHelper = createColumnHelper<any>();
 
 function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
+  const address = useCurrentAddress();
   // const navigate = useNavigate();
 
   // format to percents
@@ -38,11 +40,30 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                 const uid = neurons.find((n) => n.hotkey === hotkey)?.uid;
 
                 return (
-                  <Account
-                    address={hotkey}
-                    avatar
-                    link={cybernetRoutes.delegator.getLink(hotkey)}
-                  />
+                  <div
+                    style={{
+                      position: 'relative',
+                    }}
+                  >
+                    <>
+                      {address === hotkey && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: '-30px',
+                          }}
+                        >
+                          (my account)
+                        </span>
+                      )}
+
+                      <Account
+                        address={hotkey}
+                        avatar
+                        link={cybernetRoutes.delegator.getLink(hotkey)}
+                      />
+                    </>
+                  </div>
                 );
               },
             }),
@@ -56,12 +77,23 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
               const { hotkey, uid } = neurons[i];
               return columnHelper.accessor(String(i), {
                 header: (
-                  <Account
-                    address={hotkey}
-                    avatar
-                    onlyAvatar
-                    link={cybernetRoutes.delegator.getLink(hotkey)}
-                  />
+                  <>
+                    {address === hotkey && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                        }}
+                      >
+                        (my account)
+                      </span>
+                    )}
+                    <Account
+                      address={hotkey}
+                      avatar
+                      onlyAvatar
+                      link={cybernetRoutes.delegator.getLink(hotkey)}
+                    />
+                  </>
                 ),
                 cell: (info) => {
                   const val = info.getValue();

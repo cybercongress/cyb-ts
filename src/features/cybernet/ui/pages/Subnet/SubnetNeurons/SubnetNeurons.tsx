@@ -13,11 +13,18 @@ type Props = {
   neurons: SubnetNeuron[];
   subnetType: SubnetInfo['network_modality'];
   metadata: string;
+  addressRegisteredInSubnet: boolean;
 };
 
 const columnHelper = createColumnHelper<any>();
 
-function SubnetNeurons({ neurons, subnetType, metadata, netuid }: Props) {
+function SubnetNeurons({
+  neurons,
+  subnetType,
+  metadata,
+  netuid,
+  addressRegisteredInSubnet,
+}: Props) {
   return (
     <div>
       <Display
@@ -47,10 +54,16 @@ function SubnetNeurons({ neurons, subnetType, metadata, netuid }: Props) {
                 );
               },
             }),
+
             columnHelper.accessor('hotkey', {
               header: 'metadata',
+              id: 'metadata',
               cell: (info) => {
                 const hotkey = info.getValue();
+
+                if (!metadata) {
+                  return;
+                }
 
                 return (
                   <Link
@@ -66,14 +79,20 @@ function SubnetNeurons({ neurons, subnetType, metadata, netuid }: Props) {
                 );
               },
             }),
-            columnHelper.accessor('weight', {
-              header: 'weight',
-              cell: (info) => {
-                const hotkey = info.getValue();
 
-                return <Input disabled value="10" />;
-              },
-            }),
+            // columnHelper.accessor('weight', {
+            //   id: 'weight',
+            //   header: 'weight',
+            //   cell: (info) => {
+            //     const hotkey = info.getValue();
+
+            //     if (!addressRegisteredInSubnet) {
+            //       return;
+            //     }
+
+            //     return <Input disabled value="10" />;
+            //   },
+            // }),
           ]}
           data={neurons}
         />

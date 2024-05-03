@@ -78,7 +78,7 @@ function DelegatorsTable({ data }: Props) {
                   0
                 );
 
-                return <AmountDenom amountValue={total} denom="space-pussy" />;
+                return <AmountDenom amountValue={total} denom="pussy" />;
               },
             }),
             // my stake

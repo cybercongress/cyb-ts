@@ -16,6 +16,7 @@ import SubnetNeurons from './SubnetNeurons/SubnetNeurons';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import WeightsSetter from './tabs/Weights/WeightsSetter/WeightsSetter';
+import styles from './Subnet.module.scss';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -91,31 +92,32 @@ function Subnet() {
         <Route
           path="/"
           element={
-            <>
+            <div className={styles.neurons}>
               {subnetNeurons && (
                 <SubnetNeurons
                   neurons={subnetNeurons}
                   subnetType={subnetType}
                   netuid={netuid}
+                  addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
                   metadata={subnetQuery.data?.metadata}
                 />
               )}
 
               {addressRegisteredInSubnet && !!subnetNeurons?.length && (
-                <Display title={<DisplayTitle title="Weights setting (WIP)" />}>
-                  <WeightsSetter
-                    netuid={netuid}
-                    length={subnetQuery.data?.subnetwork_n}
-                    metadata={subnetQuery.data?.metadata}
-                    neurons={subnetNeurons}
-                    callback={() => {
-                      // weightsQuery.refetch();
-                    }}
-                    maxWeightsLimit={subnetQuery.data.max_weights_limit}
-                  />
-                </Display>
+                // <Display title={<DisplayTitle title="Weights setting (WIP)" />}>
+                <WeightsSetter
+                  netuid={netuid}
+                  length={subnetQuery.data?.subnetwork_n}
+                  metadata={subnetQuery.data?.metadata}
+                  neurons={subnetNeurons}
+                  callback={() => {
+                    // weightsQuery.refetch();
+                  }}
+                  maxWeightsLimit={subnetQuery.data.max_weights_limit}
+                />
+                // </Display>
               )}
-            </>
+            </div>
           }
         />
 

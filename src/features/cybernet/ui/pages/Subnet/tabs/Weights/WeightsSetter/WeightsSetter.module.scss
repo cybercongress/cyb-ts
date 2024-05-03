@@ -1,5 +1,14 @@
+.wrapper {
+  margin-top: 100px;
+
+  > p {
+    color: gray;
+  }
+}
 .group {
-  gap: 15px;
+  margin-top: 25px;
+  display: grid;
+  gap: 25px;
 
   max-width: 150px;
 }

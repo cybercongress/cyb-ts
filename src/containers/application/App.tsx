@@ -21,6 +21,7 @@ import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
+import { PreviousPageProvider } from 'src/contexts/previousPage';
 
 export const PORTAL_ID = 'portal';
 
@@ -96,20 +97,22 @@ function App() {
   // };
 
   return (
-    <MainLayout>
-      <>
-        {/* not move portal order */}
-        {(location.pathname.includes('/brain') ||
-          location.pathname.includes('/oracle2') ||
-          location.pathname.includes('/graph')) && (
-          <div id={PORTAL_ID} className={styles.portal} />
-        )}
+    <PreviousPageProvider>
+      <MainLayout>
+        <>
+          {/* not move portal order */}
+          {(location.pathname.includes('/brain') ||
+            location.pathname.includes('/oracle2') ||
+            location.pathname.includes('/graph')) && (
+            <div id={PORTAL_ID} className={styles.portal} />
+          )}
 
-        {!(location.pathname === '/') && <AdviserContainer />}
+          {!(location.pathname === '/') && <AdviserContainer />}
 
-        <Outlet />
-      </>
-    </MainLayout>
+          <Outlet />
+        </>
+      </MainLayout>
+    </PreviousPageProvider>
   );
 }
 
