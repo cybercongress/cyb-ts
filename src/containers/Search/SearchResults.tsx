@@ -20,13 +20,13 @@ import { initialContentTypeFilterState } from './constants';
 
 const sortByLSKey = 'search-sort';
 
-function SearchResults() {
+function SearchResults({ query: propQuery }) {
   const { query: q, cid } = useParams();
-
-  const query = q || cid || '';
+  const query = propQuery || q || cid || '';
 
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
+
   const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
