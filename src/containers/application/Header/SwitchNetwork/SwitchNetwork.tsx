@@ -1,27 +1,15 @@
-import React, { useMemo } from 'react';
-import { usePopperTooltip } from 'react-popper-tooltip';
-import { Transition } from 'react-transition-group';
+import { useMemo } from 'react';
 import cx from 'classnames';
-import { useNetworks } from 'src/contexts/networks';
-import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
-import { BandwidthBar } from '../../../../components';
-import styles from './SwitchNetwork.module.scss';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
-import {
-  Link,
-  matchPath,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { initPocket } from 'src/redux/features/pocket';
-import { Networks } from 'src/types/networks';
+import { Link, useLocation } from 'react-router-dom';
 import { routes } from 'src/routes';
 import { renderSubItems } from 'src/components/appMenu/AppMenu';
 import itemsMenu from 'src/utils/appsMenu';
-import { MenuItem, MenuItems } from '../../AppMenu';
 import { CHAIN_ID } from 'src/constants/config';
+import { MenuItem, MenuItems } from '../../AppMenu';
+import useMediaQuery from '../../../../hooks/useMediaQuery';
+import styles from './SwitchNetwork.module.scss';
+import { selectNetworkImg } from '../../../../utils/utils';
+import { BandwidthBar } from '../../../../components';
 
 export const menuButtonId = 'menu-button';
 
