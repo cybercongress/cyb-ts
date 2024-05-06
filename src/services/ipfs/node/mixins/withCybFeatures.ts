@@ -12,8 +12,12 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   options: WithCybFeaturesOptions
 ) {
   return class CybIpfsNodeMixin extends Base implements CybIpfsNode {
-    async fetchWithDetails(cid: string, parseAs?: IpfsContentType) {
-      const response = await getIPFSContent(cid, this);
+    async fetchWithDetails(
+      cid: string,
+      parseAs?: IpfsContentType,
+      abortController?: AbortController
+    ) {
+      const response = await getIPFSContent(cid, this, abortController);
       const details = await parseArrayLikeToDetails(response, cid);
 
       return !parseAs

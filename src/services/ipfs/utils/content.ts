@@ -37,7 +37,7 @@ export const detectContentType = (
 
 const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 
-function isHtml(string) {
+function isHtml(string: string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
 }
@@ -51,6 +51,45 @@ export const chunksToBlob = (
   chunks: Array<Uint8Array>,
   mime: string | undefined
 ) => new Blob(chunks, mime ? { type: mime } : {});
+
+export const extractContentType = (
+  content: IPFSContentMaybe
+): IpfsContentType => {
+  const mime = content?.meta?.mime;
+  const initialType = detectContentType(mime);
+  if (['video', 'audio'].indexOf(initialType) > -1) {
+    return initialType;
+  }
+  if (!mime) {
+    return 'other';
+  }
+  if (
+    mime.indexOf('text/plain') !== -1 ||
+    mime.indexOf('application/xml') !== -1
+  ) {
+    if (isSvg(Buffer.from(content.result))) {
+      return 'image';
+    }
+    const dataBase64 = uint8ArrayToAsciiString(content.result);
+    if (dataBase64.match(PATTERN_IPFS_HASH)) {
+      return 'other';
+    }
+    if (dataBase64.match(PATTERN_HTTP)) {
+      return 'link';
+    }
+    if (isHtml(dataBase64)) {
+      return 'other';
+    }
+    return 'text';
+  }
+  if (mime.indexOf('image') !== -1) {
+    return 'image';
+  }
+  if (mime.indexOf('application/pdf') !== -1) {
+    return 'pdf';
+  }
+  return 'other';
+};
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
@@ -83,8 +122,9 @@ export const parseArrayLikeToDetails = async (
       response.text = `Can't detect MIME for ${cid.toString()}`;
       response.gateway = true; // ???
     } else if (
-      mime.indexOf('text/plain') !== -1 ||
-      mime.indexOf('application/xml') !== -1
+      (mime.indexOf('text/plain') !== -1 ||
+        mime.indexOf('application/xml') !== -1) &&
+      rawData
     ) {
       if (isSvg(Buffer.from(rawData))) {
         response.type = 'image';

@@ -5,12 +5,10 @@ import axios from 'axios';
 // https://platform.openai.com/docs/models/overview
 // gpt-3.5-turbo
 
-const API_KEY = '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';
-
 // https://platform.openai.com/docs/api-reference/chat/create
 export const promptToOpenAI = async (
   prompt: string,
-  apiKey = API_KEY,
+  apiKey: string,
   model = 'text-davinci-003', // 'gpt-3.5-turbo',
   maxTokens = 500,
   stop = '.',

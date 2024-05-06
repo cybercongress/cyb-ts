@@ -38,6 +38,8 @@ import { QueueStrategy } from './QueueStrategy';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
+import { RuneEngine } from '../scripting/engine';
+import { postProcessIpfContent } from '../scripting/services/postProcessing';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -83,6 +85,8 @@ class QueueManager {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private node: CybIpfsNode | undefined = undefined;
+
+  private rune: RuneEngine | undefined = undefined;
 
   private defferedDbSaver?: IDeferredDbSaver;
 
@@ -164,20 +168,18 @@ class QueueManager {
     callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(async () => {
-      try {
-        const res = await fetchIpfsContent(cid, source, {
-          controller,
-          node: this.node,
-        }).then((content) => {
-          this.defferedDbSaver?.enqueueIpfsContent(content);
+      return fetchIpfsContent(cid, source, {
+        controller,
+        node: this.node,
+      }).then(async (content) => {
+        const result = content
+          ? await postProcessIpfContent(item, content, this.rune!, this.node!)
+          : undefined;
+        // console.log('----fetchIpfsContent after', cid, result);
+        this.defferedDbSaver?.enqueueIpfsContent(result);
 
-          return content;
-        });
-        return res;
-      } catch (e) {
-        // console.log('---promtoo', e);
-        throw e;
-      }
+        return result;
+      });
     }).pipe(
       timeout({
         each: settings.timeout,
@@ -277,16 +279,22 @@ class QueueManager {
       strategy,
       queueDebounceMs,
       defferedDbSaver,
+      runeInstance$,
     }: {
       strategy?: QueueStrategy;
       queueDebounceMs?: number;
       defferedDbSaver?: IDeferredDbSaver;
+      runeInstance$: Observable<RuneEngine | undefined>;
     }
   ) {
     ipfsInstance$.subscribe((node) => {
       if (node) {
         this.setNode(node);
       }
+    });
+
+    runeInstance$.subscribe((rune) => {
+      this.rune = rune;
     });
 
     this.strategy = strategy || strategies.embedded;

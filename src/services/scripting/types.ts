@@ -1,5 +1,5 @@
 import { Citizenship } from 'src/types/citizenship';
-import { KeyValueString } from 'src/types/data';
+import { KeyValueString, TabularKeyValues } from 'src/types/data';
 
 type ParamsContext = {
   path?: string[];
@@ -17,7 +17,7 @@ type UserContext = {
 type ScriptContext = {
   params: ParamsContext;
   user: UserContext;
-  secrets: Record<string, string>;
+  secrets: TabularKeyValues;
 };
 
 type EngineContext = Omit<ScriptContext, 'secrets'> & {

@@ -32,7 +32,9 @@ const loadIPFSContentFromDb = async (
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
     const textPreview = createTextPreview(data, mime);
-
+    if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
+      console.log('----loadIPFSContentFromDb', mime, textPreview, cid);
+    }
     const meta: IPFSContentMeta = {
       type: 'file', // `TODO: ipfs refactor dir support ?
       size: data.length,
@@ -134,7 +136,15 @@ const fetchIPFSContentFromNode = async (
         } else {
           meta.pinTime = -1;
         }
-
+        if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
+          console.log(
+            '----fetchIPFSContentFromNode',
+            stream,
+            mime,
+            textPreview,
+            cid
+          );
+        }
         return {
           result: stream,
           textPreview,
@@ -167,7 +177,16 @@ const fetchIPFSContentFromGateway = async (
     method: 'GET',
     signal: controller?.signal,
   });
-
+  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
+    console.log(
+      '----fetchIPFSContentFromGateway',
+      response,
+      contentUrl,
+      cid,
+      node,
+      controller?.signal
+    );
+  }
   if (response && response.body) {
     // fetch doesn't provide any headers in our case :(
 

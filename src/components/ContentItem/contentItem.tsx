@@ -37,6 +37,7 @@ function ContentItem({
 }: ContentItemProps): JSX.Element {
   const [details, setDetails] = useState<IPFSContentDetails>(undefined);
   const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     fetchParticle && (async () => fetchParticle(cid, item?.rank))();
@@ -44,6 +45,9 @@ function ContentItem({
 
   useEffect(() => {
     (async () => {
+      const hiddenByRune = content?.mutation === 'hidden';
+      setIsHidden(hiddenByRune);
+
       const details = await parseArrayLikeToDetails(
         content,
         cid
@@ -53,6 +57,10 @@ function ContentItem({
       details?.type && setType && setType(details?.type);
     })();
   }, [content, cid]); //TODO: REFACT - setType rise infinite loop
+
+  if (isHidden) {
+    return <div />;
+  }
 
   return (
     <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>

@@ -1,6 +1,12 @@
 /* eslint-disable import/no-unused-modules */
-import runeDeps from './runeDeps';
+// import runeDeps from './runeDeps';
+import { promptToOpenAI } from './services/llmRequests/openai';
 
+let runeDeps;
+
+export const initRuneDeps = (deps) => {
+  runeDeps = deps;
+};
 export async function jsCyberSearch(query) {
   return runeDeps.cybApi.graphSearch(query);
 }
@@ -14,7 +20,7 @@ export async function jsGetPassportByNickname(nickname) {
 }
 
 export async function jsEvalScriptFromIpfs(cid, funcName, params = {}) {
-  return runeDeps.evalScriptFromIpfs(cid, funcName, params);
+  return runeDeps.cybApi.evalScriptFromIpfs(cid, funcName, params);
 }
 
 export async function jsGetIpfsTextContent(cid) {
@@ -23,4 +29,9 @@ export async function jsGetIpfsTextContent(cid) {
 
 export async function jsAddContenToIpfs(content) {
   return runeDeps.addContenToIpfs(content);
+}
+
+export async function jsPromptToOpenAI(prompt, apiKey) {
+  const result = await promptToOpenAI(prompt, apiKey);
+  return result;
 }

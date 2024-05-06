@@ -12,12 +12,14 @@ import {
   ScriptEntrypointNames,
   ScriptContext,
   ScriptEntrypoints,
-  TabularKeyValues,
 } from 'src/services/scripting/types';
+
+import { TabularKeyValues } from 'src/types/data';
 
 import type { AppThunk, SliceActions } from 'src/redux/types';
 
 import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
+import { RootState } from '../store';
 
 type SliceState = {
   context: ScriptContext; // Omit<ScriptContext, 'secrets' | 'user'>;
@@ -101,6 +103,9 @@ const slice = createSlice({
     },
   },
 });
+
+export const selectRuneEntypoints = (store: RootState) =>
+  store.scripting.scripts.entrypoints;
 
 export type ScriptingActionTypes = SliceActions<typeof slice.actions>;
 

@@ -69,21 +69,9 @@ const createBackgroundWorkerApi = () => {
 
   const ipfsQueue = new QueueManager(ipfsInstance$, {
     defferedDbSaver,
+    runeInstance$,
   });
   const broadcastApi = new BroadcastChannelSender();
-
-  //   const generator = await pipeline('summarization', 'ahmedaeb/distilbart-cnn-6-6-optimised');
-  // const text = 'The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, ' +
-  //   'and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. ' +
-  //   'During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest ' +
-  //   'man-made structure in the world, a title it held for 41 years until the Chrysler Building in New ' +
-  //   'York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to ' +
-  //   'the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the ' +
-  //   'Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second ' +
-  //   'tallest free-standing structure in France after the Millau Viaduct.';
-  // const output = await generator(text, {
-  //   max_new_tokens: 100,
-  // });
 
   const initMlInstance = async (name: keyof typeof mlModelMap) => {
     if (!mlInstances[name]) {
@@ -91,7 +79,7 @@ const createBackgroundWorkerApi = () => {
       const model = mlModelMap[name];
       mlInstances[name] = await pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
-          console.log('progress_callback', name, progressData);
+          // console.log('progress_callback', name, progressData);
           const {
             status,
             progress,
@@ -187,7 +175,7 @@ const createBackgroundWorkerApi = () => {
     }
   };
 
-  const defferedDbApi = {
+  const deferredDbApi = {
     importCyberlinks: (links: LinkDto[]) => {
       defferedDbSaver.enqueueLinks(links);
     },
@@ -223,8 +211,11 @@ const createBackgroundWorkerApi = () => {
     getIpfsNode: async () => ipfsNode && proxy(ipfsNode),
     config: async () => ipfsNode?.config,
     info: async () => ipfsNode?.info(),
-    fetchWithDetails: async (cid: string, parseAs?: IpfsContentType) =>
-      ipfsNode?.fetchWithDetails(cid, parseAs),
+    fetchWithDetails: async (
+      cid: string,
+      parseAs?: IpfsContentType,
+      controller?: AbortController
+    ) => ipfsNode?.fetchWithDetails(cid, parseAs, controller),
     enqueue: async (
       cid: string,
       callback: QueueItemCallback,
@@ -244,7 +235,7 @@ const createBackgroundWorkerApi = () => {
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
-    defferedDbApi: proxy(defferedDbApi),
+    defferedDbApi: proxy(deferredDbApi),
     mlApi: proxy(mlApi),
     ipfsQueue: proxy(ipfsQueue),
     restartSync: (name: SyncEntryName) => syncService.restart(name),

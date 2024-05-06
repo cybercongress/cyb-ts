@@ -35,7 +35,7 @@ class BroadcastChannelSender {
   }
 
   public postMlSyncEntryProgress(entry: string, state: SyncProgress) {
-    console.log('postMlSyncEntryProgress', entry, state);
+    // console.log('postMlSyncEntryProgress', entry, state);
     this.channel.postMessage({
       type: 'sync_ml_entry',
       value: { entry, state },

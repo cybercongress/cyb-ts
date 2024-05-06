@@ -112,13 +112,15 @@ export type IPFSContent = {
   source: IpfsContentSource;
   contentUrl?: string;
   textPreview?: string;
+  mutation?: 'hidden' | 'modified' | 'error';
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;
 
 export type FetchWithDetailsFunc = (
   cid: string,
-  type?: IpfsContentType
+  type?: IpfsContentType,
+  controller?: AbortController
 ) => Promise<IPFSContentDetails>;
 
 export interface IpfsNode {

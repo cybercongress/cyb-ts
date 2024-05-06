@@ -25,7 +25,10 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
-import { setEntrypoint } from 'src/redux/reducers/scripting';
+import {
+  selectRuneEntypoints,
+  setEntrypoint,
+} from 'src/redux/reducers/scripting';
 import { RuneEngine } from 'src/services/scripting/engine';
 import runeDeps from 'src/services/scripting/runeDeps';
 
@@ -112,6 +115,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (state) => state.backend.services.rune.status === 'started'
   );
 
+  const runeEntryPoints = useAppSelector(selectRuneEntypoints);
+
   const myAddress = useAppSelector(selectCurrentAddress);
   const passport = useAppSelector(selectCurrentPassport);
 
@@ -148,6 +153,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
+  useEffect(() => {
+    backgroundWorkerInstance.rune.setEntrypoints(runeEntryPoints);
+  }, [runeEntryPoints]);
+
   const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
 
   const { signer, signingClient } = useSigningClient();
@@ -160,16 +169,18 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
   useEffect(() => {
-    runeDeps.init({
-      mySigner: signer,
-      mySigningClient: signingClient,
-      mySenseApi: senseApi,
-      myAddress,
-      myIpfsApi: isIpfsInitialized
-        ? backgroundWorkerInstance.ipfsApi
-        : undefined,
-      myRune: isRuneInitialized ? backgroundWorkerInstance.rune : undefined,
-    });
+    (async () => {
+      runeDeps.init({
+        mySigner: signer,
+        mySigningClient: signingClient,
+        mySenseApi: senseApi,
+        myAddress,
+        myIpfsApi: isIpfsInitialized
+          ? backgroundWorkerInstance.ipfsApi
+          : undefined,
+        myRune: isRuneInitialized ? backgroundWorkerInstance.rune : undefined,
+      });
+    })();
   }, [
     senseApi,
     signer,
@@ -220,7 +231,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           const dbApi = createDbApi();
           // pass dbApi into background worker
           await backgroundWorkerInstance.init(proxy(dbApi), {
-            entrypoints: {},
+            entrypoints: runeEntryPoints,
             secrets: {},
           });
         })

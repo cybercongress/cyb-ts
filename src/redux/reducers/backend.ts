@@ -189,7 +189,7 @@ function backendReducer(
     case 'sync_ml_entry': {
       const { entry, state: entryState } = action.value;
 
-      console.log('------sync_ml_entry', action, entryState);
+      // console.log('------sync_ml_entry', action, entryState);
       const newState = assocPath(
         ['mlState', 'entryStatus', entry],
         entryState,

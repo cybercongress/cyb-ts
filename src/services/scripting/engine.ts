@@ -73,8 +73,6 @@ export interface RuneEngine {
   ): void;
   popContext(names: (keyof ScriptContext)[]): void;
   setEntrypoints(entrypoints: ScriptEntrypoints): void;
-  setDeps(deps: Partial<EngineDeps>): void;
-  getDeps(): EngineDeps;
   // getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
 
   load(params: LoadParams): Promise<void>;
@@ -102,7 +100,6 @@ export interface RuneEngine {
 function enigine(): RuneEngine {
   let entrypoints: Partial<ScriptEntrypoints> = {};
   let context: EngineContext = { params: {}, user: {}, secrets: {} };
-  let deps: EngineDeps;
 
   const scriptCallbacks = new Map<string, ScriptCallback>();
 
@@ -137,14 +134,6 @@ function enigine(): RuneEngine {
     });
     context = newContext;
   };
-
-  const getDeps = () => deps;
-
-  const setDeps = (appDeps: Partial<EngineDeps>) => {
-    deps = { ...deps, ...appDeps };
-  };
-
-  const getSingleDep = (name: keyof EngineDeps) => deps[name];
 
   const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
     entrypoints = mapObjIndexed(
@@ -215,9 +204,18 @@ function enigine(): RuneEngine {
     if (!entrypoints.particle) {
       return { action: 'error', message: 'No particle entrypoint' };
     }
-
+    // if (params.content === undefined) {
+    //   return { action: 'pass' };
+    // }
     const { script, enabled } = entrypoints.particle;
-
+    // console.log(
+    //   'personalProcessor',
+    //   params.cid,
+    //   params.content,
+    //   params,
+    //   enabled
+    //   // output
+    // );
     if (!enabled) {
       return { action: 'pass' };
     }
@@ -228,8 +226,17 @@ function enigine(): RuneEngine {
     });
 
     if (output.result.action !== 'pass') {
-      console.log(`personalProcessor ${params.cid}`, params, output);
+      console.log(`personalProcessor pass ${params.cid}`, params, output);
     }
+    // console.log(
+    //   'personalProcessor',
+    //   params.cid,
+    //   params.content,
+    //   params,
+    //   enabled,
+    //   output
+    // );
+
     return output.result;
   };
 
@@ -265,9 +272,6 @@ function enigine(): RuneEngine {
     particleInference,
     personalProcessor,
     setEntrypoints,
-    getDeps,
-    // getSingleDep,
-    setDeps,
     pushContext,
     popContext,
     executeFunction,
