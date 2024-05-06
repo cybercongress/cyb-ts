@@ -3,9 +3,8 @@
 @import '../../../style/mixins.scss';
 
 .wrapper {
-  padding: $display-padding-top $display-padding-x 24px;
+  padding: $display-padding-top $display-padding-x 0;
 
-  overflow-x: auto;
   // TODO: remove this
   z-index: 0;
 
@@ -47,8 +46,6 @@
     padding-left: unset;
     padding-right: unset;
   }
-
-  @include blueScroll;
 }
 
 .header {
@@ -58,4 +55,10 @@
   &.withPaddingX {
     padding-left: $display-padding-x;
   }
+}
+
+.inner {
+  overflow: auto;
+  @include blueScroll;
+  padding-bottom: 24px;
 }

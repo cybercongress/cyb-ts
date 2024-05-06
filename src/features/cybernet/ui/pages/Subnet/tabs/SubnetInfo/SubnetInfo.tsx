@@ -5,7 +5,7 @@ import styles from '../../Subnet.module.scss';
 import { SubnetInfo, SubnetNeuron } from 'src/features/cybernet/types';
 import { Link, useParams } from 'react-router-dom';
 import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import SubnetNeurons from '../../SubnetNeurons/SubnetNeurons';
+import SubnetNeurons from '../SubnetNeurons/SubnetNeuronsTable/SubnetNeuronsTable';
 import { routes } from 'src/routes';
 import { Cid } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';

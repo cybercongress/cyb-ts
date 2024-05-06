@@ -21,90 +21,88 @@ function DelegatorsTable({ data }: Props) {
 
   const navigate = useNavigate();
   return (
-    <div>
-      <Table
-        // onSelect={(row) => navigate(`/delegators/${row}`)}
-        columns={useMemo(
-          () => [
-            columnHelper.accessor('uid', {
-              header: 'uid',
-              cell: ({ row }) => {
-                return row.index;
-              },
-            }),
+    <Table
+      // onSelect={(row) => navigate(`/delegators/${row}`)}
+      columns={useMemo(
+        () => [
+          columnHelper.accessor('uid', {
+            header: 'uid',
+            cell: ({ row }) => {
+              return row.index;
+            },
+          }),
 
-            columnHelper.accessor('delegate', {
-              header: 'delegate',
-              cell: (info) => (
-                <Account
-                  address={info.getValue()}
-                  avatar
-                  link={'../delegators/' + info.getValue()}
-                />
-              ),
-            }),
+          columnHelper.accessor('delegate', {
+            header: 'delegate',
+            cell: (info) => (
+              <Account
+                address={info.getValue()}
+                avatar
+                link={'../delegators/' + info.getValue()}
+              />
+            ),
+          }),
 
-            columnHelper.accessor('123', {
-              header: 'APR',
-              cell: (info) => {
-                return '10%';
-              },
-            }),
+          columnHelper.accessor('123', {
+            header: 'APR',
+            cell: (info) => {
+              return '10%';
+            },
+          }),
 
-            columnHelper.accessor('registrations', {
-              header: 'Subnets',
-              cell: (info) => (
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '5px',
-                  }}
-                >
-                  <>
-                    {info.getValue().map((val) => {
-                      return <Link to={'../subnets/' + val}>{val}</Link>;
-                    })}
-                  </>
-                </div>
-              ),
-            }),
+          columnHelper.accessor('registrations', {
+            header: 'Subnets',
+            cell: (info) => (
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '5px',
+                }}
+              >
+                <>
+                  {info.getValue().map((val) => {
+                    return <Link to={'../subnets/' + val}>{val}</Link>;
+                  })}
+                </>
+              </div>
+            ),
+          }),
 
-            columnHelper.accessor('nominators', {
-              header: 'total stake',
-              cell: (info) => {
-                const nominators = info.getValue();
-                const total = nominators.reduce(
-                  (acc, [_, stake]) => acc + stake,
-                  0
-                );
+          columnHelper.accessor('nominators', {
+            header: 'total stake',
+            cell: (info) => {
+              const nominators = info.getValue();
+              const total = nominators.reduce(
+                (acc, [_, stake]) => acc + stake,
+                0
+              );
 
-                return <AmountDenom amountValue={total} denom="pussy" />;
-              },
-            }),
-            // my stake
+              return <AmountDenom amountValue={total} denom="pussy" />;
+            },
+          }),
+          // my stake
 
-            columnHelper.accessor('nominators', {
-              header: 'my stake',
-              cell: (info) => {
-                const nominators = info.getValue();
-                const myStake = nominators.find(
-                  ([address, stake]) => address === currentAddress
-                );
+          columnHelper.accessor('nominators', {
+            header: 'my stake',
+            cell: (info) => {
+              const nominators = info.getValue();
+              const myStake = nominators.find(
+                ([address, stake]) => address === currentAddress
+              );
 
-                return (
-                  myStake && (
-                    <AmountDenom amountValue={myStake[1]} denom="space-pussy" />
-                  )
-                );
-              },
-            }),
-          ],
+              return (
+                myStake && (
+                  <AmountDenom amountValue={myStake[1]} denom="space-pussy" />
+                )
+              );
+            },
+          }),
+        ],
 
-          [currentAddress]
-        )}
-        data={data}
-      />
-    </div>
+        [currentAddress]
+      )}
+      data={data}
+    />
   );
 }
 

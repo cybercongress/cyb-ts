@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, InputNumber, Tooltip } from 'src/components';
+import { ActionBar, Button, InputNumber, Tooltip } from 'src/components';
 import styles from './WeightsSetter.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import useExecuteCybernetContract from '../../../../../useExecuteCybernetContract';
@@ -9,6 +9,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { routes } from 'src/routes';
 import { usePreviousPage } from 'src/contexts/previousPage';
 import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
+import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
+
+const DEFAULT_WEIGHT = 10;
+
+const sessionStorageKey = sessionStorageKeys.subnetWeights;
 
 type Props = {
   length: number;
@@ -18,26 +23,28 @@ type Props = {
   maxWeightsLimit: number;
 };
 
+function getSSData() {
+  const data = sessionStorage.getItem(sessionStorageKey);
+
+  return data ? JSON.parse(data) : null;
+}
+
 function WeightsSetter({
   length,
   netuid,
   callback,
-  metadata,
   neurons,
   maxWeightsLimit,
 }: Props) {
-  const w = sessionStorage.getItem('subnetWeights');
-  const weights2 = w ? JSON.parse(w)[netuid] : new Array(length).fill(10);
-  const [weights, setWeights] = useState(weights2);
-
-  const history = useLocation();
-
-  console.log(weights);
+  const ssData = getSSData()?.[netuid];
+  const [weights, setWeights] = useState(
+    ssData || new Array(length).fill(DEFAULT_WEIGHT)
+  );
 
   useEffect(() => {
     return () => {
       sessionStorage.setItem(
-        'subnetWeights',
+        sessionStorageKey,
         JSON.stringify({
           [netuid]: weights,
         })
@@ -53,7 +60,7 @@ function WeightsSetter({
 
   const { setAdviser } = useAdviser();
 
-  const { mutate: submit } = useExecuteCybernetContract({
+  const { mutate: submit, isLoading } = useExecuteCybernetContract({
     query: {
       set_weights: {
         dests: new Array(length).fill(0).map((_, i) => i),
@@ -71,37 +78,15 @@ function WeightsSetter({
 
   return (
     <div className={styles.wrapper}>
-      {/* <p>Set weights for operators</p>
-      <br /> */}
-
-      <Tooltip tooltip="You can navigate to check metadata, weighs will be saved">
-        <p>
-          Weights <QuestionBtn />
-        </p>
-      </Tooltip>
-
       <div className={styles.group}>
         {new Array(length).fill(null).map((_, i) => {
-          const { hotkey, uid } = neurons[i];
+          const { hotkey } = neurons[i];
           return (
             <div key={i}>
-              {/* <Link to={cybernetRoutes.delegator.getLink(hotkey)}>{uid}</Link> */}
-              {/* <br /> */}
-              {/* <Link
-                to={
-                  routes.oracle.ask.getLink(metadata) +
-                  `?neuron=${hotkey}&subnet=${netuid}`
-                }
-              > */}
-              {/* <Cid cid={metadata}> */}
-              {/* metadata */}
-              {/* {`${metadata.substr(0, 6)}...${metadata.substr(-6)}`} */}
-              {/* </Cid> */}
-              {/* </Link> */}
               <InputNumber
                 autoFocus={neuron === hotkey}
                 maxValue={100}
-                value={weights[i]}
+                value={weights[i] || DEFAULT_WEIGHT}
                 onChange={(e) => {
                   const newWeights = [...weights];
                   newWeights[i] = +e;
@@ -113,10 +98,13 @@ function WeightsSetter({
         })}
       </div>
 
-      <br />
-      <Button onClick={submit} disabled={false}>
-        Submit
-      </Button>
+      <ActionBar
+        button={{
+          text: 'Submit weights',
+          onClick: submit,
+          disabled: isLoading,
+        }}
+      />
     </div>
   );
 }

@@ -1,22 +1,13 @@
 import { Route, Routes, useParams } from 'react-router-dom';
 import { MainContainer, Tabs } from 'src/components';
-import {
-  SubnetInfo as SubnetInfoType,
-  SubnetNeuron,
-} from 'src/features/cybernet/types';
-import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './tabs/Weights/Weights';
-import SubnetHyperParams from './tabs/SubnetHyperParams/SubnetHyperParams';
 import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
-import SubnetNeurons from './SubnetNeurons/SubnetNeurons';
-import Display from 'src/components/containerGradient/Display/Display';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import WeightsSetter from './tabs/Weights/WeightsSetter/WeightsSetter';
-import styles from './Subnet.module.scss';
+import SubnetProvider, { useSubnet } from './subnet.context';
+import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -26,21 +17,7 @@ function Subnet() {
 
   const netuid = Number(id!);
 
-  const subnetQuery = useCybernetContract<SubnetInfoType>({
-    query: {
-      get_subnet_info: {
-        netuid,
-      },
-    },
-  });
-
-  const neuronsQuery = useCybernetContract<SubnetNeuron[]>({
-    query: {
-      get_neurons: {
-        netuid,
-      },
-    },
-  });
+  const { subnetQuery, neuronsQuery } = useSubnet();
 
   const { data: addressSubnetRegistrationStatus, refetch } =
     useQueryCybernetContract<number | null>({
@@ -57,11 +34,6 @@ function Subnet() {
     error: subnetQuery.error || neuronsQuery.error,
     defaultText: 'subnet',
   });
-
-  console.info('subnet info', subnetQuery.data);
-
-  const subnetType = subnetQuery.data?.network_modality;
-  const subnetNeurons = neuronsQuery.data;
 
   const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
 
@@ -92,32 +64,9 @@ function Subnet() {
         <Route
           path="/"
           element={
-            <div className={styles.neurons}>
-              {subnetNeurons && (
-                <SubnetNeurons
-                  neurons={subnetNeurons}
-                  subnetType={subnetType}
-                  netuid={netuid}
-                  addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
-                  metadata={subnetQuery.data?.metadata}
-                />
-              )}
-
-              {addressRegisteredInSubnet && !!subnetNeurons?.length && (
-                // <Display title={<DisplayTitle title="Weights setting (WIP)" />}>
-                <WeightsSetter
-                  netuid={netuid}
-                  length={subnetQuery.data?.subnetwork_n}
-                  metadata={subnetQuery.data?.metadata}
-                  neurons={subnetNeurons}
-                  callback={() => {
-                    // weightsQuery.refetch();
-                  }}
-                  maxWeightsLimit={subnetQuery.data.max_weights_limit}
-                />
-                // </Display>
-              )}
-            </div>
+            <SubnetNeurons
+              addressRegisteredInSubnet={addressRegisteredInSubnet}
+            />
           }
         />
 
@@ -154,4 +103,10 @@ function Subnet() {
   );
 }
 
-export default Subnet;
+export default function SubnetWithProvider() {
+  return (
+    <SubnetProvider>
+      <Subnet />
+    </SubnetProvider>
+  );
+}

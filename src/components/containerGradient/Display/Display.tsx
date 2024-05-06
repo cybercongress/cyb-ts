@@ -51,7 +51,7 @@ function Display({
         </header>
       )}
 
-      {children}
+      <div className={styles.inner}>{children}</div>
     </div>
   );
 }

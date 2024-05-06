@@ -1,14 +1,12 @@
 .wrapper {
-  margin-top: 100px;
-
-  > p {
-    color: gray;
-  }
+  position: absolute;
+  left: 700px;
+  top: 60px;
 }
+
 .group {
-  margin-top: 25px;
   display: grid;
-  gap: 25px;
+  gap: 24px;
 
   max-width: 150px;
 }

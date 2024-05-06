@@ -1,6 +1,11 @@
 import React, { createContext, useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
+/*
+  copied from, in future maybe will be possible to delete this file
+  https://github.com/remix-run/react-router/discussions/9860
+*/
+
 interface IPreviousPageContextData {
   previousPathname: string | undefined;
   /** Is true if the previous page has the same origin as the current page */
