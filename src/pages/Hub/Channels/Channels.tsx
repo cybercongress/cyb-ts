@@ -27,6 +27,7 @@ function Channels() {
       }),
       columnHelper.accessor('active', {
         header: 'active',
+        cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('destinationChainId', {
         header: 'destinationChainId',
@@ -44,7 +45,7 @@ function Channels() {
   }, []);
 
   return (
-    <DisplayHub title="Channels" type="HUB_CHANNELS">
+    <DisplayHub title="channels" type="HUB_CHANNELS">
       <Table columns={columnsData} data={dataRow} />
     </DisplayHub>
   );

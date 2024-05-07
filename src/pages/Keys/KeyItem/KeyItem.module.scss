@@ -6,8 +6,9 @@
   overflow-x: auto;
   align-items: center;
   position: relative;
+  min-height: 230px;
 
-  > img {
+  >img {
     height: auto;
   }
 
@@ -24,7 +25,7 @@
   .content {
     line-height: 30px;
 
-    > * {
+    >* {
       line-height: initial;
     }
 

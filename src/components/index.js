@@ -58,6 +58,7 @@ import Row, { RowsContainer } from './Row/Row';
 import Display from './containerGradient/Display/Display';
 import DisplayTitle from './containerGradient/DisplayTitle/DisplayTitle';
 import { Color } from './LinearGradientContainer/LinearGradientContainer';
+import Dot from './Dot/Dot';
 
 const BtnGrd = Button;
 
@@ -113,7 +114,8 @@ export {
   RowsContainer,
   Display,
   DisplayTitle,
-  Color
+  Color,
+  Dot,
 };
 
 export { Dots } from './ui/Dots';

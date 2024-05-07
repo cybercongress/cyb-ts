@@ -23,7 +23,8 @@
 
   > :nth-child(2) {
     left: -2px;
-    // overflow-x: visible;
+    position: relative;
+    overflow-x: auto;
   }
 
 }

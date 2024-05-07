@@ -22,7 +22,7 @@ function Tokens() {
     : [];
 
   return (
-    <DisplayHub title="Tokens" type="HUB_TOKENS">
+    <DisplayHub title="tokens" type="HUB_TOKENS">
       <Table
         data={dataRow}
         columns={useMemo(

@@ -4,7 +4,7 @@ import { Display, DisplayTitle } from 'src/components';
 import { HUB_CONTRACTS } from 'src/constants/hubContracts';
 import { routes } from 'src/routes';
 
-type Hub = 'Networks' | 'Channels' | 'Tokens';
+type Hub = 'networks' | 'channels' | 'tokens';
 
 function DisplayHub({
   title,
@@ -21,7 +21,7 @@ function DisplayHub({
         <DisplayTitle
           title={
             <Link to={routes.contracts.byAddress.getLink(HUB_CONTRACTS[type])}>
-              Hub {title}
+              hub {title}
             </Link>
           }
         />

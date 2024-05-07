@@ -1,3 +1,5 @@
+import { Dot } from 'src/components';
+
 type RenderRow = {
   id: number;
   active: string;
@@ -17,7 +19,7 @@ function renderRow({
 }: RenderRow) {
   return {
     id,
-    active,
+    active: <Dot color={active ? 'green' : 'red'} animation />,
     destinationChainId,
     destinationChannelId,
     sourceChainId,

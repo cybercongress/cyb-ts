@@ -1,6 +1,6 @@
-import { Pane, Pill, Text } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { Tooltip } from '../../../components';
+import Dot, { DotColors } from 'src/components/Dot/Dot';
 
 const statusHeroes = {
   BOND_STATUS_UNSPECIFIED: 0,
@@ -26,48 +26,31 @@ export function TextTable({ children, fontSize, color, display, ...props }) {
   );
 }
 
-export function StatusTooltip({ status }) {
-  let statusColor;
+export function StatusTooltip({
+  status,
+}: {
+  status: keyof typeof statusHeroes;
+}) {
+  let statusColor: DotColors;
 
   switch (statusHeroes[status]) {
     case 1:
-      statusColor = 'red';
+      statusColor = DotColors.red;
       break;
     case 2:
-      statusColor = 'yellow';
+      statusColor = DotColors.yellow;
       break;
     case 3:
-      statusColor = 'green';
+      statusColor = DotColors.green;
       break;
     default:
-      statusColor = 'neutral';
+      statusColor = DotColors.purple;
       break;
   }
 
   return (
     <Pane marginRight={10} display="flex" alignItems="center">
-      <Tooltip
-        placement="bottom"
-        tooltip={
-          <Pane display="flex" alignItems="center" paddingX={10} paddingY={10}>
-            Validator status:&nbsp;
-            {statusHeroes[status] === 1 && 'unbonded'}
-            {statusHeroes[status] === 2 && 'unbonding'}
-            {statusHeroes[status] === 3 && 'bonded'}
-          </Pane>
-        }
-      >
-        <Pill
-          height={7}
-          width={7}
-          borderRadius="50%"
-          paddingX={4}
-          paddingY={0}
-          // marginX={20}
-          isSolid
-          color={statusColor}
-        />
-      </Tooltip>
+      <Dot color={statusColor} />
     </Pane>
   );
 }

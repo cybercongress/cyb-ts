@@ -40,10 +40,10 @@ const fetcher = (client: Option<CyberClient>, type: TypeFetcher) => {
 
 export function useNetworks() {
   const dispatch = useAppDispatch();
-  const { networks: networksLS } = useAppSelector((state) => state.hub);
+  const { networks: networksStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
   const [networksData, setNetworksData] =
-    useState<Option<NetworkList>>(networksLS);
+    useState<Option<NetworkList>>(networksStorage);
   const { data } = useQuery(
     ['hub-networks'],
     () => fetcher(queryClient, TypeFetcher.NETWORKS),
@@ -70,9 +70,10 @@ export function useNetworks() {
 
 export function useTokens() {
   const dispatch = useAppDispatch();
-  const { tokens: tokensLS } = useAppSelector((state) => state.hub);
+  const { tokens: tokensStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [tokensData, setTokensData] = useState<Option<TokenList>>(tokensLS);
+  const [tokensData, setTokensData] =
+    useState<Option<TokenList>>(tokensStorage);
   const { data } = useQuery(
     ['hub-tokens'],
     () => fetcher(queryClient, TypeFetcher.TOKENS),
@@ -107,10 +108,10 @@ export function useTokens() {
 
 export function useChannels() {
   const dispatch = useAppDispatch();
-  const { channels: channelsLS } = useAppSelector((state) => state.hub);
+  const { channels: channelsStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
   const [channelsData, setChannelsData] =
-    useState<Option<ChannelList>>(channelsLS);
+    useState<Option<ChannelList>>(channelsStorage);
   const { data } = useQuery(
     ['hub-channels'],
     () => fetcher(queryClient, TypeFetcher.CHANNELS),

@@ -47,7 +47,7 @@ function Networks() {
   );
 
   return (
-    <DisplayHub title="Networks" type="HUB_NETWORKS">
+    <DisplayHub title="networks" type="HUB_NETWORKS">
       <Table data={dataRow} columns={columnsData} />
     </DisplayHub>
   );
