@@ -188,7 +188,7 @@ function ProposalsDetail({ defaultAccount }) {
 
   useEffect(() => {
     if (location.pathname === `/senate/${proposalId}`) {
-      navigate(`/senate/${proposalId}/comments`);
+      navigate(`/senate/${proposalId}/comments`, { replace: true });
     }
   }, [location.pathname]);
 
