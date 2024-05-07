@@ -20,7 +20,17 @@ import { initialContentTypeFilterState } from './constants';
 
 const sortByLSKey = 'search-sort';
 
-function SearchResults({ query: propQuery }) {
+interface SearchResultsProps {
+  query?: string;
+  noCommentsError?: string;
+  actionBarTextBtn?: string;
+}
+
+function SearchResults({
+  query: propQuery,
+  noCommentsError,
+  actionBarTextBtn,
+}: SearchResultsProps) {
   const { query: q, cid } = useParams();
   const query = propQuery || q || cid || '';
 
@@ -40,6 +50,9 @@ function SearchResults({ query: propQuery }) {
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
+  const errorMessage =
+    noCommentsError ||
+    'there are no answers or questions to this particle <br /> be the first and create one';
 
   const {
     data: items,
@@ -157,8 +170,7 @@ function SearchResults({ query: propQuery }) {
           </Display>
         ) : (
           <Display color="white">
-            there are no answers or questions to this particle <br /> be the
-            first and create one
+            <p dangerouslySetInnerHTML={{ __html: errorMessage }} />
           </Display>
         )}
       </div>
@@ -166,6 +178,7 @@ function SearchResults({ query: propQuery }) {
       {!mobile && (
         <div className={styles.actionBar}>
           <ActionBarContainer
+            textBtn={actionBarTextBtn}
             keywordHash={keywordHash}
             update={() => {
               refetch();

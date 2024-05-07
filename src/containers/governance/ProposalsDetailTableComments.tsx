@@ -10,6 +10,8 @@ function ProposalsDetailTableComments() {
   const { ipfsApi } = useBackend();
   const proposalQuery = `bostrom proposal ${proposalId}`;
   const [processedQuery, setProcessedQuery] = useState('');
+  const noCommentsError =
+    'there are no comments to this particle <br /> be the first and create one';
   useEffect(() => {
     const processQuery = async () => {
       const hash = await getIpfsHash(encodeSlash(proposalQuery));
@@ -24,7 +26,13 @@ function ProposalsDetailTableComments() {
     processQuery();
   }, [proposalQuery, ipfsApi]);
 
-  return <SearchResults query={processedQuery} />;
+  return (
+    <SearchResults
+      query={processedQuery}
+      errorMessage={noCommentsError}
+      actionBarTextBtn="Comment"
+    />
+  );
 }
 
 export default ProposalsDetailTableComments;
