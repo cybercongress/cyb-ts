@@ -1,4 +1,19 @@
+.externalLinks {
+  display: flex;
+  gap: 15px;
+}
+
 .settings {
   display: flex;
   gap: 30px;
+}
+
+.actions {
+  justify-content: space-between;
+  display: flex;
+  gap: 0 15px;
+
+  > div {
+    flex: 1;
+  }
 }
