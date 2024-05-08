@@ -10,16 +10,18 @@ import {
 import {
   FetchWithDetailsFunc,
   IPFSContentMaybe,
+  IPFSContentMutated,
   IpfsContentSource,
 } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { proxy } from 'comlink';
+import { Option } from 'src/types';
 
 type UseIpfsContentReturn = {
   isReady: boolean;
   status?: QueueItemStatus;
   source?: IpfsContentSource;
-  content: IPFSContentMaybe;
+  content: Option<IPFSContentMutated>;
   clear?: () => Promise<void>;
   cancel?: (cid: string) => Promise<void>;
   fetchParticle?: (cid: string, rank?: number) => Promise<void>;

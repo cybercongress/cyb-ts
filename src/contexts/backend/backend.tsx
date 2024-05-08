@@ -150,12 +150,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [passport, isRuneInitialized, dispatch]);
 
   useEffect(() => {
-    isReady && console.log('🟢 Backend started.');
-  }, [isReady]);
-
-  useEffect(() => {
     backgroundWorkerInstance.rune.setEntrypoints(runeEntryPoints);
   }, [runeEntryPoints]);
+
+  useEffect(() => {
+    isReady && console.log('🟢 Backend started.');
+  }, [isReady]);
 
   const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
 
@@ -170,25 +170,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      runeDeps.init({
-        mySigner: signer,
-        mySigningClient: signingClient,
-        mySenseApi: senseApi,
-        myAddress,
-        myIpfsApi: isIpfsInitialized
-          ? backgroundWorkerInstance.ipfsApi
-          : undefined,
-        myRune: isRuneInitialized ? backgroundWorkerInstance.rune : undefined,
+      runeDeps.setExternalDeps({
+        senseApi: senseApi ? proxy(senseApi) : undefined,
+        address: myAddress,
+        signingClient: signingClient ? proxy(signingClient) : undefined,
       });
     })();
-  }, [
-    senseApi,
-    signer,
-    signingClient,
-    myAddress,
-    isIpfsInitialized,
-    isRuneInitialized,
-  ]);
+  }, [senseApi, signingClient, myAddress]);
 
   const createDbApi = useCallback(() => {
     const dbApi = new DbApiWrapper();

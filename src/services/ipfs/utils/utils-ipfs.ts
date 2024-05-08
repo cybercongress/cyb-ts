@@ -32,9 +32,7 @@ const loadIPFSContentFromDb = async (
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
     const textPreview = createTextPreview(data, mime);
-    if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
-      console.log('----loadIPFSContentFromDb', mime, textPreview, cid);
-    }
+
     const meta: IPFSContentMeta = {
       type: 'file', // `TODO: ipfs refactor dir support ?
       size: data.length,

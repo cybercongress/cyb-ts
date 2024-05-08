@@ -83,15 +83,16 @@ export type Uint8ArrayWithMime = {
 export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | ReadableStream<Uint8Array>
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
-export type IpfsContentType =
+
+export type IpfsGatewayContentType = 'video' | 'audio';
+export type IpfsBaseContentType =
+  | IpfsGatewayContentType
   | 'image'
   | 'pdf'
-  | 'link'
   | 'text'
-  | 'video'
-  | 'audio'
-  | 'html'
   | 'other';
+
+export type IpfsContentType = IpfsBaseContentType | 'link' | 'html' | 'cid';
 
 export type IPFSContentDetails =
   | {
@@ -112,7 +113,12 @@ export type IPFSContent = {
   source: IpfsContentSource;
   contentUrl?: string;
   textPreview?: string;
-  mutation?: 'hidden' | 'modified' | 'error';
+};
+
+export type IPFSContentMutated = Omit<IPFSContent, 'result'> & {
+  result?: Uint8ArrayLike | string;
+  mutation?: 'hidden' | 'modified' | 'error'; // rune pipeline result
+  cidBefore?: string;
 };
 
 export type IPFSContentMaybe = IPFSContent | undefined;

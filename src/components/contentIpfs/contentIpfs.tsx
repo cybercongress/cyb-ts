@@ -1,4 +1,8 @@
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
+import {
+  IPFSContentDetails,
+  IPFSContentMaybe,
+  IPFSContentMutated,
+} from 'src/services/ipfs/types';
 import { CYBER_GATEWAY } from 'src/constants/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
@@ -7,6 +11,7 @@ import LinkHttp from './component/link';
 import Pdf from '../PDF';
 import Img from './component/img';
 import Audio from './component/Audio/Audio';
+import { Option } from 'src/types';
 
 function OtherItem({
   content,
@@ -25,6 +30,10 @@ function OtherItem({
   return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
 }
 
+function HtmlItem({ cid }: { cid: string }) {
+  return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
+}
+
 function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
   if (search) {
     return <div>{`${cid} (gateway)`}</div>;
@@ -34,7 +43,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 
 type ContentTabProps = {
   details: IPFSContentDetails;
-  content?: IPFSContentMaybe;
+  content?: Option<IPFSContentMutated>;
   cid: string;
   search?: boolean;
 };
@@ -77,7 +86,8 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
           {contentType === 'link' && (
             <LinkHttp url={details.content!} preview={search} />
           )}
-          {contentType === 'other' && (
+          {contentType === 'html' && <HtmlItem cid={content?.cid} />}
+          {['other', 'cid'].some((i) => i === contentType) && (
             <OtherItem search={search} cid={cid} content={details.content} />
           )}
         </>

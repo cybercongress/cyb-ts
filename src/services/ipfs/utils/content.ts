@@ -1,10 +1,13 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { Option } from 'src/types';
+
 import {
   IPFSContentDetails,
-  IPFSContentMaybe,
-  IpfsContentType,
+  IPFSContentMutated,
+  IpfsBaseContentType,
+  IpfsGatewayContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
 
@@ -20,9 +23,9 @@ function createImgData(rawData: Uint8Array, type: string) {
 }
 
 // eslint-disable-next-line import/no-unused-modules
-export const detectContentType = (
+export const detectGatewayContentType = (
   mime: string | undefined
-): IpfsContentType => {
+): Option<IpfsGatewayContentType> => {
   if (mime) {
     if (mime.includes('video')) {
       return 'video';
@@ -32,7 +35,7 @@ export const detectContentType = (
       return 'audio';
     }
   }
-  return 'other';
+  return undefined;
 };
 
 const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
@@ -52,34 +55,22 @@ export const chunksToBlob = (
   mime: string | undefined
 ) => new Blob(chunks, mime ? { type: mime } : {});
 
-export const extractContentType = (
-  content: IPFSContentMaybe
-): IpfsContentType => {
-  const mime = content?.meta?.mime;
-  const initialType = detectContentType(mime);
-  if (['video', 'audio'].indexOf(initialType) > -1) {
-    return initialType;
-  }
+export const mimeToBaseContentType = (
+  mime: string | undefined
+): IpfsBaseContentType => {
   if (!mime) {
     return 'other';
   }
+
+  const initialType = detectGatewayContentType(mime);
+  if (initialType) {
+    return initialType;
+  }
+
   if (
     mime.indexOf('text/plain') !== -1 ||
     mime.indexOf('application/xml') !== -1
   ) {
-    if (isSvg(Buffer.from(content.result))) {
-      return 'image';
-    }
-    const dataBase64 = uint8ArrayToAsciiString(content.result);
-    if (dataBase64.match(PATTERN_IPFS_HASH)) {
-      return 'other';
-    }
-    if (dataBase64.match(PATTERN_HTTP)) {
-      return 'link';
-    }
-    if (isHtml(dataBase64)) {
-      return 'other';
-    }
     return 'text';
   }
   if (mime.indexOf('image') !== -1) {
@@ -93,77 +84,118 @@ export const extractContentType = (
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
-  content: IPFSContentMaybe,
-  // rawDataResponse: Uint8ArrayLike | undefined,
-  // mime: string | undefined,
+  content: IPFSContentMutated | undefined,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
-    // console.log('------parseArrayLikeToDetails', cid, content);
-    const mime = content?.meta?.mime;
+    if (!content || !content?.result) {
+      return {
+        gateway: true,
+        text: cid.toString(),
+        cid,
+      };
+    }
+
+    const { result, meta } = content;
+
+    const mime = meta?.mime;
+
+    if (!mime) {
+      return {
+        cid,
+        gateway: true,
+        text: `Can't detect MIME for ${cid.toString()}`,
+      };
+    }
+    const contentType = mimeToBaseContentType(mime);
+    const contentCid = content.cid;
+
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
       gateway: false,
-      cid,
+      cid: contentCid,
+      type: contentType,
     };
-    const initialType = detectContentType(mime);
-    if (['video', 'audio'].indexOf(initialType) > -1) {
-      return { ...response, type: initialType, gateway: true };
+
+    if (detectGatewayContentType(mime)) {
+      return { ...response, gateway: true };
     }
 
-    const rawData = content?.result
-      ? await getResponseResult(content.result, onProgress)
-      : undefined;
+    const rawData =
+      typeof result !== 'string'
+        ? await getResponseResult(result, onProgress)
+        : result;
+
+    const isStringData = typeof rawData === 'string';
 
     // console.log(rawData);
+    if (!rawData) {
+      return {
+        ...response,
+        gateway: true,
+        text: `Can't parse content for ${cid.toString()}`,
+      };
+    }
 
-    if (!mime) {
-      response.text = `Can't detect MIME for ${cid.toString()}`;
-      response.gateway = true; // ???
-    } else if (
-      (mime.indexOf('text/plain') !== -1 ||
-        mime.indexOf('application/xml') !== -1) &&
-      rawData
-    ) {
-      if (isSvg(Buffer.from(rawData))) {
-        response.type = 'image';
-        response.content = createImgData(rawData, 'image/svg+xml'); // file
-      } else {
-        const dataBase64 = uint8ArrayToAsciiString(rawData);
-        // TODO: search can bel longer for 42???!
-        // also cover ipns links
-        response.link =
-          dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
-
-        if (dataBase64.match(PATTERN_IPFS_HASH)) {
-          response.gateway = true;
-          response.type = 'other';
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (dataBase64.match(PATTERN_HTTP)) {
-          response.type = 'link';
-          response.gateway = false;
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (isHtml(dataBase64)) {
-          response.type = 'other';
-          response.gateway = true;
-          response.content = cid.toString();
-        } else {
-          response.type = 'text';
-          response.content = dataBase64;
-          response.text = shortenString(dataBase64);
-        }
+    // clarify text-content subtypes
+    if (response.type === 'text') {
+      // render svg as image
+      if (!isStringData && isSvg(Buffer.from(rawData))) {
+        return {
+          ...response,
+          type: 'image',
+          content: createImgData(rawData, 'image/svg+xml'),
+        };
       }
-    } else if (mime.indexOf('image') !== -1) {
-      response.content = createImgData(rawData, mime); // file
-      response.type = 'image';
-      response.gateway = false;
-    } else if (mime.indexOf('application/pdf') !== -1) {
-      response.type = 'pdf';
-      response.content = createObjectURL(rawData, mime); // file
-      response.gateway = true; // ???
+
+      const str = isStringData ? rawData : uint8ArrayToAsciiString(rawData);
+
+      if (str.match(PATTERN_IPFS_HASH)) {
+        return {
+          ...response,
+          type: 'cid',
+          content: str,
+        };
+      }
+      if (str.match(PATTERN_HTTP)) {
+        return {
+          ...response,
+          type: 'link',
+          content: str,
+        };
+      }
+      if (isHtml(str)) {
+        return {
+          ...response,
+          type: 'html',
+          gateway: true,
+          content: cid.toString(),
+        };
+      }
+
+      // TODO: search can bel longer for 42???!
+      // also cover ipns links
+      return {
+        ...response,
+        link: str.length > 42 ? `/ipfs/${cid}` : `/search/${str}`,
+        type: 'text',
+        text: shortenString(str),
+        content: str,
+      };
+    }
+
+    if (!isStringData) {
+      if (response.type === 'image') {
+        return { ...response, content: createImgData(rawData, mime) }; // file
+      }
+      if (response.type === 'pdf') {
+        return {
+          ...response,
+          content: createObjectURL(rawData, mime),
+          gateway: true,
+        }; // file
+      }
     }
 
     return response;
@@ -184,11 +216,17 @@ export const contentToUint8Array = async (
 };
 
 export const createTextPreview = (
-  array: Uint8Array | undefined,
+  array: Uint8Array | undefined | string,
   mime?: string,
   previewLength = 150
 ) => {
-  return array && mime && mime === 'text/plain'
+  if (!array) {
+    return undefined;
+  }
+  if (typeof array === 'string') {
+    return array.slice(0, previewLength);
+  }
+  return mime && mime === 'text/plain'
     ? uint8ArrayToAsciiString(array).slice(0, previewLength)
     : undefined;
 };

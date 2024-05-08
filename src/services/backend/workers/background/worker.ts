@@ -33,6 +33,8 @@ import DbApi from '../../services/DbApi/DbApi';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
+import runeDeps, { RuneDeps } from 'src/services/scripting/runeDeps';
+// import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
 type MlModelParams = {
   name: PipelineType;
@@ -121,7 +123,10 @@ const createBackgroundWorkerApi = () => {
     params$,
   });
 
-  const init = async (dbApiProxy: DbApi & ProxyMarked, params: LoadParams) => {
+  const init = async (
+    dbApiProxy: DbApi & ProxyMarked,
+    params: LoadParams
+  ): Promise<void> => {
     dbInstance$.next(dbApiProxy);
     Promise.all([
       initMlInstance('featureExtractor'),
@@ -138,7 +143,10 @@ const createBackgroundWorkerApi = () => {
     broadcastApi.postServiceStatus('rune', 'starting');
     await rune
       .load(params)
-      .then(() => broadcastApi.postServiceStatus('rune', 'started'))
+      .then(() => {
+        runeDeps.setInternalDeps({ rune });
+        broadcastApi.postServiceStatus('rune', 'started');
+      })
       .catch((err) =>
         broadcastApi.postServiceStatus('rune', 'error', err.toString())
       );
@@ -162,7 +170,6 @@ const createBackgroundWorkerApi = () => {
       }
       broadcastApi.postServiceStatus('ipfs', 'starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
-
       ipfsInstance$.next(ipfsNode);
 
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
@@ -229,6 +236,8 @@ const createBackgroundWorkerApi = () => {
     addContent: async (content: string | File) => ipfsNode?.addContent(content),
   };
 
+  runeDeps.setInternalDeps({ ipfsApi });
+
   return {
     init,
     isInitialized: () => !!ipfsInstance$.value,
@@ -246,7 +255,9 @@ const createBackgroundWorkerApi = () => {
 
 const backgroundWorker = createBackgroundWorkerApi();
 
-export type IpfsApi = Remote<typeof backgroundWorker.ipfsApi>;
+export type IpfsApi = typeof backgroundWorker.ipfsApi;
+
+export type RemoteIpfsApi = Remote<IpfsApi>;
 
 export type BackgroundWorker = typeof backgroundWorker;
 

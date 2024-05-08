@@ -5,7 +5,7 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
 
 interface VideoPlayerProps {
-  content: IPFSContentMaybe;
+  content: IPFSContentMutated;
   details: IPFSContentDetails;
 }
 

@@ -173,7 +173,7 @@ class QueueManager {
         node: this.node,
       }).then(async (content) => {
         const result = content
-          ? await postProcessIpfContent(item, content, this.rune!, this.node!)
+          ? await postProcessIpfContent(item, content, this.rune!, this)
           : undefined;
         // console.log('----fetchIpfsContent after', cid, result);
         this.defferedDbSaver?.enqueueIpfsContent(result);

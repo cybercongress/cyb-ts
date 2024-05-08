@@ -1,4 +1,4 @@
-import { Remote } from 'comlink';
+import { ProxyMarked, Remote } from 'comlink';
 
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
@@ -14,74 +14,84 @@ import { extractRuneScript } from './helpers';
 import { IpfsApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
 
+type InternalDeps = {
+  ipfsApi?: Option<IpfsApi>;
+  rune?: Option<RuneEngine>;
+  queryClient?: Option<CyberClient>;
+};
+type ExternalDeps = {
+  signingClient?: Option<SigningCyberClient & ProxyMarked>;
+  // signer?: Option<OfflineSigner>;
+  senseApi?: Option<SenseApi & ProxyMarked>;
+  address?: Option<NeuronAddress>;
+};
+
+type Deps = InternalDeps & ExternalDeps;
+
 const createRuneDeps = () => {
-  let signingClient: Option<SigningCyberClient>;
-  let signer: Option<OfflineSigner>;
-  let queryClient: CyberClient;
-  let senseApi: SenseApi;
-  let address: Option<NeuronAddress>;
-  let ipfsApi: Option<IpfsApi>;
-  let rune: Option<RuneEngine>;
+  const deps: Deps = {};
+  // let signingClient: Option<SigningCyberClient>;
+  // let signer: Option<OfflineSigner>;
+  // let queryClient: CyberClient;
+  // let senseApi: SenseApi;
+  // let address: Option<NeuronAddress>;
+  // let ipfsApi: Option<IpfsApi>;
+  // let rune: Option<RuneEngine>;
 
   (async () => {
-    queryClient = await CyberClient.connect(RPC_URL);
+    deps.queryClient = await CyberClient.connect(RPC_URL);
   })();
 
-  const init = ({
-    mySigner,
-    mySigningClient,
-    mySenseApi,
-    myAddress,
-    myIpfsApi,
-    myRune,
-  }: {
-    mySigner: Option<OfflineSigner>;
-    mySigningClient: Option<SigningCyberClient>;
-    mySenseApi: SenseApi;
-    myAddress: Option<NeuronAddress>;
-    myIpfsApi: Option<IpfsApi>;
-    myRune: Option<Remote<RuneEngine>>;
-  }) => {
-    signer = mySigner;
-    signingClient = mySigningClient;
-    senseApi = mySenseApi;
-    address = myAddress;
-    ipfsApi = myIpfsApi;
-    rune = myRune;
-    console.log('-----IPFS API set to:', ipfsApi);
+  const setExternalDeps = (externalDeps: ExternalDeps) => {
+    Object.keys(externalDeps)
+      .filter((name) => externalDeps[name as keyof ExternalDeps] !== undefined)
+      .forEach((name) => {
+        deps[name as keyof Deps] = externalDeps[name as keyof ExternalDeps];
+      });
+  };
+
+  const setInternalDeps = (internalDeps: InternalDeps) => {
+    Object.keys(internalDeps)
+      .filter((name) => internalDeps[name as keyof InternalDeps] !== undefined)
+      .forEach((name) => {
+        deps[name as keyof Deps] = internalDeps[name as keyof InternalDeps];
+      });
   };
 
   const graphSearch = async (query: string, page = 0) => {
+    const queryClient = depOrThrow('queryClient') as CyberClient;
+
     const keywordHash = await getSearchQuery(query);
 
     return searchByHash(queryClient, keywordHash, page);
   };
 
+  const depOrThrow = (name: keyof Deps) => {
+    if (!deps[name]) {
+      throw new Error(`${name} is not set!`);
+    }
+    return deps[name] as Deps[typeof name];
+  };
+
   const singinClientOrThrow = () => {
-    if (!signingClient) {
+    if (!deps.signingClient) {
       throw new Error('signingClient not ready');
     }
-    return signingClient;
+    return deps.signingClient;
   };
 
   const ipfApiOrThrow = () => {
-    console.log('__________ipfApiOrThrow', ipfsApi);
-
-    if (!ipfsApi) {
-      console.log('__________ipfsApi not ready');
-
+    if (!deps.ipfsApi) {
       throw new Error('ipfsApi not ready');
     }
-    return ipfsApi;
+    return deps.ipfsApi;
   };
 
   const runeOrThrow = () => {
-    if (!rune) {
-      console.log('__________rune not ready');
-
+    if (!deps.rune) {
       throw new Error('rune not ready');
     }
-    return rune;
+    return deps.rune;
   };
 
   const getIpfsTextConent = async (cid: string) =>
@@ -93,14 +103,14 @@ const createRuneDeps = () => {
     params = {}
   ) => {
     try {
-      console.log(
-        'js_evalScriptFromIpfs',
-        cid,
-        funcName,
-        params,
-        ipfApiOrThrow(),
-        runeOrThrow()
-      );
+      // console.log(
+      //   'js_evalScriptFromIpfs',
+      //   cid,
+      //   funcName,
+      //   params,
+      //   ipfApiOrThrow(),
+      //   runeOrThrow()
+      // );
       const result = await getIpfsTextConent(cid);
       console.log('js_evalScriptFromIpfs particle ', cid, result);
 
@@ -115,22 +125,21 @@ const createRuneDeps = () => {
       return { action: 'error', message: e.toString() };
     }
   };
-  console.log('__________CYBBBBBBBBBBB API');
+
   const cybApi = {
     graphSearch,
     cyberlink: async (from: string, to: string) => {
-      if (!address) {
+      if (!deps.address) {
         throw new Error('Connect your wallet first');
       }
-      return sendCyberlink(address, from, to, {
-        senseApi,
+      return sendCyberlink(deps.address, from, to, {
+        senseApi: depOrThrow('senseApi') as SenseApi,
         signingClient: singinClientOrThrow(),
       });
     },
     getPassportByNickname: async (nickname: string) => {
-      const passport = await getPassportByNickname(queryClient, nickname);
+      const passport = await getPassportByNickname(deps.queryClient, nickname);
 
-      console.log('js_getPassportByNickname', passport, ipfApiOrThrow());
       return passport;
     },
     evalScriptFromIpfs,
@@ -140,7 +149,7 @@ const createRuneDeps = () => {
     },
   };
 
-  return { init, cybApi };
+  return { setExternalDeps, setInternalDeps, cybApi };
 };
 
 const runeDeps = createRuneDeps();

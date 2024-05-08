@@ -1,4 +1,9 @@
-import { IPFSContentMaybe, IpfsContentSource } from '../ipfs/types';
+import {
+  IPFSContent,
+  IPFSContentMaybe,
+  IPFSContentMutated,
+  IpfsContentSource,
+} from '../ipfs/types';
 import { LinkDbEntity } from '../CozoDb/types/entities';
 import { LinkDto } from '../CozoDb/types/dto';
 
@@ -67,7 +72,7 @@ export type QueueItemResult = {
   item: QueueItem;
   status: QueueItemStatus;
   source: QueueSource;
-  result?: IPFSContentMaybe;
+  result?: IPFSContent | IPFSContentMutated | undefined;
 };
 
 export type QueueItemAsyncResult = Omit<QueueItemResult, 'item'>;

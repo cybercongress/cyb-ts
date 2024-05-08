@@ -12,7 +12,7 @@ import { keyValuesToObject } from 'src/utils/localStorage';
 
 import { mapObjIndexed } from 'ramda';
 import { extractRuneScript } from './helpers';
-import { IpfsApi } from '../backend/workers/background/worker';
+import { RemoteIpfsApi } from '../backend/workers/background/worker';
 
 import {
   ScriptCallback,
@@ -55,7 +55,7 @@ const toRecord = (item: TabularKeyValues) =>
   keyValuesToObject(Object.values(item));
 
 type EngineDeps = {
-  ipfs?: IpfsApi;
+  ipfs?: RemoteIpfsApi;
   queryClient?: CyberClient;
   signer?: OfflineSigner;
   signingClient?: SigningCyberClient;
@@ -209,11 +209,12 @@ function enigine(): RuneEngine {
     // }
     const { script, enabled } = entrypoints.particle;
     // console.log(
-    //   'personalProcessor',
+    //   'personalProcessor!',
     //   params.cid,
     //   params.content,
     //   params,
-    //   enabled
+    //   enabled,
+    //   script
     //   // output
     // );
     if (!enabled) {

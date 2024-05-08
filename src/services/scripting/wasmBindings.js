@@ -1,12 +1,14 @@
 /* eslint-disable import/no-unused-modules */
-// import runeDeps from './runeDeps';
+import runeDeps from './runeDeps';
 import { promptToOpenAI } from './services/llmRequests/openai';
 
-let runeDeps;
+// let runeDeps;
 
-export const initRuneDeps = (deps) => {
-  runeDeps = deps;
-};
+// export const initRuneDeps = (deps) => {
+//   console.log('---initRuneDeps', deps);
+
+//   runeDeps = deps;
+// };
 export async function jsCyberSearch(query) {
   return runeDeps.cybApi.graphSearch(query);
 }
