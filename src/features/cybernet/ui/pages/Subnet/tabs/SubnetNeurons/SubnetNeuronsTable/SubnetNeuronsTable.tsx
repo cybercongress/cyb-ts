@@ -62,8 +62,9 @@ function SubnetNeuronsTable({ neurons, addressRegisteredInSubnet }: Props) {
               `?neuron=${hotkey}&subnet=${netuid}`
             }
           >
-            {/* <Cid cid={metadata}> */}{' '}
-            {`${metadata.substr(0, 6)}...${metadata.substr(-6)}`}
+            {/* <Cid cid={metadata}> */}
+            🔍
+            {/* {`${metadata.substr(0, 6)}...${metadata.substr(-6)}`} */}
             {/* </Cid> */}
           </Link>
         );
@@ -71,23 +72,23 @@ function SubnetNeuronsTable({ neurons, addressRegisteredInSubnet }: Props) {
     }),
   ];
 
-  if (addressRegisteredInSubnet) {
-    columns.push(
-      columnHelper.accessor('netuid', {
-        id: 'weight',
-        header: 'weight',
-        cell: (info) => {
-          return (
-            <div
-              style={{
-                width: 200,
-              }}
-            ></div>
-          );
-        },
-      })
-    );
-  }
+  // if (addressRegisteredInSubnet) {
+  //   columns.push(
+  //     columnHelper.accessor('netuid', {
+  //       id: 'weight',
+  //       header: 'weight',
+  //       cell: (info) => {
+  //         return (
+  //           <div
+  //             style={{
+  //               width: 200,
+  //             }}
+  //           ></div>
+  //         );
+  //       },
+  //     })
+  //   );
+  // }
   return <Table columns={columns} data={neurons} />;
 }
 

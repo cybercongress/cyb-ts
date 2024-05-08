@@ -16,7 +16,7 @@ function Cybernet() {
         element={
           <div>
             <Helmet>
-              <title>cyb: cybernet</title>
+              <title>cybernet | cyb</title>
             </Helmet>
             <Outlet />
           </div>

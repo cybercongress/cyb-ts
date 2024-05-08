@@ -3,6 +3,10 @@
   gap: 15px;
 }
 
+.info {
+  color: #a0a0a0;
+}
+
 .settings {
   display: flex;
   gap: 30px;
@@ -12,6 +16,29 @@
   justify-content: space-between;
   display: flex;
   gap: 0 15px;
+
+  .actionTitle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .actionText {
+    color: #a0a0a0;
+    margin-bottom: 20px;
+  }
+
+  .apr {
+    font-size: 14px;
+
+    color: #a0a0a0;
+
+    span {
+      font-size: 20px;
+      display: block;
+      color: var(--green-light);
+    }
+  }
 
   > div {
     flex: 1;

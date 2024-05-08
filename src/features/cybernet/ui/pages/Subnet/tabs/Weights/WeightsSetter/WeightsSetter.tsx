@@ -79,6 +79,7 @@ function WeightsSetter({
   return (
     <div className={styles.wrapper}>
       <div className={styles.group}>
+        <span>weights</span>
         {new Array(length).fill(null).map((_, i) => {
           const { hotkey } = neurons[i];
           return (

@@ -16,6 +16,7 @@ import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import subnetStyles from '../Subnet/Subnet.module.scss';
+import useDelegate from '../../hooks/useDelegate';
 
 const columnHelper = createColumnHelper<any>();
 
@@ -39,22 +40,13 @@ function Delegator() {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const { data, loading, error, refetch } =
-    useQueryCybernetContract<DelegatorType>({
-      query: {
-        get_delegate: {
-          delegate: id,
-        },
-      },
-    });
+  const { loading, data, error, refetch } = useDelegate(id);
 
   useAdviserTexts({
     isLoading: loading,
     error,
     defaultText: 'delegator info',
   });
-
-  console.log(data);
 
   const myStake = data?.nominators.find(
     ([address]) => address === currentAddress

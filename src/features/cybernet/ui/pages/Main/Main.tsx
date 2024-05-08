@@ -14,6 +14,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
+import useDelegate from '../../hooks/useDelegate';
 
 function Main() {
   const address = useCurrentAddress();
@@ -22,22 +23,40 @@ function Main() {
     defaultText: 'welcome to Cybernet 🤖',
   });
 
+  const { data } = useDelegate(address);
+  const currentAddressIsDelegator = !!data;
+
   const { data: currentStake } = useCurrentAccountStake();
   const haveStake = currentStake?.some(({ stake }) => stake > 0);
 
   return (
     <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title="Cybernet" />}>
-        <p>
+        <p className={styles.info}>
           cybernet is the place, where ones brings wealth to the project, and
-          others who value them. join the subnet and complete its enquiries, or
-          stake on those who joined to make them more valuable.
+          others who value them. <br /> join the subnet and complete its
+          enquiries, or stake on those who joined to make them more valuable.
         </p>
       </Display>
 
       <div className={styles.actions}>
-        <Display>
-          <Link to={cybernetRoutes.delegators.getLink()}>Stake</Link>
+        <Display
+          title={
+            <DisplayTitle
+              title={
+                <div className={styles.actionTitle}>
+                  stake
+                  <div className={styles.apr}>
+                    apr up to <br />
+                    <span>35%</span>
+                  </div>
+                </div>
+              }
+            />
+          }
+        >
+          <p className={styles.actionText}>stake on creators in subnets</p>
+          <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
 
           {haveStake && (
             <>
@@ -47,14 +66,34 @@ function Main() {
           )}
         </Display>
 
-        <Display>
-          <Link to={cybernetRoutes.subnets.getLink()}>Join subnets</Link>
+        <Display
+          title={
+            <DisplayTitle
+              title={
+                <div className={styles.actionTitle}>
+                  join subnets
+                  <div className={styles.apr}>
+                    apr up to
+                    <span>35%</span>
+                  </div>
+                </div>
+              }
+            />
+          }
+        >
+          <p className={styles.actionText}>complete tasks, manage grades</p>
+
+          <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
+          <br />
+          <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
 
           <br />
 
-          <Link to={cybernetRoutes.delegator.getLink(address)}>
-            My delegator
-          </Link>
+          {currentAddressIsDelegator && (
+            <Link to={cybernetRoutes.delegator.getLink(address)}>
+              My delegator
+            </Link>
+          )}
         </Display>
       </div>
 
@@ -85,7 +124,7 @@ function Main() {
             options={[
               {
                 value: 'pussy',
-                text: 'pussy',
+                text: '🟣 pussy',
               },
             ]}
           />
