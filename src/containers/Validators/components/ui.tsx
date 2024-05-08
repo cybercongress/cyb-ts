@@ -1,5 +1,6 @@
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { Tooltip } from 'src/components';
 import Dot, { DotColors } from 'src/components/Dot/Dot';
 
 const statusHeroes = {
@@ -19,6 +20,7 @@ export function TextTable({ children, fontSize, color, display, ...props }) {
       color={`${color || '#fff'}`}
       display={`${display || 'inline-flex'}`}
       alignItems="center"
+      gap={10}
       {...props}
     >
       {children}
@@ -28,29 +30,45 @@ export function TextTable({ children, fontSize, color, display, ...props }) {
 
 export function StatusTooltip({
   status,
+  size,
+  animation,
 }: {
-  status: keyof typeof statusHeroes;
+  status: keyof typeof statusHeroes | number;
+  size?: number;
+  animation?: boolean;
 }) {
   let statusColor: DotColors;
+  let textTooltip: string;
 
-  switch (statusHeroes[status]) {
+  const switchValue =
+    typeof status === 'number' ? status : statusHeroes[status];
+
+  switch (switchValue) {
     case 1:
       statusColor = DotColors.red;
+      textTooltip = 'UNBONDED';
       break;
     case 2:
       statusColor = DotColors.yellow;
+      textTooltip = 'UNBONDING';
+
       break;
     case 3:
       statusColor = DotColors.green;
+      textTooltip = 'BONDED';
+
       break;
     default:
       statusColor = DotColors.purple;
+      textTooltip = 'UNSPECIFIED';
       break;
   }
 
   return (
-    <Pane marginRight={10} display="flex" alignItems="center">
-      <Dot color={statusColor} />
+    <Pane display="flex" alignItems="center">
+      <Tooltip placement="top" strategy="fixed" tooltip={textTooltip}>
+        <Dot color={statusColor} size={size} animation={animation} />
+      </Tooltip>
     </Pane>
   );
 }

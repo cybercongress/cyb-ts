@@ -1,14 +1,15 @@
-$size: 4px;
 $animation-time: 2.3s;
 
 .dot {
+  --size: 4px;
+
   display: inline-block;
   border-radius: 50%;
   opacity: 1;
   position: relative;
 
-  width: $size;
-  height: $size;
+  width: var(--size);
+  height: var(--size);
 
   --color-r: 0;
   --color-b: 0;
@@ -52,18 +53,7 @@ $animation-time: 2.3s;
 .animation {
   transition: all 1s;
 
-  &::before {
-    content: '';
-    width: $size;
-    height: $size;
-
-    animation: pulse $animation-time infinite alternate;
-
-    position: absolute;
-    top: calc(50% - $size / 2);
-    left: calc(50% - $size / 2);
-  }
-
+  animation: pulse $animation-time infinite alternate;
 }
 
 @keyframes pulse {

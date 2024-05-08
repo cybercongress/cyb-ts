@@ -1,9 +1,10 @@
 import { Pane } from '@cybercongress/gravity';
-import { Card, StatusTooltip } from '../../components';
+import { Card } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseAvatar from './keybaseAvatar';
 import UptimeHook from './UptimeHook';
 import Display from 'src/components/containerGradient/Display/Display';
+import { StatusTooltip } from '../Validators/components';
 
 // function Row({ value, title, marginBottom }) {
 //   return (
@@ -75,7 +76,7 @@ function ValidatorInfo({ data }) {
           <KeybaseAvatar identity={identity} />
         </Pane>
         <Pane display="flex" alignItems="center">
-          <StatusTooltip status={data.status} size={10} />
+          <StatusTooltip status={data.status} size={10} animation />
           <Pane marginLeft={10} fontSize="25px">
             {website !== undefined ? <a href={website}>{moniker}</a> : moniker}
           </Pane>

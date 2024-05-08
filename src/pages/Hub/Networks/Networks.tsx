@@ -36,7 +36,7 @@ function Networks() {
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('genesisHash', {
-        header: 'genesisHash',
+        header: 'genesis hash',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('prefix', {

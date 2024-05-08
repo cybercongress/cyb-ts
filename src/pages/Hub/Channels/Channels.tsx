@@ -30,16 +30,16 @@ function Channels() {
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('destinationChainId', {
-        header: 'destinationChainId',
+        header: 'destination chain id',
       }),
       columnHelper.accessor('destinationChannelId', {
-        header: 'destinationChannelId',
+        header: 'destination channel id',
       }),
       columnHelper.accessor('sourceChainId', {
-        header: 'sourceChainId',
+        header: 'source chain id',
       }),
       columnHelper.accessor('sourceChannelId', {
-        header: 'sourceChannelId',
+        header: 'source channel id',
       }),
     ];
   }, []);
