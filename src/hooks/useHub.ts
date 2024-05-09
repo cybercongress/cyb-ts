@@ -8,7 +8,7 @@ import {
   HUB_TOKENS,
 } from 'src/constants/hubContracts';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { setChannels, setNetworks, setTokens } from 'src/redux/features/hub';
+import { setChannels, setNetworks, setTokens } from 'src/pages/Hub/redux/hub';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
 import {

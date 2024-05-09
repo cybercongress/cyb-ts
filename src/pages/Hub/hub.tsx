@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import Tokens from './Tokens/Tokens';
+import Tokens from './containers/Tokens/Tokens';
 import Layout from './Layout/Layout';
-import Networks from './Networks/Networks';
-import Channels from './Channels/Channels';
+import Networks from './containers/Networks/Networks';
+import Channels from './containers/Channels/Channels';
 
 function Hub() {
   return (

@@ -3,10 +3,9 @@
 .wrapper {
   display: grid;
   grid-template-columns: 200px minmax(200px, 62%);
-  grid-template-rows: 1fr;
+  grid-template-rows: 70vh;
   justify-content: center;
 
-  height: 100%;
   max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   // Display
