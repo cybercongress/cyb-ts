@@ -9,7 +9,7 @@ export function ContainerCard({ children, col }) {
   return (
     <div
       style={{ gridTemplateColumns: `repeat(${col}, 1fr)`, ...styles }}
-      className="container-statistics"
+      className={styles.containerStatistics}
     >
       {children}
     </div>

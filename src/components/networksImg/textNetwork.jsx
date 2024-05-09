@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import Tooltip from '../tooltip/tooltip';
-import { useTraseNetworks } from '../../hooks/useTraseNetworks';
+import { useTracesNetworks } from '../../hooks/useTracesNetworks';
 
 function TextNetwork({ network, tooltipStatus }) {
-  const { chainInfo } = useTraseNetworks(network);
+  const { chainInfo } = useTracesNetworks(network);
   const [textNetwork, setTextNetwork] = useState(network);
   const [tooltipText, setTooltipText] = useState(network);
 

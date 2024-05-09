@@ -30,6 +30,7 @@
     }
 
     &:disabled {
+      font-size: 14px; // need update root style
       color: #e4e4e4;
       opacity: 0.5;
     }
@@ -44,6 +45,8 @@
   height: unset;
 
   textarea {
+    position: relative;
+    top: -5px;
     color: white;
     resize: none;
     box-shadow: unset;

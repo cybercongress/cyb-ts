@@ -12,20 +12,35 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { routes as cybernetRoutes } from '../../routes';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import Table from 'src/components/Table/Table';
+import { createColumnHelper } from '@tanstack/react-table';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
+import subnetStyles from '../Subnet/Subnet.module.scss';
+import useDelegate from '../../hooks/useDelegate';
+
+const columnHelper = createColumnHelper<any>();
+
+const config: keyof DelegatorType = {
+  take: {
+    text: 'Commission',
+  },
+  validator_permits: {
+    text: 'Validator permits',
+  },
+  total_daily_return: {
+    text: 'Total daily return',
+  },
+  return_per_1000: {
+    text: 'Return per 1000 🟣',
+  },
+};
 
 function Delegator() {
   const { id } = useParams();
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const { data, loading, error, refetch } =
-    useQueryCybernetContract<DelegatorType>({
-      query: {
-        get_delegate: {
-          delegate: id,
-        },
-      },
-    });
+  const { loading, data, error, refetch } = useDelegate(id);
 
   useAdviserTexts({
     isLoading: loading,
@@ -33,85 +48,111 @@ function Delegator() {
     defaultText: 'delegator info',
   });
 
-  console.log(data);
-
   const myStake = data?.nominators.find(
     ([address]) => address === currentAddress
   )?.[1];
 
+  const nominators = data?.nominators;
+
   return (
     <MainContainer>
+      {myStake && (
+        <Display title={<DisplayTitle title="My stake" />}>
+          {myStake.toLocaleString()} 🟣
+        </Display>
+      )}
+
       <Display
+        noPaddingX
         title={
-          <DisplayTitle>
-            <Account address={id} />
-          </DisplayTitle>
+          <DisplayTitle
+            inDisplay={false}
+            title={<MusicalAddress address={id} />}
+          />
         }
       >
-        <ul>
+        <ul className={subnetStyles.list}>
           {data &&
-            Object.keys(data).map((item) => {
-              const value = data[item];
-              let content = value;
+            Object.keys(data)
+              .filter((item) => !['nominators', 'delegate'].includes(item))
+              .map((item) => {
+                const value = data[item];
+                let content = value;
 
-              if (item === 'delegate') {
-                return null;
-              }
+                if (item === 'owner') {
+                  content = (
+                    <Account address={value} />
+                    // <Link to={routes.neuron.getLink(value)}>{value}</Link>
+                  );
+                }
 
-              if (item === 'owner') {
-                content = (
-                  <Link to={routes.neuron.getLink(value)}>{value}</Link>
+                if (item === 'take') {
+                  content = <span>{(value / 65535).toFixed(2) * 100}%</span>;
+                }
+
+                if (['total_daily_return', 'return_per_1000'].includes(item)) {
+                  content = (
+                    <span>
+                      {value.toLocaleString()} 🟣
+                      {/* <DenomArr denomValue="pussy" onlyImg /> */}
+                    </span>
+                  );
+                }
+
+                if (item === 'registrations' || item === 'validator_permits') {
+                  content = (
+                    <ul className={styles.list}>
+                      {value.map((netuid) => {
+                        return (
+                          <li key={netuid}>
+                            <Link to={cybernetRoutes.subnet.getLink(netuid)}>
+                              {netuid}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  );
+                }
+
+                return (
+                  <li key={item}>
+                    {config[item]?.text || item}: {content}
+                  </li>
                 );
-              }
-
-              if (item === 'nominators') {
-                content = (
-                  <ul className={styles.nominators}>
-                    {value.map(([address, amount]) => {
-                      return (
-                        <li key={address}>
-                          {' '}
-                          <Link to={routes.neuron.getLink(address)}>
-                            {address}
-                          </Link>
-                          <p>
-                            Amount: {amount}{' '}
-                            <DenomArr denomValue="pussy" onlyImg />
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                );
-              }
-
-              if (item === 'registrations') {
-                content = (
-                  <ul>
-                    {value.map((netuid) => {
-                      return (
-                        <li key={netuid}>
-                          <Link to={cybernetRoutes.subnet.getLink(netuid)}>
-                            {netuid}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                );
-              }
-
-              return (
-                <li key={item}>
-                  {item}: {content}
-                </li>
-              );
-            })}
+              })}
         </ul>
       </Display>
 
-      {myStake && (
-        <Display title={<DisplayTitle title="My stake" />}>{myStake}</Display>
+      {!!nominators?.length && (
+        <Display
+          noPaddingX
+          title={<DisplayTitle title={<header>Nominators</header>} />}
+        >
+          <Table
+            columns={[
+              columnHelper.accessor('address', {
+                header: 'Address',
+                cell: (info) => <Account address={info.getValue()} />,
+              }),
+              columnHelper.accessor('amount', {
+                header: 'Amount',
+                cell: (info) => (
+                  <>
+                    {info.getValue().toLocaleString()} 🟣
+                    {/* <DenomArr denomValue="pussy" onlyImg /> */}
+                  </>
+                ),
+              }),
+            ]}
+            data={nominators.map(([address, amount]) => {
+              return {
+                address,
+                amount,
+              };
+            })}
+          />
+        </Display>
       )}
 
       <DelegatorActionBar

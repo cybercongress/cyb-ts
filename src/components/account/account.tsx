@@ -5,8 +5,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import cx from 'classnames';
+import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
 
@@ -25,9 +25,7 @@ function useGetValidatorInfo(address: string) {
     },
     {
       enabled: Boolean(
-        queryClient &&
-          address &&
-          address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+        queryClient && address && address.includes(BECH32_PREFIX_VALOPER)
       ),
     }
   );
@@ -42,13 +40,14 @@ type Props = {
   onlyAvatar?: boolean;
   avatar?: boolean;
   margin?: string;
-  sizeAvatar?: string;
+  sizeAvatar?: string | number;
   styleUser?: object;
   trimAddressParam?: [number, number];
   disabled?: boolean;
   containerClassName?: string;
   avatarClassName?: string;
   monikerClassName?: string;
+  link?: string;
 };
 
 function Account({
@@ -58,6 +57,7 @@ function Account({
   onlyAvatar,
   avatar,
   margin,
+  link,
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
@@ -77,7 +77,11 @@ function Account({
   }, [address, trimAddressParam]);
 
   const linkAddress = useMemo(() => {
-    if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
+    if (link) {
+      return link;
+    }
+
+    if (address?.includes(BECH32_PREFIX_VALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
 
@@ -86,7 +90,7 @@ function Account({
     }
 
     return `/network/bostrom/contract/${address}`;
-  }, [address, moniker]);
+  }, [address, moniker, link]);
 
   const cidAvatar = useMemo(() => {
     if (dataPassport !== undefined && dataPassport !== null) {
@@ -104,7 +108,8 @@ function Account({
       }}
     >
       {avatar && (
-        <div
+        <Link
+          to={linkAddress}
           className={cx(styles.avatar, avatarClassName)}
           style={{
             width: sizeAvatar,
@@ -112,7 +117,7 @@ function Account({
           }}
         >
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
-        </div>
+        </Link>
       )}
       {!onlyAvatar && (
         <Link

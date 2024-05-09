@@ -7,7 +7,7 @@ export const routes = {
   },
   subnet: {
     path: `${root}/subnets/:id`,
-    getLink: (id: string) => `${root}/subnets/${id}`,
+    getLink: (id: string | number) => `${root}/subnets/${id}`,
   },
   delegators: {
     path: `${root}/delegators`,

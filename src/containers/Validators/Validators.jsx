@@ -3,16 +3,18 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { useAdviser } from 'src/features/adviser/context';
+import { getDelegatorDelegations } from 'src/utils/search/utils';
+import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import { DenomArr } from 'src/components';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
 import getHeroes from './getHeroesHook';
-import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { getDelegatorDelegations } from 'src/utils/search/utils';
-import { useAdviser } from 'src/features/adviser/context';
+import styles from './Validators.module.scss';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -39,7 +41,14 @@ function Validators({ defaultAccount }) {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    setAdviser('choose your hero');
+    setAdviser(
+      <div className={styles.info}>
+        the current undelegation period is <strong>42 days</strong>
+        <br />
+        you need to burn 1 <DenomArr denomValue="hydrogen" onlyImg /> to unstake
+        1 <DenomArr denomValue="boot" onlyImg />
+      </div>
+    );
   }, [setAdviser]);
 
   useEffect(() => {
@@ -205,8 +214,8 @@ function Validators({ defaultAccount }) {
           {validatorsData
             .filter((validator) =>
               status === 'jailed'
-                ? BOND_STATUS[validator.status] < 3
-                : BOND_STATUS[validator.status] === 3
+                ? BondStatus[validator.status] < 3
+                : BondStatus[validator.status] === 3
             )
             .map((validator, index) => {
               const commission = formatNumber(

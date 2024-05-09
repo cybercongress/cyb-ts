@@ -1,0 +1,8 @@
+subscription Transactions {
+  transaction(offset: 0, limit: 200, order_by: { height: desc }) {
+    success
+    messages
+    height
+    hash
+  }
+}

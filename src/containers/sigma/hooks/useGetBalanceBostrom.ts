@@ -1,16 +1,27 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import BigNumber from 'bignumber.js';
+import _ from 'lodash';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import { Nullable } from 'src/types';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
+
+const usePrevious = (value: any) => {
+  const ref = useRef<any>();
+
+  useEffect(() => {
+    ref.current = value;
+  });
+
+  return ref.current;
+};
 
 function useGetBalanceBostrom(address: Nullable<string>) {
   const { marketData } = useAppData();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
@@ -23,31 +34,8 @@ function useGetBalanceBostrom(address: Nullable<string>) {
     change: 0,
   });
   const [balances, setBalances] = useState({});
-
-  useEffect(() => {
-    if (address) {
-      const keyLs = `lastBalances-${address}`;
-      const lastBalancesLs = localStorage.getItem(keyLs);
-
-      if (!loadingMalin && !loadingToken) {
-        let dataResult = {};
-        const mainToken = {
-          [CYBER.DENOM_CYBER]: { ...balanceMainToken },
-        };
-        const dataResultTemp = { ...mainToken, ...balanceToken };
-        const tempData = getBalanceMarket(dataResultTemp);
-        dataResult = { ...tempData };
-        setBalances(dataResult);
-        if (Object.keys(dataResult).length > 0) {
-          localStorage.setItem(keyLs, JSON.stringify(dataResult));
-        }
-      } else if (lastBalancesLs) {
-        const dataLs = JSON.parse(lastBalancesLs);
-        setBalances(dataLs);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadingMalin, loadingToken, balanceMainToken, balanceToken, address]);
+  const prevBalanceToken = usePrevious(balanceToken);
+  const prevBalanceMainToken = usePrevious(balanceMainToken);
 
   const getBalanceMarket = useCallback(
     (data) => {
@@ -59,7 +47,7 @@ function useGetBalanceBostrom(address: Nullable<string>) {
           const { total } = data[key];
           if (total.amount > 0) {
             const { amount, denom } = total;
-            const [{ coinDecimals }] = traseDenom(denom);
+            const [{ coinDecimals }] = tracesDenom(denom);
             const amountReduce = convertAmount(amount, coinDecimals);
 
             if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
@@ -75,19 +63,57 @@ function useGetBalanceBostrom(address: Nullable<string>) {
             [key]: {
               ...data[key],
               price: {
-                denom: CYBER.DENOM_LIQUID_TOKEN,
+                denom: DENOM_LIQUID,
                 amount: price.toNumber(),
               },
-              cap: { denom: CYBER.DENOM_LIQUID_TOKEN, amount: tempCap },
+              cap: { denom: DENOM_LIQUID, amount: tempCap },
             },
           };
         }, {});
       }
       return {};
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [marketData]
+    [marketData, tracesDenom]
   );
+
+  useEffect(() => {
+    // solved the problem with using objects as
+    //    a useEffect dependency via deep compare
+    if (
+      address &&
+      (!_.isEqual(prevBalanceToken, balanceToken) ||
+        !_.isEqual(prevBalanceMainToken, balanceMainToken))
+    ) {
+      const keyLs = `lastBalances-${address}`;
+      const lastBalancesLs = localStorage.getItem(keyLs);
+
+      if (!loadingMalin && !loadingToken) {
+        let dataResult = {};
+        const mainToken = {
+          [BASE_DENOM]: { ...balanceMainToken },
+        };
+        const dataResultTemp = { ...mainToken, ...balanceToken };
+        const tempData = getBalanceMarket(dataResultTemp);
+        dataResult = { ...tempData };
+        setBalances(dataResult);
+        if (Object.keys(dataResult).length > 0) {
+          localStorage.setItem(keyLs, JSON.stringify(dataResult));
+        }
+      } else if (lastBalancesLs) {
+        const dataLs = JSON.parse(lastBalancesLs);
+        setBalances(dataLs);
+      }
+    }
+  }, [
+    loadingMalin,
+    loadingToken,
+    balanceMainToken,
+    balanceToken,
+    address,
+    prevBalanceToken,
+    prevBalanceMainToken,
+    getBalanceMarket,
+  ]);
 
   const useGetCapTokens = useMemo(() => {
     let tempCap = new BigNumber(0);
@@ -136,7 +162,6 @@ function useGetBalanceBostrom(address: Nullable<string>) {
         });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useGetCapTokens, address]);
 
   return {

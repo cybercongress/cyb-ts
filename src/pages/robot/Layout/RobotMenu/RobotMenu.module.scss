@@ -1,32 +1,23 @@
+@import '../../../../layouts/variables.module.scss';
+
 $activeLineWidth: 2px;
 
 .links {
-  &::before {
-    content: '';
-    filter: blur(15px);
-  }
-
-  $headerHeight: 120px;
-  $actionBarHeight: 80px;
-
   list-style-type: none;
   position: sticky;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: calc(100vh - $headerHeight - $actionBarHeight + 30px);
+  height: calc(100vh - $reservedTopHeight - $actionBarHeight);
   max-height: 900px;
-
-  // overflow-y: auto;
-  // overflow-x: hidden;
   direction: rtl;
 
-  top: $headerHeight;
+  top: $reservedTopHeight;
   background: linear-gradient(180deg, #000000a4 82.81%, rgba(0, 0, 0, 0) 100%);
   z-index: 2; // for active state overflow
 
   li {
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     position: relative;
     display: flex;
     direction: ltr;

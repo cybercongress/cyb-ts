@@ -2,9 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Nullable } from 'src/types';
-import { useBackend } from 'src/contexts/backend';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import { DEFAULT_GAS_LIMITS } from 'src/utils/config';
+import { useBackend } from 'src/contexts/backend/backend';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
@@ -13,10 +12,9 @@ const STATE_INIT = 1;
 const STATE_AVATAR = 15;
 const STATE_AVATAR_IN_PROCESS = 15.1;
 
-
 function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { signingClient, signer } = useSigningClient();
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const inputOpenFileRef = useRef();
   const [avatarIpfs, setAvatarIpfs] = useState<Nullable<string>>(null);
@@ -34,13 +32,13 @@ function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   useEffect(() => {
     const getPinAvatar = async () => {
       if (isIpfsInitialized && avatarImg !== null) {
-        const toCid = await ipfsNode?.addContent(avatarImg);
+        const toCid = await ipfsApi?.addContent(avatarImg);
         console.log('toCid', toCid);
         setAvatarIpfs(toCid);
       }
     };
     getPinAvatar();
-  }, [isIpfsInitialized, ipfsNode, avatarImg]);
+  }, [isIpfsInitialized, ipfsApi, avatarImg]);
 
   const uploadAvatarImg = useCallback(async () => {
     if (signer && signingClient) {

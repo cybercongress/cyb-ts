@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import * as Tone from 'tone';
+
 import {
   PATTERN_CYBER,
   PATTERN_ETH,
@@ -7,7 +8,8 @@ import {
   PATTERN_OSMOS,
   PATTERN_TERRA,
   PATTERN_CYBER_VALOPER,
-} from '../../utils/config';
+  PATTERN_SPACE_PUSSY,
+} from 'src/constants/patterns';
 
 const DICTIONARY_ABC = {
   a: { note: 'E3', height: 16, gain: 1, color: '#36D6AE' },
@@ -150,6 +152,10 @@ const cutAddress = (address) => {
   }
 
   if (address.match(PATTERN_TERRA)) {
+    sliceAddress = parseAddress(address, 9);
+  }
+
+  if (address.match(PATTERN_SPACE_PUSSY)) {
     sliceAddress = parseAddress(address, 9);
   }
 

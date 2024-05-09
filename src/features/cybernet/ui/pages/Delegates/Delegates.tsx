@@ -5,6 +5,7 @@ import DelegatorsTable from './DelegatorsTable/DelegatorsTable';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { MainContainer } from 'src/components';
+import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 
 function Delegates() {
   const { data, loading, error } = useCybernetContract<Delegator>({
@@ -13,11 +14,17 @@ function Delegates() {
     },
   });
 
+  useAdviserTexts({
+    isLoading: loading,
+    error,
+    defaultText: 'Delegators',
+  });
+
   console.log(data);
 
   return (
     <MainContainer>
-      <Display title={<DisplayTitle title="Delegators" />}>
+      <Display noPaddingX title={<DisplayTitle title="Delegators" />}>
         <DelegatorsTable data={data || []} />
       </Display>
     </MainContainer>

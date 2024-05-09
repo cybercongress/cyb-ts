@@ -1,6 +1,7 @@
-import { Pane } from '@cybercongress/gravity';
+import cx from 'classnames';
 import { $TsFixMe } from 'src/types/tsfix';
 import Tooltip, { TooltipProps } from '../../tooltip/tooltip';
+import styles from './ButtonIcon.module.scss';
 
 export type Props = {
   img: $TsFixMe;
@@ -25,12 +26,9 @@ function ButtonIcon({
   const button = (
     <button
       type="button"
-      style={{
-        // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
-        margin: '0 10px',
-        padding: '5px 0',
-      }}
-      className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
+      className={cx(styles.container, {
+        [styles.activeIcon]: active,
+      })}
       disabled={disabled}
       onClick={onClick}
       {...props}
@@ -39,15 +37,15 @@ function ButtonIcon({
     </button>
   );
   return (
-    <Pane style={styleContainer}>
+    <div style={styleContainer}>
       {text ? (
-        <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
+        <Tooltip placement={placement} tooltip={<span>{text}</span>}>
           {button}
         </Tooltip>
       ) : (
         button
       )}
-    </Pane>
+    </div>
   );
 }
 

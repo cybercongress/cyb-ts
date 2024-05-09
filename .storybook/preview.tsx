@@ -14,6 +14,9 @@ import store from '../src/redux/store';
 import { Provider } from 'react-redux';
 window.React = React;
 
+// reuse from main app somehow
+window.cyb = {};
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,13 +45,13 @@ const preview: Preview = {
       <div style={{ margin: '3em' }}>
         <BrowserRouter>
           <Provider store={store}>
-            <SdkQueryClientProvider>
-              <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient}>
+              <SdkQueryClientProvider>
                 <IbcDenomProvider>
                   <Story />
                 </IbcDenomProvider>
-              </QueryClientProvider>
-            </SdkQueryClientProvider>
+              </SdkQueryClientProvider>
+            </QueryClientProvider>
           </Provider>
         </BrowserRouter>
       </div>

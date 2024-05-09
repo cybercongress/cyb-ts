@@ -1,4 +1,4 @@
-import { IPFSNodes, IpfsOptsType } from './ipfs.d';
+import { IPFSNodes, IpfsOptsType } from './types';
 
 export const CYBER_NODE_SWARM_PEER_ID =
   'QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';

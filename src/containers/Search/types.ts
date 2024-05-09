@@ -1,8 +1,10 @@
 export enum LinksTypeFilter {
   to = 'to',
-  all = 'all',
   from = 'from',
+  all = 'all',
 }
+
+export type LinksType = Exclude<LinksTypeFilter, LinksTypeFilter.all>;
 
 export type SearchItem = {
   cid: string;

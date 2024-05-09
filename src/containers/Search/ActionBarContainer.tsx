@@ -1,6 +1,5 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import {
@@ -15,15 +14,14 @@ import {
 
 import { getTxs } from '../../utils/search/utils';
 
-import {
-  LEDGER,
-  CYBER,
-  PATTERN_IPFS_HASH,
-  DEFAULT_GAS_LIMITS,
-} from '../../utils/config';
+import { LEDGER } from '../../utils/config';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { trimString } from '../../utils/utils';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import { DefaultAccount } from 'src/types/defaultAccount';
+import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
+import { SenseApi } from 'src/contexts/backend/services/senseApi';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -50,7 +48,8 @@ interface Props {
   rankLink?: string;
   update: () => void;
   signer: any;
-  node: any;
+  ipfsApi: BackgroundWorker['ipfsApi'];
+  senseApi: SenseApi;
   signingClient: any;
   keywordHash: string;
 }
@@ -119,7 +118,7 @@ class ActionBarContainer extends Component<Props, any> {
 
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
-    const { node } = this.props;
+    const { ipfsApi } = this.props;
     let content = '';
     let toCid;
 
@@ -131,7 +130,7 @@ class ActionBarContainer extends Component<Props, any> {
     if (file === null && content.match(PATTERN_IPFS_HASH)) {
       toCid = content;
     } else {
-      toCid = await node.addContent(content);
+      toCid = await ipfsApi.addContent(content);
     }
 
     this.setState({
@@ -140,12 +139,12 @@ class ActionBarContainer extends Component<Props, any> {
   };
 
   calculationIpfsFrom = async () => {
-    const { keywordHash, node } = this.props;
+    const { keywordHash, ipfsApi } = this.props;
 
     let fromCid = keywordHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await node.addContent(fromCid);
+      fromCid = await ipfsApi.addContent(fromCid);
     }
 
     this.setState({
@@ -163,7 +162,7 @@ class ActionBarContainer extends Component<Props, any> {
 
   generateTx = async () => {
     try {
-      const { signer, signingClient } = this.props;
+      const { signer, signingClient, senseApi } = this.props;
       const { fromCid, toCid, addressLocalStor } = this.state;
 
       this.setState({
@@ -174,36 +173,23 @@ class ActionBarContainer extends Component<Props, any> {
 
         console.log('address', address);
         if (addressLocalStor !== null && addressLocalStor.address === address) {
-          const fee = {
-            amount: [],
-            gas: DEFAULT_GAS_LIMITS.toString(),
-          };
-          const result = await signingClient.cyberlink(
-            address,
-            fromCid,
-            toCid,
-            fee
-          );
-          if (result.code === 0) {
-            const hash = result.transactionHash;
-            console.log('hash :>> ', hash);
-            this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-            this.timeOut = setTimeout(this.confirmTx, 1500);
-          } else if (result.code === 4) {
-            this.setState({
-              txHash: null,
-              stage: STAGE_ERROR,
-              errorMessage:
-                'Cyberlinking and investmint are not working. Wait for updates.',
+          const txHash = await sendCyberlink(address, fromCid, toCid, {
+            signingClient,
+            senseApi,
+          })
+            .then((txHash) => {
+              console.log('hash :>> ', txHash);
+              this.setState({ stage: STAGE_SUBMITTED, txHash });
+              this.timeOut = setTimeout(this.confirmTx, 1500);
+            })
+            .catch((e) => {
+              this.setState({
+                txHash: null,
+                stage: STAGE_ERROR,
+                errorMessage: e.message,
+              });
+              console.log('result: ', e.message, e);
             });
-          } else {
-            this.setState({
-              txHash: null,
-              stage: STAGE_ERROR,
-              errorMessage: result.rawLog.toString(),
-            });
-          }
-          console.log('result: ', result);
         } else {
           this.setState({
             stage: STAGE_ERROR,

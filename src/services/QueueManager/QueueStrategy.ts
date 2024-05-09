@@ -1,4 +1,4 @@
-import { IQueueStrategy, QueueSettings, QueueSource } from './QueueManager.d';
+import { IQueueStrategy, QueueSettings, QueueSource } from './types';
 
 export class QueueStrategy implements IQueueStrategy {
   settings: QueueSettings;
