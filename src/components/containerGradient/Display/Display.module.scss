@@ -1,14 +1,14 @@
 @import '../saber/index.module.scss';
 @import './variables.module.scss';
+@import '../../../style/mixins.scss';
 
 .wrapper {
-  padding: $display-padding-top $display-padding-x 24px;
+  padding: $display-padding-top $display-padding-x 0;
 
-  overflow-x: auto;
   // TODO: remove this
   z-index: 0;
 
-  overflow-x: auto;
+  max-height: 100%;
 
   &:not(.vertical) {
     @each $color in $valid-colors {
@@ -51,4 +51,14 @@
 .header {
   position: relative;
   top: -$display-padding-top;
+
+  &.withPaddingX {
+    padding-left: $display-padding-x;
+  }
+}
+
+.inner {
+  overflow: auto;
+  @include blueScroll;
+  padding-bottom: 24px;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Option } from 'src/types';
-import TxTracer from '../../../services/ibc-history/tx/TracerTx';
+import TxTracer from '../../../features/ibc-history/tx/TracerTx';
 
 const wsEndpoint = '/websocket';
 

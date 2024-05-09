@@ -1,82 +1,99 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getGraphQLQuery } from 'src/utils/search/utils';
 import useCyberlinksCount from 'src/features/cyberlinks/hooks/useCyberlinksCount';
-
-export enum LinkType {
-  to = 'to',
-  from = 'from',
-}
+import {
+  Order_By as OrderBy,
+  useCyberlinksByParticleQuery,
+} from 'src/generated/graphql';
+import { useEffect, useState } from 'react';
+import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 
 const limit = 15;
 
 type Props = {
   hash: string;
-  type: LinkType;
+  type: LinksType;
 };
 
 function useGetLinks(
-  { hash, type = LinkType.from }: Props,
+  { hash, type = LinksTypeFilter.from, neuron }: Props,
   { skip = false } = {}
 ) {
-  const cyberlinksCountQuery = useCyberlinksCount(hash);
-  const total = cyberlinksCountQuery.data[type];
+  console.log(neuron);
 
+  // always no next page when skip
+  const [hasNextPage, setHasNextPage] = useState(!skip);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
-    status,
-    data,
+    loading: isFetching,
     error,
-    isInitialLoading,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
+    data,
+    networkStatus: status,
     refetch,
-  } = useInfiniteQuery(
-    ['useGetDiscussion', hash + type],
-    async ({ pageParam = 0 }) => {
-      const res = await getGraphQLQuery(`
-      query Query {
-        cyberlinks(limit: ${limit}, offset: ${
-        limit * pageParam
-      }, order_by: {timestamp: desc}, where: {particle_${type}: {_eq: "${hash}"}}) {
-          timestamp
-          particle_${type === LinkType.from ? 'to' : 'from'}
-        }
-      }
-      `);
-      const data = res.data.cyberlinks;
+    fetchMore,
+  } = useCyberlinksByParticleQuery({
+    variables: {
+      where:
+        type === LinksTypeFilter.from
+          ? {
+              particle_from: { _eq: hash },
+              neuron: { _eq: neuron },
+              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
+            }
+          : {
+              particle_to: { _eq: hash },
+              neuron: { _eq: neuron },
+              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
+            },
 
-      return { data, page: pageParam };
+      orderBy: { timestamp: OrderBy.Desc },
+      limit,
     },
-    {
-      enabled: !skip && Boolean(hash),
-      getNextPageParam: (lastPage) => {
-        const { page } = lastPage;
+    skip: skip || !hash,
+  });
 
-        if (!total || (page + 1) * limit >= total) {
-          return undefined;
+  useEffect(() => {
+    if (!skip) {
+      setHasNextPage(true);
+    }
+  }, [skip]);
+
+  useEffect(() => {
+    isInitialLoading && setIsInitialLoading(false);
+  }, [isFetching, isInitialLoading]);
+
+  const fetchNextPage = () => {
+    fetchMore({
+      variables: {
+        offset: data?.cyberlinks.length,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          setHasNextPage(false);
+          return prev;
         }
 
-        return page + 1;
+        setHasNextPage(fetchMoreResult?.cyberlinks.length >= limit);
+
+        return {
+          ...prev,
+          cyberlinks: [...prev.cyberlinks, ...fetchMoreResult.cyberlinks],
+        };
       },
-    }
-  );
+    });
+  };
+
+  const cyberlinksCountQuery = useCyberlinksCount(hash, neuron);
+  const total = cyberlinksCountQuery.data[type];
+  const particles = (data?.cyberlinks || []).map((item) => {
+    return {
+      cid: item[type === 'from' ? 'to' : 'from'],
+      type,
+      timestamp: item.timestamp,
+    };
+  });
 
   return {
     status,
-    data:
-      data?.pages?.reduce(
-        (acc, page) =>
-          acc.concat(
-            page.data.map((item) => {
-              return {
-                ...item,
-                cid: item[`particle_${type === LinkType.from ? 'to' : 'from'}`],
-                type,
-              };
-            })
-          ),
-        []
-      ) || [],
+    data: particles,
     error,
     isFetching,
     fetchNextPage,

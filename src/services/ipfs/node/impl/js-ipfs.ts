@@ -5,7 +5,7 @@ import {
   IpfsFileStats,
   IpfsNode,
   IpfsNodePrperties,
-} from '../../ipfs';
+} from '../../types';
 import { create as createJsIpfsClient, IPFS } from 'ipfs-core';
 import { stringToCid, stringToIpfsPath } from '../../utils/cid';
 import { multiaddr } from '@multiformats/multiaddr';

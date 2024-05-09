@@ -4,10 +4,10 @@ import { GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { Decimal } from '@cosmjs/math';
-import { CYBER } from '../../../utils/config';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
+import { CHAIN_ID } from 'src/constants/config';
 
 function useSetupIbcClient(denom, network) {
   const { signingClient } = useSigningClient();
@@ -19,7 +19,7 @@ function useSetupIbcClient(denom, network) {
       setIbcClient(null);
 
       let client = null;
-      if (network && network !== CYBER.CHAIN_ID) {
+      if (network && network !== CHAIN_ID) {
         const keplr = await getKeplr();
         const { rpc, prefix, chainId } = networks[network];
         await keplr.enable(chainId);

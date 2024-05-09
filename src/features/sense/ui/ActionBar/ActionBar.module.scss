@@ -1,0 +1,14 @@
+.messageInput {
+  align-self: flex-end;
+}
+
+.sendBtn {
+  font-size: 30px;
+  min-width: 100px;
+}
+
+.error {
+  > div {
+    display: inline-block !important;
+  }
+}

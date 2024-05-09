@@ -56,6 +56,10 @@ $color-text: #36d6ae;
     color: #777;
   }
 
+  &:focus-visible {
+    border: 1px solid #40ecc1;
+  }
+
   &:disabled:hover {
     color: #777;
   }

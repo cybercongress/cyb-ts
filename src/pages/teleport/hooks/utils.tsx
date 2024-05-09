@@ -74,12 +74,15 @@ export const parseEventsTxsSwap = (log: Log[]) => {
           if (event.type === 'swap_within_batch') {
             const { attributes } = event;
 
+            // REFACTOR: CREATE HELPER <<<<
             const demandCoinDenomAttr = attributes.find(
               (attr) => attr.key === 'demand_coin_denom'
             );
             const demandCoinDenomValue = demandCoinDenomAttr
               ? demandCoinDenomAttr.value
               : undefined;
+
+            // >>>>> REFACTOR: CREATE HELPER
 
             const offerCoinDenomAttr = attributes.find(
               (attr) => attr.key === 'offer_coin_denom'

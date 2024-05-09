@@ -1,39 +1,60 @@
 import { useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { PATTERN_CYBER } from 'src/utils/config';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getPassport } from '../passports.redux';
+import { fromBech32 } from 'src/utils/utils';
 
 type Props = {
   address: string | null | undefined;
 };
 
 // add 'refresh' prop
-function usePassportByAddress(address: Props['address']) {
+function usePassportByAddress(
+  address: Props['address'],
+  {
+    skip,
+  }: {
+    skip?: boolean;
+  } = { skip: false }
+) {
   const queryClient = useQueryClient();
 
-  const passports = useAppSelector((state) => state.passports);
+  let bostromAddress: string | undefined;
+  if (address) {
+    if (address.includes('bostrom')) {
+      bostromAddress = address;
+    } else {
+      bostromAddress = fromBech32(address, 'bostrom');
+    }
+  }
+
+  const currentPassport = useAppSelector((state) =>
+    bostromAddress ? state.passports[bostromAddress] : null
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!queryClient || !address) {
+    if (
+      !queryClient ||
+      !bostromAddress ||
+      skip ||
+      (currentPassport && currentPassport.loading)
+    ) {
       return;
     }
 
-    if (!address.match(PATTERN_CYBER)) {
-      return;
+    if (!currentPassport || currentPassport.data === undefined) {
+      dispatch(getPassport({ address: bostromAddress, queryClient }));
     }
+  }, [bostromAddress, queryClient, dispatch, currentPassport, skip]);
 
-    if (!passports[address]) {
-      dispatch(getPassport({ address, queryClient }));
-    }
-  }, [address, queryClient, dispatch, passports]);
-
-  const { data, loading } = (address && passports[address]) || {};
+  const data = currentPassport?.data;
 
   return {
+    // TODO: remove 'passport' prop
     passport: data,
-    loading,
+    data,
+    loading: currentPassport?.loading || false,
     // error: null,
   };
 }

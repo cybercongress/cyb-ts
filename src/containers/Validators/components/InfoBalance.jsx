@@ -1,15 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { CardStatisics, Dots } from '../../../components';
+import { CardStatisics, Dots, DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
-
-const { DENOM_CYBER, HYDROGEN } = CYBER;
+import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 
 function TootipContent() {
   return (
     <div style={{ width: 200 }}>
-      you receive LP form staked {CYBER.DENOM_CYBER}, you can use LP for investmint A and V
+      you receive {DENOM_LIQUID} form staked {BASE_DENOM}, you can use {DENOM_LIQUID} for investmint A and V
     </div>
   );
 }
@@ -32,7 +30,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
   return (
     <ContainerGrid>
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} staked`}
+        title={`${BASE_DENOM.toUpperCase()} staked`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -43,7 +41,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       />
 
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} available`}
+        title={`${BASE_DENOM.toUpperCase()} available`}
         value={
           loadingBalanceInfo ? (
             <Dots />
@@ -55,14 +53,19 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
 
       <Link to="/hfr">
         <CardStatisics
-          title={`LP available`}
+          title={
+            <span>
+              <DenomArr denomValue={DENOM_LIQUID} />
+              available
+            </span>
+          }
           value={
             loadingBalanceInfo ? (
               <Dots />
             ) : (
               formatNumber(
-                balanceToken[CYBER.DENOM_LIQUID_TOKEN]
-                  ? balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid
+                balanceToken[DENOM_LIQUID]
+                  ? balanceToken[DENOM_LIQUID].liquid
                   : 0
               )
             )
@@ -74,7 +77,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
       </Link>
 
       <CardStatisics
-        title={`${DENOM_CYBER.toUpperCase()} rewards`}
+        title={`${BASE_DENOM.toUpperCase()} rewards`}
         value={
           loadingBalanceInfo ? (
             <Dots />

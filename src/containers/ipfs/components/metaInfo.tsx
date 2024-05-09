@@ -2,6 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import { NoItems } from '../../../components';
 import { formatCurrency } from '../../../utils/utils';
+import styles from './metaInfo.module.scss';
 
 const objectInspectorTheme = {
   ...chromeDark,
@@ -56,7 +57,7 @@ function MetaInfo({ data, cid }) {
         )}
         <RowItem text="DATA" value="" />
 
-        <div className="objectInspector">
+        <div className={styles.objectInspector}>
           <ObjectInspector
             showMaxKeys={100}
             data={data}

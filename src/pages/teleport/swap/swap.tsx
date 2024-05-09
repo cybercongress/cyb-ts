@@ -1,5 +1,4 @@
 import { MainContainer, Slider } from 'src/components';
-import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
@@ -15,6 +14,7 @@ import {
 import { useQueryClient } from 'src/contexts/queryClient';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/redux/hooks';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import TokenSetterSwap, { TokenSetterId } from './components/TokenSetterSwap';
 import { useGetParams, useGetSwapPrice } from '../hooks';
 import { sortReserveCoinDenoms, calculatePairAmount } from './utils';
@@ -26,11 +26,11 @@ import DataSwapTxs from './components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
 import Slippage from './components/slippage/Slippage';
 
-const tokenADefaultValue = CYBER.DENOM_CYBER;
-const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
+const tokenADefaultValue = BASE_DENOM;
+const tokenBDefaultValue = DENOM_LIQUID;
 
 function Swap() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const {
     totalSupplyProofList: totalSupply,
     accountBalances,
@@ -70,14 +70,14 @@ function Swap() {
   const [tokenBCoinDecimals, setTokenBCoinDecimals] = useState<number>(0);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenA);
+    const [{ coinDecimals }] = tracesDenom(tokenA);
     setTokenACoinDecimals(coinDecimals);
-  }, [traseDenom, tokenA]);
+  }, [tracesDenom, tokenA]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenB);
+    const [{ coinDecimals }] = tracesDenom(tokenB);
     setTokenBCoinDecimals(coinDecimals);
-  }, [traseDenom, tokenB]);
+  }, [tracesDenom, tokenB]);
 
   useEffect(() => {
     const balance = accountBalances ? accountBalances[tokenA] || 0 : 0;

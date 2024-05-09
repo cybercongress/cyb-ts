@@ -1,10 +1,9 @@
 import { NumericFormat } from 'react-number-format';
-import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { Color } from 'src/components/LinearGradientContainer/LinearGradientContainer';
 import Input from '../Input';
 
-export type Props = {
+type Props = {
   value: string | number;
   width?: string;
   onChange: Props['onValueChange'];
@@ -14,6 +13,8 @@ export type Props = {
   title?: string;
   color?: Color;
   fixedDecimalScale?: boolean;
+  maxValue?: number;
+  min?: number;
 };
 
 function InputNumber({
@@ -22,6 +23,7 @@ function InputNumber({
   fixedDecimalScale,
   onChange,
   maxValue,
+  min,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -44,6 +46,7 @@ function InputNumber({
         return true;
       }}
       maxValue={maxValue}
+      min={min}
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
       decimalScale={3}

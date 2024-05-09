@@ -1,8 +1,10 @@
+import styles from './Vitalik.module.scss';
+
 function Vitalik() {
   return (
-    <div className="clontainer-vitalik">
-      <div className="vitalik-oval-1" />
-      <div className="vitalik-oval-2" />
+    <div className={styles.container}>
+      <div className={styles.oval1} />
+      <div className={styles.oval2} />
     </div>
   );
 }

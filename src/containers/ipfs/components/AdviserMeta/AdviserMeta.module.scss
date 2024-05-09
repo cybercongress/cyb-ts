@@ -38,7 +38,7 @@
 
       font-size: 14px;
 
-      > span {
+      .number {
         color: #f62bfd;
         line-height: 23px;
       }
@@ -50,6 +50,7 @@
     justify-content: center;
 
     .date {
+      white-space: nowrap;
       margin-right: 10px;
     }
   }

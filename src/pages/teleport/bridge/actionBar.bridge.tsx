@@ -4,19 +4,24 @@ import {
   Pane,
   Button,
 } from '@cybercongress/gravity';
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import Long from 'long';
 import BigNumber from 'bignumber.js';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { Coin } from '@cosmjs/launchpad';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
-import { SigningStargateClient } from '@cosmjs/stargate';
+import {
+  MsgTransferEncodeObject,
+  SigningStargateClient,
+} from '@cosmjs/stargate';
+import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import {
   ActionBarContentText,
   LinkWindow,
   ActionBar as ActionBarCenter,
 } from '../../../components';
-import { DEFAULT_GAS_LIMITS, LEDGER } from '../../../utils/config';
+import { LEDGER } from '../../../utils/config';
 import {
   fromBech32,
   trimString,
@@ -27,7 +32,7 @@ import networks from '../../../utils/networkListIbc';
 
 import { TxsType, TypeTxsT } from '../type';
 import ActionBarPingTxs from '../components/actionBarPingTxs';
-import { useIbcHistory } from '../../../services/ibc-history/historyContext';
+import { useIbcHistory } from '../../../features/ibc-history/historyContext';
 
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
@@ -59,7 +64,7 @@ type Props = {
 function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { pingTxsIbc } = useIbcHistory();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -88,7 +93,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   };
 
   const depositOnClick = useCallback(async () => {
-    if (ibcClient && denomIbc && signer && traseDenom) {
+    if (ibcClient && denomIbc && signer && tracesDenom) {
       const [{ address }] = await ibcClient.signer.getAccounts();
       const [{ address: counterpartyAccount }] = await signer.getAccounts();
       const responseChainId = await ibcClient.getChainId();
@@ -100,20 +105,21 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
       );
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(denomIbc);
+
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(denomIbc);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
 
       const transferAmount = coinFunc(amount, denomIbc);
-      const msg = {
+      const msg: MsgTransferEncodeObject = {
         typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-        value: {
+        value: MsgTransfer.fromPartial({
           sourcePort,
-          sourceChannel,
+          sourceChannel: sourceChannel || '',
           sender: address,
           receiver: counterpartyAccount,
-          timeoutTimestamp,
+          timeoutTimestamp: BigInt(timeoutTimestamp.toNumber()),
           token: transferAmount,
-        },
+        }),
       };
 
       try {
@@ -135,7 +141,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
             )}`
           );
           const [{ coinDecimals: coinDecimalsSelect }] =
-            traseDenom(tokenSelect);
+            tracesDenom(tokenSelect);
           const amountSelect = convertAmountReverce(
             tokenAmount,
             coinDecimalsSelect
@@ -171,7 +177,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   }, [ibcClient, tokenAmount, denomIbc, signingClient, networkB]);
 
   const withdrawOnClick = useCallback(async () => {
-    if (signer && signingClient && traseDenom) {
+    if (signer && signingClient && tracesDenom) {
       let prefix;
       setStage(STAGE_SUBMITTED);
       if (networks[networkB]) {
@@ -183,7 +189,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
       );
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenSelect);
+      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenSelect);
       const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
       const transferAmount = coinFunc(amount, tokenSelect);
       const msg = {

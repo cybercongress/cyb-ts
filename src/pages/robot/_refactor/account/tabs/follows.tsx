@@ -59,11 +59,11 @@ function CommunityEntity({
 
 function FollowsTab() {
   const { address, isOwner } = useRobotContext();
-  const currentAccount = useSelector(
-    (state: RootState) => state.currentAccount
+  const mainAccountCommunity = useSelector(
+    (state: RootState) => state.backend.community
   );
 
-  const communityHook = useGetCommunity(address, isOwner);
+  const communityHook = useGetCommunity(address, { skip: isOwner });
 
   const { setAdviser } = useAdviser();
 
@@ -75,9 +75,7 @@ function FollowsTab() {
     );
   }, [setAdviser]);
 
-  const community = isOwner
-    ? currentAccount.community
-    : communityHook.community;
+  const community = isOwner ? mainAccountCommunity : communityHook.community;
   const loading = isOwner
     ? {
         friends: false,
@@ -85,7 +83,6 @@ function FollowsTab() {
         followers: false,
       }
     : communityHook.loading;
-
   return (
     <Pane
       style={{

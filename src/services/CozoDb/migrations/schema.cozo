@@ -11,29 +11,70 @@
         text: String,
         blocks: Int,
         size: Int,
-        sizeLocal: Int,
+        size_local: Int,
         type: String
     }
 }
-{
-    :create refs {
-        parent: String,
-        child: String
-    }
-}
+
 {
     :create link {
         from: String,
-        to: String =>
-        neuron_address: String
+        to: String,
+        neuron: String =>
+        timestamp: Int,
+        transaction_hash: String default ''
     }
 }
 {
     :create transaction {
         hash: String,
+        index: Int,
+        neuron: String,
         type: String =>
+        block_height: Int,
         success: Bool,
         timestamp: Int,
+        value: Json,
+        memo: String
+    }
+}
+
+{
+    :create sync_status {
+        owner_id: String,
+        id: String =>
+        entry_type: Int,
+        disabled: Bool,
+        timestamp_update: Int,
+        timestamp_read: Int,
+        unread_count: Int,
+        meta: Json
+    }
+}
+
+{
+    :create config {
+        key: String,
+        group_key: String =>
         value: Json
+    }
+}
+
+{
+    :create sync_queue {
+        id: String =>
+        status: Int default 0,
+        priority: Float default 0,
+    }
+}
+
+{
+    :create community {
+        owner_id: String,
+        neuron: String =>
+        particle: String,
+        name: String default '',
+        following: Bool,
+        follower: Bool
     }
 }

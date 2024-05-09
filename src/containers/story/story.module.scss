@@ -12,6 +12,17 @@
   transition: opacity 1.5s;
 }
 
+.containerStory {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  align-items: center;
+  padding: 5px 20px;
+  /* max-width: 1200px; */
+  width: 100%;
+  margin: 0 auto;
+  height: 130px;
+}
+
 // #info {
 //   position: absolute;
 //   top: 10px;

@@ -1,21 +1,16 @@
-import gql from 'graphql-tag';
-import { useQuery } from 'react-apollo';
+import { useCyberlinksCountByParticleQuery } from 'src/generated/graphql';
 
-function generateQuery(cid: string, type: 'to' | 'from') {
-  return gql`
-      query Query {
-          cyberlinks_aggregate(where: {particle_${type}: {_eq: "${cid}"}}) {
-              aggregate {
-              count
-              }
-          }
-      }
-    `;
-}
+const getVar = (type: 'from' | 'to', cid: string, neuron) => {
+  return { [`particle_${type}`]: { _eq: cid }, neuron: { _eq: neuron } };
+};
 
-function useCyberlinksCount(cid: string) {
-  const toCountQuery = useQuery(generateQuery(cid, 'to'));
-  const fromCountQuery = useQuery(generateQuery(cid, 'from'));
+function useCyberlinksCount(cid: string, neuron) {
+  const toCountQuery = useCyberlinksCountByParticleQuery({
+    variables: { where: getVar('to', cid, neuron) },
+  });
+  const fromCountQuery = useCyberlinksCountByParticleQuery({
+    variables: { where: getVar('from', cid, neuron) },
+  });
 
   return {
     data: {
