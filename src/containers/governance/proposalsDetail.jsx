@@ -15,7 +15,6 @@ import {
   getTallying,
   getProposalsDetail,
   getProposer,
-  getMinDeposit,
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
@@ -28,6 +27,7 @@ import { MainContainer } from '../portal/components';
 import ProposalsRoutes from './proposalsRoutes';
 
 import styles from './proposalsDetail.module.scss';
+import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -74,7 +74,7 @@ function ProposalsDetail({ defaultAccount }) {
   });
 
   const [totalDeposit, setTotalDeposit] = useState(0);
-  const [minDeposit, setMinDeposit] = useState(0);
+  const { paramData: minDeposit, isLoading, error } = useGovParam('deposit');
 
   useEffect(() => {
     const getProposalsInfo = async () => {
@@ -158,21 +158,6 @@ function ProposalsDetail({ defaultAccount }) {
     getStatusVoting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
-
-  useEffect(() => {
-    const getDeposit = async () => {
-      let minDepositAmount = 0;
-      const minDepositData = await getMinDeposit();
-      if (minDepositData !== null) {
-        minDepositAmount = parseFloat(
-          minDepositData.deposit_params.min_deposit[0].amount
-        );
-      }
-
-      setMinDeposit(minDepositAmount);
-    };
-    getDeposit();
-  }, [updateFunc]);
 
   const getSubStr = (str) => {
     let string = str;

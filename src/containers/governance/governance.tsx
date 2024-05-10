@@ -8,11 +8,12 @@ import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import dateFormat from 'dateformat';
 
-import { getProposals, getMinDeposit } from '../../utils/governance';
+import { getProposals } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
+import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
@@ -98,14 +99,10 @@ const mapProposalToCard = (proposal: any) => {
 function Governance() {
   const queryClient = useQueryClient();
   const [tableData, setTableData] = useState([]);
-  const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
   const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    feachMinDeposit();
-  }, []);
+  const { paramData: minDeposit, isLoading, error } = useGovParam('deposit');
 
   useEffect(() => {
     setAdviser(
@@ -152,16 +149,6 @@ function Governance() {
       setTableData(response || []);
     });
   }, []);
-
-  const feachMinDeposit = async () => {
-    const responseMinDeposit = await getMinDeposit();
-
-    if (responseMinDeposit?.deposit_params?.min_deposit?.[0].amount) {
-      setMinDeposit(
-        parseFloat(responseMinDeposit.deposit_params.min_deposit[0].amount)
-      );
-    }
-  };
 
   const active = (tableData || [])
     .reverse()

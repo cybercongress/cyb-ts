@@ -71,19 +71,6 @@ export const getProposer = async (id) => {
   }
 };
 
-export const getMinDeposit = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/gov/parameters/deposit`,
-    });
-    return response.data.result;
-  } catch (error) {
-    console.log('error :>> ', error);
-    return null;
-  }
-};
-
 export const getTableVoters = async (id, offset = 0, limit = 20) => {
   try {
     const response = await axios({
