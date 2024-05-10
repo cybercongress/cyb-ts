@@ -138,12 +138,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const particleCid = passport?.data?.extension.particle;
+
     if (particleCid) {
       (async () => {
         const code =
           (await backgroundWorkerInstance.ipfsApi
             .fetchWithDetails(particleCid)
-            .then((res) => res?.text)) || '';
+            .then((res) => res?.content)) || '';
         dispatch(setEntrypoint({ name: 'particle', code }));
       })();
     }

@@ -91,7 +91,7 @@ function Soul() {
   const [log, setLog] = useState<string[]>([]);
   const [isChanged, setIsChanged] = useState(false);
   const [code, setCode] = useState<string>('');
-  const [bio, setBio] = useState<string>('');
+  // const [bio, setBio] = useState<string>('');
 
   const [isLoaded, setIsLoaded] = useState(true);
 
@@ -150,21 +150,22 @@ function Soul() {
     }
   };
 
-  const saveScript = async (script: string, markdown: string) => {
+  const saveScript = async (script: string) => {
     try {
       addToLog(['Saving code...']);
       setIsLoaded(false);
 
-      const combinedScript = `${markdown}\r\n\`\`\`rune\r\n${script}\r\n\`\`\``;
+      // const combinedScript = `${markdown}\r\n\`\`\`rune\r\n${script}\r\n\`\`\``;
 
-      saveStringToLocalStorage(entrypointName, combinedScript);
+      saveStringToLocalStorage(entrypointName, script);
+
       if (!currentEntrypoint.enabled) {
         addToLog(['', '☑️ Saved to local storage.']);
+        dispatch(setEntrypoint({ name: entrypointName, code: script }));
       } else {
-        await saveScriptToPassport(combinedScript);
+        await saveScriptToPassport(script);
+        dispatch(setEntrypoint({ name: entrypointName, code: script }));
       }
-
-      dispatch(setEntrypoint({ name: entrypointName, code: combinedScript }));
     } finally {
       setIsLoaded(true);
       setIsChanged(false);
@@ -179,17 +180,17 @@ function Soul() {
   const onResetToDefault = async () => {
     addToLog(['Resetting to default...']);
     setIsLoaded(false);
+    setIsChanged(false);
     setCode(defaultParticleScript);
-    setBio(defaultBio);
-    await saveScript(defaultParticleScript, defaultBio);
+    // setBio(defaultBio);
+    await saveScript(defaultParticleScript);
   };
 
   useEffect(() => {
     // resetPlayGround();
-    console.log('currentEntrypoint', currentEntrypoint);
-    const { script, markdown } = extractRuneContent(currentEntrypoint.script);
-    setCode(script || defaultParticleScript);
-    setBio(markdown);
+    // const { script, markdown } = extractRuneContent(currentEntrypoint.script);
+    setCode(currentEntrypoint.script || defaultParticleScript);
+    // setBio(markdown);
   }, [currentEntrypoint]);
 
   const logText = useMemo(() => log.join('\r\n'), [log]);
@@ -208,20 +209,21 @@ function Soul() {
       addToLog([`🚫 Can't save empty code`]);
       return;
     }
+    rune
+      ?.run(code, {
+        execute: false,
+      })
+      .then((result) => {
+        if (result.diagnosticsOutput || result.error) {
+          addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
 
-    compileScript(code, {
-      execute: false,
-    }).then((result) => {
-      if (result.diagnosticsOutput || result.error) {
-        addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
-
-        highlightErrors(codeMirrorRef.current, result.diagnostics, styles);
-      } else {
-        addToLog(['🏁 Compiled - OK.']);
-
-        saveScript(code, bio);
-      }
-    });
+          highlightErrors(codeMirrorRef.current, result.diagnostics, styles);
+        } else {
+          addToLog(['🏁 Compiled - OK.']);
+          debugger;
+          saveScript(code);
+        }
+      });
   };
 
   const changeScriptEnabled = async (isOn: boolean) => {

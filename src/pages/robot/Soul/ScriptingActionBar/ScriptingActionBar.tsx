@@ -21,8 +21,6 @@ import { useBackend } from 'src/contexts/backend/backend';
 function ScriptingActionBar({
   isChanged,
   nickname,
-  node,
-
   addToLog,
   onSaveClick,
   onCancelClick,
@@ -32,7 +30,6 @@ function ScriptingActionBar({
 }: {
   isChanged: boolean;
   nickname: string;
-  node: AppIPFS;
   addToLog: (log: string[]) => void;
   onSaveClick: () => void;
   onCancelClick: () => void;
@@ -92,8 +89,17 @@ function ScriptingActionBar({
   const actionBarSteps = [
     <div key="step_0" className={styles.stepWraperJustified}>
       <Button onClick={onTestStepClick}>test cybscript</Button>
-
-      <Button onClick={resetToDefault}>reset to default</Button>
+      <div>
+        {isChanged && (
+          <>
+            <Button onClick={onSaveClick}>save</Button>
+            <Button onClick={onSaveClick}>cancel</Button>
+          </>
+        )}
+        {!isChanged && (
+          <Button onClick={resetToDefault}>reset to default</Button>
+        )}
+      </div>
     </div>,
     <div key="step_1" className={styles.stepWrapper}>
       <Button
