@@ -13,6 +13,9 @@ import {
   tap,
   interval,
   filter,
+  combineLatest,
+  withLatestFrom,
+  share,
 } from 'rxjs';
 
 import * as R from 'ramda';
@@ -146,7 +149,6 @@ class QueueManager {
 
   private postSummary() {
     const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size} node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
-
     this.channel.postServiceStatus('ipfs', 'started', summary);
   }
 
@@ -307,11 +309,25 @@ class QueueManager {
       .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
       .subscribe(() => this.node!.reconnectToSwarm(this.lastNodeCallTime));
 
+    const isInitialized$ = combineLatest([runeInstance$, ipfsInstance$]).pipe(
+      map(
+        ([runeInstance, ipfsInstance]) =>
+          !!runeInstance && !!ipfsInstance && ipfsInstance.isStarted
+      ),
+      share()
+    );
+
+    isInitialized$.subscribe((isInitialized) => {
+      isInitialized && console.log('🚦 Ipfs QueueManager initialized');
+    });
+
     this.queue$
       .pipe(
         // tap(() => console.log('----QUEUE')),
+        withLatestFrom(isInitialized$),
+        filter(([, isInitialized]) => isInitialized),
         debounceTime(this.queueDebounceMs),
-        map((queue) => this.cancelDeprioritizedItems(queue)),
+        map(([queue]) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {
           const workItems = this.getItemBySourceAndPriority(queue);
           // console.log('---workItems', workItems);

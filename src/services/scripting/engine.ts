@@ -220,14 +220,14 @@ function enigine(): RuneEngine {
     if (!enabled) {
       return { action: 'pass' };
     }
-
+    const { cid, contentType, content } = params;
     const output = await run(script, {
       funcName: 'personal_processor',
-      funcParams: params as EntrypointParams,
+      funcParams: [cid, contentType, content], //params as EntrypointParams,
     });
 
-    if (output.result.action !== 'pass') {
-      console.log(`personalProcessor pass ${params.cid}`, params, output);
+    if (output.result.action === 'error') {
+      console.log(`personalProcessor not pass ${params.cid}`, params, output);
     }
     // console.log(
     //   'personalProcessor',

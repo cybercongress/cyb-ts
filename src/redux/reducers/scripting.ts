@@ -35,7 +35,7 @@ const isParticleScriptEnabled =
 const initialScriptEntrypoints: ScriptEntrypoints = {
   particle: {
     title: 'Personal processor',
-    script: defaultParticleScript,
+    script: loadStringFromLocalStorage('particle', defaultParticleScript),
     enabled: !!isParticleScriptEnabled,
   },
   // myParticle: {

@@ -139,16 +139,19 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const particleCid = passport?.data?.extension.particle;
 
-    if (particleCid) {
+    if (particleCid && isIpfsInitialized) {
       (async () => {
-        const code =
-          (await backgroundWorkerInstance.ipfsApi
-            .fetchWithDetails(particleCid)
-            .then((res) => res?.content)) || '';
-        dispatch(setEntrypoint({ name: 'particle', code }));
+        const result = await backgroundWorkerInstance.ipfsApi.fetchWithDetails(
+          particleCid,
+          'text'
+        );
+
+        dispatch(
+          setEntrypoint({ name: 'particle', code: result?.content || '' })
+        );
       })();
     }
-  }, [passport, isRuneInitialized, dispatch]);
+  }, [passport, isRuneInitialized, isIpfsInitialized, dispatch]);
 
   useEffect(() => {
     backgroundWorkerInstance.rune.setEntrypoints(runeEntryPoints);

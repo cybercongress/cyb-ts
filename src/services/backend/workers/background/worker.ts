@@ -171,7 +171,6 @@ const createBackgroundWorkerApi = () => {
       broadcastApi.postServiceStatus('ipfs', 'starting');
       ipfsNode = await initIpfsNode(ipfsOpts);
       ipfsInstance$.next(ipfsNode);
-
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
     } catch (err) {
@@ -222,7 +221,12 @@ const createBackgroundWorkerApi = () => {
       cid: string,
       parseAs?: IpfsContentType,
       controller?: AbortController
-    ) => ipfsNode?.fetchWithDetails(cid, parseAs, controller),
+    ) => {
+      if (!ipfsNode) {
+        throw new Error('ipfs node not initialized');
+      }
+      return ipfsNode.fetchWithDetails(cid, parseAs, controller);
+    },
     enqueue: async (
       cid: string,
       callback: QueueItemCallback,

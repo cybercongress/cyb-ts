@@ -1,18 +1,13 @@
-// empty params
-pub async fn moon_domain_resolver(params) {
+pub async fn moon_domain_resolver() {
     dbg("moon_domain_resolver fired");
-    // QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17 - is html app hosted in IPFS
     return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 
-// params:
 //      cid: CID of the content
 //      contentType: text, image, video, pdf, etc...
 //      content: content itself(text only supported for now)
-pub async fn personal_processor(params) {
-    let cid = params.cid;
-    let content_type = params.contentType;
-    let content = params.content;
+pub async fn personal_processor(cid, content_type, content) {
+
     dbg(`personal_processor ${cid} ${content_type} ${content}`);
     if content_type != "text" {
         return pass()
@@ -26,7 +21,7 @@ pub async fn personal_processor(params) {
             let passport = cyb::get_passport_by_nickname(username).await;
             let particle_cid = passport["extension"]["particle"];
             cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
-            let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
+            let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", []).await;
             dbg(result);
             return result
         }
