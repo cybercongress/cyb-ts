@@ -1,6 +1,6 @@
 import React from 'react';
 import WeightsTable from './WeightsTable/WeightsTable';
-import WeightsSetter from './WeightsSetter/WeightsSetter';
+import WeightsSetter from './WeightsSetter/WeightsSetter.1';
 import { SubnetNeuron } from 'src/features/cybernet/types';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import Display from 'src/components/containerGradient/Display/Display';
@@ -48,7 +48,7 @@ function Weights({
 
   return (
     <div>
-      <Display title={<DisplayTitle title="Weights" />}>
+      <Display title={<DisplayTitle title="Grades" />}>
         <WeightsTable
           data={weightsQuery.data!}
           neurons={neurons}

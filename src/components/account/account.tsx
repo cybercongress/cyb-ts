@@ -9,6 +9,8 @@ import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
+import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import Tooltip from '../tooltip/tooltip';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -48,6 +50,7 @@ type Props = {
   avatarClassName?: string;
   monikerClassName?: string;
   link?: string;
+  markCurrentAddress?: boolean;
 };
 
 function Account({
@@ -64,6 +67,7 @@ function Account({
   disabled,
   containerClassName,
   avatarClassName,
+  markCurrentAddress,
   monikerClassName,
 }: Props) {
   const { data: dataValidInfo } = useGetValidatorInfo(address);
@@ -75,6 +79,8 @@ function Account({
   const trimAddress = useMemo(() => {
     return trimString(address, trimAddressParam[0], trimAddressParam[1]);
   }, [address, trimAddressParam]);
+
+  const currentAddress = useCurrentAddress();
 
   const linkAddress = useMemo(() => {
     if (link) {
@@ -131,6 +137,10 @@ function Account({
         >
           {!moniker ? trimAddress : moniker}
         </Link>
+      )}
+
+      {markCurrentAddress && currentAddress === address && (
+        <Tooltip tooltip="your account">🔑</Tooltip>
       )}
       {children}
     </div>

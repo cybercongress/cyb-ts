@@ -8,6 +8,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
+import useDelegate from '../../hooks/useDelegate';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -19,21 +20,23 @@ function Subnet() {
 
   const { subnetQuery, neuronsQuery } = useSubnet();
 
-  const { data: addressSubnetRegistrationStatus, refetch } =
-    useQueryCybernetContract<number | null>({
-      query: {
-        get_uid_for_hotkey_on_subnet: {
-          netuid,
-          hotkey: address,
-        },
-      },
-    });
+  // const { data: addressSubnetRegistrationStatus, refetch } =
+  //   useQueryCybernetContract<number | null>({
+  //     query: {
+  //       get_uid_for_hotkey_on_subnet: {
+  //         netuid,
+  //         hotkey: address,
+  //       },
+  //     },
+  //   });
 
-  useAdviserTexts({
-    isLoading: subnetQuery.loading,
-    error: subnetQuery.error || neuronsQuery.error,
-    defaultText: 'subnet',
-  });
+  // useAdviserTexts({
+  //   isLoading: subnetQuery.loading,
+  //   error: subnetQuery.error || neuronsQuery.error,
+  //   defaultText: 'subnet',
+  // });
+
+  const addressSubnetRegistrationStatus = 1;
 
   const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
 
@@ -54,7 +57,7 @@ function Subnet() {
           {
             to: './weights',
             key: 'weights',
-            text: 'weights',
+            text: 'grades',
           },
         ]}
         selected={tab || 'neurons'}
@@ -97,7 +100,7 @@ function Subnet() {
         netuid={netuid}
         burn={subnetQuery.data?.burn}
         addressSubnetRegistrationStatus={addressSubnetRegistrationStatus}
-        refetch={refetch}
+        // refetch={refetch}
       />
     </MainContainer>
   );

@@ -28,9 +28,11 @@ function useExecuteContractWithWaitAndAdviser({
     onSuccess,
   });
 
+  const e = error || waitForTx.error;
   useAdviserTexts({
     isLoading: isLoading || waitForTx.isLoading,
-    error: error || waitForTx.error,
+    error: e,
+    txHash: e && transactionHash,
   });
 
   return {

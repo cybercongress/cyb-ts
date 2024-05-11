@@ -78,7 +78,7 @@ function SubnetHyperParams() {
   useAdviserTexts({
     isLoading: hyperparamsQuery.loading,
     error: hyperparamsQuery.error,
-    defaultText: 'Subnet hyperparams',
+    // defaultText: 'Subnet hyperparams',
   });
 
   return (
