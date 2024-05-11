@@ -6,7 +6,7 @@ import Account from 'src/components/account/account';
 import { timeSince } from 'src/utils/utils';
 import styles from './Creator.module.scss';
 
-function Creator({ cid }: { cid: string }) {
+function Creator({ cid, onlyTime }: { cid: string; onlyTime?: boolean }) {
   const { creator } = useGetCreator(cid);
 
   if (!creator) {
@@ -24,7 +24,7 @@ function Creator({ cid }: { cid: string }) {
         </span>
       </Tooltip>
 
-      <Account address={creator.address} avatar />
+      {!onlyTime && <Account address={creator.address} avatar />}
     </>
   );
 }

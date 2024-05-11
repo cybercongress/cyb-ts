@@ -55,6 +55,8 @@ function Warp() {
   const [tokenBAmount, setTokenBAmount] = useState<string | number>('');
   const [tokenAPoolAmount, setTokenAPoolAmount] = useState<number>(0);
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState<number>(0);
+  const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
+  const [tokenBCoinDecimals, setTokenBCoinDecimals] = useState<number>(0);
   const [selectedPool, setSelectedPool] = useState<Pool | undefined>(undefined);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
   const [isEmptyPool, setIsEmptyPool] = useState<boolean>(false);
@@ -99,6 +101,16 @@ function Warp() {
 
     setAdviser(text);
   }, [setAdviser, tab]);
+
+  useEffect(() => {
+    const [{ coinDecimals }] = traseDenom(tokenA);
+    setTokenACoinDecimals(coinDecimals);
+  }, [traseDenom, tokenA]);
+
+  useEffect(() => {
+    const [{ coinDecimals }] = traseDenom(tokenB);
+    setTokenBCoinDecimals(coinDecimals);
+  }, [traseDenom, tokenB]);
 
   useEffect(() => {
     if (firstEffectOccured.current) {
@@ -189,9 +201,6 @@ function Warp() {
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
     if (accountBalances !== null) {
-      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
-
       const validTokensAB =
         Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
         Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
@@ -199,10 +208,10 @@ function Warp() {
         accountBalances[tokenB] > 0;
 
       const validTokenAmountAB =
-        parseFloat(getDisplayAmountReverce(tokenAAmount, coinDecimalsA)) <=
+        parseFloat(getDisplayAmountReverce(tokenAAmount, tokenACoinDecimals)) <=
           myATokenBalance &&
         Number(tokenAAmount) > 0 &&
-        parseFloat(getDisplayAmountReverce(tokenBAmount, coinDecimalsB)) <=
+        parseFloat(getDisplayAmountReverce(tokenBAmount, tokenBCoinDecimals)) <=
           myATokenBalanceB &&
         Number(tokenBAmount) > 0;
 
@@ -231,7 +240,6 @@ function Warp() {
       }
     }
     setIsExceeded(exceeded);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountBalances,
     tokenA,
@@ -240,32 +248,51 @@ function Warp() {
     tokenAAmount,
     tokenBAmount,
     swapPrice,
+    tokenACoinDecimals,
+    tokenBCoinDecimals,
+    isEmptyPool,
   ]);
 
   const amountChangeHandler = useCallback(
-    (values: string, e: React.ChangeEvent) => {
-      const inputAmount = values;
-
+    (inputAmount: string, e: React.ChangeEvent) => {
+      let counterPairValue = new BigNumber(0);
       const isReverse = e.target.id !== 'tokenAAmount';
-      const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
 
-      let { counterPairAmount } = calculateCounterPairAmount(
-        inputAmount,
-        e,
-        state
-      );
-      counterPairAmount = Math.abs(
-        parseFloat(Number(counterPairAmount).toFixed(4))
-      );
+      if (Number(inputAmount) > 0 && tokenAPoolAmount && tokenBPoolAmount) {
+        const state = {
+          tokenAPoolAmount,
+          tokenBPoolAmount,
+          tokenA,
+          tokenB,
+          tokenACoinDecimals,
+          tokenBCoinDecimals,
+          isReverse,
+        };
+
+        const { counterPairAmount } = calculateCounterPairAmount(
+          inputAmount,
+          state
+        );
+
+        counterPairValue = counterPairAmount;
+      }
+
       if (isReverse) {
         setTokenBAmount(new BigNumber(inputAmount).toNumber());
-        setTokenAAmount(counterPairAmount);
+        setTokenAAmount(counterPairValue.toString(10));
       } else {
         setTokenAAmount(new BigNumber(inputAmount).toNumber());
-        setTokenBAmount(counterPairAmount);
+        setTokenBAmount(counterPairValue.toString(10));
       }
     },
-    [tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA]
+    [
+      tokenAPoolAmount,
+      tokenBPoolAmount,
+      tokenB,
+      tokenA,
+      tokenACoinDecimals,
+      tokenBCoinDecimals,
+    ]
   );
 
   const amountChangeHandlerCreatePool = useCallback(

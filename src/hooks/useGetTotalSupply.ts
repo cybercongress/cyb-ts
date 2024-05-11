@@ -1,16 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import {
-  findDenomInTokenList,
-  reduceBalances,
-  isNative,
-} from 'src/utils/utils';
+import { reduceBalances, isNative } from 'src/utils/utils';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
+import { useHub } from 'src/contexts/hub';
 
 type OptionInterval = {
   refetchInterval?: number | false;
@@ -36,7 +32,7 @@ function useGetTotalSupply(
   option: OptionInterval = { refetchInterval: false }
 ) {
   const queryClient = useQueryClient();
-  const { ibcDenoms: ibcDataDenom } = useIbcDenom();
+  const { tokens } = useHub();
   const [totalSupplyAll, setTotalSupplyAll] =
     useState<Option<ObjKeyValue>>(undefined);
   const [totalSupplyProofList, setTotalSupplyProofList] =
@@ -61,27 +57,12 @@ function useGetTotalSupply(
 
         const reduceData = {};
 
-        if (ibcDataDenom) {
+        if (tokens) {
           Object.keys(datareduceTotalSupply).forEach((key) => {
             const value = datareduceTotalSupply[key];
             if (!isNative(key)) {
-              if (Object.prototype.hasOwnProperty.call(ibcDataDenom, key)) {
-                const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
-                  ibcDataDenom[key];
-                const denomInfoFromList = findDenomInTokenList(baseDenom);
-                if (denomInfoFromList) {
-                  if (
-                    Object.prototype.hasOwnProperty.call(
-                      denomInfoFromList,
-                      'destChannelId'
-                    )
-                  ) {
-                    const { destChannelId } = denomInfoFromList;
-                    if (destChannelId === sourceChannelIFromPath) {
-                      reduceData[key] = value;
-                    }
-                  }
-                }
+              if (tokens[key]) {
+                reduceData[key] = value;
               }
             } else if (key.indexOf('pool') !== 0) {
               reduceData[key] = value;
@@ -101,7 +82,7 @@ function useGetTotalSupply(
     };
 
     getTotalSupply();
-  }, [ibcDataDenom, dataGetTotalSupply]);
+  }, [tokens, dataGetTotalSupply]);
 
   return { totalSupplyProofList, totalSupplyAll };
 }

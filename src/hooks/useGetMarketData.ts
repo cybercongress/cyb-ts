@@ -86,7 +86,8 @@ function useGetMarketData() {
   const { totalSupplyAll: dataTotalSupply } = useGetTotalSupply({
     refetchInterval: 1000 * 60 * 3,
   });
-  const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
+  const dataPools = usePoolListInterval();
+  // const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
 
   useEffect(() => {
     const marketDataLS = localStorage.getItem('marketData');

@@ -12,6 +12,7 @@ import backendReducer from './backend';
 import senseReducer from '../../features/sense/redux/sense.redux';
 import warpReducer from '../features/warp';
 import ibcDenomReducer from '../features/ibcDenom';
+import hubReducer from '../../pages/Hub/redux/hub';
 
 const rootReducer = {
   gol: golReducer,
@@ -25,6 +26,7 @@ const rootReducer = {
   warp: warpReducer,
   ibcDenom: ibcDenomReducer,
   scripting: scriptingReducer,
+  hub: hubReducer,
 };
 
 export default rootReducer;
