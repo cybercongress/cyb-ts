@@ -1,20 +1,15 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Display from 'src/components/containerGradient/Display/Display';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { SubnetInfo, SubnetNeuron, Weight } from 'src/features/cybernet/types';
+import { SubnetNeuron, Weight } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Account, Cid, Input } from 'src/components';
+import { Account } from 'src/components';
 import { useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
-import { log } from 'tone/build/esm/core/util/Debug';
 import { formatWeightToGrade } from 'src/features/cybernet/ui/utils/formatWeight';
-import useDelegate from 'src/features/cybernet/ui/hooks/useDelegate';
 
 type Props = {
   neurons: SubnetNeuron[];
@@ -80,7 +75,7 @@ function handleSave(
 
 function SubnetNeuronsTable({
   neurons,
-  addressRegisteredInSubnet,
+  // addressRegisteredInSubnet,
   weights,
 }: Props) {
   const { subnetQuery } = useSubnet();
@@ -94,14 +89,7 @@ function SubnetNeuronsTable({
 
   const { block } = useAppData();
 
-  console.log(block);
-
   const myUid = neurons.find((n) => n.hotkey === address)?.uid;
-  console.log(myUid);
-
-  console.log(weights);
-
-  console.log(neurons);
 
   const vievedBlocks = getData(address);
 
@@ -180,71 +168,52 @@ function SubnetNeuronsTable({
       },
     }),
 
-    columnHelper.accessor('uid', {
-      header: 'grade (WIP)',
-      id: 'grade',
-      cell: (info) => {
-        const i = info.getValue();
+    // columnHelper.accessor('uid', {
+    //   header: 'grade (WIP)',
+    //   id: 'grade',
 
-        if (!weights) {
-          return;
-        }
+    //   cell: (info) => {
+    //     const i = info.getValue();
 
-        const mWeihts = weights[myUid];
+    //     if (!weights) {
+    //       return;
+    //     }
 
-        console.log(mWeihts, 'mWeihts');
+    //     const mWeihts = weights[myUid];
 
-        if (!mWeihts) {
-          return;
-        }
+    //     console.log(mWeihts, 'mWeihts');
 
-        const t = mWeihts.find(([id, value]) => id === i)?.[1];
+    //     if (!mWeihts) {
+    //       return;
+    //     }
 
-        if (t === undefined) {
-          return '-';
-        }
+    //     const t = mWeihts.find(([id, value]) => id === i)?.[1];
 
-        // return formatWeightToGrade(t, maxWeightsLimit);
+    //     if (t === undefined) {
+    //       return '-';
+    //     }
 
-        const g = weights[i];
-        const sum = g.reduce((acc, [id, value]) => acc + value, 0);
-        const average = sum / g.length;
+    //     // return formatWeightToGrade(t, maxWeightsLimit);
 
-        // if (Number.isNaN(average) || Number.isNaN(t)) {
-        //   debugger;
-        // }
+    //     const g = weights[i];
+    //     const sum = g.reduce((acc, [id, value]) => acc + value, 0);
+    //     const average = sum / g.length;
 
-        return (
-          <div>
-            {formatWeightToGrade(average, maxWeightsLimit)}
-            <br />
-            (my
-            {formatWeightToGrade(t, maxWeightsLimit)})
-          </div>
-        );
+    //     // if (Number.isNaN(average) || Number.isNaN(t)) {
+    //     //   debugger;
+    //     // }
 
-        // debugger;
-      },
-    }),
+    //     return (
+    //       <div>
+    //         {formatWeightToGrade(average, maxWeightsLimit)}
+    //         <br />
+    //         (my
+    //         {formatWeightToGrade(t, maxWeightsLimit)})
+    //       </div>
+    //     );
+    //   },
+    // }),
   ];
-
-  // if (addressRegisteredInSubnet) {
-  //   columns.push(
-  //     columnHelper.accessor('netuid', {
-  //       id: 'weight',
-  //       header: 'weight',
-  //       cell: (info) => {
-  //         return (
-  //           <div
-  //             style={{
-  //               width: 200,
-  //             }}
-  //           ></div>
-  //         );
-  //       },
-  //     })
-  //   );
-  // }
   return <Table columns={columns} data={neurons} />;
 }
 

@@ -20,23 +20,21 @@ function Subnet() {
 
   const { subnetQuery, neuronsQuery } = useSubnet();
 
-  // const { data: addressSubnetRegistrationStatus, refetch } =
-  //   useQueryCybernetContract<number | null>({
-  //     query: {
-  //       get_uid_for_hotkey_on_subnet: {
-  //         netuid,
-  //         hotkey: address,
-  //       },
-  //     },
-  //   });
+  const { data: addressSubnetRegistrationStatus, refetch } =
+    useQueryCybernetContract<number | null>({
+      query: {
+        get_uid_for_hotkey_on_subnet: {
+          netuid,
+          hotkey: address,
+        },
+      },
+    });
 
-  // useAdviserTexts({
-  //   isLoading: subnetQuery.loading,
-  //   error: subnetQuery.error || neuronsQuery.error,
-  //   defaultText: 'subnet',
-  // });
-
-  const addressSubnetRegistrationStatus = 1;
+  useAdviserTexts({
+    isLoading: subnetQuery.loading,
+    error: subnetQuery.error || neuronsQuery.error,
+    defaultText: 'subnet',
+  });
 
   const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
 
