@@ -20,6 +20,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import AppRouter from './router';
 import store from './redux/store';
 
@@ -39,9 +40,9 @@ import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
-
-import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
+import HubProvider from './contexts/hub';
+
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 
 const httpLink = new HttpLink({
@@ -104,22 +105,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
             <SigningClientProvider>
-              <IbcDenomProvider>
-                <WebsocketsProvider>
-                  <DataProvider>
-                    <ApolloProvider client={client}>
-                      <BackendProvider>
-                        <DeviceProvider>
-                          <AdviserProvider>
-                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                            {children}
-                          </AdviserProvider>
-                        </DeviceProvider>
-                      </BackendProvider>
-                    </ApolloProvider>
-                  </DataProvider>
-                </WebsocketsProvider>
-              </IbcDenomProvider>
+              <HubProvider>
+                <IbcDenomProvider>
+                  <WebsocketsProvider>
+                    <DataProvider>
+                      <ApolloProvider client={client}>
+                        <BackendProvider>
+                          <DeviceProvider>
+                            <AdviserProvider>
+                              {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                              {children}
+                            </AdviserProvider>
+                          </DeviceProvider>
+                        </BackendProvider>
+                      </ApolloProvider>
+                    </DataProvider>
+                  </WebsocketsProvider>
+                </IbcDenomProvider>
+              </HubProvider>
             </SigningClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>

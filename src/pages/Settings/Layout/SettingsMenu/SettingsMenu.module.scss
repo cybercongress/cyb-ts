@@ -1,0 +1,26 @@
+.wrapper {
+  width: 200px;
+
+  .links {
+    display: grid;
+    gap: 25px;
+  }
+
+  a {
+    display: flex;
+    gap: 15px;
+    line-height: 32px;
+
+    .text {
+      color: var(--grayscale-primary);
+    }
+
+    &:hover,
+    &.active {
+      .text {
+        color: var(--primary-color);
+      }
+
+    }
+  }
+}

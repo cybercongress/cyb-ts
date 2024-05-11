@@ -1,15 +1,16 @@
 .container {
   display: grid;
   grid-template-columns: 240px 1fr;
-  align-items: center;
+  align-items: baseline;
   line-height: 20px;
   font-size: 16px;
 
   .value {
     text-transform: none !important;
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

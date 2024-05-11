@@ -44,4 +44,6 @@ export const DIVISOR_CYBER_G = 10 ** 9;
 
 export const DEFAULT_GAS_LIMITS = 200000;
 
+export const COIN_DECIMALS_RESOURCE = 3;
+
 export const { MEMO_KEPLR } = defaultNetworks[DEFAULT_CHAIN_ID];
