@@ -25,6 +25,7 @@ import {
   ScriptExecutionResult,
   EntrypointParams,
   EngineContext,
+  ScriptMyCampanion,
 } from './types';
 
 import runtimeScript from './rune/runtime.rn';
@@ -54,12 +55,12 @@ type CompilerParams = {
 const toRecord = (item: TabularKeyValues) =>
   keyValuesToObject(Object.values(item));
 
-type EngineDeps = {
-  ipfs?: RemoteIpfsApi;
-  queryClient?: CyberClient;
-  signer?: OfflineSigner;
-  signingClient?: SigningCyberClient;
-};
+// type EngineDeps = {
+//   ipfs?: RemoteIpfsApi;
+//   queryClient?: CyberClient;
+//   signer?: OfflineSigner;
+//   signingClient?: SigningCyberClient;
+// };
 
 export type LoadParams = {
   entrypoints: ScriptEntrypoints;
@@ -82,10 +83,11 @@ export interface RuneEngine {
     compileParams: Partial<CompilerParams>,
     callback?: ScriptCallback
   ): Promise<ScriptExecutionResult>;
-  particleInference(
-    userScript: string,
-    params: ScriptMyParticleParams
-  ): Promise<ScriptMyParticleResult>;
+  askCompanion(
+    cid: string,
+    contentType: string,
+    content: string
+  ): Promise<ScriptMyCampanion>;
   personalProcessor(
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult>;
@@ -198,28 +200,34 @@ function enigine(): RuneEngine {
     }
   };
 
+  const getParticleScriptOrAction = ():
+    | ['error' | 'pass' | 'script', string] => {
+    if (!entrypoints.particle) {
+      return ['error', ''];
+    }
+
+    const { script, enabled } = entrypoints.particle;
+
+    if (!enabled) {
+      return ['pass', ''];
+    }
+
+    return ['script', script];
+  };
+
   const personalProcessor = async (
     params: ScriptParticleParams
   ): Promise<ScriptParticleResult> => {
-    if (!entrypoints.particle) {
+    const [resultType, script] = getParticleScriptOrAction();
+
+    if (resultType === 'error') {
       return { action: 'error', message: 'No particle entrypoint' };
     }
-    // if (params.content === undefined) {
-    //   return { action: 'pass' };
-    // }
-    const { script, enabled } = entrypoints.particle;
-    // console.log(
-    //   'personalProcessor!',
-    //   params.cid,
-    //   params.content,
-    //   params,
-    //   enabled,
-    //   script
-    //   // output
-    // );
-    if (!enabled) {
+
+    if (resultType !== 'script') {
       return { action: 'pass' };
     }
+
     const { cid, contentType, content } = params;
     const output = await run(script, {
       funcName: 'personal_processor',
@@ -229,14 +237,6 @@ function enigine(): RuneEngine {
     if (output.result.action === 'error') {
       console.log(`personalProcessor not pass ${params.cid}`, params, output);
     }
-    // console.log(
-    //   'personalProcessor',
-    //   params.cid,
-    //   params.content,
-    //   params,
-    //   enabled,
-    //   output
-    // );
 
     return output.result;
   };
@@ -255,22 +255,49 @@ function enigine(): RuneEngine {
     return output.result;
   };
 
-  const particleInference = async (
-    userScript: string,
-    funcParams: EntrypointParams
-  ): Promise<ScriptMyParticleResult> => {
-    const output = await run(userScript, {
-      funcName: 'particle_inference',
-      funcParams,
-    });
+  // const particleInference = async (
+  //   userScript: string,
+  //   funcParams: EntrypointParams
+  // ): Promise<ScriptMyParticleResult> => {
+  //   const output = await run(userScript, {
+  //     funcName: 'particle_inference',
+  //     funcParams,
+  //   });
 
-    return output.result;
+  //   return output.result;
+  // };
+
+  const askCompanion = async (
+    cid: string,
+    contentType: string,
+    content: string
+  ): Promise<ScriptMyCampanion> => {
+    const [resultType, script] = getParticleScriptOrAction();
+
+    if (resultType === 'error') {
+      return {
+        action: 'error',
+        metaItems: [{ type: 'text', text: 'No particle entrypoint' }],
+      };
+    }
+
+    if (resultType === 'pass') {
+      return { action: 'pass', metaItems: [] };
+    }
+
+    const output = await run(script, {
+      funcName: 'ask_companion',
+      funcParams: [cid, contentType, content],
+    });
+    console.log('askCompanion', output, cid, content, contentType);
+    return { action: 'answer', metaItems: output.result.content };
   };
 
   return {
     load,
     run,
-    particleInference,
+    // particleInference,
+    askCompanion,
     personalProcessor,
     setEntrypoints,
     pushContext,

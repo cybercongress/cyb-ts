@@ -3,6 +3,16 @@ pub async fn moon_domain_resolver() {
     return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 
+pub async fn ask_companion(cid, content_type, content) {
+    let links = [meta_text("similar:")];
+
+    let similar_results = cyb::search_by_embedding(content, 5).await;
+      for v in similar_results {
+        links.push(meta_link(`/oracle/ask/${v.cid}`, v.text));
+    }
+    return content_result(links)
+}
+
 //      cid: CID of the content
 //      contentType: text, image, video, pdf, etc...
 //      content: content itself(text only supported for now)

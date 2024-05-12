@@ -37,3 +37,7 @@ export async function jsPromptToOpenAI(prompt, apiKey) {
   const result = await promptToOpenAI(prompt, apiKey);
   return result;
 }
+
+export async function jsSearchByEmbedding(text, count) {
+  return runeDeps.cybApi.searcByEmbedding(text, count);
+}

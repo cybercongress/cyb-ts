@@ -10,6 +10,7 @@ import {
   IpfsGatewayContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
+import { shortenString } from 'src/utils/string';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
@@ -43,10 +44,6 @@ const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 function isHtml(string: string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
-}
-
-function shortenString(string: string, length = 300) {
-  return string.length > length ? `${string.slice(0, length)}...` : string;
 }
 
 // eslint-disable-next-line import/no-unused-modules

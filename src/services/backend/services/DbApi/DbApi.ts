@@ -5,7 +5,7 @@ import {
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
 
-import { dbResultToDtoList } from 'src/services/CozoDb/utils';
+import { dbResultToDtoList, toListOfObjects } from 'src/services/CozoDb/utils';
 import {
   removeUndefinedFields,
   dtoListToEntity,
@@ -326,6 +326,16 @@ class DbApiWrapper {
     );
 
     return dbResultToDtoList<LinkDto>(result);
+  }
+
+  public async searchByEmbedding(vec: number[], count?: number) {
+    const queryText = `
+    e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
+    ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
+    ${count ? `\r\n:limit ${count}` : ''}`;
+
+    const result = await this.db!.runCommand(queryText);
+    return toListOfObjects(result);
   }
 }
 

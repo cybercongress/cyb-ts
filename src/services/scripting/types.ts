@@ -73,6 +73,22 @@ type ScriptMyParticleResult = {
   answer?: string;
 };
 
+type MetaLinkComponent = {
+  type: 'link';
+  url: string;
+  title: string;
+};
+
+type MetaTextComponent = {
+  type: 'text';
+  text: string;
+};
+
+type ScriptMyCampanion = {
+  action: 'pass' | 'answer' | 'error';
+  metaItems: (MetaLinkComponent | MetaTextComponent)[];
+};
+
 // type ScriptScopeParams = {
 //   particle?: ScriptParticleParams;
 //   myParticle?: ScriptMyParticleParams;
@@ -109,4 +125,5 @@ export type {
   ScriptMyParticleResult,
   ScriptParticleResult,
   EngineContext,
+  ScriptMyCampanion,
 };

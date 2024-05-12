@@ -11,13 +11,14 @@ import { getPassportByNickname } from 'src/containers/portal/utils';
 import { sendCyberlink } from '../neuron/neuronApi';
 
 import { extractRuneScript } from './helpers';
-import { IpfsApi } from '../backend/workers/background/worker';
+import { IpfsApi, MlApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
 
 type InternalDeps = {
   ipfsApi?: Option<IpfsApi>;
   rune?: Option<RuneEngine>;
   queryClient?: Option<CyberClient>;
+  mlApi?: Option<MlApi>;
 };
 type ExternalDeps = {
   signingClient?: Option<SigningCyberClient & ProxyMarked>;
@@ -142,6 +143,8 @@ const createRuneDeps = () => {
 
       return passport;
     },
+    searcByEmbedding: async (text: string, count = 10) =>
+      (depOrThrow('mlApi') as MlApi).searchByEmbedding(text, count),
     evalScriptFromIpfs,
     getIpfsTextConent,
     addContenToIpfs: async (content: string) => {

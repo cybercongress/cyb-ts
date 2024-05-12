@@ -9,11 +9,15 @@ import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { IPFSContentDetails } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
+
+import { useScripting } from 'src/contexts/scripting/scripting';
+
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import SearchResults from '../Search/SearchResults';
 import AdviserMeta from './components/AdviserMeta/AdviserMeta';
+import SoulCompanion from './components/SoulCompanion/SoulCompanion';
 
 function Ipfs() {
   const { query = '' } = useParams();
@@ -22,7 +26,7 @@ function Ipfs() {
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
   const { ipfsApi, isIpfsInitialized } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
-
+  const { status: runeStatus, metaItems, runScript } = useScripting();
   const { setAdviser } = useAdviser();
 
   const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
@@ -44,7 +48,6 @@ function Ipfs() {
       cid && fetchParticle && (await fetchParticle(cid));
     })();
   }, [cid, fetchParticle]);
-
   useEffect(() => {
     if (status === 'completed') {
       (async () => {
@@ -54,9 +57,10 @@ function Ipfs() {
           // (progress: number) => console.log(`${cid} progress: ${progress}`)
         );
         setIpfsDatDetails(details);
+        await runScript(cid, details?.type || '', details?.text);
       })();
     }
-  }, [content, status, cid]);
+  }, [content, status, cid, runScript]);
 
   useEffect(() => {
     if (!status) {
@@ -112,7 +116,7 @@ function Ipfs() {
           />
         )}
       </div>
-
+      <SoulCompanion status={runeStatus} metaItems={metaItems} />
       <SearchResults />
     </MainContainer>
   );

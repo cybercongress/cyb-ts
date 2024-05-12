@@ -34,6 +34,9 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
 import runeDeps, { RuneDeps } from 'src/services/scripting/runeDeps';
+import { searchByHash } from 'src/utils/search/utils';
+import { cozoDbWorkerInstance } from '../db/service';
+import { toListOfObjects } from 'src/services/CozoDb/utils';
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
 type MlModelParams = {
@@ -65,9 +68,16 @@ const createBackgroundWorkerApi = () => {
   });
 
   let ipfsNode: CybIpfsNode | undefined;
+
+  let dbApi: DbApi | undefined;
+
   const defferedDbSaver = new DeferredDbSaver(dbInstance$);
 
   const mlInstances: Record<keyof typeof mlModelMap, any> = {};
+
+  dbInstance$.subscribe((db) => {
+    dbApi = db;
+  });
 
   const ipfsQueue = new QueueManager(ipfsInstance$, {
     defferedDbSaver,
@@ -187,16 +197,18 @@ const createBackgroundWorkerApi = () => {
     },
   };
 
-  const mlApi = {
-    getEmbedding: async (text: string) => {
-      const output = await mlInstances.featureExtractor(text, {
-        pooling: 'mean',
-        normalize: true,
-      });
-      console.log('---- getEmbedding output', output);
+  const getEmbedding = async (text: string) => {
+    const output = await mlInstances.featureExtractor(text, {
+      pooling: 'mean',
+      normalize: true,
+    });
+    // console.log('---- getEmbedding output', output);
 
-      return output.data;
-    },
+    return output.data;
+  };
+
+  const mlApi = {
+    getEmbedding,
     getQA: async (question: string, context: string) => {
       const output = await mlInstances.qa(question, context);
       console.log('---- getQA output', output);
@@ -208,6 +220,13 @@ const createBackgroundWorkerApi = () => {
       });
       console.log('---- getSummary output', output);
       return output[0].summary_text;
+    },
+
+    searchByEmbedding: async (text: string, count?: number) => {
+      const vec = await getEmbedding(text);
+
+      const rows = await dbApi!.searchByEmbedding(vec, count);
+      return rows;
     },
   };
 
@@ -240,7 +259,7 @@ const createBackgroundWorkerApi = () => {
     addContent: async (content: string | File) => ipfsNode?.addContent(content),
   };
 
-  runeDeps.setInternalDeps({ ipfsApi });
+  runeDeps.setInternalDeps({ ipfsApi, mlApi });
 
   return {
     init,
@@ -260,6 +279,8 @@ const createBackgroundWorkerApi = () => {
 const backgroundWorker = createBackgroundWorkerApi();
 
 export type IpfsApi = typeof backgroundWorker.ipfsApi;
+
+export type MlApi = typeof backgroundWorker.mlApi;
 
 export type RemoteIpfsApi = Remote<IpfsApi>;
 
