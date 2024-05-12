@@ -1,6 +1,7 @@
 .externalLinks {
   display: flex;
   gap: 15px;
+  flex-direction: column;
 }
 
 .info {
@@ -9,6 +10,7 @@
 
 .settings {
   display: flex;
+  align-items: center;
   gap: 30px;
 }
 

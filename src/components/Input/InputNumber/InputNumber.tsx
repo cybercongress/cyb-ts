@@ -15,6 +15,7 @@ type Props = {
   fixedDecimalScale?: boolean;
   maxValue?: number;
   min?: number;
+  autoFocus?: boolean;
 };
 
 function InputNumber({
@@ -24,6 +25,7 @@ function InputNumber({
   onChange,
   maxValue,
   min,
+  autoFocus,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -47,6 +49,7 @@ function InputNumber({
       }}
       maxValue={maxValue}
       min={min}
+      autoFocus={autoFocus}
       thousandsGroupStyle="thousand"
       thousandSeparator=" "
       decimalScale={3}

@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useAdviser } from 'src/features/adviser/context';
+import { routes } from 'src/routes';
 
 type Props = {
   isLoading?: boolean;
   error?: string | undefined;
   defaultText?: string;
+  txHash?: string;
 };
 
-function useAdviserTexts({ isLoading, error, defaultText }: Props) {
+function useAdviserTexts({ isLoading, error, defaultText, txHash }: Props) {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
@@ -16,7 +19,14 @@ function useAdviserTexts({ isLoading, error, defaultText }: Props) {
     let color;
 
     if (error) {
-      adviserText = error;
+      adviserText = (
+        <p>
+          {error}{' '}
+          {txHash && (
+            <Link to={routes.txExplorer.getLink(txHash)}>check tx</Link>
+          )}
+        </p>
+      );
       color = 'red';
     } else if (isLoading) {
       adviserText = 'Loading...';
@@ -28,7 +38,7 @@ function useAdviserTexts({ isLoading, error, defaultText }: Props) {
     console.log('adviserText', adviserText);
 
     setAdviser(adviserText, color);
-  }, [setAdviser, isLoading, error, defaultText]);
+  }, [setAdviser, isLoading, error, defaultText, txHash]);
 
   return null;
 }

@@ -4,8 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { Link, useNavigate } from 'react-router-dom';
 import { Delegator } from 'src/features/cybernet/types';
-import { routes } from 'src/routes';
-import { Account, AmountDenom, FormatNumberTokens } from 'src/components';
+import { Account, AmountDenom } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 type Props = {
@@ -26,29 +25,30 @@ function DelegatorsTable({ data }: Props) {
       columns={useMemo(
         () => [
           columnHelper.accessor('uid', {
-            header: 'uid',
+            header: '№',
             cell: ({ row }) => {
               return row.index;
             },
           }),
 
           columnHelper.accessor('delegate', {
-            header: 'delegate',
+            header: 'delegators',
             cell: (info) => (
               <Account
                 address={info.getValue()}
                 avatar
+                markCurrentAddress
                 link={'../delegators/' + info.getValue()}
               />
             ),
           }),
 
-          columnHelper.accessor('123', {
-            header: 'APR',
-            cell: (info) => {
-              return '10%';
-            },
-          }),
+          // columnHelper.accessor('123', {
+          //   header: 'APR',
+          //   cell: (info) => {
+          //     return '10%';
+          //   },
+          // }),
 
           columnHelper.accessor('registrations', {
             header: 'Subnets',
@@ -83,6 +83,7 @@ function DelegatorsTable({ data }: Props) {
           // my stake
 
           columnHelper.accessor('nominators', {
+            id: 'stake',
             header: 'my stake',
             cell: (info) => {
               const nominators = info.getValue();
@@ -92,7 +93,7 @@ function DelegatorsTable({ data }: Props) {
 
               return (
                 myStake && (
-                  <AmountDenom amountValue={myStake[1]} denom="space-pussy" />
+                  <AmountDenom amountValue={myStake[1]} denom="pussy" />
                 )
               );
             },

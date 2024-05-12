@@ -8,6 +8,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
+import useDelegate from '../../hooks/useDelegate';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -54,7 +55,7 @@ function Subnet() {
           {
             to: './weights',
             key: 'weights',
-            text: 'weights',
+            text: 'grades',
           },
         ]}
         selected={tab || 'neurons'}
@@ -97,7 +98,7 @@ function Subnet() {
         netuid={netuid}
         burn={subnetQuery.data?.burn}
         addressSubnetRegistrationStatus={addressSubnetRegistrationStatus}
-        refetch={refetch}
+        // refetch={refetch}
       />
     </MainContainer>
   );

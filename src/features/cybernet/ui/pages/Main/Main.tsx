@@ -15,6 +15,7 @@ import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
+import { routes } from 'src/routes';
 
 function Main() {
   const address = useCurrentAddress();
@@ -95,25 +96,25 @@ function Main() {
             </Link>
           )}
         </Display>
+
+        <Display title={<DisplayTitle title="Docs and code" />}>
+          <div className={styles.externalLinks}>
+            <LinkWindow to="https://github.com/cybercongress/cybertensor">
+              cli and python package
+            </LinkWindow>
+
+            <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
+              subnet template
+            </LinkWindow>
+
+            <LinkWindow to="https://github.com/cybercongress/cybernet">
+              cosmwasm contract
+            </LinkWindow>
+
+            <LinkWindow to="http://159.89.24.179:4000/">docs</LinkWindow>
+          </div>
+        </Display>
       </div>
-
-      <Display title={<DisplayTitle title="Docs and code" />}>
-        <div className={styles.externalLinks}>
-          <LinkWindow to="https://github.com/cybercongress/cybertensor">
-            cli and python package
-          </LinkWindow>
-
-          <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
-            subnet template
-          </LinkWindow>
-
-          <LinkWindow to="https://github.com/cybercongress/cybernet">
-            cosmwasm contract
-          </LinkWindow>
-
-          <LinkWindow to="http://159.89.24.179:4000/">docs</LinkWindow>
-        </div>
-      </Display>
 
       <Display title={<DisplayTitle title="Settings" />}>
         <div className={styles.settings}>
@@ -135,6 +136,10 @@ function Main() {
             width="50%"
             title="Contract address"
           />
+
+          <Link to={routes.contracts.byId.getLink(CYBERNET_CONTRACT_ADDRESS)}>
+            link
+          </Link>
         </div>
       </Display>
     </MainContainer>
