@@ -105,4 +105,12 @@ export const routes = {
       getLink: (idBlock: string) => `/network/bostrom/blocks/${idBlock}`,
     },
   },
+  contracts: {
+    path: '/contracts',
+    getLink: () => `/contracts`,
+    byId: {
+      path: '/contracts/:address',
+      getLink: (address: string) => `/contracts/${address}`,
+    },
+  },
 };

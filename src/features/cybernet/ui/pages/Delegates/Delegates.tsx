@@ -23,7 +23,7 @@ function Delegates() {
   console.log(data);
 
   return (
-    <MainContainer>
+    <MainContainer resetMaxWidth>
       <Display noPaddingX title={<DisplayTitle title="Delegators" />}>
         <DelegatorsTable data={data || []} />
       </Display>

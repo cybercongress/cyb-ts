@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react';
-import { ActionBar, Button, InputNumber, Tooltip } from 'src/components';
+import { useEffect, useRef, useState } from 'react';
+import { ActionBar, InputNumber } from 'src/components';
 import styles from './WeightsSetter.module.scss';
 import { useAdviser } from 'src/features/adviser/context';
 import useExecuteCybernetContract from '../../../../../useExecuteCybernetContract';
-import { SubnetNeuron } from 'src/features/cybernet/types';
-import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
-import { Link, useLocation } from 'react-router-dom';
-import { routes } from 'src/routes';
 import { usePreviousPage } from 'src/contexts/previousPage';
-import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
 import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
+import { useSubnet } from '../../../subnet.context';
 
-const DEFAULT_WEIGHT = 10;
+const DEFAULT_WEIGHT = 5;
 
 const sessionStorageKey = sessionStorageKeys.subnetWeights;
 
 type Props = {
-  length: number;
-  netuid: number;
   callback: () => void;
-  neurons: SubnetNeuron[];
-  maxWeightsLimit: number;
 };
 
 function getSSData() {
@@ -29,17 +21,37 @@ function getSSData() {
   return data ? JSON.parse(data) : null;
 }
 
-function WeightsSetter({
-  length,
-  netuid,
-  callback,
-  neurons,
-  maxWeightsLimit,
-}: Props) {
+function WeightsSetter({ callback, weights: w }: Props) {
+  const { subnetQuery, neuronsQuery } = useSubnet();
+
+  console.log(w);
+
+  const w2 = w?.reduce((acc, [uid, value], i) => {
+    acc[uid] = value;
+    return acc;
+  }, {});
+
+  console.log(w2);
+
+  const {
+    max_weights_limit: maxWeightsLimit,
+    subnetwork_n: length,
+    netuid,
+  } = subnetQuery.data!;
+
+  const neurons = neuronsQuery.data || [];
+
   const ssData = getSSData()?.[netuid];
+  console.log(ssData);
+
   const [weights, setWeights] = useState(
-    ssData || new Array(length).fill(DEFAULT_WEIGHT)
+    // ssData ||
+    new Array(length)
+      .fill(DEFAULT_WEIGHT)
+      .map((_, i) => (w2?.[i] ? (w2[i] / maxWeightsLimit) * 10 : 0).toFixed())
   );
+
+  console.log(weights);
 
   useEffect(() => {
     return () => {
@@ -54,9 +66,18 @@ function WeightsSetter({
 
   const { previousPathname } = usePreviousPage();
 
-  const search = new URLSearchParams(previousPathname?.split('?')[1]);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const neuron = search.get('neuron');
+  // need this because autoFocus not updateable
+  useEffect(() => {
+    const search = new URLSearchParams(previousPathname?.split('?')[1]);
+
+    const neuron = search.get('neuron');
+
+    if (ref.current) {
+      ref.current.querySelector(`[data-address="${neuron}"]`)?.focus();
+    }
+  }, [previousPathname]);
 
   const { setAdviser } = useAdviser();
 
@@ -65,12 +86,11 @@ function WeightsSetter({
       set_weights: {
         dests: new Array(length).fill(0).map((_, i) => i),
         netuid,
-        weights: weights.map((w) => +((maxWeightsLimit * w) / 100).toFixed(0)),
+        weights: weights.map((w) => +((maxWeightsLimit * w) / 10).toFixed(0)),
         version_key: 0,
       },
     },
     onSuccess: () => {
-      setWeights(new Array(length).fill(0));
       setAdviser('Weights set', 'green');
       callback();
     },
@@ -78,16 +98,18 @@ function WeightsSetter({
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.group}>
-        <span>weights</span>
+      <div className={styles.group} ref={ref}>
+        <span>change grades</span>
         {new Array(length).fill(null).map((_, i) => {
           const { hotkey } = neurons[i];
+
+          const value = weights[i];
           return (
             <div key={i}>
               <InputNumber
-                autoFocus={neuron === hotkey}
-                maxValue={100}
-                value={weights[i] || DEFAULT_WEIGHT}
+                data-address={hotkey}
+                maxValue={10}
+                value={value || (value === null ? 0 : value)}
                 onChange={(e) => {
                   const newWeights = [...weights];
                   newWeights[i] = +e;
@@ -101,7 +123,7 @@ function WeightsSetter({
 
       <ActionBar
         button={{
-          text: 'Submit weights',
+          text: 'Submit grades',
           onClick: submit,
           disabled: isLoading,
         }}

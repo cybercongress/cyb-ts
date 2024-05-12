@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { Link } from 'react-router-dom';
@@ -13,16 +14,15 @@ type Props = {
   maxWeightsLimit: number;
 };
 
-const columnHelper = createColumnHelper<any>();
+const columnHelper = createColumnHelper<SubnetNeuron>();
 
 function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
   const address = useCurrentAddress();
-  // const navigate = useNavigate();
 
   // format to percents
   const percentsData = data.map((item) => {
     return item.map((i) =>
-      parseFloat(((i[1] / maxWeightsLimit) * 100).toFixed(2))
+      parseFloat(((i[1] / maxWeightsLimit) * 10).toFixed(0))
     );
   });
 
@@ -45,24 +45,12 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                       position: 'relative',
                     }}
                   >
-                    <>
-                      {address === hotkey && (
-                        <span
-                          style={{
-                            position: 'absolute',
-                            top: '-30px',
-                          }}
-                        >
-                          (my account)
-                        </span>
-                      )}
-
-                      <Account
-                        address={hotkey}
-                        avatar
-                        link={cybernetRoutes.delegator.getLink(hotkey)}
-                      />
-                    </>
+                    <Account
+                      address={hotkey}
+                      avatar
+                      markCurrentAddress
+                      link={cybernetRoutes.delegator.getLink(hotkey)}
+                    />
                   </div>
                 );
               },
@@ -77,14 +65,20 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
               const { hotkey, uid } = neurons[i];
               return columnHelper.accessor(String(i), {
                 header: (
-                  <>
+                  <div
+                    style={{
+                      position: 'relative',
+                    }}
+                  >
                     {address === hotkey && (
                       <span
                         style={{
                           position: 'absolute',
+                          top: -21,
+                          left: 5,
                         }}
                       >
-                        (my account)
+                        🔑
                       </span>
                     )}
                     <Account
@@ -93,7 +87,7 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                       onlyAvatar
                       link={cybernetRoutes.delegator.getLink(hotkey)}
                     />
-                  </>
+                  </div>
                 ),
                 cell: (info) => {
                   const val = info.getValue();
@@ -101,7 +95,18 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                   if (!val) {
                     return '-';
                   }
-                  return val + '%';
+
+                  let color;
+
+                  if (val < 3) {
+                    color = 'red';
+                  } else if (val < 6) {
+                    color = 'orange';
+                  } else {
+                    color = 'green';
+                  }
+
+                  return <div className={styles[`color_${color}`]}>{val}</div>;
                 },
               });
             })

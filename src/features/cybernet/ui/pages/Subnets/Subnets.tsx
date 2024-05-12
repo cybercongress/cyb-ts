@@ -1,4 +1,4 @@
-import { MainContainer, DenomArr, Loading } from 'src/components';
+import { MainContainer, DenomArr, Loading, Tooltip } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import SubnetsTable from './SubnetsTable/SubnetsTable';
@@ -6,6 +6,8 @@ import { SubnetInfo } from 'src/features/cybernet/types';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { BLOCK_REWARD } from 'src/features/cybernet/constants';
+import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
+import styles from './Subnets.module.scss';
 
 function Subnets() {
   const { data, loading, error } = useQueryCybernetContract<SubnetInfo[]>({
@@ -39,7 +41,18 @@ function Subnets() {
       {rootSubnet && (
         <Display
           noPaddingX
-          title={<DisplayTitle title={<header>Root subnet</header>} />}
+          title={
+            <DisplayTitle
+              title={
+                <header className={styles.header}>
+                  Root subnet
+                  <Tooltip tooltip="Root subnet - ...">
+                    <QuestionBtn />
+                  </Tooltip>
+                </header>
+              }
+            />
+          }
         >
           <SubnetsTable data={[rootSubnet] || []} />
         </Display>
@@ -48,7 +61,18 @@ function Subnets() {
       {!!graphSubnets?.length && (
         <Display
           noPaddingX
-          title={<DisplayTitle title={<header>Graph subnets</header>} />}
+          title={
+            <DisplayTitle
+              title={
+                <header className={styles.header}>
+                  Graph subnets{' '}
+                  <Tooltip tooltip="Graph subnets - ...">
+                    <QuestionBtn />
+                  </Tooltip>
+                </header>
+              }
+            />
+          }
         >
           <SubnetsTable data={graphSubnets} />
         </Display>
