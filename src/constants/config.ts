@@ -12,7 +12,7 @@ function isWorker() {
 const LOCALSTORAGE_CHAIN_ID = !isWorker() && localStorage.getItem('chainId');
 
 const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
-  LOCALSTORAGE_CHAIN_ID || Networks.BOSTROM;
+  LOCALSTORAGE_CHAIN_ID || Networks.SPACE_PUSSY;
 
 export const CHAIN_ID = process.env.CHAIN_ID || DEFAULT_CHAIN_ID;
 
