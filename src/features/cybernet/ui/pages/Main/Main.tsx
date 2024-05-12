@@ -32,7 +32,7 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title="Cybernet" />}>
+      <Display title={<DisplayTitle title="Cybertensor" />}>
         <p className={styles.info}>
           cybertensor is the place, where ones brings wealth to the project, and
           others who value them. <br /> join the subnet and complete its
@@ -100,7 +100,7 @@ function Main() {
         <Display title={<DisplayTitle title="Docs and code" />}>
           <div className={styles.externalLinks}>
             <LinkWindow to="http://docs.spacepussy.ai">
-              docs
+              <b>docs</b>
             </LinkWindow>
             
             <LinkWindow to="https://github.com/cybercongress/cybertensor">
