@@ -107,7 +107,7 @@ function useGetBalance(address, updateAddress) {
             addressActive
           );
           if (rewardsPropsise.total && rewardsPropsise.total.length > 0) {
-            if (rewardsPropsise.total.length === 1 || rewardsPropsise.total[0].denom === CYBER.DENOM_CYBER) {
+            if (rewardsPropsise.total.length === 1 || rewardsPropsise.total[0].denom === BASE_DENOM) {
               setBalance((item) => ({
                 ...item,
                 rewards: Math.floor(
@@ -148,7 +148,7 @@ function useGetBalance(address, updateAddress) {
               ),
               total: Math.floor(
                 item.total +
-                  coinDecimals(parseFloat(commission.commission[0].amount))
+                coinDecimals(parseFloat(commission.commission[0].amount))
               ),
             }));
           }

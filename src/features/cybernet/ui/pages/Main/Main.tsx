@@ -20,7 +20,7 @@ function Main() {
   const address = useCurrentAddress();
 
   useAdviserTexts({
-    defaultText: 'welcome to Cybernet 🤖',
+    defaultText: 'welcome to Cybertensor 🤖',
   });
 
   const { data } = useDelegate(address);
@@ -33,7 +33,7 @@ function Main() {
     <MainContainer resetMaxWidth>
       <Display title={<DisplayTitle title="Cybernet" />}>
         <p className={styles.info}>
-          cybernet is the place, where ones brings wealth to the project, and
+          cybertensor is the place, where ones brings wealth to the project, and
           others who value them. <br /> join the subnet and complete its
           enquiries, or stake on those who joined to make them more valuable.
         </p>
@@ -99,6 +99,10 @@ function Main() {
 
       <Display title={<DisplayTitle title="Docs and code" />}>
         <div className={styles.externalLinks}>
+          <LinkWindow to="http://docs.spacepussy.ai">
+            <b>docs</b>
+          </LinkWindow>
+
           <LinkWindow to="https://github.com/cybercongress/cybertensor">
             cli and python package
           </LinkWindow>
@@ -110,8 +114,6 @@ function Main() {
           <LinkWindow to="https://github.com/cybercongress/cybernet">
             cosmwasm contract
           </LinkWindow>
-
-          <LinkWindow to="http://159.89.24.179:4000/">docs</LinkWindow>
         </div>
       </Display>
 
