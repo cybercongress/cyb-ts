@@ -278,6 +278,7 @@ function Bridge() {
     denomIbc,
     sourceChannel,
     networkB,
+    coinDecimals: tokenACoinDecimals,
   };
 
   return (
