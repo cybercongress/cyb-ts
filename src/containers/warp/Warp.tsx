@@ -103,14 +103,14 @@ function Warp() {
   }, [setAdviser, tab]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenA);
+    const [{ coinDecimals }] = tracesDenom(tokenA);
     setTokenACoinDecimals(coinDecimals);
-  }, [traseDenom, tokenA]);
+  }, [tracesDenom, tokenA]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenB);
+    const [{ coinDecimals }] = tracesDenom(tokenB);
     setTokenBCoinDecimals(coinDecimals);
-  }, [traseDenom, tokenB]);
+  }, [tracesDenom, tokenB]);
 
   useEffect(() => {
     if (firstEffectOccured.current) {
