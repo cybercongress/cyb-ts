@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import cx from 'classnames';
+import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 
 const getRoboHashImage = (addressCyber: string) =>
@@ -8,18 +8,17 @@ const getRoboHashImage = (addressCyber: string) =>
 
 function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   const { fetchWithDetails } = useQueueIpfsContent();
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
 
-  const { data: avatar } = useQuery(
-    ['getAvatar', cidAvatar],
-    async () => {
-      const details = await fetchWithDetails!(cidAvatar, 'image');
-      return details?.content;
-    },
-
-    {
-      enabled: Boolean(fetchWithDetails && cidAvatar),
+  useEffect(() => {
+    if (!fetchWithDetails || !cidAvatar) {
+      return;
     }
-  );
+
+    fetchWithDetails(cidAvatar, 'image').then((value) => {
+      setAvatar(value?.content);
+    });
+  }, [fetchWithDetails, cidAvatar]);
 
   const avatarImage =
     avatar ||
