@@ -17,6 +17,7 @@ import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
+import ActionBar from './ui/ActionBar';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -116,18 +117,8 @@ function MainLayout({ children }: { children: JSX.Element }) {
             )}
           </Link>
         )}
-        <div
-          style={{
-            width: '62%',
-            position: 'fixed',
-            left: '50%',
-            bottom: '20px',
-            transform: 'translate(-50%, -20px)',
-            maxWidth: '1000px',
-          }}
-        >
-          <Commander />
-        </div>
+        {/* <ActionBar /> */}
+
         <div className={styles.Time}>
           <Time />
         </div>

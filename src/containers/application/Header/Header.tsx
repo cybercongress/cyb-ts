@@ -47,7 +47,7 @@ function Header({ menuProps }: Props) {
         onClickOpenMenu={menuProps.toggleMenu}
       />
 
-      {/* <Commander /> */}
+      <Commander />
 
       {/* <AdviserContainer /> */}
 

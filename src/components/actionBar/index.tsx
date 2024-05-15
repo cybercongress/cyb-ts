@@ -7,13 +7,13 @@ import { Networks } from 'src/types/networks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { trimString } from 'src/utils/utils';
+import { CHAIN_ID } from 'src/constants/config';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
 import Button from '../btnGrd';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { trimString } from 'src/utils/utils';
-import Commander from 'src/containers/application/Header/Commander/Commander';
-import { CHAIN_ID } from 'src/constants/config';
+import { createPortal } from 'react-dom';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -45,7 +45,7 @@ type Props = {
   };
 };
 
-function ActionBarComp({ children, text, onClickBack, button }: Props) {
+function ActionBar({ children, text, onClickBack, button }: Props) {
   const { signerReady } = useSigningClient();
   const location = useLocation();
 
@@ -121,7 +121,7 @@ function ActionBarComp({ children, text, onClickBack, button }: Props) {
 
   const content = text || children;
 
-  return (
+  const contentPortal = (
     <ActionBarContainer>
       {/* <Telegram /> */}
 
@@ -149,25 +149,12 @@ function ActionBarComp({ children, text, onClickBack, button }: Props) {
       {/* <GitHub /> */}
     </ActionBarContainer>
   );
-}
 
-function ActionBarWrap({ children }) {
-  return (
-    <div className={styles.ActionBarWrap}>
-      <div className={styles.ActionBarWrapContent}>{children}</div>
-    </div>
-  );
-}
+  // const portalEl = document.getElementById('portalActionBar');
 
-function ActionBar({ children, text, onClickBack, button }: Props) {
-  return (
-    <ActionBarWrap>
-      <Commander />
-      <ActionBarComp text={text} onClickBack={onClickBack} button={button}>
-        {children}
-      </ActionBarComp>
-    </ActionBarWrap>
-  );
+  // return portalEl ? createPortal(contentPortal, portalEl) : contentPortal;
+
+  return contentPortal;
 }
 
 export default ActionBar;
