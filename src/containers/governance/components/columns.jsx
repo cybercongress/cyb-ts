@@ -1,4 +1,6 @@
 import { Pane } from '@cybercongress/gravity';
+import Display from 'src/components/containerGradient/Display/Display';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
 function Columns({ title, children }) {
   return (
@@ -10,14 +12,11 @@ function Columns({ title, children }) {
       gridAutoRows="max-content"
       alignItems="flex-start"
       // boxShadow="0 0 3px 0px #fff"
-      paddingX={10}
       paddingTop={10}
       paddingBottom={15}
       borderRadius="5px"
     >
-      <Pane maxHeight="20px" fontSize={20}>
-        {title}
-      </Pane>
+      <Display noPaddingY title={<DisplayTitle title={title} />}></Display>
       {children}
     </Pane>
   );
