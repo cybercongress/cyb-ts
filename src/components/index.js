@@ -56,6 +56,10 @@ import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
 import Time from './time/time';
 import Row, { RowsContainer } from './Row/Row';
+import Display from './containerGradient/Display/Display';
+import DisplayTitle from './containerGradient/DisplayTitle/DisplayTitle';
+import { Color } from './LinearGradientContainer/LinearGradientContainer';
+import Dot from './Dot/Dot';
 
 const BtnGrd = Button;
 
@@ -110,6 +114,10 @@ export {
   Time,
   Row,
   RowsContainer,
+  Display,
+  DisplayTitle,
+  Color,
+  Dot,
 };
 
 export { Dots } from './ui/Dots';

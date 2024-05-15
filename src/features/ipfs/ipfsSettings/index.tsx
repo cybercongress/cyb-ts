@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  ContainerGradientText,
   Input,
-  ActionBar,
   Button,
+  Display,
+  DisplayTitle,
 } from 'src/components';
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
 import Select from 'src/containers/warp/components/Select';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import {
   updateIpfsStateUrl,
@@ -23,7 +24,6 @@ import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend/backend';
 import { IPFSNodes } from 'src/services/ipfs/types';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
@@ -99,7 +99,7 @@ function IpfsSettings() {
   }
 
   return (
-    <ContainerGradientText>
+    <Display title={<DisplayTitle title="drive" />}>
       <div style={{ display: 'grid', gap: '20px' }}>
         <Drive />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -198,7 +198,7 @@ function IpfsSettings() {
           <Button onClick={console.log}>Sync drive</Button>
         </ActionBar> */}
       </div>
-    </ContainerGradientText>
+    </Display>
   );
 }
 
