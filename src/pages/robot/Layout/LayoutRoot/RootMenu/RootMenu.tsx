@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
 import Display from 'src/components/containerGradient/Display/Display';
-import styles from './RootMenu.module.scss';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import styles from './RootMenu.module.scss';
 
 type MenuItem = {
   text: string;
@@ -88,27 +88,32 @@ function RootMenu({ counts }: Props) {
                 to={link.link}
                 end
               >
-                <span className={styles.icon}>{link.icon}</span>
-                <span className={styles.text}>{link.text}</span>
-                <span className={styles.count}>
-                  {['karma', 'energy', 'rewards'].includes(link.name) ? (
-                    <IconsNumber
-                      value={counts[link.name]}
-                      type={(() => {
-                        switch (link.name) {
-                          case 'rewards':
-                            return 'boot';
+                <div>
+                  <span className={styles.icon}>{link.icon}</span>
+                  <span className={styles.text}>{link.text}</span>
+                </div>
 
-                          default:
-                            return link.name;
-                        }
-                      })()}
-                    />
-                  ) : (
-                    count
-                  )}
-                </span>
-                <span className={styles.description}>{link.description}</span>
+                <div>
+                  <span className={styles.count}>
+                    {['karma', 'energy', 'rewards'].includes(link.name) ? (
+                      <IconsNumber
+                        value={counts[link.name]}
+                        type={(() => {
+                          switch (link.name) {
+                            case 'rewards':
+                              return 'boot';
+
+                            default:
+                              return link.name;
+                          }
+                        })()}
+                      />
+                    ) : (
+                      count
+                    )}
+                  </span>
+                  <span className={styles.description}>{link.description}</span>
+                </div>
               </NavLink>
             </li>
           );
@@ -119,7 +124,7 @@ function RootMenu({ counts }: Props) {
 
   return (
     <div className={styles.wrapper}>
-      <Display>{renderLinks(links)}</Display>
+      <Display noPadding>{renderLinks(links)}</Display>
     </div>
   );
 }

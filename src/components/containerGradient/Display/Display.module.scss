@@ -48,6 +48,10 @@
     padding-right: unset;
   }
 
+  &.noPadding {
+    padding: unset
+  }
+
   @include blueScroll;
 }
 

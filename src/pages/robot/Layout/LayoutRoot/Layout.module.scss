@@ -10,12 +10,13 @@
   height: 70vh;
   max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
-  // Display
-  // >div>div {
-  //   height: 100%;
-  // }
+  //Display
 
   > :first-child {
+    >div {
+      height: 100%;
+    }
+
     >div {
       // don't understand this scroll
       overflow-x: hidden;
