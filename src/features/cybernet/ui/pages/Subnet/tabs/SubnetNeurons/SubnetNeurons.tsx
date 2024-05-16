@@ -34,7 +34,7 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   //   isLoading: subnetQuery.loading || neuronsQuery.loading,
 
   useAdviserTexts({
-    defaultText: 'Subnet neurons',
+    defaultText: 'Subnet creators',
   });
   // });
 
@@ -53,7 +53,7 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
     // <MainContainer width="100%">
     <Display
       noPaddingX
-      title={<DisplayTitle title={<header>Neurons</header>} />}
+      title={<DisplayTitle title={<header>Creators</header>} />}
     >
       <div className={styles.wrapper}>
         <SubnetNeuronsTable

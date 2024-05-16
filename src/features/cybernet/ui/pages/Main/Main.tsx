@@ -46,7 +46,7 @@ function Main() {
             <DisplayTitle
               title={
                 <div className={styles.actionTitle}>
-                  stake
+                  <h3>stake</h3>
                   <div className={styles.apr}>
                     apr up to <br />
                     <span>35%</span>
@@ -57,14 +57,11 @@ function Main() {
           }
         >
           <p className={styles.actionText}>stake on creators in subnets</p>
-          <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
+          <div className={styles.links}>
+            <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
 
-          {haveStake && (
-            <>
-              <br />
-              <Link to="./staking/my">My stake</Link>
-            </>
-          )}
+            {haveStake && <Link to="./staking/my">My stats</Link>}
+          </div>
         </Display>
 
         <Display
@@ -72,7 +69,7 @@ function Main() {
             <DisplayTitle
               title={
                 <div className={styles.actionTitle}>
-                  join subnets
+                  <h3>join subnets</h3>
                   <div className={styles.apr}>
                     apr up to
                     <span>35%</span>
@@ -84,21 +81,31 @@ function Main() {
         >
           <p className={styles.actionText}>complete tasks, manage grades</p>
 
-          <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
-          <br />
-          <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
+          <div className={styles.links}>
+            <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
 
-          <br />
+            <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
 
-          {currentAddressIsDelegator && (
-            <Link to={cybernetRoutes.delegator.getLink(address)}>
-              My delegator
-            </Link>
-          )}
+            {currentAddressIsDelegator && (
+              <Link to={cybernetRoutes.delegator.getLink(address)}>
+                My stats
+              </Link>
+            )}
+          </div>
         </Display>
 
-        <Display title={<DisplayTitle title="Docs and code" />}>
-          <div className={styles.externalLinks}>
+        <Display
+          title={
+            <DisplayTitle
+              title={
+                <div className={styles.actionTitle}>
+                  <h3>Docs and code</h3>
+                </div>
+              }
+            />
+          }
+        >
+          <div className={styles.links}>
             <LinkWindow to="https://github.com/cybercongress/cybertensor">
               cli and python package
             </LinkWindow>

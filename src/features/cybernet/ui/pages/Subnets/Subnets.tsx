@@ -8,6 +8,7 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
 import styles from './Subnets.module.scss';
+import { Helmet } from 'react-helmet';
 
 function Subnets() {
   const { data, loading, error } = useQueryCybernetContract<SubnetInfo[]>({
@@ -36,6 +37,9 @@ function Subnets() {
   });
   return (
     <MainContainer resetMaxWidth>
+      <Helmet>
+        <title>subnets | cyb</title>
+      </Helmet>
       {loading && <Loading />}
 
       {rootSubnet && (

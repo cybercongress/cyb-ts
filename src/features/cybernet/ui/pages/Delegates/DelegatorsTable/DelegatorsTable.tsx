@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, { useMemo } from 'react';
 import { SubnetInfo } from '../../types';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -9,19 +10,28 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 type Props = {
   data: Delegator[];
+  isLoading: boolean;
 };
 
-const columnHelper = createColumnHelper<any>();
+const columnHelper = createColumnHelper<Delegator>();
 
-function DelegatorsTable({ data }: Props) {
+function DelegatorsTable({ data, isLoading }: Props) {
   console.log(data);
 
   const currentAddress = useCurrentAddress();
 
+  function getTotalStake(nominators: Delegator['nominators']) {
+    return nominators.reduce((acc, [, stake]) => acc + stake, 0);
+  }
+
+  function getMyStake(nominators: Delegator['nominators']) {
+    return nominators.find(([address]) => address === currentAddress)?.[1];
+  }
+
   const navigate = useNavigate();
   return (
     <Table
-      // onSelect={(row) => navigate(`/delegators/${row}`)}
+      onSelect={(row) => navigate(`./${data.find((_, i) => i == row)?.owner}`)}
       columns={useMemo(
         () => [
           columnHelper.accessor('uid', {
@@ -32,7 +42,8 @@ function DelegatorsTable({ data }: Props) {
           }),
 
           columnHelper.accessor('delegate', {
-            header: 'delegators',
+            header: 'creators',
+            enableSorting: false,
             cell: (info) => (
               <Account
                 address={info.getValue()}
@@ -52,6 +63,12 @@ function DelegatorsTable({ data }: Props) {
 
           columnHelper.accessor('registrations', {
             header: 'Subnets',
+            sortingFn: (rowA, rowB) => {
+              const a = rowA.original.registrations.length;
+              const b = rowB.original.registrations.length;
+
+              return a - b;
+            },
             cell: (info) => (
               <div
                 style={{
@@ -59,43 +76,50 @@ function DelegatorsTable({ data }: Props) {
                   gap: '5px',
                 }}
               >
-                <>
-                  {info.getValue().map((val) => {
-                    return <Link to={'../subnets/' + val}>{val}</Link>;
-                  })}
-                </>
+                {info.getValue().map((val) => {
+                  return (
+                    <Link key={val} to={'../subnets/' + val}>
+                      {val}
+                    </Link>
+                  );
+                })}
               </div>
             ),
           }),
 
           columnHelper.accessor('nominators', {
             header: 'total stake',
+            sortingFn: (rowA, rowB) => {
+              const totalA = getTotalStake(rowA.original.nominators);
+              const totalB = getTotalStake(rowB.original.nominators);
+
+              return totalA - totalB;
+            },
             cell: (info) => {
               const nominators = info.getValue();
-              const total = nominators.reduce(
-                (acc, [_, stake]) => acc + stake,
-                0
-              );
+              const total = getTotalStake(nominators);
 
               return <AmountDenom amountValue={total} denom="pussy" />;
             },
           }),
-          // my stake
-
           columnHelper.accessor('nominators', {
             id: 'stake',
             header: 'my stake',
+            sortingFn: (rowA, rowB) => {
+              const myStakeA = getMyStake(rowA.original.nominators) || 0;
+              const myStakeB = getMyStake(rowB.original.nominators) || 0;
+
+              return myStakeA - myStakeB;
+            },
             cell: (info) => {
               const nominators = info.getValue();
-              const myStake = nominators.find(
-                ([address, stake]) => address === currentAddress
-              );
+              const myStake = getMyStake(nominators);
 
-              return (
-                myStake && (
-                  <AmountDenom amountValue={myStake[1]} denom="pussy" />
-                )
-              );
+              if (!myStake) {
+                return null;
+              }
+
+              return <AmountDenom amountValue={myStake} denom="pussy" />;
             },
           }),
         ],
@@ -103,6 +127,15 @@ function DelegatorsTable({ data }: Props) {
         [currentAddress]
       )}
       data={data}
+      isLoading={isLoading}
+      initialState={{
+        sorting: [
+          {
+            id: 'nominators',
+            desc: true,
+          },
+        ],
+      }}
     />
   );
 }

@@ -106,6 +106,7 @@ function SubnetNeuronsTable({
     }),
     columnHelper.accessor('hotkey', {
       header: 'neuron',
+      enableSorting: false,
       cell: (info) => {
         const hotkey = info.getValue();
 
@@ -121,8 +122,9 @@ function SubnetNeuronsTable({
     }),
 
     columnHelper.accessor('hotkey', {
-      header: 'metadata',
+      header: 'job done',
       id: 'metadata',
+      enableSorting: false,
       cell: (info) => {
         const hotkey = info.getValue();
 

@@ -1,5 +1,6 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { Link, useParams } from 'react-router-dom';
-import { Account, DenomArr, MainContainer } from 'src/components';
+import { Account, AmountDenom, DenomArr, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
@@ -7,7 +8,10 @@ import { routes } from 'src/routes';
 
 import DelegatorActionBar from './DelegatorActionBar/DelegatorActionBar';
 import styles from './Delegator.module.scss';
-import { Delegator as DelegatorType } from 'src/features/cybernet/types';
+import {
+  Delegator,
+  Delegator as DelegatorType,
+} from 'src/features/cybernet/types';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { routes as cybernetRoutes } from '../../routes';
 import { useAppSelector } from 'src/redux/hooks';
@@ -18,7 +22,7 @@ import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import subnetStyles from '../Subnet/Subnet.module.scss';
 import useDelegate from '../../hooks/useDelegate';
 
-const columnHelper = createColumnHelper<any>();
+const columnHelper = createColumnHelper<Delegator>();
 
 const config: keyof DelegatorType = {
   take: {
@@ -45,7 +49,7 @@ function Delegator() {
   useAdviserTexts({
     isLoading: loading,
     error,
-    defaultText: 'delegator info',
+    defaultText: 'creator info',
   });
 
   const myStake = data?.nominators.find(
@@ -54,9 +58,11 @@ function Delegator() {
 
   const nominators = data?.nominators;
 
+  const totalStake = nominators?.reduce((acc, [, stake]) => acc + stake, 0);
+
   return (
     <MainContainer>
-      {myStake && (
+      {myStake && data.delegate !== currentAddress && (
         <Display title={<DisplayTitle title="My stake" />}>
           {myStake.toLocaleString()} 🟣
         </Display>
@@ -127,22 +133,40 @@ function Delegator() {
       {!!nominators?.length && (
         <Display
           noPaddingX
-          title={<DisplayTitle title={<header>Nominators</header>} />}
+          title={
+            <DisplayTitle
+              title={
+                <div className={styles.nominatorsHeader}>
+                  <h3>Nominators</h3>
+
+                  <div>
+                    <AmountDenom amountValue={totalStake} denom="pussy" />
+                  </div>
+                </div>
+              }
+            />
+          }
         >
           <Table
             columns={[
               columnHelper.accessor('address', {
-                header: 'Address',
-                cell: (info) => <Account address={info.getValue()} />,
+                header: 'neuron',
+                enableSorting: false,
+                cell: (info) => (
+                  <Account
+                    address={info.getValue()}
+                    avatar
+                    markCurrentAddress
+                  />
+                ),
               }),
               columnHelper.accessor('amount', {
                 header: 'Amount',
-                cell: (info) => (
-                  <>
-                    {info.getValue().toLocaleString()} 🟣
-                    {/* <DenomArr denomValue="pussy" onlyImg /> */}
-                  </>
-                ),
+                cell: (info) => {
+                  const value = info.getValue();
+
+                  return <AmountDenom amountValue={value} denom="pussy" />;
+                },
               }),
             ]}
             data={nominators.map(([address, amount]) => {
@@ -151,6 +175,14 @@ function Delegator() {
                 amount,
               };
             })}
+            initialState={{
+              sorting: [
+                {
+                  id: 'amount',
+                  desc: true,
+                },
+              ],
+            }}
           />
         </Display>
       )}
