@@ -20,7 +20,9 @@ function SubnetSubnets() {
   const { mutate: submit, isLoading } = useExecuteCybernetContract({
     query: {
       set_weights: {
-        dests: new Array(data?.length - 1).fill(0).map((_, i) => i + 1),
+        dests:
+          data?.length &&
+          new Array(data?.length - 1).fill(0).map((_, i) => i + 1),
         netuid: 0,
         weights: data?.slice(1, data.length).map((subnet) => {
           const w = subnet.netuid;
