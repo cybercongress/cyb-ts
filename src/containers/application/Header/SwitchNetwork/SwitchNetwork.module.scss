@@ -180,6 +180,19 @@
 }
 
 .buttonWrapper {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  height: 100px;
+
+  @media (width < 768px) {
+    grid-template-columns: 100px;
+  }
+
+}
+
+.buttonWrapper {
   @media (max-width: 480px) {
     height: unset !important;
     grid-template-columns: unset !important;

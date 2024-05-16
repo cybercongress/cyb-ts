@@ -14,14 +14,14 @@ import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
 import { CHAIN_ID } from 'src/constants/config';
 
-const itemsMenu = (neuron: string) => {
+const itemsMenu = () => {
   const listItemMenu = [
     {
       name: 'My robot',
       icon: robot,
       to: '/robot',
       subItems: [
-        { name: 'sense', to: './sense' },
+        { name: 'sense', to: 'sense' },
         { name: 'brain', to: 'brain' },
         { name: 'time', to: 'time' },
         { name: 'sigma', to: 'sigma' },
