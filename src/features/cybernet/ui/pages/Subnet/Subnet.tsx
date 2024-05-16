@@ -9,6 +9,7 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
 import useDelegate from '../../hooks/useDelegate';
+import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -36,7 +37,11 @@ function Subnet() {
     defaultText: 'subnet',
   });
 
+  console.log(subnetQuery);
+
   const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
+
+  const rootSubnet = subnetQuery.data?.netuid === 0;
 
   return (
     <MainContainer resetMaxWidth>
@@ -56,6 +61,11 @@ function Subnet() {
             to: './weights',
             key: 'weights',
             text: 'grades',
+          },
+          rootSubnet && {
+            to: './subnets',
+            key: 'subnets',
+            text: 'subnets',
           },
         ]}
         selected={tab || 'neurons'}
@@ -92,6 +102,8 @@ function Subnet() {
             <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
           }
         />
+
+        <Route path="/subnets" element={<SubnetSubnets />} />
       </Routes>
 
       <ActionBar
