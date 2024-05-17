@@ -39,37 +39,47 @@ function Subnet() {
 
   console.log(subnetQuery);
 
-  const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
+  console.log(
+    addressSubnetRegistrationStatus,
+    'addressSubnetRegistrationStatus'
+  );
+
+  const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const rootSubnet = subnetQuery.data?.netuid === 0;
 
+  const tabs = [
+    {
+      to: './info',
+      key: 'info',
+      text: 'info',
+    },
+    {
+      to: './',
+      key: 'neurons',
+      text: 'neurons',
+    },
+  ];
+
+  if (!rootSubnet) {
+    tabs.push({
+      to: './weights',
+      key: 'weights',
+      text: 'grades',
+    });
+  }
+
+  if (rootSubnet) {
+    tabs.push({
+      to: './subnets',
+      key: 'subnets',
+      text: 'subnets',
+    });
+  }
+
   return (
     <MainContainer resetMaxWidth>
-      <Tabs
-        options={[
-          {
-            to: './info',
-            key: 'info',
-            text: 'info',
-          },
-          {
-            to: './',
-            key: 'neurons',
-            text: 'neurons',
-          },
-          {
-            to: './weights',
-            key: 'weights',
-            text: 'grades',
-          },
-          rootSubnet && {
-            to: './subnets',
-            key: 'subnets',
-            text: 'subnets',
-          },
-        ]}
-        selected={tab || 'neurons'}
-      />
+      <Tabs options={tabs} selected={tab || 'neurons'} />
 
       <Routes>
         <Route
@@ -78,6 +88,13 @@ function Subnet() {
             <SubnetNeurons
               addressRegisteredInSubnet={addressRegisteredInSubnet}
             />
+          }
+        />
+
+        <Route
+          path="/info"
+          element={
+            <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
           }
         />
 
@@ -95,13 +112,6 @@ function Subnet() {
             }
           />
         )}
-
-        <Route
-          path="/info"
-          element={
-            <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
-          }
-        />
 
         <Route path="/subnets" element={<SubnetSubnets />} />
       </Routes>

@@ -41,28 +41,30 @@ function Main() {
       </Display>
 
       <div className={styles.actions}>
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  <h3>stake</h3>
-                  <div className={styles.apr}>
-                    apr up to <br />
-                    <span>35%</span>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>stake</h3>
+                    <div className={styles.apr}>
+                      apr up to <br />
+                      <span>35%</span>
+                    </div>
                   </div>
-                </div>
-              }
-            />
-          }
-        >
-          <p className={styles.actionText}>stake on creators in subnets</p>
-          <div className={styles.links}>
-            <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
+                }
+              />
+            }
+          >
+            <p className={styles.actionText}>stake on creators in subnets</p>
+            <div className={styles.links}>
+              <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
 
-            {haveStake && <Link to="./staking/my">My stats</Link>}
-          </div>
-        </Display>
+              {haveStake && <Link to="./staking/my">My stats</Link>}
+            </div>
+          </Display>
+        </div>
 
         <Display
           title={
@@ -118,7 +120,7 @@ function Main() {
               cosmwasm contract
             </LinkWindow>
 
-            <LinkWindow to="http://159.89.24.179:4000/">docs</LinkWindow>
+            <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
           </div>
         </Display>
       </div>

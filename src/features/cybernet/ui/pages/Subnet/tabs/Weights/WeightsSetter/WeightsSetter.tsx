@@ -79,23 +79,6 @@ function WeightsSetter({ callback, weights: w }: Props) {
     }
   }, [previousPathname]);
 
-  const { setAdviser } = useAdviser();
-
-  const { mutate: submit, isLoading } = useExecuteCybernetContract({
-    query: {
-      set_weights: {
-        dests: new Array(length).fill(0).map((_, i) => i),
-        netuid,
-        weights: weights.map((w) => +((maxWeightsLimit * w) / 10).toFixed(0)),
-        version_key: 0,
-      },
-    },
-    onSuccess: () => {
-      setAdviser('Weights set', 'green');
-      callback();
-    },
-  });
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.group} ref={ref}>

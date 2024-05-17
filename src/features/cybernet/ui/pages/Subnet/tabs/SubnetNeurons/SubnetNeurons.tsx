@@ -4,7 +4,7 @@ import styles from './SubnetNeurons.module.scss';
 import WeightsSetter from '../Weights/WeightsSetter/WeightsSetter';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { MainContainer } from 'src/components';
+import { ActionBar, MainContainer } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
@@ -16,10 +16,14 @@ type Props = {
 function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   const { subnetQuery, neuronsQuery } = useSubnet();
 
+  console.log(addressRegisteredInSubnet, 'addressRegisteredInSubnet');
+
   const subnetNeurons = neuronsQuery.data;
   const { network_modality: subnetType, netuid } = subnetQuery.data || {};
 
   const address = useCurrentAddress();
+
+  const rootSubnet = netuid === 0;
 
   const weightsQuery = useQueryCybernetContract<any[]>({
     query: {
@@ -32,14 +36,19 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   // useAdviserTexts({
   //   defaultText: 'Subnet neurons',
   //   isLoading: subnetQuery.loading || neuronsQuery.loading,
+  // });
 
   useAdviserTexts({
     defaultText: 'Subnet creators',
   });
-  // });
+
+  const {
+    grades: {
+      newGrades: { save, data: newGrades, isGradesUpdated },
+    },
+  } = useSubnet();
 
   // fix
-
   if (!subnetNeurons || !subnetQuery.data) {
     return null;
   }
@@ -55,30 +64,33 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
       noPaddingX
       title={<DisplayTitle title={<header>Creators</header>} />}
     >
-      <div className={styles.wrapper}>
-        <SubnetNeuronsTable
-          neurons={subnetNeurons}
-          subnetType={subnetType}
-          netuid={netuid}
-          weights={weightsQuery.data || []}
-          addressRegisteredInSubnet={addressRegisteredInSubnet}
-          metadata={subnetQuery.data?.metadata}
-        />
+      <SubnetNeuronsTable weights={weightsQuery.data || []} />
 
-        {addressRegisteredInSubnet && !!subnetNeurons?.length && (
-          <WeightsSetter
-            // netuid={netuid}
-            // length={subnetQuery.data?.subnetwork_n}
-            // metadata={subnetQuery.data?.metadata}
-            weights={myW}
-            // neurons={subnetNeurons}
-            callback={() => {
-              weightsQuery.refetch();
-            }}
-            // maxWeightsLimit={subnetQuery.data?.max_weights_limit}
-          />
-        )}
-      </div>
+      {addressRegisteredInSubnet && !rootSubnet && (
+        <ActionBar
+          button={{
+            text: 'update grades',
+            onClick: save,
+            disabled: !isGradesUpdated,
+          }}
+        />
+      )}
+      {/* 
+        {addressRegisteredInSubnet &&
+          !rootSubnet &&
+          !!subnetNeurons?.length && (
+            <WeightsSetter
+              // netuid={netuid}
+              // length={subnetQuery.data?.subnetwork_n}
+              // metadata={subnetQuery.data?.metadata}
+              weights={myW}
+              // neurons={subnetNeurons}
+              callback={() => {
+                weightsQuery.refetch();
+              }}
+              // maxWeightsLimit={subnetQuery.data?.max_weights_limit}
+            />
+          )} */}
     </Display>
     // </MainContainer>
   );

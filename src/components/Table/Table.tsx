@@ -112,7 +112,7 @@ function Table<T extends object>({
                   }
 
                   if (
-                    ['a', 'button'].includes(
+                    ['a', 'button', 'input'].includes(
                       (e.target as any).tagName.toLowerCase()
                     )
                   ) {
