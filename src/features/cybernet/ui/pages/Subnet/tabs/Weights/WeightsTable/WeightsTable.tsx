@@ -30,6 +30,7 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
     <div>
       <div className={styles.temp}>
         <Table
+          enableSorting={false}
           data={neurons}
           columns={[
             columnHelper.accessor('hotkey', {
@@ -58,6 +59,7 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
           ]}
         />
         <Table
+          enableSorting={false}
           columns={
             // useMemo(
             // () =>
