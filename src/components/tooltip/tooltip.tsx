@@ -51,7 +51,9 @@ function Tooltip({
 
   return (
     <>
-      <div ref={setTriggerRef}>{children}</div>
+      <div style={{ flexGrow: '1' }} ref={setTriggerRef}>
+        {children}
+      </div>
 
       {mounted && (
         <div

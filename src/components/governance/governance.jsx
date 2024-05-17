@@ -45,7 +45,11 @@ export const Votes = ({ finalVotes }) => {
         width="100%"
         display="flex"
       >
-        <Pane display="flex" height="100%" width={`${finalVotes.yes}%`}>
+        <Pane
+          display="flex"
+          height="100%"
+          width={`${toFixedNumber(finalVotes.yes, 2)}%`}
+        >
           <Tooltip
             placement="top"
             tooltip={<Pane>Yes: {toFixedNumber(finalVotes.yes, 2)}%</Pane>}
@@ -58,7 +62,11 @@ export const Votes = ({ finalVotes }) => {
             />
           </Tooltip>
         </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.abstain}%`}>
+        <Pane
+          display="flex"
+          height="100%"
+          width={`${toFixedNumber(finalVotes.abstain, 2)}%`}
+        >
           <Tooltip
             tooltip={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
             placement="top"
@@ -72,7 +80,11 @@ export const Votes = ({ finalVotes }) => {
             />
           </Tooltip>
         </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.no}%`}>
+        <Pane
+          display="flex"
+          height="100%"
+          width={`${toFixedNumber(finalVotes.no, 2)}%`}
+        >
           <Tooltip
             tooltip={`No: ${toFixedNumber(finalVotes.no, 2)}%`}
             placement="top"
@@ -86,7 +98,11 @@ export const Votes = ({ finalVotes }) => {
             />
           </Tooltip>
         </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.noWithVeto}%`}>
+        <Pane
+          display="flex"
+          height="100%"
+          width={`${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
+        >
           <Tooltip
             tooltip={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
             placement="top"
