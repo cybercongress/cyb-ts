@@ -59,15 +59,14 @@ function Subnet() {
       key: 'neurons',
       text: 'neurons',
     },
-  ];
 
-  if (!rootSubnet) {
-    tabs.push({
+    {
       to: './weights',
       key: 'weights',
       text: 'grades',
-    });
-  }
+      disabled: rootSubnet,
+    },
+  ];
 
   if (rootSubnet) {
     tabs.push({
@@ -102,13 +101,17 @@ function Subnet() {
           <Route
             path="/weights"
             element={
-              <Weights
-                neurons={neuronsQuery.data || []}
-                netuid={netuid}
-                maxWeightsLimit={subnetQuery.data.max_weights_limit}
-                addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
-                metadata={subnetQuery.data.metadata}
-              />
+              !rootSubnet ? (
+                <Weights
+                  neurons={neuronsQuery.data || []}
+                  netuid={netuid}
+                  maxWeightsLimit={subnetQuery.data.max_weights_limit}
+                  addressRegisteredInSubnet={!!addressSubnetRegistrationStatus}
+                  metadata={subnetQuery.data.metadata}
+                />
+              ) : (
+                'not implemented yet'
+              )
             }
           />
         )}

@@ -45,7 +45,7 @@ function SubnetsTable({ data }: Props) {
 
   const { grades, subnetQuery } = useSubnet();
 
-  const rootSubnet = subnetQuery.data?.netuid === 0;
+  const rootSubnet = subnetQuery?.data?.netuid === 0;
 
   const { data: d2 } = useDelegate(address);
   const myCurrentSubnetsJoined = d2?.registrations;
@@ -204,7 +204,7 @@ function SubnetsTable({ data }: Props) {
     }
 
     return col;
-  }, [myCurrentSubnetsJoined, grades.all.data, rootSubnet]);
+  }, [myCurrentSubnetsJoined, grades?.all?.data, rootSubnet]);
 
   return (
     <Table

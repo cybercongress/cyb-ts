@@ -78,7 +78,7 @@ function Subnets() {
             />
           }
         >
-          <SubnetsTable data={graphSubnets} />
+          <SubnetsTable data={graphSubnets || []} />
         </Display>
       )}
 
