@@ -1,4 +1,5 @@
 import { EntityToDto, DtoToEntity } from 'src/types/dto';
+import { replaceQuotes } from './string';
 
 export const snakeToCamel = (str: string) =>
   str.replace(/([-_][a-z])/g, (group) =>
@@ -46,11 +47,14 @@ export function dtoToEntity<T extends Record<string, any>>(
     if (Object.prototype.hasOwnProperty.call(dto, key)) {
       const snakeCaseKey = camelToSnake(key);
       let value = dto[key];
-      if (Array.isArray(dto[key])) {
-        value = dto[key].map((item) => dtoToEntity(item));
-      } else if (typeof dto[key] === 'object') {
-        value = dtoToEntity(dto[key]);
+      if (Array.isArray(value)) {
+        value = value.map((item) => dtoToEntity(item));
+      } else if (typeof value === 'object') {
+        value = dtoToEntity(value);
       }
+      //  else if (typeof value === 'string') {
+      //   value = replaceQuotes(value);
+      // }
       dbEntity[snakeCaseKey] = value;
     }
   });

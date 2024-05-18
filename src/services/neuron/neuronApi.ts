@@ -8,6 +8,7 @@ import { getNowUtcNumber } from 'src/utils/date';
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
+
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 
 const defaultFee = {
@@ -40,7 +41,8 @@ export const sendCyberlink = async (
     neuron,
   } as LinkDto;
 
-  await senseApi?.putCyberlinsks(link);
+  // TODO: add from/toparticle to DB ??
+  await senseApi?.putCyberlink(link);
   await senseApi?.addCyberlinkLocal(link);
 
   return transactionHash;

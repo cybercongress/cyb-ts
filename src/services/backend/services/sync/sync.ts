@@ -31,7 +31,7 @@ export class SyncService {
 
   private loops: Partial<Record<SyncEntryName, BaseSyncLoop>> = {};
 
-  constructor(deps: ServiceDeps) {
+  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
     const { dbInstance$, ipfsInstance$ } = deps;
     this.isInitialized$ = combineLatest([dbInstance$, ipfsInstance$]).pipe(
       map(([dbInstance, ipfsInstance]) => !!dbInstance && !!ipfsInstance)
@@ -43,8 +43,6 @@ export class SyncService {
       },
       error: (err) => this.channelApi.postServiceStatus('sync', 'error', err),
     });
-
-    const particlesResolver = new ParticlesResolverQueue(deps).start();
 
     const communitySync$ = createCommunitySync$(deps);
     communitySync$.subscribe((community) => {

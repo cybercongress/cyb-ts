@@ -20,7 +20,8 @@ import initializeScript from './migrations/schema.cozo';
 export const DB_NAME = 'cyb-cozo-idb';
 
 const DB_STORE_NAME = 'cozodb';
-const DB_VERSION = '1.1';
+
+export const DB_VERSION = 1.2;
 
 type OnWrite = (writesCount: number) => void;
 
@@ -102,7 +103,7 @@ function createCozoDb() {
     });
   };
 
-  const getVersion = async () => {
+  const getDbVersion = async () => {
     const versionData = await get(
       'config',
       ['value'],
@@ -110,7 +111,20 @@ function createCozoDb() {
       ['key']
     );
 
-    return (versionData.rows[0][0] as string) || DB_VERSION;
+    return (versionData.rows?.[0]?.[0] as number) || 0;
+  };
+
+  const setDbVersion = async (version: number) => {
+    const result = await put('config', [
+      {
+        key: 'DB_VERSION',
+        group_key: 'system',
+        value: version,
+      },
+    ]);
+
+    // console.log('CozoDb >>> setDbVersion', version, result);
+    return result;
   };
 
   const migrate = async () => {
@@ -119,18 +133,13 @@ function createCozoDb() {
     //   console.log('CozoDb >>> migration: creating community relation....');
     //   dbSchema.community = await createSchema('community');
     // }
-
     if (!dbSchema.transaction.values.includes('block_height')) {
       cyblogCh.info('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);
-      await put('config', [
-        {
-          key: 'DB_VERSION',
-          group_key: 'system',
-          value: DB_VERSION,
-        },
-      ]);
+      await setDbVersion(0);
+
+      // await setDbVersion(DB_VERSION);
     }
     // const version = await getVersion();
     // console.log(`DB Version ${version}`);
@@ -145,7 +154,6 @@ function createCozoDb() {
     }
     const resultStr = await db.run(command, '', immutable);
     const result = JSON.parse(resultStr);
-    // console.log('----> runCommand ', command, result);
 
     if (!result.ok) {
       console.log('----> runCommand error ', command, result);
@@ -183,8 +191,8 @@ function createCozoDb() {
     runCommand(
       commandFactory!.generateGet(
         tableName,
-        conditions,
         selectFields,
+        conditions,
         conditionFields,
         options
       ),
@@ -207,7 +215,13 @@ function createCozoDb() {
     getCommandFactory: () => commandFactory,
     importRelations,
     exportRelations,
+    getDbVersion,
+    setDbVersion,
   };
 }
+
+// const cozoDb = createCozoDb();
+
+export type CybCozoDb = ReturnType<typeof createCozoDb>;
 
 export default createCozoDb();

@@ -92,8 +92,18 @@ export enum SyncQueueStatus {
   error = -1,
 }
 
-export type SyncQueueDbEntity = {
+export enum SyncQueueJobType {
+  particle = 0,
+  embedding = 1,
+}
+
+export type SyncQueueKey = {
   id: string;
+  job_type: SyncQueueJobType;
+};
+
+export type SyncQueueDbEntity = SyncQueueKey & {
+  data?: Object;
   status: SyncQueueStatus;
   priority: QueuePriority | number;
 };

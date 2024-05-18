@@ -13,8 +13,13 @@ import { IPFSContent, IPFSContentMaybe } from 'src/services/ipfs/types';
 import { v4 as uuidv4 } from 'uuid';
 import { ParticleCid } from 'src/types/base';
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
-import DbApi from '../DbApi/DbApi';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
+
+import DbApi from '../DbApi/DbApi';
+
+import { enqueueParticleEmbeddingMaybe } from '../../channels/BackendQueueChannel/helpers';
+import { createBackendQueueSender } from '../../channels/BackendQueueChannel/BackendQueueChannel';
+import { CYB_QUEUE_CHANNEL } from '../../channels/consts';
 
 type QueueItem = {
   content?: IPFSContent;
@@ -27,6 +32,8 @@ class DeferredDbSaver implements IDeferredDbSaver {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private dbApi: DbApi | undefined;
+
+  private busSender = createBackendQueueSender();
 
   public get queue(): QueueMap {
     return this.queue$.getValue();
@@ -89,6 +96,8 @@ class DeferredDbSaver implements IDeferredDbSaver {
       // eslint-disable-next-line no-await-in-loop
       const entity = mapParticleToEntity(content);
       await this.dbApi!.putParticles(entity);
+
+      await enqueueParticleEmbeddingMaybe(content);
     }
 
     if (links && links.length > 0) {

@@ -11,7 +11,10 @@ import {
 } from 'rxjs';
 import { isEmpty } from 'lodash';
 
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import {
+  EntryType,
+  SyncQueueJobType,
+} from 'src/services/CozoDb/types/entities';
 import { mapIndexerTransactionToEntity } from 'src/services/CozoDb/mapping';
 import { numberToUtcDate } from 'src/utils/date';
 import { NeuronAddress } from 'src/types/base';
@@ -338,6 +341,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     // pre-resolve 'tweets' particles
     await this.particlesResolver!.enqueueBatch(
       tweetParticles,
+      SyncQueueJobType.particle,
       QueuePriority.HIGH
     );
 
@@ -345,6 +349,7 @@ class SyncTransactionsLoop extends BaseSyncClient {
     if (nonTweetParticles.length > 0) {
       await this.particlesResolver!.enqueueBatch(
         nonTweetParticles,
+        SyncQueueJobType.particle,
         QueuePriority.LOW
       );
     }

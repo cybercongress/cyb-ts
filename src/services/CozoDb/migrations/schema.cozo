@@ -62,7 +62,9 @@
 
 {
     :create sync_queue {
-        id: String =>
+        id: String,
+        job_type: Int =>
+        data: Json?,
         status: Int default 0,
         priority: Float default 0,
     }

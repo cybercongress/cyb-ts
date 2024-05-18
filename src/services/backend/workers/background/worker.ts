@@ -34,9 +34,9 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
 import runeDeps, { RuneDeps } from 'src/services/scripting/runeDeps';
-import { searchByHash } from 'src/utils/search/utils';
-import { cozoDbWorkerInstance } from '../db/service';
-import { toListOfObjects } from 'src/services/CozoDb/utils';
+import ParticlesResolverQueue from '../../services/sync/services/ParticlesResolverQueue/ParticlesResolverQueue';
+import BackendQueueChannelListener from '../../channels/BackendQueueChannel/BackendQueueChannel';
+
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
 type MlModelParams = {
@@ -57,6 +57,9 @@ const mlModelMap: Record<string, MlModelParams> = {
     model: 'Xenova/distilbert-base-uncased-distilled-squad',
   },
 };
+
+export type GetEmbeddingFunc = (text: string) => Promise<number[]>;
+
 const createBackgroundWorkerApi = () => {
   const dbInstance$ = new Subject<DbApi | undefined>();
   const runeInstance$ = new Subject<RuneEngine | undefined>();
@@ -74,6 +77,8 @@ const createBackgroundWorkerApi = () => {
   const defferedDbSaver = new DeferredDbSaver(dbInstance$);
 
   const mlInstances: Record<keyof typeof mlModelMap, any> = {};
+
+  const getEmbeddingInstance$ = new Subject<GetEmbeddingFunc | undefined>();
 
   dbInstance$.subscribe((db) => {
     dbApi = db;
@@ -109,6 +114,10 @@ const createBackgroundWorkerApi = () => {
             done: ['done', 'ready', 'error'].some((s) => s === status),
           };
 
+          if (name === 'featureExtractor' && status === 'done') {
+            getEmbeddingInstance$.next(getEmbedding);
+          }
+
           if (progress) {
             progressItem.progress = Math.round(progress);
           }
@@ -121,17 +130,27 @@ const createBackgroundWorkerApi = () => {
     return mlInstances[name];
   };
 
-  // service to sync updates about cyberlinks, transactions, swarm etc.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const syncService = new SyncService({
+  const serviceDeps = {
     waitForParticleResolve: async (
       cid: ParticleCid,
       priority: QueuePriority = QueuePriority.MEDIUM
     ) => ipfsQueue.enqueueAndWait(cid, { postProcessing: true, priority }),
     dbInstance$,
     ipfsInstance$,
+    getEmbeddingInstance$,
     params$,
-  });
+  };
+
+  const particlesResolver = new ParticlesResolverQueue(serviceDeps).start();
+
+  const backendQueueChannel = new BackendQueueChannelListener(
+    particlesResolver,
+    defferedDbSaver
+  );
+
+  // service to sync updates about cyberlinks, transactions, swarm etc.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const syncService = new SyncService(serviceDeps, particlesResolver);
 
   const init = async (
     dbApiProxy: DbApi & ProxyMarked,

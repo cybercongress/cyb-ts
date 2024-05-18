@@ -1,6 +1,8 @@
 import {
+  EmbeddinsDbEntity,
   EntryType,
   PinDbEntity,
+  SyncQueueKey,
   SyncQueueStatus,
 } from 'src/services/CozoDb/types/entities';
 import { NeuronAddress, ParticleCid } from 'src/types/base';
@@ -18,6 +20,7 @@ import {
   LinkDto,
   ParticleDto,
   SyncQueueDto,
+  SyncQueueKeyDto,
   SyncStatusDto,
   TransactionDto,
 } from 'src/services/CozoDb/types/dto';
@@ -235,14 +238,35 @@ class DbApiWrapper {
   }
 
   public async putSyncQueue(item: SyncQueueItem[] | SyncQueueItem) {
-    const entitites = Array.isArray(item) ? item : [item];
+    const entitites = dtoListToEntity(Array.isArray(item) ? item : [item]);
     return this.db!.executePutCommand('sync_queue', entitites);
+  }
+
+  public async existSyncQueueItem({ id, jobType }: SyncQueueKeyDto) {
+    const result = await this.db!.executeGetCommand(
+      'sync_queue',
+      ['id'],
+      [`id = '${id}'`, `job_type = ${jobType}`],
+      ['id', 'job_type']
+    );
+
+    return result.rows.length > 0;
+  }
+
+  public async existEmbedding(cid: ParticleCid) {
+    const result = await this.db!.executeGetCommand(
+      'embeddings',
+      ['cid'],
+      [`cid = '${cid}'`]
+    );
+
+    return result.rows.length > 0;
   }
 
   public async updateSyncQueue(
     item: Partial<SyncQueueDto>[] | Partial<SyncQueueDto>
   ) {
-    const entitites = Array.isArray(item) ? item : [item];
+    const entitites = dtoListToEntity(Array.isArray(item) ? item : [item]);
     try {
       return this.db!.executeUpdateCommand('sync_queue', entitites);
     } catch (e) {
@@ -253,23 +277,21 @@ class DbApiWrapper {
       });
       // eslint-disable-next-line no-restricted-syntax
       for (const entity of entitites) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.removeSyncQueue(entity.id!);
+        if (entity) {
+          const { id, job_type: jobType = 0 } = entity;
+          // eslint-disable-next-line no-await-in-loop
+          await this.removeSyncQueue({ id: id!, jobType });
+        }
       }
 
       return { ok: true };
     }
   }
 
-  public async removeSyncQueue(id: ParticleCid | ParticleCid[]) {
-    const ids = Array.isArray(id) ? id : [id];
+  public async removeSyncQueue(id: SyncQueueKeyDto | SyncQueueKeyDto[]) {
+    const ids = dtoListToEntity(Array.isArray(id) ? id : [id]);
 
-    return this.db!.executeRmCommand(
-      'sync_queue',
-      ids.map((id) => ({
-        id,
-      }))
-    );
+    return this.db!.executeRmCommand('sync_queue', ids);
   }
 
   public async getSyncQueue({
@@ -281,7 +303,7 @@ class DbApiWrapper {
   }): Promise<SyncQueueDto[]> {
     const result = await this.db!.executeGetCommand(
       'sync_queue',
-      ['id', 'status', 'priority'],
+      ['id', 'status', 'priority', 'job_type'],
       [`status in [${statuses.join(',')}]`],
       [],
       { orderBy: ['-priority'], limit }
@@ -291,6 +313,7 @@ class DbApiWrapper {
       id: row[0] as string,
       status: row[1] as SyncQueueStatus,
       priority: row[2] as number,
+      jobType: row[3] as number,
     }));
   }
 
@@ -336,6 +359,15 @@ class DbApiWrapper {
 
     const result = await this.db!.runCommand(queryText);
     return toListOfObjects(result);
+  }
+
+  public async putEmbedding(cid: string, vec: number[]) {
+    return this.db!.executePutCommand('embeddings', [
+      {
+        cid,
+        vec,
+      } as EmbeddinsDbEntity,
+    ]);
   }
 }
 

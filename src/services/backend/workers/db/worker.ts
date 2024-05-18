@@ -5,6 +5,7 @@ import { GetCommandOptions } from 'src/services/CozoDb/types/types';
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types/services';
+import migrate from 'src/services/CozoDb/migrations/migrations';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;
@@ -27,6 +28,7 @@ const createDbWorkerApi = () => {
     // channel.post({ type: 'indexeddb_write', value: writesCount });
 
     await cozoDb.init(onWriteCallback);
+    await migrate(cozoDb);
     isInitialized = true;
 
     setTimeout(() => {
@@ -59,7 +61,7 @@ const createDbWorkerApi = () => {
     conditionFields?: string[],
     options: GetCommandOptions = {}
   ) =>
-    cozoDb.get(tableName, conditions, selectFields, conditionFields, options);
+    cozoDb.get(tableName, selectFields, conditions, conditionFields, options);
 
   const importRelations = async (content: string) =>
     cozoDb.importRelations(content);
