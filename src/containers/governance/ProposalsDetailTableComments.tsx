@@ -27,11 +27,13 @@ function ProposalsDetailTableComments() {
   }, [proposalQuery, ipfsApi]);
 
   return (
-    <SearchResults
-      query={processedQuery}
-      errorMessage={noCommentsError}
-      actionBarTextBtn="Comment"
-    />
+    <div style={{ marginTop: '20px' }}>
+      <SearchResults
+        query={processedQuery}
+        errorMessage={noCommentsError}
+        actionBarTextBtn="Comment"
+      />
+    </div>
   );
 }
 
