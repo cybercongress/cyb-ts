@@ -53,6 +53,7 @@ export const Votes = ({ finalVotes }) => {
           <Tooltip
             placement="top"
             tooltip={<Pane>Yes: {toFixedNumber(finalVotes.yes, 2)}%</Pane>}
+            flexGrow
           >
             <Pane
               backgroundColor="#3ab793"
@@ -70,6 +71,7 @@ export const Votes = ({ finalVotes }) => {
           <Tooltip
             tooltip={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
             placement="top"
+            flexGrow
           >
             <Pane
               backgroundColor="#ccdcff"
@@ -88,6 +90,7 @@ export const Votes = ({ finalVotes }) => {
           <Tooltip
             tooltip={`No: ${toFixedNumber(finalVotes.no, 2)}%`}
             placement="top"
+            flexGrow
           >
             <Pane
               backgroundColor="#ffcf65"
@@ -106,6 +109,7 @@ export const Votes = ({ finalVotes }) => {
           <Tooltip
             tooltip={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
             placement="top"
+            flexGrow
           >
             <Pane
               backgroundColor="#fe8a8a"
