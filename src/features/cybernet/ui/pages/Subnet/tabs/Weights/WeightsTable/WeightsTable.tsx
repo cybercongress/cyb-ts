@@ -2,62 +2,94 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { Link } from 'react-router-dom';
-import { SubnetNeuron } from 'src/features/cybernet/types';
+import { SubnetInfo, SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import styles from './WeightsTable.module.scss';
 import { Account } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
+import { useSubnet } from '../../../subnet.context';
 
-type Props = {
-  data: any[];
-  neurons: SubnetNeuron[];
-  maxWeightsLimit: number;
-};
+type Props = {};
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
-function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
+function WeightsTable({}: Props) {
   const address = useCurrentAddress();
 
-  // format to percents
-  const percentsData = data.map((item) => {
-    return item.map((i) =>
-      parseFloat(((i[1] / maxWeightsLimit) * 10).toFixed(0))
-    );
+  const { subnetQuery, grades, neuronsQuery } = useSubnet();
+
+  const uid = subnetQuery.data?.netuid;
+  const isRootSubnet = uid === 0;
+
+  const neurons = neuronsQuery.data || [];
+
+  const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
+    query: {
+      get_subnets_info: {},
+    },
   });
+
+  if (!neurons.length) {
+    return null;
+  }
+
+  const rows = isRootSubnet
+    ? subnetsQuery.data?.map((subnet) => subnet.netuid)
+    : neurons.map((neuron) => neuron.hotkey);
+
+  console.log(rows);
+
+  if (!rows?.length) {
+    return null;
+  }
+
+  console.log(rows);
+
+  const data = grades.all.data;
 
   return (
     <div>
       <div className={styles.temp}>
         <Table
           enableSorting={false}
-          data={neurons}
+          data={rows}
           columns={[
-            columnHelper.accessor('hotkey', {
-              header: '',
-              cell: (info) => {
-                const hotkey = info.getValue();
+            // @ts-ignore
+            columnHelper.accessor(
+              (row) => {
+                return row;
+              },
+              {
+                id: 'uid',
+                header: '',
+                cell: (info) => {
+                  const uid = info.getValue();
 
-                const uid = neurons.find((n) => n.hotkey === hotkey)?.uid;
+                  if (isRootSubnet) {
+                    return (
+                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
+                        SN {uid}
+                      </Link>
+                    );
+                  }
 
-                return (
-                  <div
-                    style={{
-                      position: 'relative',
-                    }}
-                  >
+                  console.log(uid, 'uid');
+
+                  return (
                     <Account
-                      address={hotkey}
+                      address={uid}
                       avatar
                       markCurrentAddress
-                      link={cybernetRoutes.delegator.getLink(hotkey)}
+                      link={cybernetRoutes.delegator.getLink(uid)}
                     />
-                  </div>
-                );
-              },
-            }),
+                  );
+                },
+              }
+            ),
           ]}
         />
+
         <Table
           enableSorting={false}
           columns={
@@ -86,6 +118,7 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                     <Account
                       address={hotkey}
                       avatar
+                      // markCurrentAddress
                       onlyAvatar
                       link={cybernetRoutes.delegator.getLink(hotkey)}
                     />
@@ -113,7 +146,7 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
               });
             })
           }
-          data={percentsData}
+          data={data}
         />
       </div>
     </div>

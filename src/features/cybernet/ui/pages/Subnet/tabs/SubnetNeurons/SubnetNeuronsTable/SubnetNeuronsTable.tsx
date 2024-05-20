@@ -12,9 +12,7 @@ import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
 import { useMemo } from 'react';
 
-type Props = {
-  weights: Weight[];
-};
+type Props = {};
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
@@ -72,7 +70,7 @@ function handleSave(
   save(data, currentAddress);
 }
 
-function SubnetNeuronsTable({ weights }: Props) {
+function SubnetNeuronsTable({}: Props) {
   const {
     subnetQuery,
     neuronsQuery,
@@ -91,9 +89,6 @@ function SubnetNeuronsTable({ weights }: Props) {
   const neurons = neuronsQuery?.data || [];
 
   const { block } = useAppData();
-  // const block = true;
-
-  // const myUid = neurons.find((n) => n.hotkey === address)?.uid;
 
   const rootSubnet = netuid === 0;
 
@@ -111,7 +106,7 @@ function SubnetNeuronsTable({ weights }: Props) {
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: 'neuron',
+        header: 'operator',
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
@@ -130,6 +125,7 @@ function SubnetNeuronsTable({ weights }: Props) {
 
     if (!rootSubnet) {
       col.push(
+        // @ts-ignore
         columnHelper.accessor('hotkey', {
           header: 'job done',
           id: 'metadata',

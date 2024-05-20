@@ -34,7 +34,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
       onSelect={(row) => navigate(`./${data.find((_, i) => i == row)?.owner}`)}
       columns={useMemo(
         () => [
-          columnHelper.accessor('uid', {
+          columnHelper.accessor((row) => row, {
             header: '№',
             cell: ({ row }) => {
               return row.index;
@@ -42,7 +42,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
           }),
 
           columnHelper.accessor('delegate', {
-            header: 'creators',
+            header: 'operator',
             enableSorting: false,
             cell: (info) => (
               <Account
@@ -62,7 +62,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
           // }),
 
           columnHelper.accessor('registrations', {
-            header: 'Subnets',
+            header: 'Joined subnets',
             sortingFn: (rowA, rowB) => {
               const a = rowA.original.registrations.length;
               const b = rowB.original.registrations.length;
@@ -88,7 +88,8 @@ function DelegatorsTable({ data, isLoading }: Props) {
           }),
 
           columnHelper.accessor('nominators', {
-            header: 'total stake',
+            header: 'pussy stake',
+            id: 'stake',
             sortingFn: (rowA, rowB) => {
               const totalA = getTotalStake(rowA.original.nominators);
               const totalB = getTotalStake(rowB.original.nominators);
@@ -103,8 +104,8 @@ function DelegatorsTable({ data, isLoading }: Props) {
             },
           }),
           columnHelper.accessor('nominators', {
-            id: 'stake',
-            header: 'my stake',
+            header: 'my investment',
+            id: 'myStake',
             sortingFn: (rowA, rowB) => {
               const myStakeA = getMyStake(rowA.original.nominators) || 0;
               const myStakeB = getMyStake(rowB.original.nominators) || 0;

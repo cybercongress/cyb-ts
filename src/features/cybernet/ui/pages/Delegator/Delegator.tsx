@@ -49,7 +49,7 @@ function Delegator() {
   useAdviserTexts({
     isLoading: loading,
     error,
-    defaultText: 'creator info',
+    defaultText: 'operator info',
   });
 
   const myStake = data?.nominators.find(
@@ -63,7 +63,7 @@ function Delegator() {
   return (
     <MainContainer>
       {myStake && data.delegate !== currentAddress && (
-        <Display title={<DisplayTitle title="My stake" />}>
+        <Display title={<DisplayTitle title="My investment" />}>
           {myStake.toLocaleString()} 🟣
         </Display>
       )}
@@ -137,7 +137,7 @@ function Delegator() {
             <DisplayTitle
               title={
                 <div className={styles.nominatorsHeader}>
-                  <h3>Nominators</h3>
+                  <h3>Investors</h3>
 
                   <div>
                     <AmountDenom amountValue={totalStake} denom="pussy" />
@@ -150,7 +150,7 @@ function Delegator() {
           <Table
             columns={[
               columnHelper.accessor('address', {
-                header: 'neuron',
+                header: 'investor',
                 enableSorting: false,
                 cell: (info) => (
                   <Account
@@ -161,7 +161,7 @@ function Delegator() {
                 ),
               }),
               columnHelper.accessor('amount', {
-                header: 'Amount',
+                header: 'pussy power',
                 cell: (info) => {
                   const value = info.getValue();
 

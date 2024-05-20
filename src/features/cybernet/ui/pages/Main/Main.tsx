@@ -57,11 +57,11 @@ function Main() {
               />
             }
           >
-            <p className={styles.actionText}>stake on creators in subnets</p>
+            <p className={styles.actionText}>invest in operators subnets</p>
             <div className={styles.links}>
-              <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
+              <Link to={cybernetRoutes.delegators.getLink()}>operators</Link>
 
-              {haveStake && <Link to="./staking/my">My stats</Link>}
+              {haveStake && <Link to="./staking/my">stats</Link>}
             </div>
           </Display>
         </div>
@@ -90,7 +90,7 @@ function Main() {
 
             {currentAddressIsDelegator && (
               <Link to={cybernetRoutes.delegator.getLink(address)}>
-                My stats
+                my operator
               </Link>
             )}
           </div>

@@ -83,7 +83,7 @@ function SubnetsTable({ data }: Props) {
         },
       }),
       columnHelper.accessor('max_allowed_uids', {
-        header: 'creators',
+        header: 'operators',
         sortingFn: (rowA, rowB) => {
           const a = rowA.original.subnetwork_n;
           const b = rowB.original.subnetwork_n;
