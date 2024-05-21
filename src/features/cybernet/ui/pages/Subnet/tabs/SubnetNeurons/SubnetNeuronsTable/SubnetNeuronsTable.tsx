@@ -202,7 +202,7 @@ function SubnetNeuronsTable({}: Props) {
     return col;
   }, [
     allGrades,
-    block,
+    // block,
     // cur,
     metadata,
     netuid,

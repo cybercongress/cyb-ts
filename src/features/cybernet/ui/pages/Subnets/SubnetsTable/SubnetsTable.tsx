@@ -66,38 +66,6 @@ function SubnetsTable({ data }: Props) {
           );
         },
       }),
-      columnHelper.accessor('max_allowed_validators', {
-        header: 'leaders',
-        sortingFn: (rowA, rowB) => {
-          const a = rowA.original.subnetwork_n;
-          const b = rowB.original.subnetwork_n;
-
-          return a - b;
-        },
-        cell: (info) => {
-          const n = info.getValue();
-
-          const current = info.row.original.subnetwork_n;
-
-          return <F value={current} maxValue={n} />;
-        },
-      }),
-      columnHelper.accessor('max_allowed_uids', {
-        header: 'operators',
-        sortingFn: (rowA, rowB) => {
-          const a = rowA.original.subnetwork_n;
-          const b = rowB.original.subnetwork_n;
-
-          return a - b;
-        },
-        cell: (info) => {
-          const n = info.getValue();
-
-          const current = info.row.original.subnetwork_n;
-
-          return <F value={current} maxValue={n} />;
-        },
-      }),
 
       columnHelper.accessor('owner', {
         header: 'owner',
@@ -118,30 +86,6 @@ function SubnetsTable({ data }: Props) {
         },
       }),
 
-      columnHelper.accessor('emission_values', {
-        header: 'Emission block',
-
-        sortingFn: (rowA, rowB) => {
-          const a = rowA.original.emission_values;
-          const b = rowB.original.emission_values;
-
-          return a - b;
-        },
-
-        cell: (info) =>
-          `${parseFloat(((info.getValue() / BLOCK_REWARD) * 100).toFixed(2))}%`,
-      }),
-
-      // columnHelper.accessor('netuid', {
-      //   header: 'link',
-      //   cell: (info) => <Link to={'./' + info.getValue()}>link</Link>,
-      // }),
-
-      columnHelper.accessor('tempo', {
-        header: 'tempo',
-        cell: (info) => info.getValue(),
-      }),
-
       columnHelper.accessor('metadata', {
         header: 'metadata',
         enableSorting: false,
@@ -157,6 +101,68 @@ function SubnetsTable({ data }: Props) {
       }),
     ];
 
+    if (!rootSubnet) {
+      col.push(
+        // @ts-ignore
+        columnHelper.accessor('max_allowed_validators', {
+          header: 'leaders',
+          sortingFn: (rowA, rowB) => {
+            const a = rowA.original.subnetwork_n;
+            const b = rowB.original.subnetwork_n;
+
+            return a - b;
+          },
+          cell: (info) => {
+            const n = info.getValue();
+
+            const current = info.row.original.subnetwork_n;
+
+            return <F value={current} maxValue={n} />;
+          },
+        }),
+        columnHelper.accessor('max_allowed_uids', {
+          header: 'operators',
+          sortingFn: (rowA, rowB) => {
+            const a = rowA.original.subnetwork_n;
+            const b = rowB.original.subnetwork_n;
+
+            return a - b;
+          },
+          cell: (info) => {
+            const n = info.getValue();
+
+            const current = info.row.original.subnetwork_n;
+
+            return <F value={current} maxValue={n} />;
+          },
+        }),
+
+        columnHelper.accessor('emission_values', {
+          header: 'Emission block',
+          sortingFn: (rowA, rowB) => {
+            const a = rowA.original.emission_values;
+            const b = rowB.original.emission_values;
+
+            return a - b;
+          },
+
+          cell: (info) =>
+            `${parseFloat(
+              ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
+            )}%`,
+        }),
+        // columnHelper.accessor('netuid', {
+        //   header: 'link',
+        //   cell: (info) => <Link to={'./' + info.getValue()}>link</Link>,
+        // }),
+
+        columnHelper.accessor('tempo', {
+          header: 'tempo',
+          cell: (info) => info.getValue(),
+        })
+      );
+    }
+
     if (rootSubnet) {
       col.push(
         // @ts-ignore
@@ -169,8 +175,6 @@ function SubnetsTable({ data }: Props) {
 
             const avgA = getAverageGrade(grades.all.data, a);
             const avgB = getAverageGrade(grades.all.data, b);
-
-            debugger;
 
             return avgA - avgB;
           },

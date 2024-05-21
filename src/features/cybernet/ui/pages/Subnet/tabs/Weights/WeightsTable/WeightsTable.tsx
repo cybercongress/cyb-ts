@@ -43,10 +43,6 @@ function WeightsTable({}: Props) {
 
   const data = grades.all.data;
 
-  console.log(data);
-
-  console.log(columns);
-
   if (!columns) {
     return null;
   }
@@ -84,21 +80,12 @@ function WeightsTable({}: Props) {
             // useMemo(
             // () =>
             columns.map((uid) => {
-              console.log(uid, 'uid');
               return columnHelper.accessor(String(uid), {
                 id: `t${uid}`,
                 header: () => {
                   if (isRootSubnet) {
                     return (
-                      <Link
-                        to={cybernetRoutes.subnet.getLink(uid)}
-                        style={
-                          {
-                            // minHeight: 40,
-                            // display: 'block',
-                          }
-                        }
-                      >
+                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
                         SN&nbsp;{uid}
                       </Link>
                     );

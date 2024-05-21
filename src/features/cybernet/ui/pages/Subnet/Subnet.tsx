@@ -37,13 +37,6 @@ function Subnet() {
     defaultText: 'subnet',
   });
 
-  console.log(subnetQuery);
-
-  console.log(
-    addressSubnetRegistrationStatus,
-    'addressSubnetRegistrationStatus'
-  );
-
   const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const rootSubnet = subnetQuery.data?.netuid === 0;

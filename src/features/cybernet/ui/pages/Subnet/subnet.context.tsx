@@ -33,7 +33,7 @@ export function getAverageGrade(grades, uid: string) {
 
   const avg = sum ? (sum / count).toFixed(2) : 0;
 
-  return avg;
+  return Number(avg);
 }
 
 const SubnetContext = React.createContext<{
@@ -99,8 +99,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  console.error(newGrades);
-
   const myUid = neuronsQuery.data?.find(
     (n) => n.hotkey === currentAddress
   )?.uid;
@@ -138,9 +136,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setNewGrades(gradesFromMe);
   }, [gradesFromMe]);
-
-  console.log(weightsQuery.data);
-  console.log(grades);
 
   function setGrade(uid: string, grade: number) {
     setNewGrades((prev) => ({
@@ -192,8 +187,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
           data: newGrades,
           setGrade: setGrade,
           save: submit,
-          isGradesUpdated: true,
-          // isGradesUpdated: !isEqual(newGrades, gradesFromMe),
+          isGradesUpdated: !isEqual(newGrades, gradesFromMe),
         },
       },
     };
