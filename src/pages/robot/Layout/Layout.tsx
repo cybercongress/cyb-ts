@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Loader2 from 'src/components/ui/Loader2';
 
-import RobotHeader from './RobotHeader/RobotHeader';
 import { useRobotContext } from '../robot.context';
 import WrappedActionBar from './WrappedActionBar';
 import styles from './Layout.module.scss';
@@ -20,8 +19,6 @@ function Layout() {
           <Loader2 />
         ) : (
           <>
-            <RobotHeader />
-
             <Outlet />
 
             <WrappedActionBar />

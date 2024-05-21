@@ -9,7 +9,7 @@ import Brain from './Brain/Brain';
 import SensePage from './SensePage';
 import LayoutRoot from './Layout/LayoutRoot/Layout';
 import ZeroUser from './ZeroUser/ZeroUser';
-import FeedsTab from './_refactor/account/tabs/feeds';
+import FeedsTab from './_refactor/account/tabs/feeds/feeds';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
 import FollowsTab from './_refactor/account/tabs/follows';
 import Heroes from './_refactor/account/tabs/heroes';
@@ -23,16 +23,20 @@ function RobotRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route element={<LayoutRoot />}>
-          <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
-          <Route path="soul" element={<UnderConstruction />} />
-          <Route path="energy/*" element={<RoutedEnergy />} />
-          <Route path="swarm" element={<FollowsTab />} />
-          <Route path="security" element={<Heroes />} />
-          <Route path="rights" element={<UnderConstruction />} />
-          <Route path="karma" element={<Karma />} />
-          <Route path="badges" element={<TableDiscipline />} />
-        </Route>
+        {newUser ? (
+          <Route index element={<ZeroUser />} />
+        ) : (
+          <Route element={<LayoutRoot />}>
+            <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
+            <Route path="soul" element={<UnderConstruction />} />
+            <Route path="energy/*" element={<RoutedEnergy />} />
+            <Route path="swarm" element={<FollowsTab />} />
+            <Route path="security" element={<Heroes />} />
+            <Route path="rights" element={<UnderConstruction />} />
+            <Route path="karma" element={<Karma />} />
+            <Route path="badges" element={<TableDiscipline />} />
+          </Route>
+        )}
 
         <Route path="sigma" element={<Sigma />} />
         <Route path="time" element={<TxsTable />} />

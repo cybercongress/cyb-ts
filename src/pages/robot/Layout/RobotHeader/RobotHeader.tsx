@@ -1,8 +1,8 @@
-import { ContainerGradientText } from 'src/components';
+import { Display } from 'src/components';
+import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import styles from './RobotHeader.module.scss';
 import { useRobotContext } from '../../robot.context';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
-import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 
 function RobotHeader() {
   const { address, passport } = useRobotContext();
@@ -12,19 +12,20 @@ function RobotHeader() {
 
   return (
     <header className={styles.wrapper}>
-      <ContainerGradientText>
-        <div className={styles.inner}>
+      <Display noPadding>
+        <div className={styles.content}>
+          <div className={styles.level}>
+            <span className={styles.levelValue}>level 1</span>
+            <span className={styles.levelTime}>1 year 145 day 06:46</span>
+          </div>
           <AvataImgIpfs addressCyber={address} cidAvatar={avatar} />
 
-          <div>
+          <div className={styles.addressName}>
             {nickname && <h3 className={styles.name}>{nickname}</h3>}
             <MusicalAddress address={address} />
           </div>
-          {/* <Link to="/keys" className={styles.keys}>
-            <img src={require('../../../image/keplr-icon.svg')} alt="Keplr" />
-          </Link> */}
         </div>
-      </ContainerGradientText>
+      </Display>
     </header>
   );
 }
