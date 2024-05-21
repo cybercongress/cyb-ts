@@ -31,13 +31,6 @@ type Deps = InternalDeps & ExternalDeps;
 
 const createRuneDeps = () => {
   const deps: Deps = {};
-  // let signingClient: Option<SigningCyberClient>;
-  // let signer: Option<OfflineSigner>;
-  // let queryClient: CyberClient;
-  // let senseApi: SenseApi;
-  // let address: Option<NeuronAddress>;
-  // let ipfsApi: Option<IpfsApi>;
-  // let rune: Option<RuneEngine>;
 
   (async () => {
     deps.queryClient = await CyberClient.connect(RPC_URL);

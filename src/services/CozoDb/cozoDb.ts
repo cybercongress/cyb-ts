@@ -88,6 +88,7 @@ function createCozoDb() {
       const result = await runCommand(initializeScript);
 
       relations = await getRelations();
+      await setDbVersion(DB_VERSION);
     }
 
     const schemasMap = await Promise.all(
@@ -137,7 +138,7 @@ function createCozoDb() {
       cyblogCh.info('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);
-      await setDbVersion(0);
+      await setDbVersion(DB_VERSION);
 
       // await setDbVersion(DB_VERSION);
     }

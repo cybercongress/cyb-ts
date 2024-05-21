@@ -6,7 +6,7 @@ import { IpfsContentType } from 'src/services/ipfs/types';
 export type ScriptingContextType = {
   status: 'loading' | 'ready' | 'pending' | 'done' | 'error';
   metaItems: ScriptMyCampanion['metaItems'];
-  runScript: (
+  askCompanion: (
     cid: string,
     contentType: IpfsContentType,
     content: any
@@ -16,7 +16,7 @@ export type ScriptingContextType = {
 const ScriptingContext = React.createContext<ScriptingContextType>({
   status: 'loading',
   metaItems: [],
-  runScript: async () => {
+  askCompanion: async () => {
     throw new Error('ScriptingProvider not found');
   },
 });
@@ -32,7 +32,7 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
   const [metaItems, setMetaItems] = useState<ScriptingContextType['metaItems']>(
     []
   );
-  const runScript = useCallback(
+  const askCompanion = useCallback(
     async (cid: string, contentType: IpfsContentType, content: any) => {
       if (contentType !== 'text') {
         setStatus('done');
@@ -53,9 +53,9 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     return {
       status,
       metaItems,
-      runScript,
+      askCompanion,
     };
-  }, [status, metaItems, runScript]);
+  }, [status, metaItems, askCompanion]);
 
   return (
     <ScriptingContext.Provider value={value}>

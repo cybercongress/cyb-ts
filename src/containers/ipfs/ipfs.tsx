@@ -26,7 +26,7 @@ function Ipfs() {
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
   const { ipfsApi, isIpfsInitialized } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
-  const { status: runeStatus, metaItems, runScript } = useScripting();
+  const { status: runeStatus, metaItems, askCompanion } = useScripting();
   const { setAdviser } = useAdviser();
 
   const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
@@ -57,10 +57,10 @@ function Ipfs() {
           // (progress: number) => console.log(`${cid} progress: ${progress}`)
         );
         setIpfsDatDetails(details);
-        await runScript(cid, details?.type || '', details?.text);
+        await askCompanion(cid, details?.type || '', details?.text);
       })();
     }
-  }, [content, status, cid, runScript]);
+  }, [content, status, cid, askCompanion]);
 
   useEffect(() => {
     if (!status) {

@@ -235,9 +235,12 @@ function enigine(): RuneEngine {
     });
 
     if (output.result.action === 'error') {
-      console.log(`personalProcessor not pass ${params.cid}`, params, output);
+      console.error(
+        `[rune].personalProcessor error: ${params.cid}`,
+        params,
+        output
+      );
     }
-
     return output.result;
   };
 

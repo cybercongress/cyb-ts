@@ -6,12 +6,13 @@ import { LinkDbEntity, PinTypeMap } from './types/entities';
 import { Transaction } from '../backend/services/indexer/types';
 import { LinkDto, ParticleDto, PinDto, TransactionDto } from './types/dto';
 import { CyberlinksByParticleQuery } from 'src/generated/graphql';
+import { replaceQuotes } from 'src/utils/string';
 
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, result, meta, textPreview } = particle;
   const { size, mime, type, blocks, sizeLocal } = meta;
   // hack to fix string command
-  const text = textPreview?.replace(/"/g, "'") || '';
+  const text = replaceQuotes(textPreview || '');
   return {
     cid,
     size: size || 0,

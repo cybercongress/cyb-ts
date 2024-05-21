@@ -27,7 +27,7 @@ import {
   mimeToBaseContentType,
   parseArrayLikeToDetails,
 } from 'src/services/ipfs/utils/content';
-import { shortenString } from 'src/utils/string';
+import { replaceQuotes, shortenString } from 'src/utils/string';
 import { IPFSContentMutated } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
@@ -296,7 +296,14 @@ class ParticlesResolverQueue {
     if (items.length === 0) {
       return;
     }
-    const result = await this.db!.putSyncQueue(items);
+
+    // TODO: remove quotes inside mapping
+    const queueItems = items.map((q) => ({
+      ...q,
+      data: q.data ? replaceQuotes(q?.data) : undefined,
+    }));
+
+    const result = await this.db!.putSyncQueue(queueItems);
 
     const queue = this._syncQueue$.value;
 

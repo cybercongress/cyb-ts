@@ -62,23 +62,24 @@ function ScriptingActionBar({
       `🚧 Fetching particle '${testCid}'...`,
     ]);
 
-    const { contentType = '???', content = '' } =
-      await ipfsApi?.fetchWithDetails(testCid);
-    const preview =
-      content.length > 144 ? `${content.slice(1, 144)}....` : content;
+    const result = await ipfsApi?.fetchWithDetails(testCid);
+    if (result) {
+      const { type, content } = result;
 
-    addToLog([
-      `   ☑️ Content-type: ${contentType}`,
-      `   ☑️ Preview: ${preview}`,
-      '',
-      '💭 Execute script....',
-    ]);
+      const preview =
+        content!.length > 144 ? `${content!.slice(1, 144)}....` : content;
 
-    compileAndTest('personal_processor', {
-      cid: testCid,
-      contentType,
-      content,
-    });
+      addToLog([
+        `   ☑️ Content-type: ${type}`,
+        `   ☑️ Preview: ${preview}`,
+        '',
+        '💭 Execute script....',
+      ]);
+
+      compileAndTest('personal_processor', [testCid, type, content]);
+    } else {
+      addToLog([`🚫 '${testCid}' - can't resolve.`]);
+    }
     setActionBarStep(0);
   };
 
@@ -120,16 +121,7 @@ function ScriptingActionBar({
   ];
 
   return (
-    <ActionBarContainer
-      additionalButtons={
-        isChanged
-          ? [
-              { text: 'cancel', onClick: onCancelClick },
-              { text: 'save', onClick: onSaveClick },
-            ]
-          : []
-      }
-    >
+    <ActionBarContainer>
       <Pane className={styles.actionPanel}>
         <StepsBar
           steps={actionBarSteps}

@@ -27,6 +27,7 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import {
   selectRuneEntypoints,
+  setContext,
   setEntrypoint,
 } from 'src/redux/reducers/scripting';
 import { RuneEngine } from 'src/services/scripting/engine';
@@ -34,6 +35,7 @@ import runeDeps from 'src/services/scripting/runeDeps';
 
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { useSigningClient } from '../signerClient';
+import { UserContext } from 'src/services/scripting/types';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -79,6 +81,7 @@ const valueContext = {
   isReady: false,
   dbApi: null,
   ipfsApi: null,
+  mlApi: null,
 };
 
 const BackendContext =
@@ -118,13 +121,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const runeEntryPoints = useAppSelector(selectRuneEntypoints);
 
   const myAddress = useAppSelector(selectCurrentAddress);
-  const passport = useAppSelector(selectCurrentPassport);
+  const citizenship = useAppSelector(selectCurrentPassport);
 
   const { friends, following } = useAppSelector(
     (state) => state.backend.community
   );
 
-  // // TODO: preload from DB
   const followings = useMemo(() => {
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
@@ -137,21 +139,38 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [myAddress, dispatch]);
 
   useEffect(() => {
-    const particleCid = passport?.data?.extension.particle;
-
-    if (particleCid && isIpfsInitialized) {
-      (async () => {
-        const result = await backgroundWorkerInstance.ipfsApi.fetchWithDetails(
-          particleCid,
-          'text'
-        );
-
-        dispatch(
-          setEntrypoint({ name: 'particle', code: result?.content || '' })
-        );
-      })();
+    if (citizenship) {
+      const particleCid = citizenship.extension.particle;
+      backgroundWorkerInstance.rune.pushContext('user', {
+        address: citizenship.owner,
+        nickname: citizenship.extension.nickname,
+        citizenship,
+        particle: particleCid,
+      } as UserContext);
+    } else {
+      backgroundWorkerInstance.rune.popContext(['user', 'secrets']);
     }
-  }, [passport, isRuneInitialized, isIpfsInitialized, dispatch]);
+  }, [citizenship]);
+
+  useEffect(() => {
+    if (citizenship) {
+      const particleCid = citizenship.extension.particle;
+
+      if (particleCid && isIpfsInitialized) {
+        (async () => {
+          const result =
+            await backgroundWorkerInstance.ipfsApi.fetchWithDetails(
+              particleCid,
+              'text'
+            );
+
+          dispatch(
+            setEntrypoint({ name: 'particle', code: result?.content || '' })
+          );
+        })();
+      }
+    }
+  }, [citizenship, isRuneInitialized, isIpfsInitialized, dispatch]);
 
   useEffect(() => {
     backgroundWorkerInstance.rune.setEntrypoints(runeEntryPoints);

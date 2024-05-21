@@ -47,9 +47,8 @@ function PassportMoonCitizenship() {
   const { isMobile: mobile } = useDevice();
   const defaultAccount = useAppSelector((state) => state.pocket.defaultAccount);
 
-  const p = useAppSelector(selectCurrentPassport);
+  const citizenship = useAppSelector(selectCurrentPassport);
   // FIXME: backward compatibility
-  const citizenship = p.data || null;
 
   const queryClient = useQueryClient();
   const { addressActive } = useSetActiveAddress(defaultAccount);

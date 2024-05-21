@@ -48,14 +48,14 @@ const mlModelMap: Record<string, MlModelParams> = {
     name: 'feature-extraction',
     model: 'Xenova/all-MiniLM-L6-v2',
   },
-  summarization: {
-    name: 'summarization',
-    model: 'ahmedaeb/distilbart-cnn-6-6-optimised',
-  },
-  qa: {
-    name: 'question-answering',
-    model: 'Xenova/distilbert-base-uncased-distilled-squad',
-  },
+  // summarization: {
+  //   name: 'summarization',
+  //   model: 'ahmedaeb/distilbart-cnn-6-6-optimised',
+  // },
+  // qa: {
+  //   name: 'question-answering',
+  //   model: 'Xenova/distilbert-base-uncased-distilled-squad',
+  // },
 };
 
 export type GetEmbeddingFunc = (text: string) => Promise<number[]>;

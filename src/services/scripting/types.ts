@@ -7,7 +7,7 @@ type ParamsContext = {
   search?: { [k: string]: string };
 };
 
-type UserContext = {
+export type UserContext = {
   address?: string;
   nickname?: string;
   passport?: Citizenship;

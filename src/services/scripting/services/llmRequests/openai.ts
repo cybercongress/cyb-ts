@@ -9,20 +9,19 @@ import axios from 'axios';
 export const promptToOpenAI = async (
   prompt: string,
   apiKey: string,
-  model = 'text-davinci-003', // 'gpt-3.5-turbo',
-  maxTokens = 500,
-  stop = '.',
-  n = 1
+  params: any = {
+    model: 'text-davinci-003', // 'gpt-3.5-turbo',
+    maxTokens: 500,
+    stop: '.',
+    n: 1,
+  }
 ) => {
   //prompt: `Complete this sentence: "${input}"`,
   const response = await axios.post(
     'https://api.openai.com/v1/completions',
     {
       prompt,
-      model,
-      max_tokens: maxTokens,
-      n,
-      stop,
+      ...params,
     },
     {
       headers: {
