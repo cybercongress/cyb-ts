@@ -28,9 +28,15 @@ type SliceState = {
   };
 };
 
+const particleEnabled = loadStringFromLocalStorage(
+  getEntrypointKeyName('particle', 'enabled'),
+  undefined
+);
+
 const isParticleScriptEnabled =
-  !!loadStringFromLocalStorage(getEntrypointKeyName('particle', 'enabled')) ||
-  true;
+  particleEnabled !== undefined ? !!particleEnabled : true;
+
+console.log('----isParticleScriptEnabled', isParticleScriptEnabled);
 
 const initialScriptEntrypoints: ScriptEntrypoints = {
   particle: {

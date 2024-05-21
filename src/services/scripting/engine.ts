@@ -138,6 +138,7 @@ function enigine(): RuneEngine {
   };
 
   const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
+    console.log('-----setEntrypoints', scriptEntrypoints);
     entrypoints = mapObjIndexed(
       (v) => ({ ...v, script: extractRuneScript(v.script) }),
       scriptEntrypoints

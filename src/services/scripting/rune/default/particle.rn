@@ -15,25 +15,31 @@ pub async fn moon_domain_resolver() {
 
     return content_result(`Hello, ${nickname}, your lucky number is ${rand_int} 🎉`);
 
-    // return app hosted by CID
+    // substitute with some CID (ipfs hosted app in this case)
     // return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 
 // Extend particle page with custom UI elements
 pub async fn ask_companion(cid, content_type, content) {
+    // plain text item
     let links = [meta_text("similar:")];
 
+    // search closest 5 particles using local data from the brain
     let similar_results = cyb::search_by_embedding(content, 5).await;
-      for v in similar_results {
+
+
+    for v in similar_results {
+        // link item
         links.push(meta_link(`/oracle/ask/${v.cid}`, v.text));
     }
+
     return content_result(links)
 }
 
 // Transform content of the particle
 pub async fn personal_processor(cid, content_type, content) {
 
-    // pass as is any non-text content
+    // skip any non-text content
     if content_type != "text" {
         return pass()
     }
