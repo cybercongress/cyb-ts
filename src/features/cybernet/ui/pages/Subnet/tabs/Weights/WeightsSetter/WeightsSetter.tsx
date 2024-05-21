@@ -64,20 +64,6 @@ function WeightsSetter({ callback, weights: w }: Props) {
     };
   }, [netuid, weights]);
 
-  const { previousPathname } = usePreviousPage();
-
-  const ref = useRef<HTMLDivElement>(null);
-
-  // need this because autoFocus not updateable
-  useEffect(() => {
-    const search = new URLSearchParams(previousPathname?.split('?')[1]);
-
-    const neuron = search.get('neuron');
-
-    if (ref.current) {
-      ref.current.querySelector(`[data-address="${neuron}"]`)?.focus();
-    }
-  }, [previousPathname]);
 
   return (
     <div className={styles.wrapper}>

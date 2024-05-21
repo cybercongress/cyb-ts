@@ -3,18 +3,16 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import Display from 'src/components/containerGradient/Display/Display';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 
-type Props = {
-  addressRegisteredInSubnet: boolean;
-};
+type Props = {};
 
-function Weights({ addressRegisteredInSubnet }: Props) {
+function Weights({}: Props) {
   useAdviserTexts({
     defaultText: 'Subnet weights',
   });
 
   return (
     <div>
-      <Display title={<DisplayTitle title="Grades" />}>
+      <Display noPaddingX title={<DisplayTitle title="Grades" />}>
         <WeightsTable />
       </Display>
 

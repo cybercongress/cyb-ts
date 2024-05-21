@@ -193,7 +193,7 @@ function SubnetNeuronsTable({}: Props) {
           cell: (info) => {
             const uid = info.getValue();
 
-            return <GradeSetterInput uid={uid} />;
+            return <GradeSetterInput key={uid} uid={uid} />;
           },
         })
       );
@@ -202,7 +202,7 @@ function SubnetNeuronsTable({}: Props) {
     return col;
   }, [
     allGrades,
-    // block,
+    block,
     // cur,
     metadata,
     netuid,

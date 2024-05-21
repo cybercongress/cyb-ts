@@ -16,6 +16,7 @@ import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
 import { routes } from 'src/routes';
+import ContractsTable from './ContractsTable/ContractsTable';
 
 function Main() {
   const address = useCurrentAddress();
@@ -32,12 +33,14 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title="Cybernet" />}>
-        <p className={styles.info}>
-          cybernet is the place, where ones brings wealth to the project, and
-          others who value them. <br /> join the subnet and complete its
-          enquiries, or stake on those who joined to make them more valuable.
-        </p>
+      <Display>
+        cybernet is the place, where ones brings wealth to the project, and
+        others who value them. <br /> join the subnet and complete its
+        enquiries, or stake on those who joined to make them more valuable.
+      </Display>
+
+      <Display noPaddingX title={<DisplayTitle title="Cybernet" />}>
+        <ContractsTable />
       </Display>
 
       <div className={styles.actions}>
@@ -124,33 +127,6 @@ function Main() {
           </div>
         </Display>
       </div>
-
-      <Display title={<DisplayTitle title="Settings" />}>
-        <div className={styles.settings}>
-          <Select
-            disabled
-            title="Chain"
-            valueSelect="pussy"
-            options={[
-              {
-                value: 'pussy',
-                text: '🟣 pussy',
-              },
-            ]}
-          />
-
-          <Input
-            value={CYBERNET_CONTRACT_ADDRESS}
-            disabled
-            width="50%"
-            title="Contract address"
-          />
-
-          <Link to={routes.contracts.byId.getLink(CYBERNET_CONTRACT_ADDRESS)}>
-            link
-          </Link>
-        </div>
-      </Display>
     </MainContainer>
   );
 }

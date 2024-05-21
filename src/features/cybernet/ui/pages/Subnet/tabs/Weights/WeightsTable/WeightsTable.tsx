@@ -9,6 +9,7 @@ import { Account } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { useSubnet } from '../../../subnet.context';
+import { useMemo } from 'react';
 
 type Props = {};
 
@@ -34,59 +35,46 @@ function WeightsTable({}: Props) {
     return null;
   }
 
-  const rows = isRootSubnet
-    ? subnetsQuery.data?.map((subnet) => subnet.netuid)
-    : neurons.map((neuron) => neuron.hotkey);
-
-  console.log(rows);
-
-  if (!rows?.length) {
-    return null;
-  }
-
-  console.log(rows);
+  const columns = isRootSubnet
+    ? subnetsQuery.data
+        ?.map((subnet) => subnet.netuid)
+        .filter((subnet) => subnet !== 0)
+    : neurons.map((neuron) => neuron.uid);
 
   const data = grades.all.data;
 
+  console.log(data);
+
+  console.log(columns);
+
+  if (!columns) {
+    return null;
+  }
+
   return (
     <div>
-      <div className={styles.temp}>
+      <div className={styles.wrapper}>
         <Table
           enableSorting={false}
-          data={rows}
+          data={neurons}
           columns={[
             // @ts-ignore
-            columnHelper.accessor(
-              (row) => {
-                return row;
+            columnHelper.accessor('hotkey', {
+              id: 'uid',
+              header: '',
+              cell: (info) => {
+                const uid = info.getValue();
+
+                return (
+                  <Account
+                    address={uid}
+                    avatar
+                    markCurrentAddress
+                    link={cybernetRoutes.delegator.getLink(uid)}
+                  />
+                );
               },
-              {
-                id: 'uid',
-                header: '',
-                cell: (info) => {
-                  const uid = info.getValue();
-
-                  if (isRootSubnet) {
-                    return (
-                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
-                        SN {uid}
-                      </Link>
-                    );
-                  }
-
-                  console.log(uid, 'uid');
-
-                  return (
-                    <Account
-                      address={uid}
-                      avatar
-                      markCurrentAddress
-                      link={cybernetRoutes.delegator.getLink(uid)}
-                    />
-                  );
-                },
-              }
-            ),
+            }),
           ]}
         />
 
@@ -95,37 +83,58 @@ function WeightsTable({}: Props) {
           columns={
             // useMemo(
             // () =>
-            data.map((_, i) => {
-              const { hotkey, uid } = neurons[i];
-              return columnHelper.accessor(String(i), {
-                header: (
-                  <div
-                    style={{
-                      position: 'relative',
-                    }}
-                  >
-                    {address === hotkey && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: -21,
-                          left: 5,
-                        }}
+            columns.map((uid) => {
+              console.log(uid, 'uid');
+              return columnHelper.accessor(String(uid), {
+                id: `t${uid}`,
+                header: () => {
+                  if (isRootSubnet) {
+                    return (
+                      <Link
+                        to={cybernetRoutes.subnet.getLink(uid)}
+                        style={
+                          {
+                            // minHeight: 40,
+                            // display: 'block',
+                          }
+                        }
                       >
-                        🔑
-                      </span>
-                    )}
-                    <Account
-                      address={hotkey}
-                      avatar
-                      // markCurrentAddress
-                      onlyAvatar
-                      link={cybernetRoutes.delegator.getLink(hotkey)}
-                    />
-                  </div>
-                ),
+                        SN&nbsp;{uid}
+                      </Link>
+                    );
+                  }
+
+                  const hotkey = neurons[uid].hotkey;
+
+                  return (
+                    <div
+                      style={{
+                        position: 'relative',
+                      }}
+                    >
+                      {address === hotkey && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: 15,
+                            left: 20,
+                          }}
+                        >
+                          🔑
+                        </span>
+                      )}
+                      <Account
+                        address={hotkey}
+                        avatar
+                        // markCurrentAddress
+                        onlyAvatar
+                        link={cybernetRoutes.delegator.getLink(hotkey)}
+                      />
+                    </div>
+                  );
+                },
                 cell: (info) => {
-                  const val = info.getValue();
+                  const val = info.row.original[uid];
 
                   if (!val) {
                     return '-';
@@ -145,6 +154,8 @@ function WeightsTable({}: Props) {
                 },
               });
             })
+            // [columns, address, isRootSubnet]
+            // )
           }
           data={data}
         />
