@@ -41,7 +41,6 @@ function createCozoDb() {
       onIndexedDbWrite
     );
     await initDbSchema();
-    commandFactory = createCozoDbCommandFactory(dbSchema);
   };
 
   async function init(onWrite?: OnWrite): Promise<void> {
@@ -83,12 +82,12 @@ function createCozoDb() {
   const initDbSchema = async (): Promise<void> => {
     let relations = await getRelations();
 
-    if (relations.length === 0) {
+    const shouldInitialize = relations.length === 0;
+    if (shouldInitialize) {
       cyblogCh.info('CozoDb: apply DB schema', initializeScript);
       const result = await runCommand(initializeScript);
 
       relations = await getRelations();
-      await setDbVersion(DB_VERSION);
     }
 
     const schemasMap = await Promise.all(
@@ -102,6 +101,13 @@ function createCozoDb() {
     cyblogCh.info('CozoDb schema initialized: ', {
       data: [dbSchema, relations, schemasMap],
     });
+
+    commandFactory = createCozoDbCommandFactory(dbSchema);
+
+    if (shouldInitialize) {
+      // if initialized set initial version
+      await setDbVersion(DB_VERSION);
+    }
   };
 
   const getDbVersion = async () => {
