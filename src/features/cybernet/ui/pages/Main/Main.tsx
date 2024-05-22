@@ -16,6 +16,7 @@ import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
 import { routes } from 'src/routes';
+import ContractsTable from './ContractsTable/ContractsTable';
 
 function Main() {
   const address = useCurrentAddress();
@@ -32,47 +33,48 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title="Cybernet" />}>
-        <p className={styles.info}>
-          cybertensor is the place, where ones brings wealth to the project, and
-          others who value them. <br /> join the subnet and complete its
-          enquiries, or stake on those who joined to make them more valuable.
-        </p>
+      <Display>
+        cybernet is the place, where ones brings wealth to the project, and
+        others who value them. <br /> join the subnet and complete its
+        enquiries, or stake on those who joined to make them more valuable.
+      </Display>
+
+      <Display noPaddingX title={<DisplayTitle title="Cybernet" />}>
+        <ContractsTable />
       </Display>
 
       <div className={styles.actions}>
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  stake
-                  <div className={styles.apr}>
-                    apr up to <br />
-                    <span>35%</span>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>stake</h3>
+                    <div className={styles.apr}>
+                      apr up to <br />
+                      <span>35%</span>
+                    </div>
                   </div>
-                </div>
-              }
-            />
-          }
-        >
-          <p className={styles.actionText}>stake on creators in subnets</p>
-          <Link to={cybernetRoutes.delegators.getLink()}>all creators</Link>
+                }
+              />
+            }
+          >
+            <p className={styles.actionText}>invest in operators subnets</p>
+            <div className={styles.links}>
+              <Link to={cybernetRoutes.delegators.getLink()}>operators</Link>
 
-          {haveStake && (
-            <>
-              <br />
-              <Link to="./staking/my">My stake</Link>
-            </>
-          )}
-        </Display>
+              {haveStake && <Link to="./staking/my">stats</Link>}
+            </div>
+          </Display>
+        </div>
 
         <Display
           title={
             <DisplayTitle
               title={
                 <div className={styles.actionTitle}>
-                  join subnets
+                  <h3>join subnets</h3>
                   <div className={styles.apr}>
                     apr up to
                     <span>35%</span>
@@ -84,25 +86,31 @@ function Main() {
         >
           <p className={styles.actionText}>complete tasks, manage grades</p>
 
-          <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
-          <br />
-          <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
+          <div className={styles.links}>
+            <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
 
-          <br />
+            <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
 
-          {currentAddressIsDelegator && (
-            <Link to={cybernetRoutes.delegator.getLink(address)}>
-              My delegator
-            </Link>
-          )}
+            {currentAddressIsDelegator && (
+              <Link to={cybernetRoutes.delegator.getLink(address)}>
+                my operator
+              </Link>
+            )}
+          </div>
         </Display>
 
-        <Display title={<DisplayTitle title="Docs and code" />}>
-          <div className={styles.externalLinks}>
-            <LinkWindow to="http://docs.spacepussy.ai">
-              docs
-            </LinkWindow>
-            
+        <Display
+          title={
+            <DisplayTitle
+              title={
+                <div className={styles.actionTitle}>
+                  <h3>Docs and code</h3>
+                </div>
+              }
+            />
+          }
+        >
+          <div className={styles.links}>
             <LinkWindow to="https://github.com/cybercongress/cybertensor">
               cli and python package
             </LinkWindow>
@@ -115,36 +123,10 @@ function Main() {
               cosmwasm contract
             </LinkWindow>
 
+            <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
           </div>
         </Display>
       </div>
-
-      <Display title={<DisplayTitle title="Settings" />}>
-        <div className={styles.settings}>
-          <Select
-            disabled
-            title="Chain"
-            valueSelect="pussy"
-            options={[
-              {
-                value: 'pussy',
-                text: '🟣 pussy',
-              },
-            ]}
-          />
-
-          <Input
-            value={CYBERNET_CONTRACT_ADDRESS}
-            disabled
-            width="50%"
-            title="Contract address"
-          />
-
-          <Link to={routes.contracts.byId.getLink(CYBERNET_CONTRACT_ADDRESS)}>
-            link
-          </Link>
-        </div>
-      </Display>
     </MainContainer>
   );
 }

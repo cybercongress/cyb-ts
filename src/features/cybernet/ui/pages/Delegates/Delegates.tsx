@@ -17,15 +17,15 @@ function Delegates() {
   useAdviserTexts({
     isLoading: loading,
     error,
-    defaultText: 'Delegators',
+    defaultText: 'choose operator to invest',
   });
 
   console.log(data);
 
   return (
     <MainContainer resetMaxWidth>
-      <Display noPaddingX title={<DisplayTitle title="Delegators" />}>
-        <DelegatorsTable data={data || []} />
+      <Display noPaddingX title={<DisplayTitle title="Operators" />}>
+        <DelegatorsTable data={data || []} isLoading={loading} />
       </Display>
     </MainContainer>
   );

@@ -15,6 +15,10 @@
 
     th {
       font-weight: 400;
+
+      &.sortable {
+        cursor: pointer;
+      }
     }
   }
 
@@ -34,5 +38,9 @@
         @include tableHover;
       }
     }
+  }
+
+  &.selectable tbody tr {
+    cursor: pointer;
   }
 }
