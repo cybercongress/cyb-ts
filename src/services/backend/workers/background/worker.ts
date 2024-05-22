@@ -159,8 +159,8 @@ const createBackgroundWorkerApi = () => {
     dbInstance$.next(dbApiProxy);
     Promise.all([
       initMlInstance('featureExtractor'),
-      initMlInstance('summarization'),
-      initMlInstance('qa'),
+      // initMlInstance('summarization'),
+      // initMlInstance('qa'),
     ])
       .then((result) => {
         broadcastApi.postServiceStatus('ml', 'started');
@@ -228,18 +228,18 @@ const createBackgroundWorkerApi = () => {
 
   const mlApi = {
     getEmbedding,
-    getQA: async (question: string, context: string) => {
-      const output = await mlInstances.qa(question, context);
-      console.log('---- getQA output', output);
-      return output.answer;
-    },
-    getSummary: async (context: string, maxTokens = 100) => {
-      const output = await mlInstances.summarization(context, {
-        max_new_tokens: maxTokens,
-      });
-      console.log('---- getSummary output', output);
-      return output[0].summary_text;
-    },
+    // getQA: async (question: string, context: string) => {
+    //   const output = await mlInstances.qa(question, context);
+    //   console.log('---- getQA output', output);
+    //   return output.answer;
+    // },
+    // getSummary: async (context: string, maxTokens = 100) => {
+    //   const output = await mlInstances.summarization(context, {
+    //     max_new_tokens: maxTokens,
+    //   });
+    //   console.log('---- getSummary output', output);
+    //   return output[0].summary_text;
+    // },
 
     searchByEmbedding: async (text: string, count?: number) => {
       const vec = await getEmbedding(text);

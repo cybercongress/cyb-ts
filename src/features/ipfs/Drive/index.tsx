@@ -47,9 +47,9 @@ function Drive() {
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [searchEmbedding, setSearchEmbedding] = useState('');
-  const [summarizeCid, setSummarizeCid] = useState('');
+  // const [summarizeCid, setSummarizeCid] = useState('');
   const [outputText, setOutputText] = useState('');
-  const [questionText, setQuestionText] = useState('');
+  // const [questionText, setQuestionText] = useState('');
   const [embeddingsProcessStatus, setEmbeddingsProcessStatus] = useState('');
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -167,35 +167,35 @@ function Drive() {
     runQuery(value);
   };
 
-  const createParticleEmbeddingsClick = async () => {
-    const data = await cozoDbRemote?.runCommand(
-      '?[cid, text] := *particle{cid, mime, text, blocks, size, size_local, type}, mime="text/plain"',
-      true
-    );
+  // const createParticleEmbeddingsClick = async () => {
+  //   const data = await cozoDbRemote?.runCommand(
+  //     '?[cid, text] := *particle{cid, mime, text, blocks, size, size_local, type}, mime="text/plain"',
+  //     true
+  //   );
 
-    let index = 0;
-    const totalItems = data!.rows.length;
-    setEmbeddingsProcessStatus(`Starting... Total particles (0/${totalItems})`);
+  //   let index = 0;
+  //   const totalItems = data!.rows.length;
+  //   setEmbeddingsProcessStatus(`Starting... Total particles (0/${totalItems})`);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const row of data!.rows) {
-      const [cid, text] = row;
-      const vec = await mlApi?.getEmbedding(text as string);
-      const res = await cozoDbRemote?.executePutCommand('embeddings', [
-        {
-          cid,
-          vec,
-        } as EmbeddinsDbEntity,
-      ]);
-      index++;
-      setEmbeddingsProcessStatus(
-        `Processing particles (${index}/${totalItems})....`
-      );
-    }
-    setEmbeddingsProcessStatus(
-      `Embeddings complete for (0/${totalItems}) particles!`
-    );
-  };
+  //   // eslint-disable-next-line no-restricted-syntax
+  //   for await (const row of data!.rows) {
+  //     const [cid, text] = row;
+  //     const vec = await mlApi?.getEmbedding(text as string);
+  //     const res = await cozoDbRemote?.executePutCommand('embeddings', [
+  //       {
+  //         cid,
+  //         vec,
+  //       } as EmbeddinsDbEntity,
+  //     ]);
+  //     index++;
+  //     setEmbeddingsProcessStatus(
+  //       `Processing particles (${index}/${totalItems})....`
+  //     );
+  //   }
+  //   setEmbeddingsProcessStatus(
+  //     `Embeddings complete for (0/${totalItems}) particles!`
+  //   );
+  // };
 
   const searchByEmbeddingsClick = async () => {
     const vec = await mlApi?.getEmbedding(searchEmbedding);
@@ -207,47 +207,36 @@ function Drive() {
     runQuery(queryText);
   };
 
-  const summarizeClick = async () => {
-    const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
-      ?.content;
-    const output = await mlApi?.getSummary(text!);
-    setOutputText(output);
+  // const summarizeClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getSummary(text!);
+  //   setOutputText(output);
 
-    // const queryText = `
-    // e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
-    // ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
-    // `;
-    // setQueryText(queryText);
-    // runQuery(queryText);
-  };
+  // };
 
-  const questionClick = async () => {
-    const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
-      ?.content;
-    const output = await mlApi?.getQA(questionText, text!);
-    setOutputText(output);
-    // const vec = await mlApi?.getEmbedding(searchEmbedding);
-    // const queryText = `
-    // e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
-    // ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
-    // `;
-    // setQueryText(queryText);
-    // runQuery(queryText);
-  };
+  // const questionClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getQA(questionText, text!);
+  //   setOutputText(output);
+
+  // };
+
   function onSearchEmbeddingChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
     setSearchEmbedding(value);
   }
 
-  function onSummarizeCidChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { value } = event.target;
-    setSummarizeCid(value);
-  }
+  // function onSummarizeCidChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setSummarizeCid(value);
+  // }
 
-  function onQuestionChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { value } = event.target;
-    setQuestionText(value);
-  }
+  // function onQuestionChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setQuestionText(value);
+  // }
 
   return (
     <>
@@ -280,7 +269,7 @@ function Drive() {
         </Display>
         <BackendStatus />
         <Pane width="100%">
-          <div className={styles.centerPanel}>
+          {/* <div className={styles.centerPanel}>
             <Button small onClick={createParticleEmbeddingsClick}>
               🤖 create particle embeddings
             </Button>
@@ -306,7 +295,7 @@ function Drive() {
             <Button small onClick={questionClick}>
               🔮 Ask question about CID content
             </Button>
-          </div>
+          </div> */}
           <div>{outputText}</div>
           <div className={styles.buttonPanel}>
             <Input

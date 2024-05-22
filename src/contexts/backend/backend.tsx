@@ -52,11 +52,13 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
+type IpfsApiRemote = Remote<BackgroundWorker['ipfsApi']> | null;
+
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: SenseApi;
   mlApi: Remote<BackgroundWorker['mlApi']> | null;
-  ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
+  ipfsApi: IpfsApiRemote;
   defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
   rune: Remote<RuneEngine> | null;
   dbApi: DbApiWrapper | null;
@@ -116,6 +118,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const isRuneInitialized = useAppSelector(
     (state) => state.backend.services.rune.status === 'started'
+  );
+
+  const isMlInitialized = useAppSelector(
+    (state) => state.backend.services.ml.status === 'started'
   );
 
   const runeEntryPoints = useAppSelector(selectRuneEntypoints);
@@ -287,18 +293,42 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return () => channel.close();
   }, [dispatch, createDbApi]);
 
+  const ipfsApi = useMemo(
+    () => (isIpfsInitialized ? backgroundWorkerInstance.ipfsApi : null),
+    [isIpfsInitialized]
+  );
+
+  const ipfsNode = useMemo(
+    () =>
+      isIpfsInitialized ? backgroundWorkerInstance.ipfsApi.getIpfsNode() : null,
+    [isIpfsInitialized]
+  );
+
+  const rune = useMemo(
+    () => (isRuneInitialized ? backgroundWorkerInstance.rune : null),
+    [isRuneInitialized]
+  );
+
+  const mlApi = useMemo(
+    () => (isMlInitialized ? backgroundWorkerInstance.mlApi : null),
+    [isMlInitialized]
+  );
+
+  const defferedDbApi = useMemo(
+    () => (isDbInitialized ? backgroundWorkerInstance.defferedDbApi : null),
+    [isDbInitialized]
+  );
+
   const valueMemo = useMemo(
     () =>
       ({
         // backgroundWorker: backgroundWorkerInstance,
         cozoDbRemote: cozoDbWorkerInstance,
-        ipfsApi: backgroundWorkerInstance.ipfsApi,
-        mlApi: backgroundWorkerInstance.mlApi,
-        defferedDbApi: backgroundWorkerInstance.defferedDbApi,
-        rune: backgroundWorkerInstance.rune,
-        ipfsNode: isIpfsInitialized
-          ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
-          : null,
+        ipfsApi,
+        mlApi,
+        defferedDbApi,
+        rune,
+        ipfsNode,
         restartSync: (name: SyncEntryName) =>
           backgroundWorkerInstance.restartSync(name),
         dbApi,
@@ -318,6 +348,12 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       ipfsError,
       senseApi,
       dbApi,
+      mlApi,
+      ipfsApi,
+      ipfsNode,
+      defferedDbApi,
+      rune,
+      loadIpfs,
     ]
   );
 

@@ -138,7 +138,6 @@ function enigine(): RuneEngine {
   };
 
   const setEntrypoints = (scriptEntrypoints: ScriptEntrypoints) => {
-    console.log('-----setEntrypoints', scriptEntrypoints);
     entrypoints = mapObjIndexed(
       (v) => ({ ...v, script: extractRuneScript(v.script) }),
       scriptEntrypoints
@@ -293,7 +292,7 @@ function enigine(): RuneEngine {
       funcName: 'ask_companion',
       funcParams: [cid, contentType, content],
     });
-    console.log('askCompanion', output, cid, content, contentType);
+
     return { action: 'answer', metaItems: output.result.content };
   };
 

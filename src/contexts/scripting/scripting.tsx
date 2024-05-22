@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useBackend } from '../backend/backend';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScriptMyCampanion } from 'src/services/scripting/types';
-import { IpfsContentType } from 'src/services/ipfs/types';
+import { IPFSContentMutated, IpfsContentType } from 'src/services/ipfs/types';
+import { useBackend } from '../backend/backend';
 
 export type ScriptingContextType = {
   status: 'loading' | 'ready' | 'pending' | 'done' | 'error';
   metaItems: ScriptMyCampanion['metaItems'];
   askCompanion: (
     cid: string,
-    contentType: IpfsContentType,
-    content: any
+    contentType?: IpfsContentType,
+    content?: IPFSContentMutated['result']
   ) => Promise<void>;
 };
 
@@ -33,18 +33,24 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     []
   );
   const askCompanion = useCallback(
-    async (cid: string, contentType: IpfsContentType, content: any) => {
-      if (contentType !== 'text') {
+    async (
+      cid: string,
+      contentType?: IpfsContentType,
+      content?: IPFSContentMutated['result']
+    ) => {
+      if (!contentType || !content || contentType !== 'text') {
         setStatus('done');
         setMetaItems([
           { type: 'text', text: `Skip companion for '${contentType}'.` },
         ]);
         return;
       }
-      await rune?.askCompanion(cid, contentType, content).then((result) => {
-        setMetaItems(result.metaItems);
-        setStatus('done');
-      });
+      await rune
+        ?.askCompanion(cid, contentType, content as string)
+        .then((result) => {
+          setMetaItems(result.metaItems);
+          setStatus('done');
+        });
     },
     [rune]
   );

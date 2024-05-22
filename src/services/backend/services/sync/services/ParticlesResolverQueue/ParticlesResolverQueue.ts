@@ -300,9 +300,8 @@ class ParticlesResolverQueue {
     // TODO: remove quotes inside mapping
     const queueItems = items.map((q) => ({
       ...q,
-      data: q.data ? replaceQuotes(q?.data) : undefined,
+      data: q.data ? replaceQuotes(q.data.toString()) : '',
     }));
-
     const result = await this.db!.putSyncQueue(queueItems);
 
     const queue = this._syncQueue$.value;

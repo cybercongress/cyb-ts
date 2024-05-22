@@ -97,16 +97,7 @@ const createRuneDeps = () => {
     params = {}
   ) => {
     try {
-      // console.log(
-      //   'js_evalScriptFromIpfs',
-      //   cid,
-      //   funcName,
-      //   params,
-      //   ipfApiOrThrow(),
-      //   runeOrThrow()
-      // );
       const result = await getIpfsTextConent(cid);
-      console.log('js_evalScriptFromIpfs particle ', cid, result);
 
       if (result?.content === undefined) {
         return { action: 'error', message: 'Particle not found' };
