@@ -9,6 +9,7 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
 import useDelegate from '../../hooks/useDelegate';
+import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -36,30 +37,41 @@ function Subnet() {
     defaultText: 'subnet',
   });
 
-  const addressRegisteredInSubnet = !!addressSubnetRegistrationStatus;
+  const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
+
+  const rootSubnet = subnetQuery.data?.netuid === 0;
+
+  const tabs = [
+    {
+      to: './info',
+      key: 'info',
+      text: 'info',
+    },
+    {
+      to: './',
+      key: 'operators',
+      text: 'operators',
+    },
+
+    {
+      to: './weights',
+      key: 'grades',
+      text: 'grades',
+      disabled: rootSubnet,
+    },
+  ];
+
+  if (rootSubnet) {
+    tabs.push({
+      to: './subnets',
+      key: 'subnets',
+      text: 'subnets',
+    });
+  }
 
   return (
     <MainContainer resetMaxWidth>
-      <Tabs
-        options={[
-          {
-            to: './info',
-            key: 'info',
-            text: 'info',
-          },
-          {
-            to: './',
-            key: 'neurons',
-            text: 'neurons',
-          },
-          {
-            to: './weights',
-            key: 'weights',
-            text: 'grades',
-          },
-        ]}
-        selected={tab || 'neurons'}
-      />
+      <Tabs options={tabs} selected={tab || 'operators'} />
 
       <Routes>
         <Route
@@ -68,6 +80,13 @@ function Subnet() {
             <SubnetNeurons
               addressRegisteredInSubnet={addressRegisteredInSubnet}
             />
+          }
+        />
+
+        <Route
+          path="/info"
+          element={
+            <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
           }
         />
 
@@ -86,12 +105,7 @@ function Subnet() {
           />
         )}
 
-        <Route
-          path="/info"
-          element={
-            <SubnetInfo data={subnetQuery.data} neurons={neuronsQuery.data} />
-          }
-        />
+        <Route path="/subnets" element={<SubnetSubnets />} />
       </Routes>
 
       <ActionBar
