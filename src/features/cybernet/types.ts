@@ -57,6 +57,8 @@ export type StakeInfo = {
 }[];
 
 type Stake = [string, number];
+
+// [neuron_uid, weight]
 export type Weight = [number, number];
 
 interface AxonInfo {
@@ -100,3 +102,6 @@ export interface SubnetNeuron {
   bonds: any[];
   pruning_score: number;
 }
+
+// [neuron_uid, weight]
+export type Weights = Weight[];

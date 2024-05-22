@@ -1,9 +1,3 @@
-.externalLinks {
-  display: flex;
-  gap: 15px;
-  flex-direction: column;
-}
-
 .info {
   color: #a0a0a0;
 }
@@ -14,6 +8,12 @@
   gap: 30px;
 }
 
+.bgWrapper {
+  // background-image: url('./images/1.jpg');
+  // background-repeat: no-repeat;
+  // background-size: cover;
+}
+
 .actions {
   justify-content: space-between;
   display: flex;
@@ -22,7 +22,13 @@
   .actionTitle {
     width: 100%;
     display: flex;
+    align-items: center;
     justify-content: space-between;
+
+    h3 {
+      font-size: 30px;
+      font-weight: 400;
+    }
   }
 
   .actionText {
@@ -40,6 +46,12 @@
       display: block;
       color: var(--green-light);
     }
+  }
+
+  .links {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
   }
 
   > div {

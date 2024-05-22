@@ -6,16 +6,13 @@ import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
 import { Account } from 'src/components';
-import { useSubnet } from '../../../subnet.context';
+import { getAverageGrade, useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
-import { formatWeightToGrade } from 'src/features/cybernet/ui/utils/formatWeight';
+import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
+import { useMemo } from 'react';
 
-type Props = {
-  neurons: SubnetNeuron[];
-  addressRegisteredInSubnet: boolean;
-  weights: Weight[];
-};
+type Props = {};
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
@@ -73,12 +70,14 @@ function handleSave(
   save(data, currentAddress);
 }
 
-function SubnetNeuronsTable({
-  neurons,
-  // addressRegisteredInSubnet,
-  weights,
-}: Props) {
-  const { subnetQuery } = useSubnet();
+function SubnetNeuronsTable({}: Props) {
+  const {
+    subnetQuery,
+    neuronsQuery,
+    grades: {
+      all: { data: allGrades },
+    },
+  } = useSubnet();
   const {
     netuid,
     metadata,
@@ -87,133 +86,130 @@ function SubnetNeuronsTable({
 
   const address = useCurrentAddress();
 
+  const neurons = neuronsQuery?.data || [];
+
   const { block } = useAppData();
 
-  const myUid = neurons.find((n) => n.hotkey === address)?.uid;
+  const rootSubnet = netuid === 0;
 
   const vievedBlocks = getData(address);
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
-  const columns = [
-    columnHelper.accessor('uid', {
-      header: 'uid',
-      cell: (info) => {
-        const uid = info.getValue();
+  const columns = useMemo(() => {
+    const col = [
+      columnHelper.accessor('uid', {
+        header: 'uid',
+        cell: (info) => {
+          const uid = info.getValue();
+          return uid;
+        },
+      }),
+      columnHelper.accessor('hotkey', {
+        header: 'operator',
+        enableSorting: false,
+        cell: (info) => {
+          const hotkey = info.getValue();
 
-        return uid;
-      },
-    }),
-    columnHelper.accessor('hotkey', {
-      header: 'neuron',
-      cell: (info) => {
-        const hotkey = info.getValue();
+          return (
+            <Account
+              address={hotkey}
+              avatar
+              markCurrentAddress
+              link={cybernetRoutes.delegator.getLink(hotkey)}
+            />
+          );
+        },
+      }),
+    ];
 
-        return (
-          <Account
-            address={hotkey}
-            avatar
-            markCurrentAddress
-            link={cybernetRoutes.delegator.getLink(hotkey)}
-          />
-        );
-      },
-    }),
+    if (!rootSubnet) {
+      col.push(
+        // @ts-ignore
+        columnHelper.accessor('hotkey', {
+          header: 'job done',
+          id: 'metadata',
+          enableSorting: false,
+          cell: (info) => {
+            const hotkey = info.getValue();
 
-    columnHelper.accessor('hotkey', {
-      header: 'metadata',
-      id: 'metadata',
-      cell: (info) => {
-        const hotkey = info.getValue();
+            if (!metadata) {
+              return null;
+            }
 
-        if (!metadata) {
-          return null;
-        }
+            const viewedBlock = cur?.[hotkey];
 
-        const vievedBlock = cur?.[hotkey];
+            return (
+              <>
+                <Link
+                  onClick={() => {
+                    if (!block) {
+                      return;
+                    }
 
-        return (
-          <>
-            <Link
-              onClick={(e) => {
-                if (!block) {
-                  return;
-                }
+                    handleSave(hotkey, netuid, +block, address);
+                  }}
+                  to={
+                    routes.oracle.ask.getLink(metadata) +
+                    `?neuron=${hotkey}&subnet=${netuid}`
+                  }
+                >
+                  🔍
+                </Link>
 
-                handleSave(hotkey, netuid, +block, address);
-              }}
-              to={
-                routes.oracle.ask.getLink(metadata) +
-                `?neuron=${hotkey}&subnet=${netuid}`
-              }
-            >
-              {/* <Cid cid={metadata}> */}
-              🔍
-              {/* {`${metadata.substr(0, 6)}...${metadata.substr(-6)}`} */}
-              {/* </Cid> */}
-            </Link>
+                <br />
+                {viewedBlock && block && (
+                  <span
+                    style={{
+                      fontSize: 14,
+                    }}
+                  >
+                    (viewed {block - viewedBlock} blocks ago)
+                  </span>
+                )}
+              </>
+            );
+          },
+        }),
+        columnHelper.accessor('uid', {
+          header: 'grade',
+          id: 'grade',
+          cell: (info) => {
+            const uid = info.getValue();
 
-            <br />
-            {vievedBlock && block && (
-              <span
-                style={{
-                  fontSize: 14,
-                }}
-              >
-                (viewed {block - vievedBlock} blocks ago)
-              </span>
-            )}
-          </>
-        );
-      },
-    }),
+            if (!allGrades) {
+              return null;
+            }
 
-    // columnHelper.accessor('uid', {
-    //   header: 'grade (WIP)',
-    //   id: 'grade',
+            const avg = getAverageGrade(allGrades, uid);
 
-    //   cell: (info) => {
-    //     const i = info.getValue();
+            return avg;
+          },
+        }),
+        columnHelper.accessor('uid', {
+          id: 'setGrade',
+          header: 'Set grade',
+          enableSorting: false,
+          cell: (info) => {
+            const uid = info.getValue();
 
-    //     if (!weights) {
-    //       return;
-    //     }
+            return <GradeSetterInput key={uid} uid={uid} />;
+          },
+        })
+      );
+    }
 
-    //     const mWeihts = weights[myUid];
+    return col;
+  }, [
+    allGrades,
+    // block,
+    // cur,
+    metadata,
+    netuid,
+    rootSubnet,
+    address,
+  ]);
 
-    //     console.log(mWeihts, 'mWeihts');
-
-    //     if (!mWeihts) {
-    //       return;
-    //     }
-
-    //     const t = mWeihts.find(([id, value]) => id === i)?.[1];
-
-    //     if (t === undefined) {
-    //       return '-';
-    //     }
-
-    //     // return formatWeightToGrade(t, maxWeightsLimit);
-
-    //     const g = weights[i];
-    //     const sum = g.reduce((acc, [id, value]) => acc + value, 0);
-    //     const average = sum / g.length;
-
-    //     // if (Number.isNaN(average) || Number.isNaN(t)) {
-    //     //   debugger;
-    //     // }
-
-    //     return (
-    //       <div>
-    //         {formatWeightToGrade(average, maxWeightsLimit)}
-    //         <br />
-    //         (my
-    //         {formatWeightToGrade(t, maxWeightsLimit)})
-    //       </div>
-    //     );
-    //   },
-    // }),
-  ];
   return <Table columns={columns} data={neurons} />;
 }
 

@@ -52,7 +52,7 @@ function ProposalsDetailTableComments() {
     isInitialLoading,
     refetch,
     fetchNextPage: next,
-  } = useSearchData(proposalHash, {
+  } = useSearchData(proposalHash, null, {
     sortBy,
     linksType: linksTypeFilter,
   });

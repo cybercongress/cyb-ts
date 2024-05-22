@@ -2,95 +2,126 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { Link } from 'react-router-dom';
-import { SubnetNeuron } from 'src/features/cybernet/types';
+import { SubnetInfo, SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import styles from './WeightsTable.module.scss';
 import { Account } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
+import { useSubnet } from '../../../subnet.context';
+import { useMemo } from 'react';
 
-type Props = {
-  data: any[];
-  neurons: SubnetNeuron[];
-  maxWeightsLimit: number;
-};
+type Props = {};
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
-function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
+function WeightsTable({}: Props) {
   const address = useCurrentAddress();
 
-  // format to percents
-  const percentsData = data.map((item) => {
-    return item.map((i) =>
-      parseFloat(((i[1] / maxWeightsLimit) * 10).toFixed(0))
-    );
+  const { subnetQuery, grades, neuronsQuery } = useSubnet();
+
+  const uid = subnetQuery.data?.netuid;
+  const isRootSubnet = uid === 0;
+
+  const neurons = neuronsQuery.data || [];
+
+  const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
+    query: {
+      get_subnets_info: {},
+    },
   });
+
+  if (!neurons.length) {
+    return null;
+  }
+
+  const columns = isRootSubnet
+    ? subnetsQuery.data
+        ?.map((subnet) => subnet.netuid)
+        .filter((subnet) => subnet !== 0)
+    : neurons.map((neuron) => neuron.uid);
+
+  const data = grades.all.data;
+
+  if (!columns) {
+    return null;
+  }
 
   return (
     <div>
-      <div className={styles.temp}>
+      <div className={styles.wrapper}>
         <Table
+          enableSorting={false}
           data={neurons}
           columns={[
+            // @ts-ignore
             columnHelper.accessor('hotkey', {
+              id: 'uid',
               header: '',
               cell: (info) => {
-                const hotkey = info.getValue();
-
-                const uid = neurons.find((n) => n.hotkey === hotkey)?.uid;
+                const uid = info.getValue();
 
                 return (
-                  <div
-                    style={{
-                      position: 'relative',
-                    }}
-                  >
-                    <Account
-                      address={hotkey}
-                      avatar
-                      markCurrentAddress
-                      link={cybernetRoutes.delegator.getLink(hotkey)}
-                    />
-                  </div>
+                  <Account
+                    address={uid}
+                    avatar
+                    markCurrentAddress
+                    link={cybernetRoutes.delegator.getLink(uid)}
+                  />
                 );
               },
             }),
           ]}
         />
+
         <Table
+          enableSorting={false}
           columns={
             // useMemo(
             // () =>
-            data.map((_, i) => {
-              const { hotkey, uid } = neurons[i];
-              return columnHelper.accessor(String(i), {
-                header: (
-                  <div
-                    style={{
-                      position: 'relative',
-                    }}
-                  >
-                    {address === hotkey && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: -21,
-                          left: 5,
-                        }}
-                      >
-                        🔑
-                      </span>
-                    )}
-                    <Account
-                      address={hotkey}
-                      avatar
-                      onlyAvatar
-                      link={cybernetRoutes.delegator.getLink(hotkey)}
-                    />
-                  </div>
-                ),
+            columns.map((uid) => {
+              return columnHelper.accessor(String(uid), {
+                id: `t${uid}`,
+                header: () => {
+                  if (isRootSubnet) {
+                    return (
+                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
+                        SN&nbsp;{uid}
+                      </Link>
+                    );
+                  }
+
+                  const hotkey = neurons[uid].hotkey;
+
+                  return (
+                    <div
+                      style={{
+                        position: 'relative',
+                      }}
+                    >
+                      {address === hotkey && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: 15,
+                            left: 20,
+                          }}
+                        >
+                          🔑
+                        </span>
+                      )}
+                      <Account
+                        address={hotkey}
+                        avatar
+                        // markCurrentAddress
+                        onlyAvatar
+                        link={cybernetRoutes.delegator.getLink(hotkey)}
+                      />
+                    </div>
+                  );
+                },
                 cell: (info) => {
-                  const val = info.getValue();
+                  const val = info.row.original[uid];
 
                   if (!val) {
                     return '-';
@@ -110,8 +141,10 @@ function WeightsTable({ data, neurons, maxWeightsLimit }: Props) {
                 },
               });
             })
+            // [columns, address, isRootSubnet]
+            // )
           }
-          data={percentsData}
+          data={data}
         />
       </div>
     </div>
