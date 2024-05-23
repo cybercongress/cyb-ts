@@ -110,7 +110,7 @@ function enigine(): RuneEngine {
   const load = async (params: LoadParams) => {
     entrypoints = params.entrypoints;
     pushContext('secrets', params.secrets);
-
+    console.log('-----------rune engine initializing');
     console.time('⚡️ Rune initialized! 🔋');
     rune = await initAsync();
     // window.rune = rune; // debug
@@ -174,13 +174,14 @@ function enigine(): RuneEngine {
       scriptParams,
       compilerParams
     );
-    const { result } = outputData;
+    const { result, error } = outputData;
 
     scriptCallbacks.delete(refId);
 
     try {
       return {
         ...outputData,
+        error,
         result: result
           ? JSON.parse(result)
           : { action: 'error', message: 'No result' },
@@ -292,6 +293,13 @@ function enigine(): RuneEngine {
       funcName: 'ask_companion',
       funcParams: [cid, contentType, content],
     });
+
+    if (output.result.action === 'error') {
+      return {
+        action: 'error',
+        metaItems: [{ type: 'text', text: output.error }],
+      };
+    }
 
     return { action: 'answer', metaItems: output.result.content };
   };

@@ -3,7 +3,7 @@ import { DB_VERSION, type CybCozoDb } from '../cozoDb';
 const migrate = async (db: CybCozoDb) => {
   const version = await db.getDbVersion();
   console.log('* db version:', version);
-  if (version < 1.1) {
+  if (version < 1.2) {
     //
     console.log('⚡️ Migrating to 1.1');
     console.log('    add job_type field to sync_queue');

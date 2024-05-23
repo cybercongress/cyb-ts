@@ -22,6 +22,7 @@ import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PipelineType, pipeline } from '@xenova/transformers';
 import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
+import runeDeps from 'src/services/scripting/runeDeps';
 
 import { exposeWorkerApi } from '../factoryMethods';
 
@@ -33,9 +34,8 @@ import DbApi from '../../services/DbApi/DbApi';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
-import runeDeps, { RuneDeps } from 'src/services/scripting/runeDeps';
 import ParticlesResolverQueue from '../../services/sync/services/ParticlesResolverQueue/ParticlesResolverQueue';
-import BackendQueueChannelListener from '../../channels/BackendQueueChannel/BackendQueueChannel';
+import { BackendQueueChannelListener } from '../../channels/BackendQueueChannel/BackendQueueChannel';
 
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
@@ -92,8 +92,10 @@ const createBackgroundWorkerApi = () => {
 
   const initMlInstance = async (name: keyof typeof mlModelMap) => {
     if (!mlInstances[name]) {
-      broadcastApi.postServiceStatus('ml', 'starting');
+      // broadcastApi.postServiceStatus('ml', 'starting');
       const model = mlModelMap[name];
+      console.log('-----------init ml pipeline');
+
       mlInstances[name] = await pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
           // console.log('progress_callback', name, progressData);
@@ -125,6 +127,7 @@ const createBackgroundWorkerApi = () => {
           broadcastApi.postMlSyncEntryProgress(name, progressItem);
         },
       });
+      console.log('-----mlInst', !!mlInstances[name]);
     }
 
     return mlInstances[name];
@@ -151,24 +154,26 @@ const createBackgroundWorkerApi = () => {
   // service to sync updates about cyberlinks, transactions, swarm etc.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const syncService = new SyncService(serviceDeps, particlesResolver);
+  const initMl = async () => {
+    broadcastApi.postServiceStatus('ml', 'starting');
+    console.log('-----------init ml starting');
 
-  const init = async (
-    dbApiProxy: DbApi & ProxyMarked,
-    params: LoadParams
-  ): Promise<void> => {
-    dbInstance$.next(dbApiProxy);
-    Promise.all([
+    return Promise.all([
       initMlInstance('featureExtractor'),
       // initMlInstance('summarization'),
       // initMlInstance('qa'),
     ])
       .then((result) => {
+        console.log('-----------init ml', result);
         broadcastApi.postServiceStatus('ml', 'started');
         return result;
       })
       .catch((e) =>
         broadcastApi.postServiceStatus('ml', 'error', e.toString())
       );
+  };
+
+  const initRune = async (params: LoadParams) => {
     broadcastApi.postServiceStatus('rune', 'starting');
     await rune
       .load(params)
@@ -181,6 +186,16 @@ const createBackgroundWorkerApi = () => {
       );
 
     runeInstance$.next(rune);
+  };
+
+  const init = async (
+    dbApiProxy: DbApi & ProxyMarked,
+    params: LoadParams
+  ): Promise<void> => {
+    dbInstance$.next(dbApiProxy);
+
+    // non-awaitable
+    Promise.all([initMl(), initRune(params)]);
   };
 
   const stopIpfs = async () => {
@@ -221,7 +236,6 @@ const createBackgroundWorkerApi = () => {
       pooling: 'mean',
       normalize: true,
     });
-    // console.log('---- getEmbedding output', output);
 
     return output.data;
   };

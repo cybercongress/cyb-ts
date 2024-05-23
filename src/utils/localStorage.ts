@@ -42,7 +42,7 @@ const loadStringFromLocalStorage = (
   defaultValue?: string
 ) => {
   const keyName = stringKeyMap[name] || name;
-  const result = localStorage.getItem(keyName) || defaultValue || '';
+  const result = localStorage.getItem(keyName) || defaultValue;
   return result;
 };
 

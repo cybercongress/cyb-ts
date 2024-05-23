@@ -48,5 +48,3 @@ export class BackendQueueChannelListener {
     }
   }
 }
-
-export default BackendQueueChannelListener;

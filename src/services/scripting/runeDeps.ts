@@ -13,83 +13,101 @@ import { sendCyberlink } from '../neuron/neuronApi';
 import { extractRuneScript } from './helpers';
 import { IpfsApi, MlApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 type InternalDeps = {
-  ipfsApi?: Option<IpfsApi>;
-  rune?: Option<RuneEngine>;
-  queryClient?: Option<CyberClient>;
-  mlApi?: Option<MlApi>;
+  ipfsApi: Option<IpfsApi>;
+  rune: Option<RuneEngine>;
+  queryClient: Option<CyberClient>;
+  mlApi: Option<MlApi>;
 };
 type ExternalDeps = {
-  signingClient?: Option<SigningCyberClient & ProxyMarked>;
+  signingClient: Option<SigningCyberClient & ProxyMarked>;
   // signer?: Option<OfflineSigner>;
-  senseApi?: Option<SenseApi & ProxyMarked>;
-  address?: Option<NeuronAddress>;
+  senseApi: Option<SenseApi & ProxyMarked>;
+  address: Option<NeuronAddress>;
 };
 
 type Deps = InternalDeps & ExternalDeps;
 
+type SubjectDeps<T> = {
+  [K in keyof T]: BehaviorSubject<T[K]>;
+};
+
 const createRuneDeps = () => {
-  const deps: Deps = {};
+  const subjectDeps: SubjectDeps<Deps> = {
+    // Initialize subjects for each dependency
+    ipfsApi: new BehaviorSubject<InternalDeps['ipfsApi']>(undefined),
+    rune: new BehaviorSubject<InternalDeps['rune']>(undefined),
+    queryClient: new BehaviorSubject<InternalDeps['queryClient']>(undefined),
+    mlApi: new BehaviorSubject<Option<InternalDeps['mlApi']>>(undefined),
+    signingClient: new BehaviorSubject<ExternalDeps['signingClient']>(
+      undefined
+    ),
+    senseApi: new BehaviorSubject<ExternalDeps['senseApi']>(undefined),
+    address: new BehaviorSubject<ExternalDeps['address']>(undefined),
+  };
+
+  const defferedDependency = (name: keyof Deps): Promise<Deps[typeof name]> => {
+    if (subjectDeps[name]?.getValue()) {
+      return Promise.resolve(
+        subjectDeps[name as keyof Deps].getValue() as Deps[typeof name]
+      );
+    }
+
+    return new Promise((resolve) => {
+      const item$ = subjectDeps[name] as BehaviorSubject<Deps[typeof name]>;
+
+      if (item$.getValue()) {
+        resolve(item$.getValue());
+      }
+
+      const subscription = item$.subscribe((value) => {
+        if (value !== undefined) {
+          resolve(value);
+          subscription.unsubscribe();
+        }
+      });
+    });
+  };
 
   (async () => {
-    deps.queryClient = await CyberClient.connect(RPC_URL);
+    const client = await CyberClient.connect(RPC_URL);
+    subjectDeps.queryClient?.next(client);
   })();
 
-  const setExternalDeps = (externalDeps: ExternalDeps) => {
+  const setExternalDeps = (externalDeps: Partial<ExternalDeps>) => {
     Object.keys(externalDeps)
       .filter((name) => externalDeps[name as keyof ExternalDeps] !== undefined)
       .forEach((name) => {
-        deps[name as keyof Deps] = externalDeps[name as keyof ExternalDeps];
+        const item = externalDeps[name as keyof ExternalDeps];
+        subjectDeps[name as keyof Deps].next(item);
       });
   };
 
-  const setInternalDeps = (internalDeps: InternalDeps) => {
+  const setInternalDeps = (internalDeps: Partial<InternalDeps>) => {
     Object.keys(internalDeps)
       .filter((name) => internalDeps[name as keyof InternalDeps] !== undefined)
       .forEach((name) => {
-        deps[name as keyof Deps] = internalDeps[name as keyof InternalDeps];
+        const item = internalDeps[name as keyof InternalDeps];
+        subjectDeps[name as keyof Deps].next(item);
       });
   };
 
   const graphSearch = async (query: string, page = 0) => {
-    const queryClient = depOrThrow('queryClient') as CyberClient;
+    const queryClient = (await defferedDependency(
+      'queryClient'
+    )) as CyberClient;
 
     const keywordHash = await getSearchQuery(query);
 
     return searchByHash(queryClient, keywordHash, page);
   };
 
-  const depOrThrow = (name: keyof Deps) => {
-    if (!deps[name]) {
-      throw new Error(`${name} is not set!`);
-    }
-    return deps[name] as Deps[typeof name];
+  const getIpfsTextConent = async (cid: string) => {
+    const ipfsApi = (await defferedDependency('ipfsApi')) as IpfsApi;
+    return ipfsApi.fetchWithDetails(cid, 'text');
   };
-
-  const singinClientOrThrow = () => {
-    if (!deps.signingClient) {
-      throw new Error('signingClient not ready');
-    }
-    return deps.signingClient;
-  };
-
-  const ipfApiOrThrow = () => {
-    if (!deps.ipfsApi) {
-      throw new Error('ipfsApi not ready');
-    }
-    return deps.ipfsApi;
-  };
-
-  const runeOrThrow = () => {
-    if (!deps.rune) {
-      throw new Error('rune not ready');
-    }
-    return deps.rune;
-  };
-
-  const getIpfsTextConent = async (cid: string) =>
-    ipfApiOrThrow().fetchWithDetails(cid, 'text');
 
   const evalScriptFromIpfs = async (
     cid: ParticleCid,
@@ -105,7 +123,9 @@ const createRuneDeps = () => {
       // in case of soul script is mixed with markdown
       // need to extract pure script
       const pureScript = extractRuneScript(result.content);
-      return runeOrThrow().executeFunction(pureScript, funcName, params);
+      const rune = (await defferedDependency('rune')) as RuneEngine;
+
+      return rune.executeFunction(pureScript, funcName, params);
     } catch (e) {
       return { action: 'error', message: e.toString() };
     }
@@ -114,25 +134,37 @@ const createRuneDeps = () => {
   const cybApi = {
     graphSearch,
     cyberlink: async (from: string, to: string) => {
-      if (!deps.address) {
+      const address = subjectDeps.address.getValue();
+      if (!address) {
         throw new Error('Connect your wallet first');
       }
-      return sendCyberlink(deps.address, from, to, {
-        senseApi: depOrThrow('senseApi') as SenseApi,
-        signingClient: singinClientOrThrow(),
+      const senseApi = (await defferedDependency('senseApi')) as SenseApi;
+      const signingClient = (await defferedDependency(
+        'signingClient'
+      )) as SigningCyberClient;
+
+      return sendCyberlink(address, from, to, {
+        senseApi,
+        signingClient,
       });
     },
     getPassportByNickname: async (nickname: string) => {
-      const passport = await getPassportByNickname(deps.queryClient, nickname);
+      const queryClient = await defferedDependency('queryClient');
+      const passport = await getPassportByNickname(queryClient, nickname);
 
       return passport;
     },
-    searcByEmbedding: async (text: string, count = 10) =>
-      (depOrThrow('mlApi') as MlApi).searchByEmbedding(text, count),
+    searcByEmbedding: async (text: string, count = 10) => {
+      const mlApi = (await defferedDependency('mlApi')) as MlApi;
+
+      return mlApi.searchByEmbedding(text, count);
+    },
     evalScriptFromIpfs,
     getIpfsTextConent,
     addContenToIpfs: async (content: string) => {
-      return ipfApiOrThrow().addContent(content);
+      const ipfsApi = (await defferedDependency('ipfsApi')) as IpfsApi;
+
+      return ipfsApi.addContent(content);
     },
   };
 
