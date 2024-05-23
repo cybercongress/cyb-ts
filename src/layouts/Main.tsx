@@ -18,6 +18,7 @@ import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
 import ActionBar from './ui/ActionBar';
+import CircularMenu from 'src/components/appMenu/CircularMenu';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -91,9 +92,9 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
+      {/*       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
         <AppMenu closeMenu={closeMenu} />
-      </AppSideBar>
+      </AppSideBar> */}
 
       <SenseButton className={styles.senseBtn} />
       <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
@@ -101,8 +102,13 @@ function MainLayout({ children }: { children: JSX.Element }) {
       {children}
 
       <footer>
+        <CircularMenu circleSize={graphSize} />
         {!isMobile && (
-          <Link to={routes.brain.path} className={stylesOracle.graphWrapper}>
+          <Link
+            to={routes.brain.path}
+            className={stylesOracle.graphWrapper}
+            style={{ bottom: '0px' }}
+          >
             {/* <Link
               to={routes.brain.path}
               className={stylesOracle.enlargeBtn}
