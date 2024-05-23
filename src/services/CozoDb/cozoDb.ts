@@ -48,7 +48,7 @@ function createCozoDb() {
     await initCozoDb();
     await loadCozoDb();
 
-    await migrate();
+    await initialMigrate();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -134,7 +134,7 @@ function createCozoDb() {
     return result;
   };
 
-  const migrate = async () => {
+  const initialMigrate = async () => {
     // if (!dbSchema.community) {
     //   const result = await runCommand(communityScript);
     //   console.log('CozoDb >>> migration: creating community relation....');
