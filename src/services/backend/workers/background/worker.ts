@@ -32,10 +32,9 @@ import { SyncServiceParams } from '../../services/sync/types';
 import DbApi from '../../services/DbApi/DbApi';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import DeferredDbSaver from '../../services/DeferredDbSaver/DeferredDbSaver';
 import { SyncEntryName } from '../../types/services';
 import ParticlesResolverQueue from '../../services/sync/services/ParticlesResolverQueue/ParticlesResolverQueue';
-import { BackendQueueChannelListener } from '../../channels/BackendQueueChannel/BackendQueueChannel';
+import BackendQueueChannelListener from '../../channels/BackendQueueChannel/BackendQueueChannel';
 
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
@@ -61,7 +60,7 @@ const mlModelMap: Record<string, MlModelParams> = {
 export type GetEmbeddingFunc = (text: string) => Promise<number[]>;
 
 const createBackgroundWorkerApi = () => {
-  const dbInstance$ = new Subject<DbApi | undefined>();
+  const dbInstance$ = new BehaviorSubject<DbApi | undefined>(undefined);
   const runeInstance$ = new Subject<RuneEngine | undefined>();
 
   const ipfsInstance$ = new BehaviorSubject<CybIpfsNode | undefined>(undefined);
@@ -74,8 +73,6 @@ const createBackgroundWorkerApi = () => {
 
   let dbApi: DbApi | undefined;
 
-  const defferedDbSaver = new DeferredDbSaver(dbInstance$);
-
   const mlInstances: Record<keyof typeof mlModelMap, any> = {};
 
   const getEmbeddingInstance$ = new Subject<GetEmbeddingFunc | undefined>();
@@ -85,7 +82,6 @@ const createBackgroundWorkerApi = () => {
   });
 
   const ipfsQueue = new QueueManager(ipfsInstance$, {
-    defferedDbSaver,
     runeInstance$,
   });
   const broadcastApi = new BroadcastChannelSender();
@@ -148,7 +144,7 @@ const createBackgroundWorkerApi = () => {
 
   const backendQueueChannel = new BackendQueueChannelListener(
     particlesResolver,
-    defferedDbSaver
+    dbInstance$
   );
 
   // service to sync updates about cyberlinks, transactions, swarm etc.
@@ -225,12 +221,6 @@ const createBackgroundWorkerApi = () => {
     }
   };
 
-  const deferredDbApi = {
-    importCyberlinks: (links: LinkDto[]) => {
-      defferedDbSaver.enqueueLinks(links);
-    },
-  };
-
   const getEmbedding = async (text: string) => {
     const output = await mlInstances.featureExtractor(text, {
       pooling: 'mean',
@@ -300,7 +290,6 @@ const createBackgroundWorkerApi = () => {
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
-    defferedDbApi: proxy(deferredDbApi),
     mlApi: proxy(mlApi),
     ipfsQueue: proxy(ipfsQueue),
     restartSync: (name: SyncEntryName) => syncService.restart(name),

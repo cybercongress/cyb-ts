@@ -16,6 +16,7 @@ import { coinDecimals } from '../../utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 function ContainerGrid({ children }) {
   return (
@@ -82,7 +83,8 @@ function Market({ defaultAccount }) {
           setLoadingSearch(false);
           setAllPage(Math.ceil(parseFloat(response.pagination.total) / 10));
           setPage((item) => item + 1);
-          defferedDbApi?.importCyberlinks(
+
+          enqueueLinksSave(
             response.result.map((l) => mapLinkToLinkDto(hash, l.particle))
           );
         } else {
@@ -104,7 +106,8 @@ function Market({ defaultAccount }) {
     const response = await searchByHash(queryClient, keywordHash, page);
     if (response.result) {
       links = reduceSearchResults(response, tab);
-      defferedDbApi?.importCyberlinks(
+
+      enqueueLinksSave(
         response.result.map((l) => mapLinkToLinkDto(keywordHash, l.particle))
       );
     }

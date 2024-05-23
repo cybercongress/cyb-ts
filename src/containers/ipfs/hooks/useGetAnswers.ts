@@ -5,6 +5,7 @@ import { reduceParticleArr } from './useGetBackLink';
 import { searchByHash } from 'src/utils/search/utils';
 import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
@@ -26,10 +27,7 @@ function useGetAnswers(hash) {
       const reduceArr = result ? reduceParticleArr(result) : [];
       setTotal(pageParam === 0 && response.pagination.total);
 
-      defferedDbApi?.importCyberlinks(
-        result.map((l) => mapLinkToLinkDto(hash, l.particle))
-      );
-
+      enqueueLinksSave(result.map((l) => mapLinkToLinkDto(hash, l.particle)));
       return { data: reduceArr, page: pageParam };
     },
     {

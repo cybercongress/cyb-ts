@@ -1,6 +1,6 @@
 import { ProxyMarked, Remote } from 'comlink';
 
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { BehaviorSubject, first } from 'rxjs';
 import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { RPC_URL } from 'src/constants/config';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
@@ -13,7 +13,6 @@ import { sendCyberlink } from '../neuron/neuronApi';
 import { extractRuneScript } from './helpers';
 import { IpfsApi, MlApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
-import { BehaviorSubject, Subject } from 'rxjs';
 
 type InternalDeps = {
   ipfsApi: Option<IpfsApi>;
@@ -49,12 +48,6 @@ const createRuneDeps = () => {
   };
 
   const defferedDependency = (name: keyof Deps): Promise<Deps[typeof name]> => {
-    if (subjectDeps[name]?.getValue()) {
-      return Promise.resolve(
-        subjectDeps[name as keyof Deps].getValue() as Deps[typeof name]
-      );
-    }
-
     return new Promise((resolve) => {
       const item$ = subjectDeps[name] as BehaviorSubject<Deps[typeof name]>;
 
@@ -62,12 +55,13 @@ const createRuneDeps = () => {
         resolve(item$.getValue());
       }
 
-      const subscription = item$.subscribe((value) => {
-        if (value !== undefined) {
+      item$
+        .pipe(
+          first((value) => value !== undefined) // Automatically unsubscribes after the first valid value
+        )
+        .subscribe((value) => {
           resolve(value);
-          subscription.unsubscribe();
-        }
-      });
+        });
     });
   };
 

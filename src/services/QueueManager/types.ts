@@ -81,12 +81,6 @@ export type QueueItemPostProcessor = (
   content: IPFSContentMaybe
 ) => Promise<IPFSContentMaybe>;
 
-export interface IDeferredDbSaver {
-  // postProcess: (content: IPFSContentMaybe) => Promise<IPFSContentMaybe>;
-  enqueueIpfsContent: (content: IPFSContentMaybe) => void;
-  enqueueLinks: (links: LinkDto[]) => void;
-}
-
 export type FetchParticleAsync = (
   cid: string,
   options?: QueueItemOptions

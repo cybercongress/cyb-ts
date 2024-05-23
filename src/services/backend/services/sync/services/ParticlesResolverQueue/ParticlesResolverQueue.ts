@@ -9,6 +9,7 @@ import {
   share,
   EMPTY,
   Subject,
+  first,
 } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
@@ -20,7 +21,7 @@ import {
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
-import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/helpers';
+import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 import { GetEmbeddingFunc } from 'src/services/backend/workers/background/worker';
 
 import {
@@ -52,6 +53,16 @@ export const getContentToEmbed = async (content: IPFSContentMutated) => {
   }
 
   return [contentType, undefined];
+};
+
+export const getTextContentIfShouldEmbed = async (
+  content: IPFSContentMutated
+) => {
+  const [contentType, data] = await getContentToEmbed(content);
+
+  const shouldEmbed = contentType === 'text' && !!data;
+
+  return shouldEmbed ? data : undefined;
 };
 
 class ParticlesResolverQueue {
@@ -99,10 +110,14 @@ class ParticlesResolverQueue {
       }
     });
 
-    deps.dbInstance$.subscribe(async (db) => {
-      this.db = db;
-      await this.loadSyncQueue();
-    });
+    deps.dbInstance$
+      .pipe(
+        first((value) => value !== undefined) // Automatically unsubscribes after the first valid value
+      )
+      .subscribe(async (db) => {
+        this.db = db;
+        await this.loadSyncQueue();
+      });
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
