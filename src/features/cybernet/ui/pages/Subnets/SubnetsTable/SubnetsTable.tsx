@@ -14,6 +14,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
 import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
+import useCybernetTexts from '../../../useCybernetTexts';
 
 type Props = {
   // remove
@@ -45,6 +46,8 @@ function SubnetsTable({ data }: Props) {
 
   const { grades, subnetQuery } = useSubnet();
 
+  const { getText } = useCybernetTexts();
+
   const rootSubnet = subnetQuery?.data?.netuid === 0;
 
   const { data: d2 } = useDelegate(address);
@@ -68,7 +71,7 @@ function SubnetsTable({ data }: Props) {
       }),
 
       columnHelper.accessor('owner', {
-        header: 'owner',
+        header: getText('subnetOwner'),
         enableSorting: false,
         cell: (info) => {
           const value = info.getValue();
@@ -105,7 +108,7 @@ function SubnetsTable({ data }: Props) {
       col.push(
         // @ts-ignore
         columnHelper.accessor('max_allowed_validators', {
-          header: 'leaders',
+          header: getText('validator', true),
           sortingFn: (rowA, rowB) => {
             const a = rowA.original.subnetwork_n;
             const b = rowB.original.subnetwork_n;
@@ -121,7 +124,7 @@ function SubnetsTable({ data }: Props) {
           },
         }),
         columnHelper.accessor('max_allowed_uids', {
-          header: 'operators',
+          header: getText('miner', true),
           sortingFn: (rowA, rowB) => {
             const a = rowA.original.subnetwork_n;
             const b = rowB.original.subnetwork_n;

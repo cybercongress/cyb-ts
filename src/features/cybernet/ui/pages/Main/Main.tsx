@@ -17,9 +17,12 @@ import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
 import { routes } from 'src/routes';
 import ContractsTable from './ContractsTable/ContractsTable';
+import useCybernetTexts from '../../useCybernetTexts';
 
 function Main() {
   const address = useCurrentAddress();
+
+  const { getText } = useCybernetTexts();
 
   useAdviserTexts({
     defaultText: 'welcome to Cybernet 🤖',
@@ -52,7 +55,7 @@ function Main() {
                   <div className={styles.actionTitle}>
                     <h3>stake</h3>
                     <div className={styles.apr}>
-                      apr up to <br />
+                      yield up to <br />
                       <span>35%</span>
                     </div>
                   </div>
@@ -60,11 +63,21 @@ function Main() {
               />
             }
           >
-            <p className={styles.actionText}>invest in operators subnets</p>
+            <p className={styles.actionText}>
+              learn by staking on {getText('delegate', true)}
+            </p>
             <div className={styles.links}>
-              <Link to={cybernetRoutes.delegators.getLink()}>operators</Link>
+              <Link to={cybernetRoutes.delegators.getLink()}>
+                {getText('delegate', true)}
+              </Link>
 
-              {haveStake && <Link to="./staking/my">stats</Link>}
+              <button disabled type="button" className={styles.delegatorsBtn}>
+                {getText('delegator', true)}
+              </button>
+
+              {haveStake && (
+                <Link to="./staking/my">my {getText('delegator')}</Link>
+              )}
             </div>
           </Display>
         </div>
@@ -74,9 +87,9 @@ function Main() {
             <DisplayTitle
               title={
                 <div className={styles.actionTitle}>
-                  <h3>join subnets</h3>
+                  <h3>mine</h3>
                   <div className={styles.apr}>
-                    apr up to
+                    yield up to
                     <span>35%</span>
                   </div>
                 </div>
@@ -84,16 +97,18 @@ function Main() {
             />
           }
         >
-          <p className={styles.actionText}>complete tasks, manage grades</p>
+          <p className={styles.actionText}>teach by linking content</p>
 
           <div className={styles.links}>
-            <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
+            <Link to={cybernetRoutes.subnet.getLink(0)}>{getText('root')}</Link>
 
-            <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
+            <Link to={cybernetRoutes.subnets.getLink()}>
+              {getText('subnetwork', true)}
+            </Link>
 
             {currentAddressIsDelegator && (
               <Link to={cybernetRoutes.delegator.getLink(address)}>
-                my operator
+                my {getText('delegate')}
               </Link>
             )}
           </div>

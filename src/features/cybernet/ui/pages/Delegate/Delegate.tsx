@@ -1,13 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link, useParams } from 'react-router-dom';
-import { Account, AmountDenom, DenomArr, MainContainer } from 'src/components';
+import { Account, AmountDenom, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import { routes } from 'src/routes';
 
-import DelegatorActionBar from './DelegatorActionBar/DelegatorActionBar';
-import styles from './Delegator.module.scss';
+import DelegateActionBar from './DelegateActionBar/DelegateActionBar';
+import styles from './Delegate.module.scss';
 import {
   Delegator,
   Delegator as DelegatorType,
@@ -21,6 +19,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import subnetStyles from '../Subnet/Subnet.module.scss';
 import useDelegate from '../../hooks/useDelegate';
+import useCybernetTexts from '../../useCybernetTexts';
 
 const columnHelper = createColumnHelper<Delegator>();
 
@@ -45,11 +44,12 @@ function Delegator() {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const { loading, data, error, refetch } = useDelegate(id);
+  const { getText } = useCybernetTexts();
 
   useAdviserTexts({
     isLoading: loading,
     error,
-    defaultText: 'operator info',
+    defaultText: `${getText('delegate')} info`,
   });
 
   const myStake = data?.nominators.find(
@@ -63,7 +63,7 @@ function Delegator() {
   return (
     <MainContainer>
       {myStake && data.delegate !== currentAddress && (
-        <Display title={<DisplayTitle title="My investment" />}>
+        <Display title={<DisplayTitle title="My stake" />}>
           {myStake.toLocaleString()} 🟣
         </Display>
       )}
@@ -137,7 +137,7 @@ function Delegator() {
             <DisplayTitle
               title={
                 <div className={styles.nominatorsHeader}>
-                  <h3>Investors</h3>
+                  <h3>{getText('delegator', true)}</h3>
 
                   <div>
                     <AmountDenom amountValue={totalStake} denom="pussy" />
@@ -150,7 +150,7 @@ function Delegator() {
           <Table
             columns={[
               columnHelper.accessor('address', {
-                header: 'investor',
+                header: getText('delegator'),
                 enableSorting: false,
                 cell: (info) => (
                   <Account
@@ -187,7 +187,7 @@ function Delegator() {
         </Display>
       )}
 
-      <DelegatorActionBar
+      <DelegateActionBar
         address={id}
         stakedAmount={myStake}
         onSuccess={refetch}

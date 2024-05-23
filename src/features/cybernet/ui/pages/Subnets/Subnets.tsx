@@ -9,6 +9,7 @@ import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
 import styles from './Subnets.module.scss';
 import { Helmet } from 'react-helmet';
+import useCybernetTexts from '../../useCybernetTexts';
 
 function Subnets() {
   const { data, loading, error } = useQueryCybernetContract<SubnetInfo[]>({
@@ -23,6 +24,8 @@ function Subnets() {
   const rootSubnet = data?.find((subnet) => subnet.netuid === 0);
   const graphSubnets = data?.filter((subnet) => subnet.network_modality === 0);
   const p2pSubnets = data?.filter((subnet) => subnet.network_modality === 1);
+
+  const { getText } = useCybernetTexts();
 
   useAdviserTexts({
     isLoading: loading,
@@ -49,7 +52,7 @@ function Subnets() {
             <DisplayTitle
               title={
                 <header className={styles.header}>
-                  Root subnet
+                  {getText('root')} {getText('subnetwork')}
                   <Tooltip tooltip="Root subnet - ...">
                     <QuestionBtn />
                   </Tooltip>

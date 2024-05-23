@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Delegator } from 'src/features/cybernet/types';
 import { Account, AmountDenom } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useCybernetTexts from '../../../useCybernetTexts';
 
 type Props = {
   data: Delegator[];
@@ -15,10 +16,9 @@ type Props = {
 
 const columnHelper = createColumnHelper<Delegator>();
 
-function DelegatorsTable({ data, isLoading }: Props) {
-  console.log(data);
-
+function DelegatesTable({ data, isLoading }: Props) {
   const currentAddress = useCurrentAddress();
+  const { getText } = useCybernetTexts();
 
   function getTotalStake(nominators: Delegator['nominators']) {
     return nominators.reduce((acc, [, stake]) => acc + stake, 0);
@@ -42,7 +42,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
           }),
 
           columnHelper.accessor('delegate', {
-            header: 'operator',
+            header: getText('delegate'),
             enableSorting: false,
             cell: (info) => (
               <Account
@@ -62,7 +62,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
           // }),
 
           columnHelper.accessor('registrations', {
-            header: 'Joined subnets',
+            header: getText('subnetwork', true),
             sortingFn: (rowA, rowB) => {
               const a = rowA.original.registrations.length;
               const b = rowB.original.registrations.length;
@@ -88,7 +88,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
           }),
 
           columnHelper.accessor('nominators', {
-            header: 'pussy stake',
+            header: 'pussy power',
             id: 'stake',
             sortingFn: (rowA, rowB) => {
               const totalA = getTotalStake(rowA.original.nominators);
@@ -104,7 +104,7 @@ function DelegatorsTable({ data, isLoading }: Props) {
             },
           }),
           columnHelper.accessor('nominators', {
-            header: 'my investment',
+            header: 'my stake',
             id: 'myStake',
             sortingFn: (rowA, rowB) => {
               const myStakeA = getMyStake(rowA.original.nominators) || 0;
@@ -141,4 +141,4 @@ function DelegatorsTable({ data, isLoading }: Props) {
   );
 }
 
-export default DelegatorsTable;
+export default DelegatesTable;

@@ -22,7 +22,7 @@ type Props = {
   onSuccess: () => void;
 };
 
-function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
+function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
 
   const currentAddress = useAppSelector(selectCurrentAddress);
@@ -158,4 +158,4 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
   );
 }
 
-export default DelegatorActionBar;
+export default DelegateActionBar;

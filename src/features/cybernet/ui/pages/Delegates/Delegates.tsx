@@ -1,11 +1,12 @@
 import React from 'react';
 import { Delegator } from 'src/features/cybernet/types';
 import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import DelegatorsTable from './DelegatorsTable/DelegatorsTable';
+import DelegatesTable from './DelegatesTable/DelegatesTable';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { MainContainer } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useCybernetTexts from '../../useCybernetTexts';
 
 function Delegates() {
   const { data, loading, error } = useCybernetContract<Delegator>({
@@ -14,18 +15,23 @@ function Delegates() {
     },
   });
 
+  const { getText } = useCybernetTexts();
+
   useAdviserTexts({
     isLoading: loading,
     error,
-    defaultText: 'choose operator to invest',
+    defaultText: `choose ${getText('delegate')} for learning`,
   });
 
   console.log(data);
 
   return (
     <MainContainer resetMaxWidth>
-      <Display noPaddingX title={<DisplayTitle title="Operators" />}>
-        <DelegatorsTable data={data || []} isLoading={loading} />
+      <Display
+        noPaddingX
+        title={<DisplayTitle title={getText('delegate', true)} />}
+      >
+        <DelegatesTable data={data || []} isLoading={loading} />
       </Display>
     </MainContainer>
   );
