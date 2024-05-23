@@ -56,6 +56,7 @@ import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
 import Settings from './pages/Settings/Settings';
+import Test from './pages/test';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -115,6 +116,7 @@ function AppRouter() {
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<OracleLanding />} />
 
+          <Route path="/test" element={<Test />} />
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
 

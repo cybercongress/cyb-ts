@@ -1,3 +1,5 @@
+import { SigningCyberClient } from '@cybercongress/cyber-js';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import React, {
   useCallback,
   useContext,
@@ -5,20 +7,20 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { SigningCyberClient } from '@cybercongress/cyber-js';
-import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
-import { Option } from 'src/types';
+import { BECH32_PREFIX, CHAIN_ID, RPC_URL } from 'src/constants/config';
 import { useAppSelector } from 'src/redux/hooks';
-import { Keplr } from '@keplr-wallet/types';
-import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
-import { accountsKeplr } from 'src/utils/utils';
-import usePrevious from 'src/hooks/usePrevious';
-import { RPC_URL, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
+import { Option } from 'src/types';
+import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
+import { initOfflineSigner } from 'src/utils/offlineSigner';
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
 //   keplr: Keplr;
 // };
+declare global {
+  interface Window {
+    __TAURI__: any;
+  }
+}
 
 type SignerClientContextType = {
   readonly signingClient: Option<SigningCyberClient>;
@@ -102,10 +104,25 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   }, [initSigner]);
 
   useEffect(() => {
-    window.addEventListener('keplr_keystorechange', () => {
-      initSigner();
-    });
+    window.addEventListener('keplr_keystorechange', initSigner);
   }, [initSigner]);
+
+  useEffect(() => {
+    (async () => {
+      if (window.__TAURI__) {
+        console.log('Init signing client');
+        try {
+          const signer = await initOfflineSigner();
+          const clientJs = await createClient(signer);
+
+          setSigner(signer);
+          setSigningClient(clientJs);
+        } catch (e) {
+          console.error('Failed to init signer client:', e);
+        }
+      }
+    })();
+  }, []);
 
   const value = useMemo(
     () => ({ initSigner, signer, signingClient, signerReady }),

@@ -92,27 +92,31 @@ function ActionBarConnect({
     setStage(STAGE_ADD_ADDRESS_OK);
 
     clearState();
-    if (updateAddress) {
-      updateAddress();
-    }
-    if (updateFuncActionBar) {
-      updateFuncActionBar();
-    }
+    updateAddress?.();
+    updateFuncActionBar?.();
   };
 
   const connectKeplr = async () => {
     if (signer) {
-      const { bech32Address, pubKey, name } = await signer.keplr.getKey(
-        CHAIN_ID
-      );
+      // const { bech32Address, pubKey, name } = await signer.keplr.getKey(
+      //   CHAIN_ID
+      // );
+      const { address, pubkey: pubKey } = (await signer.getAccounts())[0];
       const pk = Buffer.from(pubKey).toString('hex');
 
+      // const accounts: AccountValue = {
+      //   bech32: bech32Address,
+      //   keys: 'keplr',
+      //   pk,
+      //   path: HDPATH,
+      //   name,
+      // };
       const accounts: AccountValue = {
-        bech32: bech32Address,
+        bech32: address,
         keys: 'keplr',
         pk,
         path: HDPATH,
-        name,
+        name: 'offline',
       };
 
       setStage(STAGE_ADD_ADDRESS_OK);
@@ -130,7 +134,7 @@ function ActionBarConnect({
     }
   };
 
-  const selectMethodFunc = (method) => {
+  const selectMethodFunc = (method: string) => {
     if (method !== selectMethod) {
       setSelectMethod(method);
     } else {
