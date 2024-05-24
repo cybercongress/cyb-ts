@@ -65,7 +65,9 @@ function Main() {
                     <div className={styles.apr}>
                       yield up to <br />
                       <span>
-                        {Number(selectedContract.economy.staker_apr).toFixed(2)}
+                        {Number(selectedContract?.economy?.staker_apr).toFixed(
+                          2
+                        )}
                         %
                       </span>
                     </div>
@@ -102,7 +104,7 @@ function Main() {
                   <div className={styles.apr}>
                     yield up to
                     <span>
-                      {Number(selectedContract.economy.validator_apr).toFixed(
+                      {Number(selectedContract?.economy?.validator_apr).toFixed(
                         2
                       )}
                       %
