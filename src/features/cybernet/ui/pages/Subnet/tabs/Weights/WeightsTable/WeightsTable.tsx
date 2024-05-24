@@ -10,6 +10,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { useSubnet } from '../../../subnet.context';
 import { useMemo } from 'react';
+import { useCybernet } from 'src/features/cybernet/ui/cybernet.context';
 
 type Props = {};
 
@@ -19,6 +20,8 @@ function WeightsTable({}: Props) {
   const address = useCurrentAddress();
 
   const { subnetQuery, grades, neuronsQuery } = useSubnet();
+
+  const { selectedContract } = useCybernet();
 
   const uid = subnetQuery.data?.netuid;
   const isRootSubnet = uid === 0;
@@ -84,9 +87,14 @@ function WeightsTable({}: Props) {
                 id: `t${uid}`,
                 header: () => {
                   if (isRootSubnet) {
+                    const {
+                      metadata: { name },
+                    } = selectedContract;
                     return (
-                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
-                        SN&nbsp;{uid}
+                      <Link
+                        to={cybernetRoutes.subnet.getLink('pussy', name, uid)}
+                      >
+                        {name}
                       </Link>
                     );
                   }

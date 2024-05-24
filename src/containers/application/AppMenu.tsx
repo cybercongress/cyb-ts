@@ -84,11 +84,11 @@ const itemsMenu = () => {
     {
       name: 'cybernet',
       icon: temple,
-      to: '/cybernet',
+      to: '/cyberverse',
       subItems: [
-        { name: 'subnets', to: cybernetRoutes.subnets.getLink() },
-        { name: 'delegates', to: cybernetRoutes.delegators.getLink() },
-        { name: 'my staking', to: '/cybernet/staking/my' },
+        { name: 'facilities', to: '/cyberverse/facilities' },
+        { name: 'mentors', to: '/cyberverse/mentors' },
+        { name: 'my learner', to: '/cybernet/staking/my' },
       ],
     },
 

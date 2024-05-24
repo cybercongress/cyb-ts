@@ -15,6 +15,7 @@ import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
 import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
 import useCybernetTexts from '../../../useCybernetTexts';
+import { useCybernet } from '../../../cybernet.context';
 
 type Props = {
   // remove
@@ -53,18 +54,31 @@ function SubnetsTable({ data }: Props) {
   const { data: d2 } = useDelegate(address);
   const myCurrentSubnetsJoined = d2?.registrations;
 
+  const myAddressJoinedRootSubnet = myCurrentSubnetsJoined?.includes(0);
+
+  const { selectedContract } = useCybernet();
+
   const columns = useMemo(() => {
     const col = [
-      columnHelper.accessor('netuid', {
-        header: '№',
+      columnHelper.accessor('metadata', {
+        header: getText('uid'),
+        id: 'subnetName',
         cell: (info) => {
-          const netuid = info.getValue();
+          const value = info.getValue();
+          const name = value.name;
+
+          const netuid = info.row.original.netuid;
 
           const isMySubnet = myCurrentSubnetsJoined?.includes(netuid);
 
+          const {
+            metadata: { name: contractName },
+          } = selectedContract;
           return (
-            <Link to={subnetRoutes.subnet.getLink(netuid)}>
-              {netuid} {isMySubnet && '✅'}
+            <Link
+              to={subnetRoutes.subnet.getLink('pussy', contractName, netuid)}
+            >
+              {name} {isMySubnet && '✅'}
             </Link>
           );
         },
@@ -93,7 +107,9 @@ function SubnetsTable({ data }: Props) {
         header: 'metadata',
         enableSorting: false,
         cell: (info) => {
-          const cid = info.getValue();
+          const value = info.getValue();
+
+          const cid = value.particle;
 
           return (
             <Cid cid={info.getValue()}>
@@ -196,22 +212,31 @@ function SubnetsTable({ data }: Props) {
         })
       );
 
-      col.push(
-        // @ts-ignore
-        columnHelper.accessor('netuid', {
-          header: 'Set grade',
-          id: 'setGrade',
-          enableSorting: false,
-          cell: (info) => {
-            const uid = info.getValue();
-            return <GradeSetterInput uid={uid} />;
-          },
-        })
-      );
+      if (myAddressJoinedRootSubnet) {
+        col.push(
+          // @ts-ignore
+          columnHelper.accessor('netuid', {
+            header: 'Set grade',
+            id: 'setGrade',
+            enableSorting: false,
+            cell: (info) => {
+              const uid = info.getValue();
+              return <GradeSetterInput uid={uid} />;
+            },
+          })
+        );
+      }
     }
 
     return col;
-  }, [myCurrentSubnetsJoined, grades?.all?.data, rootSubnet]);
+  }, [
+    myCurrentSubnetsJoined,
+    myAddressJoinedRootSubnet,
+    grades?.all?.data,
+    rootSubnet,
+    selectedContract,
+    getText,
+  ]);
 
   return (
     <Table

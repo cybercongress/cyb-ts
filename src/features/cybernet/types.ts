@@ -105,3 +105,52 @@ export interface SubnetNeuron {
 
 // [neuron_uid, weight]
 export type Weights = Weight[];
+
+//genegated
+
+interface BlockRewards {
+  denom: string;
+  amount: string;
+}
+
+interface TotalStake {
+  denom: string;
+  amount: string;
+}
+
+interface TotalIssuance {
+  denom: string;
+  amount: string;
+}
+
+interface TotalRewards {
+  denom: string;
+  amount: string;
+}
+
+export interface Economy {
+  validator_apr: string;
+  staker_apr: string;
+  block_rewards: BlockRewards;
+  total_stake: TotalStake;
+  default_commission: string;
+  commission_change: boolean;
+  total_issuance: TotalIssuance;
+  total_rewards: TotalRewards;
+}
+
+export interface Metadata {
+  name: string;
+  particle: string;
+  description: string;
+  logo: string;
+  types: string;
+  extra: string;
+}
+
+export interface ContractWithData {
+  address: string;
+  metadata: Metadata;
+  economy: Economy;
+  isLoading: boolean;
+}

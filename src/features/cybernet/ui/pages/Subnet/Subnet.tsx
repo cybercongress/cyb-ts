@@ -10,16 +10,23 @@ import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
 import useDelegate from '../../hooks/useDelegate';
 import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
+import { useCybernet } from '../../cybernet.context';
+import useCybernetTexts from '../../useCybernetTexts';
+import Display from 'src/components/containerGradient/Display/Display';
 
 function Subnet() {
   const { id, ...rest } = useParams();
   const tab = rest['*'];
 
+  console.log(tab);
+
   const address = useCurrentAddress();
 
   const netuid = Number(id!);
 
-  const { subnetQuery, neuronsQuery } = useSubnet();
+  // const {selectedContract} = useCybernet();
+
+  const { subnetQuery, neuronsQuery, refetch: refetchSubnet } = useSubnet();
 
   const { data: addressSubnetRegistrationStatus, refetch } =
     useQueryCybernetContract<number | null>({
@@ -34,12 +41,14 @@ function Subnet() {
   useAdviserTexts({
     isLoading: subnetQuery.loading,
     error: subnetQuery.error || neuronsQuery.error,
-    defaultText: 'subnet',
+    // defaultText: 'subnet',
   });
 
   const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const rootSubnet = subnetQuery.data?.netuid === 0;
+
+  const { getText } = useCybernetTexts();
 
   const tabs = [
     {
@@ -49,12 +58,12 @@ function Subnet() {
     },
     {
       to: './',
-      key: 'operators',
-      text: 'operators',
+      key: 'validators',
+      text: getText('validator', true),
     },
 
     {
-      to: './weights',
+      to: './grades',
       key: 'grades',
       text: 'grades',
       disabled: rootSubnet,
@@ -63,15 +72,22 @@ function Subnet() {
 
   if (rootSubnet) {
     tabs.push({
-      to: './subnets',
-      key: 'subnets',
-      text: 'subnets',
+      to: './facilities',
+      key: 'facilities',
+      text: getText('subnetwork', true),
     });
   }
 
+  const { metadata } = subnetQuery.data || {};
+
   return (
     <MainContainer resetMaxWidth>
-      <Tabs options={tabs} selected={tab || 'operators'} />
+      <Display>
+        <h3>subnet metadata</h3>
+
+        <p>{JSON.stringify(metadata)}</p>
+      </Display>
+      <Tabs options={tabs} selected={tab || 'validators'} />
 
       <Routes>
         <Route
@@ -92,7 +108,7 @@ function Subnet() {
 
         {subnetQuery.data?.subnetwork_n > 0 && (
           <Route
-            path="/weights"
+            path="/grades"
             element={
               <Weights
                 neurons={neuronsQuery.data || []}
@@ -105,14 +121,24 @@ function Subnet() {
           />
         )}
 
-        <Route path="/subnets" element={<SubnetSubnets />} />
+        <Route
+          path="/facilities"
+          element={
+            <SubnetSubnets
+              addressRegisteredInSubnet={addressRegisteredInSubnet}
+            />
+          }
+        />
       </Routes>
 
       <ActionBar
         netuid={netuid}
         burn={subnetQuery.data?.burn}
         addressSubnetRegistrationStatus={addressSubnetRegistrationStatus}
-        // refetch={refetch}
+        refetch={() => {
+          refetchSubnet();
+          refetch();
+        }}
       />
     </MainContainer>
   );

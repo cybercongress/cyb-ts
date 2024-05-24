@@ -11,13 +11,13 @@ import { Link } from 'react-router-dom';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
 import { routes } from 'src/routes';
 import ContractsTable from './ContractsTable/ContractsTable';
 import useCybernetTexts from '../../useCybernetTexts';
+import { useCybernet } from '../../cybernet.context';
 
 function Main() {
   const address = useCurrentAddress();
@@ -25,7 +25,7 @@ function Main() {
   const { getText } = useCybernetTexts();
 
   useAdviserTexts({
-    defaultText: 'welcome to Cybernet 🤖',
+    defaultText: 'welcome to Cyberverse 🤖',
   });
 
   const { data } = useDelegate(address);
@@ -33,6 +33,14 @@ function Main() {
 
   const { data: currentStake } = useCurrentAccountStake();
   const haveStake = currentStake?.some(({ stake }) => stake > 0);
+
+  const { selectedContract } = useCybernet();
+
+  const {
+    metadata: { name } = {},
+    address: contractAddress,
+    network = 'pussy',
+  } = selectedContract || {};
 
   return (
     <MainContainer resetMaxWidth>
@@ -56,7 +64,10 @@ function Main() {
                     <h3>stake</h3>
                     <div className={styles.apr}>
                       yield up to <br />
-                      <span>35%</span>
+                      <span>
+                        {Number(selectedContract.economy.staker_apr).toFixed(2)}
+                        %
+                      </span>
                     </div>
                   </div>
                 }
@@ -67,7 +78,7 @@ function Main() {
               learn by staking on {getText('delegate', true)}
             </p>
             <div className={styles.links}>
-              <Link to={cybernetRoutes.delegators.getLink()}>
+              <Link to={cybernetRoutes.delegators.getLink('pussy', name)}>
                 {getText('delegate', true)}
               </Link>
 
@@ -90,7 +101,12 @@ function Main() {
                   <h3>mine</h3>
                   <div className={styles.apr}>
                     yield up to
-                    <span>35%</span>
+                    <span>
+                      {Number(selectedContract.economy.validator_apr).toFixed(
+                        2
+                      )}
+                      %
+                    </span>
                   </div>
                 </div>
               }
@@ -100,9 +116,11 @@ function Main() {
           <p className={styles.actionText}>teach by linking content</p>
 
           <div className={styles.links}>
-            <Link to={cybernetRoutes.subnet.getLink(0)}>{getText('root')}</Link>
+            <Link to={cybernetRoutes.subnet.getLink('pussy', name, 0)}>
+              {getText('root')}
+            </Link>
 
-            <Link to={cybernetRoutes.subnets.getLink()}>
+            <Link to={cybernetRoutes.subnets.getLink(network, name)}>
               {getText('subnetwork', true)}
             </Link>
 

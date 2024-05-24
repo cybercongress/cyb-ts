@@ -7,6 +7,8 @@ function useCybernetTexts() {
 
   const type = selectedContract?.type;
 
+  console.log(type);
+
   function getText(key: Texts, isPlural?: boolean) {
     const t = type === 'graph' ? 'graph' : 'default';
     const t2 = texts[key][t];

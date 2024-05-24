@@ -2,15 +2,15 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { AmountDenom, DenomArr, LinkWindow } from 'src/components';
+import { AmountDenom, Cid, DenomArr, LinkWindow } from 'src/components';
 import Table from 'src/components/Table/Table';
-import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import { routes } from 'src/routes';
 import { trimString } from 'src/utils/utils';
 import { useCybernet } from '../../../cybernet.context';
 import ImgDenom from 'src/components/valueImg/imgDenom';
+import { ContractWithData } from 'src/features/cybernet/types';
 
-const columnHelper = createColumnHelper<(typeof data)[0]>();
+const columnHelper = createColumnHelper<ContractWithData>();
 
 function ContractsTable() {
   const { contracts, selectContract } = useCybernet();
@@ -18,36 +18,44 @@ function ContractsTable() {
   return (
     <Table
       onSelect={(row) => {
-        const address = contracts[row!]
-          ? contracts[row!].address
-          : CYBERNET_CONTRACT_ADDRESS;
+        debugger;
+        const address = contracts[row!] ? contracts[row!].address : '';
         selectContract(address);
       }}
       enableSorting={false}
       columns={useMemo(
         () => [
-          columnHelper.accessor('name', {
+          columnHelper.accessor('metadata.name', {
             header: '',
           }),
-          columnHelper.accessor('apr', {
-            header: '',
-            cell: (info) => <span>30%</span>,
-          }),
-          columnHelper.accessor('docs', {
-            header: '',
-            cell: (info) => {
-              // const value = info.getValue();
-              const value = 'https://docs.spacepussy.ai';
-
-              return <LinkWindow to={value}>docs</LinkWindow>;
-            },
-          }),
-          columnHelper.accessor('network', {
+          columnHelper.accessor('metadata.description', {
             header: '',
             cell: (info) => {
               const value = info.getValue();
 
-              return <DenomArr type="network" denomValue={value} />;
+              return <Cid cid={value}></Cid>;
+            },
+          }),
+          columnHelper.accessor('economy.staker_apr', {
+            header: '',
+            cell: (info) => <span>{Number(info.getValue()).toFixed(2)}%</span>,
+          }),
+          // columnHelper.accessor('docs', {
+          //   header: '',
+          //   cell: (info) => {
+          //     // const value = info.getValue();
+          //     const value = 'https://docs.spacepussy.ai';
+
+          //     return <LinkWindow to={value}>docs</LinkWindow>;
+          //   },
+          // }),
+          columnHelper.accessor('address', {
+            header: '',
+            id: 'network',
+            cell: (info) => {
+              const value = info.getValue();
+
+              return <DenomArr type="network" denomValue="space-pussy" />;
             },
           }),
           columnHelper.accessor('address', {

@@ -8,6 +8,7 @@ import Subnets from './pages/Subnets/Subnets';
 import MyStake from './pages/MyStake/MyStake';
 import { Helmet } from 'react-helmet';
 import CybernetProvider from './cybernet.context';
+import Verses from './pages/Verses/Verses';
 
 function Cybernet() {
   return (
@@ -26,11 +27,17 @@ function Cybernet() {
         }
       >
         <Route index element={<Main />} />
-        <Route path="subnets" element={<Subnets />} />
-        <Route path="subnets/:id/*" element={<Subnet />} />u
-        <Route path="delegators" element={<Delegates />} />
-        <Route path="delegators/:id" element={<Delegate />} />
-        <Route path="staking/my" element={<MyStake />} />
+        <Route path="/verses" element={<Verses />} />
+        <Route path="/verses/:network" element={<Verses />} />
+        <Route path="/verses/:network/:nameOrAddress" element={<Outlet />}>
+          <Route path="facilities" element={<Subnets />} />
+          <Route path="facilities/:id/*" element={<Subnet />} />
+
+          <Route path="mentors" element={<Delegates />} />
+          <Route path="mentors/:id" element={<Delegate />} />
+
+          <Route path="staking/my" element={<MyStake />} />
+        </Route>
       </Route>
     </Routes>
   );

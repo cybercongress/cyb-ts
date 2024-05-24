@@ -39,6 +39,7 @@ export function getAverageGrade(grades, uid: string) {
 const SubnetContext = React.createContext<{
   subnetQuery: ReturnType<typeof useCybernetContract<SubnetInfo>>;
   neuronsQuery: ReturnType<typeof useCybernetContract<SubnetNeuron[]>>;
+  addressRegisteredInSubnet: boolean;
   grades: {
     all: ReturnType<typeof useCybernetContract<Weights>>;
     my: {
@@ -82,6 +83,18 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
   }>({});
 
   const currentAddress = useCurrentAddress();
+
+  const { data: addressSubnetRegistrationStatus, refetch } =
+    useCybernetContract<number | null>({
+      query: {
+        get_uid_for_hotkey_on_subnet: {
+          netuid,
+          hotkey: currentAddress,
+        },
+      },
+    });
+
+  const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const subnetQuery = useCybernetContract<SubnetInfo>({
     query: {
@@ -137,6 +150,8 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
     setNewGrades(gradesFromMe);
   }, [gradesFromMe]);
 
+  console.log(subnetQuery.data);
+
   function setGrade(uid: string, grade: number) {
     setNewGrades((prev) => ({
       ...prev,
@@ -172,6 +187,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => {
     return {
+      addressRegisteredInSubnet,
       subnetQuery,
       neuronsQuery,
       grades: {
@@ -187,15 +203,25 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
           data: newGrades,
           setGrade: setGrade,
           save: submit,
+          isLoading,
           isGradesUpdated: !isEqual(newGrades, gradesFromMe),
         },
       },
+      refetch: () => {
+        subnetQuery.refetch();
+        neuronsQuery.refetch();
+        weightsQuery.refetch();
+        refetch();
+      },
     };
   }, [
+    addressRegisteredInSubnet,
     subnetQuery,
+    refetch,
     neuronsQuery,
     weightsQuery,
     grades,
+    isLoading,
     gradesFromMe,
     newGrades,
     submit,

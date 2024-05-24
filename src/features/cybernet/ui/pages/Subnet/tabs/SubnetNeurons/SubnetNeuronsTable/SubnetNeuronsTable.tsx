@@ -11,6 +11,7 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
 import { useMemo } from 'react';
+import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 
 type Props = {};
 
@@ -73,6 +74,7 @@ function handleSave(
 function SubnetNeuronsTable({}: Props) {
   const {
     subnetQuery,
+    addressRegisteredInSubnet,
     neuronsQuery,
     grades: {
       all: { data: allGrades },
@@ -90,6 +92,8 @@ function SubnetNeuronsTable({}: Props) {
 
   const { block } = useAppData();
 
+  const { getText } = useCybernetTexts();
+
   const rootSubnet = netuid === 0;
 
   const vievedBlocks = getData(address);
@@ -106,7 +110,8 @@ function SubnetNeuronsTable({}: Props) {
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: 'operator',
+        header: getText('validator'),
+        // size: 200,
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
@@ -185,18 +190,24 @@ function SubnetNeuronsTable({}: Props) {
 
             return avg;
           },
-        }),
-        columnHelper.accessor('uid', {
-          id: 'setGrade',
-          header: 'Set grade',
-          enableSorting: false,
-          cell: (info) => {
-            const uid = info.getValue();
-
-            return <GradeSetterInput key={uid} uid={uid} />;
-          },
         })
       );
+
+      if (addressRegisteredInSubnet) {
+        col.push(
+          // @ts-ignore
+          columnHelper.accessor('uid', {
+            id: 'setGrade',
+            header: 'Set grade',
+            enableSorting: false,
+            cell: (info) => {
+              const uid = info.getValue();
+
+              return <GradeSetterInput key={uid} uid={uid} />;
+            },
+          })
+        );
+      }
     }
 
     return col;
@@ -206,6 +217,7 @@ function SubnetNeuronsTable({}: Props) {
     // cur,
     metadata,
     netuid,
+    addressRegisteredInSubnet,
     rootSubnet,
     address,
   ]);

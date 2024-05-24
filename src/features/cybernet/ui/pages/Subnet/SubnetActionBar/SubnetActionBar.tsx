@@ -5,6 +5,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
+import useCybernetTexts from '../../../useCybernetTexts';
 
 type Props = {
   netuid: number;
@@ -29,6 +30,7 @@ function SubnetActionBar({
   const address = useAppSelector(selectCurrentAddress);
 
   const { setAdviser } = useAdviser();
+  const { getText } = useCybernetTexts();
 
   const canRegister = addressSubnetRegistrationStatus === null;
 
@@ -38,7 +40,7 @@ function SubnetActionBar({
     refetch();
   }
 
-  const { mutate: register } = useExecuteCybernetContract({
+  const subnetRegisterExecution = useExecuteCybernetContract({
     query: {
       burned_register: {
         netuid,
@@ -54,7 +56,7 @@ function SubnetActionBar({
     onSuccess: handleSuccess,
   });
 
-  const { mutate: registerRoot } = useExecuteCybernetContract({
+  const rootSubnetRegisterExecution = useExecuteCybernetContract({
     query: {
       root_register: {
         hotkey: address,
@@ -71,11 +73,11 @@ function SubnetActionBar({
     return (
       <ActionBar
         button={{
-          text: 'Register to root',
-          // link: '/contracts/' + CYBERNET_CONTRACT_ADDRESS,
-          onClick: registerRoot,
+          text: `Register to ${getText('root')}`,
+          onClick: rootSubnetRegisterExecution.mutate,
+          disabled: rootSubnetRegisterExecution.isLoading,
         }}
-      ></ActionBar>
+      />
     );
   }
 
@@ -85,7 +87,7 @@ function SubnetActionBar({
         break;
       }
       button = {
-        text: 'Register to subnet',
+        text: `Register to ${getText('subnetwork')}`,
         onClick: () => setStep(Steps.REGISTER_CONFIRM),
       };
 
@@ -94,7 +96,8 @@ function SubnetActionBar({
     case Steps.REGISTER_CONFIRM:
       button = {
         text: 'Confirm registration',
-        onClick: register,
+        onClick: subnetRegisterExecution.mutate,
+        disabled: subnetRegisterExecution.isLoading,
       };
 
       onClickBack = () => setStep(Steps.INITIAL);

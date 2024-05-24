@@ -210,8 +210,8 @@ function AppRouter() {
           <Route path="/sigma" element={<SigmaWrapper />} />
 
           <Route path="/nebula" element={<Nebula />} />
-          <Route path="/cybernet" element={<Cybernet />} />
-          <Route path="/cybernet/*" element={<Cybernet />} />
+          <Route path="/cyberverse" element={<Cybernet />} />
+          <Route path="/cyberverse/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
 

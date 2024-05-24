@@ -10,6 +10,7 @@ import { routes } from 'src/routes';
 import { Cid } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetHyperParams from '../SubnetHyperParams/SubnetHyperParams';
+import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 
 type Props = {
   data: SubnetInfo;
@@ -73,13 +74,18 @@ const config: { [K in keyof SubnetInfo]: { text: string } } = {
 function SubnetInfo({ data: subnetInfoData }: Props) {
   const { id } = useParams();
 
+  const { getText } = useCybernetTexts();
+
   useAdviserTexts({
-    defaultText: 'Subnet params',
+    defaultText: `${getText('subnetwork')} params`,
   });
 
   return (
     <>
-      <Display noPaddingX title={<DisplayTitle title="Subnet info" />}>
+      <Display
+        noPaddingX
+        title={<DisplayTitle title={`${getText('subnetwork')} info`} />}
+      >
         <ul className={styles.list}>
           {subnetInfoData &&
             Object.keys(subnetInfoData).map((item) => {
@@ -93,10 +99,12 @@ function SubnetInfo({ data: subnetInfoData }: Props) {
               }
 
               if (item === 'metadata') {
-                content = (
-                  <Cid cid={value} />
-                  // <Link to={routes.oracle.ask.getLink(value)}>{value}</Link>
-                );
+                content = '';
+
+                // content = (
+                //   <Cid cid={value} />
+                //   // <Link to={routes.oracle.ask.getLink(value)}>{value}</Link>
+                // );
               }
 
               if (['burn'].includes(item)) {
