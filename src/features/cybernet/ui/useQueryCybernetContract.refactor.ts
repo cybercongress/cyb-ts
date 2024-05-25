@@ -23,7 +23,7 @@ function useQueryCybernetContract<DataType>({
   const contractAddress2 = contractAddress || selectedContract.address;
 
   const { refetch, data, error, isLoading } = useQuery<DataType>(
-    ['queryCybernetContract', contractAddress, query],
+    ['queryCybernetContract', contractAddress2, query],
     () => {
       return queryCybernetContract(contractAddress2, query, queryClient!);
     },

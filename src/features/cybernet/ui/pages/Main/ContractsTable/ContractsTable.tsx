@@ -29,7 +29,8 @@ function ContractsTable() {
         () => [
           columnHelper.accessor('metadata.name', {
             header: '',
-            minSize: 150,
+            // minSize: 150,
+            size: 0,
             cell: (info) => {
               const value = info.getValue();
 

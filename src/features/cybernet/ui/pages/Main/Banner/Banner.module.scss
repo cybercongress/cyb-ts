@@ -1,0 +1,26 @@
+.banner {
+  display: flex;
+  justify-content: center;
+  h1,
+  h2 {
+    font-weight: 400;
+  }
+  h1 {
+    color: var(--pink);
+    font-size: 42px;
+  }
+
+  h2 {
+    font-size: 20px;
+    color: var(--green-light);
+  }
+}
+
+.rewardsBlock {
+  display: flex;
+  flex-direction: column;
+
+  span {
+    font-size: 40px;
+  }
+}

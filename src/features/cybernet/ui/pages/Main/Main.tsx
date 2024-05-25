@@ -18,6 +18,7 @@ import { routes } from 'src/routes';
 import ContractsTable from './ContractsTable/ContractsTable';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCybernet } from '../../cybernet.context';
+import Banner from './Banner/Banner';
 
 function Main() {
   const address = useCurrentAddress();
@@ -44,11 +45,7 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
-      <Display>
-        cybernet is the place, where ones brings wealth to the project, and
-        others who value them. <br /> join the subnet and complete its
-        enquiries, or stake on those who joined to make them more valuable.
-      </Display>
+      <Banner />
 
       <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
         <ContractsTable />
