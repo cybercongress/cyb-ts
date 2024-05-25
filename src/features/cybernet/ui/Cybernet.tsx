@@ -37,7 +37,7 @@ function Cybernet() {
           <Route path="mentors" element={<Delegates />} />
           <Route path="mentors/:id" element={<Delegate />} />
 
-          <Route path="staking/my" element={<MyStake />} />
+          <Route path="learners/my" element={<MyStake />} />
         </Route>
       </Route>
     </Routes>

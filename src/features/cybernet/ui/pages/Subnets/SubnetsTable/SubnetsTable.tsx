@@ -15,7 +15,7 @@ import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
 import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
 import useCybernetTexts from '../../../useCybernetTexts';
-import { useCybernet } from '../../../cybernet.context';
+import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 
 type Props = {
   // remove
@@ -57,6 +57,8 @@ function SubnetsTable({ data }: Props) {
   const myAddressJoinedRootSubnet = myCurrentSubnetsJoined?.includes(0);
 
   const { selectedContract } = useCybernet();
+
+  const { contractName, network } = useCurrentContract();
 
   const columns = useMemo(() => {
     const col = [
@@ -240,7 +242,9 @@ function SubnetsTable({ data }: Props) {
 
   return (
     <Table
-      onSelect={(row) => navigate(subnetRoutes.subnet.getLink(row))}
+      onSelect={(row) =>
+        navigate(subnetRoutes.subnet.getLink('pussy', contractName, row))
+      }
       columns={columns}
       data={data}
       // if 1 - root subnet

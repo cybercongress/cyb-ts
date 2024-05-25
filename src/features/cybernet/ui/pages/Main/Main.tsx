@@ -89,7 +89,9 @@ function Main() {
               </button>
 
               {haveStake && (
-                <Link to="./staking/my">my {getText('delegator')}</Link>
+                <Link to={cybernetRoutes.myLearner.getLink('pussy', name)}>
+                  my {getText('delegator')}
+                </Link>
               )}
             </div>
           </Display>

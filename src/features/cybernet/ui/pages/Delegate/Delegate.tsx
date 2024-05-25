@@ -66,7 +66,7 @@ function Delegator() {
     <MainContainer>
       {myStake && data.delegate !== currentAddress && (
         <Display title={<DisplayTitle title="My stake" />}>
-          {myStake.toLocaleString()} 🟣
+          <AmountDenom amountValue={myStake} denom="pussy" />
         </Display>
       )}
 

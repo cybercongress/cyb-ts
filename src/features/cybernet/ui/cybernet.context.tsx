@@ -95,4 +95,16 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function useCurrentContract() {
+  const { selectedContract } = useCybernet();
+
+  const { metadata } = selectedContract;
+  const contractName = metadata?.name;
+
+  return {
+    contractName,
+    network: 'pussy',
+  };
+}
+
 export default CybernetProvider;

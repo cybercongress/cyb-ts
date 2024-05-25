@@ -121,7 +121,11 @@ function SubnetNeuronsTable({}: Props) {
               address={hotkey}
               avatar
               markCurrentAddress
-              link={cybernetRoutes.delegator.getLink(hotkey)}
+              link={cybernetRoutes.delegator.getLink(
+                'pussy',
+                metadata.name,
+                hotkey
+              )}
             />
           );
         },
