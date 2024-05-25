@@ -10,7 +10,10 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { useSubnet } from '../../../subnet.context';
 import { useMemo } from 'react';
-import { useCybernet } from 'src/features/cybernet/ui/cybernet.context';
+import {
+  useCurrentContract,
+  useCybernet,
+} from 'src/features/cybernet/ui/cybernet.context';
 
 type Props = {};
 
@@ -27,6 +30,8 @@ function WeightsTable({}: Props) {
   const isRootSubnet = uid === 0;
 
   const neurons = neuronsQuery.data || [];
+
+  const currentContract = useCurrentContract();
 
   const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
     query: {
@@ -46,7 +51,7 @@ function WeightsTable({}: Props) {
 
   const data = grades.all.data;
 
-  if (!columns) {
+  if (!columns?.length) {
     return null;
   }
 
@@ -64,12 +69,18 @@ function WeightsTable({}: Props) {
               cell: (info) => {
                 const uid = info.getValue();
 
+                console.log(currentContract);
+
                 return (
                   <Account
                     address={uid}
                     avatar
                     markCurrentAddress
-                    link={cybernetRoutes.delegator.getLink(uid)}
+                    link={cybernetRoutes.delegator.getLink(
+                      currentContract.network,
+                      currentContract.contractName,
+                      uid
+                    )}
                   />
                 );
               },
@@ -123,7 +134,11 @@ function WeightsTable({}: Props) {
                         avatar
                         // markCurrentAddress
                         onlyAvatar
-                        link={cybernetRoutes.delegator.getLink(hotkey)}
+                        link={cybernetRoutes.delegator.getLink(
+                          currentContract.network,
+                          currentContract.contractName,
+                          hotkey
+                        )}
                       />
                     </div>
                   );

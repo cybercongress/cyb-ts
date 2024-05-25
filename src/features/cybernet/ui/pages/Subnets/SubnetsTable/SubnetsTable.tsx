@@ -73,9 +73,8 @@ function SubnetsTable({ data }: Props) {
 
           const isMySubnet = myCurrentSubnetsJoined?.includes(netuid);
 
-          const {
-            metadata: { name: contractName },
-          } = selectedContract;
+          const { metadata: { name: contractName } = {} } =
+            selectedContract || {};
           return (
             <Link
               to={subnetRoutes.subnet.getLink('pussy', contractName, netuid)}

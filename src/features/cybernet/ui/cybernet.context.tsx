@@ -3,7 +3,6 @@ import { Networks } from 'src/types/networks';
 import useQueryCybernetContract from './useQueryCybernetContract.refactor';
 import { ContractWithData, Economy, SubnetInfo } from '../types';
 import { Metadata } from 'cosmjs-types/cosmos/bank/v1beta1/bank';
-import meta from 'src/components/AvailableAmount/AvailableAmount.stories';
 
 type ContractType = 'graph' | 'ml';
 
@@ -16,10 +15,12 @@ const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
   selectContract: (address: string) => void;
   selectedContract: ContractWithData;
-  subnetsQuery: ReturnType<typeof useQueryCybernetContract>;
+  // subnetsQuery: ReturnType<typeof useQueryCybernetContract<SubnetInfo[]>;
+  subnetsQuery: any;
 }>({
   contracts: {},
   selectContract: null,
+  subnetsQuery: null,
   selectedContract: null,
 });
 
@@ -83,7 +84,9 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
         return {
           contracts,
           subnetsQuery,
-          selectContract: setSelectedContractAddress,
+          selectContract: (value) => {
+            setSelectedContractAddress(value || CONTRACT_NEW);
+          },
           selectedContract: contracts.find(
             (contract) => contract.address === selectedContractAddress
           ),

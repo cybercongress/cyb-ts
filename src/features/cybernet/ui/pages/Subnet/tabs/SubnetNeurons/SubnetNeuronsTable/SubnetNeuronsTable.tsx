@@ -12,6 +12,10 @@ import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
 import { useMemo } from 'react';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
+import {
+  useCurrentContract,
+  useCybernet,
+} from 'src/features/cybernet/ui/cybernet.context';
 
 type Props = {};
 
@@ -97,6 +101,7 @@ function SubnetNeuronsTable({}: Props) {
   const rootSubnet = netuid === 0;
 
   const vievedBlocks = getData(address);
+  const { selectedContract } = useCybernet();
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
@@ -123,7 +128,7 @@ function SubnetNeuronsTable({}: Props) {
               markCurrentAddress
               link={cybernetRoutes.delegator.getLink(
                 'pussy',
-                metadata.name,
+                selectedContract?.metadata?.name,
                 hotkey
               )}
             />
@@ -218,6 +223,7 @@ function SubnetNeuronsTable({}: Props) {
   }, [
     allGrades,
     // block,
+    selectedContract,
     // cur,
     metadata,
     netuid,

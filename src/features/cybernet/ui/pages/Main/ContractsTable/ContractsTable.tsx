@@ -10,11 +10,13 @@ import { useCybernet } from '../../../cybernet.context';
 import ImgDenom from 'src/components/valueImg/imgDenom';
 import { ContractWithData } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../routes';
+import styles from './ContractsTable.module.scss';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 
 const columnHelper = createColumnHelper<ContractWithData>();
 
 function ContractsTable() {
-  const { contracts, selectContract } = useCybernet();
+  const { contracts, selectContract, selectedContract } = useCybernet();
 
   return (
     <Table
@@ -27,13 +29,23 @@ function ContractsTable() {
         () => [
           columnHelper.accessor('metadata.name', {
             header: '',
+            minSize: 150,
             cell: (info) => {
               const value = info.getValue();
 
+              const logo = info.row.original.metadata?.logo;
+
+              const selected = selectedContract?.metadata?.name === value;
+
               return (
-                <Link to={cybernetRoutes.subnets.getLink('pussy', value)}>
-                  {value}
-                </Link>
+                <div className={styles.nameCell}>
+                  {selected && <span>✔</span>}
+
+                  <Link to={cybernetRoutes.subnets.getLink('pussy', value)}>
+                    <AvataImgIpfs cidAvatar={logo} />
+                    {value}
+                  </Link>
+                </div>
               );
             },
           }),
@@ -84,7 +96,7 @@ function ContractsTable() {
             },
           }),
         ],
-        []
+        [selectedContract]
       )}
       data={contracts}
     />

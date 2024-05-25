@@ -9,6 +9,7 @@ import MyStake from './pages/MyStake/MyStake';
 import { Helmet } from 'react-helmet';
 import CybernetProvider from './cybernet.context';
 import Verses from './pages/Verses/Verses';
+import Verse from './pages/Verse/Verse';
 
 function Cybernet() {
   return (
@@ -29,7 +30,7 @@ function Cybernet() {
         <Route index element={<Main />} />
         <Route path="/verses" element={<Verses />} />
         <Route path="/verses/:network" element={<Verses />} />
-        <Route path="/verses/:network/:nameOrAddress" element={<Outlet />}>
+        <Route path="/verses/:network/:nameOrAddress" element={<Verse />}>
           {/* <Route index element={<p>no page</p>} /> */}
           <Route path="facilities" element={<Subnets />} />
           <Route path="facilities/:id/*" element={<Subnet />} />

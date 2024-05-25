@@ -1,5 +1,5 @@
 import { Route, Routes, useParams } from 'react-router-dom';
-import { MainContainer, Tabs } from 'src/components';
+import { Cid, MainContainer, Tabs } from 'src/components';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './tabs/Weights/Weights';
 import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
@@ -13,6 +13,10 @@ import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
 import { useCybernet } from '../../cybernet.context';
 import useCybernetTexts from '../../useCybernetTexts';
 import Display from 'src/components/containerGradient/Display/Display';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import { trimString } from 'src/utils/utils';
+import SubnetHeader from './SubnetHeader/SubnetHeader';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -78,15 +82,10 @@ function Subnet() {
     });
   }
 
-  const { metadata } = subnetQuery.data || {};
-
   return (
     <MainContainer resetMaxWidth>
-      <Display>
-        <h3>subnet metadata</h3>
+      <SubnetHeader />
 
-        <p>{JSON.stringify(metadata)}</p>
-      </Display>
       <Tabs options={tabs} selected={tab || 'validators'} />
 
       <Routes>

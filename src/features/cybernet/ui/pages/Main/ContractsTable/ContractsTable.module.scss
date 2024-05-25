@@ -1,0 +1,21 @@
+.nameCell {
+  position: relative;
+  padding-left: 30px;
+
+  > span {
+    color: var(--green-light);
+    position: absolute;
+    left: 10px;
+  }
+
+  > a {
+    display: flex;
+    align-items: center;
+
+    > img {
+      margin-right: 7px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+}

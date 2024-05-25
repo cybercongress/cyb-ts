@@ -1,3 +1,11 @@
+export interface Metadata {
+  name: string;
+  particle: string;
+  description: string;
+  logo: string;
+  types: string;
+  extra: string;
+}
 export type SubnetInfo = {
   blocks_since_last_step: number;
   burn: number;
@@ -11,6 +19,7 @@ export type SubnetInfo = {
   metadata: string;
   min_allowed_weights: number;
   netuid: number;
+  metadata: Metadata;
   network_modality: number;
   owner: string;
   rho: number;
@@ -137,15 +146,6 @@ export interface Economy {
   commission_change: boolean;
   total_issuance: TotalIssuance;
   total_rewards: TotalRewards;
-}
-
-export interface Metadata {
-  name: string;
-  particle: string;
-  description: string;
-  logo: string;
-  types: string;
-  extra: string;
 }
 
 export interface ContractWithData {
