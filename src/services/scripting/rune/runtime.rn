@@ -19,7 +19,7 @@ pub fn error(message) {
 }
 
 pub fn meta_text(text) {
-    #{ "action" "text": text, "type": "text" }
+    #{ "text": text, "type": "text" }
 }
 
 pub fn meta_link(url, title) {
