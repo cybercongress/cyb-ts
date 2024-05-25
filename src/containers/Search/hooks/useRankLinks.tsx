@@ -4,7 +4,6 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getRankGrade, searchByHash } from 'src/utils/search/utils';
 import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
 import { coinDecimals } from 'src/utils/utils';
-import { useBackend } from 'src/contexts/backend/backend';
 
 import { LinksTypeFilter } from '../types';
 import { merge } from './shared';
@@ -14,7 +13,6 @@ const PER_PAGE_LIMIT = 10;
 
 const useSearch = (hash: string, { skip = false } = {}) => {
   const cid = hash;
-  const { defferedDbApi } = useBackend();
 
   const queryClient = useQueryClient();
 

@@ -53,7 +53,6 @@ const reduceSearchResults = (data, query) => {
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
-  const { defferedDbApi } = useBackend();
 
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
@@ -97,7 +96,7 @@ function Market({ defaultAccount }) {
       }
     };
     getFirstItem();
-  }, [queryClient, tab, defferedDbApi, update]);
+  }, [queryClient, tab, update]);
 
   const fetchMoreData = async () => {
     // a fake async api call like which sends

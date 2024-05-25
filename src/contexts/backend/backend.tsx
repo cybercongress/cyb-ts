@@ -59,7 +59,6 @@ type BackendProviderContextType = {
   senseApi: SenseApi;
   mlApi: Remote<BackgroundWorker['mlApi']> | null;
   ipfsApi: IpfsApiRemote;
-  defferedDbApi: Remote<BackgroundWorker['defferedDbApi']> | null;
   rune: Remote<RuneEngine> | null;
   dbApi: DbApiWrapper | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
@@ -75,7 +74,6 @@ type BackendProviderContextType = {
 const valueContext = {
   cozoDbRemote: null,
   senseApi: null,
-  defferedDbApi: null,
   rune: null,
   isIpfsInitialized: false,
   isDbInitialized: false,
@@ -314,11 +312,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     [isMlInitialized]
   );
 
-  const defferedDbApi = useMemo(
-    () => (isDbInitialized ? backgroundWorkerInstance.defferedDbApi : null),
-    [isDbInitialized]
-  );
-
   const valueMemo = useMemo(
     () =>
       ({
@@ -326,7 +319,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi,
         mlApi,
-        defferedDbApi,
         rune,
         ipfsNode,
         restartSync: (name: SyncEntryName) =>
@@ -351,7 +343,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       mlApi,
       ipfsApi,
       ipfsNode,
-      defferedDbApi,
       rune,
       loadIpfs,
     ]

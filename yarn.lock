@@ -13610,10 +13610,10 @@ cyb-cozo-lib-wasm@^0.7.145:
   resolved "https://registry.yarnpkg.com/cyb-cozo-lib-wasm/-/cyb-cozo-lib-wasm-0.7.145.tgz#df82255d478415134d0a2cf82de1467c2009db92"
   integrity sha512-vCbiFuBPFOaMyS9kPutatBDekAqEafmsQ9jX34J3eMzQiBmoyujsm+z6jZiLwVWz2yDNtF/H17ofgexalHKjnw==
 
-cyb-rune-wasm@0.0.81:
-  version "0.0.81"
-  resolved "https://registry.yarnpkg.com/cyb-rune-wasm/-/cyb-rune-wasm-0.0.81.tgz#976737b4fac9f334c8cfba5bb9aeda9fc312f8cc"
-  integrity sha512-+iEmObz1MWiWDsAMudBAhFxZH9Dza2iaxKB6dneskELxoxCwhSveBQcOV+uGvkxX71g3kNgsClt+qRZRPHCXmw==
+cyb-rune-wasm@^0.0.82:
+  version "0.0.82"
+  resolved "https://registry.yarnpkg.com/cyb-rune-wasm/-/cyb-rune-wasm-0.0.82.tgz#f5ecb2c3f0d9e55b6a44b542191d0e0de57a8b65"
+  integrity sha512-u+SIcFd09gEWwVlStGAimI465xkt7tBF5YtZ58nsQIs8OdWX3IXeHsnkmcJPGeP7ZVQDFY3SCwSwHM77F1p7Gw==
 
 d3-array@1, d3-array@^1.1.1, d3-array@^1.2.0, d3-array@^1.2.1:
   version "1.2.4"

@@ -24,7 +24,7 @@ Using cybscript any cyber citizen can
 
 soul is stored in [[ipfs]] and is linked directly to avatars passport.
 
-## cyb module
+## CYB module
 
 cyb module provide bindings that connect cyber-scripting with app and extend [Rune language] functionality.
 
@@ -36,7 +36,7 @@ Allows to evaluate code from external IPFS scripts in verifiable way, execute re
 // Evaluate function from IPFS
 cyb::eval_script_from_ipfs(cid,'func_name', #{'name': 'john-the-baptist', 'evangelist': true, 'age': 33})
 
-// Evaluate remote function(not ready yet)
+// Evaluate remote function(in developement)
 cyb::eval_remote_script(peer_id, func_name, params)
 ```
 
@@ -61,7 +61,7 @@ cyb::get_cyberlinks_to_cid(cid: string)  -> json;
 cyb::cyber_search(query: string) -> json;
 
 // Create cyber link
-// (this action will trigger signer)
+// (this action requires trigger signer)
 cyb::cyber_link(from_cid: string, to_cid: string);
 ```
 
@@ -71,16 +71,25 @@ Work with IPFS
 
 ```
 cyb::get_text_from_ipfs(cid: string) -> string;
-cyb::add_text_to_ipfs(text: string);
+cyb::add_content_to_ipfs(text: string);
+```
+
+#### Local relational-graph-vector database
+
+Access to [[cozo]] and your [[brain]] data that represented in text and vector-based formats.
+
+```
+// return N closest particles based on embeddings of each
+cyb::search_by_embedding(text:string, count: int) -> string[];
 ```
 
 #### Experemental
 
-OpenAI promts(beta)
+OpenAI promts(beta, in developement)
 
 ```
 // Apply prompt OpenAI and get result
-cyb::open_ai_prompt(prompt: string; api_key: string) -> string;
+cyb::open_ai_prompt(prompt: string;  params: json) -> string;
 ```
 
 #### Debug
@@ -102,17 +111,14 @@ At the moment all entrypoint types is related to some particle in cyber:
 
 - Moon Domain Resolver
 - Personal Processor
-- Particle Inference
+- Ask Companion
 
 ### Entrypoint principles
 
-Each entrypoint is function that accept `params` argument as **input**.
-`params` is dynamic key-value object with 0-n props.
+Each entrypoint is function that accept some arguments as **input**.
 
 ```
-pub async fn personal_processor(params) {
-    let cid = params.cid;
-    let content = params.content;
+pub async fn personal_processor(cid, content_type, content) {
     // ... //
 }
 ```
@@ -121,25 +127,25 @@ _`personal_processor` is entrypoint for each-single particle(see. furter)_
 
 Second convention that each entrypoint should return **output** object - with one required property named _action_ and some optional props depending on action for ex. `#{action: 'pass'}`.
 
-Cyber-scripting has helpers to construct responses:
+Cyber-scripting has helpers to construct object-like responses, with mandatory "action" field and some optional fields:
 
 ```
 pass() // pass untouched = #{action: 'pass'}
 
 hide() // hide particle = #{ "action": "hide" }
 
-cid_result(cid) // change particle's cid and parse = #{ "cid": cid, "action": "cid_result" }
+cid_result(cid) // change particle's cid and parse = #{ "action": "cid_result", "cid": cid  }
 
-content_result(content) //  modify particle content = #{ "content": content, "action": "content_result" }
+content_result(content) //  modify particle content = #{ "action": "content_result", "content": content }
 
-error(message) // error ^_^ = #{ "message": message, "action": "error" }
+error(message) // error ^_^ = #{ "action": "error", "message": message }
 ```
 
 So minimal entrypoint looks like this:
 
 ```
-pub async fn personal_processor(params) {
-    return pass()
+pub async fn personal_processor(cid, content_type, content) {
+    return pass() // keep data stream untouched
 }
 ```
 
@@ -157,12 +163,10 @@ A[particle] -- cid --> B[IPFS] -- content --> C(("personal<br />processor")) -- 
 ```
 // params:
 //      cid: CID of the content
-//      contentType: text, image, link, pdf, video, directory, html etc...
-//      content: content itself (text only supported at the moment)
-pub async fn personal_processor(params) {
-    let cid = params.cid; // CID of the particle
-    let content_type = params.contentType; // text, image, video, audio, pdf, etc...
-    let content = params.content; //  content (text only supported for now)
+//      content_type: text, image, link, pdf, video, directory, html etc...
+//      content: (text only supported at the moment)
+pub async fn personal_processor(cid, content_type, content) {
+    /* SOME CODE */
 }
 ```
 
@@ -188,32 +192,30 @@ Every user can write his own .moon domain resolver: _[username].moon_. When any 
 
 ```mermaid
 graph LR
-B(username.moon) -- username --> C["cyber<br/>passport<br/>particle"] --  cid --> D(IPFS) -- script code --> E(( particle<br/> resolver)) -- content --> F(result)
+B(username.moon) -- username --> C["cyber<br/>passport<br/>particle"] --  cid --> D(IPFS) -- script code --> E(( particle<br/> resolver)) -- render content --> F(result)
 ```
 
-Minimal resolver can looks like this:
+Minimal resolver can looks like this: \* _no input params but context is used(user that look at your domain)_
 
 ```
-pub async fn moon_domain_resolver(params) {
+pub async fn moon_domain_resolver() {
+
     // particle consumer from context
     let name = cyb::context.nickname;
 
-    // Content
+    // respond
+    // as string
     return content_result(`Hello ${name}!`)
-    // or CID
+
+    // or CID(can be any text/image or even app hosted inside IPFS)
     // return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 ```
 
-_There is no params for this entrypoint, but context can be used as input(see furter)_
-
 And there is minimal personal processor that process domain and run resolver from remote user script.
 
 ```
-pub async fn personal_processor(params) {
-    let content_type = params.contentType;
-    let content = params.content;
-
+pub async fn personal_processor(cid, content_type, content) {
     // check if text is passed here and it's looks like .moon domain
     if content_type == "text" and content.ends_with(".moon") {
             let items = content.split(".").collect::<Vec>();
@@ -230,28 +232,41 @@ pub async fn personal_processor(params) {
                 // log to browser console
                 cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
 
-                // execute user 'moon_domain_resolver' function from 'soul' script
-                return cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
+                // execute user 'moon_domain_resolver' function from 'soul' script with zero params
+                return cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", []).await;
         }
     }
 }
 ```
 
-#### ~~Particle Inference~~
+#### Ask Companion
 
-###### _(in developement)_
+User can extend UI of the particle with custom controls. User can pass meta items as script result and cyb will render as UI extension.
+At the moment we have 2 meta UI items:
 
-Every user is able to create his own particle that appears in search results of all his followers and depends:
+- text: `meta_text("title")`
+- link: `meta_link("/@master", "link to user named @master")`
 
 ```mermaid
 graph LR
-E(follower) -- search input --> C(("particle<br/>inference")) -- answer --> D(search results)
+E(user) -- search input --> C(("ask<br/>Companion")) -- companion payload --> D(meta UI)
 ```
 
 ```
-particle_inference(params) {
-    let input = params.input // search input aka command
-    pass()
+pub async fn ask_companion(cid, content_type, content) {
+    // plain text item
+    let links = [meta_text("similar:")];
+
+    // search closest 5 particles using local data from the brain(embedding-search)
+    let similar_results = cyb::search_by_embedding(content, 5).await;
+
+
+    for v in similar_results {
+        // link item
+        links.push(meta_link(`/oracle/ask/${v.cid}`, v.text));
+    }
+
+    return content_result(links)
 }
 ```
 
@@ -268,14 +283,18 @@ Context point to place and obstacles where entrypoint was triggered. Context is 
   - key/value storage
 
 ```
-// Get list of url parameters
-let path = cyb::context.params.path;
 
 // nick of user that see this particle(in case of domain resolver)
 let name = cyb::context.user.nickname;
 
-//get some secret
-let openAI_apiKey = cyb::context.secrets.openAI_apiKey;
+// user particle that contains soul, that can be interracted directly from your soul
+let particle = cyb::context.particle;
+
+// Get list of url parameters (in progress)
+let path = cyb::context.params.path;
+
+//get some secret (in progress)
+let open_ai_api_key = cyb::context.secrets.open_ai_api_key;
 
 ```
 
@@ -284,83 +303,102 @@ let openAI_apiKey = cyb::context.secrets.openAI_apiKey;
 #### Personal processor
 
 ```
-// empty params
-pub async fn moon_domain_resolver(params) {
-    dbg("moon_domain_resolver fired");
-    // QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17 - is html app hosted in IPFS
-    return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
+// your content for <citizen_name>.moon domain
+pub async fn moon_domain_resolver() {
+    // get nickname of domain resolver at the momemnt
+    let nickname =  cyb::context.user.nickname;
+
+    let rng = rand::WyRand::new();
+    let rand_int = rng.int_range(0, 999999);
+
+    return content_result(`Hello, ${nickname}, your lucky number is ${rand_int} 🎉`);
+
+    // substitute with some CID (ipfs hosted app in this case)
+    // return cid_result("QmcqikiVZJLmum6QRDH7kmLSUuvoPvNiDnCKY4A5nuRw17")
 }
 
-// params:
-//      cid: CID of the content
-//      contentType: text, image, video, pdf, etc...
-//      content: content itself(text only supported for now)
-pub async fn personal_processor(params) {
-    let cid = params.cid;
-    let content_type = params.contentType;
-    let content = params.content;
-    dbg(`personal_processor ${cid} ${content_type} ${content}`);
+// Extend particle page with custom UI elements
+pub async fn ask_companion(cid, content_type, content) {
+    // plain text item
+    let links = [meta_text("similar:")];
+
+    // search closest 5 particles using local data from the brain
+    let similar_results = cyb::search_by_embedding(content, 5).await;
+
+
+    for v in similar_results {
+        // link item
+        links.push(meta_link(`/oracle/ask/${v.cid}`, v.text));
+    }
+
+    return content_result(links)
+}
+
+// Transform content of the particle
+pub async fn personal_processor(cid, content_type, content) {
+
+    // skip any non-text content
     if content_type != "text" {
         return pass()
     }
 
+    // <citizen_name>.moon domain resolver
     if content.ends_with(".moon") {
         let items = content.split(".").collect::<Vec>();
+
         let username = items[0];
         let ext = items[1];
+
         if username.len() <= 14 && ext == "moon" {
+
+            // get passport data by username
             let passport = cyb::get_passport_by_nickname(username).await;
+
+            // particle - CID of soul script
             let particle_cid = passport["extension"]["particle"];
+
             cyb::log(`Resolve ${username} domain from passport particle '${particle_cid}'`);
-            let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", #{}).await;
-            dbg(result);
+
+            // resolve content(script) by cid
+            // evaluate 'moon_domain_resolver' from that
+            let result = cyb::eval_script_from_ipfs(particle_cid, "moon_domain_resolver", []).await;
+
             return result
         }
     }
 
-    let one_guy = 'Mark Zukerberg';
-
-    if content.contains(one_guy) {
-        cyb::log(`Update ${cid} content, replace ${one_guy} to 'Elon Musk'`);
-        return content_result(content.replace(one_guy, "Elon Musk"))
-    }
-
-    let buzz_word = "хуярта";
+    // example of content exclusion from the search results
+    let buzz_word = "пиздопроебанное хуеплетство";
 
     if content.contains(buzz_word) {
         cyb::log(`Hide ${cid} item because of '${buzz_word}' in the content`);
         return hide()
     }
 
-    // <ticker>@NOW btcusd@NOW
+
+    // example of content modification
+    // replaces cyber with cyber❤
+    let highlight_text = "cyber";
+    let highlight_with = "❤";
+
+    if content.contains(highlight_text) {
+        cyb::log(`Update ${cid} content, highlight ${highlight_text}${highlight_with}`);
+        return content_result(content.replace(highlight_text, `${highlight_text}${highlight_with}`))
+    }
+
+    // replace <token_name>@NOW (ex. bitcoin@NOW) with actual price in usdt
+    // using external api call
     if content.contains("@NOW") {
         let left_part = content.split("@NOW").next().unwrap();
-        let symbol = left_part.split(" ").rev().next().unwrap();
+        let token_name = left_part.split(" ").rev().next().unwrap();
+        let vs_currency = "usd";
 
         // external url call
-        let json =  http::get( `https://api.binance.com/api/v3/ticker?symbol=${symbol}`).await?.json().await?;
-        return content_result(content.replace(`${symbol}@NOW`, json["lastPrice"]))
+        let json =  http::get(`https://api.coingecko.com/api/v3/simple/price?ids=${token_name}&vs_currencies=${vs_currency}`).await?.json().await?;
+        return content_result(content.replace(`${token_name}@NOW`, `Current ${token_name} price is ${json[token_name][vs_currency]} ${vs_currency}`))
     }
 
-    if content.contains("openai@me") {
-        // get path from url
-        let path = cyb::context.params.path;
-        if path.len() >= 2 && path[0] == "ipfs" {
-
-            // get openAI api key from secrets
-            let openAI_api_key = cyb::context.secrets.openAI_api_key;
-
-            // get current item CID fro url cyb.ap/ipfs/Qm.....
-            let cid = path[1];
-
-            // get current item content from IPFS
-            let main_text = cyb::get_text_from_ipfs(cid).await;
-            // apply openAI prompt
-            let result = cyb::open_ai_prompt(`${main_text}\r\n What is this text about?`, openAI_api_key).await;
-            return content_result(`OpenAI say: ${result}`);
-        }
-    }
-
-    pass() // Pass as is
+    // anything else - pass as is
+    pass()
 }
 ```

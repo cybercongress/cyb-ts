@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unused-modules */
+import { getFromLink, getToLink } from 'src/utils/search/utils';
 import runeDeps from './runeDeps';
 import { promptToOpenAI } from './services/llmRequests/openai';
 
@@ -40,4 +41,14 @@ export async function jsPromptToOpenAI(prompt, apiKey, params) {
 
 export async function jsSearchByEmbedding(text, count) {
   return runeDeps.cybApi.searcByEmbedding(text, count);
+}
+
+export async function jsCyberLinksFrom(cid) {
+  const result = await getFromLink(cid);
+  return result;
+}
+
+export async function jsCyberLinksTo(cid) {
+  const result = await getToLink(cid);
+  return result;
 }
