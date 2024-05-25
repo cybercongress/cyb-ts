@@ -92,7 +92,7 @@ const createBackgroundWorkerApi = () => {
       const model = mlModelMap[name];
       console.log('-----------init ml pipeline');
 
-      mlInstances[name] = await pipeline(model.name, model.model, {
+      return pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
           const {
             status,
@@ -122,8 +122,12 @@ const createBackgroundWorkerApi = () => {
 
           broadcastApi.postMlSyncEntryProgress(name, progressItem);
         },
+      }).then((model) => {
+        console.log('----model', name, typeof model);
+        mlInstances[name] = model;
+
+        return model;
       });
-      console.log('-----mlInst', !!mlInstances[name]);
     }
 
     return mlInstances[name];
