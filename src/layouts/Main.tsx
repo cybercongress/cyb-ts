@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { localStorageKeys } from 'src/constants/localStorageKeys';
-import AppMenu from 'src/containers/application/AppMenu';
-import AppSideBar from 'src/containers/application/AppSideBar';
 import Header from 'src/containers/application/Header/Header';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
@@ -79,10 +77,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
     };
   }, []);
 
-  function closeMenu() {
-    toggleMenu(false);
-  }
-
   return (
     <div className={styles.wrapper} ref={ref}>
       <Header
@@ -91,16 +85,9 @@ function MainLayout({ children }: { children: JSX.Element }) {
           isOpen: openMenu,
         }}
       />
-
-      {/*       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu closeMenu={closeMenu} />
-      </AppSideBar> */}
-
       <SenseButton className={styles.senseBtn} />
       <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
-
       {children}
-
       <footer>
         <CircularMenu circleSize={graphSize} />
         {!isMobile && (

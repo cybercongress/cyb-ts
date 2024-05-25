@@ -1,6 +1,5 @@
 .circle {
   position: fixed;
-  // left: 10px;
   bottom: 0px;
   z-index: 4;
   width: 220px;
@@ -11,7 +10,7 @@
 .menu {
   --diameter: 140px;
   --i: 24deg; //elements angle
-  --delta: 0deg;
+  --delta: 0deg; //second menu layer angle
   list-style-type: none;
   padding: 0;
   display: grid;

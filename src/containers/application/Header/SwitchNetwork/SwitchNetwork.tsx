@@ -2,18 +2,18 @@ import { useMemo } from 'react';
 import cx from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import { routes } from 'src/routes';
-import { renderSubItems } from 'src/components/appMenu/AppMenu';
 import itemsMenu from 'src/utils/appsMenu';
 import { CHAIN_ID } from 'src/constants/config';
 import { useAppSelector } from 'src/redux/hooks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Networks } from 'src/types/networks';
-import { MenuItem, MenuItems } from '../../AppMenu';
+import { MenuItem, MenuItems } from 'src/types/menu';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './SwitchNetwork.module.scss';
 import { selectNetworkImg } from '../../../../utils/utils';
 import ChainInfo from './ui/ChainInfo/ChainInfo';
+import SubMenu from 'src/components/appMenu/SubMenu';
 
 export const menuButtonId = 'menu-button';
 
@@ -93,7 +93,10 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
 
       {getRoute && getRoute[0] && (
         <div className={cx(styles.containerSubItems, styles.tooltipContainer)}>
-          {renderSubItems(getRoute[0].subItems, location, undefined)}
+          <SubMenu
+            subItems={getRoute[0].subItems}
+            closeMenu={onClickOpenMenu}
+          />
         </div>
       )}
     </>

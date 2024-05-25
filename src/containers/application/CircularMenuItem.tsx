@@ -1,12 +1,14 @@
 import { NavLink } from 'react-router-dom';
 import styles from 'src/components/appMenu/CircularMenu.module.scss';
+import { MenuItem } from 'src/types/menu';
 
 interface Props {
-  selected: boolean;
+  item: MenuItem;
   onClick: () => void;
+  selected: boolean;
 }
 
-function CircularMenuItem({ item, selected, onClick }: Props) {
+const CircularMenuItem = ({ item, onClick, selected }: Props) => {
   return (
     <div className={styles.menu_item}>
       <NavLink to={item.to} onClick={onClick} style={{ position: 'inherit' }}>
@@ -18,6 +20,6 @@ function CircularMenuItem({ item, selected, onClick }: Props) {
       </NavLink>
     </div>
   );
-}
+};
 
 export default CircularMenuItem;
