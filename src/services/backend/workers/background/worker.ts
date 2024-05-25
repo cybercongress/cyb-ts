@@ -94,41 +94,45 @@ const createBackgroundWorkerApi = () => {
 
       return pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
-          const {
-            status,
-            progress,
-            // name: modelName,
-            loaded,
-            total,
-          } = progressData;
+          try {
+            const {
+              status,
+              progress,
+              // name: modelName,
+              loaded,
+              total,
+            } = progressData;
 
-          const message = loaded
-            ? `${model.model} - ${loaded}/${total} bytes`
-            : model.model;
-          const progressItem = {
-            status,
-            message,
-            done: ['done', 'ready', 'error'].some((s) => s === status),
-          };
-          console.log('progress_callback', name, progressData);
+            const message = loaded
+              ? `${model.model} - ${loaded}/${total} bytes`
+              : model.model;
+            const progressItem = {
+              status,
+              message,
+              done: ['done', 'ready', 'error'].some((s) => s === status),
+            };
+            console.log('progress_callback', name, progressData);
 
-          if (name === 'featureExtractor' && status === 'done') {
-            getEmbeddingInstance$.next(getEmbedding);
+            if (progress) {
+              progressItem.progress = Math.round(progress);
+            }
+
+            broadcastApi.postMlSyncEntryProgress(name, progressItem);
+          } catch (e) {
+            console.log('-------progresss error', name, e.toString());
           }
-
-          if (progress) {
-            progressItem.progress = Math.round(progress);
-          }
-
-          broadcastApi.postMlSyncEntryProgress(name, progressItem);
         },
       }).then((model) => {
         console.log('----model', name, typeof model);
+        getEmbeddingInstance$.next(getEmbedding);
+
         mlInstances[name] = model;
 
         return model;
       });
     }
+    console.log(`${name} - already loaded`);
+    getEmbeddingInstance$.next(getEmbedding);
 
     return mlInstances[name];
   };
