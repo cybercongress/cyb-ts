@@ -76,7 +76,7 @@ cyb::add_content_to_ipfs(text: string);
 
 #### Local relational-graph-vector database
 
-Access to [[cozo]] and your [[brain]] data that represented in text and vector-based formats.
+Access to [[cozo]] and your [[brain]] data represented in text and vector-based formats.
 
 ```
 // return N closest particles based on embeddings of each
