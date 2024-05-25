@@ -103,7 +103,7 @@ class ParticlesResolverQueue {
 
     deps.getEmbeddingInstance$?.subscribe((f) => {
       this.getEmbedding = f;
-      console.log('------PRQ getEmbedding SET');
+      console.log('------PRQ getEmbedding SET', typeof f);
       // if embedding function is provided, retriger the queue
       if (this.queue.size > 0) {
         this._syncQueue$.next(this.queue);

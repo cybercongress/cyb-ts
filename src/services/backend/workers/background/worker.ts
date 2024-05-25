@@ -110,7 +110,7 @@ const createBackgroundWorkerApi = () => {
             message,
             done: ['done', 'ready', 'error'].some((s) => s === status),
           };
-          // console.log('progress_callback', name, progressItem);
+          console.log('progress_callback', name, progressItem);
 
           if (name === 'featureExtractor' && status === 'done') {
             getEmbeddingInstance$.next(getEmbedding);
