@@ -94,7 +94,6 @@ const createBackgroundWorkerApi = () => {
 
       mlInstances[name] = await pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
-          // console.log('progress_callback', name, progressData);
           const {
             status,
             progress,
@@ -111,6 +110,7 @@ const createBackgroundWorkerApi = () => {
             message,
             done: ['done', 'ready', 'error'].some((s) => s === status),
           };
+          // console.log('progress_callback', name, progressItem);
 
           if (name === 'featureExtractor' && status === 'done') {
             getEmbeddingInstance$.next(getEmbedding);
@@ -222,6 +222,7 @@ const createBackgroundWorkerApi = () => {
   };
 
   const getEmbedding = async (text: string) => {
+    console.log('-------getEmbb', typeof mlInstances.featureExtractor);
     const output = await mlInstances.featureExtractor(text, {
       pooling: 'mean',
       normalize: true,

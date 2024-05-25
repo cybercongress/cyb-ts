@@ -103,7 +103,7 @@ export type SyncQueueKey = {
 };
 
 export type SyncQueueDbEntity = SyncQueueKey & {
-  data?: Object;
+  data: string;
   status: SyncQueueStatus;
   priority: QueuePriority | number;
 };

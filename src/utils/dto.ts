@@ -1,5 +1,5 @@
 import { EntityToDto, DtoToEntity } from 'src/types/dto';
-import { replaceQuotes } from './string';
+import { deserializeString } from './string';
 
 export const snakeToCamel = (str: string) =>
   str.replace(/([-_][a-z])/g, (group) =>
@@ -26,6 +26,8 @@ export function entityToDto<T extends Record<string, any>>(
         value = dbEntity[key].map((item) => entityToDto(item));
       } else if (typeof dbEntity[key] === 'object') {
         value = entityToDto(dbEntity[key]);
+      } else if (typeof dbEntity[key] === 'string') {
+        value = deserializeString(value);
       }
       dto[camelCaseKey] = value;
     }

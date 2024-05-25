@@ -13,9 +13,6 @@ import { removeDublicates } from 'src/utils/list';
 import { clone } from 'lodash';
 import { SYNC_ENTRIES_TO_TRACK_PROGRESS } from 'src/services/backend/services/sync/services/consts';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
-import { ScriptEntrypoints } from 'src/services/scripting/types';
-
-import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
 
 export const RESET_SYNC_STATE_ACTION_NAME = 'reset_sync_entry';
 

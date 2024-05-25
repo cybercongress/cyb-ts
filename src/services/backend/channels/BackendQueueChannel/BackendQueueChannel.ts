@@ -66,11 +66,7 @@ class BackendQueueChannelListener {
     // TODO: TMP ASYNC WAIT TO INIT DB
     await this.getDeffredDbApi();
 
-    this.particlesResolver.enqueue(
-      Array.isArray(data)
-        ? data.map((d) => ({ ...d, data: JSON.stringify(d.data) }))
-        : [{ ...data, data: JSON.stringify(data.data) }]
-    );
+    this.particlesResolver.enqueue(Array.isArray(data) ? data : [data]);
   }
 
   private onMessage(msg: MessageEvent<QueueChannelMessage>) {

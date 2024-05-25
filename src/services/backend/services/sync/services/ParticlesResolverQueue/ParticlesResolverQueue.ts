@@ -103,7 +103,7 @@ class ParticlesResolverQueue {
 
     deps.getEmbeddingInstance$?.subscribe((f) => {
       this.getEmbedding = f;
-
+      console.log('------PRQ getEmbedding SET');
       // if embedding function is provided, retriger the queue
       if (this.queue.size > 0) {
         this._syncQueue$.next(this.queue);
@@ -171,7 +171,7 @@ class ParticlesResolverQueue {
 
       return true;
     } catch (err) {
-      console.error(`saveEmbedding error: ${cid} - ${text} `, err);
+      console.error(`saveEmbedding error: ${cid} - ${text} `, err.toString());
       return false;
     }
   }
@@ -312,12 +312,7 @@ class ParticlesResolverQueue {
       return;
     }
 
-    // TODO: remove quotes inside mapping
-    const queueItems = items.map((q) => ({
-      ...q,
-      data: q.data ? replaceQuotes(q.data.toString()) : '',
-    }));
-    const result = await this.db!.putSyncQueue(queueItems);
+    const result = await this.db!.putSyncQueue(items);
 
     const queue = this._syncQueue$.value;
 

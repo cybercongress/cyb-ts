@@ -173,8 +173,18 @@ function createCozoDb() {
   const put = async (
     tableName: string,
     array: Partial<DbEntity>[]
-  ): Promise<IDBResult> =>
-    runCommand(commandFactory!.generatePut(tableName, array));
+  ): Promise<IDBResult> => {
+    if (array.length === 0) {
+      throw new DBResultError({
+        code: '-1',
+        message: `cant PUT [] into ${tableName}`,
+        display: '',
+        severity: '',
+        ok: false,
+      });
+    }
+    return runCommand(commandFactory!.generatePut(tableName, array));
+  };
 
   const rm = async (
     tableName: string,
