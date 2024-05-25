@@ -9,6 +9,7 @@ import { trimString } from 'src/utils/utils';
 import { useCybernet } from '../../../cybernet.context';
 import ImgDenom from 'src/components/valueImg/imgDenom';
 import { ContractWithData } from 'src/features/cybernet/types';
+import { cybernetRoutes } from '../../../routes';
 
 const columnHelper = createColumnHelper<ContractWithData>();
 
@@ -18,7 +19,6 @@ function ContractsTable() {
   return (
     <Table
       onSelect={(row) => {
-        debugger;
         const address = contracts[row!] ? contracts[row!].address : '';
         selectContract(address);
       }}
@@ -27,13 +27,22 @@ function ContractsTable() {
         () => [
           columnHelper.accessor('metadata.name', {
             header: '',
+            cell: (info) => {
+              const value = info.getValue();
+
+              return (
+                <Link to={cybernetRoutes.subnets.getLink('pussy', value)}>
+                  {value}
+                </Link>
+              );
+            },
           }),
           columnHelper.accessor('metadata.description', {
             header: '',
             cell: (info) => {
               const value = info.getValue();
 
-              return <Cid cid={value}></Cid>;
+              return <Cid cid={value}>{trimString(value, 6, 6)}</Cid>;
             },
           }),
           columnHelper.accessor('economy.staker_apr', {

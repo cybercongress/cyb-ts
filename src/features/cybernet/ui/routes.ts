@@ -33,9 +33,12 @@ export const routes = {
       `${root}/verses/${network}/${nameOrAddress}/mentors`,
   },
   delegator: {
-    path: `${root}/delegators/:address`,
-    getLink: (address: string) => `${root}/delegators/${address}`,
+    path: `${root}/verses/:network/:nameOrAddress/facilities/:nameOrUid/mentors/:address`,
+    getLink: (network: string, nameOrAddress: string, address: string) =>
+      `${root}/verses/${network}/${nameOrAddress}/mentors/${address}`,
   },
 };
+
+routes.delegate = routes.delegator;
 
 export const cybernetRoutes = routes;

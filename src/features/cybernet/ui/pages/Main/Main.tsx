@@ -50,7 +50,7 @@ function Main() {
         enquiries, or stake on those who joined to make them more valuable.
       </Display>
 
-      <Display noPaddingX title={<DisplayTitle title="Cybernet" />}>
+      <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
         <ContractsTable />
       </Display>
 
@@ -95,72 +95,76 @@ function Main() {
           </Display>
         </div>
 
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  <h3>mine</h3>
-                  <div className={styles.apr}>
-                    yield up to
-                    <span>
-                      {Number(selectedContract?.economy?.validator_apr).toFixed(
-                        2
-                      )}
-                      %
-                    </span>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>mine</h3>
+                    <div className={styles.apr}>
+                      yield up to
+                      <span>
+                        {Number(
+                          selectedContract?.economy?.validator_apr
+                        ).toFixed(2)}
+                        %
+                      </span>
+                    </div>
                   </div>
-                </div>
-              }
-            />
-          }
-        >
-          <p className={styles.actionText}>teach by linking content</p>
+                }
+              />
+            }
+          >
+            <p className={styles.actionText}>teach by linking content</p>
 
-          <div className={styles.links}>
-            <Link to={cybernetRoutes.subnet.getLink('pussy', name, 0)}>
-              {getText('root')}
-            </Link>
-
-            <Link to={cybernetRoutes.subnets.getLink(network, name)}>
-              {getText('subnetwork', true)}
-            </Link>
-
-            {currentAddressIsDelegator && (
-              <Link to={cybernetRoutes.delegator.getLink(address)}>
-                my {getText('delegate')}
+            <div className={styles.links}>
+              <Link to={cybernetRoutes.subnet.getLink('pussy', name, 0)}>
+                {getText('root')}
               </Link>
-            )}
-          </div>
-        </Display>
 
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  <h3>Docs and code</h3>
-                </div>
-              }
-            />
-          }
-        >
-          <div className={styles.links}>
-            <LinkWindow to="https://github.com/cybercongress/cybertensor">
-              cli and python package
-            </LinkWindow>
+              <Link to={cybernetRoutes.subnets.getLink(network, name)}>
+                {getText('subnetwork', true)}
+              </Link>
 
-            <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
-              subnet template
-            </LinkWindow>
+              {currentAddressIsDelegator && (
+                <Link to={cybernetRoutes.delegator.getLink(address)}>
+                  my {getText('delegate')}
+                </Link>
+              )}
+            </div>
+          </Display>
+        </div>
 
-            <LinkWindow to="https://github.com/cybercongress/cybernet">
-              cosmwasm contract
-            </LinkWindow>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>deploy</h3>
+                  </div>
+                }
+              />
+            }
+          >
+            <div className={styles.links}>
+              <LinkWindow to="https://github.com/cybercongress/cybertensor">
+                cli and python package
+              </LinkWindow>
 
-            <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
-          </div>
-        </Display>
+              <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
+                subnet template
+              </LinkWindow>
+
+              <LinkWindow to="https://github.com/cybercongress/cybernet">
+                cosmwasm contract
+              </LinkWindow>
+
+              <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
+            </div>
+          </Display>
+        </div>
       </div>
     </MainContainer>
   );

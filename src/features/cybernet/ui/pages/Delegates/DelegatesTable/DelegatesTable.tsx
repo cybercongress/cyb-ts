@@ -8,6 +8,8 @@ import { Delegator } from 'src/features/cybernet/types';
 import { Account, AmountDenom } from 'src/components';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useCybernetTexts from '../../../useCybernetTexts';
+import { cybernetRoutes } from '../../../routes';
+import { useCybernet } from '../../../cybernet.context';
 
 type Props = {
   data: Delegator[];
@@ -20,6 +22,9 @@ function DelegatesTable({ data, isLoading }: Props) {
   const currentAddress = useCurrentAddress();
   const { getText } = useCybernetTexts();
 
+  const { selectedContract, subnetsQuery } = useCybernet();
+  const contractName = selectedContract?.metadata?.name;
+
   function getTotalStake(nominators: Delegator['nominators']) {
     return nominators.reduce((acc, [, stake]) => acc + stake, 0);
   }
@@ -27,6 +32,10 @@ function DelegatesTable({ data, isLoading }: Props) {
   function getMyStake(nominators: Delegator['nominators']) {
     return nominators.find(([address]) => address === currentAddress)?.[1];
   }
+
+  console.log(data);
+  console.log(subnetsQuery);
+  const subnets = subnetsQuery.data || [];
 
   const navigate = useNavigate();
   return (
@@ -44,14 +53,22 @@ function DelegatesTable({ data, isLoading }: Props) {
           columnHelper.accessor('delegate', {
             header: getText('delegate'),
             enableSorting: false,
-            cell: (info) => (
-              <Account
-                address={info.getValue()}
-                avatar
-                markCurrentAddress
-                link={'../delegators/' + info.getValue()}
-              />
-            ),
+            cell: (info) => {
+              const address = info.getValue();
+
+              return (
+                <Account
+                  address={address}
+                  avatar
+                  markCurrentAddress
+                  link={cybernetRoutes.delegator.getLink(
+                    'pussy',
+                    contractName,
+                    address
+                  )}
+                />
+              );
+            },
           }),
 
           // columnHelper.accessor('123', {
@@ -76,10 +93,20 @@ function DelegatesTable({ data, isLoading }: Props) {
                   gap: '5px',
                 }}
               >
-                {info.getValue().map((val) => {
+                {info.getValue().map((uid) => {
+                  const name = subnets.find((subnet) => subnet.netuid === uid)
+                    ?.metadata?.name;
+
                   return (
-                    <Link key={val} to={'../subnets/' + val}>
-                      {val}
+                    <Link
+                      key={uid}
+                      to={cybernetRoutes.subnet.getLink(
+                        'pussy',
+                        contractName,
+                        uid
+                      )}
+                    >
+                      {name || uid}
                     </Link>
                   );
                 })}
@@ -125,14 +152,14 @@ function DelegatesTable({ data, isLoading }: Props) {
           }),
         ],
 
-        [currentAddress]
+        [currentAddress, getText, subnets, contractName]
       )}
       data={data}
       isLoading={isLoading}
       initialState={{
         sorting: [
           {
-            id: 'nominators',
+            id: 'stake',
             desc: true,
           },
         ],

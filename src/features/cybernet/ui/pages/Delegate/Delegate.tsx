@@ -60,6 +60,8 @@ function Delegator() {
 
   const totalStake = nominators?.reduce((acc, [, stake]) => acc + stake, 0);
 
+  console.log(data);
+
   return (
     <MainContainer>
       {myStake && data.delegate !== currentAddress && (
@@ -96,12 +98,15 @@ function Delegator() {
                   content = <span>{(value / 65535).toFixed(2) * 100}%</span>;
                 }
 
-                if (['total_daily_return', 'return_per_1000'].includes(item)) {
+                if (
+                  [
+                    'total_daily_return',
+                    'return_per_1000',
+                    'return_per_giga',
+                  ].includes(item)
+                ) {
                   content = (
-                    <span>
-                      {value.toLocaleString()} 🟣
-                      {/* <DenomArr denomValue="pussy" onlyImg /> */}
-                    </span>
+                    <AmountDenom amountValue={value.amount} denom="pussy" />
                   );
                 }
 
@@ -120,6 +125,8 @@ function Delegator() {
                     </ul>
                   );
                 }
+
+                console.log('item', item, 'value', value, 'content', content);
 
                 return (
                   <li key={item}>

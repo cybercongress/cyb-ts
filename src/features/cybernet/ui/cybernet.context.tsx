@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { Networks } from 'src/types/networks';
 import useQueryCybernetContract from './useQueryCybernetContract.refactor';
-import { ContractWithData, Economy } from '../types';
+import { ContractWithData, Economy, SubnetInfo } from '../types';
 import { Metadata } from 'cosmjs-types/cosmos/bank/v1beta1/bank';
 import meta from 'src/components/AvailableAmount/AvailableAmount.stories';
 
 type ContractType = 'graph' | 'ml';
 
-const CONTRACT_OLD =
-  'pussy1ddwq8rxgdsm27pvpxqdy2ep9enuen6t2yhrqujvj9qwl4dtukx0s8hpka9';
+const CONTRACT_NEW2 =
+  'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y';
 const CONTRACT_NEW =
   'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5';
 
@@ -16,6 +16,7 @@ const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
   selectContract: (address: string) => void;
   selectedContract: ContractWithData;
+  subnetsQuery: ReturnType<typeof useQueryCybernetContract>;
 }>({
   contracts: {},
   selectContract: null,
@@ -54,7 +55,14 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
     useState(CONTRACT_NEW);
 
   const c1 = useCybernetContractWithData(CONTRACT_NEW);
-  const c2 = useCybernetContractWithData(CONTRACT_OLD);
+  const c2 = useCybernetContractWithData(CONTRACT_NEW2);
+
+  const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
+    query: {
+      get_subnets_info: {},
+    },
+    contractAddress: selectedContractAddress,
+  });
 
   return (
     <CybernetContext.Provider
@@ -62,28 +70,25 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
         const contracts = [
           {
             ...c1,
-            type: 'graph',
+            type: c1.metadata?.types,
           },
-          // {
-          //   ...c1,
-          //   metadata: {
-          //     ...c1.metadata,
-          //     name: 'same but ML type',
-          //   },
-          //   type: 'ml',
-          // },
+          {
+            ...c2,
+            type: c2.metadata?.types,
+          },
         ];
 
         console.log(contracts);
 
         return {
           contracts,
+          subnetsQuery,
           selectContract: setSelectedContractAddress,
           selectedContract: contracts.find(
             (contract) => contract.address === selectedContractAddress
           ),
         };
-      }, [c1, selectedContractAddress])}
+      }, [c1, selectedContractAddress, c2, subnetsQuery])}
     >
       {children}
     </CybernetContext.Provider>
