@@ -57,8 +57,10 @@ class BackendQueueChannelListener {
   private async saveParticles(content: IPFSContent) {
     const dbApi = await this.getDeffredDbApi();
     const entity = mapParticleToEntity(content);
-    await dbApi.putParticles(entity);
-    await enqueueParticleEmbeddingMaybe(content);
+    const result = await dbApi.putParticles(entity);
+    if (result.ok) {
+      await enqueueParticleEmbeddingMaybe(content);
+    }
     // console.log('---saveParticles done', content);
   }
 

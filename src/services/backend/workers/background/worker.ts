@@ -111,9 +111,9 @@ const createBackgroundWorkerApi = () => {
             const progressItem = {
               status,
               message,
-              done: ['done', 'ready', 'error'].some((s) => s === status),
+              done: ['ready', 'error'].some((s) => s === status),
             };
-            console.log('progress_callback', name, progressData);
+            // console.log('progress_callback', name, progressData);
 
             if (progress) {
               progressItem.progress = Math.round(progress);
@@ -232,7 +232,6 @@ const createBackgroundWorkerApi = () => {
   };
 
   const getEmbedding = async (text: string) => {
-    console.log('-------getEmbb', typeof mlInstances.featureExtractor);
     const output = await mlInstances.featureExtractor(text, {
       pooling: 'mean',
       normalize: true,

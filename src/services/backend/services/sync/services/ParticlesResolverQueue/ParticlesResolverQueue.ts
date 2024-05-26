@@ -103,7 +103,6 @@ class ParticlesResolverQueue {
 
     deps.getEmbeddingInstance$?.subscribe((f) => {
       this.getEmbedding = f;
-      console.log('------PRQ getEmbedding SET', typeof f);
       // if embedding function is provided, retriger the queue
       if (this.queue.size > 0) {
         this._syncQueue$.next(this.queue);
@@ -136,23 +135,6 @@ class ParticlesResolverQueue {
         }
 
         await enqueueParticleEmbeddingMaybe(result);
-        // const [contentType, data] = await getContentToEmbed(result);
-
-        // if (contentType === 'text') {
-        //   if (this.canEmbed && data) {
-        //     this.saveEmbedding(id, data);
-        //   } else {
-        //     this.enqueue([
-        //       {
-        //         id,
-        //         data,
-        //         priority: QueuePriority.LOW,
-        //         jobType: SyncQueueJobType.embedding,
-        //       },
-        //     ]);
-        //   }
-        // }
-
         return true;
       })
       .catch(() => false);
@@ -166,7 +148,6 @@ class ParticlesResolverQueue {
         const vec = await this.getEmbedding!(text);
 
         const result = await this.db!.putEmbedding(cid, vec);
-        // console.log('------saveEmbedding ', vec, text, result.ok);
       }
 
       return true;

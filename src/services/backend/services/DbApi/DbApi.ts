@@ -159,7 +159,7 @@ class DbApiWrapper {
     const entitites = dtoListToEntity(
       Array.isArray(particles) ? particles : [particles]
     );
-    await this.db!.executePutCommand('particle', entitites);
+    return this.db!.executePutCommand('particle', entitites);
   }
 
   public async getParticlesRaw(fields: string[]) {

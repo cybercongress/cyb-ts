@@ -11,6 +11,7 @@ pub fn cid_result(cid) {
 }
 
 pub fn content_result(content) {
+    // #{ "content": json::to_string(content)?, "action": "content_result" }
     #{ "content": content, "action": "content_result" }
 }
 

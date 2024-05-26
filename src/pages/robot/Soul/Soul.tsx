@@ -104,7 +104,6 @@ function Soul() {
     outputRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     addToLog([`🚧 Execute your '${funcName}'.`]);
-    console.log('---------test', code, funcName, funcParams);
     rune
       ?.run(code, {
         execute: true,
@@ -112,7 +111,6 @@ function Soul() {
         funcParams,
       })
       .then((result) => {
-        console.log('---------test result', result);
         const isOk = !result.diagnosticsOutput && !result.error;
         highlightErrors(codeMirrorRef!.current, result.diagnostics, styles);
         if (!isOk) {
