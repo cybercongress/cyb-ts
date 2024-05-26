@@ -241,9 +241,10 @@ function SubnetsTable({ data }: Props) {
 
   return (
     <Table
-      onSelect={(row) =>
-        navigate(subnetRoutes.subnet.getLink('pussy', contractName, row))
-      }
+      onSelect={(row) => {
+        const netuid = data[row].netuid;
+        navigate(subnetRoutes.subnet.getLink('pussy', contractName, netuid));
+      }}
       columns={columns}
       data={data}
       // if 1 - root subnet

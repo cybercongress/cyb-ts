@@ -63,8 +63,6 @@ function WeightsTable({}: Props) {
               cell: (info) => {
                 const uid = info.getValue();
 
-                console.log(currentContract);
-
                 return (
                   <Account
                     address={uid}
@@ -115,11 +113,7 @@ function WeightsTable({}: Props) {
                   const hotkey = neurons[uid].hotkey;
 
                   return (
-                    <div
-                      style={{
-                        position: 'relative',
-                      }}
-                    >
+                    <div className={styles.headerCell}>
                       {address === hotkey && (
                         <span
                           style={{
