@@ -20,7 +20,7 @@ import {
 import { ParticleCid } from 'src/types/base';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { PipelineType, pipeline } from '@xenova/transformers';
+import { PipelineType, pipeline, env } from '@xenova/transformers';
 import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
 import runeDeps from 'src/services/scripting/runeDeps';
 
@@ -37,6 +37,8 @@ import ParticlesResolverQueue from '../../services/sync/services/ParticlesResolv
 import BackendQueueChannelListener from '../../channels/BackendQueueChannel/BackendQueueChannel';
 
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
+
+env.allowLocalModels = false;
 
 type MlModelParams = {
   name: PipelineType;
