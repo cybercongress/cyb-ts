@@ -1,6 +1,8 @@
 .banner {
   display: flex;
+  position: relative;
   justify-content: center;
+
   h1,
   h2 {
     font-weight: 400;
@@ -8,19 +10,57 @@
   h1 {
     color: var(--pink);
     font-size: 42px;
+    align-self: flex-end;
+
+    position: absolute;
+    right: 50px;
+    bottom: 0;
   }
 
   h2 {
     font-size: 20px;
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    top: 0;
+
     color: var(--green-light);
+    align-self: flex-start;
+  }
+}
+
+.center {
+  align-self: center;
+  position: relative;
+  display: flex;
+
+  min-height: 200px;
+
+  > img {
+    position: absolute;
+    top: 0;
+    height: 110%;
+    left: calc(50% - 120px);
+    bottom: 0;
   }
 }
 
 .rewardsBlock {
   display: flex;
+  align-self: center;
+  margin: auto;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
+  top: 10px;
 
   span {
     font-size: 40px;
+    text-shadow: 0 0 10px #ffffff;
+  }
+
+  .rewardsText {
+    font-size: 16px;
+    align-self: flex-end;
   }
 }

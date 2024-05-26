@@ -150,8 +150,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
     setNewGrades(gradesFromMe);
   }, [gradesFromMe]);
 
-  console.log(subnetQuery.data);
-
   function setGrade(uid: string, grade: number) {
     setNewGrades((prev) => ({
       ...prev,

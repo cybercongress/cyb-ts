@@ -32,8 +32,6 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   const balance = useGetBalance(queryClient, currentAddress);
   const availableBalance = balance?.liquid?.amount;
 
-  console.log(availableBalance);
-
   const [amount, setAmount] = useState(0);
 
   function handleSuccess() {

@@ -21,14 +21,17 @@ function Banner() {
         />
       </h2>
 
-      {totalPaid && (
-        <div className={styles.rewardsBlock}>
-          <span>
+      <div className={styles.center}>
+        <img src={require('./logo.png')} alt="cyberver" />
+
+        {totalPaid && (
+          <div className={styles.rewardsBlock}>
             <AmountDenom amountValue={totalPaid} denom="pussy" />
-          </span>
-          <span>rewards payed</span>
-        </div>
-      )}
+
+            <span className={styles.rewardsText}>rewards payed</span>
+          </div>
+        )}
+      </div>
 
       <h1>
         <TypingText content="cyberver" />

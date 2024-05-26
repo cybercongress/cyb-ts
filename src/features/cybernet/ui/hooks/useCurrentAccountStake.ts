@@ -15,8 +15,6 @@ function useCurrentAccountStake() {
     skip: !currentAddress,
   });
 
-  console.log(query);
-
   return query;
 }
 

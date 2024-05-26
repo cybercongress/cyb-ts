@@ -10,6 +10,8 @@ import styles from './Main.module.scss';
 import { routes } from 'src/routes';
 import { Link } from 'react-router-dom';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
+import { CHAIN_ID } from 'src/constants/config';
+import { Networks } from 'src/types/networks';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const pocket = useAppSelector(({ pocket }) => pocket);
@@ -61,7 +63,9 @@ function MainLayout({ children }: { children: JSX.Element }) {
         <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
       </AppSideBar>
 
-      <SenseButton className={styles.senseBtn} />
+      {CHAIN_ID === Networks.BOSTROM && (
+        <SenseButton className={styles.senseBtn} />
+      )}
 
       {children}
 

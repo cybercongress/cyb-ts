@@ -17,12 +17,11 @@ import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { trimString } from 'src/utils/utils';
 import SubnetHeader from './SubnetHeader/SubnetHeader';
+import Loader2 from 'src/components/ui/Loader2';
 
 function Subnet() {
   const { id, ...rest } = useParams();
   const tab = rest['*'];
-
-  console.log(tab);
 
   const address = useCurrentAddress();
 
@@ -129,6 +128,8 @@ function Subnet() {
           }
         />
       </Routes>
+
+      {subnetQuery.loading && <Loader2 />}
 
       <ActionBar
         netuid={netuid}

@@ -79,8 +79,6 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
           },
         ];
 
-        console.log(contracts);
-
         return {
           contracts,
           subnetsQuery,

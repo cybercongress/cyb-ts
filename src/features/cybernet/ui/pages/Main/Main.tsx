@@ -19,6 +19,7 @@ import ContractsTable from './ContractsTable/ContractsTable';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCybernet } from '../../cybernet.context';
 import Banner from './Banner/Banner';
+import { Stars } from 'src/containers/portal/components';
 
 function Main() {
   const address = useCurrentAddress();
@@ -45,6 +46,7 @@ function Main() {
 
   return (
     <MainContainer resetMaxWidth>
+      <Stars />
       <Banner />
 
       <Display noPaddingX title={<DisplayTitle title="choose verse" />}>

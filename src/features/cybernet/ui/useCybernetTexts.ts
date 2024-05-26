@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCybernet } from './cybernet.context';
 import { texts, Texts } from './cybernetTexts';
 
@@ -6,8 +5,6 @@ function useCybernetTexts() {
   const { selectedContract } = useCybernet();
 
   const type = selectedContract?.type;
-
-  console.log(type);
 
   function getText(key: Texts, isPlural?: boolean) {
     const t = type === 'graph' ? 'graph' : 'default';

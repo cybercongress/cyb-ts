@@ -82,15 +82,15 @@ const itemsMenu = () => {
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
     {
-      name: 'cybernet',
+      name: 'cyberverse',
       icon: temple,
       to: '/cyberverse',
       subItems: [
         { name: 'board', to: '/cyberverse/faculties/0' },
         { name: 'faculties', to: '/cyberverse/faculties' },
         { name: 'mentors', to: '/cyberverse/mentors' },
+        { name: 'my mentor', to: '/cyberverse/mentors/my' },
         { name: 'my learner', to: '/cyberverse/learners/my' },
-        { name: 'my staker', to: '/cyberverse/mentors/my' },
       ],
     },
 

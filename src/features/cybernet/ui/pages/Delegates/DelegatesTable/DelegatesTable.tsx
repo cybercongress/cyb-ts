@@ -33,8 +33,6 @@ function DelegatesTable({ data, isLoading }: Props) {
     return nominators.find(([address]) => address === currentAddress)?.[1];
   }
 
-  console.log(data);
-  console.log(subnetsQuery);
   const subnets = subnetsQuery.data || [];
 
   const navigate = useNavigate();

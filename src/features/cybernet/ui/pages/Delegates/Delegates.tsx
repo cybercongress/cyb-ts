@@ -23,8 +23,6 @@ function Delegates() {
     defaultText: `choose ${getText('delegate')} for learning`,
   });
 
-  console.log(data);
-
   return (
     <MainContainer resetMaxWidth>
       <Display

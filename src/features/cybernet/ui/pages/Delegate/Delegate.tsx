@@ -62,8 +62,6 @@ function Delegator() {
 
   const totalStake = nominators?.reduce((acc, [, stake]) => acc + stake, 0);
 
-  console.log(data);
-
   return (
     <MainContainer>
       {myStake && data.delegate !== currentAddress && (
@@ -127,8 +125,6 @@ function Delegator() {
                     </ul>
                   );
                 }
-
-                console.log('item', item, 'value', value, 'content', content);
 
                 return (
                   <li key={item}>
