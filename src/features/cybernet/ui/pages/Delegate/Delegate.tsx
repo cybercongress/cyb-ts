@@ -43,7 +43,9 @@ function Delegator() {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const { loading, data, error, refetch } = useDelegate(id);
+  const { loading, data, error, refetch } = useDelegate(
+    id !== 'my' ? id : currentAddress
+  );
   const { getText } = useCybernetTexts();
 
   useAdviserTexts({
