@@ -44,9 +44,9 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
     // <MainContainer width="100%">
     <Display
       noPaddingX
-      title={
-        <DisplayTitle title={<header>{getText('validator', true)}</header>} />
-      }
+      // title={
+      //   <DisplayTitle title={<header>{getText('validator', true)}</header>} />
+      // }
     >
       <SubnetNeuronsTable />
 

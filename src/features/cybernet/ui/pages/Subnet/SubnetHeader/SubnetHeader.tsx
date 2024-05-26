@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cid } from 'src/components';
+import { AmountDenom, Cid } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { trimString } from 'src/utils/utils';
@@ -11,30 +11,37 @@ import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 function Item({ title, content }) {
   return (
     <div className={styles.item}>
-      {title}
+      <h6>{title}</h6>
       {content}
     </div>
   );
 }
 
 function SubnetHeader() {
-  const { subnetQuery } = useSubnet();
+  const { subnetQuery, neuronsQuery } = useSubnet();
   const { getText } = useCybernetTexts();
 
   const metadata = subnetQuery.data?.metadata || {};
 
+  // fix
   if (!metadata?.name) {
     return null;
   }
-
   if (!subnetQuery.data) {
     return null;
   }
 
-  console.log(subnetQuery.data);
+  const totalNeuronsStake = neuronsQuery.data?.reduce(
+    (acc, neuron) => acc + neuron.stake.reduce((acc, b) => acc + b[1], 0),
+    0
+  );
 
-  const { netuid, difficulty, tempo, max_allowed_validators } =
-    subnetQuery.data;
+  const {
+    netuid,
+    difficulty,
+    tempo,
+    max_allowed_validators: maxAllowedValidators,
+  } = subnetQuery.data;
 
   const { logo, description, name } = metadata;
 
@@ -42,17 +49,25 @@ function SubnetHeader() {
     <Display>
       <div className={styles.wrapper}>
         <Item
-          title={`${getText('subnetwork')} №${netuid} }`}
-          content={`${name}`}
+          title={`${getText('subnetwork')} №${netuid}`}
+          content={<span className={styles.name}>{name}</span>}
         />
-        <div>
-          max {getText('validator', true)} {max_allowed_validators}
+        <Item
+          title={`max ${getText('validator', true)}`}
+          content={maxAllowedValidators}
+        />
+        <Item title="difficulty" content={difficulty} />
+        <Item title="tempo" content={tempo} />
+        <div className={styles.logo}>
+          <AvataImgIpfs cidAvatar={logo} />
         </div>
-        <div>difficulty {difficulty}</div>
-        <div>tempo {tempo}</div>
-        <AvataImgIpfs cidAvatar={logo} height={20} width={20} />
         <Cid cid={description}>{trimString(description, 6, 6)}</Cid>
-        power
+        <Item
+          title="teaching power"
+          content={
+            <AmountDenom amountValue={totalNeuronsStake} denom="pussy" />
+          }
+        />
       </div>
     </Display>
   );
