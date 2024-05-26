@@ -84,7 +84,7 @@ function SubnetInfo({ data: subnetInfoData }: Props) {
     <>
       <Display
         noPaddingX
-        title={<DisplayTitle title={`${getText('subnetwork')} info`} />}
+        // title={<DisplayTitle title={`${getText('subnetwork')} info`} />}
       >
         <ul className={styles.list}>
           {subnetInfoData &&

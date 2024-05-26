@@ -76,8 +76,8 @@ function Subnet() {
 
   if (rootSubnet) {
     tabs.push({
-      to: './facilities',
-      key: 'facilities',
+      to: './faculties',
+      key: 'faculties',
       text: getText('subnetwork', true),
     });
   }
@@ -121,7 +121,7 @@ function Subnet() {
         )}
 
         <Route
-          path="/facilities"
+          path="/faculties"
           element={
             <SubnetSubnets
               addressRegisteredInSubnet={addressRegisteredInSubnet}

@@ -23,7 +23,7 @@ function SubnetSubnets({ addressRegisteredInSubnet }) {
   } = useSubnet();
 
   return (
-    <Display noPaddingX title={<DisplayTitle title="Subnets" />}>
+    <Display noPaddingX>
       <SubnetsTable
         data={subnetsWithoutRoot || []}
         addressRegisteredInSubnet={addressRegisteredInSubnet}

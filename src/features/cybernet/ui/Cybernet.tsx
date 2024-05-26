@@ -32,8 +32,8 @@ function Cybernet() {
         <Route path="/verses/:network" element={<Verses />} />
         <Route path="/verses/:network/:nameOrAddress" element={<Verse />}>
           {/* <Route index element={<p>no page</p>} /> */}
-          <Route path="facilities" element={<Subnets />} />
-          <Route path="facilities/:id/*" element={<Subnet />} />
+          <Route path="faculties" element={<Subnets />} />
+          <Route path="faculties/:id/*" element={<Subnet />} />
 
           <Route path="mentors" element={<Delegates />} />
           <Route path="mentors/:id" element={<Delegate />} />

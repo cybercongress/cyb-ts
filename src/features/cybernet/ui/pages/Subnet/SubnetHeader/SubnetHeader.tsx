@@ -8,33 +8,51 @@ import styles from './SubnetHeader.module.scss';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 
+function Item({ title, content }) {
+  return (
+    <div className={styles.item}>
+      {title}
+      {content}
+    </div>
+  );
+}
+
 function SubnetHeader() {
   const { subnetQuery } = useSubnet();
   const { getText } = useCybernetTexts();
 
   const metadata = subnetQuery.data?.metadata || {};
 
-  if (!metadata) {
+  if (!metadata?.name) {
     return null;
   }
 
+  if (!subnetQuery.data) {
+    return null;
+  }
+
+  console.log(subnetQuery.data);
+
+  const { netuid, difficulty, tempo, max_allowed_validators } =
+    subnetQuery.data;
+
+  const { logo, description, name } = metadata;
+
   return (
-    <Display
-      title={
-        <DisplayTitle title={`${getText('subnetwork')} ${metadata.name}`} />
-      }
-    >
+    <Display>
       <div className={styles.wrapper}>
-        <AvataImgIpfs cidAvatar={metadata.logo} height={20} width={20} />
-
+        <Item
+          title={`${getText('subnetwork')} №${netuid} }`}
+          content={`${name}`}
+        />
         <div>
-          <Cid cid={metadata.description}>
-            {trimString(metadata.description, 6, 6)}
-          </Cid>
-          {/* <p>type: {metadata.types}</p> */}
+          max {getText('validator', true)} {max_allowed_validators}
         </div>
-
-        {/* <p>{JSON.stringify(metadata)}</p> */}
+        <div>difficulty {difficulty}</div>
+        <div>tempo {tempo}</div>
+        <AvataImgIpfs cidAvatar={logo} height={20} width={20} />
+        <Cid cid={description}>{trimString(description, 6, 6)}</Cid>
+        power
       </div>
     </Display>
   );

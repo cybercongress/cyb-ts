@@ -86,7 +86,7 @@ const itemsMenu = () => {
       icon: temple,
       to: '/cyberverse',
       subItems: [
-        { name: 'facilities', to: '/cyberverse/facilities' },
+        { name: 'faculties', to: '/cyberverse/faculties' },
         { name: 'mentors', to: '/cyberverse/mentors' },
         { name: 'my learner', to: '/cybernet/staking/my' },
       ],

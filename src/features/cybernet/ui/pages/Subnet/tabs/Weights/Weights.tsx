@@ -12,7 +12,7 @@ function Weights({}: Props) {
 
   return (
     <div>
-      <Display noPaddingX title={<DisplayTitle title="Grades" />}>
+      <Display noPaddingX>
         <WeightsTable />
       </Display>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { useCybernet } from '../../../cybernet.context';
 import { AmountDenom } from 'src/components';
 import styles from './Banner.module.scss';
+import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
 
 function Banner() {
   const { contracts } = useCybernet();
@@ -13,7 +14,12 @@ function Banner() {
 
   return (
     <div className={styles.banner}>
-      <h2>teaching and learning must be rewarded</h2>
+      <h2>
+        <TypingText
+          content="teaching and learning must be rewarded"
+          delay={30}
+        />
+      </h2>
 
       {totalPaid && (
         <div className={styles.rewardsBlock}>
@@ -24,7 +30,9 @@ function Banner() {
         </div>
       )}
 
-      <h1>cyberver</h1>
+      <h1>
+        <TypingText content="cyberver" />
+      </h1>
     </div>
   );
 }

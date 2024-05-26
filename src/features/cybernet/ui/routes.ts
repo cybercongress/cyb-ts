@@ -15,25 +15,25 @@ export const routes = {
       `${root}/verses/${network}/${nameOrAddress}`,
   },
   subnets: {
-    path: `${root}/verses/:network/:nameOrAddress/facilities`,
+    path: `${root}/verses/:network/:nameOrAddress/faculties`,
     getLink: (network: string, nameOrAddress: string) =>
-      `${root}/verses/${network}/${nameOrAddress}/facilities`,
+      `${root}/verses/${network}/${nameOrAddress}/faculties`,
   },
   subnet: {
-    path: `${root}/verses/:network/:nameOrAddress/facilities/:nameOrUid`,
+    path: `${root}/verses/:network/:nameOrAddress/faculties/:nameOrUid`,
     getLink: (
       network: string,
       nameOrAddress: string,
       nameOrUid: string | number
-    ) => `${root}/verses/${network}/${nameOrAddress}/facilities/${nameOrUid}`,
+    ) => `${root}/verses/${network}/${nameOrAddress}/faculties/${nameOrUid}`,
   },
   delegators: {
-    path: `${root}/verses/:network/:nameOrAddress/facilities/:nameOrUid/mentors`,
+    path: `${root}/verses/:network/:nameOrAddress/faculties/:nameOrUid/mentors`,
     getLink: (network: string, nameOrAddress: string, nameOrUid: string) =>
       `${root}/verses/${network}/${nameOrAddress}/mentors`,
   },
   delegator: {
-    path: `${root}/verses/:network/:nameOrAddress/facilities/:nameOrUid/mentors/:address`,
+    path: `${root}/verses/:network/:nameOrAddress/faculties/:nameOrUid/mentors/:address`,
     getLink: (network: string, nameOrAddress: string, address: string) =>
       `${root}/verses/${network}/${nameOrAddress}/mentors/${address}`,
   },

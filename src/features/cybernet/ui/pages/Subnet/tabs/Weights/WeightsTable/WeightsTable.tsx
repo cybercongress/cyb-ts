@@ -24,7 +24,7 @@ function WeightsTable({}: Props) {
 
   const { subnetQuery, grades, neuronsQuery } = useSubnet();
 
-  const { selectedContract } = useCybernet();
+  const { selectedContract, subnetsQuery } = useCybernet();
 
   const uid = subnetQuery.data?.netuid;
   const isRootSubnet = uid === 0;
@@ -32,12 +32,6 @@ function WeightsTable({}: Props) {
   const neurons = neuronsQuery.data || [];
 
   const currentContract = useCurrentContract();
-
-  const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
-    query: {
-      get_subnets_info: {},
-    },
-  });
 
   if (!neurons.length) {
     return null;
@@ -99,11 +93,19 @@ function WeightsTable({}: Props) {
                 header: () => {
                   if (isRootSubnet) {
                     const {
-                      metadata: { name },
+                      metadata: { name: contractName },
                     } = selectedContract;
+
+                    const name = subnetsQuery.data?.find(
+                      (subnet) => subnet.netuid === uid
+                    ).metadata?.name;
                     return (
                       <Link
-                        to={cybernetRoutes.subnet.getLink('pussy', name, uid)}
+                        to={cybernetRoutes.subnet.getLink(
+                          'pussy',
+                          contractName,
+                          uid
+                        )}
                       >
                         {name}
                       </Link>
