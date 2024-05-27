@@ -31,7 +31,12 @@ export const detectContentType = (
     if (mime.includes('audio')) {
       return 'audio';
     }
+
+    if (mime.includes('epub')) {
+      return 'epub';
+    }
   }
+
   return 'other';
 };
 
@@ -69,15 +74,13 @@ export const parseArrayLikeToDetails = async (
       cid,
     };
     const initialType = detectContentType(mime);
-    if (['video', 'audio'].indexOf(initialType) > -1) {
+    if (['video', 'audio', 'epub'].indexOf(initialType) > -1) {
       return { ...response, type: initialType, gateway: true };
     }
 
     const rawData = content?.result
       ? await getResponseResult(content.result, onProgress)
       : undefined;
-
-    // console.log(rawData);
 
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;
