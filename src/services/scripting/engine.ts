@@ -2,23 +2,18 @@ import initAsync, { compile } from 'cyb-rune-wasm';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { CyberClient } from '@cybercongress/cyber-js';
-import {
-  OfflineSigner,
-  SigningCyberClient,
-} from '@cybercongress/cyber-js/build/signingcyberclient';
 import { TabularKeyValues } from 'src/types/data';
 import { keyValuesToObject } from 'src/utils/localStorage';
 
 import { mapObjIndexed } from 'ramda';
+import { removeBrokenUnicode } from 'src/utils/string';
+
 import { extractRuneScript } from './helpers';
-import { RemoteIpfsApi } from '../backend/workers/background/worker';
 
 import {
   ScriptCallback,
   ScriptParticleParams,
   ScriptContext,
-  ScriptMyParticleResult,
   ScriptParticleResult,
   // ScriptMyParticleParams,
   ScriptEntrypoints,
@@ -29,7 +24,6 @@ import {
 } from './types';
 
 import runtimeScript from './rune/runtime.rn';
-import { deserializeString, serializeString } from 'src/utils/string';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -46,22 +40,8 @@ type CompilerParams = {
   config: typeof compileConfig;
 };
 
-// | { name: 'ipfs'; item: AppIPFS }
-// | { name: 'queryClient'; item: CyberClient }
-// | {
-//     name: 'signer';
-//     item: { signer?: OfflineSigner; signingClient: SigningCyberClient };
-//   };
-
 const toRecord = (item: TabularKeyValues) =>
   keyValuesToObject(Object.values(item));
-
-// type EngineDeps = {
-//   ipfs?: RemoteIpfsApi;
-//   queryClient?: CyberClient;
-//   signer?: OfflineSigner;
-//   signingClient?: SigningCyberClient;
-// };
 
 export type LoadParams = {
   entrypoints: ScriptEntrypoints;
@@ -184,7 +164,7 @@ function enigine(): RuneEngine {
         ...outputData,
         error,
         result: result
-          ? JSON.parse(result)
+          ? JSON.parse(removeBrokenUnicode(result))
           : { action: 'error', message: 'No result' },
       };
     } catch (e) {
@@ -233,21 +213,21 @@ function enigine(): RuneEngine {
     const { cid, contentType, content } = params;
     const output = await run(script, {
       funcName: 'personal_processor',
-      funcParams: [cid, contentType, serializeString(content || '')], //params as EntrypointParams,
+      funcParams: [cid, contentType, content], //params as EntrypointParams,
     });
 
     const { action, content: outputContent } = output.result;
 
     if (action === 'error') {
       console.error(
-        `[rune].personalProcessor error: ${params.cid}`,
+        `RUNE: personalProcessor error: ${params.cid}`,
         params,
         output
       );
     }
 
     if (outputContent) {
-      return { ...output.result, content: deserializeString(outputContent) };
+      return { ...output.result, content: outputContent };
     }
 
     return output.result;

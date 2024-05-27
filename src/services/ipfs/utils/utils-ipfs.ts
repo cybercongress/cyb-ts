@@ -175,16 +175,6 @@ const fetchIPFSContentFromGateway = async (
     method: 'GET',
     signal: controller?.signal,
   });
-  if (cid === 'QmakRbRoKh5Nss8vbg9qnNN2Bcsr7jUX1nbDeMT5xe8xa1') {
-    console.log(
-      '----fetchIPFSContentFromGateway',
-      response,
-      contentUrl,
-      cid,
-      node,
-      controller?.signal
-    );
-  }
   if (response && response.body) {
     // fetch doesn't provide any headers in our case :(
 

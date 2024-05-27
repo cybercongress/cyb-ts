@@ -85,121 +85,121 @@ export const parseArrayLikeToDetails = async (
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
-  try {
-    if (!content || !content?.result) {
-      return {
-        gateway: true,
-        text: cid.toString(),
-        cid,
-      };
-    }
-
-    const { result, meta } = content;
-
-    const mime = meta?.mime;
-
-    if (!mime) {
-      return {
-        cid,
-        gateway: true,
-        text: `Can't detect MIME for ${cid.toString()}`,
-      };
-    }
-    const contentType = mimeToBaseContentType(mime);
-    const contentCid = content.cid;
-
-    const response: IPFSContentDetails = {
-      link: `/ipfs/${cid}`,
-      gateway: false,
-      cid: contentCid,
-      type: contentType,
+  // try {
+  if (!content || !content?.result) {
+    return {
+      gateway: true,
+      text: cid.toString(),
+      cid,
     };
+  }
 
-    if (detectGatewayContentType(mime)) {
-      return { ...response, gateway: true };
-    }
+  const { result, meta } = content;
 
-    const rawData =
-      typeof result !== 'string'
-        ? await getResponseResult(result, onProgress)
-        : result;
+  const mime = meta?.mime;
 
-    const isStringData = typeof rawData === 'string';
+  if (!mime) {
+    return {
+      cid,
+      gateway: true,
+      text: `Can't detect MIME for ${cid.toString()}`,
+    };
+  }
+  const contentType = mimeToBaseContentType(mime);
+  const contentCid = content.cid;
 
-    // console.log(rawData);
-    if (!rawData) {
+  const response: IPFSContentDetails = {
+    link: `/ipfs/${cid}`,
+    gateway: false,
+    cid: contentCid,
+    type: contentType,
+  };
+
+  if (detectGatewayContentType(mime)) {
+    return { ...response, gateway: true };
+  }
+
+  const rawData =
+    typeof result !== 'string'
+      ? await getResponseResult(result, onProgress)
+      : result;
+
+  const isStringData = typeof rawData === 'string';
+
+  // console.log(rawData);
+  if (!rawData) {
+    return {
+      ...response,
+      gateway: true,
+      text: `Can't parse content for ${cid.toString()}`,
+    };
+  }
+
+  // clarify text-content subtypes
+  if (response.type === 'text') {
+    // render svg as image
+    if (!isStringData && isSvg(Buffer.from(rawData))) {
       return {
         ...response,
-        gateway: true,
-        text: `Can't parse content for ${cid.toString()}`,
+        type: 'image',
+        content: createImgData(rawData, 'image/svg+xml'),
       };
     }
 
-    // clarify text-content subtypes
-    if (response.type === 'text') {
-      // render svg as image
-      if (!isStringData && isSvg(Buffer.from(rawData))) {
-        return {
-          ...response,
-          type: 'image',
-          content: createImgData(rawData, 'image/svg+xml'),
-        };
-      }
+    const str = isStringData ? rawData : uint8ArrayToAsciiString(rawData);
 
-      const str = isStringData ? rawData : uint8ArrayToAsciiString(rawData);
-
-      if (str.match(PATTERN_IPFS_HASH)) {
-        return {
-          ...response,
-          type: 'cid',
-          content: str,
-        };
-      }
-      if (str.match(PATTERN_HTTP)) {
-        return {
-          ...response,
-          type: 'link',
-          content: str,
-        };
-      }
-      if (isHtml(str)) {
-        return {
-          ...response,
-          type: 'html',
-          gateway: true,
-          content: cid.toString(),
-        };
-      }
-
-      // TODO: search can bel longer for 42???!
-      // also cover ipns links
+    if (str.match(PATTERN_IPFS_HASH)) {
       return {
         ...response,
-        link: str.length > 42 ? `/ipfs/${cid}` : `/search/${str}`,
-        type: 'text',
-        text: shortenString(str),
+        type: 'cid',
         content: str,
       };
     }
-
-    if (!isStringData) {
-      if (response.type === 'image') {
-        return { ...response, content: createImgData(rawData, mime) }; // file
-      }
-      if (response.type === 'pdf') {
-        return {
-          ...response,
-          content: createObjectURL(rawData, mime),
-          gateway: true,
-        }; // file
-      }
+    if (str.match(PATTERN_HTTP)) {
+      return {
+        ...response,
+        type: 'link',
+        content: str,
+      };
+    }
+    if (isHtml(str)) {
+      return {
+        ...response,
+        type: 'html',
+        gateway: true,
+        content: cid.toString(),
+      };
     }
 
-    return response;
-  } catch (e) {
-    console.log('----parseRawIpfsData', e, cid);
-    return undefined;
+    // TODO: search can bel longer for 42???!
+    // also cover ipns links
+    return {
+      ...response,
+      link: str.length > 42 ? `/ipfs/${cid}` : `/search/${str}`,
+      type: 'text',
+      text: shortenString(str),
+      content: str,
+    };
   }
+
+  if (!isStringData) {
+    if (response.type === 'image') {
+      return { ...response, content: createImgData(rawData, mime) }; // file
+    }
+    if (response.type === 'pdf') {
+      return {
+        ...response,
+        content: createObjectURL(rawData, mime),
+        gateway: true,
+      }; // file
+    }
+  }
+
+  return response;
+  // } catch (e) {
+  //   console.log('----parseRawIpfsData', e, cid);
+  //   return undefined;
+  // }
 };
 
 export const contentToUint8Array = async (

@@ -25,3 +25,9 @@ export function deserializeString(serialized: string): string {
     .replace(/\\\\/g, '\\') // Unescape backslashes
     .replace(/\\!!/g, '#'); // Unescape # cozo comment
 }
+
+const specialCharsRegexe = /\\u\{[a-fA-F0-9]+\}/g;
+
+export function removeBrokenUnicode(string: string): string {
+  return string.replace(specialCharsRegexe, '');
+}
