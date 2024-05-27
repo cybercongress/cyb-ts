@@ -138,7 +138,8 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "workbox-webpack-plugin": "^7.1.0"
   },
   "dependencies": {
     "@apollo/client": "^3.9.4",
@@ -256,6 +257,11 @@
     "videostream": "^3.2.2",
     "web3": "1.2.4",
     "web3-utils": "^4.2.1",
+    "workbox-core": "^7.1.0",
+    "workbox-expiration": "^7.1.0",
+    "workbox-precaching": "^7.1.0",
+    "workbox-routing": "^7.1.0",
+    "workbox-strategies": "^7.1.0",
     "worker-url": "^1.1.0"
   },
   "prec-commit": [

@@ -236,11 +236,14 @@ function Bridge() {
   );
 
   useEffect(() => {
+    const [{ coinDecimals }] = tracesDenom(tokenSelect);
+    setTokenACoinDecimals(coinDecimals);
+  }, [tokenSelect, tracesDenom]);
+
+  useEffect(() => {
     const token = getDenomToken(networkA);
     setTokenA(token);
-    const [{ coinDecimals }] = tracesDenom(token);
-    setTokenACoinDecimals(coinDecimals);
-  }, [networkA, tracesDenom, getDenomToken]);
+  }, [networkA, getDenomToken]);
 
   useEffect(() => {
     const token = getDenomToken(networkB);
@@ -275,6 +278,7 @@ function Bridge() {
     denomIbc,
     sourceChannel,
     networkB,
+    coinDecimals: tokenACoinDecimals,
   };
 
   return (

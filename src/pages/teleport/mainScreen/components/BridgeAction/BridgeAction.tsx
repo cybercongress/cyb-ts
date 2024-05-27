@@ -15,8 +15,8 @@ const defaultData = [
   },
   {
     token:
-      'ibc/B6CAD3F7469F3FAD18ED2230A6C7B15E654AB2E1B66E1C70879C04FEF874A863',
-    networkFrom: 'gravity-bridge-3',
+      'ibc/13B2C536BB057AC79D5616B8EA1B9540EC1F2170718CAFF6F0083C966FFFED0B',
+    networkFrom: 'osmosis-1',
     networkTo: 'bostrom',
   },
 ];
