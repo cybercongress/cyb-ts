@@ -3,6 +3,7 @@ import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import styles from './RobotHeader.module.scss';
 import { useRobotContext } from '../../robot.context';
+import CreatePassportAgo from './ui/CreatePassportAgo/CreatePassportAgo';
 
 function RobotHeader() {
   const { address, passport } = useRobotContext();
@@ -16,7 +17,10 @@ function RobotHeader() {
         <div className={styles.content}>
           <div className={styles.level}>
             <span className={styles.levelValue}>level 1</span>
-            <span className={styles.levelTime}>1 year 145 day 06:46</span>
+            {address && (
+              <CreatePassportAgo address={address} nickname={nickname} />
+            )}
+            {/* <span className={styles.levelTime}>1 year 145 day 06:46</span> */}
           </div>
           <AvataImgIpfs addressCyber={address} cidAvatar={avatar} />
 
