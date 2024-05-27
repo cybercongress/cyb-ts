@@ -166,34 +166,12 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
 
   return (
     <Pane>
-      <Table>
-        <Table.Head
-          style={{
-            backgroundColor: '#000',
-            border: 'none',
-            marginTop: '10px',
-            paddingBottom: '10px',
-          }}
-          paddingLeft={20}
-        >
-          <Table.TextHeaderCell textAlign="center">
-            <Text color="#fff" fontSize="17px">
-              voter
-            </Text>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>tx</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="end">
-            <Text color="#fff" fontSize="17px">
-              vote option
-            </Text>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="end">
-            <TextTable>timestamp</TextTable>
-          </Table.TextHeaderCell>
-        </Table.Head>
-
+      <Table
+        style={{
+          backgroundColor: '#000',
+          marginTop: '20px',
+        }}
+      >
         <Table.Body style={{ backgroundColor: '#000', overflow: 'hidden' }}>
           <InfiniteScroll
             dataLength={items.length}
