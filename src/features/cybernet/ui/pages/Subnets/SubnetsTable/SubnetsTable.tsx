@@ -113,9 +113,7 @@ function SubnetsTable({ data }: Props) {
           const cid = value.particle;
 
           return (
-            <Cid cid={info.getValue()}>
-              {`${cid.substr(0, 6)}...${cid.substr(-6)}`}
-            </Cid>
+            <Cid cid={cid}>{`${cid.substr(0, 6)}...${cid.substr(-6)}`}</Cid>
           );
         },
       }),

@@ -3,7 +3,11 @@ import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContra
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { StakeInfo } from '../../types';
 
-function useCurrentAccountStake() {
+type Props = {
+  skip?: boolean;
+};
+
+function useCurrentAccountStake({ skip } = {}) {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const query = useCybernetContract<StakeInfo>({
@@ -12,7 +16,7 @@ function useCurrentAccountStake() {
         coldkey: currentAddress,
       },
     },
-    skip: !currentAddress,
+    skip: !currentAddress || skip,
   });
 
   return query;

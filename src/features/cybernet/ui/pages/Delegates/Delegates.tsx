@@ -7,13 +7,10 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import { MainContainer } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import useCybernetTexts from '../../useCybernetTexts';
+import { useDelegates } from '../../hooks/useDelegate';
 
 function Delegates() {
-  const { data, loading, error } = useCybernetContract<Delegator>({
-    query: {
-      get_delegates: {},
-    },
-  });
+  const { loading, error } = useDelegates();
 
   const { getText } = useCybernetTexts();
 
@@ -29,7 +26,7 @@ function Delegates() {
         noPaddingX
         title={<DisplayTitle title={getText('delegate', true)} />}
       >
-        <DelegatesTable data={data || []} isLoading={loading} />
+        <DelegatesTable />
       </Display>
     </MainContainer>
   );
