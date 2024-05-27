@@ -9,6 +9,7 @@
 }
 
 .bgWrapper {
+  position: relative;
   &:nth-of-type(1) {
     background-image: url('./images/1.jpg');
   }

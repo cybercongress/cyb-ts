@@ -129,7 +129,9 @@ function Main() {
               </Link>
 
               {currentAddressIsDelegator && (
-                <Link to={cybernetRoutes.delegator.getLink(address)}>
+                <Link
+                  to={cybernetRoutes.delegator.getLink(network, name, address)}
+                >
                   my {getText('delegate')}
                 </Link>
               )}
