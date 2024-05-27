@@ -201,7 +201,7 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
             hasMore={page !== allPage}
             style={{ display: 'grid', gap: '15px' }}
             loader={
-              <h4>
+              <h4 className={styles.loader}>
                 Loading
                 <Dots />
               </h4>
