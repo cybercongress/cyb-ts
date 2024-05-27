@@ -28,14 +28,19 @@ export const routes = {
     ) => `${root}/verses/${network}/${nameOrAddress}/faculties/${nameOrUid}`,
   },
   delegators: {
-    path: `${root}/verses/:network/:nameOrAddress/faculties/:nameOrUid/mentors`,
-    getLink: (network: string, nameOrAddress: string, nameOrUid: string) =>
+    path: `${root}/verses/:network/:nameOrAddress/mentors`,
+    getLink: (network: string, nameOrAddress: string) =>
       `${root}/verses/${network}/${nameOrAddress}/mentors`,
   },
   delegator: {
     path: `${root}/verses/:network/:nameOrAddress/faculties/:nameOrUid/mentors/:address`,
     getLink: (network: string, nameOrAddress: string, address: string) =>
       `${root}/verses/${network}/${nameOrAddress}/mentors/${address}`,
+  },
+  myMentor: {
+    path: `${root}/verses/:network/:nameOrAddress/mentors/my`,
+    getLink: (network: string, nameOrAddress: string) =>
+      `${root}/verses/${network}/${nameOrAddress}/mentors/my`,
   },
   myLearner: {
     path: `${root}/verses/:network/:nameOrAddress/learners/my`,

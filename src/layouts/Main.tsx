@@ -8,7 +8,7 @@ import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useAppSelector } from 'src/redux/hooks';
 import styles from './Main.module.scss';
 import { routes } from 'src/routes';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import { CHAIN_ID } from 'src/constants/config';
 import { Networks } from 'src/types/networks';
@@ -18,6 +18,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = pocket;
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { pathname } = useLocation();
 
   // for new user show menu, else no + animation
   const [openMenu, setOpenMenu] = useState(
@@ -60,7 +61,18 @@ function MainLayout({ children }: { children: JSX.Element }) {
       />
 
       <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
+        <AppMenu
+          addressActive={addressActive}
+          closeMenu={() => {
+            // temp until refactoring will be merged
+            // prevent menu close on cybernet navigation
+            if (pathname.includes('/cyberverse')) {
+              return;
+            }
+
+            closeMenu();
+          }}
+        />
       </AppSideBar>
 
       {CHAIN_ID === Networks.BOSTROM && (

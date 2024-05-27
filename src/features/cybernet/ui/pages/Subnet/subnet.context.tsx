@@ -76,7 +76,9 @@ export function useSubnet() {
 
 function SubnetProvider({ children }: { children: React.ReactNode }) {
   const { id } = useParams();
-  const netuid = Number(id!);
+
+  const f = id === 'board' ? 0 : +id;
+  const netuid = Number(f);
 
   const [newGrades, setNewGrades] = useState<{
     [uid: string]: number;

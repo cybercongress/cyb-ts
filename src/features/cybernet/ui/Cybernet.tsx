@@ -67,8 +67,8 @@ function Cybernet() {
 
         <Route path="/faculties/*" element={<Redirect />} />
         <Route path="/mentors" element={<Redirect />} />
-        <Route path="/learners/my" element={<Redirect />} />
         <Route path="/mentors/my" element={<Redirect />} />
+        <Route path="/learners/my" element={<Redirect />} />
       </Route>
 
       <Route path="*" element={<p>shouldnt be here</p>} />

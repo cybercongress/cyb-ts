@@ -25,7 +25,8 @@ function Subnet() {
 
   const address = useCurrentAddress();
 
-  const netuid = Number(id!);
+  const f = id === 'board' ? 0 : +id;
+  const netuid = Number(f);
 
   // const {selectedContract} = useCybernet();
 

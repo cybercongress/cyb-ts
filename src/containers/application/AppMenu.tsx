@@ -86,11 +86,35 @@ const itemsMenu = () => {
       icon: temple,
       to: '/cyberverse',
       subItems: [
-        { name: 'board', to: '/cyberverse/faculties/0' },
-        { name: 'faculties', to: '/cyberverse/faculties' },
-        { name: 'mentors', to: '/cyberverse/mentors' },
-        { name: 'my mentor', to: '/cyberverse/mentors/my' },
-        { name: 'my learner', to: '/cyberverse/learners/my' },
+        {
+          name: '👑  board',
+          to: '/cyberverse/faculties/board',
+          // not good, fix
+          matchPathname: cybernetRoutes.subnet.path.replace(
+            ':nameOrUid',
+            'board'
+          ),
+        },
+        {
+          name: '🏫  faculties',
+          to: '/cyberverse/faculties',
+          matchPathname: cybernetRoutes.subnets.path,
+        },
+        {
+          name: '💼  mentors',
+          to: '/cyberverse/mentors',
+          matchPathname: cybernetRoutes.delegators.path,
+        },
+        {
+          name: '👨‍🎓  my mentor',
+          to: '/cyberverse/mentors/my',
+          matchPathname: cybernetRoutes.myMentor.path,
+        },
+        {
+          name: '👨‍🎓  my learner',
+          to: '/cyberverse/learners/my',
+          matchPathname: cybernetRoutes.myLearner.path,
+        },
       ],
     },
 

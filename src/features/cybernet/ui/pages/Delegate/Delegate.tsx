@@ -75,7 +75,9 @@ function Delegator() {
         title={
           <DisplayTitle
             inDisplay={false}
-            title={<MusicalAddress address={id} />}
+            title={
+              <MusicalAddress address={id === 'my' ? currentAddress : id} />
+            }
           />
         }
       >
