@@ -13,7 +13,7 @@ import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { useGovParam } from 'src/hooks/governance/params/useGovParams';
+import Loader2 from 'src/components/ui/Loader2';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
@@ -101,8 +101,8 @@ function Governance() {
   const [tableData, setTableData] = useState([]);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const { setAdviser } = useAdviser();
-  const { paramData: minDeposit, isLoading, error } = useGovParam('deposit');
 
   useEffect(() => {
     setAdviser(
@@ -115,6 +115,7 @@ function Governance() {
   useEffect(() => {
     const getStatistics = async () => {
       if (queryClient) {
+        setIsLoading(true);
         let communityPool = 0;
         const totalCyb: Record<string, number> = {};
         let stakedBoot = 0;
@@ -144,9 +145,11 @@ function Governance() {
   useEffect(() => {
     getProposals().then((response) => {
       if (!response) {
+        setIsLoading(false);
         return;
       }
       setTableData(response || []);
+      setIsLoading(false);
     });
   }, []);
 
@@ -224,17 +227,23 @@ function Governance() {
 
   return (
     <MainContainer width="100%">
-      <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
-      <Pane
-        display="grid"
-        justifyItems="center"
-        gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-        gridGap="20px"
-      >
-        <Columns title="Active">{active}</Columns>
-        <Columns title="Accepted">{accepted}</Columns>
-        <Columns title="Rejected">{rejected}</Columns>
-      </Pane>
+      {isLoading ? (
+        <Loader2 />
+      ) : (
+        <>
+          <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+          <Pane
+            display="grid"
+            justifyItems="center"
+            gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+            gridGap="20px"
+          >
+            <Columns title="Active">{active}</Columns>
+            <Columns title="Accepted">{accepted}</Columns>
+            <Columns title="Rejected">{rejected}</Columns>
+          </Pane>
+        </>
+      )}
     </MainContainer>
   );
 }
