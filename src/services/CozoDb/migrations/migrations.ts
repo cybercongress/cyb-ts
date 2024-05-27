@@ -1,4 +1,28 @@
+import { getRelevance } from 'src/utils/search/utils';
 import { DB_VERSION, type CybCozoDb } from '../cozoDb';
+import { DbEntity, SyncQueueJobType } from '../types/entities';
+import { QueuePriority } from 'src/services/QueueManager/types';
+import { SyncQueueDto } from '../types/dto';
+import { dtoListToEntity } from 'src/utils/dto';
+import { ParticleCid } from 'src/types/base';
+
+export const fetchInitialEmbeddings = async (
+  saveSyncQueue: (syncItems: Partial<DbEntity>[]) => Promise<void>
+) => {
+  console.log(' [initial]fetch initial particles...');
+  const relevancePaticles = await getRelevance(0, 400);
+
+  const items = relevancePaticles.result.map(
+    ({ particle }: { particle: ParticleCid }) => ({
+      id: particle,
+      data: '',
+      jobType: SyncQueueJobType.particle,
+      priority: QueuePriority.LOW,
+    })
+  ) as SyncQueueDto[];
+
+  await saveSyncQueue(dtoListToEntity(items));
+};
 
 const migrate = async (db: CybCozoDb) => {
   const version = await db.getDbVersion();

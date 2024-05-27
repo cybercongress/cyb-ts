@@ -80,8 +80,8 @@ pub async fn personal_processor(cid, content_type, content) {
 
     // example of content modification
     // replaces cyber with cyber❤
-    let highlight_text = "cyber";
-    let highlight_with = "❤";
+    let highlight_text = "cyber ";
+    let highlight_with = "❤ ";
 
     if content.contains(highlight_text) {
         cyb::log(`Update ${cid} content, highlight ${highlight_text}${highlight_with}`);

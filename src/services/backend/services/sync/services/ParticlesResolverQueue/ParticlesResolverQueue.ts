@@ -36,6 +36,7 @@ import { SyncQueueItem } from './types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
 import DbApi from '../../../DbApi/DbApi';
+import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
 
 const QUEUE_BATCH_SIZE = 100;
 
@@ -60,7 +61,11 @@ export const getTextContentIfShouldEmbed = async (
 ) => {
   const [contentType, data] = await getContentToEmbed(content);
 
-  const shouldEmbed = contentType === 'text' && !!data;
+  let shouldEmbed = contentType === 'text' && !!data;
+
+  shouldEmbed =
+    shouldEmbed &&
+    (!data!.match(PATTERN_COSMOS) || !data!.match(PATTERN_CYBER));
 
   return shouldEmbed ? data : undefined;
 };

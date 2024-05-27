@@ -16,6 +16,7 @@ import { clearIndexedDBStore, toListOfObjects } from './utils';
 import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
 import initializeScript from './migrations/schema.cozo';
+import { fetchInitialEmbeddings } from './migrations/migrations';
 
 export const DB_NAME = 'cyb-cozo-idb';
 
@@ -24,6 +25,8 @@ const DB_STORE_NAME = 'cozodb';
 export const DB_VERSION = 1.2;
 
 type OnWrite = (writesCount: number) => void;
+
+let shouldInitialize = false;
 
 function createCozoDb() {
   let db: CozoDb | undefined;
@@ -82,7 +85,7 @@ function createCozoDb() {
   const initDbSchema = async (): Promise<void> => {
     let relations = await getRelations();
 
-    const shouldInitialize = relations.length === 0;
+    shouldInitialize = relations.length === 0;
     if (shouldInitialize) {
       cyblogCh.info('CozoDb: apply DB schema', initializeScript);
       const result = await runCommand(initializeScript);
@@ -107,6 +110,10 @@ function createCozoDb() {
     if (shouldInitialize) {
       // if initialized set initial version
       await setDbVersion(DB_VERSION);
+      await fetchInitialEmbeddings(async (items: Partial<DbEntity>[]) => {
+        console.log(' [initial]save initial particles...');
+        await put('sync_queue', items);
+      });
     }
   };
 

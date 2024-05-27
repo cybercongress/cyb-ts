@@ -1,35 +1,32 @@
-# Backend Architecture
-
-> TODO: update
-
-# Cyb local backend
+# CYB local backend(in-browser)
 
 Cyb plays singinficat role in cyber infrastructure. The app reconstruct self-sufficient backend+frontend pattern inside the browser.
 In big view app consist from 3 parts:
 
 ```mermaid
 graph TD;
-        App["Frontend\n(main thread)"]-.proxy.->Backend["Backend\n(shared worker)"];
-        App-.proxy.->Db["Graph Db\n(shared worker)"];
+        App["frontend\n(main thread)"]-.proxy.->Backend["backend\n(shared worker)"];
+        App-.proxy.->Db["graph db\n(shared worker)"];
         Backend-.proxy.->Db;
         App<-.message\nchannels.->Backend;
 ```
 
 To reduce overload of main thread we have created 2 separate shared workers, where all the stuff is hosted. Bi-interraction between all layers occurs using proxy(comlink abstraction) or directly using broadcast channels.
 
-## Db
+## Db layer
 
-Db worker is pretty simple it it's host only local relational-graph-vector database - [[cozo]].
+Db worker is pretty simple it it's host only local relational-graph-vector database - [[cozo]]. It's represented with DbApi in frontend and backend layers.
 Cozo provide bazing fast access to brain and ipfs data in relational form and also in vector format, processing by [ml]embedder.
 
 ```mermaid
 graph TD;
+        dbApi["dbApi"]--odb_meta_orm;
         subgraph rune["cozo db"]
             db_meta_orm[["meta orm"]]-.->db;
         end
 ```
 
-### Entities
+### Db entities
 
 - brain:
   - particles
@@ -45,7 +42,7 @@ graph TD;
   - config
   - queue messages
 
-## Backend
+## Backend layer
 
 Backend worker is more complicated it contains significant elements of cyb architecture:
 

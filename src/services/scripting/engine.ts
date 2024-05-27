@@ -29,6 +29,7 @@ import {
 } from './types';
 
 import runtimeScript from './rune/runtime.rn';
+import { deserializeString, serializeString } from 'src/utils/string';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -232,16 +233,23 @@ function enigine(): RuneEngine {
     const { cid, contentType, content } = params;
     const output = await run(script, {
       funcName: 'personal_processor',
-      funcParams: [cid, contentType, content], //params as EntrypointParams,
+      funcParams: [cid, contentType, serializeString(content || '')], //params as EntrypointParams,
     });
 
-    if (output.result.action === 'error') {
+    const { action, content: outputContent } = output.result;
+
+    if (action === 'error') {
       console.error(
         `[rune].personalProcessor error: ${params.cid}`,
         params,
         output
       );
     }
+
+    if (outputContent) {
+      return { ...output.result, content: deserializeString(outputContent) };
+    }
+
     return output.result;
   };
 

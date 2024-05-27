@@ -55,13 +55,17 @@ class BackendQueueChannelListener {
   }
 
   private async saveParticles(content: IPFSContent) {
-    const dbApi = await this.getDeffredDbApi();
-    const entity = mapParticleToEntity(content);
-    const result = await dbApi.putParticles(entity);
-    if (result.ok) {
-      await enqueueParticleEmbeddingMaybe(content);
+    try {
+      const dbApi = await this.getDeffredDbApi();
+      const entity = mapParticleToEntity(content);
+      const result = await dbApi.putParticles(entity);
+      if (result.ok) {
+        await enqueueParticleEmbeddingMaybe(content);
+      }
+    } catch (e) {
+      console.log('---saveParticle e', content, e);
+      throw e;
     }
-    // console.log('---saveParticles done', content);
   }
 
   private async enquueSync(data: SyncQueueItem | SyncQueueItem[]) {
