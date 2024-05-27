@@ -40,6 +40,7 @@ import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
+
 import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
 
