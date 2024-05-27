@@ -239,9 +239,9 @@ function SwitchAccount() {
                   image={require('../../../../image/sigma.png')}
                 />
                 <AccountItem
-                  name="keys"
+                  name="settings"
                   setControlledVisible={setControlledVisible}
-                  link={routes.keys.path}
+                  link={routes.settings.path}
                   image={require('./keys.png')}
                 />
               </div>

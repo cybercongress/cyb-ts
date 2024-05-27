@@ -1,0 +1,30 @@
+@import '../../../layouts/variables.module.scss';
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 200px minmax(200px, 62%);
+  grid-template-rows: 1fr;
+  justify-content: center;
+
+  height: 70vh;
+  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
+
+  // Display
+  >div>div {
+    height: 100%;
+  }
+
+  > :first-child {
+    >div {
+      // don't understand this scroll
+      overflow-x: hidden;
+    }
+  }
+
+  > :nth-child(2) {
+    left: -2px;
+    position: relative;
+    overflow-x: auto;
+  }
+
+}

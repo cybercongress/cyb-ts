@@ -14,7 +14,7 @@ const reverse = (value: boolean) => ({
 const defaultPairPoolId: DefaultPairPoolIdObj = {
   12: reverse(true),
 
-  19: reverse(true),
+  7: reverse(true),
 
   5: reverse(false),
 

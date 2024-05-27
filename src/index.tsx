@@ -42,6 +42,8 @@ import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
 
 import AdviserProvider from './features/adviser/context';
+import HubProvider from './contexts/hub';
+
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 
 const httpLink = new HttpLink({
@@ -104,22 +106,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
             <SigningClientProvider>
-              <IbcDenomProvider>
-                <WebsocketsProvider>
-                  <DataProvider>
-                    <ApolloProvider client={client}>
-                      <BackendProvider>
-                        <DeviceProvider>
-                          <AdviserProvider>
-                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                            {children}
-                          </AdviserProvider>
-                        </DeviceProvider>
-                      </BackendProvider>
-                    </ApolloProvider>
-                  </DataProvider>
-                </WebsocketsProvider>
-              </IbcDenomProvider>
+              <HubProvider>
+                <IbcDenomProvider>
+                  <WebsocketsProvider>
+                    <DataProvider>
+                      <ApolloProvider client={client}>
+                        <BackendProvider>
+                          <DeviceProvider>
+                            <AdviserProvider>
+                              {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                              {children}
+                            </AdviserProvider>
+                          </DeviceProvider>
+                        </BackendProvider>
+                      </ApolloProvider>
+                    </DataProvider>
+                  </WebsocketsProvider>
+                </IbcDenomProvider>
+              </HubProvider>
             </SigningClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>

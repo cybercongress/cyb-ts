@@ -101,9 +101,9 @@ function ImgDenom({
         setTooltipText(path);
       }
     } else {
-      setImgDenom(defaultImg);
+      setImgDenom(getNativeImg(coinDenom));
     }
-  }, [coinDenom, infoDenom, fetchWithDetails]);
+  }, [coinDenom, infoDenom, fetchWithDetails, getImgFromIpfsByCid]);
 
   const img = (
     <img
