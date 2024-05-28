@@ -42,34 +42,43 @@ function ContractsTable() {
           }
 
           const contract = contracts[row!];
-          const {
-            address,
-            metadata: { name },
-          } = contract;
+          const { address, metadata: { name } = {} } = contract;
           selectContract(address);
-          navigate(cybernetRoutes.verse.getLink('pussy', name));
+          navigate(cybernetRoutes.verse.getLink('pussy', name || address));
         }}
         enableSorting={false}
         columns={useMemo(
           () => [
             columnHelper.accessor('metadata.name', {
               header: '',
-              // minSize: 150,
+              maxSize: 250,
               size: 0,
               cell: (info) => {
                 const value = info.getValue();
 
-                const logo = info.row.original.metadata?.logo;
+                const { original } = info.row;
+                const logo = original.metadata?.logo;
+                const address = original.address;
 
-                const selected = selectedContract?.metadata?.name === value;
+                const selected = selectedContract?.address === address;
 
                 return (
                   <div className={styles.nameCell}>
                     {selected && <span>✔</span>}
 
-                    <Link to={cybernetRoutes.subnets.getLink('pussy', value)}>
+                    <Link
+                      // remove
+                      style={{
+                        maxWidth: 100,
+                        overflow: 'hidden',
+                      }}
+                      to={cybernetRoutes.subnets.getLink(
+                        'pussy',
+                        value || address
+                      )}
+                    >
                       <AvataImgIpfs cidAvatar={logo} />
-                      {value}
+                      {value || address}
                     </Link>
                   </div>
                 );
@@ -83,7 +92,7 @@ function ContractsTable() {
                 const row = info.row.original;
 
                 if (!row.metadata) {
-                  return '';
+                  return '-';
                 }
 
                 const type = row.metadata.types;
@@ -108,19 +117,27 @@ function ContractsTable() {
 
             columnHelper.accessor('economy.staker_apr', {
               header: '',
-              cell: (info) => (
-                <span>
-                  {Number(info.getValue()).toFixed(2)}
-                  <span
-                    style={{
-                      fontSize: 14,
-                      color: '#A0A0A0',
-                    }}
-                  >
-                    % teach yield
+              cell: (info) => {
+                const value = info.getValue();
+
+                if (!value) {
+                  return '-';
+                }
+
+                return (
+                  <span>
+                    {Number(info.getValue()).toFixed(2)}
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: '#A0A0A0',
+                      }}
+                    >
+                      % teach yield
+                    </span>
                   </span>
-                </span>
-              ),
+                );
+              },
             }),
             columnHelper.accessor('metadata.description', {
               header: '',

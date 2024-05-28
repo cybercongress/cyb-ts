@@ -44,6 +44,8 @@ function Main() {
     network = 'pussy',
   } = selectedContract || {};
 
+  const contractNameOrAddress = name || contractAddress;
+
   return (
     <MainContainer resetMaxWidth>
       <Stars />
@@ -79,7 +81,12 @@ function Main() {
               learn by staking on {getText('delegate', true)}
             </p>
             <div className={styles.links}>
-              <Link to={cybernetRoutes.delegators.getLink('pussy', name)}>
+              <Link
+                to={cybernetRoutes.delegators.getLink(
+                  'pussy',
+                  contractNameOrAddress
+                )}
+              >
                 {getText('delegate', true)}
               </Link>
 
@@ -88,7 +95,12 @@ function Main() {
               </button>
 
               {haveStake && (
-                <Link to={cybernetRoutes.myLearner.getLink('pussy', name)}>
+                <Link
+                  to={cybernetRoutes.myLearner.getLink(
+                    'pussy',
+                    contractNameOrAddress
+                  )}
+                >
                   my {getText('delegator')}
                 </Link>
               )}
@@ -120,17 +132,32 @@ function Main() {
             <p className={styles.actionText}>teach by linking content</p>
 
             <div className={styles.links}>
-              <Link to={cybernetRoutes.subnet.getLink('pussy', name, 0)}>
+              <Link
+                to={cybernetRoutes.subnet.getLink(
+                  'pussy',
+                  contractNameOrAddress,
+                  0
+                )}
+              >
                 {getText('root')}
               </Link>
 
-              <Link to={cybernetRoutes.subnets.getLink(network, name)}>
+              <Link
+                to={cybernetRoutes.subnets.getLink(
+                  network,
+                  contractNameOrAddress
+                )}
+              >
                 {getText('subnetwork', true)}
               </Link>
 
               {currentAddressIsDelegator && (
                 <Link
-                  to={cybernetRoutes.delegator.getLink(network, name, address)}
+                  to={cybernetRoutes.delegator.getLink(
+                    network,
+                    contractNameOrAddress,
+                    address
+                  )}
                 >
                   my {getText('delegate')}
                 </Link>
