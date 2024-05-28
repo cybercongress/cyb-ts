@@ -12,8 +12,21 @@ import { ContractWithData } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../routes';
 import styles from './ContractsTable.module.scss';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import useParticleDetails from 'src/features/particle/useParticleDetails';
 
 const columnHelper = createColumnHelper<ContractWithData>();
+
+function Test({
+  cid,
+  fallback: F,
+}: {
+  cid: string;
+  fallback: React.ReactNode;
+}) {
+  const d = useParticleDetails(cid);
+
+  return d.data?.content || F;
+}
 
 function ContractsTable() {
   const { contracts, selectContract, selectedContract } = useCybernet();
@@ -68,7 +81,13 @@ function ContractsTable() {
               cell: (info) => {
                 const value = info.getValue();
                 const row = info.row.original;
+
+                if (!row.metadata) {
+                  return '';
+                }
+
                 const type = row.metadata.types;
+
                 const diff = type === ContractTypes.Graph ? 'easy' : 'hard';
 
                 return (
@@ -81,7 +100,7 @@ function ContractsTable() {
                     >
                       {diff}:
                     </span>{' '}
-                    <Cid cid={value}>info</Cid>
+                    <Test cid={value} fallback={<Cid cid={value}>info</Cid>} />
                   </div>
                 );
               },
