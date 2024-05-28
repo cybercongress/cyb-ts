@@ -14,7 +14,7 @@
 
     position: absolute;
     right: 50px;
-    bottom: 0;
+    bottom: 20px;
   }
 
   h2 {
@@ -22,7 +22,7 @@
     position: absolute;
     left: 0;
     z-index: 1;
-    top: 0;
+    top: 20px;
 
     color: var(--green-light);
     align-self: flex-start;
@@ -37,10 +37,21 @@
   min-height: 200px;
 
   > img {
+    @keyframes appear {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    animation: appear 1500ms ease-out;
     position: absolute;
     top: 0;
-    height: 110%;
-    left: calc(50% - 120px);
+    height: 100%;
+    $size: 200px;
+    left: calc(50% - #{$size} / 2);
     bottom: 0;
   }
 }

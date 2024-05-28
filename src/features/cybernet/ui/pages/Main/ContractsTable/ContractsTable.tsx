@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createColumnHelper } from '@tanstack/react-table';
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AmountDenom, Cid, DenomArr, LinkWindow } from 'src/components';
 import Table from 'src/components/Table/Table';
 import { routes } from 'src/routes';
@@ -18,12 +18,23 @@ const columnHelper = createColumnHelper<ContractWithData>();
 function ContractsTable() {
   const { contracts, selectContract, selectedContract } = useCybernet();
 
+  const navigate = useNavigate();
+
   return (
     <div className={styles.wrapper}>
       <Table
         onSelect={(row) => {
-          const address = contracts[row!] ? contracts[row!].address : '';
+          if (!row) {
+            return;
+          }
+
+          const contract = contracts[row!];
+          const {
+            address,
+            metadata: { name },
+          } = contract;
           selectContract(address);
+          navigate(cybernetRoutes.verse.getLink('pussy', name));
         }}
         enableSorting={false}
         columns={useMemo(

@@ -8,7 +8,8 @@ function Banner() {
   const { contracts } = useCybernet();
 
   const totalPaid = contracts.reduce(
-    (acc, contract) => acc + Number(contract.economy?.total_rewards?.amount),
+    (acc, contract) =>
+      acc + Number(contract.economy?.total_rewards?.amount) || 0,
     0
   );
 
@@ -24,7 +25,7 @@ function Banner() {
       <div className={styles.center}>
         <img src={require('./logo.png')} alt="cyberver" />
 
-        {totalPaid && (
+        {!!totalPaid && (
           <div className={styles.rewardsBlock}>
             <AmountDenom amountValue={totalPaid} denom="pussy" />
 

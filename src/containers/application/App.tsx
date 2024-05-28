@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { AppDispatch } from 'src/redux/store';
 import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
@@ -22,6 +22,7 @@ import useSenseManager from 'src/features/sense/ui/useSenseManager';
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 
 export const PORTAL_ID = 'portal';
 
@@ -107,9 +108,10 @@ function App() {
             <div id={PORTAL_ID} className={styles.portal} />
           )}
 
-          {!['/', '/cyberver'].includes(location.pathname) && (
-            <AdviserContainer />
-          )}
+          {!(
+            ['/'].includes(location.pathname) ||
+            matchPath(cybernetRoutes.verse.path, location.pathname)
+          ) && <AdviserContainer />}
 
           <Outlet />
         </>

@@ -82,7 +82,7 @@ function DelegatesTable({}: Props) {
       }),
 
       // columnHelper.accessor('123', {
-      //   header: 'APR',
+      //   header: '',
       //   cell: (info) => {
       //     return '10%';
       //   },
