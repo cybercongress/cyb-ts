@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { SubnetHyperParameters } from 'src/features/cybernet/types';
@@ -6,6 +6,7 @@ import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContra
 
 import styles from '../../Subnet.module.scss';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import { routes } from 'src/routes';
 
 const config: { [K in keyof SubnetHyperParameters]: { text: string } } = {
   rho: {
@@ -67,10 +68,12 @@ const config: { [K in keyof SubnetHyperParameters]: { text: string } } = {
 function SubnetHyperParams() {
   const { id: netuid } = useParams();
 
+  const f = netuid === 'board' ? 0 : +netuid;
+
   const hyperparamsQuery = useCybernetContract<SubnetHyperParameters>({
     query: {
       get_subnet_hyperparams: {
-        netuid: +netuid,
+        netuid: f,
       },
     },
   });
@@ -97,9 +100,14 @@ function SubnetHyperParams() {
               content = <span>{value === true ? 'yes' : 'no'}</span>;
             }
 
+            const title = config[item].text || item;
+
             return (
               <li key={item}>
-                {config[item].text || item}: <div>{content}</div>
+                <Link to={routes.oracle.ask.getLink(title.toLowerCase())}>
+                  {title}
+                </Link>
+                <div>{content}</div>
               </li>
             );
           })}
