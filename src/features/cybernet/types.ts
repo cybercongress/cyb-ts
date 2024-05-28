@@ -36,6 +36,10 @@ export type Delegator = {
   validator_permits: number[];
   return_per_1000: number;
   total_daily_return: number;
+  return_per_giga: {
+    amount: number;
+    denom: string;
+  };
 };
 
 export type SubnetHyperParameters = {

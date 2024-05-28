@@ -81,12 +81,18 @@ function DelegatesTable({}: Props) {
         },
       }),
 
-      // columnHelper.accessor('123', {
-      //   header: '',
-      //   cell: (info) => {
-      //     return '10%';
-      //   },
-      // }),
+      columnHelper.accessor('return_per_giga', {
+        header: 'yield',
+        cell: (info) => {
+          const value = info.getValue();
+
+          const yieldValue = (
+            (Number(value.amount) / 1_000_000_000) *
+            100
+          ).toFixed(2);
+          return yieldValue + '%';
+        },
+      }),
 
       columnHelper.accessor('registrations', {
         header: getText('subnetwork', true),
