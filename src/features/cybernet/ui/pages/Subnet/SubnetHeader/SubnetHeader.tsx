@@ -17,6 +17,8 @@ function Item({ title, content }) {
   );
 }
 
+export const HeaderItem = Item;
+
 function SubnetHeader() {
   const { subnetQuery, neuronsQuery } = useSubnet();
   const { getText } = useCybernetTexts();

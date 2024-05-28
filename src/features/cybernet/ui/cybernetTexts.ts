@@ -44,8 +44,8 @@ export const texts: {
     graph: 'professor',
   },
   rootValidator: {
-    default: 'lead',
-    graph: 'professor',
+    default: 'validator',
+    graph: 'lead',
   },
   miner: {
     default: 'miner',

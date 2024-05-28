@@ -13,6 +13,7 @@ import { useCurrentContract } from '../../cybernet.context';
 import { Helmet } from 'react-helmet';
 import { useDelegates } from '../../hooks/useDelegate';
 import DelegatesTable from '../Delegates/DelegatesTable/DelegatesTable';
+import { HeaderItem } from '../Subnet/SubnetHeader/SubnetHeader';
 
 type T = StakeInfo[0];
 const columnHelper = createColumnHelper<T>();
@@ -28,7 +29,7 @@ function MyStake() {
 
   useAdviserTexts({
     isLoading: loading,
-    error,
+    error: error?.message,
     defaultText: 'my stake',
   });
 
@@ -44,10 +45,18 @@ function MyStake() {
       </Helmet>
 
       <Display>
-        <div>mentors {data?.length}</div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <HeaderItem title="mentors" content={data?.length} />
 
-        <div>
-          total stake <AmountDenom amountValue={total} denom="pussy" />
+          <HeaderItem
+            title="total stake"
+            content={<AmountDenom amountValue={total} denom="pussy" />}
+          />
         </div>
       </Display>
       <Display noPaddingX title={<DisplayTitle title="My stake" />}>

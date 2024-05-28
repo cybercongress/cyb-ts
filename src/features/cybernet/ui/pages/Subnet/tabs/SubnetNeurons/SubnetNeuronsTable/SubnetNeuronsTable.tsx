@@ -115,7 +115,7 @@ function SubnetNeuronsTable({}: Props) {
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: getText('delegate'),
+        header: getText(rootSubnet ? 'rootValidator' : 'delegate'),
         // size: 200,
         enableSorting: false,
         cell: (info) => {
@@ -232,7 +232,20 @@ function SubnetNeuronsTable({}: Props) {
     address,
   ]);
 
-  return <Table columns={columns} data={neurons} />;
+  return (
+    <Table
+      columns={columns}
+      data={neurons}
+      initialState={{
+        sorting: [
+          {
+            id: 'uid',
+            desc: false,
+          },
+        ],
+      }}
+    />
+  );
 }
 
 export default SubnetNeuronsTable;

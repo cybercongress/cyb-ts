@@ -63,7 +63,7 @@ function Subnet() {
     {
       to: './',
       key: 'delegates',
-      text: getText('delegate', true),
+      text: getText(rootSubnet ? 'rootValidator' : 'delegate', true),
     },
 
     {

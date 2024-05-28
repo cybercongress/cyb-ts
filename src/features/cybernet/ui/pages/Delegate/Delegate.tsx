@@ -85,6 +85,16 @@ function Delegator() {
           />
         }
       >
+        {!loading && !data && (
+          <div
+            style={{
+              textAlign: 'center',
+            }}
+          >
+            no mentor info
+          </div>
+        )}
+
         <ul className={subnetStyles.list}>
           {data &&
             Object.keys(data)

@@ -26,7 +26,10 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   // });
 
   useAdviserTexts({
-    defaultText: `${getText('subnetwork')} ${getText('validator', true)}`,
+    defaultText: `${getText(rootSubnet ? 'root' : 'subnetwork')} ${getText(
+      rootSubnet ? 'rootValidator' : 'delegate',
+      true
+    )}`,
   });
 
   const {
