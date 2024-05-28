@@ -27,7 +27,7 @@ function Main() {
   const { getText } = useCybernetTexts();
 
   useAdviserTexts({
-    defaultText: 'welcome to Cyberverse 🤖',
+    defaultText: 'welcome to Cyberver 🤖',
   });
 
   const { data } = useDelegate(address);

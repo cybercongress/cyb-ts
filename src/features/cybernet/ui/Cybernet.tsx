@@ -30,7 +30,7 @@ function Redirect() {
 
   const route =
     cybernetRoutes.verse.getLink(network, contractName) +
-    pathname.replace('/cyberverse', '');
+    pathname.replace('/cyberver', '');
 
   return <Navigate to={route} replace />;
 }

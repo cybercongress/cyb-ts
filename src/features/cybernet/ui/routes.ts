@@ -1,4 +1,4 @@
-const root = '/cyberverse';
+const root = '/cyberver';
 
 export const routes = {
   verses: {

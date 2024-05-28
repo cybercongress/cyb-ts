@@ -107,7 +107,7 @@ function App() {
             <div id={PORTAL_ID} className={styles.portal} />
           )}
 
-          {!['/', '/cyberverse'].includes(location.pathname) && (
+          {!['/', '/cyberver'].includes(location.pathname) && (
             <AdviserContainer />
           )}
 

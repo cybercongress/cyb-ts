@@ -34,8 +34,6 @@ function DelegatesTable({}: Props) {
     skip: !isMyLearnerPage,
   });
 
-  console.log(stakeQuery);
-
   const { data, loading: isLoading } = useDelegates();
 
   const { selectedContract, subnetsQuery } = useCybernet();
@@ -53,12 +51,10 @@ function DelegatesTable({}: Props) {
 
   const navigate = useNavigate();
 
-  console.log(data);
-
   const columns = useMemo(() => {
     const cols = [
       columnHelper.accessor((row) => row, {
-        header: '№',
+        header: 'card',
         cell: ({ row }) => {
           return row.index;
         },
@@ -125,7 +121,7 @@ function DelegatesTable({}: Props) {
       }),
 
       columnHelper.accessor('nominators', {
-        header: 'pussy power',
+        header: 'teaching power',
         id: columnsIds.stake,
         sortingFn: (rowA, rowB) => {
           const totalA = getTotalStake(rowA.original.nominators);

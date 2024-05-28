@@ -82,13 +82,13 @@ const itemsMenu = () => {
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
     {
-      name: 'cyberverse',
+      name: 'cyberver',
       icon: temple,
-      to: '/cyberverse',
+      to: '/cyberver',
       subItems: [
         {
           name: '👑  board',
-          to: '/cyberverse/faculties/board',
+          to: '/cyberver/faculties/board',
           // not good, fix
           matchPathname: cybernetRoutes.subnet.path.replace(
             ':nameOrUid',
@@ -97,22 +97,22 @@ const itemsMenu = () => {
         },
         {
           name: '🏫  faculties',
-          to: '/cyberverse/faculties',
+          to: '/cyberver/faculties',
           matchPathname: cybernetRoutes.subnets.path,
         },
         {
           name: '💼  mentors',
-          to: '/cyberverse/mentors',
+          to: '/cyberver/mentors',
           matchPathname: cybernetRoutes.delegators.path,
         },
         {
           name: '👨‍🎓  my mentor',
-          to: '/cyberverse/mentors/my',
+          to: '/cyberver/mentors/my',
           matchPathname: cybernetRoutes.myMentor.path,
         },
         {
           name: '👨‍🎓  my learner',
-          to: '/cyberverse/learners/my',
+          to: '/cyberver/learners/my',
           matchPathname: cybernetRoutes.myLearner.path,
         },
       ],

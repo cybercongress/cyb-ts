@@ -63,7 +63,7 @@ function SubnetsTable({ data }: Props) {
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('metadata', {
-        header: getText('uid'),
+        header: 'name',
         id: 'subnetName',
         cell: (info) => {
           const value = info.getValue();
@@ -104,16 +104,32 @@ function SubnetsTable({ data }: Props) {
         },
       }),
 
-      columnHelper.accessor('metadata', {
-        header: 'metadata',
+      columnHelper.accessor('metadata.particle', {
+        header: 'teaser',
+        header: 'teaser',
         enableSorting: false,
         cell: (info) => {
           const value = info.getValue();
 
-          const cid = value.particle;
+          const cid = value;
 
           return (
-            <Cid cid={cid}>{`${cid.substr(0, 6)}...${cid.substr(-6)}`}</Cid>
+            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
+          );
+        },
+      }),
+
+      columnHelper.accessor('metadata.description', {
+        header: 'rules',
+        id: 'rules',
+        enableSorting: false,
+        cell: (info) => {
+          const value = info.getValue();
+
+          const cid = value;
+
+          return (
+            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
           );
         },
       }),

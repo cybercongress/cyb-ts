@@ -66,7 +66,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
           closeMenu={() => {
             // temp until refactoring will be merged
             // prevent menu close on cybernet navigation
-            if (pathname.includes('/cyberverse')) {
+            if (pathname.includes('/cyberver')) {
               return;
             }
 

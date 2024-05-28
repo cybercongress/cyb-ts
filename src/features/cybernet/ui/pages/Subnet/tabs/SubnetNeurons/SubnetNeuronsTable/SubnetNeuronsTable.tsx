@@ -108,14 +108,14 @@ function SubnetNeuronsTable({}: Props) {
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('uid', {
-        header: 'uid',
+        header: getText('uid'),
         cell: (info) => {
           const uid = info.getValue();
           return uid;
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: getText('validator'),
+        header: getText('delegate'),
         // size: 200,
         enableSorting: false,
         cell: (info) => {

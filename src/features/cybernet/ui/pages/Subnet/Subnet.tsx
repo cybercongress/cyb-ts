@@ -62,8 +62,8 @@ function Subnet() {
     },
     {
       to: './',
-      key: 'validators',
-      text: getText('validator', true),
+      key: 'delegates',
+      text: getText('delegate', true),
     },
 
     {
@@ -86,7 +86,7 @@ function Subnet() {
     <MainContainer resetMaxWidth>
       <SubnetHeader />
 
-      <Tabs options={tabs} selected={tab || 'validators'} />
+      <Tabs options={tabs} selected={tab || 'delegates'} />
 
       <Routes>
         <Route
