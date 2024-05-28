@@ -16,6 +16,10 @@ const CybernetContext = React.createContext<{
   selectContract: (address: string) => void;
   selectedContract: ContractWithData;
   // subnetsQuery: ReturnType<typeof useQueryCybernetContract<SubnetInfo[]>;
+  // fix
+  subnetsQuery: {
+    data: SubnetInfo[];
+  };
   subnetsQuery: any;
 }>({
   contracts: {},

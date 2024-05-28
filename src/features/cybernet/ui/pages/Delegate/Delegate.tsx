@@ -20,6 +20,7 @@ import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import subnetStyles from '../Subnet/Subnet.module.scss';
 import useDelegate from '../../hooks/useDelegate';
 import useCybernetTexts from '../../useCybernetTexts';
+import { useCurrentContract, useCybernet } from '../../cybernet.context';
 
 const columnHelper = createColumnHelper<Delegator>();
 
@@ -43,10 +44,13 @@ function Delegator() {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const { loading, data, error, refetch } = useDelegate(
-    id !== 'my' ? id : currentAddress
-  );
+  const f = id !== 'my' ? id : currentAddress;
+
+  const { loading, data, error, refetch } = useDelegate(f);
   const { getText } = useCybernetTexts();
+
+  const { subnetsQuery } = useCybernet();
+  const { network, contractName } = useCurrentContract();
 
   useAdviserTexts({
     isLoading: loading,
@@ -116,10 +120,20 @@ function Delegator() {
                   content = (
                     <ul className={styles.list}>
                       {value.map((netuid) => {
+                        const name = subnetsQuery.data?.find(
+                          (subnet) => subnet.netuid === netuid
+                        )?.metadata?.name;
+
                         return (
                           <li key={netuid}>
-                            <Link to={cybernetRoutes.subnet.getLink(netuid)}>
-                              {netuid}
+                            <Link
+                              to={cybernetRoutes.subnet.getLink(
+                                network,
+                                contractName,
+                                netuid
+                              )}
+                            >
+                              {name}
                             </Link>
                           </li>
                         );
@@ -195,7 +209,7 @@ function Delegator() {
       )}
 
       <DelegateActionBar
-        address={id}
+        address={f}
         stakedAmount={myStake}
         onSuccess={refetch}
       />
