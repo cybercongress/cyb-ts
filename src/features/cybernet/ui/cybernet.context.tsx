@@ -6,6 +6,11 @@ import { Metadata } from 'cosmjs-types/cosmos/bank/v1beta1/bank';
 
 type ContractType = 'graph' | 'ml';
 
+export enum ContractTypes {
+  Graph = 'graph',
+  ML = 'ml',
+}
+
 const CONTRACT_NEW2 =
   'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y';
 const CONTRACT_NEW =

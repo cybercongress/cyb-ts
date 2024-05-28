@@ -6,7 +6,7 @@ import { AmountDenom, Cid, DenomArr, LinkWindow } from 'src/components';
 import Table from 'src/components/Table/Table';
 import { routes } from 'src/routes';
 import { trimString } from 'src/utils/utils';
-import { useCybernet } from '../../../cybernet.context';
+import { ContractTypes, useCybernet } from '../../../cybernet.context';
 import ImgDenom from 'src/components/valueImg/imgDenom';
 import { ContractWithData } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../routes';
@@ -62,29 +62,55 @@ function ContractsTable() {
                 );
               },
             }),
+
+            columnHelper.accessor('metadata.particle', {
+              header: '',
+              cell: (info) => {
+                const value = info.getValue();
+                const row = info.row.original;
+                const type = row.metadata.types;
+                const diff = type === ContractTypes.Graph ? 'easy' : 'hard';
+
+                return (
+                  <div>
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: '#A0A0A0',
+                      }}
+                    >
+                      {diff}:
+                    </span>{' '}
+                    <Cid cid={value}>info</Cid>
+                  </div>
+                );
+              },
+            }),
+
+            columnHelper.accessor('economy.staker_apr', {
+              header: '',
+              cell: (info) => (
+                <span>
+                  {Number(info.getValue()).toFixed(2)}
+                  <span
+                    style={{
+                      fontSize: 14,
+                      color: '#A0A0A0',
+                    }}
+                  >
+                    % teach yield
+                  </span>
+                </span>
+              ),
+            }),
             columnHelper.accessor('metadata.description', {
               header: '',
               cell: (info) => {
                 const value = info.getValue();
 
-                return <Cid cid={value}>{trimString(value, 6, 6)}</Cid>;
+                return <Cid cid={value}>rules</Cid>;
               },
             }),
-            columnHelper.accessor('economy.staker_apr', {
-              header: '',
-              cell: (info) => (
-                <span>{Number(info.getValue()).toFixed(2)}%</span>
-              ),
-            }),
-            // columnHelper.accessor('docs', {
-            //   header: '',
-            //   cell: (info) => {
-            //     // const value = info.getValue();
-            //     const value = 'https://docs.spacepussy.ai';
-
-            //     return <LinkWindow to={value}>docs</LinkWindow>;
-            //   },
-            // }),
             columnHelper.accessor('address', {
               header: '',
               id: 'network',
