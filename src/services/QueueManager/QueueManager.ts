@@ -59,7 +59,7 @@ const strategies = {
   external: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
@@ -67,7 +67,7 @@ const strategies = {
   embedded: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'gateway', 'node']
@@ -130,12 +130,16 @@ class QueueManager {
       const executeCount =
         settings.maxConcurrentExecutions -
         this.executing[queueSource as IpfsContentSource].size;
-
       const itemsByPriority = items
         .sort(
           (a, b) => getQueueItemTotalPriority(b) - getQueueItemTotalPriority(a)
         )
         .slice(0, executeCount);
+      console.log(
+        `----q ${queueSource} ${
+          this.executing[queueSource as IpfsContentSource].size
+        }/${settings.maxConcurrentExecutions} `
+      );
 
       // console.log('---itemsByPriority', itemsByPriority);
 

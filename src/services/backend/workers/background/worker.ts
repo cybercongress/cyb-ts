@@ -92,7 +92,6 @@ const createBackgroundWorkerApi = () => {
     if (!mlInstances[name]) {
       // broadcastApi.postServiceStatus('ml', 'starting');
       const model = mlModelMap[name];
-      console.log('-----------init ml pipeline');
 
       return pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
@@ -162,7 +161,6 @@ const createBackgroundWorkerApi = () => {
   const syncService = new SyncService(serviceDeps, particlesResolver);
   const initMl = async () => {
     broadcastApi.postServiceStatus('ml', 'starting');
-    console.log('-----------init ml starting');
 
     return Promise.all([
       initMlInstance('featureExtractor'),
