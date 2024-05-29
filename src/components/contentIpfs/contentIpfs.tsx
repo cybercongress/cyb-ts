@@ -80,7 +80,10 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <LinkHttp url={details.content!} preview={search} />
           )}
           {contentType === 'epub' && (
-            <EPubView url={`${CYBER_GATEWAY_URL}/ipfs/${cid}`} />
+            <EPubView
+              url={`${CYBER_GATEWAY_URL}/ipfs/${cid}`}
+              search={search}
+            />
           )}
           {contentType === 'other' && (
             <OtherItem search={search} cid={cid} content={details.content} />

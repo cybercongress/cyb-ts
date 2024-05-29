@@ -1,26 +1,46 @@
-import React, { CSSProperties, useMemo } from 'react';
+import React, {
+  CSSProperties,
+  ComponentProps,
+  useCallback,
+  useMemo,
+} from 'react';
 import { ReactReader } from 'react-reader';
 import useEPubLocation from 'src/hooks/useEPubLocation';
 
 interface IProps {
   url: string;
+  search?: boolean;
   style?: CSSProperties;
 }
 
-function EPubView({ url, style }: IProps) {
-  const [location, setLocation] = useEPubLocation(url);
+type EpubInitOptions = ComponentProps<typeof ReactReader>['epubInitOptions'];
+const epubInitOptions: EpubInitOptions = { openAs: 'epub' };
 
-  const currentStyle = useMemo(() => ({ height: '60vh', ...style }), [style]);
+function EPubView({ url, search, style }: IProps) {
+  const [location, setLocation] = useEPubLocation(url);
+  const currentLocation = location && !search ? location : 0;
+
+  const currentStyle = useMemo(
+    () => ({ height: search ? '300px' : '60vh', ...style }),
+    [style, search]
+  );
+
+  const onLocationChange = useCallback(
+    (loc: string) => {
+      if (!search) {
+        setLocation(loc);
+      }
+    },
+    [search, setLocation]
+  );
 
   return (
     <div style={currentStyle}>
       <ReactReader
         url={url}
-        location={location ?? 0}
-        locationChanged={(loc) => {
-          setLocation(loc);
-        }}
-        epubInitOptions={{ openAs: 'epub' }}
+        location={currentLocation}
+        locationChanged={onLocationChange}
+        epubInitOptions={epubInitOptions}
       />
     </div>
   );

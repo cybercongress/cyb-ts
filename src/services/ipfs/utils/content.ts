@@ -42,7 +42,7 @@ export const detectContentType = (
 
 const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 
-function isHtml(string) {
+function isHtml(string: string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
 }
@@ -60,13 +60,10 @@ export const chunksToBlob = (
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
   content: IPFSContentMaybe,
-  // rawDataResponse: Uint8ArrayLike | undefined,
-  // mime: string | undefined,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
-    // console.log('------parseArrayLikeToDetails', cid, content);
     const mime = content?.meta?.mime;
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
