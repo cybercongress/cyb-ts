@@ -127,10 +127,6 @@ function SubnetsTable({ data }: Props) {
           const value = info.getValue();
           const cid = value;
 
-          if (!cid) {
-            return '-';
-          }
-
           return (
             <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
           );

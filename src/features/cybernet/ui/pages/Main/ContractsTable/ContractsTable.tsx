@@ -137,9 +137,13 @@ function ContractsTable() {
             columnHelper.accessor('metadata.description', {
               header: '',
               cell: (info) => {
-                const value = info.getValue();
+                const cid = info.getValue();
 
-                return <Cid cid={value}>rules</Cid>;
+                if (!cid) {
+                  return '-';
+                }
+
+                return <Cid cid={cid}>rules</Cid>;
               },
             }),
             columnHelper.accessor('address', {

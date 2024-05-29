@@ -65,6 +65,10 @@ function useCybernetContractWithData(address: string) {
 }
 
 function CybernetProvider({ children }: { children: React.ReactNode }) {
+  const [selectedContractAddress, setSelectedContractAddress] = useState(
+    contractsConfig[2]
+  );
+
   const { nameOrAddress } = useParams();
 
   const c1 = useCybernetContractWithData(contractsConfig[0]);
@@ -93,6 +97,14 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   ) {
     address = currentContract.address;
   }
+
+  if (address && selectedContractAddress !== address) {
+    setSelectedContractAddress(address);
+  }
+
+  const currentContract2 = contracts.find(
+    (contract) => contract.address === selectedContractAddress
+  );
 
   const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
     query: {
@@ -126,9 +138,9 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
         return {
           contracts,
           subnetsQuery,
-          selectedContract: currentContract,
+          selectedContract: currentContract2,
         };
-      }, [c1, c2, subnetsQuery, c3, c4, currentContract])}
+      }, [c1, c2, subnetsQuery, c3, c4, currentContract2])}
     >
       {children}
     </CybernetContext.Provider>
@@ -142,7 +154,7 @@ export function useCurrentContract() {
   const contractName = metadata?.name;
 
   return {
-    contractName,
+    contractName: contractName || selectedContract.address,
     network: 'pussy',
   };
 }
