@@ -1,7 +1,7 @@
 /* eslint-disable react/no-children-prop */
 import { useEffect, useState } from 'react';
 import { Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -167,15 +167,6 @@ function ProposalsDetail({ defaultAccount }) {
     }
     return string;
   };
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (location.pathname === `/senate/${proposalId}`) {
-      navigate(`/senate/${proposalId}/comments`, { replace: true });
-    }
-  }, [location.pathname]);
 
   return (
     <>
