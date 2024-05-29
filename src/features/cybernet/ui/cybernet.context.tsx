@@ -3,6 +3,8 @@ import { Networks } from 'src/types/networks';
 import useQueryCybernetContract from './useQueryCybernetContract.refactor';
 import { ContractWithData, Economy, SubnetInfo } from '../types';
 import { Metadata } from 'cosmjs-types/cosmos/bank/v1beta1/bank';
+import { useLocation, useParams } from 'react-router-dom';
+import { isPussyAddress } from 'src/utils/address';
 
 type ContractType = 'graph' | 'ml';
 
@@ -17,8 +19,6 @@ const contractsConfig = [
   'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
   'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
 ];
-
-const defaultContract = contractsConfig[0];
 
 const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
@@ -65,19 +65,40 @@ function useCybernetContractWithData(address: string) {
 }
 
 function CybernetProvider({ children }: { children: React.ReactNode }) {
-  const [selectedContractAddress, setSelectedContractAddress] =
-    useState(defaultContract);
+  const { nameOrAddress } = useParams();
 
   const c1 = useCybernetContractWithData(contractsConfig[0]);
   const c2 = useCybernetContractWithData(contractsConfig[1]);
   const c3 = useCybernetContractWithData(contractsConfig[2]);
   const c4 = useCybernetContractWithData(contractsConfig[3]);
 
+  const contracts = [c1, c2, c3, c4];
+
+  const currentContract =
+    nameOrAddress &&
+    contracts.find(
+      (contract) =>
+        contract.address === nameOrAddress ||
+        contract.metadata?.name === nameOrAddress
+    );
+
+  let address;
+
+  if (nameOrAddress && isPussyAddress(nameOrAddress)) {
+    address = nameOrAddress;
+  } else if (
+    nameOrAddress &&
+    currentContract &&
+    currentContract.metadata?.name === nameOrAddress
+  ) {
+    address = currentContract.address;
+  }
+
   const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
     query: {
       get_subnets_info: {},
     },
-    contractAddress: selectedContractAddress,
+    contractAddress: address,
   });
 
   return (
@@ -102,19 +123,12 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
           },
         ];
 
-        console.log(contracts);
-
         return {
           contracts,
           subnetsQuery,
-          selectContract: (value) => {
-            setSelectedContractAddress(value || defaultContract);
-          },
-          selectedContract: contracts.find(
-            (contract) => contract.address === selectedContractAddress
-          ),
+          selectedContract: currentContract,
         };
-      }, [c1, selectedContractAddress, c2, subnetsQuery, c3, c4])}
+      }, [c1, c2, subnetsQuery, c3, c4, currentContract])}
     >
       {children}
     </CybernetContext.Provider>

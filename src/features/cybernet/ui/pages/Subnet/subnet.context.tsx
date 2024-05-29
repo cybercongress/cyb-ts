@@ -179,7 +179,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
       },
     },
     onSuccess: () => {
-      debugger;
       setAdviser('Weights set', 'green');
       weightsQuery.refetch();
     },

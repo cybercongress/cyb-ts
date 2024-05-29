@@ -42,9 +42,9 @@ function Subnets() {
               title={
                 <header className={styles.header}>
                   {getText('root')}
-                  <Tooltip tooltip="Root subnet - ...">
+                  {/* <Tooltip tooltip="Root subnet - ...">
                     <QuestionBtn />
-                  </Tooltip>
+                  </Tooltip> */}
                 </header>
               }
             />
@@ -62,9 +62,9 @@ function Subnets() {
               title={
                 <header className={styles.header}>
                   {getText('subnetwork', true)}
-                  <Tooltip tooltip="Graph subnets - ...">
+                  {/* <Tooltip tooltip="Graph subnets - ...">
                     <QuestionBtn />
-                  </Tooltip>
+                  </Tooltip> */}
                 </header>
               }
             />

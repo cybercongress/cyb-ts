@@ -7,7 +7,7 @@ import {
   Select,
 } from 'src/components';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
@@ -36,7 +36,17 @@ function Main() {
   const { data: currentStake } = useCurrentAccountStake();
   const haveStake = currentStake?.some(({ stake }) => stake > 0);
 
-  const { selectedContract } = useCybernet();
+  const { selectedContract, contracts } = useCybernet();
+
+  const { nameOrAddress } = useParams();
+
+  if (!nameOrAddress && contracts.length) {
+    return (
+      <Navigate
+        to={cybernetRoutes.verse.getLink('pussy', contracts[3].address)}
+      />
+    );
+  }
 
   const {
     metadata: { name } = {},

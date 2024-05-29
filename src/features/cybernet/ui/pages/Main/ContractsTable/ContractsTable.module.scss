@@ -7,6 +7,7 @@
 .nameCell {
   position: relative;
   padding-left: 30px;
+  text-align: left;
 
   > span {
     color: var(--green-light);
@@ -15,8 +16,7 @@
   }
 
   > a {
-    display: flex;
-    align-items: center;
+    display: inline-flex;
 
     > img {
       margin-right: 7px;

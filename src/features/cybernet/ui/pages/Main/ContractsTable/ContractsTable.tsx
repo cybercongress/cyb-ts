@@ -29,7 +29,7 @@ function Test({
 }
 
 function ContractsTable() {
-  const { contracts, selectContract, selectedContract } = useCybernet();
+  const { contracts, selectedContract } = useCybernet();
 
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ function ContractsTable() {
 
           const contract = contracts[row!];
           const { address, metadata: { name } = {} } = contract;
-          selectContract(address);
+
           navigate(cybernetRoutes.verse.getLink('pussy', name || address));
         }}
         enableSorting={false}
@@ -67,18 +67,13 @@ function ContractsTable() {
                     {selected && <span>✔</span>}
 
                     <Link
-                      // remove
-                      style={{
-                        maxWidth: 100,
-                        overflow: 'hidden',
-                      }}
                       to={cybernetRoutes.subnets.getLink(
                         'pussy',
                         value || address
                       )}
                     >
                       <AvataImgIpfs cidAvatar={logo} />
-                      {value || address}
+                      {value || trimString(address, 6, 3)}
                     </Link>
                   </div>
                 );
