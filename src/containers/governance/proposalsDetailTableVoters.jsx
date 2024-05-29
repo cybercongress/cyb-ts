@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../components';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
 import { timeSince, trimString } from '../../utils/utils';
+import Tooltip from 'src/components/tooltip/tooltip';
 
 const LIMIT = 50;
 
@@ -56,7 +57,6 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [allPage, setAllPage] = useState(0);
-  const [hoveredTime, setHoveredRow] = useState(null);
 
   useEffect(() => {
     getFirstItem();
@@ -148,16 +148,18 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
               {optionText(item.option)}
             </Text>
           </Table.TextCell>
-          <Table.TextCell
-            textAlign="end"
-            onMouseEnter={() => setHoveredRow(item.voter)}
-            onMouseLeave={() => setHoveredRow(null)}
-          >
-            {hoveredTime === item.voter ? (
-              <TextTable>{new Date(item.timestamp).toLocaleString()}</TextTable>
-            ) : (
+
+          <Table.TextCell textAlign="end">
+            <Tooltip
+              placement="top"
+              tooltip={
+                <TextTable>
+                  {new Date(item.timestamp).toLocaleString()}
+                </TextTable>
+              }
+            >
               <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
-            )}
+            </Tooltip>
           </Table.TextCell>
         </Table.Row>
       </ContainerGradientText>
