@@ -79,7 +79,6 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   const contracts = [c1, c2];
 
   console.log('contracts', contracts);
-  
 
   const currentContract =
     nameOrAddress &&
@@ -122,11 +121,11 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
         const contracts = [
           {
             ...c1,
-            type: c1.metadata?.types,
+            type: c1.metadata?.name === 'graph' ? 'graph' : 'ml',
           },
           {
             ...c2,
-            type: c2.metadata?.types,
+            type: c2.metadata?.name === 'graph' ? 'graph' : 'ml',
           },
           // {
           //   ...c3,

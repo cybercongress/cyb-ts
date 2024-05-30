@@ -58,6 +58,7 @@ function ContractsTable() {
 
                 const { original } = info.row;
                 const logo = original.metadata?.logo;
+
                 const address = original.address;
 
                 const selected = selectedContract?.address === address;
@@ -72,7 +73,7 @@ function ContractsTable() {
                         value || address
                       )}
                     >
-                      <AvataImgIpfs cidAvatar={logo} />
+                      {logo && <AvataImgIpfs cidAvatar={logo} />}
                       {value || trimString(address, 6, 3)}
                     </Link>
                   </div>
