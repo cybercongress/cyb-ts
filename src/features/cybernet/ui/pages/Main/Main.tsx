@@ -56,6 +56,8 @@ function Main() {
 
   const contractNameOrAddress = name || contractAddress;
 
+  const { staker_apr, validator_apr } = selectedContract?.economy || {};
+
   return (
     <MainContainer resetMaxWidth>
       <Stars />
@@ -73,15 +75,18 @@ function Main() {
                 title={
                   <div className={styles.actionTitle}>
                     <h3>stake</h3>
-                    <div className={styles.apr}>
-                      yield up to <br />
-                      <span>
-                        {Number(selectedContract?.economy?.staker_apr).toFixed(
-                          2
-                        )}
-                        %
-                      </span>
-                    </div>
+
+                    {staker_apr && (
+                      <div className={styles.apr}>
+                        yield up to <br />
+                        <span>
+                          {Number(
+                            selectedContract?.economy?.staker_apr
+                          ).toFixed(2)}
+                          %
+                        </span>
+                      </div>
+                    )}
                   </div>
                 }
               />
@@ -125,15 +130,17 @@ function Main() {
                 title={
                   <div className={styles.actionTitle}>
                     <h3>mine</h3>
-                    <div className={styles.apr}>
-                      yield up to
-                      <span>
-                        {Number(
-                          selectedContract?.economy?.validator_apr
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    </div>
+                    {validator_apr && (
+                      <div className={styles.apr}>
+                        yield up to
+                        <span>
+                          {Number(
+                            selectedContract?.economy?.validator_apr
+                          ).toFixed(2)}
+                          %
+                        </span>
+                      </div>
+                    )}
                   </div>
                 }
               />
