@@ -190,9 +190,15 @@ class QueueManager {
     }).pipe(
       timeout({
         each: settings.timeout,
-        with: () =>
+        with: (timeoutInfo) =>
           throwError(() => {
+            console.log(
+              '----timeout triggered',
+              timeoutInfo.lastValue?.cid,
+              timeoutInfo.lastValue?.source
+            );
             controller?.abort('timeout');
+
             return new QueueItemTimeoutError(settings.timeout);
           }),
       }),

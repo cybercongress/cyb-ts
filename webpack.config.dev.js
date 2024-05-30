@@ -19,9 +19,9 @@ module.exports = merge(commonConfig, {
     historyApiFallback: true,
   },
   plugins: [
-    new ReactRefreshWebpackPlugin({
-      overlay: false,
-    }),
+    // new ReactRefreshWebpackPlugin({
+    //   overlay: false,
+    // }),
     new webpack.DefinePlugin({
       ...commonConfig.plugins.find(
         (plugin) => plugin.constructor.name === 'DefinePlugin'

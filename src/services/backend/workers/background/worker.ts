@@ -303,6 +303,34 @@ const createBackgroundWorkerApi = () => {
     restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
+
+    testCase: () => {
+      console.log('>>> test case fired');
+      (async () => {
+        const controller = new AbortController();
+        setTimeout(() => {
+          controller.abort();
+          console.log('>>> abort triggered');
+        }, 1000); // Abort after 1 second
+
+        try {
+          const response = await fetch(
+            'https://gateway.ipfs.cybernode.ai/ipfs/QmPRHHTeWzgBoRvbYMg4Q3ZVviu3VDP5rTPLgXotYpiuba',
+            {
+              method: 'GET',
+              signal: controller.signal,
+            }
+          );
+          // Handle the response
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            console.log('>>> Fetch aborted');
+          } else {
+            console.error('>>> Fetch error:', error);
+          }
+        }
+      })();
+    },
   };
 };
 

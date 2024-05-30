@@ -5,7 +5,7 @@ type WorkerType = SharedWorker | Worker;
 
 const isSharedWorkersSupported = typeof SharedWorker !== 'undefined';
 
-const isSharedWorkerUsed = isSharedWorkersSupported && !process.env.IS_DEV;
+const isSharedWorkerUsed = isSharedWorkersSupported; //&& !process.env.IS_DEV;
 
 // apply serializers for custom types
 function installTransferHandlers() {

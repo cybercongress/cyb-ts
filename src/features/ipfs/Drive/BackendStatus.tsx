@@ -70,9 +70,15 @@ function BackendStatus() {
     (store) => store.backend
   );
 
+  const { testCase } = useBackend();
+
   const downloadLogsOnClick = () => {
     const logs = cyblog.getLogs();
     downloadJson(logs, `cyblog_${new Date().toISOString()}.json`);
+  };
+
+  const testOnClick = async () => {
+    await testCase();
   };
 
   return (
@@ -116,6 +122,9 @@ function BackendStatus() {
         <div className={styles.buttonPanel}>
           <Button small onClick={downloadLogsOnClick}>
             🐞 download logs
+          </Button>
+          <Button small onClick={testOnClick}>
+            test abort signal
           </Button>
         </div>
       </div>
