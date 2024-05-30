@@ -78,6 +78,9 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
 
   const contracts = [c1, c2];
 
+  console.log('contracts', contracts);
+  
+
   const currentContract =
     nameOrAddress &&
     contracts.find(
