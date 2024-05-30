@@ -7,6 +7,7 @@ import { useAdviser } from 'src/features/adviser/context';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import dateFormat from 'dateformat';
+import { useQuery } from '@tanstack/react-query';
 
 import { getProposals } from '../../utils/governance';
 import Columns from './components/columns';
@@ -98,10 +99,9 @@ const mapProposalToCard = (proposal: any) => {
 
 function Governance() {
   const queryClient = useQueryClient();
-  const [tableData, setTableData] = useState([]);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingStatistics, setIsLoadingStatistics] = useState(true);
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
@@ -115,7 +115,7 @@ function Governance() {
   useEffect(() => {
     const getStatistics = async () => {
       if (queryClient) {
-        setIsLoading(true);
+        setIsLoadingStatistics(true);
         let communityPool = 0;
         const totalCyb: Record<string, number> = {};
         let stakedBoot = 0;
@@ -137,21 +137,19 @@ function Governance() {
           stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[BASE_DENOM];
         }
         setStaked(stakedBoot);
+        setIsLoadingStatistics(false);
       }
     };
     getStatistics();
   }, [queryClient]);
 
-  useEffect(() => {
-    getProposals().then((response) => {
-      if (!response) {
-        setIsLoading(false);
-        return;
-      }
-      setTableData(response || []);
-      setIsLoading(false);
-    });
-  }, []);
+  const { data: tableData = [], isLoading: isLoadingProposals } = useQuery(
+    ['proposals'],
+    async () => {
+      const response = await getProposals();
+      return response || [];
+    }
+  );
 
   const active = (tableData || [])
     .reverse()
@@ -224,14 +222,19 @@ function Governance() {
         />
       </ProposalWrapper>
     ));
+  const isLoading = isLoadingStatistics || isLoadingProposals;
 
   return (
     <MainContainer width="100%">
-      {isLoading ? (
-        <Loader2 />
-      ) : (
-        <>
+      <>
+        {isLoadingStatistics ? (
+          <Loader2 />
+        ) : (
           <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+        )}
+        {isLoadingProposals ? (
+          <Loader2 />
+        ) : (
           <Pane
             display="grid"
             justifyItems="center"
@@ -242,8 +245,8 @@ function Governance() {
             <Columns title="Accepted">{accepted}</Columns>
             <Columns title="Rejected">{rejected}</Columns>
           </Pane>
-        </>
-      )}
+        )}
+      </>
     </MainContainer>
   );
 }
