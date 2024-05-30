@@ -43,6 +43,7 @@ import BackendProvider from './contexts/backend/backend';
 import { Helmet } from 'react-helmet';
 import AdviserProvider from './features/adviser/context';
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -111,8 +112,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       <BackendProvider>
                         <DeviceProvider>
                           <AdviserProvider>
-                            {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                            {children}
+                            <ErrorBoundary>{children}</ErrorBoundary>
                           </AdviserProvider>
                         </DeviceProvider>
                       </BackendProvider>
