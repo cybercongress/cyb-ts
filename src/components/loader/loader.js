@@ -211,17 +211,18 @@ const Bootloader = () => {
 function bootstrap() {
   if ('serviceWorker' in navigator) {
     console.log('Going to install service worker');
-    window.addEventListener('load', () => {
-      console.log('Starting to load service worker');
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then((registration) => {
-          console.log('service worker registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('service worker registration failed: ', registrationError);
-        });
-    });
+    // TODO: tmp disabled
+    // window.addEventListener('load', () => {
+    //   console.log('Starting to load service worker');
+    //   navigator.serviceWorker
+    //     .register('/service-worker.js')
+    //     .then((registration) => {
+    //       console.log('service worker registered: ', registration);
+    //     })
+    //     .catch((registrationError) => {
+    //       console.log('service worker registration failed: ', registrationError);
+    //     });
+    // });
   } else {
     console.log('No service worker is available');
   }
@@ -246,8 +247,9 @@ function bootstrap() {
 
       progressData.innerHTML = `Loading: <span>${Math.round(
         progress * 100
-      )}%</span>. <br/> Network speed: <span>${Math.round(e.networkSpeed * 100) / 100
-        } kbps</span>`;
+      )}%</span>. <br/> Network speed: <span>${
+        Math.round(e.networkSpeed * 100) / 100
+      } kbps</span>`;
 
       // console.log(e.loaded, e.loaded / e.totalSize); // @TODO
     })
