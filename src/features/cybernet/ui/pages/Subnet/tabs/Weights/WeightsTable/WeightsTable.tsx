@@ -10,6 +10,10 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import { useSubnet } from '../../../subnet.context';
 import { useMemo } from 'react';
+import {
+  useCurrentContract,
+  useCybernet,
+} from 'src/features/cybernet/ui/cybernet.context';
 
 type Props = {};
 
@@ -20,16 +24,14 @@ function WeightsTable({}: Props) {
 
   const { subnetQuery, grades, neuronsQuery } = useSubnet();
 
+  const { selectedContract, subnetsQuery } = useCybernet();
+
   const uid = subnetQuery.data?.netuid;
   const isRootSubnet = uid === 0;
 
   const neurons = neuronsQuery.data || [];
 
-  const subnetsQuery = useQueryCybernetContract<SubnetInfo[]>({
-    query: {
-      get_subnets_info: {},
-    },
-  });
+  const currentContract = useCurrentContract();
 
   if (!neurons.length) {
     return null;
@@ -43,7 +45,7 @@ function WeightsTable({}: Props) {
 
   const data = grades.all.data;
 
-  if (!columns) {
+  if (!columns?.length) {
     return null;
   }
 
@@ -66,7 +68,11 @@ function WeightsTable({}: Props) {
                     address={uid}
                     avatar
                     markCurrentAddress
-                    link={cybernetRoutes.delegator.getLink(uid)}
+                    link={cybernetRoutes.delegator.getLink(
+                      currentContract.network,
+                      currentContract.contractName,
+                      uid
+                    )}
                   />
                 );
               },
@@ -84,9 +90,22 @@ function WeightsTable({}: Props) {
                 id: `t${uid}`,
                 header: () => {
                   if (isRootSubnet) {
+                    const {
+                      metadata: { name: contractName },
+                    } = selectedContract;
+
+                    const name = subnetsQuery.data?.find(
+                      (subnet) => subnet.netuid === uid
+                    ).metadata?.name;
                     return (
-                      <Link to={cybernetRoutes.subnet.getLink(uid)}>
-                        SN&nbsp;{uid}
+                      <Link
+                        to={cybernetRoutes.subnet.getLink(
+                          'pussy',
+                          contractName,
+                          uid
+                        )}
+                      >
+                        {name}
                       </Link>
                     );
                   }
@@ -94,11 +113,7 @@ function WeightsTable({}: Props) {
                   const hotkey = neurons[uid].hotkey;
 
                   return (
-                    <div
-                      style={{
-                        position: 'relative',
-                      }}
-                    >
+                    <div className={styles.headerCell}>
                       {address === hotkey && (
                         <span
                           style={{
@@ -115,7 +130,11 @@ function WeightsTable({}: Props) {
                         avatar
                         // markCurrentAddress
                         onlyAvatar
-                        link={cybernetRoutes.delegator.getLink(hotkey)}
+                        link={cybernetRoutes.delegator.getLink(
+                          currentContract.network,
+                          currentContract.contractName,
+                          hotkey
+                        )}
                       />
                     </div>
                   );

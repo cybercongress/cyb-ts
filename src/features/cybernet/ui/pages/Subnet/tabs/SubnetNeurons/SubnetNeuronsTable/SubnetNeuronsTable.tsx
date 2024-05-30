@@ -11,6 +11,11 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
 import { useMemo } from 'react';
+import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
+import {
+  useCurrentContract,
+  useCybernet,
+} from 'src/features/cybernet/ui/cybernet.context';
 
 type Props = {};
 
@@ -73,6 +78,7 @@ function handleSave(
 function SubnetNeuronsTable({}: Props) {
   const {
     subnetQuery,
+    addressRegisteredInSubnet,
     neuronsQuery,
     grades: {
       all: { data: allGrades },
@@ -90,23 +96,27 @@ function SubnetNeuronsTable({}: Props) {
 
   const { block } = useAppData();
 
+  const { getText } = useCybernetTexts();
+
   const rootSubnet = netuid === 0;
 
   const vievedBlocks = getData(address);
+  const { selectedContract } = useCybernet();
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('uid', {
-        header: 'uid',
+        header: getText('uid'),
         cell: (info) => {
           const uid = info.getValue();
           return uid;
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: 'operator',
+        header: getText(rootSubnet ? 'rootValidator' : 'delegate'),
+        // size: 200,
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
@@ -116,7 +126,11 @@ function SubnetNeuronsTable({}: Props) {
               address={hotkey}
               avatar
               markCurrentAddress
-              link={cybernetRoutes.delegator.getLink(hotkey)}
+              link={cybernetRoutes.delegator.getLink(
+                'pussy',
+                selectedContract?.metadata?.name,
+                hotkey
+              )}
             />
           );
         },
@@ -185,32 +199,53 @@ function SubnetNeuronsTable({}: Props) {
 
             return avg;
           },
-        }),
-        columnHelper.accessor('uid', {
-          id: 'setGrade',
-          header: 'Set grade',
-          enableSorting: false,
-          cell: (info) => {
-            const uid = info.getValue();
-
-            return <GradeSetterInput key={uid} uid={uid} />;
-          },
         })
       );
+
+      if (addressRegisteredInSubnet) {
+        col.push(
+          // @ts-ignore
+          columnHelper.accessor('uid', {
+            id: 'setGrade',
+            header: 'Set grade',
+            enableSorting: false,
+            cell: (info) => {
+              const uid = info.getValue();
+
+              return <GradeSetterInput key={uid} uid={uid} />;
+            },
+          })
+        );
+      }
     }
 
     return col;
   }, [
     allGrades,
     // block,
+    selectedContract,
     // cur,
     metadata,
     netuid,
+    addressRegisteredInSubnet,
     rootSubnet,
     address,
   ]);
 
-  return <Table columns={columns} data={neurons} />;
+  return (
+    <Table
+      columns={columns}
+      data={neurons}
+      initialState={{
+        sorting: [
+          {
+            id: 'uid',
+            desc: false,
+          },
+        ],
+      }}
+    />
+  );
 }
 
 export default SubnetNeuronsTable;

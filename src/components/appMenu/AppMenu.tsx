@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useLocation, NavLink } from 'react-router-dom';
+import { useLocation, NavLink, matchPath } from 'react-router-dom';
 import styles from './AppMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
@@ -59,9 +59,13 @@ const renderSubItems = (
   onClickSubItem
 ) => {
   return subItems.map((itemSub) => {
+    const { matchPathname } = itemSub;
     return (
       <Items
-        selected={itemSub.to === location.pathname}
+        selected={
+          itemSub.to === location.pathname ||
+          (matchPathname && !!matchPath(matchPathname, location.pathname))
+        }
         key={itemSub.name}
         item={itemSub}
         onClick={() => onClickSubItem(itemSub.name)}

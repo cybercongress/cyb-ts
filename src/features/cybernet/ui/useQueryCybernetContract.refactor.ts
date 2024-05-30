@@ -2,24 +2,34 @@ import { useQueryClient } from 'src/contexts/queryClient';
 
 import { useQuery } from '@tanstack/react-query';
 import { CybernetContractQuery, queryCybernetContract } from '../api';
+import { useCybernet } from './cybernet.context';
 
 type Props = {
   query: CybernetContractQuery;
   skip?: boolean;
+  contractAddress?: string;
 };
 
 // TODO: copied from usePassportContract, reuse  core logic
 
-function useQueryCybernetContract<DataType>({ query, skip }: Props) {
+function useQueryCybernetContract<DataType>({
+  contractAddress,
+  query,
+  skip,
+}: Props) {
   const queryClient = useQueryClient();
 
+  const { selectedContract } = useCybernet();
+
+  const contractAddress2 = contractAddress || selectedContract?.address;
+
   const { refetch, data, error, isLoading } = useQuery<DataType>(
-    ['cybernetContract', query],
+    ['queryCybernetContract', contractAddress2, query],
     () => {
-      return queryCybernetContract(query, queryClient!);
+      return queryCybernetContract(contractAddress2, query, queryClient!);
     },
     {
-      enabled: !skip && !!queryClient,
+      enabled: !skip && !!queryClient && !!contractAddress2,
     }
   );
 

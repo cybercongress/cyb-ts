@@ -22,7 +22,7 @@ type Props = {
   onSuccess: () => void;
 };
 
-function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
+function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
 
   const currentAddress = useAppSelector(selectCurrentAddress);
@@ -31,8 +31,6 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   const balance = useGetBalance(queryClient, currentAddress);
   const availableBalance = balance?.liquid?.amount;
-
-  console.log(availableBalance);
 
   const [amount, setAmount] = useState(0);
 
@@ -104,9 +102,12 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
       break;
 
     case Steps.STAKE: {
+      const { mutate, isReady, isLoading } = executeStake;
+
       content = (
         <InputNumber
           value={amount}
+          disabled={isLoading}
           maxValue={availableBalance}
           onChange={(val) => setAmount(Number(val))}
         />
@@ -114,21 +115,23 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
 
       onClickBack = handleClickBack;
 
-      const { mutate, isReady, isLoading } = executeStake;
-
       button = {
         text: 'Stake',
         onClick: mutate,
-        disabled: !isReady || isLoading,
+        disabled: !isReady || amount === 0,
+        pending: isLoading,
       };
 
       break;
     }
 
     case Steps.UNSTAKE: {
+      const { mutate, isReady, isLoading } = executeUnstake;
+
       content = (
         <InputNumber
           value={amount}
+          disabled={isLoading}
           maxValue={stakedAmount}
           onChange={(val) => setAmount(Number(val))}
         />
@@ -136,12 +139,11 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
 
       onClickBack = handleClickBack;
 
-      const { mutate, isReady, isLoading } = executeUnstake;
-
       button = {
         text: 'Unstake',
         onClick: mutate,
-        disabled: !isReady || isLoading,
+        disabled: !isReady || amount === 0,
+        pending: isLoading,
       };
 
       break;
@@ -158,4 +160,4 @@ function DelegatorActionBar({ address, stakedAmount, onSuccess }: Props) {
   );
 }
 
-export default DelegatorActionBar;
+export default DelegateActionBar;

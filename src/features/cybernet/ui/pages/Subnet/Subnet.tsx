@@ -1,5 +1,5 @@
 import { Route, Routes, useParams } from 'react-router-dom';
-import { MainContainer, Tabs } from 'src/components';
+import { Cid, MainContainer, Tabs } from 'src/components';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './tabs/Weights/Weights';
 import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
@@ -10,6 +10,14 @@ import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
 import useDelegate from '../../hooks/useDelegate';
 import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
+import { useCybernet } from '../../cybernet.context';
+import useCybernetTexts from '../../useCybernetTexts';
+import Display from 'src/components/containerGradient/Display/Display';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import { trimString } from 'src/utils/utils';
+import SubnetHeader from './SubnetHeader/SubnetHeader';
+import Loader2 from 'src/components/ui/Loader2';
 
 function Subnet() {
   const { id, ...rest } = useParams();
@@ -17,9 +25,12 @@ function Subnet() {
 
   const address = useCurrentAddress();
 
-  const netuid = Number(id!);
+  const f = id === 'board' ? 0 : +id;
+  const netuid = Number(f);
 
-  const { subnetQuery, neuronsQuery } = useSubnet();
+  // const {selectedContract} = useCybernet();
+
+  const { subnetQuery, neuronsQuery, refetch: refetchSubnet } = useSubnet();
 
   const { data: addressSubnetRegistrationStatus, refetch } =
     useQueryCybernetContract<number | null>({
@@ -34,12 +45,14 @@ function Subnet() {
   useAdviserTexts({
     isLoading: subnetQuery.loading,
     error: subnetQuery.error || neuronsQuery.error,
-    defaultText: 'subnet',
+    // defaultText: 'subnet',
   });
 
   const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const rootSubnet = subnetQuery.data?.netuid === 0;
+
+  const { getText } = useCybernetTexts();
 
   const tabs = [
     {
@@ -49,12 +62,12 @@ function Subnet() {
     },
     {
       to: './',
-      key: 'operators',
-      text: 'operators',
+      key: 'delegates',
+      text: getText(rootSubnet ? 'rootValidator' : 'delegate', true),
     },
 
     {
-      to: './weights',
+      to: './grades',
       key: 'grades',
       text: 'grades',
       disabled: rootSubnet,
@@ -63,15 +76,17 @@ function Subnet() {
 
   if (rootSubnet) {
     tabs.push({
-      to: './subnets',
-      key: 'subnets',
-      text: 'subnets',
+      to: './faculties',
+      key: 'faculties',
+      text: getText('subnetwork', true),
     });
   }
 
   return (
     <MainContainer resetMaxWidth>
-      <Tabs options={tabs} selected={tab || 'operators'} />
+      <SubnetHeader />
+
+      <Tabs options={tabs} selected={tab || 'delegates'} />
 
       <Routes>
         <Route
@@ -92,7 +107,7 @@ function Subnet() {
 
         {subnetQuery.data?.subnetwork_n > 0 && (
           <Route
-            path="/weights"
+            path="/grades"
             element={
               <Weights
                 neurons={neuronsQuery.data || []}
@@ -105,14 +120,26 @@ function Subnet() {
           />
         )}
 
-        <Route path="/subnets" element={<SubnetSubnets />} />
+        <Route
+          path="/faculties"
+          element={
+            <SubnetSubnets
+              addressRegisteredInSubnet={addressRegisteredInSubnet}
+            />
+          }
+        />
       </Routes>
+
+      {subnetQuery.loading && <Loader2 />}
 
       <ActionBar
         netuid={netuid}
         burn={subnetQuery.data?.burn}
         addressSubnetRegistrationStatus={addressSubnetRegistrationStatus}
-        // refetch={refetch}
+        refetch={() => {
+          refetchSubnet();
+          refetch();
+        }}
       />
     </MainContainer>
   );

@@ -7,22 +7,27 @@ import {
   Select,
 } from 'src/components';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
 import { routes } from 'src/routes';
 import ContractsTable from './ContractsTable/ContractsTable';
+import useCybernetTexts from '../../useCybernetTexts';
+import { useCybernet } from '../../cybernet.context';
+import Banner from './Banner/Banner';
+import { Stars } from 'src/containers/portal/components';
 
 function Main() {
   const address = useCurrentAddress();
 
+  const { getText } = useCybernetTexts();
+
   useAdviserTexts({
-    defaultText: 'welcome to Cybertensor 🤖',
+    defaultText: 'welcome to Cyberver 🤖',
   });
 
   const { data } = useDelegate(address);
@@ -31,15 +36,32 @@ function Main() {
   const { data: currentStake } = useCurrentAccountStake();
   const haveStake = currentStake?.some(({ stake }) => stake > 0);
 
+  const { selectedContract, contracts } = useCybernet();
+
+  const { nameOrAddress } = useParams();
+
+  if (!nameOrAddress && contracts.length) {
+    return (
+      <Navigate
+        to={cybernetRoutes.verse.getLink('pussy', contracts[3].address)}
+      />
+    );
+  }
+
+  const {
+    metadata: { name } = {},
+    address: contractAddress,
+    network = 'pussy',
+  } = selectedContract || {};
+
+  const contractNameOrAddress = name || contractAddress;
+
   return (
     <MainContainer resetMaxWidth>
-      <Display>
-        cybernet is the place, where ones brings wealth to the project, and
-        others who value them. <br /> join the subnet and complete its
-        enquiries, or stake on those who joined to make them more valuable.
-      </Display>
+      <Stars />
+      <Banner />
 
-      <Display noPaddingX title={<DisplayTitle title="Cybernet" />}>
+      <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
         <ContractsTable />
       </Display>
 
@@ -52,80 +74,137 @@ function Main() {
                   <div className={styles.actionTitle}>
                     <h3>stake</h3>
                     <div className={styles.apr}>
-                      apr up to <br />
-                      <span>35%</span>
+                      yield up to <br />
+                      <span>
+                        {Number(selectedContract?.economy?.staker_apr).toFixed(
+                          2
+                        )}
+                        %
+                      </span>
                     </div>
                   </div>
                 }
               />
             }
           >
-            <p className={styles.actionText}>invest in operators subnets</p>
+            <p className={styles.actionText}>
+              learn by staking on {getText('delegate', true)}
+            </p>
             <div className={styles.links}>
-              <Link to={cybernetRoutes.delegators.getLink()}>operators</Link>
+              <Link
+                to={cybernetRoutes.delegators.getLink(
+                  'pussy',
+                  contractNameOrAddress
+                )}
+              >
+                {getText('delegate', true)}
+              </Link>
 
-              {haveStake && <Link to="./staking/my">stats</Link>}
+              <button disabled type="button" className={styles.delegatorsBtn}>
+                {getText('delegator', true)}
+              </button>
+
+              {haveStake && (
+                <Link
+                  to={cybernetRoutes.myLearner.getLink(
+                    'pussy',
+                    contractNameOrAddress
+                  )}
+                >
+                  my {getText('delegator')}
+                </Link>
+              )}
             </div>
           </Display>
         </div>
 
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  <h3>join subnets</h3>
-                  <div className={styles.apr}>
-                    apr up to
-                    <span>35%</span>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>mine</h3>
+                    <div className={styles.apr}>
+                      yield up to
+                      <span>
+                        {Number(
+                          selectedContract?.economy?.validator_apr
+                        ).toFixed(2)}
+                        %
+                      </span>
+                    </div>
                   </div>
-                </div>
-              }
-            />
-          }
-        >
-          <p className={styles.actionText}>complete tasks, manage grades</p>
+                }
+              />
+            }
+          >
+            <p className={styles.actionText}>teach by linking content</p>
 
-          <div className={styles.links}>
-            <Link to={cybernetRoutes.subnet.getLink(0)}>root subnet</Link>
-
-            <Link to={cybernetRoutes.subnets.getLink()}>all subnets</Link>
-
-            {currentAddressIsDelegator && (
-              <Link to={cybernetRoutes.delegator.getLink(address)}>
-                my operator
+            <div className={styles.links}>
+              <Link
+                to={cybernetRoutes.subnet.getLink(
+                  'pussy',
+                  contractNameOrAddress,
+                  0
+                )}
+              >
+                {getText('root')}
               </Link>
-            )}
-          </div>
-        </Display>
 
-        <Display
-          title={
-            <DisplayTitle
-              title={
-                <div className={styles.actionTitle}>
-                  <h3>Docs and code</h3>
-                </div>
-              }
-            />
-          }
-        >
-          <div className={styles.links}>
-            <LinkWindow to="https://github.com/cybercongress/cybertensor">
-              cli and python package
-            </LinkWindow>
+              <Link
+                to={cybernetRoutes.subnets.getLink(
+                  network,
+                  contractNameOrAddress
+                )}
+              >
+                {getText('subnetwork', true)}
+              </Link>
 
-            <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
-              subnet template
-            </LinkWindow>
+              {currentAddressIsDelegator && (
+                <Link
+                  to={cybernetRoutes.delegator.getLink(
+                    network,
+                    contractNameOrAddress,
+                    address
+                  )}
+                >
+                  my {getText('delegate')}
+                </Link>
+              )}
+            </div>
+          </Display>
+        </div>
 
-            <LinkWindow to="https://github.com/cybercongress/cybernet">
-              cosmwasm contract
-            </LinkWindow>
+        <div className={styles.bgWrapper}>
+          <Display
+            title={
+              <DisplayTitle
+                title={
+                  <div className={styles.actionTitle}>
+                    <h3>deploy</h3>
+                  </div>
+                }
+              />
+            }
+          >
+            <div className={styles.links}>
+              <LinkWindow to="https://github.com/cybercongress/cybertensor">
+                cli and python package
+              </LinkWindow>
 
-            <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
-          </div>
-        </Display>
+              <LinkWindow to="https://github.com/cybercongress/cybertensor-subnet-template">
+                subnet template
+              </LinkWindow>
+
+              <LinkWindow to="https://github.com/cybercongress/cybernet">
+                cosmwasm contract
+              </LinkWindow>
+
+              <LinkWindow to="https://docs.spacepussy.ai">docs</LinkWindow>
+            </div>
+          </Display>
+        </div>
       </div>
     </MainContainer>
   );

@@ -39,6 +39,7 @@ export function getAverageGrade(grades, uid: string) {
 const SubnetContext = React.createContext<{
   subnetQuery: ReturnType<typeof useCybernetContract<SubnetInfo>>;
   neuronsQuery: ReturnType<typeof useCybernetContract<SubnetNeuron[]>>;
+  addressRegisteredInSubnet: boolean;
   grades: {
     all: ReturnType<typeof useCybernetContract<Weights>>;
     my: {
@@ -75,13 +76,27 @@ export function useSubnet() {
 
 function SubnetProvider({ children }: { children: React.ReactNode }) {
   const { id } = useParams();
-  const netuid = Number(id!);
+
+  const f = id === 'board' ? 0 : +id;
+  const netuid = Number(f);
 
   const [newGrades, setNewGrades] = useState<{
     [uid: string]: number;
   }>({});
 
   const currentAddress = useCurrentAddress();
+
+  const { data: addressSubnetRegistrationStatus, refetch } =
+    useCybernetContract<number | null>({
+      query: {
+        get_uid_for_hotkey_on_subnet: {
+          netuid,
+          hotkey: currentAddress,
+        },
+      },
+    });
+
+  const addressRegisteredInSubnet = addressSubnetRegistrationStatus !== null;
 
   const subnetQuery = useCybernetContract<SubnetInfo>({
     query: {
@@ -164,7 +179,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
       },
     },
     onSuccess: () => {
-      debugger;
       setAdviser('Weights set', 'green');
       weightsQuery.refetch();
     },
@@ -172,6 +186,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => {
     return {
+      addressRegisteredInSubnet,
       subnetQuery,
       neuronsQuery,
       grades: {
@@ -187,15 +202,25 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
           data: newGrades,
           setGrade: setGrade,
           save: submit,
+          isLoading,
           isGradesUpdated: !isEqual(newGrades, gradesFromMe),
         },
       },
+      refetch: () => {
+        subnetQuery.refetch();
+        neuronsQuery.refetch();
+        weightsQuery.refetch();
+        refetch();
+      },
     };
   }, [
+    addressRegisteredInSubnet,
     subnetQuery,
+    refetch,
     neuronsQuery,
     weightsQuery,
     grades,
+    isLoading,
     gradesFromMe,
     newGrades,
     submit,

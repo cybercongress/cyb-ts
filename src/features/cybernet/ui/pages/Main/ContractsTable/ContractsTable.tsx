@@ -1,77 +1,182 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createColumnHelper } from '@tanstack/react-table';
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { LinkWindow } from 'src/components';
+import { Link, useNavigate } from 'react-router-dom';
+import { AmountDenom, Cid, DenomArr, LinkWindow } from 'src/components';
 import Table from 'src/components/Table/Table';
-import { CYBERNET_CONTRACT_ADDRESS } from 'src/features/cybernet/constants';
 import { routes } from 'src/routes';
 import { trimString } from 'src/utils/utils';
+import { ContractTypes, useCybernet } from '../../../cybernet.context';
+import ImgDenom from 'src/components/valueImg/imgDenom';
+import { ContractWithData } from 'src/features/cybernet/types';
+import { cybernetRoutes } from '../../../routes';
+import styles from './ContractsTable.module.scss';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import useParticleDetails from 'src/features/particle/useParticleDetails';
 
-const data = [
-  {
-    name: 'graph',
-    address: CYBERNET_CONTRACT_ADDRESS,
-    apr: 35,
-    docs: 'https://docs.spacepussy.ai',
-    network: 'pussy 🟣',
-  },
-  {
-    name: 'ml',
-    address: '-',
-    apr: 20,
-    docs: 'https://docs.spacepussy.ai',
-    network: 'pussy 🟣',
-  },
-];
+const columnHelper = createColumnHelper<ContractWithData>();
 
-const columnHelper = createColumnHelper<(typeof data)[0]>();
+function Test({
+  cid,
+  fallback: F,
+}: {
+  cid: string;
+  fallback: React.ReactNode;
+}) {
+  const d = useParticleDetails(cid);
+
+  return d.data?.content || F;
+}
 
 function ContractsTable() {
+  const { contracts, selectedContract } = useCybernet();
+
+  const navigate = useNavigate();
+
   return (
-    <Table
-      enableSorting={false}
-      columns={useMemo(
-        () => [
-          columnHelper.accessor('name', {
-            header: '',
-          }),
-          columnHelper.accessor('network', {
-            header: '',
-          }),
-          columnHelper.accessor('apr', {
-            header: '',
-            cell: (info) => <span>{info.getValue()}%</span>,
-          }),
-          columnHelper.accessor('docs', {
-            header: '',
-            cell: (info) => {
-              const value = info.getValue();
+    <div className={styles.wrapper}>
+      <Table
+        onSelect={(row) => {
+          if (!row) {
+            return;
+          }
 
-              return <LinkWindow to={value}>docs</LinkWindow>;
-            },
-          }),
-          columnHelper.accessor('address', {
-            header: '',
-            cell: (info) => {
-              const value = info.getValue();
+          const contract = contracts[row!];
+          const { address, metadata: { name } = {} } = contract;
 
-              if (value === '-') {
-                return '-';
-              }
+          navigate(cybernetRoutes.verse.getLink('pussy', name || address));
+        }}
+        enableSorting={false}
+        columns={useMemo(
+          () => [
+            columnHelper.accessor('metadata.name', {
+              header: '',
+              maxSize: 250,
+              size: 0,
+              cell: (info) => {
+                const value = info.getValue();
 
-              return (
-                <Link to={routes.contracts.byId.getLink(value)}>
-                  {trimString(value, 9, 3)}
-                </Link>
-              );
-            },
-          }),
-        ],
-        []
-      )}
-      data={data}
-    />
+                const { original } = info.row;
+                const logo = original.metadata?.logo;
+                const address = original.address;
+
+                const selected = selectedContract?.address === address;
+
+                return (
+                  <div className={styles.nameCell}>
+                    {selected && <span>✔</span>}
+
+                    <Link
+                      to={cybernetRoutes.subnets.getLink(
+                        'pussy',
+                        value || address
+                      )}
+                    >
+                      <AvataImgIpfs cidAvatar={logo} />
+                      {value || trimString(address, 6, 3)}
+                    </Link>
+                  </div>
+                );
+              },
+            }),
+
+            columnHelper.accessor('metadata.particle', {
+              header: '',
+              cell: (info) => {
+                const value = info.getValue();
+                const row = info.row.original;
+
+                if (!row.metadata) {
+                  return '-';
+                }
+
+                const type = row.metadata.types;
+
+                const diff = type === ContractTypes.Graph ? 'easy' : 'hard';
+
+                return (
+                  <div>
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: '#A0A0A0',
+                      }}
+                    >
+                      {diff}:
+                    </span>{' '}
+                    <Test cid={value} fallback={<Cid cid={value}>info</Cid>} />
+                  </div>
+                );
+              },
+            }),
+
+            columnHelper.accessor('economy.staker_apr', {
+              header: '',
+              cell: (info) => {
+                const value = info.getValue();
+
+                if (!value) {
+                  return '-';
+                }
+
+                return (
+                  <span>
+                    {Number(info.getValue()).toFixed(2)}
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: '#A0A0A0',
+                      }}
+                    >
+                      % teach yield
+                    </span>
+                  </span>
+                );
+              },
+            }),
+            columnHelper.accessor('metadata.description', {
+              header: '',
+              cell: (info) => {
+                const cid = info.getValue();
+
+                if (!cid) {
+                  return '-';
+                }
+
+                return <Cid cid={cid}>rules</Cid>;
+              },
+            }),
+            columnHelper.accessor('address', {
+              header: '',
+              id: 'network',
+              cell: (info) => {
+                const value = info.getValue();
+
+                return <DenomArr type="network" denomValue="space-pussy" />;
+              },
+            }),
+            columnHelper.accessor('address', {
+              header: '',
+              cell: (info) => {
+                const value = info.getValue();
+
+                if (value === '-') {
+                  return '-';
+                }
+
+                return (
+                  <Link to={routes.contracts.byId.getLink(value)}>
+                    {trimString(value, 9, 3)}
+                  </Link>
+                );
+              },
+            }),
+          ],
+          [selectedContract]
+        )}
+        data={contracts}
+      />
+    </div>
   );
 }
 

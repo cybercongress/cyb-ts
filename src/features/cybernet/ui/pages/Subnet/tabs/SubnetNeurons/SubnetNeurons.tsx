@@ -4,6 +4,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { ActionBar } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 
 type Props = {
   addressRegisteredInSubnet: boolean;
@@ -12,12 +13,12 @@ type Props = {
 function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   const { subnetQuery, neuronsQuery } = useSubnet();
 
-  console.log(addressRegisteredInSubnet, 'addressRegisteredInSubnet');
-
   const subnetNeurons = neuronsQuery.data;
   const { network_modality: subnetType, netuid } = subnetQuery.data || {};
 
   const rootSubnet = netuid === 0;
+
+  const { getText } = useCybernetTexts();
 
   // useAdviserTexts({
   //   defaultText: 'Subnet neurons',
@@ -25,12 +26,15 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   // });
 
   useAdviserTexts({
-    defaultText: 'Subnet operators',
+    defaultText: `${getText(rootSubnet ? 'root' : 'subnetwork')} ${getText(
+      rootSubnet ? 'rootValidator' : 'delegate',
+      true
+    )}`,
   });
 
   const {
     grades: {
-      newGrades: { save, data: newGrades, isGradesUpdated },
+      newGrades: { save, data: newGrades, isGradesUpdated, isLoading },
     },
   } = useSubnet();
 
@@ -43,7 +47,9 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
     // <MainContainer width="100%">
     <Display
       noPaddingX
-      title={<DisplayTitle title={<header>Operators</header>} />}
+      // title={
+      //   <DisplayTitle title={<header>{getText('validator', true)}</header>} />
+      // }
     >
       <SubnetNeuronsTable />
 
@@ -53,6 +59,7 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
             text: 'update grades',
             onClick: save,
             disabled: !isGradesUpdated,
+            pending: isLoading,
           }}
         />
       )}

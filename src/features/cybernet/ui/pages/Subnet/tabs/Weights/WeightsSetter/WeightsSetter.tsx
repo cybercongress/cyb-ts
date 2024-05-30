@@ -24,14 +24,10 @@ function getSSData() {
 function WeightsSetter({ callback, weights: w }: Props) {
   const { subnetQuery, neuronsQuery } = useSubnet();
 
-  console.log(w);
-
   const w2 = w?.reduce((acc, [uid, value], i) => {
     acc[uid] = value;
     return acc;
   }, {});
-
-  console.log(w2);
 
   const {
     max_weights_limit: maxWeightsLimit,
@@ -42,7 +38,6 @@ function WeightsSetter({ callback, weights: w }: Props) {
   const neurons = neuronsQuery.data || [];
 
   const ssData = getSSData()?.[netuid];
-  console.log(ssData);
 
   const [weights, setWeights] = useState(
     // ssData ||
@@ -50,8 +45,6 @@ function WeightsSetter({ callback, weights: w }: Props) {
       .fill(DEFAULT_WEIGHT)
       .map((_, i) => (w2?.[i] ? (w2[i] / maxWeightsLimit) * 10 : 0).toFixed())
   );
-
-  console.log(weights);
 
   useEffect(() => {
     return () => {
@@ -63,7 +56,6 @@ function WeightsSetter({ callback, weights: w }: Props) {
       );
     };
   }, [netuid, weights]);
-
 
   return (
     <div className={styles.wrapper}>

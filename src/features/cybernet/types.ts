@@ -1,3 +1,11 @@
+export interface Metadata {
+  name: string;
+  particle: string;
+  description: string;
+  logo: string;
+  types: string;
+  extra: string;
+}
 export type SubnetInfo = {
   blocks_since_last_step: number;
   burn: number;
@@ -11,6 +19,7 @@ export type SubnetInfo = {
   metadata: string;
   min_allowed_weights: number;
   netuid: number;
+  metadata: Metadata;
   network_modality: number;
   owner: string;
   rho: number;
@@ -27,6 +36,10 @@ export type Delegator = {
   validator_permits: number[];
   return_per_1000: number;
   total_daily_return: number;
+  return_per_giga: {
+    amount: number;
+    denom: string;
+  };
 };
 
 export type SubnetHyperParameters = {
@@ -105,3 +118,43 @@ export interface SubnetNeuron {
 
 // [neuron_uid, weight]
 export type Weights = Weight[];
+
+//genegated
+
+interface BlockRewards {
+  denom: string;
+  amount: string;
+}
+
+interface TotalStake {
+  denom: string;
+  amount: string;
+}
+
+interface TotalIssuance {
+  denom: string;
+  amount: string;
+}
+
+interface TotalRewards {
+  denom: string;
+  amount: string;
+}
+
+export interface Economy {
+  validator_apr: string;
+  staker_apr: string;
+  block_rewards: BlockRewards;
+  total_stake: TotalStake;
+  default_commission: string;
+  commission_change: boolean;
+  total_issuance: TotalIssuance;
+  total_rewards: TotalRewards;
+}
+
+export interface ContractWithData {
+  address: string;
+  metadata: Metadata;
+  economy: Economy;
+  isLoading: boolean;
+}

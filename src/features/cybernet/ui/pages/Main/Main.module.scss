@@ -9,13 +9,28 @@
 }
 
 .bgWrapper {
-  // background-image: url('./images/1.jpg');
-  // background-repeat: no-repeat;
-  // background-size: cover;
+  position: relative;
+  &:nth-of-type(1) {
+    background-image: url('./images/1.jpg');
+  }
+  &:nth-of-type(2) {
+    background-image: url('./images/3.jpg');
+  }
+  &:nth-of-type(3) {
+    background-image: url('./images/2.jpg');
+  }
+
+  > div {
+    height: 100%;
+  }
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 .actions {
   justify-content: space-between;
+  align-items: stretch;
   display: flex;
   gap: 0 15px;
 
@@ -57,4 +72,11 @@
   > div {
     flex: 1;
   }
+}
+
+.delegatorsBtn {
+  font-size: 16px;
+  margin: 0;
+  text-align: left;
+  cursor: not-allowed;
 }

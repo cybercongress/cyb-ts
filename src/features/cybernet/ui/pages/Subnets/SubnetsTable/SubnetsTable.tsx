@@ -14,6 +14,8 @@ import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
 import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
+import useCybernetTexts from '../../../useCybernetTexts';
+import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 
 type Props = {
   // remove
@@ -45,30 +47,46 @@ function SubnetsTable({ data }: Props) {
 
   const { grades, subnetQuery } = useSubnet();
 
+  const { getText } = useCybernetTexts();
+
   const rootSubnet = subnetQuery?.data?.netuid === 0;
 
   const { data: d2 } = useDelegate(address);
   const myCurrentSubnetsJoined = d2?.registrations;
 
+  const myAddressJoinedRootSubnet = myCurrentSubnetsJoined?.includes(0);
+
+  const { selectedContract } = useCybernet();
+
+  const { contractName, network } = useCurrentContract();
+
   const columns = useMemo(() => {
     const col = [
-      columnHelper.accessor('netuid', {
-        header: '№',
+      columnHelper.accessor('metadata', {
+        header: 'name',
+        id: 'subnetName',
         cell: (info) => {
-          const netuid = info.getValue();
+          const value = info.getValue();
+          const name = value.name;
+
+          const netuid = info.row.original.netuid;
 
           const isMySubnet = myCurrentSubnetsJoined?.includes(netuid);
 
+          const { metadata: { name: contractName } = {} } =
+            selectedContract || {};
           return (
-            <Link to={subnetRoutes.subnet.getLink(netuid)}>
-              {netuid} {isMySubnet && '✅'}
+            <Link
+              to={subnetRoutes.subnet.getLink('pussy', contractName, netuid)}
+            >
+              {name} {isMySubnet && '✅'}
             </Link>
           );
         },
       }),
 
       columnHelper.accessor('owner', {
-        header: 'owner',
+        header: getText('subnetOwner'),
         enableSorting: false,
         cell: (info) => {
           const value = info.getValue();
@@ -86,16 +104,31 @@ function SubnetsTable({ data }: Props) {
         },
       }),
 
-      columnHelper.accessor('metadata', {
-        header: 'metadata',
+      columnHelper.accessor('metadata.particle', {
+        header: 'teaser',
+        header: 'teaser',
         enableSorting: false,
         cell: (info) => {
-          const cid = info.getValue();
+          const value = info.getValue();
+
+          const cid = value;
 
           return (
-            <Cid cid={info.getValue()}>
-              {`${cid.substr(0, 6)}...${cid.substr(-6)}`}
-            </Cid>
+            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
+          );
+        },
+      }),
+
+      columnHelper.accessor('metadata.description', {
+        header: 'rules',
+        id: 'rules',
+        enableSorting: false,
+        cell: (info) => {
+          const value = info.getValue();
+          const cid = value;
+
+          return (
+            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
           );
         },
       }),
@@ -105,7 +138,7 @@ function SubnetsTable({ data }: Props) {
       col.push(
         // @ts-ignore
         columnHelper.accessor('max_allowed_validators', {
-          header: 'leaders',
+          header: getText('validator', true),
           sortingFn: (rowA, rowB) => {
             const a = rowA.original.subnetwork_n;
             const b = rowB.original.subnetwork_n;
@@ -121,7 +154,7 @@ function SubnetsTable({ data }: Props) {
           },
         }),
         columnHelper.accessor('max_allowed_uids', {
-          header: 'operators',
+          header: getText('miner', true),
           sortingFn: (rowA, rowB) => {
             const a = rowA.original.subnetwork_n;
             const b = rowB.original.subnetwork_n;
@@ -193,26 +226,38 @@ function SubnetsTable({ data }: Props) {
         })
       );
 
-      col.push(
-        // @ts-ignore
-        columnHelper.accessor('netuid', {
-          header: 'Set grade',
-          id: 'setGrade',
-          enableSorting: false,
-          cell: (info) => {
-            const uid = info.getValue();
-            return <GradeSetterInput uid={uid} />;
-          },
-        })
-      );
+      if (myAddressJoinedRootSubnet) {
+        col.push(
+          // @ts-ignore
+          columnHelper.accessor('netuid', {
+            header: 'Set grade',
+            id: 'setGrade',
+            enableSorting: false,
+            cell: (info) => {
+              const uid = info.getValue();
+              return <GradeSetterInput uid={uid} />;
+            },
+          })
+        );
+      }
     }
 
     return col;
-  }, [myCurrentSubnetsJoined, grades?.all?.data, rootSubnet]);
+  }, [
+    myCurrentSubnetsJoined,
+    myAddressJoinedRootSubnet,
+    grades?.all?.data,
+    rootSubnet,
+    selectedContract,
+    getText,
+  ]);
 
   return (
     <Table
-      onSelect={(row) => navigate(subnetRoutes.subnet.getLink(row))}
+      onSelect={(row) => {
+        const netuid = data[row].netuid;
+        navigate(subnetRoutes.subnet.getLink('pussy', contractName, netuid));
+      }}
       columns={columns}
       data={data}
       // if 1 - root subnet

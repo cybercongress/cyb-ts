@@ -7,7 +7,7 @@ import { useSubnet } from '../../subnet.context';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { isEqual } from 'lodash';
 
-function SubnetSubnets() {
+function SubnetSubnets({ addressRegisteredInSubnet }) {
   const { data, loading, error } = useQueryCybernetContract<SubnetInfo[]>({
     query: {
       get_subnets_info: {},
@@ -23,8 +23,11 @@ function SubnetSubnets() {
   } = useSubnet();
 
   return (
-    <Display noPaddingX title={<DisplayTitle title="Subnets" />}>
-      <SubnetsTable data={subnetsWithoutRoot || []} />
+    <Display noPaddingX>
+      <SubnetsTable
+        data={subnetsWithoutRoot || []}
+        addressRegisteredInSubnet={addressRegisteredInSubnet}
+      />
 
       <ActionBar
         button={{

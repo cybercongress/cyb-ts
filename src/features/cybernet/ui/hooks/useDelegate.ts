@@ -13,4 +13,14 @@ function useDelegate(address: string) {
   return query;
 }
 
+export function useDelegates() {
+  const query = useQueryCybernetContract<Delegator[]>({
+    query: {
+      get_delegates: {},
+    },
+  });
+
+  return query;
+}
+
 export default useDelegate;
