@@ -43,7 +43,7 @@ function Main() {
   if (!nameOrAddress && contracts.length) {
     return (
       <Navigate
-        to={cybernetRoutes.verse.getLink('pussy', contracts[3].address)}
+        to={cybernetRoutes.verse.getLink('pussy', contracts[0].address)}
       />
     );
   }
