@@ -14,8 +14,8 @@ export enum ContractTypes {
 }
 
 const contractsConfig = [
-  'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
-  'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
+  // 'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
+  // 'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
   'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
   'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
 ];
@@ -66,17 +66,17 @@ function useCybernetContractWithData(address: string) {
 
 function CybernetProvider({ children }: { children: React.ReactNode }) {
   const [selectedContractAddress, setSelectedContractAddress] = useState(
-    contractsConfig[2]
+    contractsConfig[0]
   );
 
   const { nameOrAddress } = useParams();
 
   const c1 = useCybernetContractWithData(contractsConfig[0]);
   const c2 = useCybernetContractWithData(contractsConfig[1]);
-  const c3 = useCybernetContractWithData(contractsConfig[2]);
-  const c4 = useCybernetContractWithData(contractsConfig[3]);
+  // const c3 = useCybernetContractWithData(contractsConfig[2]);
+  // const c4 = useCybernetContractWithData(contractsConfig[3]);
 
-  const contracts = [c1, c2, c3, c4];
+  const contracts = [c1, c2];
 
   const currentContract =
     nameOrAddress &&
@@ -125,14 +125,14 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
             ...c2,
             type: c2.metadata?.types,
           },
-          {
-            ...c3,
-            type: c3.metadata?.types,
-          },
-          {
-            ...c4,
-            type: c4.metadata?.types,
-          },
+          // {
+          //   ...c3,
+          //   type: c3.metadata?.types,
+          // },
+          // {
+          //   ...c4,
+          //   type: c4.metadata?.types,
+          // },
         ];
 
         return {
@@ -140,7 +140,7 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
           subnetsQuery,
           selectedContract: currentContract2,
         };
-      }, [c1, c2, subnetsQuery, c3, c4, currentContract2])}
+      }, [c1, c2, subnetsQuery, currentContract2])}
     >
       {children}
     </CybernetContext.Provider>
