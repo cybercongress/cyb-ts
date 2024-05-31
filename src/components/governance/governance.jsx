@@ -74,7 +74,10 @@ export const Votes = ({ finalVotes }) => {
           style={{ width: `${toFixedNumber(finalVotes.noWithVeto, 2)}%` }}
         >
           <Tooltip
-            tooltip={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
+            tooltip={`No With Veto: ${toFixedNumber(
+              finalVotes.noWithVeto,
+              2
+            )}%`}
             placement="top"
             contentStyle={{ flexGrow: 1 }}
           />
@@ -94,7 +97,7 @@ export const Votes = ({ finalVotes }) => {
           <Tooltip tooltip="No: 0%" placement="top" />
         </div>
         <div className={styles.voteSection} style={{ width: '0%' }}>
-          <Tooltip tooltip="NoWithVeto: 0%" placement="top" />
+          <Tooltip tooltip="No With Veto: 0%" placement="top" />
         </div>
       </div>
     );

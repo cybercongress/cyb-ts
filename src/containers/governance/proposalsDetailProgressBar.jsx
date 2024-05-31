@@ -93,7 +93,7 @@ function ProposalsDetailProgressBar({
               alt="pie"
             />
             <Text color="#c7c7c7">
-              NoWithVeto {toFixedNumber(veto_threshold * 100, 2)}%
+              No With Veto {toFixedNumber(veto_threshold * 100, 2)}%
             </Text>
           </Pane>
         </Pane>
@@ -125,7 +125,7 @@ function ProposalsDetailProgressBar({
               color="#fff"
               marginX={5}
               marginY={5}
-            >{`NoWithVeto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
+            >{`No With Veto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
           </Pane>
         </Pane>
       </ContainerGradientText>
