@@ -113,7 +113,7 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<OracleLanding />} />
+          <Route index element={<Cybernet />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />

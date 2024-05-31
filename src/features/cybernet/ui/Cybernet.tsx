@@ -44,7 +44,7 @@ function Cybernet() {
           <div>
             <CybernetProvider>
               <Helmet>
-                <title>cybernet | cyb</title>
+                <title>cyberver | cyb</title>
               </Helmet>
               <Outlet />
             </CybernetProvider>

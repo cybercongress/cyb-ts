@@ -57,7 +57,7 @@ const listConfig = {
       <>
         {/*behold the new{' '}*/}
         {/*<Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>*/}
-        <Link to={'/cybernet'}>cybertensor</Link>
+        <Link to={'/cyberver'}>cyberver</Link>
       </>
     ),
     description: (
