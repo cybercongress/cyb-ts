@@ -108,7 +108,8 @@ function Governance() {
   useEffect(() => {
     setAdviser(
       <>
-        the place where community will hear you. <br /> propose your idea here
+        the place where community will hear you
+        <br /> propose your idea here
       </>
     );
   }, [setAdviser]);
@@ -223,16 +224,12 @@ function Governance() {
         />
       </ProposalWrapper>
     ));
-  const isLoading = isLoadingStatistics || isLoadingProposals;
 
   return (
     <MainContainer width="100%">
       <>
-        {isLoadingStatistics ? (
-          <Loader2 />
-        ) : (
-          <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
-        )}
+        <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+
         {isLoadingProposals ? (
           <Loader2 />
         ) : (

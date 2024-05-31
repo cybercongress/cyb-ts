@@ -1,13 +1,20 @@
 import { Tabs } from 'src/components';
 import { useLocation } from 'react-router-dom';
-import { TypePages } from './type';
 
-function TabListGoverance() {
+enum TypePages {
+  voters = 'voters',
+  comments = 'comments',
+  meta = 'meta',
+}
+
+function TabListGovernance() {
   const location = useLocation();
   const locationSplit = location.pathname.replace(/^\/|\/$/g, '').split('/');
-  let active = Object.values(TypePages).find(
+
+  const active = Object.values(TypePages).find(
     (item) => item === locationSplit[2]
   );
+
   if (!active) {
     return null;
   }
@@ -19,4 +26,4 @@ function TabListGoverance() {
   );
 }
 
-export default TabListGoverance;
+export default TabListGovernance;

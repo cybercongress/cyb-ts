@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import TabListGoverance from './tabList';
+import TabListGovernance from './tabList';
 
 function Layout() {
   return (
     <div>
-      <TabListGoverance />
+      <TabListGovernance />
       <Outlet />
     </div>
   );
