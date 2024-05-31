@@ -33,7 +33,7 @@ export function Telegram() {
             src={telegram}
           />
 
-          <span>t/eng</span>
+          <span>t/uncensored</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/CyberGlobalHub">
@@ -43,7 +43,7 @@ export function Telegram() {
             src={telegram}
           />
 
-          <span>t/ru</span>
+          <span>t/community</span>
         </LinkWindow>
 
         <LinkWindow to="https://t.me/bostrom_news">
@@ -89,7 +89,7 @@ export function Telegram() {
             }
           }
         >
-          <LinkWindow to="https://t.me/cyber/47885">
+          <LinkWindow to="https://t.me/cyber">
             <div
               style={{
                 display: 'flex',
@@ -102,7 +102,7 @@ export function Telegram() {
               <img alt="share" style={{ width: 20, height: 20 }} src={share} />
             </div>
           </LinkWindow>
-          <LinkWindow to="https://t.me/cyber/47896">
+          <LinkWindow to="https://t.me/cyber">
             <div
               style={{
                 display: 'flex',
