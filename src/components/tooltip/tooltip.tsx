@@ -12,7 +12,7 @@ export type TooltipProps = {
   tooltip: React.ReactNode;
   hideBorder?: boolean;
   placement?: Popper.Config['placement'];
-  flexGrow?: boolean;
+  contentStyle?: React.CSSProperties;
 
   /**
    * @deprecated not use
@@ -25,7 +25,7 @@ function Tooltip({
   trigger = 'hover',
   tooltip,
   hideBorder = true,
-  flexGrow = false, //refactor
+  contentStyle = {},
   strategy = 'absolute',
   placement = 'top',
 }: TooltipProps) {
@@ -53,7 +53,7 @@ function Tooltip({
 
   return (
     <>
-      <div ref={setTriggerRef} style={flexGrow ? { flexGrow: 1 } : undefined}>
+      <div ref={setTriggerRef} style={contentStyle}>
         {children}
       </div>
 
@@ -75,4 +75,5 @@ function Tooltip({
     </>
   );
 }
+
 export default Tooltip;
