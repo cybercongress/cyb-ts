@@ -10,7 +10,6 @@ import { Key } from '@keplr-wallet/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { BECH32_PREFIX, BECH32_PREFIX_VAL_CONS } from 'src/constants/config';
 import { LEDGER } from './config';
-import tokenList from './tokenList';
 
 import cyberSpace from '../image/large-purple-circle.png';
 import customNetwork from '../image/large-orange-circle.png';
@@ -376,18 +375,6 @@ function isNative(denom) {
   return true;
 }
 
-const findDenomInTokenList = (baseDenom) => {
-  let demonInfo;
-
-  const findObj = tokenList.find((item) => item.coinMinimalDenom === baseDenom);
-
-  if (findObj) {
-    demonInfo = { ...findObj };
-  }
-
-  return demonInfo;
-};
-
 const findPoolDenomInArr = (
   baseDenom: string,
   dataPools: Pool[]
@@ -449,7 +436,6 @@ export {
   getDisplayAmountReverce,
   convertAmount,
   convertAmountReverce,
-  findDenomInTokenList,
   isNative,
   findPoolDenomInArr,
   getNowUtcTime,

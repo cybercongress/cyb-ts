@@ -1,22 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/services/ipfs/types';
+import { useParams } from 'react-router-dom';
+import Display from 'src/components/containerGradient/Display/Display';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
-import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
-import Display from 'src/components/containerGradient/Display/Display';
+import { useDevice } from 'src/contexts/device';
+import { IpfsContentType } from 'src/services/ipfs/types';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
+import useIsOnline from 'src/hooks/useIsOnline';
 import { encodeSlash } from '../../utils/utils';
 import ActionBarContainer from './ActionBarContainer';
-import FirstItems from './_FirstItems.refactor';
-import useSearchData from './hooks/useSearchData';
-import { LinksTypeFilter, SortBy } from './types';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
+import FirstItems from './_FirstItems.refactor';
 import { initialContentTypeFilterState } from './constants';
+import useSearchData from './hooks/useSearchData';
+import { LinksTypeFilter, SortBy } from './types';
 
 const sortByLSKey = 'search-sort';
 
@@ -33,6 +34,7 @@ function SearchResults({
 }: Props) {
   const { query: q, cid } = useParams();
   const query = propQuery || q || cid || '';
+  const isOnline = useIsOnline();
 
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
@@ -50,12 +52,15 @@ function SearchResults({
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
-  const noResultsText = noCommentText || (
-    <>
-      there are no answers or questions to this particle <br /> be the first and
-      create one'
-    </>
-  );
+
+  const noResultsText = isOnline
+    ? noCommentText || (
+        <>
+          there are no answers or questions to this particle <br /> be the first
+          and create one
+        </>
+      )
+    : "ther's nothing to show, wait until you're online";
 
   const {
     data: items,

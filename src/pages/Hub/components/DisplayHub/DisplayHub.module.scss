@@ -1,0 +1,9 @@
+@import '../../../../style/mixins.scss';
+
+.link {
+  span {
+    width: 20px;
+    height: 20px;
+    @include withShareIcon;
+  }
+}

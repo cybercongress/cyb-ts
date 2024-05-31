@@ -62,7 +62,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
 
   const exception =
-    (location.pathname !== routes.keys.path &&
+    (!location.pathname.includes('/keys') &&
       !location.pathname.includes('/drive') &&
       // !location.pathname.includes('/oracle') &&
       location.pathname !== '/') ||

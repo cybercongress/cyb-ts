@@ -6,14 +6,9 @@ import {
   TracesDenomFuncResponse,
   TracesDenomFuncType,
 } from 'src/types/ibc';
-import {
-  findDenomInTokenList,
-  findPoolDenomInArr,
-  isNative,
-} from 'src/utils/utils';
-import coinDecimalsConfig from 'src/utils/configToken';
+import { findPoolDenomInArr, isNative } from 'src/utils/utils';
 import useAllDenomTraces from 'src/hooks/useAllDenomTraces';
-// import { useTokens } from 'src/hooks/useHub';
+import { useHub } from './hub';
 
 type IbcDenomContextContextType = {
   ibcDenoms: Option<IbcDenomsArr>;
@@ -35,7 +30,7 @@ export function useIbcDenom() {
 function IbcDenomProvider({ children }: { children: React.ReactNode }) {
   const poolsData = usePoolListInterval();
   const allDenomTraces = useAllDenomTraces();
-  // const { tokens } = useTokens();
+  const { tokens } = useHub();
 
   const tracesDenom = useCallback<TracesDenomFuncType>(
     (denomTraces: string): TracesDenomFuncResponse[] => {
@@ -47,6 +42,7 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         native: true,
       };
 
+      // pool token is array [denom1, denom2]
       if (denomTraces.includes('pool') && poolsData) {
         const findPool = findPoolDenomInArr(denomTraces, poolsData);
         if (findPool) {
@@ -57,15 +53,22 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      if (!denomTraces.includes('pool') && coinDecimalsConfig[denomTraces]) {
-        const { denom, coinDecimals } = coinDecimalsConfig[denomTraces];
-        infoDenomTemp.denom = denom;
-        infoDenomTemp.coinDecimals = coinDecimals || 0;
-      } else {
-        infoDenomTemp.denom = denomTraces.toUpperCase();
-      }
+      // check hub contracts
+      if (tokens && tokens[denomTraces]) {
+        const {
+          decimals,
+          ticker,
+          logo,
+          channel_id: channelId,
+          contract,
+        } = tokens[denomTraces];
 
-      if (
+        infoDenomTemp.denom = ticker;
+        infoDenomTemp.coinDecimals = parseFloat(decimals);
+        infoDenomTemp.coinImageCid = contract.includes('ibc') ? logo : '';
+        infoDenomTemp.path = channelId;
+      } else if (
+        // response lcd all denom traces
         !isNative(denomTraces) &&
         allDenomTraces &&
         allDenomTraces[denomTraces]
@@ -73,25 +76,16 @@ function IbcDenomProvider({ children }: { children: React.ReactNode }) {
         const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
           allDenomTraces[denomTraces];
         infoDenomTemp.native = false;
-
-        const denomInfoFromList = findDenomInTokenList(baseDenom);
-        if (denomInfoFromList) {
-          const { denom, coinDecimals, coinImageCid, counterpartyChainId } =
-            denomInfoFromList;
-          infoDenomTemp.denom = denom;
-          infoDenomTemp.coinDecimals = coinDecimals;
-          infoDenomTemp.coinImageCid = coinImageCid || '';
-          infoDenomTemp.path = `${counterpartyChainId}/${sourceChannelIFromPath}`;
-        } else {
-          infoDenomTemp.denom = baseDenom;
-          infoDenomTemp.path = sourceChannelIFromPath;
-        }
+        infoDenomTemp.denom = baseDenom;
+        infoDenomTemp.path = sourceChannelIFromPath;
+      } else {
+        infoDenomTemp.denom = denomTraces.toUpperCase();
       }
 
       return [{ ...infoDenomTemp }];
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allDenomTraces, poolsData]
+
+    [allDenomTraces, poolsData, tokens]
   );
 
   const value = useMemo(
