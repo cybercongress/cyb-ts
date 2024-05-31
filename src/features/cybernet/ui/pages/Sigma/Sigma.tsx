@@ -14,10 +14,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // reuse
 const contractsConfig = [
-  // 'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
-  // 'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
   'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
   'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
+];
+
+const legacy = [
+  'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
+  'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
 ];
 
 function Item({ contractAddress, callback }) {
@@ -111,6 +114,16 @@ function Sigma() {
       />
 
       {contractsConfig.map((contractAddress) => (
+        <Item
+          key={contractAddress}
+          contractAddress={contractAddress}
+          callback={handleTotal}
+        />
+      ))}
+
+      <h3>legacy verses</h3>
+
+      {legacy.map((contractAddress) => (
         <Item
           key={contractAddress}
           contractAddress={contractAddress}
