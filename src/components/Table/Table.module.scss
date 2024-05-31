@@ -18,6 +18,11 @@
 
       &.sortable {
         cursor: pointer;
+        white-space: nowrap;
+
+        > span {
+          margin-left: 3px;
+        }
       }
     }
   }

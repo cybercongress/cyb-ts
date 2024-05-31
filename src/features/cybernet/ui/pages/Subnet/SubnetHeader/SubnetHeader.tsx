@@ -63,7 +63,7 @@ function SubnetHeader() {
         <div className={styles.logo}>
           <AvataImgIpfs cidAvatar={logo} />
         </div>
-        <Cid cid={description}>{trimString(description, 6, 6)}</Cid>
+        <Cid cid={description}>description</Cid>
         <Item
           title="teaching power"
           content={

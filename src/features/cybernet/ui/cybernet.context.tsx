@@ -1,24 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { Networks } from 'src/types/networks';
+
 import useQueryCybernetContract from './useQueryCybernetContract.refactor';
-import { ContractWithData, Economy, SubnetInfo } from '../types';
-import { Metadata } from 'cosmjs-types/cosmos/bank/v1beta1/bank';
-import { useLocation, useParams } from 'react-router-dom';
+import {
+  ContractTypes,
+  ContractWithData,
+  Economy,
+  Metadata,
+  SubnetInfo,
+} from '../types';
+import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { isPussyAddress } from 'src/utils/address';
-
-type ContractType = 'graph' | 'ml';
-
-export enum ContractTypes {
-  Graph = 'graph',
-  ML = 'ml',
-}
+import { cybernetRoutes } from './routes';
 
 const contractsConfig = [
-  // 'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
-  // 'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
   'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
   'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
 ];
+
+// const legacy = [
+//   'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
+//   'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
+// ];
 
 const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
@@ -42,6 +44,12 @@ export function useCybernet() {
 }
 
 function useCybernetContractWithData(address: string) {
+  const location = useLocation();
+
+  const isMainPage = !!matchPath(cybernetRoutes.verse.path, location.pathname);
+
+  console.log('isMainPage', isMainPage);
+
   const metadataQuery = useQueryCybernetContract<Metadata>({
     contractAddress: address,
     query: {
@@ -54,10 +62,19 @@ function useCybernetContractWithData(address: string) {
     query: {
       get_economy: {},
     },
+
+    refetchInterval: isMainPage ? 20 * 1000 : undefined,
   });
 
+  const { name, types } = metadataQuery.data || {};
+  const type =
+    name?.includes(ContractTypes.Graph) || types?.includes(ContractTypes.Graph)
+      ? ContractTypes.Graph
+      : ContractTypes.ML;
+
   return {
-    address: address,
+    address,
+    type,
     metadata: metadataQuery.data,
     economy: economyQuery.data,
     isLoading: metadataQuery.loading || economyQuery.loading,
@@ -73,10 +90,8 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
 
   const c1 = useCybernetContractWithData(contractsConfig[0]);
   const c2 = useCybernetContractWithData(contractsConfig[1]);
-  // const c3 = useCybernetContractWithData(contractsConfig[2]);
-  // const c4 = useCybernetContractWithData(contractsConfig[3]);
 
-  const contracts = [c1, c2];
+  const contracts = useMemo(() => [c1, c2], [c1, c2]);
 
   console.log('contracts', contracts);
 
@@ -118,31 +133,12 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   return (
     <CybernetContext.Provider
       value={useMemo(() => {
-        const contracts = [
-          {
-            ...c1,
-            type: c1.metadata?.name === 'graph' ? 'graph' : 'ml',
-          },
-          {
-            ...c2,
-            type: c2.metadata?.name === 'graph' ? 'graph' : 'ml',
-          },
-          // {
-          //   ...c3,
-          //   type: c3.metadata?.types,
-          // },
-          // {
-          //   ...c4,
-          //   type: c4.metadata?.types,
-          // },
-        ];
-
         return {
           contracts,
           subnetsQuery,
           selectedContract: currentContract2,
         };
-      }, [c1, c2, subnetsQuery, currentContract2])}
+      }, [contracts, subnetsQuery, currentContract2])}
     >
       {children}
     </CybernetContext.Provider>

@@ -118,7 +118,6 @@ const itemsMenu = () => {
         {
           name: '𝚺 sigma',
           to: '/cyberver/sigma',
-          // matchPathname: cybernetRoutes.myLearner.path,
         },
       ],
     },

@@ -11,6 +11,7 @@ import Loader2 from 'src/components/ui/Loader2';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { routes } from 'src/routes';
 
 // reuse
 const contractsConfig = [
@@ -38,15 +39,24 @@ function Item({ contractAddress, callback }) {
     callback(total, contractAddress);
   }, [total, callback, contractAddress]);
 
+  const isLegacy = legacy.includes(contractAddress);
+
   return (
     <Display
       title={
         <DisplayTitle
           title={
             <div className={styles.header}>
-              <Link to={cybernetRoutes.verse.getLink('pussy', contractAddress)}>
+              <Link
+                to={
+                  !isLegacy
+                    ? cybernetRoutes.verse.getLink('pussy', contractAddress)
+                    : routes.contracts.byId.getLink(contractAddress)
+                }
+              >
                 {trimString(contractAddress, 6, 6)}
               </Link>
+
               <AmountDenom amountValue={total} denom="pussy" />
             </div>
           }

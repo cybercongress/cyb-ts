@@ -141,6 +141,13 @@ interface TotalRewards {
   amount: string;
 }
 
+export type ContractType = 'graph' | 'ml';
+
+export enum ContractTypes {
+  Graph = 'graph',
+  ML = 'ml',
+}
+
 export interface Economy {
   validator_apr: string;
   staker_apr: string;
@@ -154,6 +161,7 @@ export interface Economy {
 
 export interface ContractWithData {
   address: string;
+  type: ContractType;
   metadata: Metadata;
   economy: Economy;
   isLoading: boolean;

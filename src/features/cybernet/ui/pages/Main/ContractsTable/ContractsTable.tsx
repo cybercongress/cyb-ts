@@ -2,13 +2,12 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AmountDenom, Cid, DenomArr, LinkWindow } from 'src/components';
+import { Cid, DenomArr } from 'src/components';
 import Table from 'src/components/Table/Table';
 import { routes } from 'src/routes';
 import { trimString } from 'src/utils/utils';
-import { ContractTypes, useCybernet } from '../../../cybernet.context';
-import ImgDenom from 'src/components/valueImg/imgDenom';
-import { ContractWithData } from 'src/features/cybernet/types';
+import { useCybernet } from '../../../cybernet.context';
+import { ContractTypes, ContractWithData } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../routes';
 import styles from './ContractsTable.module.scss';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
@@ -16,6 +15,7 @@ import useParticleDetails from 'src/features/particle/useParticleDetails';
 
 const columnHelper = createColumnHelper<ContractWithData>();
 
+// will be refactored
 function Test({
   cid,
   fallback: F,
@@ -59,7 +59,7 @@ function ContractsTable() {
                 const { original } = info.row;
                 const logo = original.metadata?.logo;
 
-                const address = original.address;
+                const { address } = original;
 
                 const selected = selectedContract?.address === address;
 
@@ -91,21 +91,19 @@ function ContractsTable() {
                   return '-';
                 }
 
-                const type = row.metadata.types;
-
-                const diff = type === ContractTypes.Graph ? 'easy' : 'hard';
+                const { type } = row;
+                const difficulty =
+                  type === ContractTypes.Graph ? 'easy' : 'hard';
 
                 return (
-                  <div>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        color: '#A0A0A0',
-                      }}
-                    >
-                      {diff}:
-                    </span>{' '}
-                    <Test cid={value} fallback={<Cid cid={value}>info</Cid>} />
+                  <div className={styles.descriptionCell}>
+                    <span className={styles.smallText}>{difficulty}:</span>{' '}
+                    <p>
+                      <Test
+                        cid={value}
+                        fallback={<Cid cid={value}>info</Cid>}
+                      />
+                    </p>
                   </div>
                 );
               },
@@ -123,14 +121,7 @@ function ContractsTable() {
                 return (
                   <span>
                     {Number(info.getValue()).toFixed(2)}
-                    <span
-                      style={{
-                        fontSize: 14,
-                        color: '#A0A0A0',
-                      }}
-                    >
-                      % teach yield
-                    </span>
+                    <span className={styles.smallText}>% teach yield</span>
                   </span>
                 );
               },

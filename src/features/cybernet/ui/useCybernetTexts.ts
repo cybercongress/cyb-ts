@@ -4,7 +4,7 @@ import { texts, Texts } from './cybernetTexts';
 function useCybernetTexts() {
   const { selectedContract } = useCybernet();
 
-  const type = selectedContract?.metadata?.name === 'graph' ? 'graph' : 'ml';
+  const type = selectedContract?.type;
 
   function getText(key: Texts, isPlural?: boolean) {
     const t = type === 'graph' ? 'graph' : 'default';
