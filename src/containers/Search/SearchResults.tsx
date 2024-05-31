@@ -20,17 +20,17 @@ import { initialContentTypeFilterState } from './constants';
 
 const sortByLSKey = 'search-sort';
 
-interface SearchResultsProps {
+type Props = {
   query?: string;
-  noCommentsError?: string;
+  noCommentText?: React.ReactNode;
   actionBarTextBtn?: string;
-}
+};
 
 function SearchResults({
   query: propQuery,
-  noCommentsError,
+  noCommentText,
   actionBarTextBtn,
-}: SearchResultsProps) {
+}: Props) {
   const { query: q, cid } = useParams();
   const query = propQuery || q || cid || '';
 
@@ -50,9 +50,12 @@ function SearchResults({
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
-  const errorMessage =
-    noCommentsError ||
-    'there are no answers or questions to this particle <br /> be the first and create one';
+  const noResultsText = noCommentText || (
+    <>
+      there are no answers or questions to this particle <br /> be the first and
+      create one'
+    </>
+  );
 
   const {
     data: items,
@@ -169,9 +172,7 @@ function SearchResults({
             <p>{error.message}</p>
           </Display>
         ) : (
-          <Display color="white">
-            <p dangerouslySetInnerHTML={{ __html: errorMessage }} />
-          </Display>
+          <Display color="white">{noResultsText}</Display>
         )}
       </div>
 
