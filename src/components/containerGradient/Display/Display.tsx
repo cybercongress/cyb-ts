@@ -13,7 +13,6 @@ type Props = {
   status?: ColorLamp;
 
   noPaddingX?: boolean;
-  noPaddingY?: boolean;
 
   sideSaber?: 'left' | 'right';
 
@@ -27,7 +26,6 @@ function Display({
   isVertical,
   title,
   noPaddingX,
-  noPaddingY,
   sideSaber,
   color = Colors.GREEN,
   status,
@@ -39,7 +37,6 @@ function Display({
       className={cx(styles.wrapper, styles[colorTemp], {
         [styles.vertical]: isVertical,
         [styles.noPaddingX]: noPaddingX,
-        [styles.noPaddingY]: noPaddingY,
         [sideSaber ? styles[sideSaber] : undefined]: sideSaber,
       })}
     >

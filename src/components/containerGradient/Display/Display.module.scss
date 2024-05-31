@@ -48,15 +48,10 @@
     padding-right: unset;
   }
 
-  &.noPaddingY {
-    padding-top: unset;
-    padding-bottom: unset;
-  }
-
   @include blueScroll;
 }
 
 .header {
   position: relative;
-  /* top: -$display-padding-top; */
+  top: -$display-padding-top;
 }
