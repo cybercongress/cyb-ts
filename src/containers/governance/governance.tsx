@@ -15,6 +15,7 @@ import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 import Loader2 from 'src/components/ui/Loader2';
+import styles from './components/styles.module.scss';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
@@ -235,16 +236,11 @@ function Governance() {
         {isLoadingProposals ? (
           <Loader2 />
         ) : (
-          <Pane
-            display="grid"
-            justifyItems="center"
-            gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-            gridGap="20px"
-          >
+          <div className={styles.column}>
             <Columns title="Active">{active}</Columns>
             <Columns title="Accepted">{accepted}</Columns>
             <Columns title="Rejected">{rejected}</Columns>
-          </Pane>
+          </div>
         )}
       </>
     </MainContainer>
