@@ -77,6 +77,6 @@ const IPFSContentTransferHandler: TransferHandler<
 
 export {
   IPFSContentTransferHandler,
-  serializeIPFSContent,
-  deserializeIPFSContent,
+  // serializeIPFSContent,
+  // deserializeIPFSContent,
 };
