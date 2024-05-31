@@ -175,7 +175,7 @@ const itemsMenu = () => {
     // },
   ];
 
-  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
+  if (CHAIN_ID === Networks.BOSTROM) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,
