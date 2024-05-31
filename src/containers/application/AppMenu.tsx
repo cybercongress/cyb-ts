@@ -74,7 +74,6 @@ const itemsMenu = () => {
         { name: 'Codes', to: '/libs' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
         { name: 'Txs', to: '/network/bostrom/tx' },
-
       ],
     },
     // { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
@@ -123,7 +122,6 @@ const itemsMenu = () => {
     //   ],
     // },
     // { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
-   
 
     { name: 'Governance', icon: senate, to: '/senate', subItems: [] },
     // { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
@@ -174,7 +172,7 @@ const itemsMenu = () => {
     // },
   ];
 
-  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
+  if (CHAIN_ID === Networks.BOSTROM) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,
