@@ -60,7 +60,16 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
+      <AppSideBar
+        openMenu={openMenu}
+        closeMenu={() => {
+          if (pathname.includes('/cyberver')) {
+            return;
+          }
+
+          closeMenu();
+        }}
+      >
         <AppMenu
           addressActive={addressActive}
           closeMenu={() => {
