@@ -25,3 +25,15 @@
     }
   }
 }
+
+.descriptionCell {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0 7px;
+}
+
+.smallText {
+  font-size: 14px;
+  color: #a0a0a0;
+}

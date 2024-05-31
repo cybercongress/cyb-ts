@@ -84,6 +84,7 @@ function SubnetNeuronsTable({}: Props) {
       all: { data: allGrades },
     },
   } = useSubnet();
+
   const {
     netuid,
     metadata,
@@ -164,7 +165,7 @@ function SubnetNeuronsTable({}: Props) {
                     handleSave(hotkey, netuid, +block, address);
                   }}
                   to={
-                    routes.oracle.ask.getLink(metadata) +
+                    routes.oracle.ask.getLink(metadata.particle) +
                     `?neuron=${hotkey}&subnet=${netuid}`
                   }
                 >

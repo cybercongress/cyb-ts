@@ -1,13 +1,16 @@
 import { useQueryClient } from 'src/contexts/queryClient';
 
-import { useQuery } from '@tanstack/react-query';
+import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { CybernetContractQuery, queryCybernetContract } from '../api';
 import { useCybernet } from './cybernet.context';
 
 type Props = {
   query: CybernetContractQuery;
-  skip?: boolean;
   contractAddress?: string;
+
+  // combine to 1 object prop
+  skip?: boolean;
+  refetchInterval?: UseQueryOptions['refetchInterval'];
 };
 
 // TODO: copied from usePassportContract, reuse  core logic
@@ -16,6 +19,7 @@ function useQueryCybernetContract<DataType>({
   contractAddress,
   query,
   skip,
+  refetchInterval,
 }: Props) {
   const queryClient = useQueryClient();
 
@@ -29,6 +33,8 @@ function useQueryCybernetContract<DataType>({
       return queryCybernetContract(contractAddress2, query, queryClient!);
     },
     {
+      // @ts-ignore
+      refetchInterval,
       enabled: !skip && !!queryClient && !!contractAddress2,
     }
   );

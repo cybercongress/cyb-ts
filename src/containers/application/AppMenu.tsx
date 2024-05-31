@@ -54,6 +54,10 @@ const itemsMenu = () => {
           to: '/cyberver/learners/my',
           matchPathname: cybernetRoutes.myLearner.path,
         },
+        {
+          name: '𝚺 sigma',
+          to: '/cyberver/sigma',
+        },
       ],
     },
     {
@@ -122,7 +126,6 @@ const itemsMenu = () => {
     //   ],
     // },
     // { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
-
     { name: 'Governance', icon: senate, to: '/senate', subItems: [] },
     // { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
