@@ -21,6 +21,7 @@ import CybernetProvider, {
 import Verses from './pages/Verses/Verses';
 import Verse from './pages/Verse/Verse';
 import { cybernetRoutes } from './routes';
+import Sigma from './pages/Sigma/Sigma';
 
 function Redirect() {
   const { contractName, network } = useCurrentContract();
@@ -66,6 +67,8 @@ function Cybernet() {
 
           <Route path="learners/my" element={<MyStake />} />
         </Route>
+
+        <Route path="/sigma" element={<Sigma />} />
 
         <Route path="/faculties/*" element={<Redirect />} />
         <Route path="/mentors" element={<Redirect />} />

@@ -7,19 +7,24 @@ type Props = {
   skip?: boolean;
 };
 
-function useCurrentAccountStake({ skip } = {}) {
-  const currentAddress = useAppSelector(selectCurrentAddress);
-
+export function useStake({ address, contractAddress, skip }) {
   const query = useCybernetContract<StakeInfo>({
     query: {
       get_stake_info_for_coldkey: {
-        coldkey: currentAddress,
+        coldkey: address,
       },
     },
-    skip: !currentAddress || skip,
+    contractAddress,
+    skip: !address || skip,
   });
 
   return query;
+}
+
+function useCurrentAccountStake({ skip } = {}) {
+  const currentAddress = useAppSelector(selectCurrentAddress);
+
+  return useStake({ address: currentAddress, skip });
 }
 
 export default useCurrentAccountStake;

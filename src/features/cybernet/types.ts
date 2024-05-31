@@ -158,3 +158,7 @@ export interface ContractWithData {
   economy: Economy;
   isLoading: boolean;
 }
+
+type StakeInfo2 = [string, number];
+
+export type StakeList = StakeInfo2[];
