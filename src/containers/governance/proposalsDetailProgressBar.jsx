@@ -23,7 +23,7 @@ function ProposalsDetailProgressBar({
   tallying,
   tally,
 }) {
-  const { quorum, threshold, veto } = tallying;
+  const { quorum, threshold, veto_threshold } = tallying;
   const { yes, abstain, no, noWithVeto, participation } = tally;
 
   return (
@@ -89,11 +89,11 @@ function ProposalsDetailProgressBar({
           <Pane display="flex" alignItems="center" marginRight={15}>
             <img
               style={{ width: 20, marginRight: 5 }}
-              src={noWithVeto > veto * 100 ? iconPieActive : iconPie}
+              src={noWithVeto > veto_threshold * 100 ? iconPieActive : iconPie}
               alt="pie"
             />
             <Text color="#c7c7c7">
-              NoWithVeto {toFixedNumber(veto * 100, 2)}%
+              No With Veto {toFixedNumber(veto_threshold * 100, 2)}%
             </Text>
           </Pane>
         </Pane>
@@ -125,7 +125,7 @@ function ProposalsDetailProgressBar({
               color="#fff"
               marginX={5}
               marginY={5}
-            >{`NoWithVeto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
+            >{`No With Veto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
           </Pane>
         </Pane>
       </ContainerGradientText>

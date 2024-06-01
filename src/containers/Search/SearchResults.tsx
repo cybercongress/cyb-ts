@@ -21,17 +21,24 @@ import { LinksTypeFilter, SortBy } from './types';
 
 const sortByLSKey = 'search-sort';
 
-function SearchResults() {
-  const { query: q, cid } = useParams();
-  const isOnline = useIsOnline();
-  const defaultMessage = isOnline
-    ? 'there are no answers or questions to this particle <br /> be the first and create one'
-    : "ther's nothing to show, wait until you're online";
+type Props = {
+  query?: string;
+  noCommentText?: React.ReactNode;
+  actionBarTextBtn?: string;
+};
 
-  const query = q || cid || '';
+function SearchResults({
+  query: propQuery,
+  noCommentText,
+  actionBarTextBtn,
+}: Props) {
+  const { query: q, cid } = useParams();
+  const query = propQuery || q || cid || '';
+  const isOnline = useIsOnline();
 
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
+
   const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
@@ -45,6 +52,15 @@ function SearchResults() {
     localStorage.getItem(sortByLSKey) || SortBy.rank
   );
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
+
+  const noResultsText = isOnline
+    ? noCommentText || (
+        <>
+          there are no answers or questions to this particle <br /> be the first
+          and create one
+        </>
+      )
+    : "ther's nothing to show, wait until you're online";
 
   const {
     data: items,
@@ -161,13 +177,14 @@ function SearchResults() {
             <p>{error.message}</p>
           </Display>
         ) : (
-          <Display color="white">{defaultMessage}</Display>
+          <Display color="white">{noResultsText}</Display>
         )}
       </div>
 
       {!mobile && (
         <div className={styles.actionBar}>
           <ActionBarContainer
+            textBtn={actionBarTextBtn}
             keywordHash={keywordHash}
             update={() => {
               refetch();

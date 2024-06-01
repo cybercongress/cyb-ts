@@ -3,6 +3,7 @@ import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM } from 'src/constants/config';
 import { formatNumber } from '../../utils/search/utils';
 import Tooltip from '../tooltip/tooltip';
+import styles from './styles.module.scss';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');
@@ -37,122 +38,68 @@ const toFixedNumber = (number, toFixed) => {
 export const Votes = ({ finalVotes }) => {
   try {
     return (
-      <Pane
-        backgroundColor="#ffffff14"
-        borderRadius={5}
-        overflow="hidden"
-        height={10}
-        width="100%"
-        display="flex"
-      >
-        <Pane display="flex" height="100%" width={`${finalVotes.yes}%`}>
+      <div className={styles.votesContainer}>
+        <div
+          className={`${styles.voteSection} ${styles.voteYes}`}
+          style={{ width: `${toFixedNumber(finalVotes.yes, 2)}%` }}
+        >
           <Tooltip
             placement="top"
-            tooltip={<Pane>Yes: {toFixedNumber(finalVotes.yes, 2)}%</Pane>}
-          >
-            <Pane
-              backgroundColor="#3ab793"
-              display="flex"
-              height="100%"
-              width="100%"
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.abstain}%`}>
+            tooltip={<div>Yes: {toFixedNumber(finalVotes.yes, 2)}%</div>}
+            contentStyle={{ flexGrow: 1 }}
+          />
+        </div>
+        <div
+          className={`${styles.voteSection} ${styles.voteAbstain}`}
+          style={{ width: `${toFixedNumber(finalVotes.abstain, 2)}%` }}
+        >
           <Tooltip
             tooltip={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
             placement="top"
-          >
-            <Pane
-              backgroundColor="#ccdcff"
-              display="flex"
-              height="100%"
-              width="100%"
-              // width={`${finalVotes.abstain}%`}
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.no}%`}>
+            contentStyle={{ flexGrow: 1 }}
+          />
+        </div>
+        <div
+          className={`${styles.voteSection} ${styles.voteNo}`}
+          style={{ width: `${toFixedNumber(finalVotes.no, 2)}%` }}
+        >
           <Tooltip
             tooltip={`No: ${toFixedNumber(finalVotes.no, 2)}%`}
             placement="top"
-          >
-            <Pane
-              backgroundColor="#ffcf65"
-              display="flex"
-              height="100%"
-              width="100%"
-              // width={`${finalVotes.no}%`}
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={`${finalVotes.noWithVeto}%`}>
+            contentStyle={{ flexGrow: 1 }}
+          />
+        </div>
+        <div
+          className={`${styles.voteSection} ${styles.voteNoWithVeto}`}
+          style={{ width: `${toFixedNumber(finalVotes.noWithVeto, 2)}%` }}
+        >
           <Tooltip
-            tooltip={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
+            tooltip={`No With Veto: ${toFixedNumber(
+              finalVotes.noWithVeto,
+              2
+            )}%`}
             placement="top"
-          >
-            <Pane
-              backgroundColor="#fe8a8a"
-              display="flex"
-              height="100%"
-              width="100%"
-              // width={`${finalVotes.noWithVeto}%`}
-            />
-          </Tooltip>
-        </Pane>
-      </Pane>
+            contentStyle={{ flexGrow: 1 }}
+          />
+        </div>
+      </div>
     );
   } catch (error) {
     return (
-      <Pane
-        backgroundColor="#ffffff14"
-        borderRadius={5}
-        overflow="hidden"
-        height={10}
-        width="100%"
-        display="flex"
-      >
-        <Pane display="flex" height="100%" width={0}>
-          <Tooltip placement="top" tooltip="Yes: 0%">
-            <Pane
-              backgroundColor="#3ab793"
-              display="flex"
-              height="100%"
-              width={0}
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={0}>
-          <Tooltip tooltip="Abstain: 0%" placement="top">
-            <Pane
-              backgroundColor="#ccdcff"
-              display="flex"
-              height="100%"
-              width={0}
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={0}>
-          <Tooltip tooltip="No: 0%" placement="top">
-            <Pane
-              backgroundColor="#ffcf65"
-              display="flex"
-              height="100%"
-              width={0}
-            />
-          </Tooltip>
-        </Pane>
-        <Pane display="flex" height="100%" width={0}>
-          <Tooltip tooltip="NoWithVeto: 0%" placement="top">
-            <Pane
-              backgroundColor="#fe8a8a"
-              display="flex"
-              height="100%"
-              width={0}
-            />
-          </Tooltip>
-        </Pane>
-      </Pane>
+      <div className={styles.votesContainer}>
+        <div className={styles.voteSection} style={{ width: '0%' }}>
+          <Tooltip placement="top" tooltip="Yes: 0%" />
+        </div>
+        <div className={styles.voteSection} style={{ width: '0%' }}>
+          <Tooltip tooltip="Abstain: 0%" placement="top" />
+        </div>
+        <div className={styles.voteSection} style={{ width: '0%' }}>
+          <Tooltip tooltip="No: 0%" placement="top" />
+        </div>
+        <div className={styles.voteSection} style={{ width: '0%' }}>
+          <Tooltip tooltip="No With Veto: 0%" placement="top" />
+        </div>
+      </div>
     );
   }
 };
