@@ -11,8 +11,8 @@ import Commander from 'src/containers/application/Header/Commander/Commander';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import { Time } from 'src/components';
 import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
+import TimeFooter from 'src/features/TimeFooter/TimeFooter';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
@@ -120,7 +120,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
         {/* <ActionBar /> */}
 
         <div className={styles.Time}>
-          <Time />
+          <TimeFooter />
         </div>
         {/* <Link to={routes.social.path}>contacts</Link> */}
       </footer>

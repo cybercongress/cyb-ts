@@ -1,15 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { getTransactions } from 'src/utils/search/utils';
 
 const request = async (address: string, offset: number, limit: number) => {
   const events = [
     {
-      key: 'wasm.minter',
-      value: CONTRACT_ADDRESS_PASSPORT,
-    },
-    {
-      key: 'wasm.owner',
+      key: 'message.sender',
       value: address,
     },
   ];
@@ -21,11 +16,11 @@ const request = async (address: string, offset: number, limit: number) => {
   return response.data;
 };
 
-const LIMIT = 30;
+const LIMIT = 1;
 
 function useGetTimeCreatePassport(address?: string) {
   const { data } = useQuery(
-    ['getCreatePassport', address],
+    ['getFirstTxs', address],
     async () => {
       if (!address) {
         return undefined;
@@ -35,6 +30,7 @@ function useGetTimeCreatePassport(address?: string) {
     },
     {
       enabled: Boolean(address),
+      retry: 1,
     }
   );
 

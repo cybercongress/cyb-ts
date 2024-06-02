@@ -1,49 +1,26 @@
-import { useEffect, useState } from 'react';
-import { formatNumber, getNowUtcTime } from 'src/utils/utils';
+import { formatNumber } from 'src/utils/utils';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from 'src/redux/hooks';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
-import { routes } from 'src/routes';
 import unixTimestamp from './utils';
 import styles from './time.module.scss';
 
-function Time() {
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
-  const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
-  const { passport } = usePassportByAddress(useGetAddress);
-  const useGetName = passport?.extension.nickname;
-  const [timeSeconds, setTimeSeconds] = useState(0);
-  const { days, minutes, hours } = unixTimestamp(timeSeconds / 1000);
+function Time({ msTime, linkTo }: { msTime: number; linkTo: string }) {
+  const { years, months, days, minutes, hours } = unixTimestamp(msTime / 1000); // convert to sec
 
-  const linkAddress = useGetName
-    ? routes.robotPassport.getLink(useGetName)
-    : useGetAddress
-    ? routes.neuron.getLink(useGetAddress)
-    : undefined;
+  let valueTime = days;
+  let titleTime = 'days';
 
-  useEffect(() => {
-    const getTime = () => {
-      const utcTime = getNowUtcTime();
-      setTimeSeconds(utcTime);
-    };
-    getTime();
-
-    const timeInterval = setInterval(() => {
-      getTime();
-    }, 60000);
-
-    return () => {
-      clearInterval(timeInterval);
-    };
-  }, []);
+  if (years > 1) {
+    valueTime = years;
+    titleTime = 'years';
+  } else if (months > 1) {
+    valueTime = months;
+    titleTime = 'months';
+  }
 
   return (
-    <Link
-      to={linkAddress ? `${linkAddress}/timeline` : routes.robot.path}
-      className={styles.wrapper}
-    >
-      <span>{formatNumber(days)}</span>
-      <span className={styles.day}>day</span>
+    <Link to={linkTo} className={styles.wrapper}>
+      <span>{formatNumber(valueTime)}</span>
+      <span className={styles.day}>{titleTime}</span>
       <div>
         <span>{hours}</span>:<span>{minutes}</span>
       </div>

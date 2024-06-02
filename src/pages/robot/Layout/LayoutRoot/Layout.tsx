@@ -16,7 +16,7 @@ function Layout() {
         <Loader2 />
       ) : (
         <>
-          <RobotHeader />
+          {/* <RobotHeader menuCounts={counts} /> */}
 
           <div className={styles.content}>
             <RootMenu counts={counts} />

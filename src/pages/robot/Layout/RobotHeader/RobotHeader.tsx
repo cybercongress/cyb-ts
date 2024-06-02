@@ -3,24 +3,23 @@ import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import styles from './RobotHeader.module.scss';
 import { useRobotContext } from '../../robot.context';
-import CreatePassportAgo from './ui/CreatePassportAgo/CreatePassportAgo';
+import FirstTx from './ui/FirstTx/FirstTx';
+import Level from './ui/Level/Level';
+import TabsNotOwner from './ui/TabsNotOwner/TabsNotOwner';
 
-function RobotHeader() {
-  const { address, passport } = useRobotContext();
+function RobotHeader({ menuCounts }) {
+  const { address, passport, isOwner } = useRobotContext();
 
   const avatar = passport?.extension?.avatar;
   const nickname = passport?.extension?.nickname;
 
   return (
     <header className={styles.wrapper}>
-      <Display noPadding>
+      <Display noPadding color="blue">
         <div className={styles.content}>
           <div className={styles.level}>
-            <span className={styles.levelValue}>level 1</span>
-            {address && (
-              <CreatePassportAgo address={address} nickname={nickname} />
-            )}
-            {/* <span className={styles.levelTime}>1 year 145 day 06:46</span> */}
+            <Level value={menuCounts} />
+            {address && <FirstTx address={address} />}
           </div>
           <AvataImgIpfs addressCyber={address} cidAvatar={avatar} />
 
@@ -29,6 +28,7 @@ function RobotHeader() {
             <MusicalAddress address={address} />
           </div>
         </div>
+        {!isOwner && <TabsNotOwner menuCounts={menuCounts} />}
       </Display>
     </header>
   );
