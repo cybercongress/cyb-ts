@@ -11,9 +11,9 @@ import LayoutRoot from './Layout/LayoutRoot/Layout';
 import ZeroUser from './ZeroUser/ZeroUser';
 import FeedsTab from './_refactor/account/tabs/feeds/feeds';
 import UnderConstruction from './UnderConstruction/UnderConstruction';
-import FollowsTab from './_refactor/account/tabs/follows';
 import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
+import Follows from './_refactor/account/tabs/Follows/Follows';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
@@ -30,7 +30,7 @@ function RobotRoutes() {
             <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
             <Route path="soul" element={<UnderConstruction />} />
             <Route path="energy/*" element={<RoutedEnergy />} />
-            <Route path="swarm" element={<FollowsTab />} />
+            <Route path="swarm" element={<Follows />} />
             <Route path="security" element={<Heroes />} />
             <Route path="rights" element={<UnderConstruction />} />
             <Route path="karma" element={<Karma />} />
