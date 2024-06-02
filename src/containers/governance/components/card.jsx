@@ -85,6 +85,7 @@ function TypeProps({ type }) {
           {textType}
         </div>
       }
+      style={{ paddingBottom: '20px' }}
     >
       <img style={{ width: 25, height: 25 }} src={typeImg} alt="type" />
     </Tooltip>
@@ -97,7 +98,7 @@ function AcceptedCard({ id, name, votes, type, timeEnd }) {
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={5}>
@@ -118,7 +119,7 @@ function RejectedCard({ id, name, votes, type, timeEnd }) {
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={5}>
@@ -146,7 +147,7 @@ function ActiveCard({
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={2}>

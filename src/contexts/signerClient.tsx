@@ -1,5 +1,7 @@
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Keplr } from '@keplr-wallet/types';
+import _ from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -8,10 +10,13 @@ import React, {
   useState,
 } from 'react';
 import { BECH32_PREFIX, CHAIN_ID, RPC_URL } from 'src/constants/config';
-import { useAppSelector } from 'src/redux/hooks';
+import usePrevious from 'src/hooks/usePrevious';
+import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { initOfflineSigner } from 'src/utils/offlineSigner';
+import { accountsKeplr } from 'src/utils/utils';
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
 //   keplr: Keplr;
@@ -55,11 +60,37 @@ export function useSigningClient() {
 }
 
 function SigningClientProvider({ children }: { children: React.ReactNode }) {
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
+  const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
+  const dispatch = useAppDispatch();
   const [signer, setSigner] = useState<SignerClientContextType['signer']>();
   const [signerReady, setSignerReady] = useState(false);
   const [signingClient, setSigningClient] =
     useState<SignerClientContextType['signingClient']>();
+  const prevAccounts = usePrevious(accounts);
+
+  const selectAddress = useCallback(
+    async (keplr: Keplr) => {
+      if (!accounts || _.isEqual(prevAccounts, accounts)) {
+        return;
+      }
+      const keyInfo = await keplr.getKey(CHAIN_ID);
+
+      const findAccount = Object.keys(accounts).find((key) => {
+        if (accounts[key].cyber.bech32 === keyInfo.bech32Address) {
+          return key;
+        }
+
+        return undefined;
+      });
+
+      if (findAccount) {
+        dispatch(setDefaultAccount({ name: findAccount }));
+      } else {
+        dispatch(addAddressPocket(accountsKeplr(keyInfo)));
+      }
+    },
+    [accounts, prevAccounts, dispatch]
+  );
 
   useEffect(() => {
     (async () => {
@@ -78,6 +109,8 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
   const initSigner = useCallback(async () => {
     const windowKeplr = await getKeplr();
     if (windowKeplr && windowKeplr.experimentalSuggestChain) {
+      selectAddress(windowKeplr);
+
       windowKeplr.defaultOptions = {
         sign: {
           preferNoSetFee: true,
@@ -92,7 +125,7 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
       setSigner(offlineSigner);
       setSigningClient(clientJs);
     }
-  }, []);
+  }, [selectAddress]);
 
   useEffect(() => {
     (async () => {
