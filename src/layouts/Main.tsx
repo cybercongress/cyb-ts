@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { localStorageKeys } from 'src/constants/localStorageKeys';
-import AppMenu from 'src/containers/application/AppMenu';
-import AppSideBar from 'src/containers/application/AppSideBar';
 import Header from 'src/containers/application/Header/Header';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
@@ -18,6 +16,7 @@ import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
 import ActionBar from './ui/ActionBar';
+import CircularMenu from 'src/components/appMenu/CircularMenu';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -78,10 +77,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
     };
   }, []);
 
-  function closeMenu() {
-    toggleMenu(false);
-  }
-
   return (
     <div className={styles.wrapper} ref={ref}>
       <Header
@@ -90,19 +85,17 @@ function MainLayout({ children }: { children: JSX.Element }) {
           isOpen: openMenu,
         }}
       />
-
-      <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu closeMenu={closeMenu} />
-      </AppSideBar>
-
       <SenseButton className={styles.senseBtn} />
       <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
-
       {children}
-
       <footer>
+        <CircularMenu circleSize={graphSize} />
         {!isMobile && (
-          <Link to={routes.brain.path} className={stylesOracle.graphWrapper}>
+          <Link
+            to={routes.brain.path}
+            className={stylesOracle.graphWrapper}
+            style={{ bottom: '0px' }}
+          >
             {/* <Link
               to={routes.brain.path}
               className={stylesOracle.enlargeBtn}
