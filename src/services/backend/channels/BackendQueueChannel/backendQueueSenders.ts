@@ -42,7 +42,8 @@ export const enqueueParticleEmbeddingMaybe = async (
 export const enqueueParticleSave = (content: IPFSContentMutated) => {
   busSender.enqueue({
     type: 'particle',
-    data: content as IPFSContent,
+    // TODO: add AsyncIterator serializer
+    data: { ...content, result: undefined } as IPFSContent,
   });
 
   return true;

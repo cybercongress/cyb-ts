@@ -185,7 +185,6 @@ class QueueManager {
         }
         // put saveto db msg into bus
         if (result && source !== 'db') {
-          // TODO: serialize AsyncGenerator
           enqueueParticleSave(result);
         }
 
