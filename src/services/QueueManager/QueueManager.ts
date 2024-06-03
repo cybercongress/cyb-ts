@@ -172,12 +172,14 @@ class QueueManager {
           [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
         },
       }).then(async (content) => {
-        const result = !item.postProcessing
-          ? content
+        let result;
+        if (!item.postProcessing) {
+          result = content;
+        } else {
+          result = content
             ? await postProcessIpfContent(item, content, this.rune!, this)
-            : undefined
-          : content;
-
+            : undefined;
+        }
         // put saveto db msg into bus
         if (result && source !== 'db') {
           enqueueParticleSave(result);
