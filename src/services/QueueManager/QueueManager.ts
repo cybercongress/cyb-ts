@@ -60,7 +60,7 @@ const strategies = {
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
       node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+      gateway: { timeout: 10000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),
@@ -75,8 +75,8 @@ const strategies = {
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 6 * 1000, maxConcurrentExecutions: 50 }, // TODO: set to 60
-      gateway: { timeout: 3 * 1000, maxConcurrentExecutions: 11 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
+      gateway: { timeout: 10000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),

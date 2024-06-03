@@ -171,10 +171,6 @@ const fetchIPFSContentFromGateway = async (
     ? await fetchIPFSContentMeta(cid, node, controller?.signal)
     : emptyMeta;
 
-  controller?.signal &&
-    controller?.signal.onabort((ev) => {
-      console.log('-----aborted', cid);
-    });
   const contentUrl = `${CYBER_GATEWAY_URL}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
