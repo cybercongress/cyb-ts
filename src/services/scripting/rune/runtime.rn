@@ -30,5 +30,5 @@ pub fn meta_link(url, title) {
 pub async fn async_callback(data) {
     cyb::log("asyc callback from rune");
 
-    cyb::callback(cyb::ref_id, data).await
+    //    cyb::callback(cyb::ref_id, data).await
 }
