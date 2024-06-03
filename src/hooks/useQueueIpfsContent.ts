@@ -29,7 +29,10 @@ type UseIpfsContentReturn = {
   fetchWithDetails?: FetchWithDetailsFunc;
 };
 
-function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
+function useQueueIpfsContent(
+  parentId?: string,
+  skipRune = false
+): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus>();
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();

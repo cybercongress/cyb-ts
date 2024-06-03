@@ -100,7 +100,7 @@ function Soul() {
     []
   );
 
-  const compileAndTest = async (funcName: string, funcParams = {}) => {
+  const compileAndTest = async (funcName: string, funcParams = []) => {
     outputRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     addToLog([`🚧 Execute your '${funcName}'.`]);
@@ -114,6 +114,7 @@ function Soul() {
         const isOk = !result.diagnosticsOutput && !result.error;
         highlightErrors(codeMirrorRef!.current, result.diagnostics, styles);
         if (!isOk) {
+          console.log('----res', result);
           addToLog(['⚠️ Errors:', `   ${result.diagnosticsOutput}`]);
         } else {
           addToLog([

@@ -26,7 +26,12 @@ function Ipfs() {
   const { fetchParticle, status, content } = useQueueIpfsContent(cid);
   const { ipfsApi, isIpfsInitialized, isReady } = useBackend();
   const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
-  const { status: runeStatus, metaItems, askCompanion } = useScripting();
+  const {
+    status: runeStatus,
+    metaItems,
+    askCompanion,
+    clearMetaItems,
+  } = useScripting();
   const { setAdviser } = useAdviser();
 
   const isText = useMemo(() => !query.match(PATTERN_IPFS_HASH), [query]);
@@ -39,13 +44,14 @@ function Ipfs() {
       setCid(query);
     } else if (isIpfsInitialized) {
       (async () => {
+        clearMetaItems();
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
         await ipfsApi!.addContent(query);
 
         setCid(cidFromQuery);
       })();
     }
-  }, [isText, isReady, query, ipfsApi, isIpfsInitialized]);
+  }, [isText, isReady, query, ipfsApi, isIpfsInitialized, clearMetaItems]);
 
   useEffect(() => {
     (async () => {

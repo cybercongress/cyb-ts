@@ -331,10 +331,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isDbInitialized,
         isSyncInitialized,
         isReady,
-        testCase: async () => {
-          console.log('----test case clic', backgroundWorkerInstance);
-          await backgroundWorkerInstance.testCase();
-        },
       } as BackendProviderContextType),
     [
       isReady,

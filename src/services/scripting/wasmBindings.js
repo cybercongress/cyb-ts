@@ -52,3 +52,8 @@ export async function jsCyberLinksTo(cid) {
   const result = await getToLink(cid);
   return result;
 }
+
+export async function jsExecuteScriptCallback(refId, data) {
+  console.log('exec deps callback', refId);
+  return runeDeps.cybApi.executeScriptCallback(refId, data);
+}

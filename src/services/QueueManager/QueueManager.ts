@@ -135,13 +135,6 @@ class QueueManager {
           (a, b) => getQueueItemTotalPriority(b) - getQueueItemTotalPriority(a)
         )
         .slice(0, executeCount);
-      console.log(
-        `----q ${queueSource} ${
-          this.executing[queueSource as IpfsContentSource].size
-        }/${settings.maxConcurrentExecutions} `
-      );
-
-      // console.log('---itemsByPriority', itemsByPriority);
 
       itemsToExecute.push(...itemsByPriority);
     }
@@ -176,9 +169,11 @@ class QueueManager {
         controller,
         node: this.node,
       }).then(async (content) => {
-        const result = content
-          ? await postProcessIpfContent(item, content, this.rune!, this)
-          : undefined;
+        const result = !item.postProcessing
+          ? content
+            ? await postProcessIpfContent(item, content, this.rune!, this)
+            : undefined
+          : content;
 
         // put saveto db msg into bus
         if (result && source !== 'db') {
@@ -190,13 +185,8 @@ class QueueManager {
     }).pipe(
       timeout({
         each: settings.timeout,
-        with: (timeoutInfo) =>
+        with: () =>
           throwError(() => {
-            console.log(
-              '----timeout triggered',
-              timeoutInfo.lastValue?.cid,
-              timeoutInfo.lastValue?.source
-            );
             controller?.abort('timeout');
 
             return new QueueItemTimeoutError(settings.timeout);

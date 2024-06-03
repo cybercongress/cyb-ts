@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ScriptMyCampanion } from 'src/services/scripting/types';
 import { IPFSContentMutated, IpfsContentType } from 'src/services/ipfs/types';
 import { useBackend } from '../backend/backend';
+import { proxy } from 'comlink';
 
 export type ScriptingContextType = {
   status: 'loading' | 'ready' | 'pending' | 'done' | 'error';
@@ -11,6 +12,7 @@ export type ScriptingContextType = {
     contentType?: IpfsContentType,
     content?: IPFSContentMutated['result']
   ) => Promise<void>;
+  clearMetaItems: () => void;
 };
 
 const ScriptingContext = React.createContext<ScriptingContextType>({
@@ -19,6 +21,7 @@ const ScriptingContext = React.createContext<ScriptingContextType>({
   askCompanion: async () => {
     throw new Error('ScriptingProvider not found');
   },
+  clearMetaItems: () => null,
 });
 
 export function useScripting() {
@@ -46,7 +49,12 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       await rune
-        ?.askCompanion(cid, contentType, content as string)
+        ?.askCompanion(
+          cid,
+          contentType,
+          content as string,
+          proxy((data = {}) => console.log('CALLBACK'))
+        )
         .then((result) => {
           setMetaItems(result.metaItems);
           setStatus('done');
@@ -55,13 +63,16 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     [rune]
   );
 
+  const clearMetaItems = useCallback(() => setMetaItems([]), [setMetaItems]);
+
   const value = useMemo(() => {
     return {
       status,
       metaItems,
       askCompanion,
+      clearMetaItems,
     };
-  }, [status, metaItems, askCompanion]);
+  }, [status, metaItems, askCompanion, clearMetaItems]);
 
   return (
     <ScriptingContext.Provider value={value}>

@@ -10,15 +10,12 @@ import {
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 
-// import { CozoDbWorkerApi } from 'src/services/backend/workers/db/worker';
-
 import {
   QueueItemCallback,
   QueueItemOptions,
   QueuePriority,
 } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
-import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PipelineType, pipeline, env } from '@xenova/transformers';
 import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
@@ -142,7 +139,7 @@ const createBackgroundWorkerApi = () => {
     waitForParticleResolve: async (
       cid: ParticleCid,
       priority: QueuePriority = QueuePriority.MEDIUM
-    ) => ipfsQueue.enqueueAndWait(cid, { postProcessing: true, priority }),
+    ) => ipfsQueue.enqueueAndWait(cid, { postProcessing: false, priority }),
     dbInstance$,
     ipfsInstance$,
     getEmbeddingInstance$,
@@ -303,34 +300,6 @@ const createBackgroundWorkerApi = () => {
     restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
-
-    testCase: () => {
-      console.log('>>> test case fired');
-      (async () => {
-        const controller = new AbortController();
-        setTimeout(() => {
-          controller.abort();
-          console.log('>>> abort triggered');
-        }, 1000); // Abort after 1 second
-
-        try {
-          const response = await fetch(
-            'https://gateway.ipfs.cybernode.ai/ipfs/QmPRHHTeWzgBoRvbYMg4Q3ZVviu3VDP5rTPLgXotYpiuba',
-            {
-              method: 'GET',
-              signal: controller.signal,
-            }
-          );
-          // Handle the response
-        } catch (error) {
-          if (error.name === 'AbortError') {
-            console.log('>>> Fetch aborted');
-          } else {
-            console.error('>>> Fetch error:', error);
-          }
-        }
-      })();
-    },
   };
 };
 

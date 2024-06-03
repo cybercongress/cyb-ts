@@ -79,7 +79,6 @@ const createDbWorkerApi = () => {
 
     const commandFactory = getCommandFactory();
     const putCommand = commandFactory!.generateModifyCommand(tableName, 'put');
-    let isOk = true;
     for (let i = 0; i < array.length; i += batchSize) {
       const batch = array.slice(i, i + batchSize);
 

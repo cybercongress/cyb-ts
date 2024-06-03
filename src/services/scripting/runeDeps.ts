@@ -125,6 +125,15 @@ const createRuneDeps = () => {
     }
   };
 
+  const executeScriptCallback = async (refId: string, data = {}) => {
+    try {
+      const rune = (await defferedDependency('rune')) as RuneEngine;
+      return rune.executeCallback(refId, data);
+    } catch (e) {
+      return { action: 'error', message: e.toString() };
+    }
+  };
+
   const cybApi = {
     graphSearch,
     cyberlink: async (from: string, to: string) => {
@@ -160,6 +169,7 @@ const createRuneDeps = () => {
 
       return ipfsApi.addContent(content);
     },
+    executeScriptCallback,
   };
 
   return { setExternalDeps, setInternalDeps, cybApi };

@@ -67,7 +67,8 @@ export interface RuneEngine {
   askCompanion(
     cid: string,
     contentType: string,
-    content: string
+    content: string,
+    callback?: ScriptCallback
   ): Promise<ScriptMyCampanion>;
   personalProcessor(
     params: ScriptParticleParams
@@ -77,6 +78,7 @@ export interface RuneEngine {
     funcName: string,
     params: EntrypointParams
   ): Promise<ScriptParticleResult>;
+  executeCallback(refId: string, data: any): Promise<void>;
 }
 
 // eslint-disable-next-line import/prefer-default-export
@@ -157,9 +159,9 @@ function enigine(): RuneEngine {
     );
     const { result, error } = outputData;
 
-    scriptCallbacks.delete(refId);
-
     try {
+      scriptCallbacks.delete(refId);
+
       return {
         ...outputData,
         error,
@@ -168,6 +170,8 @@ function enigine(): RuneEngine {
           : { action: 'error', message: 'No result' },
       };
     } catch (e) {
+      scriptCallbacks.delete(refId);
+
       console.log(
         `engine.run err ${compilerParams.funcName}`,
         e,
@@ -262,7 +266,8 @@ function enigine(): RuneEngine {
   const askCompanion = async (
     cid: string,
     contentType: string,
-    content: string
+    content: string,
+    callback?: ScriptCallback
   ): Promise<ScriptMyCampanion> => {
     const [resultType, script] = getParticleScriptOrAction();
 
@@ -277,10 +282,14 @@ function enigine(): RuneEngine {
       return { action: 'pass', metaItems: [] };
     }
 
-    const output = await run(script, {
-      funcName: 'ask_companion',
-      funcParams: [cid, contentType, content],
-    });
+    const output = await run(
+      script,
+      {
+        funcName: 'ask_companion',
+        funcParams: [cid, contentType, content],
+      },
+      callback
+    );
 
     if (output.result.action === 'error') {
       return {
@@ -290,6 +299,14 @@ function enigine(): RuneEngine {
     }
 
     return { action: 'answer', metaItems: output.result.content };
+  };
+
+  const executeCallback = async (refId: string, data: any) => {
+    const callback = scriptCallbacks.get(refId);
+
+    if (callback) {
+      await callback(data);
+    }
   };
 
   return {
@@ -302,6 +319,7 @@ function enigine(): RuneEngine {
     pushContext,
     popContext,
     executeFunction,
+    executeCallback,
     getDebug: () => ({
       context,
       entrypoints,

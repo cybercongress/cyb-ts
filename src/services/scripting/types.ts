@@ -37,18 +37,7 @@ type ScriptEntrypoints = {
 
 type ScriptEntrypointNames = keyof ScriptEntrypoints;
 
-type ScriptCallbackStatus =
-  | 'pending'
-  | 'running'
-  | 'completed'
-  | 'canceled'
-  | 'error';
-
-type ScriptCallback = (
-  refId: string,
-  status: ScriptCallbackStatus,
-  result: unknown
-) => void;
+type ScriptCallback = (data: any) => Promise<void>;
 
 type ScriptParticleParams = {
   cid?: string;
