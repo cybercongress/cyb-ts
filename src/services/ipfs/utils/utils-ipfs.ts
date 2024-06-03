@@ -229,6 +229,8 @@ async function fetchIpfsContent(
 ): Promise<IPFSContentMaybe> {
   const { node, controller, headers } = options;
 
+  source !== 'db' && console.log(`fetchIpfsContent ${cid} ${source}`);
+
   try {
     switch (source) {
       case 'db':
