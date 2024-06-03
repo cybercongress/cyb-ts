@@ -41,7 +41,7 @@ import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
 const QUEUE_BATCH_SIZE = 100;
 
 export const getContentToEmbed = async (content: IPFSContentMutated) => {
-  const contentType = mimeToBaseContentType(content?.meta?.mime || '');
+  const contentType = { content }; //mimeToBaseContentType(content?.meta?.mime || '');
 
   // create embedding for allowed content
   if (contentType === 'text') {

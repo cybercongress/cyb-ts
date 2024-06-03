@@ -31,9 +31,9 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
     }
 
     async isConnectedToSwarm() {
-      return !!(await super.getPeers()).find(
-        (peerId) => peerId === options.swarmPeerId
-      );
+      const peers = await super.getPeers();
+      console.log('-peers', peers);
+      return !!peers.find((peerId) => peerId === options.swarmPeerId);
     }
 
     async reconnectToSwarm(lastConnectedTimestamp?: number) {

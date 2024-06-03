@@ -94,7 +94,7 @@ export const parseArrayLikeToDetails = async (
     };
   }
 
-  const { result, meta } = content;
+  const { result, meta, contentType } = content;
 
   const mime = meta?.mime;
 
@@ -105,7 +105,7 @@ export const parseArrayLikeToDetails = async (
       text: `Can't detect MIME for ${cid.toString()}`,
     };
   }
-  const contentType = mimeToBaseContentType(mime);
+  // const contentType = mimeToBaseContentType(mime);
   const contentCid = content.cid;
 
   const response: IPFSContentDetails = {

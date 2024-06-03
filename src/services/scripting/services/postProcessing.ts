@@ -1,5 +1,6 @@
 import {
   IPFSContent,
+  IPFSContentMaybe,
   IPFSContentMeta,
   IPFSContentMutated,
 } from 'src/services/ipfs/types';
@@ -12,11 +13,44 @@ import {
 } from 'src/services/ipfs/utils/content';
 import QueueManager from 'src/services/QueueManager/QueueManager';
 import { RuneEngine } from '../engine';
+import { Option } from 'src/types';
 
-const contentToStringOrEmpty = (content: IPFSContent, contentType: string) =>
-  contentType === 'text' && content.result instanceof Uint8Array
-    ? uint8ArrayToAsciiString(content.result)
-    : '';
+// const contentToStringOrEmpty = (content: IPFSContent, contentType: string) =>
+//   contentType === 'text' && content.result instanceof Uint8Array
+//     ? uint8ArrayToAsciiString(content.result)
+//     : '';
+
+// transform Uint8Array chunks to text
+export const uint8ArrayToTextOrSkip = (
+  content: IPFSContentMaybe
+): Option<IPFSContentMutated> => {
+  if (!content) {
+    return undefined;
+  }
+
+  const contentType = mimeToBaseContentType(content?.meta?.mime);
+
+  if (contentType === 'text' && content.result instanceof Uint8Array) {
+    return {
+      ...content,
+      contentType,
+      result: uint8ArrayToAsciiString(content.result),
+    };
+  }
+
+  return content;
+};
+
+const contentToStringOrEmpty = (content: IPFSContent) => {
+  if (content.contentType !== 'text') {
+    return '';
+  }
+  if (content.result instanceof Uint8Array) {
+    return uint8ArrayToAsciiString(content.result);
+  }
+
+  return content.result as string;
+};
 
 /**
  * Execute 'particle' script to post process item: modify cid or content, or hide from view
@@ -34,17 +68,18 @@ export async function postProcessIpfContent(
 ): Promise<IPFSContentMutated> {
   try {
     const { cid, controller, source } = item;
-    const { meta } = content;
+    const { contentType } = content;
     // TODO: refactor
     // textPreview only some beggining of content
     // refactor to use all the content
     // maybe move this outside
-    const contentType = mimeToBaseContentType(meta?.mime);
+
     const mutation = await rune.personalProcessor({
       cid,
       contentType,
-      content: contentToStringOrEmpty(content, contentType),
+      content: contentToStringOrEmpty(content),
     });
+
     if (mutation.action === 'cid_result' && mutation.cid) {
       // refectch content from new cid
       const result = await ipfsQueue.enqueueAndWait(mutation.cid, {

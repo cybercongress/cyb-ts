@@ -40,7 +40,10 @@ import { QueueStrategy } from './QueueStrategy';
 import { enqueueParticleSave } from '../backend/channels/BackendQueueChannel/backendQueueSenders';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
 import { RuneEngine } from '../scripting/engine';
-import { postProcessIpfContent } from '../scripting/services/postProcessing';
+import {
+  postProcessIpfContent,
+  uint8ArrayToTextOrSkip,
+} from '../scripting/services/postProcessing';
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { CustomHeaders, XCybSourceValues } from './constants';
 
@@ -172,7 +175,7 @@ class QueueManager {
           [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
         },
       }).then(async (content) => {
-        let result;
+        let result = uint8ArrayToTextOrSkip(content);
         if (!item.postProcessing) {
           result = content;
         } else {
@@ -182,6 +185,7 @@ class QueueManager {
         }
         // put saveto db msg into bus
         if (result && source !== 'db') {
+          // TODO: serialize AsyncGenerator
           enqueueParticleSave(result);
         }
 

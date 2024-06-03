@@ -113,6 +113,7 @@ export type IPFSContent = {
   source: IpfsContentSource;
   contentUrl?: string;
   textPreview?: string;
+  contentType?: IpfsContentType;
 };
 
 export type IPFSContentMutated = Omit<IPFSContent, 'result'> & {
