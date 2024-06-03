@@ -312,6 +312,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     [isMlInitialized]
   );
 
+  const defferedDbApi = useMemo(
+    () => (isDbInitialized ? backgroundWorkerInstance.defferedDbApi : null),
+    [isDbInitialized]
+  );
+
   const valueMemo = useMemo(
     () =>
       ({
@@ -320,6 +325,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         ipfsApi,
         mlApi,
         rune,
+        defferedDbApi,
         ipfsNode,
         restartSync: (name: SyncEntryName) =>
           backgroundWorkerInstance.restartSync(name),
