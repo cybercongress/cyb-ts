@@ -1,5 +1,9 @@
-.header {
+.item {
   display: flex;
-  width: 100%;
+  align-items: center;
   justify-content: space-between;
+
+  & + .item {
+    margin-top: 20px;
+  }
 }

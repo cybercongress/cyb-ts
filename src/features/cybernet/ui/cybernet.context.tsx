@@ -150,10 +150,12 @@ export function useCurrentContract() {
 
   const { metadata } = selectedContract;
   const contractName = metadata?.name;
+  const type = selectedContract?.type;
 
   return {
     contractName: contractName || selectedContract.address,
     network: 'pussy',
+    type,
   };
 }
 

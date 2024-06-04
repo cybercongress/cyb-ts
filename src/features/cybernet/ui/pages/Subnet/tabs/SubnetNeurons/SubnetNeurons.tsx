@@ -44,7 +44,6 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   }
 
   return (
-    // <MainContainer width="100%">
     <Display
       noPaddingX
       // title={
@@ -64,7 +63,6 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
         />
       )}
     </Display>
-    // </MainContainer>
   );
 }
 

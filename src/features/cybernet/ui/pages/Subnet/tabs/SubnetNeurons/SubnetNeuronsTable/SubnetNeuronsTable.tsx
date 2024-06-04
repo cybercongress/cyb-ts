@@ -18,6 +18,7 @@ import {
 } from 'src/features/cybernet/ui/cybernet.context';
 import { getColor } from '../../Weights/WeightsTable/WeightsTable';
 import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
+import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 
 type Props = {};
 
@@ -133,6 +134,10 @@ function SubnetNeuronsTable({}: Props) {
 
   const vievedBlocks = getData(address);
   const { selectedContract } = useCybernet();
+
+  const { type } = useCurrentContract();
+
+  const isMLVerse = checkIsMLVerse(type);
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
@@ -258,7 +263,7 @@ function SubnetNeuronsTable({}: Props) {
         })
       );
 
-      if (addressRegisteredInSubnet) {
+      if (addressRegisteredInSubnet && !isMLVerse) {
         col.push(
           // @ts-ignore
           columnHelper.accessor('uid', {
@@ -278,6 +283,7 @@ function SubnetNeuronsTable({}: Props) {
     return col;
   }, [
     allGrades,
+    isMLVerse,
     // block,
     selectedContract,
     // cur,

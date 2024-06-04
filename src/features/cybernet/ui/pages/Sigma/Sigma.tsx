@@ -12,6 +12,7 @@ import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { routes } from 'src/routes';
+import { useCybernet } from '../../cybernet.context';
 
 // reuse
 const contractsConfig = [
@@ -41,26 +42,30 @@ function Item({ contractAddress, callback }) {
 
   const isLegacy = legacy.includes(contractAddress);
 
+  const { contracts } = useCybernet();
+
+  const contractName = contracts.find(
+    (contract) => contract.address === contractAddress
+  )?.metadata?.name;
+
   return (
     <Display
       title={
         <DisplayTitle
           title={
-            <div className={styles.header}>
-              <Link
-                to={
-                  !isLegacy
-                    ? cybernetRoutes.verse.getLink('pussy', contractAddress)
-                    : routes.contracts.byId.getLink(contractAddress)
-                }
-              >
-                {trimString(contractAddress, 6, 6)}
-              </Link>
-
-              <AmountDenom amountValue={total} denom="pussy" />
-            </div>
+            <Link
+              to={
+                !isLegacy
+                  ? cybernetRoutes.verse.getLink('pussy', contractAddress)
+                  : routes.contracts.byId.getLink(contractAddress)
+              }
+            >
+              {contractName || trimString(contractAddress, 6, 6)}
+            </Link>
           }
-        />
+        >
+          <AmountDenom amountValue={total} denom="pussy" />
+        </DisplayTitle>
       }
     >
       {query.loading ? (
@@ -68,21 +73,25 @@ function Item({ contractAddress, callback }) {
       ) : query.error ? (
         query.error.message
       ) : filteredData?.length > 0 ? (
-        filteredData.map(({ hotkey, stake }) => {
-          return (
-            <div key={hotkey}>
-              <Account
-                address={hotkey}
-                link={cybernetRoutes.delegator.getLink(
-                  'pussy',
-                  contractAddress,
-                  hotkey
-                )}
-              />
-              <AmountDenom amountValue={stake} denom="pussy" />
-            </div>
-          );
-        })
+        filteredData
+          .sort((a, b) => b.stake - a.stake)
+          .map(({ hotkey, stake }) => {
+            return (
+              <div key={hotkey} className={styles.item}>
+                <Account
+                  address={hotkey}
+                  avatar
+                  markCurrentAddress
+                  link={cybernetRoutes.delegator.getLink(
+                    'pussy',
+                    contractAddress,
+                    hotkey
+                  )}
+                />
+                <AmountDenom amountValue={stake} denom="pussy" />
+              </div>
+            );
+          })
       ) : (
         'No stakes'
       )}
@@ -109,17 +118,12 @@ function Sigma() {
   }, []);
 
   return (
-    <MainContainer>
+    <>
       <Display
         title={
-          <DisplayTitle
-            title={
-              <div className={styles.header}>
-                Sigma
-                <AmountDenom amountValue={sum} denom="pussy" />
-              </div>
-            }
-          />
+          <DisplayTitle title="Sigma">
+            <AmountDenom amountValue={sum} denom="pussy" />
+          </DisplayTitle>
         }
       />
 
@@ -140,7 +144,7 @@ function Sigma() {
           callback={handleTotal}
         />
       ))}
-    </MainContainer>
+    </>
   );
 }
 

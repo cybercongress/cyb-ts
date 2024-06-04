@@ -59,7 +59,7 @@ function Main() {
   const { staker_apr, validator_apr } = selectedContract?.economy || {};
 
   return (
-    <MainContainer resetMaxWidth>
+    <>
       <Stars />
       <Banner />
 
@@ -213,7 +213,7 @@ function Main() {
           </Display>
         </div>
       </div>
-    </MainContainer>
+    </>
   );
 }
 

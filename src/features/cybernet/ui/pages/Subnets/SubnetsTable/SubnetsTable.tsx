@@ -6,7 +6,7 @@ import Table from 'src/components/Table/Table';
 import { Link, useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
 
-import { Account, Cid } from 'src/components';
+import { Account, Cid, Tooltip } from 'src/components';
 
 import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import useDelegate from '../../../hooks/useDelegate';
@@ -77,9 +77,19 @@ function SubnetsTable({ data }: Props) {
             selectedContract || {};
           return (
             <Link
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0 7px',
+              }}
               to={subnetRoutes.subnet.getLink('pussy', contractName, netuid)}
             >
-              {name} {isMySubnet && '✅'}
+              {name}{' '}
+              {isMySubnet && (
+                <Tooltip tooltip={`you joined this ${getText('subnetwork')}`}>
+                  ✅
+                </Tooltip>
+              )}
             </Link>
           );
         },
@@ -146,11 +156,11 @@ function SubnetsTable({ data }: Props) {
             return a - b;
           },
           cell: (info) => {
-            const n = info.getValue();
+            const max = info.getValue();
 
             const current = info.row.original.subnetwork_n;
 
-            return <F value={current} maxValue={n} />;
+            return <F value={current >= max ? max : current} maxValue={max} />;
           },
         }),
         columnHelper.accessor('max_allowed_uids', {
@@ -162,11 +172,11 @@ function SubnetsTable({ data }: Props) {
             return a - b;
           },
           cell: (info) => {
-            const n = info.getValue();
+            const max = info.getValue();
 
             const current = info.row.original.subnetwork_n;
 
-            return <F value={current} maxValue={n} />;
+            return <F value={current} maxValue={max} />;
           },
         }),
 
