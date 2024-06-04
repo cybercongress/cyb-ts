@@ -16,7 +16,7 @@ import useExecuteCybernetContract from '../../useExecuteCybernetContract';
 import { useAdviser } from 'src/features/adviser/context';
 import { isEqual } from 'lodash';
 
-export function getAverageGrade(grades, uid: string) {
+export function getAverageGrade(grades, uid: number) {
   let count = 0;
 
   const sum = grades.reduce((acc, w) => {
@@ -38,7 +38,10 @@ export function getAverageGrade(grades, uid: string) {
 
 const SubnetContext = React.createContext<{
   subnetQuery: ReturnType<typeof useCybernetContract<SubnetInfo>>;
-  neuronsQuery: ReturnType<typeof useCybernetContract<SubnetNeuron[]>>;
+  neuronsQuery: {
+    data: SubnetNeuron[];
+    // refetch: () => void;
+  } | null;
   addressRegisteredInSubnet: boolean;
   grades: {
     all: ReturnType<typeof useCybernetContract<Weights>>;
@@ -113,6 +116,8 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
       },
     },
   });
+
+  console.log(neuronsQuery);
 
   const myUid = neuronsQuery.data?.find(
     (n) => n.hotkey === currentAddress

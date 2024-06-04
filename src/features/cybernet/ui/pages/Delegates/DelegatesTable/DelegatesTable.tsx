@@ -47,6 +47,11 @@ function DelegatesTable({}: Props) {
     return nominators.find(([address]) => address === currentAddress)?.[1];
   }
 
+  // maybe rename
+  function getYieldValue(value: number) {
+    return Number(((value / 1_000_000_000) * 100).toFixed(2));
+  }
+
   const subnets = subnetsQuery.data || [];
 
   const navigate = useNavigate();
@@ -83,14 +88,17 @@ function DelegatesTable({}: Props) {
 
       columnHelper.accessor('return_per_giga', {
         header: 'yield',
+        sortingFn: (rowA, rowB) => {
+          const a = getYieldValue(rowA.original.return_per_giga.amount);
+          const b = getYieldValue(rowB.original.return_per_giga.amount);
+
+          return a - b;
+        },
         cell: (info) => {
           const value = info.getValue();
 
-          const yieldValue = (
-            (Number(value.amount) / 1_000_000_000) *
-            100
-          ).toFixed(2);
-          return yieldValue + '%';
+          const yieldVal = getYieldValue(value.amount);
+          return `${yieldVal}%`;
         },
       }),
 
