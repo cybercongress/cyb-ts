@@ -22,6 +22,7 @@ import Verses from './pages/Verses/Verses';
 import Verse from './pages/Verse/Verse';
 import { cybernetRoutes } from './routes';
 import Sigma from './pages/Sigma/Sigma';
+import { MainContainer } from 'src/components';
 
 function Redirect() {
   const { contractName, network } = useCurrentContract();
@@ -47,7 +48,10 @@ function Cybernet() {
               <Helmet>
                 <title>cyberver | cyb</title>
               </Helmet>
-              <Outlet />
+
+              <MainContainer resetMaxWidth>
+                <Outlet />
+              </MainContainer>
             </CybernetProvider>
           </div>
         }

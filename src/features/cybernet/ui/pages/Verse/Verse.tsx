@@ -9,7 +9,6 @@ function Verse() {
   const { selectedContract } = useCybernet();
   return (
     <>
-      {/* <MainContainer resetMaxWidth> */}
       {/* <div
         style={{
           maxWidth: '62%',
@@ -20,7 +19,6 @@ function Verse() {
           <AvataImgIpfs cidAvatar={selectedContract?.metadata?.logo} />
         </Display>
       </div> */}
-      {/* </MainContainer> */}
       <Outlet />
     </>
   );

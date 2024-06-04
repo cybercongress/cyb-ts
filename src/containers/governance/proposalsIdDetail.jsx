@@ -95,7 +95,7 @@ function ProposalsIdDetail({
         <Item marginBottom={15} title="No" value={`${toFixedNumber(no, 2)}%`} />
         <Item
           marginBottom={15}
-          title="NoWithVeto"
+          title="No With Veto"
           value={`${toFixedNumber(noWithVeto, 2)}% (Threshold ${toFixedNumber(
             veto * 100,
             2

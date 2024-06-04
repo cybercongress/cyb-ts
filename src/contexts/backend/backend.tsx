@@ -213,16 +213,30 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return () => channel.close();
   }, [dispatch, createDbApi]);
 
+  const ipfsApi = useMemo(
+    () => (isIpfsInitialized ? backgroundWorkerInstance.ipfsApi : null),
+    [isIpfsInitialized]
+  );
+
+  const ipfsNode = useMemo(
+    () =>
+      isIpfsInitialized ? backgroundWorkerInstance.ipfsApi.getIpfsNode() : null,
+    [isIpfsInitialized]
+  );
+
+  const defferedDbApi = useMemo(
+    () => (isDbInitialized ? backgroundWorkerInstance.defferedDbApi : null),
+    [isDbInitialized]
+  );
+
   const valueMemo = useMemo(
     () =>
       ({
         // backgroundWorker: backgroundWorkerInstance,
         cozoDbRemote: cozoDbWorkerInstance,
-        ipfsApi: backgroundWorkerInstance.ipfsApi,
-        defferedDbApi: backgroundWorkerInstance.defferedDbApi,
-        ipfsNode: isIpfsInitialized
-          ? backgroundWorkerInstance.ipfsApi.getIpfsNode()
-          : null,
+        ipfsApi,
+        defferedDbApi,
+        ipfsNode,
         restartSync: (name: SyncEntryName) =>
           backgroundWorkerInstance.restartSync(name),
         dbApi,

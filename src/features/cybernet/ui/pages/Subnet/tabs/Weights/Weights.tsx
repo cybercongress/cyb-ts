@@ -7,7 +7,7 @@ type Props = {};
 
 function Weights({}: Props) {
   useAdviserTexts({
-    defaultText: 'Subnet weights',
+    // defaultText: 'Subnet weights',
   });
 
   return (

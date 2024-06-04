@@ -5,7 +5,7 @@ import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Account } from 'src/components';
+import { Account, Tooltip } from 'src/components';
 import { getAverageGrade, useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
@@ -16,6 +16,9 @@ import {
   useCurrentContract,
   useCybernet,
 } from 'src/features/cybernet/ui/cybernet.context';
+import { getColor } from '../../Weights/WeightsTable/WeightsTable';
+import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
+import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 
 type Props = {};
 
@@ -89,11 +92,37 @@ function SubnetNeuronsTable({}: Props) {
     netuid,
     metadata,
     max_weights_limit: maxWeightsLimit,
+    max_allowed_validators: maxAllowedValidators,
   } = subnetQuery?.data || {};
 
   const address = useCurrentAddress();
 
   const neurons = neuronsQuery?.data || [];
+
+  const { validatorStakeBreak, neuronsStake } = useMemo(() => {
+    const neurons = neuronsQuery?.data || [];
+
+    const neuronsStake = neurons.map((n) => {
+      const total = n.stake.reduce((acc, s) => acc + s[1], 0);
+
+      return total;
+    });
+
+    const sorted = neuronsStake.sort((a, b) => b - a);
+
+    const { length } = sorted;
+
+    const validatorStakeBreak =
+      sorted[
+        length <= maxAllowedValidators ? length - 1 : maxAllowedValidators - 1
+      ];
+
+    return { validatorStakeBreak, neuronsStake };
+  }, [maxAllowedValidators, neuronsQuery?.data]);
+
+  function checkIsProfessor(uid: number) {
+    return neuronsStake[uid] >= validatorStakeBreak;
+  }
 
   const { block } = useAppData();
 
@@ -103,6 +132,10 @@ function SubnetNeuronsTable({}: Props) {
 
   const vievedBlocks = getData(address);
   const { selectedContract } = useCybernet();
+
+  const { type } = useCurrentContract();
+
+  const isMLVerse = checkIsMLVerse(type);
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
@@ -121,18 +154,35 @@ function SubnetNeuronsTable({}: Props) {
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
+          const { uid } = info.row.original;
+
+          const isProfessor = checkIsProfessor(uid);
 
           return (
-            <Account
-              address={hotkey}
-              avatar
-              markCurrentAddress
-              link={cybernetRoutes.delegator.getLink(
-                'pussy',
-                selectedContract?.metadata?.name,
-                hotkey
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0 7px',
+              }}
+            >
+              <Account
+                address={hotkey}
+                avatar
+                markCurrentAddress
+                link={cybernetRoutes.delegator.getLink(
+                  'pussy',
+                  selectedContract?.metadata?.name,
+                  hotkey
+                )}
+              />
+
+              {isProfessor && (
+                <Tooltip tooltip="professor">
+                  <span>💼</span>
+                </Tooltip>
               )}
-            />
+            </div>
           );
         },
       }),
@@ -189,6 +239,12 @@ function SubnetNeuronsTable({}: Props) {
         columnHelper.accessor('uid', {
           header: 'grade',
           id: 'grade',
+          sortingFn: (rowA, rowB) => {
+            const a = getAverageGrade(allGrades, rowA.original.uid);
+            const b = getAverageGrade(allGrades, rowB.original.uid);
+
+            return a - b;
+          },
           cell: (info) => {
             const uid = info.getValue();
 
@@ -198,12 +254,14 @@ function SubnetNeuronsTable({}: Props) {
 
             const avg = getAverageGrade(allGrades, uid);
 
-            return avg;
+            const color = getColor(avg);
+
+            return <span className={colorStyles[`color_${color}`]}>{avg}</span>;
           },
         })
       );
 
-      if (addressRegisteredInSubnet) {
+      if (addressRegisteredInSubnet && !isMLVerse) {
         col.push(
           // @ts-ignore
           columnHelper.accessor('uid', {
@@ -223,6 +281,7 @@ function SubnetNeuronsTable({}: Props) {
     return col;
   }, [
     allGrades,
+    isMLVerse,
     // block,
     selectedContract,
     // cur,
@@ -240,8 +299,8 @@ function SubnetNeuronsTable({}: Props) {
       initialState={{
         sorting: [
           {
-            id: 'uid',
-            desc: false,
+            id: 'grade',
+            desc: true,
           },
         ],
       }}

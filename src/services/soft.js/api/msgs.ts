@@ -10,10 +10,10 @@ import {
   DEFAULT_GAS_LIMITS,
   BASE_DENOM,
   DENOM_LIQUID,
+  COIN_DECIMALS_RESOURCE,
 } from 'src/constants/config';
 import { calculatePairAmount } from 'src/pages/teleport/swap/utils';
 import { ObjKeyValue } from 'src/types/data';
-import coinDecimalsConfig from 'src/utils/configToken';
 import { authAccounts } from 'src/utils/search/utils';
 import { reduceBalances } from 'src/utils/utils';
 
@@ -23,7 +23,7 @@ const coinFunc = (amount: number, denom: string): Coin => {
 
 const checkDenom = (denom: string) => {
   if (denom === 'millivolt' || denom === 'milliampere') {
-    return coinDecimalsConfig[denom].coinDecimals;
+    return COIN_DECIMALS_RESOURCE;
   }
 
   return 0;

@@ -30,7 +30,7 @@ function MyStake() {
   useAdviserTexts({
     isLoading: loading,
     error: error?.message,
-    defaultText: 'my stake',
+    defaultText: 'my learner',
   });
 
   const total =
@@ -39,7 +39,7 @@ function MyStake() {
     }, 0) || 0;
 
   return (
-    <MainContainer>
+    <>
       <Helmet>
         <title>my learner | cyb</title>
       </Helmet>
@@ -62,7 +62,7 @@ function MyStake() {
       <Display noPaddingX title={<DisplayTitle title="My stake" />}>
         <DelegatesTable />
       </Display>
-    </MainContainer>
+    </>
   );
 }
 

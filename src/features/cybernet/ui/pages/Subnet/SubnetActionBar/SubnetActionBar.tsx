@@ -6,6 +6,9 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import useCybernetTexts from '../../../useCybernetTexts';
+import { useCurrentContract, useCybernet } from '../../../cybernet.context';
+import { ContractTypes } from 'src/features/cybernet/types';
+import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 
 type Props = {
   netuid: number;
@@ -32,7 +35,7 @@ function SubnetActionBar({
   const { setAdviser } = useAdviser();
   const { getText } = useCybernetTexts();
 
-  const canRegister = addressSubnetRegistrationStatus === null;
+  const notRegistered = addressSubnetRegistrationStatus === null;
 
   function handleSuccess() {
     setAdviser('Registered', 'green');
@@ -69,7 +72,26 @@ function SubnetActionBar({
   let content;
   let onClickBack: undefined | (() => void);
 
-  if (canRegister && netuid === 0) {
+  const { type } = useCurrentContract();
+
+  const isMlVerse = type === ContractTypes.ML;
+
+  let text;
+
+  // refactor ifs
+  if (notRegistered && !isMlVerse) {
+    text = `join ${getText('subnetwork')}`;
+  } else if (isMlVerse) {
+    text = 'use cli to register in ML verse subnets';
+  }
+
+  useAdviserTexts({
+    defaultText: text,
+  });
+
+  const isRoot = netuid === 0;
+
+  if (notRegistered && netuid === 0) {
     return (
       <ActionBar
         button={{
@@ -83,9 +105,18 @@ function SubnetActionBar({
 
   switch (step) {
     case Steps.INITIAL:
-      if (!canRegister) {
+      if (!notRegistered) {
         break;
       }
+
+      if (!isRoot && isMlVerse) {
+        button = {
+          text: 'Registration is disabled',
+          disabled: true,
+        };
+        break;
+      }
+
       button = {
         text: `Register to ${getText('subnetwork')}`,
         onClick: () => setStep(Steps.REGISTER_CONFIRM),

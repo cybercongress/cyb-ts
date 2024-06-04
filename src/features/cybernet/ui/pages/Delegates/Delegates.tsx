@@ -21,14 +21,12 @@ function Delegates() {
   });
 
   return (
-    <MainContainer resetMaxWidth>
-      <Display
-        noPaddingX
-        title={<DisplayTitle title={getText('delegate', true)} />}
-      >
-        <DelegatesTable />
-      </Display>
-    </MainContainer>
+    <Display
+      noPaddingX
+      title={<DisplayTitle title={getText('delegate', true)} />}
+    >
+      <DelegatesTable />
+    </Display>
   );
 }
 

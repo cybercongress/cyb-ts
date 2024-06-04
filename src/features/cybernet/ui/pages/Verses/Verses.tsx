@@ -7,11 +7,9 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 
 function Verses() {
   return (
-    <MainContainer resetMaxWidth>
-      <Display title={<DisplayTitle title="Verses" />} noPaddingX>
-        <ContractsTable />
-      </Display>
-    </MainContainer>
+    <Display title={<DisplayTitle title="Verses" />} noPaddingX>
+      <ContractsTable />
+    </Display>
   );
 }
 

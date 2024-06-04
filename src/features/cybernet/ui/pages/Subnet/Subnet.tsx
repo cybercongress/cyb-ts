@@ -83,7 +83,7 @@ function Subnet() {
   }
 
   return (
-    <MainContainer resetMaxWidth>
+    <>
       <SubnetHeader />
 
       <Tabs options={tabs} selected={tab || 'delegates'} />
@@ -141,7 +141,7 @@ function Subnet() {
           refetch();
         }}
       />
-    </MainContainer>
+    </>
   );
 }
 
