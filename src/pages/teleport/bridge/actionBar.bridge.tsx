@@ -10,7 +10,6 @@ import BigNumber from 'bignumber.js';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { Option } from 'src/types';
 import { Coin } from '@cosmjs/launchpad';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 import {
   MsgTransferEncodeObject,
   SigningStargateClient,
@@ -59,12 +58,12 @@ type Props = {
   ibcClient: null | SigningStargateClient;
   denomIbc: null | string;
   sourceChannel: string | null;
+  coinDecimals: number;
 };
 
 function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   const { pingTxsIbc } = useIbcHistory();
   const { signingClient, signer } = useSigningClient();
-  const { tracesDenom } = useIbcDenom();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -82,6 +81,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     denomIbc,
     sourceChannel,
     networkB,
+    coinDecimals,
   } = stateActionBar;
 
   const clearState = () => {
@@ -93,149 +93,149 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
   };
 
   const depositOnClick = useCallback(async () => {
-    if (ibcClient && denomIbc && signer && tracesDenom) {
-      const [{ address }] = await ibcClient.signer.getAccounts();
-      const [{ address: counterpartyAccount }] = await signer.getAccounts();
-      const responseChainId = await ibcClient.getChainId();
+    if (!ibcClient || !denomIbc || !signer) {
+      return;
+    }
 
-      setStage(STAGE_SUBMITTED);
+    const [{ address }] = await ibcClient.signer.getAccounts();
+    const [{ address: counterpartyAccount }] = await signer.getAccounts();
+    const responseChainId = await ibcClient.getChainId();
 
-      const sourcePort = 'transfer';
+    setStage(STAGE_SUBMITTED);
 
-      const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
+    const sourcePort = 'transfer';
+
+    const timeoutTimestamp = Long.fromString(
+      `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
+    );
+
+    const amount = convertAmountReverce(tokenAmount, coinDecimals);
+
+    const transferAmount = coinFunc(amount, denomIbc);
+    const msg: MsgTransferEncodeObject = {
+      typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
+      value: MsgTransfer.fromPartial({
+        sourcePort,
+        sourceChannel: sourceChannel || '',
+        sender: address,
+        receiver: counterpartyAccount,
+        timeoutTimestamp: BigInt(timeoutTimestamp.toNumber()),
+        token: transferAmount,
+      }),
+    };
+
+    try {
+      const response = await ibcClient.signAndBroadcast(
+        address,
+        [msg],
+        1.5,
+        ''
       );
 
-      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(denomIbc);
-      const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
+      console.log('response', response);
 
-      const transferAmount = coinFunc(amount, denomIbc);
-      const msg: MsgTransferEncodeObject = {
-        typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-        value: MsgTransfer.fromPartial({
-          sourcePort,
-          sourceChannel: sourceChannel || '',
-          sender: address,
-          receiver: counterpartyAccount,
-          timeoutTimestamp: BigInt(timeoutTimestamp.toNumber()),
-          token: transferAmount,
-        }),
-      };
-
-      try {
-        const response = await ibcClient.signAndBroadcast(
-          address,
-          [msg],
-          1.5,
-          ''
+      if (response.code === 0) {
+        setTxHashIbc(response.transactionHash);
+        setLinkIbcTxs(
+          `${networks[responseChainId].explorerUrlToTx.replace(
+            '{txHash}',
+            response.transactionHash.toUpperCase()
+          )}`
         );
 
-        console.log('response', response);
-
-        if (response.code === 0) {
-          setTxHashIbc(response.transactionHash);
-          setLinkIbcTxs(
-            `${networks[responseChainId].explorerUrlToTx.replace(
-              '{txHash}',
-              response.transactionHash.toUpperCase()
-            )}`
-          );
-          const [{ coinDecimals: coinDecimalsSelect }] =
-            tracesDenom(tokenSelect);
-          const amountSelect = convertAmountReverce(
-            tokenAmount,
-            coinDecimalsSelect
-          );
-          const transferData = {
-            txHash: response.transactionHash,
-            address: counterpartyAccount,
-            sourceChainId: responseChainId,
-            destChainId: networkB,
-            sender: address,
-            recipient: counterpartyAccount,
-            createdAt: getNowUtcTime(),
-            amount: coinFunc(amountSelect, tokenSelect),
-          };
-          pingTxsIbc(ibcClient, transferData);
-          setStage(STAGE_CONFIRMED_IBC);
-          // if (response.rawLog.length > 0) {
-          //   parseRawLog(response.rawLog);
-          // }
-        } else {
-          setTxHashIbc(null);
-          setErrorMessage(response.rawLog.toString());
-          setStage(STAGE_ERROR);
-        }
-      } catch (e) {
-        console.error(`error: `, e);
+        const transferData = {
+          txHash: response.transactionHash,
+          address: counterpartyAccount,
+          sourceChainId: responseChainId,
+          destChainId: networkB,
+          sender: address,
+          recipient: counterpartyAccount,
+          createdAt: getNowUtcTime(),
+          amount: coinFunc(amount, tokenSelect),
+        };
+        pingTxsIbc(ibcClient, transferData);
+        setStage(STAGE_CONFIRMED_IBC);
+        // if (response.rawLog.length > 0) {
+        //   parseRawLog(response.rawLog);
+        // }
+      } else {
         setTxHashIbc(null);
-        setErrorMessage(e.toString());
+        setErrorMessage(response.rawLog.toString());
         setStage(STAGE_ERROR);
       }
+    } catch (e) {
+      console.error(`error: `, e);
+      setTxHashIbc(null);
+      setErrorMessage(e.toString());
+      setStage(STAGE_ERROR);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ibcClient, tokenAmount, denomIbc, signingClient, networkB]);
 
   const withdrawOnClick = useCallback(async () => {
-    if (signer && signingClient && tracesDenom) {
-      let prefix;
-      setStage(STAGE_SUBMITTED);
-      if (networks[networkB]) {
-        prefix = networks[networkB].prefix;
-      }
-      const [{ address }] = await signer.getAccounts();
-      const sourcePort = 'transfer';
-      const counterpartyAccount = fromBech32(address, prefix);
-      const timeoutTimestamp = Long.fromString(
-        `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
+    if (!signer || !signingClient) {
+      return;
+    }
+
+    let prefix;
+    setStage(STAGE_SUBMITTED);
+    if (networks[networkB]) {
+      prefix = networks[networkB].prefix;
+    }
+    const [{ address }] = await signer.getAccounts();
+    const sourcePort = 'transfer';
+    const counterpartyAccount = fromBech32(address, prefix);
+    const timeoutTimestamp = Long.fromString(
+      `${new Date().getTime() + TIMEOUT_TIMESTAMP}000000`
+    );
+
+    const amount = convertAmountReverce(tokenAmount, coinDecimals);
+    const transferAmount = coinFunc(amount, tokenSelect);
+    const msg = {
+      typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
+      value: {
+        sourcePort,
+        sourceChannel,
+        sender: address,
+        receiver: counterpartyAccount,
+        timeoutTimestamp,
+        token: transferAmount,
+      },
+    };
+    try {
+      const response = await signingClient.signAndBroadcast(
+        address,
+        [msg],
+        fee,
+        ''
       );
-      const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenSelect);
-      const amount = convertAmountReverce(tokenAmount, coinDecimalsA);
-      const transferAmount = coinFunc(amount, tokenSelect);
-      const msg = {
-        typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-        value: {
-          sourcePort,
-          sourceChannel,
-          sender: address,
-          receiver: counterpartyAccount,
-          timeoutTimestamp,
-          token: transferAmount,
-        },
-      };
-      try {
-        const response = await signingClient.signAndBroadcast(
+      if (response.code === 0) {
+        setTxHash(response.transactionHash);
+        const ChainId = await signingClient.getChainId();
+        const transferData = {
+          txHash: response.transactionHash,
           address,
-          [msg],
-          fee,
-          ''
-        );
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
-          const ChainId = await signingClient.getChainId();
-          const transferData = {
-            txHash: response.transactionHash,
-            address,
-            sourceChainId: ChainId,
-            destChainId: networkB,
-            sender: address,
-            recipient: counterpartyAccount,
-            createdAt: getNowUtcTime(),
-            amount: transferAmount,
-          };
-          pingTxsIbc(signingClient, transferData);
-        } else {
-          setTxHash(undefined);
-          setErrorMessage(response.rawLog.toString());
-          setStage(STAGE_ERROR);
-        }
-      } catch (e) {
-        console.error(`error: `, e);
+          sourceChainId: ChainId,
+          destChainId: networkB,
+          sender: address,
+          recipient: counterpartyAccount,
+          createdAt: getNowUtcTime(),
+          amount: transferAmount,
+        };
+        pingTxsIbc(signingClient, transferData);
+      } else {
         setTxHash(undefined);
-        setErrorMessage(e.toString());
+        setErrorMessage(response.rawLog.toString());
         setStage(STAGE_ERROR);
       }
+    } catch (e) {
+      console.error(`error: `, e);
+      setTxHash(undefined);
+      setErrorMessage(e.toString());
+      setStage(STAGE_ERROR);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenSelect, signer, tokenAmount, sourceChannel, networkB]);
 

@@ -5,6 +5,8 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import { ActionBar } from 'src/components';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
+import { useCurrentContract } from 'src/features/cybernet/ui/cybernet.context';
+import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 
 type Props = {
   addressRegisteredInSubnet: boolean;
@@ -37,6 +39,9 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
       newGrades: { save, data: newGrades, isGradesUpdated, isLoading },
     },
   } = useSubnet();
+  const { type } = useCurrentContract();
+
+  const isMLVerse = checkIsMLVerse(type);
 
   // fix
   if (!subnetNeurons || !subnetQuery.data) {
@@ -44,7 +49,6 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   }
 
   return (
-    // <MainContainer width="100%">
     <Display
       noPaddingX
       // title={
@@ -53,7 +57,7 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
     >
       <SubnetNeuronsTable />
 
-      {addressRegisteredInSubnet && !rootSubnet && (
+      {addressRegisteredInSubnet && !rootSubnet && !isMLVerse && (
         <ActionBar
           button={{
             text: 'update grades',
@@ -64,7 +68,6 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
         />
       )}
     </Display>
-    // </MainContainer>
   );
 }
 

@@ -90,83 +90,78 @@ function KeyItem({ account, selected, selectKey }: Props) {
   }
 
   return (
-    <ContainerGradientText status="green">
-      <div
-        className={cx(styles.wrapper, {
-          [styles.selected]: selected,
-        })}
-        onClick={() => selectKey(bech32)}
-      >
-        <div className={styles.imageWrapper}>
-          <img src={require('./images/1.png')} alt="" />
+    <div
+      className={cx(styles.wrapper, {
+        [styles.selected]: selected,
+      })}
+      onClick={() => selectKey(bech32)}
+    >
+      <div className={styles.imageWrapper}>
+        <img src={require('./images/1.png')} alt="" />
 
-          {isActive && (
-            <Pill text="active" color="green" className={styles.active} />
-          )}
-        </div>
-
-        <div className={styles.content}>
-          key <Pill color="white" text={name || 'noname'} /> <br />
-          {['keplr'].includes(keys) && (
-            <>
-              signed by <Pill color="red" text={keys} />{' '}
-            </>
-          )}
-          {isHardware && (
-            <>
-              stored in <Pill color="red" text={keys} />
-            </>
-          )}{' '}
-          {path && (
-            <>
-              and located at the path <Pill text={path.join('/')} /> <br />
-            </>
-          )}
-          from neuron <Pill text={<MusicalAddress address={bech32} />} /> <br />
-          gives{' '}
-          <Pill
-            color={isReadOnly ? 'blue' : 'green'}
-            text={isReadOnly ? 'read' : 'write'}
-          />{' '}
-          access
-          {(passportsLoading ||
-            passportIds.data?.tokens.length ||
-            activePassport.data) && (
-            <>
-              {' '}
-              to avatars: <br />
-            </>
-          )}
-          {passportsLoading && <Loader2 />}
-          {(activePassport.data || !!passportIds.data?.tokens?.length) && (
-            <div className={styles.passports}>
-              {activePassport.data &&
-                renderPassportPill(activePassport.data, true)}
-              {passportIds.data?.tokens?.map((tokenId) => {
-                return (
-                  <PassportLoader
-                    key={tokenId}
-                    tokenId={tokenId}
-                    render={(passport) => {
-                      if (
-                        activePassport.data &&
-                        equals(
-                          activePassport.data.extension,
-                          passport.extension
-                        )
-                      ) {
-                        return null;
-                      }
-                      return renderPassportPill(passport);
-                    }}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </div>
+        {isActive && (
+          <Pill text="active" color="green" className={styles.active} />
+        )}
       </div>
-    </ContainerGradientText>
+
+      <div className={styles.content}>
+        key <Pill color="white" text={name || 'noname'} /> <br />
+        {['keplr'].includes(keys) && (
+          <>
+            signed by <Pill color="red" text={keys} />{' '}
+          </>
+        )}
+        {isHardware && (
+          <>
+            stored in <Pill color="red" text={keys} />
+          </>
+        )}{' '}
+        {path && (
+          <>
+            and located at the path <Pill text={path.join('/')} /> <br />
+          </>
+        )}
+        from neuron <Pill text={<MusicalAddress address={bech32} />} /> <br />
+        gives{' '}
+        <Pill
+          color={isReadOnly ? 'blue' : 'green'}
+          text={isReadOnly ? 'read' : 'write'}
+        />{' '}
+        access
+        {(passportsLoading ||
+          passportIds.data?.tokens.length ||
+          activePassport.data) && (
+          <>
+            {' '}
+            to avatars: <br />
+          </>
+        )}
+        {passportsLoading && <Loader2 />}
+        {(activePassport.data || !!passportIds.data?.tokens?.length) && (
+          <div className={styles.passports}>
+            {activePassport.data &&
+              renderPassportPill(activePassport.data, true)}
+            {passportIds.data?.tokens?.map((tokenId) => {
+              return (
+                <PassportLoader
+                  key={tokenId}
+                  tokenId={tokenId}
+                  render={(passport) => {
+                    if (
+                      activePassport.data &&
+                      equals(activePassport.data.extension, passport.extension)
+                    ) {
+                      return null;
+                    }
+                    return renderPassportPill(passport);
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

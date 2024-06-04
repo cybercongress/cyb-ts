@@ -157,7 +157,7 @@ function ContractsTable() {
                 }
 
                 return (
-                  <Link to={routes.contracts.byId.getLink(value)}>
+                  <Link to={routes.contracts.byAddress.getLink(value)}>
                     {trimString(value, 9, 3)}
                   </Link>
                 );

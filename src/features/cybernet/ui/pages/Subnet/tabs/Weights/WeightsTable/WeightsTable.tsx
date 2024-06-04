@@ -14,8 +14,23 @@ import {
   useCurrentContract,
   useCybernet,
 } from 'src/features/cybernet/ui/cybernet.context';
+import colorStyles from './temp.module.scss';
 
 type Props = {};
+
+export function getColor(value) {
+  let color;
+
+  if (value < 3) {
+    color = 'red';
+  } else if (value < 6) {
+    color = 'orange';
+  } else {
+    color = 'green';
+  }
+
+  return color;
+}
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
@@ -146,17 +161,11 @@ function WeightsTable({}: Props) {
                     return '-';
                   }
 
-                  let color;
+                  const color = getColor(val);
 
-                  if (val < 3) {
-                    color = 'red';
-                  } else if (val < 6) {
-                    color = 'orange';
-                  } else {
-                    color = 'green';
-                  }
-
-                  return <div className={styles[`color_${color}`]}>{val}</div>;
+                  return (
+                    <div className={colorStyles[`color_${color}`]}>{val}</div>
+                  );
                 },
               });
             })

@@ -67,7 +67,7 @@ function Delegator() {
   const totalStake = nominators?.reduce((acc, [, stake]) => acc + stake, 0);
 
   return (
-    <MainContainer>
+    <>
       {myStake && data.delegate !== currentAddress && (
         <Display title={<DisplayTitle title="My stake" />}>
           <AmountDenom amountValue={myStake} denom="pussy" />
@@ -223,7 +223,7 @@ function Delegator() {
         stakedAmount={myStake}
         onSuccess={refetch}
       />
-    </MainContainer>
+    </>
   );
 }
 

@@ -43,7 +43,10 @@ function Main() {
   if (!nameOrAddress && contracts.length) {
     return (
       <Navigate
-        to={cybernetRoutes.verse.getLink('pussy', contracts[0].address)}
+        to={cybernetRoutes.verse.getLink(
+          'pussy',
+          selectedContract?.metadata?.name || contracts[0].address
+        )}
       />
     );
   }
@@ -59,13 +62,15 @@ function Main() {
   const { staker_apr, validator_apr } = selectedContract?.economy || {};
 
   return (
-    <MainContainer resetMaxWidth>
+    <>
       <Stars />
       <Banner />
 
-      <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
-        <ContractsTable />
-      </Display>
+      <div className={styles.verses}>
+        <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
+          <ContractsTable />
+        </Display>
+      </div>
 
       <div className={styles.actions}>
         <div className={styles.bgWrapper}>
@@ -213,7 +218,7 @@ function Main() {
           </Display>
         </div>
       </div>
-    </MainContainer>
+    </>
   );
 }
 

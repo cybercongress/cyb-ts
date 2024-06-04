@@ -3,6 +3,8 @@ import { useSubnet } from '../subnet.context';
 import { useEffect, useRef } from 'react';
 import { usePreviousPage } from 'src/contexts/previousPage';
 import usePrevious from 'src/hooks/usePrevious';
+import RcSlider from 'src/containers/mint/components/Slider/Slider';
+import Slider from 'rc-slider';
 
 type Props = {
   uid: number;
@@ -55,6 +57,23 @@ function GradeSetterInput({ uid }: Props) {
           newGrades?.setGrade(uid.toString(), +e);
         }}
       />
+
+      {/* <Slider
+        min={0}
+        max={10}
+        onChange={(amount: number) => {
+          newGrades?.setGrade(uid.toString(), amount);
+        }}
+        value={newGrades?.data?.[uid] || 0}
+        railStyle={{
+          backgroundColor: 'red',
+        }}
+        marks={{
+          0: '0',
+          5: '5',
+          10: '10',
+        }}
+      /> */}
     </div>
   );
 }

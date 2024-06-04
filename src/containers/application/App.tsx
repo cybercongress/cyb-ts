@@ -69,6 +69,11 @@ function App() {
   // }, [communityLoaded, community, dispatch]);
 
   useEffect(() => {
+    // tabs
+    if (matchPath(routes.senateProposal.path, location.pathname)) {
+      return;
+    }
+
     window.scrollTo(0, 0);
   }, [location.pathname]);
 

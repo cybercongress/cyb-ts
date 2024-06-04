@@ -8,7 +8,7 @@ type optionsProps = {
   text?: string;
 };
 
-export type Props = {
+type Props = {
   options: optionsProps[];
   selected: string;
 };

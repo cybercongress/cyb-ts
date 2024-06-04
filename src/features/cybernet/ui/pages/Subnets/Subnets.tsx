@@ -28,7 +28,7 @@ function Subnets() {
     defaultText: 'explore the full list of faculties',
   });
   return (
-    <MainContainer resetMaxWidth>
+    <>
       <Helmet>
         <title>{getText('subnetwork', true)} | cyb</title>
       </Helmet>
@@ -73,7 +73,7 @@ function Subnets() {
           <SubnetsTable data={graphSubnets || []} />
         </Display>
       )}
-    </MainContainer>
+    </>
   );
 }
 

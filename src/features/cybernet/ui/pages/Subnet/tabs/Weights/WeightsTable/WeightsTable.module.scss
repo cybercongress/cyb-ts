@@ -14,18 +14,6 @@
   }
 }
 
-.color_ {
-  &red {
-    color: var(--red);
-  }
-  &green {
-    color: var(--green-light);
-  }
-  &orange {
-    color: orange;
-  }
-}
-
 .headerCell {
   position: relative;
   display: flex;
