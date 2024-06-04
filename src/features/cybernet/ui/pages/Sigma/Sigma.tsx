@@ -57,7 +57,7 @@ function Item({ contractAddress, callback }) {
               to={
                 !isLegacy
                   ? cybernetRoutes.verse.getLink('pussy', contractAddress)
-                  : routes.contracts.byId.getLink(contractAddress)
+                  : routes.contracts.byAddress.getLink(contractAddress)
               }
             >
               {contractName || trimString(contractAddress, 6, 6)}
