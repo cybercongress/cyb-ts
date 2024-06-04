@@ -102,14 +102,13 @@ function SubnetsTable({ data }: Props) {
           const value = info.getValue();
 
           return (
-            <Link to={routes.neuron.getLink(value)}>
-              <Account
-                address={value}
-                avatar
-                markCurrentAddress
-                // link={'../delegators/' + info.getValue()}
-              />
-            </Link>
+            <Account
+              address={value}
+              avatar
+              link={routes.neuron.getLink(value)}
+              markCurrentAddress
+              // link={'../delegators/' + info.getValue()}
+            />
           );
         },
       }),

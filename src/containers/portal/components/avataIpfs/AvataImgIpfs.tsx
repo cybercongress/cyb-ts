@@ -21,7 +21,7 @@ function AvatarImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   }, [fetchWithDetails, cidAvatar]);
 
   const avatarImage =
-    data ||
+    avatar ||
     (addressCyber && getRoboHashImage(addressCyber)) ||
     img ||
     getRoboHashImage('null');

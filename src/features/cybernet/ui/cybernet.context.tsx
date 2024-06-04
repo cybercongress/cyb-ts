@@ -91,8 +91,6 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
 
   const contracts = useMemo(() => [c1, c2], [c1, c2]);
 
-  console.log('verses', contracts);
-
   const currentContract =
     nameOrAddress &&
     contracts.find(
@@ -131,6 +129,8 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   return (
     <CybernetContext.Provider
       value={useMemo(() => {
+        console.log('verses', contracts);
+
         return {
           contracts,
           subnetsQuery,
