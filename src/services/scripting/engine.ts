@@ -270,7 +270,6 @@ function enigine(): RuneEngine {
     callback?: ScriptCallback
   ): Promise<ScriptMyCampanion> => {
     const [resultType, script] = getParticleScriptOrAction();
-
     if (resultType === 'error') {
       return {
         action: 'error',
@@ -290,7 +289,6 @@ function enigine(): RuneEngine {
       },
       callback
     );
-
     if (output.result.action === 'error') {
       return {
         action: 'error',

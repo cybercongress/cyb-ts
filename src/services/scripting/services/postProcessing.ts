@@ -28,7 +28,7 @@ export const uint8ArrayToTextOrSkip = (
     return undefined;
   }
 
-  const contentType = mimeToBaseContentType(content?.meta?.mime);
+  const contentType = content?.meta?.contentType || 'other';
 
   if (contentType === 'text' && content.result instanceof Uint8Array) {
     return {
@@ -38,11 +38,13 @@ export const uint8ArrayToTextOrSkip = (
     };
   }
 
-  return content;
+  return { ...content, contentType };
 };
 
 const contentToStringOrEmpty = (content: IPFSContent) => {
-  if (content.contentType !== 'text') {
+  const contentType = content?.meta?.contentType || 'other';
+
+  if (contentType !== 'text') {
     return '';
   }
   if (content.result instanceof Uint8Array) {
@@ -68,7 +70,7 @@ export async function postProcessIpfContent(
 ): Promise<IPFSContentMutated> {
   try {
     const { cid, controller, source } = item;
-    const { contentType } = content;
+    const { meta } = content;
     // TODO: refactor
     // textPreview only some beggining of content
     // refactor to use all the content
@@ -76,7 +78,7 @@ export async function postProcessIpfContent(
 
     const mutation = await rune.personalProcessor({
       cid,
-      contentType,
+      contentType: meta.contentType,
       content: contentToStringOrEmpty(content),
     });
 
@@ -104,11 +106,12 @@ export async function postProcessIpfContent(
         size: mutation.content?.length,
         sizeLocal: mutation.content?.length,
         mime: 'text/plain',
+        contentType: 'text',
       } as IPFSContentMeta;
       return {
         ...content,
         result: mutation.content,
-        textPreview: createTextPreview(mutation.content),
+        textPreview: createTextPreview(mutation.content, 'text'),
         meta,
         mutation: 'modified',
       };

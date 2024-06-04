@@ -24,10 +24,7 @@ import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 import { GetEmbeddingFunc } from 'src/services/backend/workers/background/worker';
 
-import {
-  mimeToBaseContentType,
-  parseArrayLikeToDetails,
-} from 'src/services/ipfs/utils/content';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { replaceQuotes, shortenString } from 'src/utils/string';
 import { IPFSContentMutated } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
@@ -41,7 +38,7 @@ import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
 const QUEUE_BATCH_SIZE = 100;
 
 export const getContentToEmbed = async (content: IPFSContentMutated) => {
-  const contentType = { content }; //mimeToBaseContentType(content?.meta?.mime || '');
+  const contentType = content?.meta?.contentType || '';
 
   // create embedding for allowed content
   if (contentType === 'text') {

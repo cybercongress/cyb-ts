@@ -7,7 +7,10 @@ import {
   IPFSContentDetails,
   IPFSContentMutated,
   IpfsBaseContentType,
+  IpfsContentSource,
+  IpfsContentType,
   IpfsGatewayContentType,
+  MimeBasedContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
 import { shortenString } from 'src/utils/string';
@@ -52,9 +55,10 @@ export const chunksToBlob = (
   mime: string | undefined
 ) => new Blob(chunks, mime ? { type: mime } : {});
 
+// eslint-disable-next-line import/no-unused-modules
 export const mimeToBaseContentType = (
   mime: string | undefined
-): IpfsBaseContentType => {
+): IpfsContentType => {
   if (!mime) {
     return 'other';
   }
@@ -94,9 +98,9 @@ export const parseArrayLikeToDetails = async (
     };
   }
 
-  const { result, meta, contentType } = content;
+  const { result, meta } = content;
 
-  const mime = meta?.mime;
+  const { mime, contentType } = meta;
 
   if (!mime) {
     return {
@@ -105,7 +109,6 @@ export const parseArrayLikeToDetails = async (
       text: `Can't detect MIME for ${cid.toString()}`,
     };
   }
-  // const contentType = mimeToBaseContentType(mime);
   const contentCid = content.cid;
 
   const response: IPFSContentDetails = {
@@ -214,7 +217,7 @@ export const contentToUint8Array = async (
 
 export const createTextPreview = (
   array: Uint8Array | undefined | string,
-  mime?: string,
+  contentType: IpfsContentType,
   previewLength = 150
 ) => {
   if (!array) {
@@ -223,7 +226,7 @@ export const createTextPreview = (
   if (typeof array === 'string') {
     return array.slice(0, previewLength);
   }
-  return mime && mime === 'text/plain'
+  return contentType && contentType === 'text'
     ? uint8ArrayToAsciiString(array).slice(0, previewLength)
     : undefined;
 };

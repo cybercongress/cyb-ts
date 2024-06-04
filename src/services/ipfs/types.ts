@@ -56,25 +56,6 @@ export type getIpfsUserGatewanAndNodeType = {
   userGateway: string | undefined;
 };
 
-export type IPFSContentMeta = IpfsFileStats & {
-  blockSizes?: never[]; // ???
-  data?: string; // ???
-  mime?: string;
-  local?: boolean;
-  statsTime?: number;
-  catTime?: number;
-  pinTime?: number;
-};
-
-type IPFSData =
-  | Blob
-  | Buffer
-  | string
-  | ReadableStream<Uint8Array>
-  | Uint8Array
-  | File
-  | Blob[];
-
 export type Uint8ArrayWithMime = {
   mime: string;
   rawData: Uint8Array;
@@ -85,6 +66,7 @@ export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | Readab
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
 
 export type IpfsGatewayContentType = 'video' | 'audio';
+export type MimeBasedContentType = 'image' | 'pdf' | 'text' | 'other';
 export type IpfsBaseContentType =
   | IpfsGatewayContentType
   | 'image'
@@ -93,6 +75,17 @@ export type IpfsBaseContentType =
   | 'other';
 
 export type IpfsContentType = IpfsBaseContentType | 'link' | 'html' | 'cid';
+
+export type IPFSContentMeta = IpfsFileStats & {
+  blockSizes?: never[]; // ???
+  data?: string; // ???
+  mime?: string;
+  local?: boolean;
+  statsTime?: number;
+  catTime?: number;
+  pinTime?: number;
+  contentType?: IpfsContentType;
+};
 
 export type IPFSContentDetails =
   | {

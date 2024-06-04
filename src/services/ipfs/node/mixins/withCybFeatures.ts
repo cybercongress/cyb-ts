@@ -17,8 +17,9 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
       parseAs?: IpfsContentType,
       abortController?: AbortController
     ) {
-      const response = await getIPFSContent(cid, this, abortController);
-      const details = await parseArrayLikeToDetails(response, cid);
+      const content = await getIPFSContent(cid, this, abortController);
+
+      const details = await parseArrayLikeToDetails(content, cid);
       return !parseAs
         ? details
         : details?.type === parseAs

@@ -10,7 +10,7 @@ module.exports = merge(commonConfig, {
     https: true,
     host: 'localhost',
     port: process.env.PORT_APP || '3001',
-    hot: false,
+    hot: true,
     // ngrok tunnel
     allowedHosts: ['.ngrok-free.app'],
     headers: {
@@ -19,9 +19,9 @@ module.exports = merge(commonConfig, {
     historyApiFallback: true,
   },
   plugins: [
-    // new ReactRefreshWebpackPlugin({
-    //   overlay: false,
-    // }),
+    new ReactRefreshWebpackPlugin({
+      overlay: false,
+    }),
     new webpack.DefinePlugin({
       ...commonConfig.plugins.find(
         (plugin) => plugin.constructor.name === 'DefinePlugin'
