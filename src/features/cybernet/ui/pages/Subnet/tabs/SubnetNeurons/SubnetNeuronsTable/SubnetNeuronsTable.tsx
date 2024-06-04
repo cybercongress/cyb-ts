@@ -120,8 +120,6 @@ function SubnetNeuronsTable({}: Props) {
     return { validatorStakeBreak, neuronsStake };
   }, [maxAllowedValidators, neuronsQuery?.data]);
 
-  console.log(validatorStakeBreak, neuronsStake);
-
   function checkIsProfessor(uid: number) {
     return neuronsStake[uid] >= validatorStakeBreak;
   }

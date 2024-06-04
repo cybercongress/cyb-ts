@@ -117,8 +117,6 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  console.log(neuronsQuery);
-
   const myUid = neuronsQuery.data?.find(
     (n) => n.hotkey === currentAddress
   )?.uid;

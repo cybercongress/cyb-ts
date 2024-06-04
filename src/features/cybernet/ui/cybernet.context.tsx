@@ -48,8 +48,6 @@ function useCybernetContractWithData(address: string) {
 
   const isMainPage = !!matchPath(cybernetRoutes.verse.path, location.pathname);
 
-  console.log('isMainPage', isMainPage);
-
   const metadataQuery = useQueryCybernetContract<Metadata>({
     contractAddress: address,
     query: {
@@ -93,7 +91,7 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
 
   const contracts = useMemo(() => [c1, c2], [c1, c2]);
 
-  console.log('contracts', contracts);
+  console.log('verses', contracts);
 
   const currentContract =
     nameOrAddress &&
