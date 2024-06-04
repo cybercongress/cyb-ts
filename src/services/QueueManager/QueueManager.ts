@@ -171,11 +171,13 @@ class QueueManager {
       return fetchIpfsContent(cid, source, {
         controller,
         node: this.node,
-        headers: {
-          [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
-        },
+        // TODO : disable
+        // headers: {
+        //   [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
+        // },
       }).then(async (content) => {
         let result = uint8ArrayToTextOrSkip(content);
+
         if (!item.postProcessing) {
           result = content;
         } else {
