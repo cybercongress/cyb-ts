@@ -289,6 +289,7 @@ function enigine(): RuneEngine {
       },
       callback
     );
+    console.log('=====ask', cid, contentType, content);
     if (output.result.action === 'error') {
       return {
         action: 'error',
