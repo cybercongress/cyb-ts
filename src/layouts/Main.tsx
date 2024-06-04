@@ -17,6 +17,7 @@ import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
 import ActionBar from './ui/ActionBar';
 import CircularMenu from 'src/components/appMenu/CircularMenu';
+import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -113,6 +114,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
         {/* <ActionBar /> */}
 
         <div className={styles.Time}>
+          <TimeHistory />
           <TimeFooter />
         </div>
         {/* <Link to={routes.social.path}>contacts</Link> */}

@@ -1,0 +1,17 @@
+$size-img: 20px;
+
+.wrapper {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 70px $size-img;
+
+  span {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+
+  img {
+    width: $size-img;
+    height: $size-img;
+  }
+}

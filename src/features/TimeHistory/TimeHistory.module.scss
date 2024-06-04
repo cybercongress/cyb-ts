@@ -1,0 +1,12 @@
+.wrapper {
+  display: grid;
+  gap: 20px;
+  width: 200px;
+  height: 160px;
+  padding-bottom: 20px;
+
+  position: absolute;
+  bottom: 20px;
+  overflow: hidden scroll;
+  right: -5vw;
+}
