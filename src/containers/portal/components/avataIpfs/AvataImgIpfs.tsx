@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import cx from 'classnames';
@@ -7,35 +6,25 @@ import cx from 'classnames';
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
-function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
+function AvatarImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   const { fetchWithDetails } = useQueueIpfsContent();
 
-  const [avatar, setAvatar] = useState<string | null>(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
     async () => {
       const response = await fetchWithDetails!(cidAvatar, 'image');
-      return response?.content || '';
+      return response?.content || null;
     },
-
     {
       enabled: Boolean(fetchWithDetails && cidAvatar),
-      staleTime: 10 * (60 * 1000), // 10 mins
+      // staleTime: 10 * (60 * 1000), // 10 mins
       cacheTime: 15 * (60 * 1000), // 15 mins
       retry: 0,
     }
   );
 
-  useEffect(() => {
-    if (!data) {
-      setAvatar(null);
-    } else {
-      setAvatar(data);
-    }
-  }, [data]);
-
   const avatarImage =
-    avatar ||
+    data ||
     (addressCyber && getRoboHashImage(addressCyber)) ||
     img ||
     getRoboHashImage('null');
@@ -50,4 +39,4 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   );
 }
 
-export default AvataImgIpfs;
+export default AvatarImgIpfs;

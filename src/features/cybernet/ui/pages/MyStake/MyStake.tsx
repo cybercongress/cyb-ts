@@ -30,7 +30,7 @@ function MyStake() {
   useAdviserTexts({
     isLoading: loading,
     error: error?.message,
-    defaultText: 'my stake',
+    defaultText: 'my learner',
   });
 
   const total =
