@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-
+import styles from './styles.module.scss';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../components';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
 import { timeSince, trimString } from '../../utils/utils';
+import Tooltip from 'src/components/tooltip/tooltip';
 
 const LIMIT = 50;
 
@@ -50,7 +51,8 @@ const optionTextColor = (option) => {
   }
 };
 
-function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
+function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
+  const { proposalId } = useParams();
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -101,7 +103,12 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
   };
 
   if (loading) {
-    return <Dots />;
+    return (
+      <h4 className={styles.loader}>
+        Loading
+        <Dots />
+      </h4>
+    );
   }
 
   const rowsTable = items.map((item) => {
@@ -115,7 +122,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
     }
 
     return (
-      <ContainerGradientText status={optionTextColor(item.option)} key={d}>
+      <ContainerGradientText status={optionTextColor(item.option)} key={key}>
         <Table.Row
           borderBottom="none"
           paddingLeft={20}
@@ -141,8 +148,18 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
               {optionText(item.option)}
             </Text>
           </Table.TextCell>
+
           <Table.TextCell textAlign="end">
-            <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
+            <Tooltip
+              placement="top"
+              tooltip={
+                <TextTable>
+                  {new Date(item.timestamp).toLocaleString()}
+                </TextTable>
+              }
+            >
+              <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
+            </Tooltip>
           </Table.TextCell>
         </Table.Row>
       </ContainerGradientText>
@@ -151,34 +168,12 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
 
   return (
     <Pane>
-      <Table>
-        <Table.Head
-          style={{
-            backgroundColor: '#000',
-            border: 'none',
-            marginTop: '10px',
-            paddingBottom: '10px',
-          }}
-          paddingLeft={20}
-        >
-          <Table.TextHeaderCell textAlign="center">
-            <Text color="#fff" fontSize="17px">
-              voter
-            </Text>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>tx</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="end">
-            <Text color="#fff" fontSize="17px">
-              vote option
-            </Text>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="end">
-            <TextTable>timestamp</TextTable>
-          </Table.TextHeaderCell>
-        </Table.Head>
-
+      <Table
+        style={{
+          backgroundColor: '#000',
+          marginTop: '20px',
+        }}
+      >
         <Table.Body style={{ backgroundColor: '#000', overflow: 'hidden' }}>
           <InfiniteScroll
             dataLength={items.length}
@@ -186,7 +181,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
             hasMore={page !== allPage}
             style={{ display: 'grid', gap: '15px' }}
             loader={
-              <h4>
+              <h4 className={styles.loader}>
                 Loading
                 <Dots />
               </h4>

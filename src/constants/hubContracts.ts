@@ -9,3 +9,9 @@ export const HUB_CHANNELS =
 
 export const HUB_PROTOCOLS =
   'bostrom12yqsxh82qy3dz6alnmjhupyk85skgeqznzxv92q99hqtyu7vvdsqgwjgv';
+
+export const HUB_CONTRACTS = {
+  HUB_TOKENS,
+  HUB_NETWORKS,
+  HUB_CHANNELS,
+};

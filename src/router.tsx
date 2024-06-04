@@ -56,6 +56,7 @@ import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
 import Cybernet from './features/cybernet/ui/Cybernet';
+import Settings from './pages/Settings/Settings';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -214,6 +215,8 @@ function AppRouter() {
           <Route path="/cyberver/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
 

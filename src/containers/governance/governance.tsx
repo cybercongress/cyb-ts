@@ -7,12 +7,15 @@ import { useAdviser } from 'src/features/adviser/context';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import dateFormat from 'dateformat';
+import { useQuery } from '@tanstack/react-query';
 
-import { getProposals, getMinDeposit } from '../../utils/governance';
+import { getProposals } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
+import Loader2 from 'src/components/ui/Loader2';
+import styles from './components/styles.module.scss';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
@@ -97,20 +100,16 @@ const mapProposalToCard = (proposal: any) => {
 
 function Governance() {
   const queryClient = useQueryClient();
-  const [tableData, setTableData] = useState([]);
-  const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
   const [staked, setStaked] = useState(0);
+  const [isLoadingStatistics, setIsLoadingStatistics] = useState(true);
   const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    feachMinDeposit();
-  }, []);
 
   useEffect(() => {
     setAdviser(
       <>
-        the place where community will hear you. <br /> propose your idea here
+        the place where community will hear you
+        <br /> propose your idea here
       </>
     );
   }, [setAdviser]);
@@ -118,6 +117,7 @@ function Governance() {
   useEffect(() => {
     const getStatistics = async () => {
       if (queryClient) {
+        setIsLoadingStatistics(true);
         let communityPool = 0;
         const totalCyb: Record<string, number> = {};
         let stakedBoot = 0;
@@ -139,29 +139,19 @@ function Governance() {
           stakedBoot = totalCyb[DENOM_LIQUID] / totalCyb[BASE_DENOM];
         }
         setStaked(stakedBoot);
+        setIsLoadingStatistics(false);
       }
     };
     getStatistics();
   }, [queryClient]);
 
-  useEffect(() => {
-    getProposals().then((response) => {
-      if (!response) {
-        return;
-      }
-      setTableData(response || []);
-    });
-  }, []);
-
-  const feachMinDeposit = async () => {
-    const responseMinDeposit = await getMinDeposit();
-
-    if (responseMinDeposit?.deposit_params?.min_deposit?.[0].amount) {
-      setMinDeposit(
-        parseFloat(responseMinDeposit.deposit_params.min_deposit[0].amount)
-      );
+  const { data: tableData = [], isLoading: isLoadingProposals } = useQuery(
+    ['proposals'],
+    async () => {
+      const response = await getProposals();
+      return response || [];
     }
-  };
+  );
 
   const active = (tableData || [])
     .reverse()
@@ -237,17 +227,19 @@ function Governance() {
 
   return (
     <MainContainer width="100%">
-      <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
-      <Pane
-        display="grid"
-        justifyItems="center"
-        gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-        gridGap="20px"
-      >
-        <Columns title="Active">{active}</Columns>
-        <Columns title="Accepted">{accepted}</Columns>
-        <Columns title="Rejected">{rejected}</Columns>
-      </Pane>
+      <>
+        <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+
+        {isLoadingProposals ? (
+          <Loader2 />
+        ) : (
+          <div className={styles.column}>
+            <Columns title="Active">{active}</Columns>
+            <Columns title="Accepted">{accepted}</Columns>
+            <Columns title="Rejected">{rejected}</Columns>
+          </div>
+        )}
+      </>
     </MainContainer>
   );
 }

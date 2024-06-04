@@ -68,7 +68,7 @@ export const routes = {
     },
   },
   keys: {
-    path: '/keys',
+    path: '/settings/keys',
   },
   sigma: {
     path: '/sigma',
@@ -97,6 +97,13 @@ export const routes = {
     path: '/tx/:hash',
     getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
   },
+  contracts: {
+    path: '/contracts',
+    byAddress: {
+      path: '/contracts/:contractAddress',
+      getLink: (contractAddress: string) => `/contracts/${contractAddress}`,
+    },
+  },
   blocks: {
     path: '/blocks',
     getLink: () => `/network/bostrom/blocks`,
@@ -105,12 +112,7 @@ export const routes = {
       getLink: (idBlock: string) => `/network/bostrom/blocks/${idBlock}`,
     },
   },
-  contracts: {
-    path: '/contracts',
-    getLink: () => `/contracts`,
-    byId: {
-      path: '/contracts/:address',
-      getLink: (address: string) => `/contracts/${address}`,
-    },
+  settings: {
+    path: '/settings',
   },
 };
