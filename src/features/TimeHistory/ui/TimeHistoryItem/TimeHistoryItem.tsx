@@ -1,3 +1,4 @@
+import { CreatedAt } from 'src/components';
 import styles from './TimeHistoryItem.module.scss';
 import RouteItem from '../RouteItem/RouteItem';
 import { ActionType } from '../type';
@@ -20,7 +21,9 @@ function TimeHistoryItem({ time, action }: Props) {
   return (
     <div className={styles.wrapper}>
       <div>{actionValue}</div>
-      <span>{time}</span>
+      <span>
+        <CreatedAt timeAt={time} />
+      </span>
     </div>
   );
 }

@@ -249,9 +249,9 @@ function timeSince(timeMS: number) {
   }
   interval = Math.floor(seconds / 60);
   if (interval > 1) {
-    return `${interval} minutes`;
+    return `${interval} min`;
   }
-  return `${Math.floor(seconds)} seconds`;
+  return `${Math.floor(seconds)} sec`;
 }
 
 const reduceBalances = (data): ObjKeyValue => {

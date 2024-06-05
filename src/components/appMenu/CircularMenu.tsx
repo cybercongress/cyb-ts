@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import itemsMenu from 'src/utils/appsMenu';
 import CircularMenuItem from 'src/containers/application/CircularMenuItem';
 import styles from './CircularMenu.module.scss';
@@ -35,10 +34,9 @@ function CircularMenu({ circleSize }) {
           index,
           circleSize
         );
-        const key = uuidv4();
         return (
           <div
-            key={key}
+            key={index}
             className={styles.circle}
             style={{ width: circleSize, height: circleSize }}
           >
@@ -49,9 +47,9 @@ function CircularMenu({ circleSize }) {
                 '--delta': `${nextLevelMenuAngle}deg`,
               }}
             >
-              {chunk.map((item) => {
+              {chunk.map((item, index) => {
                 return (
-                  <li key={key}>
+                  <li key={index}>
                     <CircularMenuItem
                       item={item}
                       onClick={() => handleItemClick(item)}

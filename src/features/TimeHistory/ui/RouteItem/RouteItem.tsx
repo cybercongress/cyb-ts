@@ -5,6 +5,8 @@ import { RouteItemT } from '../type';
 import styles from './RouteItem.module.scss';
 
 const findIconApp = (url: string) => {
+  // const isRobot = url.includes('@') || url.includes('neuron/');
+
   const findApp = itemsMenu().reduce((acc: MenuItems, item: MenuItem) => {
     if (item.to === url) {
       acc.push(item);
