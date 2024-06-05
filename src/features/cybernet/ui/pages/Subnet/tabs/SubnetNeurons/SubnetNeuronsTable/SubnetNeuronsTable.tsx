@@ -5,7 +5,7 @@ import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Account, Tooltip } from 'src/components';
+import { Account, AmountDenom, Tooltip } from 'src/components';
 import { getAverageGrade, useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
@@ -234,6 +234,23 @@ function SubnetNeuronsTable({}: Props) {
                 )}
               </>
             );
+          },
+        }),
+        // TODO: refactor to use neuronStake
+        columnHelper.accessor('stake', {
+          header: 'teaching power',
+          id: 'stake',
+          sortingFn: (rowA, rowB) => {
+            const a = rowA.original.stake.reduce((acc, s) => acc + s[1], 0);
+            const b = rowB.original.stake.reduce((acc, s) => acc + s[1], 0);
+
+            return a - b;
+          },
+          cell: (info) => {
+            const stake = info.getValue();
+
+            const total = stake.reduce((acc, s) => acc + s[1], 0);
+            return <AmountDenom amountValue={total} denom="space-pussy" />;
           },
         }),
         columnHelper.accessor('uid', {
