@@ -10,6 +10,8 @@ const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
+console.log(process.env.CHAIN_ID);
+
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
@@ -117,11 +119,11 @@ const config = {
       // ProvidePlugin configuration
       cyblog: ['src/utils/logging/cyblog.ts', 'default'],
     }),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: 'src/services/service-worker/service-worker.ts',
-      swDest: 'service-worker.js',
-      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
-    }),
+    // new WorkboxPlugin.InjectManifest({
+    //   swSrc: 'src/services/service-worker/service-worker.ts',
+    //   swDest: 'service-worker.js',
+    //   maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    // }),
   ],
   module: {
     rules: [

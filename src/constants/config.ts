@@ -14,7 +14,10 @@ const LOCALSTORAGE_CHAIN_ID = !isWorker() && localStorage.getItem('chainId');
 const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
   LOCALSTORAGE_CHAIN_ID || Networks.BOSTROM;
 
+console.log('defaultNetworks', DEFAULT_CHAIN_ID);
+
 export const CHAIN_ID = process.env.CHAIN_ID || DEFAULT_CHAIN_ID;
+console.log('CHAIN_ID', CHAIN_ID);
 
 export const LCD_URL =
   process.env.LCD_URL || defaultNetworks[DEFAULT_CHAIN_ID].LCD_URL;
