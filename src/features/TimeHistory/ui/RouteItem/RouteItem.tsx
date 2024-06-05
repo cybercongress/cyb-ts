@@ -4,18 +4,18 @@ import DEFAULT_IMG from 'images/large-orange-circle.png';
 import { RouteItemT } from '../type';
 import styles from './RouteItem.module.scss';
 
+const findSubItemFc = (subItems: MenuItem['subItems'], url: string) =>
+  subItems.filter((item) => url.includes(item.to));
+
 const findIconApp = (url: string) => {
   // const isRobot = url.includes('@') || url.includes('neuron/');
 
   const findApp = itemsMenu().reduce((acc: MenuItems, item: MenuItem) => {
     if (item.to === url) {
       acc.push(item);
-    } else if (item.subItems.filter((item) => item.to === url).length !== 0) {
-      console.log(
-        'item.subItems.filter((item) => item.to === url)',
-        item.subItems.filter((item) => item.to === url)
-      );
-      acc.push(item);
+    } else if (findSubItemFc(item.subItems, url).length !== 0) {
+      const findSubItem = findSubItemFc(item.subItems, url);
+      acc.push({ ...item, name: findSubItem[0].name });
     }
     return acc;
   }, []);
