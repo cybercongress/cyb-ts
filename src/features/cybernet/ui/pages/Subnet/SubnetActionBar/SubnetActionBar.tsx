@@ -9,6 +9,8 @@ import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import { ContractTypes } from 'src/features/cybernet/types';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import { AmountDenom } from 'src/components';
+import styles from './SubnetActionBar.module.scss';
 
 type Props = {
   netuid: number;
@@ -111,8 +113,8 @@ function SubnetActionBar({
 
       if (!isRoot && isMlVerse) {
         button = {
-          text: 'Registration is disabled',
-          disabled: true,
+          text: <span className={styles.installBtn}>install</span>,
+          link: 'https://github.com/cybercongress/cybertensor',
         };
         break;
       }
@@ -135,8 +137,8 @@ function SubnetActionBar({
 
       content = (
         <>
-          fee is {burn?.toLocaleString()} 🟣
-          {/* <DenomArr onlyImg denomValue="pussy" /> */}
+          fee is
+          <AmountDenom amountValue={burn} denom="pussy" />
         </>
       );
 
