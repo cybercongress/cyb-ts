@@ -11,8 +11,12 @@ import { removeMarkdownFormatting, replaceQuotes } from 'src/utils/string';
 export const mapParticleToEntity = (particle: IPFSContent): ParticleDto => {
   const { cid, meta, textPreview } = particle;
   const { size, mime, type, blocks, sizeLocal } = meta;
+
   // hack to fix string command
-  const text = replaceQuotes(removeMarkdownFormatting(textPreview) || '');
+  const text = textPreview
+    ? replaceQuotes(removeMarkdownFormatting(textPreview))
+    : '';
+
   return {
     cid,
     size: size || 0,

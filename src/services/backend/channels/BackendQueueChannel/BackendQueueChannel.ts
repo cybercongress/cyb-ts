@@ -63,7 +63,12 @@ class BackendQueueChannelListener {
         await enqueueParticleEmbeddingMaybe(content);
       }
     } catch (e) {
-      console.log('---saveParticle e', content, e.toString());
+      console.log(
+        '---saveParticle e',
+        content,
+        content.textPreview,
+        e.toString()
+      );
       throw e;
     }
   }
