@@ -16,26 +16,29 @@ type Props = {
 // TODO: copied from usePassportContract, reuse  core logic
 
 function useQueryCybernetContract<DataType>({
-  contractAddress,
   query,
+  contractAddress,
   skip,
   refetchInterval,
 }: Props) {
   const queryClient = useQueryClient();
 
   const { selectedContract } = useCybernet();
+  const contractAddr = contractAddress || selectedContract?.address;
 
-  const contractAddress2 = contractAddress || selectedContract?.address;
-
-  const { refetch, data, error, isLoading } = useQuery<DataType>(
-    ['queryCybernetContract', contractAddress2, query],
+  const { refetch, data, error, isLoading } = useQuery<
+    unknown,
+    unknown,
+    DataType
+  >(
+    ['queryCybernetContract', contractAddr, query],
     () => {
-      return queryCybernetContract(contractAddress2, query, queryClient!);
+      return queryCybernetContract(contractAddr, query, queryClient!);
     },
     {
       // @ts-ignore
       refetchInterval,
-      enabled: !skip && !!queryClient && !!contractAddress2,
+      enabled: !skip && Boolean(queryClient && contractAddr),
     }
   );
 

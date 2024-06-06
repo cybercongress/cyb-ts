@@ -4,10 +4,12 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { StakeInfo } from '../../types';
 
 type Props = {
+  address: string;
+  contractAddress?: string;
   skip?: boolean;
 };
 
-export function useStake({ address, contractAddress, skip }) {
+export function useStake({ address, contractAddress, skip }: Props) {
   const query = useCybernetContract<StakeInfo>({
     query: {
       get_stake_info_for_coldkey: {
