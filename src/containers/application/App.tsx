@@ -21,6 +21,7 @@ import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
+import { setTimeHistory, setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 
 export const PORTAL_ID = 'portal';
 
@@ -69,6 +70,10 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    dispatch(setTimeHistoryRoute(location.pathname));
+  }, [location.pathname, dispatch]);
 
   useEffect(() => {
     if (ipfsError && !location.pathname.includes('/drive')) {

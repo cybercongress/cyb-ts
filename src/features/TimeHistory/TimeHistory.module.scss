@@ -1,0 +1,16 @@
+.wrapper {
+  display: grid;
+  gap: 20px;
+  width: 200px;
+  height: 160px;
+  padding-top: 5px;
+  padding-bottom: 20px;
+
+  position: absolute;
+  bottom: 20px;
+  overflow: hidden scroll;
+  right: -5vw;
+
+  background-color: rgba(0, 0, 0, 0.5490196078);
+  backdrop-filter: blur(7px);
+}

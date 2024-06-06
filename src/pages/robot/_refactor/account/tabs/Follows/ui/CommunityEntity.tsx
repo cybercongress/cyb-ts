@@ -15,31 +15,37 @@ function CommunityEntity({
   noItemsTitle,
   loading,
 }: CommunityEntityProps) {
+  let content;
+
   if (loading) {
-    return <Loader2 />;
+    content = <Loader2 />;
   }
 
   if (items.length > 0) {
-    return (
-      <div className={styles.wrapper}>
-        <DisplayTitle title={title} />
-
-        <div className={styles.containerItem}>
-          {items.map((item) => (
-            <Account
-              styleUser={{ flexDirection: 'column' }}
-              sizeAvatar="80px"
-              avatar
-              address={item}
-              key={`community_${title}_${item}`}
-              trimAddressParam={[4, 3]}
-            />
-          ))}
-        </div>
+    content = (
+      <div className={styles.containerItem}>
+        {items.map((item) => (
+          <Account
+            styleUser={{ flexDirection: 'column' }}
+            sizeAvatar="80px"
+            avatar
+            address={item}
+            key={`community_${title}_${item}`}
+            trimAddressParam={[4, 3]}
+          />
+        ))}
       </div>
     );
+  } else {
+    content = <NoItems text={noItemsTitle} />;
   }
-  return <NoItems text={noItemsTitle} />;
+
+  return (
+    <div className={styles.wrapper}>
+      <DisplayTitle title={title} />
+      {content}
+    </div>
+  );
 }
 
 export default CommunityEntity;

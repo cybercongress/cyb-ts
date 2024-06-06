@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Time } from 'src/components';
-import { getNowUtcTime } from 'src/utils/utils';
 import BigNumber from 'bignumber.js';
+import { getNowUtcNumber } from 'src/utils/date';
 import useGetTimeCreatePassport from './api/api';
 
 type Props = {
@@ -22,7 +22,7 @@ function FirstTx({ address }: Props) {
       return undefined;
     }
 
-    return new BigNumber(getNowUtcTime())
+    return new BigNumber(getNowUtcNumber())
       .minus(Date.parse(timestamp))
       .toNumber();
   }, [data]);

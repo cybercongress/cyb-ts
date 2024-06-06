@@ -1,0 +1,8 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: end;
+  gap: 10px;
+  padding: 0 5px;
+  font-size: 14px;
+}

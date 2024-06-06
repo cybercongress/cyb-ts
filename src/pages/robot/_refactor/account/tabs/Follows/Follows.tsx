@@ -35,7 +35,7 @@ function Follows() {
       }
     : communityHook.loading;
   return (
-    <Display noPadding>
+    <Display noPadding color="blue">
       <div className={styles.wrapper}>
         <CommunityEntity
           title="Friends"
