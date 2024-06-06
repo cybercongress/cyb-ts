@@ -12,6 +12,7 @@ import {
   mergeMap,
   of,
   share,
+  switchMap,
   throwError,
   timeout,
   withLatestFrom,
@@ -45,10 +46,10 @@ import {
   uint8ArrayToTextOrSkip,
 } from '../scripting/services/postProcessing';
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-import { CustomHeaders, XCybSourceValues } from './constants';
+// import { CustomHeaders, XCybSourceValues } from './constants';
 
 const QUEUE_DEBOUNCE_MS = 33;
-const CONNECTION_KEEPER_RETRY_MS = 5000;
+const CONNECTION_KEEPER_RETRY_MS = 15000;
 
 function getQueueItemTotalPriority(item: QueueItem): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
@@ -314,8 +315,21 @@ class QueueManager {
     // Little hack to handle keep-alive connection to swarm cyber node
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
     interval(CONNECTION_KEEPER_RETRY_MS)
-      .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
-      .subscribe(() => this.node!.reconnectToSwarm(this.lastNodeCallTime));
+      .pipe(
+        filter(
+          () =>
+            !!this.node &&
+            !![...this.queue$.value.values()].find((i) => i.source === 'node')
+        )
+      )
+      .subscribe(() => {
+        console.log(
+          '-----reconnect cnt',
+          this.queue$.value.size,
+          this.queue$.value
+        );
+        this.node!.reconnectToSwarm(true);
+      });
 
     const isInitialized$ = combineLatest([runeInstance$, ipfsInstance$]).pipe(
       map(
@@ -341,7 +355,7 @@ class QueueManager {
           // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
-            this.node?.reconnectToSwarm(this.lastNodeCallTime);
+            this.node?.reconnectToSwarm(false);
 
             return merge(...workItems.map((item) => this.fetchData$(item)));
           }

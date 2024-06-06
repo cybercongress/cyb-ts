@@ -22,7 +22,7 @@ pub async fn moon_domain_resolver() {
 // Extend particle page with custom UI elements
 pub async fn ask_companion(cid, content_type, content) {
     // plain text item
-    let links = [meta_text("similar:")];
+    let links = [meta_text("similar: ")];
 
     // search closest 5 particles using local data from the brain
     let similar_results = cyb::search_by_embedding(content, 5).await;
@@ -31,6 +31,10 @@ pub async fn ask_companion(cid, content_type, content) {
     for v in similar_results {
         // link item
         links.push(meta_link(`/oracle/ask/${v.cid}`, v.text));
+    }
+
+    if links.len() == 1 {
+        links = [meta_text("no similar particles found")];
     }
 
     return content_result(links)

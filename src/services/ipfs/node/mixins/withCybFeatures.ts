@@ -36,8 +36,9 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
       return !!peers.find((peerId) => peerId === options.swarmPeerId);
     }
 
-    async reconnectToSwarm(lastConnectedTimestamp?: number) {
-      if (!(await this.isConnectedToSwarm())) {
+    async reconnectToSwarm(forced = false) {
+      const isConnectedToSwarm = await this.isConnectedToSwarm();
+      if (!isConnectedToSwarm || forced) {
         // TODO: refactor using timeout for node config
 
         //   const needToReconnect =

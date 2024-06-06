@@ -25,7 +25,7 @@ import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/Bac
 import { GetEmbeddingFunc } from 'src/services/backend/workers/background/worker';
 
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { replaceQuotes, shortenString } from 'src/utils/string';
+import { shortenString } from 'src/utils/string';
 import { IPFSContentMutated } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
@@ -46,6 +46,7 @@ export const getContentToEmbed = async (content: IPFSContentMutated) => {
 
     if (details?.content) {
       // data to be used for embedding
+
       return [contentType, shortenString(details.content, 512)];
     }
   }

@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { LsResult } from 'ipfs-core-types/dist/src/pin';
+import { Option } from 'src/types';
 
 export type CallBackFuncStatus = (a: string) => void;
 
@@ -142,7 +143,7 @@ export interface IpfsNode {
 
 export interface CybIpfsNode extends IpfsNode {
   isConnectedToSwarm(): Promise<boolean>;
-  reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
+  reconnectToSwarm(forced: Option<boolean>): Promise<void>;
   fetchWithDetails: FetchWithDetailsFunc;
   addContent(content: File | string): Promise<string | undefined>;
 }
