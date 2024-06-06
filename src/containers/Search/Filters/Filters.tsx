@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './Filters.module.scss';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import { LinksTypeFilter, SortBy } from '../types';
@@ -44,14 +44,14 @@ const sortConfig = {
     label: '📅',
     tooltip: 'sort particles by date of creation',
   },
-  [SortBy.popular]: {
-    label: '🔥',
-    tooltip: '',
-  },
-  [SortBy.mine]: {
-    label: '👤',
-    tooltip: '',
-  },
+  // [SortBy.popular]: {
+  //   label: '🔥',
+  //   tooltip: '',
+  // },
+  // [SortBy.mine]: {
+  //   label: '👤',
+  //   tooltip: '',
+  // },
 };
 
 type Props = {
@@ -70,6 +70,8 @@ function Filters({
   neuron,
   setNeuron,
 }: Props) {
+  const [chooseNeuronOpen, setChooseNeuronOpen] = useState(!!neuron);
+
   return (
     <>
       <header className={styles.header}>
@@ -119,9 +121,9 @@ function Filters({
             return {
               label: sortConfig[sortType].label,
               disabled:
-                sortType === SortBy.mine ||
-                sortType === SortBy.popular ||
-                (sortType === SortBy.rank && neuron),
+                // sortType === SortBy.mine ||
+                // sortType === SortBy.popular ||
+                sortType === SortBy.rank && neuron,
               name: sortType,
               checked: filter2 === sortType,
               tooltip: sortConfig[sortType].tooltip,
@@ -130,6 +132,19 @@ function Filters({
           onChange={(sortType: SortBy) => {
             setFilter2(sortType);
             localStorage.setItem('search-sort', sortType);
+          }}
+        />
+
+        <ButtonsGroup
+          type="checkbox"
+          items={[
+            {
+              label: '👤',
+              checked: !!neuron,
+            },
+          ]}
+          onChange={() => {
+            setChooseNeuronOpen((item) => !item);
           }}
         />
 
@@ -164,9 +179,11 @@ function Filters({
         </Tooltip>
       </header>
 
-      <br />
-
-      <AccountInput recipient={neuron} setRecipient={setNeuron} />
+      {chooseNeuronOpen && (
+        <div className={styles.neuronFilter}>
+          <AccountInput recipient={neuron} setRecipient={setNeuron} />
+        </div>
+      )}
     </>
   );
 }
