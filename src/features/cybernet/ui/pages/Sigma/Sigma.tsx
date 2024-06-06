@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { routes } from 'src/routes';
 import { useCybernet } from '../../cybernet.context';
+import { AccountInput } from 'src/pages/teleport/components/Inputs';
 
 // reuse
 const contractsConfig = [
@@ -25,10 +26,11 @@ const legacy = [
   'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
 ];
 
-function Item({ contractAddress, callback }) {
-  const currentAddress = useCurrentAddress();
-
-  const query = useStake({ address: currentAddress, contractAddress });
+function Item({ contractAddress, callback, address }) {
+  const query = useStake({
+    address,
+    contractAddress,
+  });
 
   const filteredData = query.data?.filter(({ stake }) => stake > 0);
 
@@ -108,6 +110,15 @@ function Sigma() {
     [key: string]: number;
   }>({});
 
+  const currentAddress = useCurrentAddress();
+  const [address, setAddress] = useState(currentAddress);
+
+  useEffect(() => {
+    if (!address && currentAddress) {
+      setAddress(currentAddress);
+    }
+  }, [currentAddress, address]);
+
   const sum = Object.values(total).reduce((acc, value) => acc + value, 0);
 
   const handleTotal = useCallback((value: number, contractAddress: string) => {
@@ -119,16 +130,27 @@ function Sigma() {
 
   return (
     <>
+      <div className={styles.chooser}>
+        <AccountInput
+          recipient={address}
+          setRecipient={setAddress}
+          title="mentor"
+        />
+      </div>
+
       <Display
         title={
           <DisplayTitle title="Sigma">
             <AmountDenom amountValue={sum} denom="pussy" />
           </DisplayTitle>
         }
-      />
+      >
+        {' '}
+      </Display>
 
       {contractsConfig.map((contractAddress) => (
         <Item
+          address={address}
           key={contractAddress}
           contractAddress={contractAddress}
           callback={handleTotal}
@@ -139,6 +161,7 @@ function Sigma() {
 
       {legacy.map((contractAddress) => (
         <Item
+          address={address}
           key={contractAddress}
           contractAddress={contractAddress}
           callback={handleTotal}
