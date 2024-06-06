@@ -1,10 +1,11 @@
 .circle {
   position: fixed;
   bottom: 0px;
-  z-index: 4;
+  z-index: -1;
   width: 220px;
   height: 220px;
   display: inline-flex;
+  border-radius: 50%;
 }
 
 .menu {
@@ -46,9 +47,9 @@
 }
 
 .menu_item {
-  box-shadow: 0px 0px 13px rgba(255, 255, 255, 0.33);
+  box-shadow: 0px 0px 13px #ffffff54;
   opacity: 1;
-  background-color: rgba(16, 16, 16, 1);
+  background-color: #101010;
   border-radius: 50%;
   width: 38px;
   height: 38px;
@@ -57,24 +58,9 @@
   display: flex;
 }
 
-.circularMenu {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.active_green_dot {
-  width: 5px;
-  height: 5px;
-  background-color: rgba(118, 255, 3, 1);
-  box-shadow: 0px 0px 10px 0px rgba(118, 255, 3, 1);
-  opacity: 1;
-  border-radius: 50%;
-  position: absolute;
-  top: -5px;
-  right: -5px;
+.menu_item.active {
+  border: 1px solid #ffffff6b;
+  box-shadow: 0px 0px 8px #ffffff4d inset, 0px 0px 13px #ffffff4d;
+  width: 100%;
+  height: 100%;
 }

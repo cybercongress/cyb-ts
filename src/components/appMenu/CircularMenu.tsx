@@ -4,6 +4,7 @@ import itemsMenu from 'src/utils/appsMenu';
 import CircularMenuItem from 'src/containers/application/CircularMenuItem';
 import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
+import { useLocation } from 'react-router-dom';
 
 declare module 'react' {
   interface CSSProperties {
@@ -17,6 +18,8 @@ function CircularMenu({ circleSize }) {
   const _ = require('lodash');
   const chunkSize = 7;
   const linkChunks = _.chunk(itemsMenu(), chunkSize);
+
+  const location = useLocation();
 
   function calculateDiameter(index, circleSize) {
     const menuCircleDiameter = circleSize / 2 + 40 * (index + 1) - 10;
@@ -50,12 +53,15 @@ function CircularMenu({ circleSize }) {
               }}
             >
               {chunk.map((item) => {
+                const isSelected =
+                  activeItem?.name === item.name ||
+                  location.pathname === item.to;
                 return (
-                  <li key={key}>
+                  <li key={uuidv4()}>
                     <CircularMenuItem
                       item={item}
                       onClick={() => handleItemClick(item)}
-                      selected={activeItem?.name === item.name}
+                      selected={isSelected}
                     />
                   </li>
                 );

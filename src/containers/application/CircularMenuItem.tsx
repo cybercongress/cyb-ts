@@ -10,7 +10,7 @@ interface Props {
 
 const CircularMenuItem = ({ item, onClick, selected }: Props) => {
   return (
-    <div className={styles.menu_item}>
+    <div className={`${styles.menu_item} ${selected ? styles.active : ''}`}>
       <NavLink to={item.to} onClick={onClick} style={{ position: 'inherit' }}>
         <img
           src={item.icon}
