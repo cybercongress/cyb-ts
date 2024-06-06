@@ -27,6 +27,8 @@ import contains from '../utils';
 import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';
 import { TypeRecipient } from '../type';
+import { isPussyAddress } from 'src/utils/address';
+import { fromBech32 } from 'src/utils/utils';
 
 type Props = {
   recipient: string | undefined;
@@ -84,7 +86,14 @@ function AccountInput({ recipient, setRecipient }: Props) {
       }
 
       if (value.match(PATTERN_CYBER)) {
-        setRecipient(value);
+        // if (value.includes('pussy')) {
+        const t = fromBech32(value, 'pussy');
+
+        setRecipient(t);
+        // }
+        // else {
+        //   setRecipient(value);
+        // }
         setListRecipient({});
         return;
       }
@@ -154,7 +163,11 @@ function AccountInput({ recipient, setRecipient }: Props) {
 
   const onClickByNickname = (owner: string, nickname: string | undefined) => {
     setValueRecipient(nickname || owner);
-    setRecipient(owner);
+
+    const t = fromBech32(owner, 'pussy');
+    console.log(t);
+
+    setRecipient(t);
     clickOutsideHandler();
   };
 

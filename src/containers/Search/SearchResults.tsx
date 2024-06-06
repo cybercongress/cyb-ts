@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -44,6 +44,8 @@ function SearchResults({
 
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
+
+  const navigate = useNavigate();
 
   const [rankLink, setRankLink] = useState(null);
 
@@ -167,6 +169,8 @@ function SearchResults({
         neuron={neuron}
         setNeuron={(v) => {
           setNeuron(v);
+          // debugger;
+          navigate(`/oracle/ask/${query}?neuron=${v}`);
           setSortBy(SortBy.date);
         }}
       />

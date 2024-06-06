@@ -6,6 +6,7 @@ import { initialContentTypeFilterState } from '../constants';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { Tooltip } from 'src/components';
 import { AccountInput } from 'src/pages/teleport/components/Inputs';
+import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 
 // TODO: move to ipfs config, global
 export const contentTypeConfig = {
@@ -71,6 +72,10 @@ function Filters({
   setNeuron,
 }: Props) {
   const [chooseNeuronOpen, setChooseNeuronOpen] = useState(!!neuron);
+
+  console.log(neuron);
+
+  const currentAddress = useCurrentAddress();
 
   return (
     <>
@@ -139,12 +144,31 @@ function Filters({
           type="checkbox"
           items={[
             {
+              label: '💇',
+              name: 'me',
+              checked: neuron === currentAddress,
+              tooltip: 'show only particles from my neuron',
+            },
+            {
               label: '👤',
-              checked: !!neuron,
+              name: 'neuron',
+              checked:
+                (!!neuron && neuron !== currentAddress) || chooseNeuronOpen,
+              tooltip: 'show only particles from this neuron',
             },
           ]}
-          onChange={() => {
-            setChooseNeuronOpen((item) => !item);
+          onChange={(name) => {
+            if (name === 'neuron') {
+              setChooseNeuronOpen((item) => !item);
+            }
+
+            if (name !== 'neuron' && chooseNeuronOpen) {
+              setChooseNeuronOpen(false);
+            }
+
+            if (name === 'me') {
+              setNeuron(neuron === currentAddress ? null : currentAddress);
+            }
           }}
         />
 
@@ -181,7 +205,16 @@ function Filters({
 
       {chooseNeuronOpen && (
         <div className={styles.neuronFilter}>
-          <AccountInput recipient={neuron} setRecipient={setNeuron} />
+          <AccountInput
+            recipient={neuron}
+            setRecipient={(v) => {
+              if (v) {
+                setChooseNeuronOpen(false);
+              }
+
+              setNeuron(v);
+            }}
+          />
         </div>
       )}
     </>
