@@ -27,17 +27,23 @@ import contains from '../utils';
 import AccountInputOptionList from './AccountInputItem';
 import AccountInputListContainer from './AccountInputContainer';
 import { TypeRecipient } from '../type';
-import { isPussyAddress } from 'src/utils/address';
 import { fromBech32 } from 'src/utils/utils';
+import { CHAIN_ID } from 'src/constants/config';
+import { Networks } from 'src/types/networks';
 
 type Props = {
   recipient: string | undefined;
   setRecipient: React.Dispatch<React.SetStateAction<string | undefined>>;
+  title?: string;
 };
 
 const PLACEHOLDER_TITLE = 'choose recipient';
 
-function AccountInput({ recipient, setRecipient }: Props) {
+function AccountInput({
+  recipient,
+  setRecipient,
+  title = PLACEHOLDER_TITLE,
+}: Props) {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const inputElem = useRef(null);
@@ -77,6 +83,14 @@ function AccountInput({ recipient, setRecipient }: Props) {
     return selectCommunity.friends;
   }, [selectedTypeRecipient, accounts, selectCommunity]);
 
+  function handleSetRecipient(value: string) {
+    let v = value;
+    if (CHAIN_ID === Networks.SPACE_PUSSY) {
+      v = fromBech32(value, 'pussy');
+    }
+    setRecipient(v);
+  }
+
   const getRecipient = useCallback(
     async (value: string) => {
       if (!value) {
@@ -86,14 +100,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
       }
 
       if (value.match(PATTERN_CYBER)) {
-        // if (value.includes('pussy')) {
-        const t = fromBech32(value, 'pussy');
-
-        setRecipient(t);
-        // }
-        // else {
-        //   setRecipient(value);
-        // }
+        handleSetRecipient(value);
         setListRecipient({});
         return;
       }
@@ -164,10 +171,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
   const onClickByNickname = (owner: string, nickname: string | undefined) => {
     setValueRecipient(nickname || owner);
 
-    const t = fromBech32(owner, 'pussy');
-    console.log(t);
-
-    setRecipient(t);
+    handleSetRecipient(owner);
     clickOutsideHandler();
   };
 
@@ -178,7 +182,7 @@ function AccountInput({ recipient, setRecipient }: Props) {
         onClick={() => setIsOpen(true)}
         className={styles.containerBtnValue}
       >
-        <LinearGradientContainer color={Color.Green} title={PLACEHOLDER_TITLE}>
+        <LinearGradientContainer color={Color.Green} title={title}>
           <Account
             avatar
             disabled
@@ -197,11 +201,10 @@ function AccountInput({ recipient, setRecipient }: Props) {
         id="recipient"
         value={valueRecipient}
         onChange={(e) => onChangeRecipient(e.target.value)}
-        title={PLACEHOLDER_TITLE}
+        title={title}
         color={!recipient ? Color.Red : Color.Green}
         classNameTextbox={styles.contentValueInput}
         onFocusFnc={() => setIsOpen(true)}
-        // onClick={}
       />
 
       {isOpen && (

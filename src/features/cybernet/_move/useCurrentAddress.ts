@@ -1,4 +1,3 @@
-import React from 'react';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 

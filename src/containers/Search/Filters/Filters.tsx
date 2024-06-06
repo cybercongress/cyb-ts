@@ -4,9 +4,18 @@ import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
 import { LinksTypeFilter, SortBy } from '../types';
 import { initialContentTypeFilterState } from '../constants';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
-import { Tooltip } from 'src/components';
+import { Account, Tooltip } from 'src/components';
 import { AccountInput } from 'src/pages/teleport/components/Inputs';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import { useAppSelector } from 'src/redux/hooks';
+import useCurrentPassport from 'src/features/cybernet/_move/useCurrentPassport';
+import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+
+enum NeuronFilterType {
+  me = 'me',
+  all = 'all',
+  neuron = 'neuron',
+}
 
 // TODO: move to ipfs config, global
 export const contentTypeConfig = {
@@ -57,6 +66,11 @@ const sortConfig = {
 
 type Props = {
   linksFilter: LinksTypeFilter;
+
+  neuronFilter: {
+    value: string;
+    setValue: (address: string | null) => void;
+  };
 };
 
 function Filters({
@@ -68,14 +82,13 @@ function Filters({
   setLinksFilter,
   total,
   contentType,
-  neuron,
-  setNeuron,
+  neuronFilter,
 }: Props) {
-  const [chooseNeuronOpen, setChooseNeuronOpen] = useState(!!neuron);
-
-  console.log(neuron);
+  const [isNeuronChooserOpened, setNeuronChooserOpened] = useState(false);
 
   const currentAddress = useCurrentAddress();
+  const currentPassport = useCurrentPassport();
+  const { value: neuron, setValue: setNeuron } = neuronFilter;
 
   return (
     <>
@@ -144,31 +157,58 @@ function Filters({
           type="checkbox"
           items={[
             {
-              label: '💇',
-              name: 'me',
+              label: (
+                <AvataImgIpfs
+                  style={{ height: 18, width: 18 }}
+                  cidAvatar={currentPassport?.data?.extension.avatar}
+                />
+              ),
+              name: NeuronFilterType.me,
               checked: neuron === currentAddress,
               tooltip: 'show only particles from my neuron',
             },
             {
               label: '👤',
-              name: 'neuron',
+              name: NeuronFilterType.neuron,
               checked:
-                (!!neuron && neuron !== currentAddress) || chooseNeuronOpen,
+                (!!neuron && neuron !== currentAddress) ||
+                isNeuronChooserOpened,
               tooltip: 'show only particles from this neuron',
+            },
+            {
+              label: '🌏',
+              name: NeuronFilterType.all,
+              checked: !neuron,
+              tooltip: 'show all particles',
             },
           ]}
           onChange={(name) => {
-            if (name === 'neuron') {
-              setChooseNeuronOpen((item) => !item);
+            let value;
+            let value2: typeof isNeuronChooserOpened;
+            switch (name) {
+              case NeuronFilterType.all:
+                value = null;
+                break;
+
+              case NeuronFilterType.me:
+                value = neuron === currentAddress ? null : currentAddress;
+                break;
+
+              case NeuronFilterType.neuron:
+                value = null;
+                value2 = !isNeuronChooserOpened;
+                break;
+
+              default:
+                break;
             }
 
-            if (name !== 'neuron' && chooseNeuronOpen) {
-              setChooseNeuronOpen(false);
+            if (name !== NeuronFilterType.neuron && isNeuronChooserOpened) {
+              value2 = false;
             }
 
-            if (name === 'me') {
-              setNeuron(neuron === currentAddress ? null : currentAddress);
-            }
+            setNeuron(value || null);
+            setNeuronChooserOpened(value2 || false);
           }}
         />
 
@@ -203,16 +243,17 @@ function Filters({
         </Tooltip>
       </header>
 
-      {chooseNeuronOpen && (
+      {isNeuronChooserOpened && (
         <div className={styles.neuronFilter}>
           <AccountInput
+            title="choose neuron for filtering"
             recipient={neuron}
-            setRecipient={(v) => {
-              if (v) {
-                setChooseNeuronOpen(false);
+            setRecipient={(address) => {
+              if (address) {
+                setNeuronChooserOpened(false);
               }
 
-              setNeuron(v);
+              setNeuron(address || null);
             }}
           />
         </div>
