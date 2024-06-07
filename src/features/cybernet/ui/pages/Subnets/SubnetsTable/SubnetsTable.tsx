@@ -17,6 +17,8 @@ import { routes as subnetRoutes } from '../../../routes';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
+import CIDResolver from 'src/components/CIDResolver/CIDResolver';
+import { trimString } from 'src/utils/utils';
 
 type Props = {
   // remove
@@ -112,16 +114,13 @@ function SubnetsTable({ data }: Props) {
 
       columnHelper.accessor('metadata.particle', {
         header: 'teaser',
-        header: 'teaser',
+        id: 'teaser',
+        size: 150,
         enableSorting: false,
         cell: (info) => {
-          const value = info.getValue();
+          const cid = info.getValue();
 
-          const cid = value;
-
-          return (
-            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
-          );
+          return <CIDResolver cid={cid} />;
         },
       }),
 
@@ -130,12 +129,9 @@ function SubnetsTable({ data }: Props) {
         id: 'rules',
         enableSorting: false,
         cell: (info) => {
-          const value = info.getValue();
-          const cid = value;
+          const cid = info.getValue();
 
-          return (
-            <Cid cid={cid}>{`${cid.substr(0, 3)}...${cid.substr(-3)}`}</Cid>
-          );
+          return <Cid cid={cid}>{trimString(cid, 3, 3)}</Cid>;
         },
       }),
     ];

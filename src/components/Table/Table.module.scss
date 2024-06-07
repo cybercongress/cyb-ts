@@ -15,6 +15,7 @@
 
     th {
       font-weight: 400;
+      position: relative;
 
       &.sortable {
         cursor: pointer;
@@ -22,6 +23,12 @@
 
         > span {
           margin-left: 3px;
+        }
+      }
+
+      &:hover {
+        .resizer {
+          opacity: 1;
         }
       }
     }
@@ -48,4 +55,22 @@
   &.selectable tbody tr {
     cursor: pointer;
   }
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: 0;
+  width: 5px;
+  background: red;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+}
+
+.isResizing {
+  background: blue;
+  opacity: 1;
 }

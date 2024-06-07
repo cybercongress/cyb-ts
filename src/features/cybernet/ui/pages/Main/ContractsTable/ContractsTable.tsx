@@ -12,21 +12,9 @@ import { cybernetRoutes } from '../../../routes';
 import styles from './ContractsTable.module.scss';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
 import useParticleDetails from 'src/features/particle/useParticleDetails';
+import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 
 const columnHelper = createColumnHelper<ContractWithData>();
-
-// will be refactored
-function Test({
-  cid,
-  fallback: F,
-}: {
-  cid: string;
-  fallback: React.ReactNode;
-}) {
-  const d = useParticleDetails(cid);
-
-  return d.data?.content || F;
-}
 
 function ContractsTable() {
   const { contracts, selectedContract } = useCybernet();
@@ -99,9 +87,9 @@ function ContractsTable() {
                   <div className={styles.descriptionCell}>
                     <span className={styles.smallText}>{difficulty}:</span>{' '}
                     <p>
-                      <Test
+                      <CIDResolver
                         cid={value}
-                        fallback={<Cid cid={value}>info</Cid>}
+                        // fallback={<Cid cid={value}>info</Cid>}
                       />
                     </p>
                   </div>
