@@ -16,6 +16,7 @@ import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
+import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 
 type Props = {
   // remove
@@ -67,30 +68,26 @@ function SubnetsTable({ data }: Props) {
         id: 'subnetName',
         cell: (info) => {
           const value = info.getValue();
-          const name = value.name;
 
-          const netuid = info.row.original.netuid;
+          const { netuid } = info.row.original;
 
           const isMySubnet = myCurrentSubnetsJoined?.includes(netuid);
 
-          const { metadata: { name: contractName } = {} } =
-            selectedContract || {};
           return (
-            <Link
+            <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0 7px',
               }}
-              to={subnetRoutes.subnet.getLink('pussy', contractName, netuid)}
             >
-              {name}{' '}
+              <SubnetPreview subnetUID={netuid} withName />
               {isMySubnet && (
                 <Tooltip tooltip={`you joined this ${getText('subnetwork')}`}>
                   ✅
                 </Tooltip>
               )}
-            </Link>
+            </div>
           );
         },
       }),
@@ -177,31 +174,31 @@ function SubnetsTable({ data }: Props) {
 
             return <F value={current} maxValue={max} />;
           },
-        }),
+        })
 
-        columnHelper.accessor('emission_values', {
-          header: 'Emission block',
-          sortingFn: (rowA, rowB) => {
-            const a = rowA.original.emission_values;
-            const b = rowB.original.emission_values;
+        // columnHelper.accessor('emission_values', {
+        //   header: 'Emission block',
+        //   sortingFn: (rowA, rowB) => {
+        //     const a = rowA.original.emission_values;
+        //     const b = rowB.original.emission_values;
 
-            return a - b;
-          },
+        //     return a - b;
+        //   },
 
-          cell: (info) =>
-            `${parseFloat(
-              ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
-            )}%`,
-        }),
+        //   cell: (info) =>
+        //     `${parseFloat(
+        //       ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
+        //     )}%`,
+        // }),
         // columnHelper.accessor('netuid', {
         //   header: 'link',
         //   cell: (info) => <Link to={'./' + info.getValue()}>link</Link>,
         // }),
 
-        columnHelper.accessor('tempo', {
-          header: 'tempo',
-          cell: (info) => info.getValue(),
-        })
+        //   columnHelper.accessor('tempo', {
+        //     header: 'tempo',
+        //     cell: (info) => info.getValue(),
+        //   })
       );
     }
 

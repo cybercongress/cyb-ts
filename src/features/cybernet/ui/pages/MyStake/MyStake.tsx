@@ -1,31 +1,20 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { Account, AmountDenom, MainContainer } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
-import { routes as cybernetRoutes } from '../../routes';
-import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import { StakeInfo } from 'src/features/cybernet/types';
-import useCybernetTexts from '../../useCybernetTexts';
-import { useCurrentContract } from '../../cybernet.context';
 import { Helmet } from 'react-helmet';
-import { useDelegates } from '../../hooks/useDelegate';
 import DelegatesTable from '../Delegates/DelegatesTable/DelegatesTable';
 import { HeaderItem } from '../Subnet/SubnetHeader/SubnetHeader';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 type T = StakeInfo[0];
 const columnHelper = createColumnHelper<T>();
 
 function MyStake() {
   const { loading, error, data } = useCurrentAccountStake();
-
-  const { getText } = useCybernetTexts();
-
-  const delegatesQuery = useDelegates();
-
-  const { contractName, network } = useCurrentContract();
 
   useAdviserTexts({
     isLoading: loading,
@@ -55,7 +44,7 @@ function MyStake() {
 
           <HeaderItem
             title="total stake"
-            content={<AmountDenom amountValue={total} denom="pussy" />}
+            content={<IconsNumber value={total} type="pussy" />}
           />
         </div>
       </Display>

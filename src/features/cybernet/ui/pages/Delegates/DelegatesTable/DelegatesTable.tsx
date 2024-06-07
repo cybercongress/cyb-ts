@@ -12,6 +12,10 @@ import { cybernetRoutes } from '../../../routes';
 import { useCybernet } from '../../../cybernet.context';
 import { useDelegates } from '../../../hooks/useDelegate';
 import useCurrentAccountStake from '../../../hooks/useCurrentAccountStake';
+import IconsNumber from '../../../../../../components/IconsNumber/IconsNumber';
+import SubnetPreview, {
+  SubnetPreviewGroup,
+} from '../../../components/SubnetPreview/SubnetPreview';
 
 type Props = {};
 
@@ -110,28 +114,20 @@ function DelegatesTable({}: Props) {
 
           return a - b;
         },
-        cell: (info) => (
-          <div
-            style={{
-              display: 'flex',
-              gap: '5px',
-            }}
-          >
-            {info.getValue().map((uid) => {
-              const name = subnets.find((subnet) => subnet.netuid === uid)
-                ?.metadata?.name;
+        cell: (info) => {
+          const value = info.getValue();
 
-              return (
-                <Link
-                  key={uid}
-                  to={cybernetRoutes.subnet.getLink('pussy', contractName, uid)}
-                >
-                  {name || uid}
-                </Link>
-              );
-            })}
-          </div>
-        ),
+          return (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <SubnetPreviewGroup uids={value} />
+            </div>
+          );
+        },
       }),
 
       columnHelper.accessor('nominators', {
@@ -147,7 +143,7 @@ function DelegatesTable({}: Props) {
           const nominators = info.getValue();
           const total = getTotalStake(nominators);
 
-          return <AmountDenom amountValue={total} denom="pussy" />;
+          return <IconsNumber value={total} type="pussy" />;
         },
       }),
       columnHelper.accessor('nominators', {
@@ -166,8 +162,7 @@ function DelegatesTable({}: Props) {
           if (!myStake) {
             return null;
           }
-
-          return <AmountDenom amountValue={myStake} denom="pussy" />;
+          return <IconsNumber value={myStake} type="pussy" />;
         },
       }),
     ];
@@ -180,11 +175,16 @@ function DelegatesTable({}: Props) {
   }, [currentAddress, getText, subnets, contractName, isMyLearnerPage]);
 
   // use 1 loop
-  const myMentors = stakeQuery.data?.map((stake) => stake.hotkey) || [];
+  const myMentors =
+    stakeQuery.data
+      ?.filter(({ stake }) => stake > 0)
+      ?.map((stake) => stake.hotkey) || [];
 
   const renderData = !isMyLearnerPage
     ? data
     : data?.filter((mentor) => myMentors.includes(mentor.delegate));
+
+  console.log('renderData', renderData);
 
   return (
     <Table

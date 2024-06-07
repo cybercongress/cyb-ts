@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { routes } from 'src/routes';
 import { useCybernet } from '../../cybernet.context';
 import { AccountInput } from 'src/pages/teleport/components/Inputs';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 // reuse
 const contractsConfig = [
@@ -66,7 +67,7 @@ function Item({ contractAddress, callback, address }) {
             </Link>
           }
         >
-          <AmountDenom amountValue={total} denom="pussy" />
+          <IconsNumber value={total} type="pussy" />
         </DisplayTitle>
       }
     >
@@ -90,7 +91,10 @@ function Item({ contractAddress, callback, address }) {
                     hotkey
                   )}
                 />
-                <AmountDenom amountValue={stake} denom="pussy" />
+
+                <div>
+                  <IconsNumber value={stake} type="pussy" />
+                </div>
               </div>
             );
           })
@@ -103,7 +107,7 @@ function Item({ contractAddress, callback, address }) {
 
 function Sigma() {
   useAdviserTexts({
-    defaultText: 'cyberver sigma',
+    defaultText: 'learners stake stat',
   });
 
   const [total, setTotal] = useState<{
@@ -130,23 +134,30 @@ function Sigma() {
 
   return (
     <>
-      <div className={styles.chooser}>
-        <AccountInput
-          recipient={address}
-          setRecipient={setAddress}
-          title="mentor"
-        />
+      <div className={styles.wrapper}>
+        <Display
+          title={
+            <DisplayTitle
+              title={
+                <>
+                  Sigma
+                  <div className={styles.chooser}>
+                    <AccountInput
+                      recipient={address}
+                      setRecipient={setAddress}
+                      title="choose learner"
+                    />
+                  </div>
+                </>
+              }
+            >
+              <AmountDenom amountValue={sum} denom="pussy" />
+            </DisplayTitle>
+          }
+        >
+          {' '}
+        </Display>
       </div>
-
-      <Display
-        title={
-          <DisplayTitle title="Sigma">
-            <AmountDenom amountValue={sum} denom="pussy" />
-          </DisplayTitle>
-        }
-      >
-        {' '}
-      </Display>
 
       {contractsConfig.map((contractAddress) => (
         <Item

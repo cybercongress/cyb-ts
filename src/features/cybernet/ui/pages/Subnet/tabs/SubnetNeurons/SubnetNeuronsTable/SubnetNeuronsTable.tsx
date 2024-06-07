@@ -19,6 +19,7 @@ import {
 import { getColor } from '../../Weights/WeightsTable/WeightsTable';
 import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 type Props = {};
 
@@ -139,6 +140,8 @@ function SubnetNeuronsTable({}: Props) {
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
+  console.log('neurons', neurons);
+
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('uid', {
@@ -219,7 +222,13 @@ function SubnetNeuronsTable({}: Props) {
                     `?neuron=${hotkey}&subnet=${netuid}`
                   }
                 >
-                  🔍
+                  <Tooltip
+                    tooltip={`check what job have been done by this ${getText(
+                      'delegate'
+                    )}`}
+                  >
+                    🔍
+                  </Tooltip>
                 </Link>
 
                 <br />
@@ -250,7 +259,7 @@ function SubnetNeuronsTable({}: Props) {
             const stake = info.getValue();
 
             const total = stake.reduce((acc, s) => acc + s[1], 0);
-            return <AmountDenom amountValue={total} denom="space-pussy" />;
+            return <IconsNumber value={total} type="pussy" />;
           },
         }),
         columnHelper.accessor('uid', {
