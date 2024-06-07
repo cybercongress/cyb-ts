@@ -83,6 +83,7 @@ class BootloaderPlugin {
     const htmlAssets = {
       js: [],
       css: [],
+      wasm: [],
     };
 
     compiler.hooks.entryOption.tap('BootloaderPlugin', (context) => {
@@ -153,22 +154,17 @@ class BootloaderPlugin {
           );
         }
 
-        // const moduleNames = ['helia', 'cyb-cozo-lib-wasm'];
-
-        // moduleNames.forEach((moduleName) => {
-        //   Object.keys(compilation.assets).forEach((assetName) => {
-        //     const correctedModuleName = moduleName.replace(/-/g, '_');
-
-        //     if (assetName.startsWith(correctedModuleName)) {
-        //       // Assuming you have a method to process these assets
-        //       this.processModuleAsset(
-        //         assetName,
-        //         compilation.assets[assetName],
-        //         htmlAssets
-        //       );
-        //     }
-        //   });
-        // });
+        Object.keys(compilation.assets).forEach((assetName) => {
+          if (assetName.endsWith('.wasm')) {
+            this.processHtmlAsset(
+              assets.publicPath,
+              assetName,
+              compilation.assets,
+              new Set(),
+              htmlAssets.wasm
+            );
+          }
+        });
       });
 
       hooks.alterAssetTags.tap('BootloaderPlugin', ({ assetTags }) => {
@@ -198,7 +194,6 @@ class BootloaderPlugin {
           });
           // removing bootloader files from assets so webpack will not emit them
           entrypoint.getFiles().forEach((filename) => {
-            // console.log(filename);
             delete compilation.assets[filename];
           });
         }

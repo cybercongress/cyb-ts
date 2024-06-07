@@ -16,10 +16,15 @@ const Bootloader = () => {
   this.getTotalSize = (assets) => {
     const cssAssets = assets.css || [];
     const jsAssets = assets.js || [];
+    const wasmAssets = assets.wasm || [];
     const sum = (acc, asset) => {
       return acc + (asset.size || 0);
     };
-    return cssAssets.reduce(sum, 0) + jsAssets.reduce(sum, 0);
+    return (
+      cssAssets.reduce(sum, 0) +
+      jsAssets.reduce(sum, 0) +
+      wasmAssets.reduce(sum, 0)
+    );
     return this;
   };
 
@@ -189,6 +194,7 @@ const Bootloader = () => {
     const _this = this;
     const cssAssets = this.assets.css || [];
     const jsAssets = this.assets.js || [];
+    const wasmAssets = this.assets.wasm || [];
     const fullReport = {
       succeeded: [],
       failed: [],
@@ -203,6 +209,11 @@ const Bootloader = () => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(jsAssets);
         return fullReport;
+      })
+      .then((report) => {
+        _this.mergeReport(fullReport, report);
+        _this.appendHtmlElements(wasmAssets);
+        return fullReport;
       });
   };
   return this;
@@ -211,20 +222,20 @@ const Bootloader = () => {
 function bootstrap() {
   if ('serviceWorker' in navigator) {
     console.log('Going to install service worker');
-    // window.addEventListener('load', () => {
-    //   console.log('Starting to load service worker');
-    //   navigator.serviceWorker
-    //     .register('/service-worker.js')
-    //     .then((registration) => {
-    //       console.log('service worker registered: ', registration);
-    //     })
-    //     .catch((registrationError) => {
-    //       console.log(
-    //         'service worker registration failed: ',
-    //         registrationError
-    //       );
-    //     });
-    // });
+    window.addEventListener('load', () => {
+      console.log('Starting to load service worker');
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('service worker registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log(
+            'service worker registration failed: ',
+            registrationError
+          );
+        });
+    });
   } else {
     console.log('No service worker is available');
   }
@@ -236,6 +247,7 @@ function bootstrap() {
       null || _a === void 0
       ? void 0
       : _a.assets) || {};
+
   Bootloader()
     .attachAssets(assets)
     .load((e) => {
