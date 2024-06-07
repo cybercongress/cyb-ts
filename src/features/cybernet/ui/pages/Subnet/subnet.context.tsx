@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import {
@@ -34,6 +34,31 @@ export function getAverageGrade(grades, uid: number) {
   const avg = sum ? (sum / count).toFixed(2) : 0;
 
   return Number(avg);
+}
+
+// split grades to new hook
+
+const LS_KEY = 'setGrades';
+
+function getLSKey(address: string) {
+  return `${LS_KEY}_${address}`;
+}
+
+function getLSData(address: string, subnetId: number) {
+  const data = sessionStorage.getItem(getLSKey(address));
+
+  const parsedData = data ? JSON.parse(data) : null;
+
+  return parsedData ? parsedData[subnetId] : null;
+}
+
+function saveLSData(data, address: string, subnetId: number) {
+  const newData = {
+    ...getLSData(address, subnetId),
+    [subnetId]: data,
+  };
+
+  sessionStorage.setItem(getLSKey(address), JSON.stringify(newData));
 }
 
 const SubnetContext = React.createContext<{
@@ -83,11 +108,32 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
   const f = id === 'board' ? 0 : +id;
   const netuid = Number(f);
 
+  const currentAddress = useCurrentAddress();
+
+  const getLastGrades = useCallback(() => {
+    if (!currentAddress || !netuid) {
+      return null;
+    }
+
+    const lastGrades = getLSData(currentAddress, netuid);
+    return lastGrades;
+  }, [currentAddress, netuid]);
+
+  useEffect(() => {
+    if (!currentAddress) {
+      return;
+    }
+
+    const lastGrades = getLastGrades();
+
+    if (lastGrades) {
+      setNewGrades(lastGrades);
+    }
+  }, [currentAddress, netuid, getLastGrades]);
+
   const [newGrades, setNewGrades] = useState<{
     [uid: string]: number;
   }>({});
-
-  const currentAddress = useCurrentAddress();
 
   const { data: addressSubnetRegistrationStatus, refetch } =
     useCybernetContract<number | null>({
@@ -148,19 +194,39 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
   }, [weightsQuery.data]);
 
   const gradesFromMe = useMemo(() => {
-    return grades?.[myUid] || {};
-  }, [grades, myUid]);
+    const lastGrades = getLastGrades();
+
+    return lastGrades || grades?.[myUid] || {};
+  }, [grades, myUid, getLastGrades]);
 
   useEffect(() => {
     setNewGrades(gradesFromMe);
   }, [gradesFromMe]);
 
-  function setGrade(uid: string, grade: number) {
+  const setGrade = useCallback((uid: string, grade: number) => {
     setNewGrades((prev) => ({
       ...prev,
       [uid]: grade,
     }));
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!currentAddress || !netuid) {
+      return;
+    }
+
+    if (Object.keys(newGrades).length === 0) {
+      return;
+    }
+
+    const lastData = getLSData(currentAddress, netuid);
+
+    if (isEqual(newGrades, lastData)) {
+      return;
+    }
+
+    saveLSData(newGrades, currentAddress, netuid);
+  }, [newGrades, currentAddress, netuid]);
 
   const { setAdviser } = useAdviser();
 
@@ -203,7 +269,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
         },
         newGrades: {
           data: newGrades,
-          setGrade: setGrade,
+          setGrade,
           save: submit,
           isLoading,
           isGradesUpdated: !isEqual(newGrades, gradesFromMe),
@@ -219,6 +285,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
   }, [
     addressRegisteredInSubnet,
     subnetQuery,
+    setGrade,
     refetch,
     neuronsQuery,
     weightsQuery,

@@ -7,6 +7,7 @@ import { useSubnet } from '../subnet.context';
 import styles from './SubnetHeader.module.scss';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 function Item({ title, content }) {
   return (
@@ -33,10 +34,11 @@ function SubnetHeader() {
     return null;
   }
 
-  const totalNeuronsStake = neuronsQuery.data?.reduce(
-    (acc, neuron) => acc + neuron.stake.reduce((acc, b) => acc + b[1], 0),
-    0
-  );
+  const totalNeuronsStake =
+    neuronsQuery.data?.reduce(
+      (acc, neuron) => acc + neuron.stake.reduce((acc, b) => acc + b[1], 0),
+      0
+    ) || 0;
 
   const {
     netuid,
@@ -66,9 +68,7 @@ function SubnetHeader() {
         <Cid cid={description}>description</Cid>
         <Item
           title="teaching power"
-          content={
-            <AmountDenom amountValue={totalNeuronsStake} denom="pussy" />
-          }
+          content={<IconsNumber value={totalNeuronsStake} type="pussy" />}
         />
       </div>
     </Display>

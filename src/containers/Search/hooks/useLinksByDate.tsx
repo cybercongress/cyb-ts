@@ -5,7 +5,7 @@ import { merge } from './shared';
 function useLinksByDate(
   hash: string,
   type: LinksTypeFilter,
-  neuron,
+  neuron: string | null,
   { skip = false } = {}
 ) {
   const data = useGetDiscussion(

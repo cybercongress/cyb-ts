@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
+import { useStake as useVerseStake } from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
 
 const initValue = {
   denom: BASE_DENOM,
@@ -17,6 +18,7 @@ export const initValueMainToken = {
   melting: { ...initValue },
   growth: { ...initValue },
   total: { ...initValue },
+  cyberver: { ...initValue },
 };
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
@@ -72,6 +74,23 @@ const getCommissionAmount = (data) => {
 };
 
 export const useGetBalance = (client, addressBech32) => {
+  // seems combine to 1 hook
+  const s1 = useVerseStake({
+    address: addressBech32,
+    contractAddress:
+      'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
+  });
+
+  const s2 = useVerseStake({
+    address: addressBech32,
+    contractAddress:
+      'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
+  });
+
+  const total1 = s1.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
+  const total2 = s2.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
+  const totalCyberver = total1 + total2;
+
   try {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { data, isFetching } = useQuery(
@@ -121,6 +140,10 @@ export const useGetBalance = (client, addressBech32) => {
           frozen: delegationsAmount,
           melting: unbondingAmount,
           growth: rewardsAmount,
+          cyberver: {
+            denom: BASE_DENOM,
+            amount: totalCyberver,
+          },
         };
 
         if (commissionAmount.amount > 0) {

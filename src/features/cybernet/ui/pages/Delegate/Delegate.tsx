@@ -21,6 +21,8 @@ import subnetStyles from '../Subnet/Subnet.module.scss';
 import useDelegate from '../../hooks/useDelegate';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../cybernet.context';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import { SubnetPreviewGroup } from '../../components/SubnetPreview/SubnetPreview';
 
 const columnHelper = createColumnHelper<Delegator>();
 
@@ -105,8 +107,7 @@ function Delegator() {
 
                 if (item === 'owner') {
                   content = (
-                    <Account address={value} />
-                    // <Link to={routes.neuron.getLink(value)}>{value}</Link>
+                    <Account avatar address={value} markCurrentAddress />
                   );
                 }
 
@@ -122,32 +123,16 @@ function Delegator() {
                   ].includes(item)
                 ) {
                   content = (
-                    <AmountDenom amountValue={value.amount} denom="pussy" />
+                    <div>
+                      <IconsNumber value={value.amount} type="pussy" />
+                    </div>
                   );
                 }
 
                 if (item === 'registrations' || item === 'validator_permits') {
                   content = (
                     <ul className={styles.list}>
-                      {value.map((netuid) => {
-                        const name = subnetsQuery.data?.find(
-                          (subnet) => subnet.netuid === netuid
-                        )?.metadata?.name;
-
-                        return (
-                          <li key={netuid}>
-                            <Link
-                              to={cybernetRoutes.subnet.getLink(
-                                network,
-                                contractName,
-                                netuid
-                              )}
-                            >
-                              {name}
-                            </Link>
-                          </li>
-                        );
-                      })}
+                      <SubnetPreviewGroup uids={value} />
                     </ul>
                   );
                 }
@@ -171,7 +156,7 @@ function Delegator() {
                   <h3>{getText('delegator', true)}</h3>
 
                   <div>
-                    <AmountDenom amountValue={totalStake} denom="pussy" />
+                    <IconsNumber value={totalStake} type="pussy" />
                   </div>
                 </div>
               }
@@ -196,7 +181,16 @@ function Delegator() {
                 cell: (info) => {
                   const value = info.getValue();
 
-                  return <AmountDenom amountValue={value} denom="pussy" />;
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      <IconsNumber value={value} type="pussy" />
+                    </div>
+                  );
                 },
               }),
             ]}

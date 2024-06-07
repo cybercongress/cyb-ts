@@ -47,6 +47,10 @@ export const routes = {
     getLink: (network: string, nameOrAddress: string) =>
       `${root}/verses/${network}/${nameOrAddress}/learners/my`,
   },
+  sigma: {
+    path: `${root}/sigma`,
+    getLink: () => `${root}/sigma`,
+  },
 };
 
 routes.delegate = routes.delegator;

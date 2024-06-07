@@ -10,7 +10,6 @@ function Brain() {
       <ActionBar>
         <Button
           className={styles.link}
-          reloadDocument
           link="https://cosmograph.app/run/?data=https://gateway.ipfs.cybernode.ai/ipfs/QmQ3snofqRrDhpANRCwZrCPG7rAvABrkL9KHreMtmYDiCL"
         >
           Full graph <span />

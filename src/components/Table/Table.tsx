@@ -53,6 +53,9 @@ function Table<T extends object>({
     //   console.log(state);
     //   debugger;
     // },
+
+    // enableColumnResizing: true,
+    // columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
@@ -75,6 +78,10 @@ function Table<T extends object>({
                     className={cx({
                       [styles.sortable]: header.column.getCanSort(),
                     })}
+                    colSpan={header.colSpan}
+                    style={{
+                      width: header.column.getSize(),
+                    }}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
@@ -90,6 +97,16 @@ function Table<T extends object>({
                         }
                       />
                     )}
+                    {/* <div
+                      {...{
+                        onDoubleClick: () => header.column.resetSize(),
+                        onMouseDown: header.getResizeHandler(),
+                        onTouchStart: header.getResizeHandler(),
+                        className: `${styles.resizer} ${
+                          header.column.getIsResizing() ? styles.isResizing : ''
+                        }`,
+                      }}
+                    /> */}
                   </th>
                 );
               })}
@@ -133,8 +150,12 @@ function Table<T extends object>({
               >
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    // eslint-disable-next-line react/jsx-key
-                    <td key={cell.id}>
+                    <td
+                      key={cell.id}
+                      style={{
+                        width: cell.column.getSize(),
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

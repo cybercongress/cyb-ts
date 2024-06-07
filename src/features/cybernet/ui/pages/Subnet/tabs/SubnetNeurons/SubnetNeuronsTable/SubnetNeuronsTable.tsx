@@ -5,7 +5,7 @@ import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Account, Tooltip } from 'src/components';
+import { Account, AmountDenom, Tooltip } from 'src/components';
 import { getAverageGrade, useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
@@ -19,6 +19,7 @@ import {
 import { getColor } from '../../Weights/WeightsTable/WeightsTable';
 import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 
 type Props = {};
 
@@ -139,6 +140,8 @@ function SubnetNeuronsTable({}: Props) {
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
+  console.log('neurons', neurons);
+
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('uid', {
@@ -219,7 +222,13 @@ function SubnetNeuronsTable({}: Props) {
                     `?neuron=${hotkey}&subnet=${netuid}`
                   }
                 >
-                  🔍
+                  <Tooltip
+                    tooltip={`check what job have been done by this ${getText(
+                      'delegate'
+                    )}`}
+                  >
+                    🔍
+                  </Tooltip>
                 </Link>
 
                 <br />
@@ -234,6 +243,23 @@ function SubnetNeuronsTable({}: Props) {
                 )}
               </>
             );
+          },
+        }),
+        // TODO: refactor to use neuronStake
+        columnHelper.accessor('stake', {
+          header: 'teaching power',
+          id: 'stake',
+          sortingFn: (rowA, rowB) => {
+            const a = rowA.original.stake.reduce((acc, s) => acc + s[1], 0);
+            const b = rowB.original.stake.reduce((acc, s) => acc + s[1], 0);
+
+            return a - b;
+          },
+          cell: (info) => {
+            const stake = info.getValue();
+
+            const total = stake.reduce((acc, s) => acc + s[1], 0);
+            return <IconsNumber value={total} type="pussy" />;
           },
         }),
         columnHelper.accessor('uid', {

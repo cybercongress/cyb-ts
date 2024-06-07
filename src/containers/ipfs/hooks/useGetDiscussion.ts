@@ -11,13 +11,22 @@ const limit = 15;
 type Props = {
   hash: string;
   type: LinksType;
+  neuron: string | null;
 };
 
 function useGetLinks(
   { hash, type = LinksTypeFilter.from, neuron }: Props,
   { skip = false } = {}
 ) {
-  console.log(neuron);
+  const where = {
+    [`particle_${type}`]: { _eq: hash },
+  };
+
+  if (neuron) {
+    where.neuron = { _eq: neuron };
+  }
+
+  console.log('search neuron:', neuron);
 
   // always no next page when skip
   const [hasNextPage, setHasNextPage] = useState(!skip);
@@ -31,19 +40,7 @@ function useGetLinks(
     fetchMore,
   } = useCyberlinksByParticleQuery({
     variables: {
-      where:
-        type === LinksTypeFilter.from
-          ? {
-              particle_from: { _eq: hash },
-              neuron: { _eq: neuron },
-              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
-            }
-          : {
-              particle_to: { _eq: hash },
-              neuron: { _eq: neuron },
-              // neuron: { _eq: 'pussy1ay267fakkrgfy9lf2m7wsj8uez2dgylhp6nyxl' },
-            },
-
+      where,
       orderBy: { timestamp: OrderBy.Desc },
       limit,
     },
