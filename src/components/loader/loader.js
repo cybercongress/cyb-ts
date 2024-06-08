@@ -136,21 +136,32 @@ const Bootloader = () => {
           : _a.removeChild(oldAsset));
       // create new asset
       const objectURL = URL.createObjectURL(blob);
-      const tag = js
-        ? _this.createScriptTag(objectURL, assetId)
-        : _this.createCssTag(objectURL, assetId);
-      tag.onload = tag.onerror = () => {
-        // remove listeners
-        tag.onload = tag.onerror = null;
-        // note: if you want the file to be accessible after loading
-        // then comment out bellow line
-        URL.revokeObjectURL(objectURL);
-      };
-      _this.tagMap[asset.file] = tag;
-      return asset;
+      if (js === 'wasm') {
+        return fetch(asset).then(() => {
+          console.log('---loaded wasm', asset);
+          return asset;
+        });
+      } else {
+        const tag =
+          js === 'js'
+            ? _this.createScriptTag(objectURL, assetId)
+            : _this.createCssTag(objectURL, assetId);
+
+        tag.onload = tag.onerror = () => {
+          // remove listeners
+          tag.onload = tag.onerror = null;
+          // note: if you want the file to be accessible after loading
+          // then comment out bellow line
+          URL.revokeObjectURL(objectURL);
+        };
+        _this.tagMap[asset.file] = tag;
+
+        return asset;
+      }
     });
   };
   this.loadAssets = (assets, js, cb) => {
+    console.log('----loadAssets', assets, js);
     const _this = this;
     const report = {
       succeeded: [],
@@ -199,16 +210,17 @@ const Bootloader = () => {
       succeeded: [],
       failed: [],
     };
-    return this.loadAssets(cssAssets, false, cb)
+    return this.loadAssets(cssAssets, 'css', cb)
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(cssAssets);
-        return _this.loadAssets(jsAssets, true, cb);
+        return _this.loadAssets(jsAssets, 'js', cb);
       })
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(jsAssets);
-        return fullReport;
+        // return fullReport;
+        return _this.loadAssets(wasmAssets, 'wasm', cb);
       })
       .then((report) => {
         _this.mergeReport(fullReport, report);
