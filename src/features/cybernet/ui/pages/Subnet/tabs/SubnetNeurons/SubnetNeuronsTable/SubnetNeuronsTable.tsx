@@ -263,7 +263,7 @@ function SubnetNeuronsTable({}: Props) {
           },
         }),
         columnHelper.accessor('validator_trust', {
-          header: `${getText('validator')} trust`,
+          header: `trust`,
           cell: (info) => {
             const validatorTrust = info.getValue();
             const formatted = ((validatorTrust / 65536) * 100).toFixed(2);
@@ -272,7 +272,7 @@ function SubnetNeuronsTable({}: Props) {
           },
         }),
         columnHelper.accessor('emission', {
-          header: 'emission last epoch',
+          header: 'last rewards',
           cell: (info) => {
             const emission = info.getValue();
             return <IconsNumber value={emission} type="pussy" />;
