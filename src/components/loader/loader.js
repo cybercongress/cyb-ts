@@ -136,32 +136,24 @@ const Bootloader = () => {
           : _a.removeChild(oldAsset));
       // create new asset
       const objectURL = URL.createObjectURL(blob);
-      if (js === 'wasm') {
-        return fetch(asset).then(() => {
-          console.log('---loaded wasm', asset);
-          return asset;
-        });
-      } else {
-        const tag =
-          js === 'js'
-            ? _this.createScriptTag(objectURL, assetId)
-            : _this.createCssTag(objectURL, assetId);
 
-        tag.onload = tag.onerror = () => {
-          // remove listeners
-          tag.onload = tag.onerror = null;
-          // note: if you want the file to be accessible after loading
-          // then comment out bellow line
-          URL.revokeObjectURL(objectURL);
-        };
-        _this.tagMap[asset.file] = tag;
+      const tag = js
+        ? _this.createScriptTag(objectURL, assetId)
+        : _this.createCssTag(objectURL, assetId);
 
-        return asset;
-      }
+      tag.onload = tag.onerror = () => {
+        // remove listeners
+        tag.onload = tag.onerror = null;
+        // note: if you want the file to be accessible after loading
+        // then comment out bellow line
+        URL.revokeObjectURL(objectURL);
+      };
+      _this.tagMap[asset.file] = tag;
+
+      return asset;
     });
   };
   this.loadAssets = (assets, js, cb) => {
-    console.log('----loadAssets', assets, js);
     const _this = this;
     const report = {
       succeeded: [],
@@ -210,21 +202,21 @@ const Bootloader = () => {
       succeeded: [],
       failed: [],
     };
-    return this.loadAssets(cssAssets, 'css', cb)
+    return this.loadAssets(cssAssets, false, cb)
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(cssAssets);
-        return _this.loadAssets(jsAssets, 'js', cb);
-      })
-      .then((report) => {
-        _this.mergeReport(fullReport, report);
-        _this.appendHtmlElements(jsAssets);
-        // return fullReport;
-        return _this.loadAssets(wasmAssets, 'wasm', cb);
+        return _this.loadAssets(wasmAssets, true, cb);
       })
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(wasmAssets);
+        return _this.loadAssets(jsAssets, true, cb);
+      })
+      .then((report) => {
+        _this.mergeReport(fullReport, report);
+        _this.appendHtmlElements(jsAssets);
+
         return fullReport;
       });
   };
@@ -280,6 +272,7 @@ function bootstrap() {
       // console.log(e.loaded, e.loaded / e.totalSize); // @TODO
     })
     .then((report) => {
+      console.log('----final', report);
       if (window !== null) {
         let pageloader = null;
         pageloader = setInterval(function () {
