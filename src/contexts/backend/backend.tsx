@@ -184,7 +184,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
-  const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
+  const [dbApi, setDbApi] = useState<DbApiWrapper | undefined>(undefined);
 
   const { signer, signingClient } = useSigningClient();
 
@@ -197,10 +197,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      runeDeps.setExternalDeps({
-        senseApi: senseApi ? proxy(senseApi) : undefined,
+      backgroundWorkerInstance.setRuneDeps({
         address: myAddress,
-        signingClient: signingClient ? proxy(signingClient) : undefined,
+        // TODO: proxify particular methods
+        // senseApi: senseApi ? proxy(senseApi) : undefined,
+        // signingClient: signingClient ? proxy(signingClient) : undefined,
       });
     })();
   }, [senseApi, signingClient, myAddress]);
@@ -289,7 +290,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
     window.q = backgroundWorkerInstance.ipfsQueue;
     return () => channel.close();
-  }, [dispatch, createDbApi]);
+  }, [dispatch, runeEntryPoints, createDbApi]);
 
   const ipfsApi = useMemo(
     () => (isIpfsInitialized ? backgroundWorkerInstance.ipfsApi : null),

@@ -1,6 +1,6 @@
 import { ProxyMarked, Remote } from 'comlink';
 
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, first, tap } from 'rxjs';
 import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { RPC_URL } from 'src/constants/config';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
@@ -13,14 +13,16 @@ import { sendCyberlink } from '../neuron/neuronApi';
 import { extractRuneScript } from './helpers';
 import { IpfsApi, MlApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
+import DbApiWrapper from '../backend/services/DbApi/DbApi';
 
 type InternalDeps = {
   ipfsApi: Option<IpfsApi>;
   rune: Option<RuneEngine>;
   queryClient: Option<CyberClient>;
   mlApi: Option<MlApi>;
+  dbApi: Option<DbApiWrapper>;
 };
-type ExternalDeps = {
+export type ExternalDeps = {
   signingClient: Option<SigningCyberClient & ProxyMarked>;
   // signer?: Option<OfflineSigner>;
   senseApi: Option<SenseApi & ProxyMarked>;
@@ -45,19 +47,19 @@ const createRuneDeps = () => {
     ),
     senseApi: new BehaviorSubject<ExternalDeps['senseApi']>(undefined),
     address: new BehaviorSubject<ExternalDeps['address']>(undefined),
+    dbApi: new BehaviorSubject<ExternalDeps['dbApi']>(undefined),
   };
 
   const defferedDependency = (name: keyof Deps): Promise<Deps[typeof name]> => {
     return new Promise((resolve) => {
       const item$ = subjectDeps[name] as BehaviorSubject<Deps[typeof name]>;
-
       if (item$.getValue()) {
         resolve(item$.getValue());
       }
 
       item$
         .pipe(
-          first((value) => value !== undefined) // Automatically unsubscribes after the first valid value
+          first((value) => !!value) // Automatically unsubscribes after the first valid value
         )
         .subscribe((value) => {
           resolve(value);
@@ -159,7 +161,7 @@ const createRuneDeps = () => {
     },
     searcByEmbedding: async (text: string, count = 10) => {
       const mlApi = (await defferedDependency('mlApi')) as MlApi;
-
+      await defferedDependency('dbApi');
       return mlApi.searchByEmbedding(text, count);
     },
     evalScriptFromIpfs,

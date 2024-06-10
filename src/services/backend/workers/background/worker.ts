@@ -19,7 +19,7 @@ import { ParticleCid } from 'src/types/base';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PipelineType, pipeline, env } from '@xenova/transformers';
 import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
-import runeDeps from 'src/services/scripting/runeDeps';
+import runeDeps, { ExternalDeps } from 'src/services/scripting/runeDeps';
 
 import { exposeWorkerApi } from '../factoryMethods';
 
@@ -78,6 +78,7 @@ const createBackgroundWorkerApi = () => {
 
   dbInstance$.subscribe((db) => {
     dbApi = db;
+    runeDeps.setInternalDeps({ dbApi });
   });
 
   const ipfsQueue = new QueueManager(ipfsInstance$, {
@@ -297,6 +298,8 @@ const createBackgroundWorkerApi = () => {
     rune: proxy(rune),
     mlApi: proxy(mlApi),
     ipfsQueue: proxy(ipfsQueue),
+    setRuneDeps: (deps: Partial<ExternalDeps>) =>
+      runeDeps.setExternalDeps(deps),
     restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
