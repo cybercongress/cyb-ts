@@ -157,9 +157,9 @@ function SubnetNeuronsTable({}: Props) {
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
-          const { uid } = info.row.original;
+          const { validator_permit: validatorPermit } = info.row.original;
 
-          const isProfessor = checkIsProfessor(uid);
+          const isProfessor = !!validatorPermit;
 
           return (
             <div
@@ -262,6 +262,23 @@ function SubnetNeuronsTable({}: Props) {
             return <IconsNumber value={total} type="pussy" />;
           },
         }),
+        columnHelper.accessor('validator_trust', {
+          header: `${getText('validator')} trust`,
+          cell: (info) => {
+            const validatorTrust = info.getValue();
+            const formatted = ((validatorTrust / 65515) * 100).toFixed(2);
+
+            return `${formatted}%`;
+          },
+        }),
+        columnHelper.accessor('emission', {
+          header: 'emission last epoch',
+          cell: (info) => {
+            const emission = info.getValue();
+            return <IconsNumber value={emission} type="pussy" />;
+          },
+        }),
+
         columnHelper.accessor('uid', {
           header: 'grade',
           id: 'grade',

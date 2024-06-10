@@ -53,7 +53,7 @@ function DelegatesTable({}: Props) {
 
   // maybe rename
   function getYieldValue(value: number) {
-    return Number(((value / 1_000_000_000) * 365).toFixed(2));
+    return Number(((value / 1_000_000_000) * 100 * 365).toFixed(2));
   }
 
   const subnets = subnetsQuery.data || [];
