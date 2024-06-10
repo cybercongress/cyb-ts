@@ -253,8 +253,11 @@ const createBackgroundWorkerApi = () => {
 
     searchByEmbedding: async (text: string, count?: number) => {
       const vec = await getEmbedding(text);
+      console.log('----searchByEmbedding', vec);
 
       const rows = await dbApi!.searchByEmbedding(vec, count);
+      console.log('----searcByEmbedding rows', rows);
+
       return rows;
     },
   };
