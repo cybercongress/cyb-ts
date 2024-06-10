@@ -117,11 +117,11 @@ const config = {
       // ProvidePlugin configuration
       cyblog: ['src/utils/logging/cyblog.ts', 'default'],
     }),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: 'src/services/service-worker/service-worker.ts',
-      swDest: 'service-worker.js',
-      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
-    }),
+    // new WorkboxPlugin.InjectManifest({
+    //   swSrc: 'src/services/service-worker/service-worker.ts',
+    //   swDest: 'service-worker.js',
+    //   maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    // }),
   ],
   module: {
     rules: [

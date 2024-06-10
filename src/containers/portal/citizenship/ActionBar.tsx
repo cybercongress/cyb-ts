@@ -56,7 +56,7 @@ function ActionBar({
 
   const { isIpfsInitialized } = useBackend();
 
-  const checkAddress = (obj, network, address) =>
+  const checkAddress = (obj: any, network: string, address: string) =>
     Object.keys(obj).filter(
       (k) => obj[k][network] && obj[k][network].bech32 === address
     );
@@ -265,7 +265,7 @@ function ActionBar({
             text="update page"
           />
         ) : (
-          <BtnGrd onClick={() => connectAccToCyber()} text="connect" />
+          <BtnGrd onClick={connectAccToCyber} text="connect" />
           // <Button onClick={() => connectAccToCyber()}>connect</Button>
         )}
       </ActionBarSteps>

@@ -419,7 +419,7 @@ export function ConnectAddress({
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {keplr ? (
+        {keplr || window.__TAURI__ ? (
           <ButtonIcon
             onClick={() => selectMethodFunc('keplr')}
             active={selectMethod === 'keplr'}
