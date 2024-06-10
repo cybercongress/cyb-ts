@@ -47,7 +47,7 @@ function Ipfs() {
         clearMetaItems();
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
         await ipfsApi!.addContent(query);
-
+        setIpfsDatDetails(undefined);
         setCid(cidFromQuery);
       })();
     }
@@ -67,10 +67,23 @@ function Ipfs() {
           // (progress: number) => console.log(`${cid} progress: ${progress}`)
         );
         setIpfsDatDetails(details);
-        await askCompanion(cid, details?.type, details?.text);
       })();
     }
   }, [content, status, cid, askCompanion]);
+
+  useEffect(() => {
+    (async () => {
+      if (ipfsDataDetails) {
+        console.log(
+          '---askCompanion',
+          cid,
+          ipfsDataDetails?.type,
+          ipfsDataDetails?.text
+        );
+        await askCompanion(cid, ipfsDataDetails?.type, ipfsDataDetails?.text);
+      }
+    })();
+  }, [cid, askCompanion, ipfsDataDetails]);
 
   useEffect(() => {
     if (!status) {

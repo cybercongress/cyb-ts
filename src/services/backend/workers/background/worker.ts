@@ -181,7 +181,7 @@ const createBackgroundWorkerApi = () => {
       .load(params)
       .then(() => {
         runeDeps.setInternalDeps({ rune });
-        broadcastApi.postServiceStatus('rune', 'started');
+        setTimeout(() => broadcastApi.postServiceStatus('rune', 'started'), 0);
       })
       .catch((err) =>
         broadcastApi.postServiceStatus('rune', 'error', err.toString())
