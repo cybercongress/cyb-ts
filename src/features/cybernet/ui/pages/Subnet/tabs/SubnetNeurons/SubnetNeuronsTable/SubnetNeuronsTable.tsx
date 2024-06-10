@@ -266,7 +266,7 @@ function SubnetNeuronsTable({}: Props) {
           header: `${getText('validator')} trust`,
           cell: (info) => {
             const validatorTrust = info.getValue();
-            const formatted = ((validatorTrust / 65515) * 100).toFixed(2);
+            const formatted = ((validatorTrust / 65536) * 100).toFixed(2);
 
             return `${formatted}%`;
           },
