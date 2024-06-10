@@ -51,6 +51,24 @@ const Bootloader = () => {
     tag.src = src;
     return tag;
   };
+
+  this.createWasmScriptTag = (src, id) => {
+    console.log('------createWasmScriptTag', src, id);
+    const tag = document.createElement('script');
+    tag.id = id;
+    tag.type = 'text/javascript';
+    // Script to instantiate the WebAssembly module
+    tag.innerHTML = `
+                       (async () => {
+                           const response = await fetch('${src}');
+                           const wasmArrayBuffer = await response.arrayBuffer();
+                           const wasmModule = await WebAssembly.instantiate(wasmArrayBuffer);
+                           console.log('WASM Module:', wasmModule);
+                       })();
+                   `;
+    return tag;
+  };
+
   this.createCssTag = (href, id) => {
     const tag = document.createElement('link');
     tag.id = id;
@@ -136,20 +154,35 @@ const Bootloader = () => {
           : _a.removeChild(oldAsset));
       // create new asset
       const objectURL = URL.createObjectURL(blob);
+      console.log('------create tag', assetId, objectURL);
 
-      const tag = js
-        ? _this.createScriptTag(objectURL, assetId)
-        : _this.createCssTag(objectURL, assetId);
-
-      tag.onload = tag.onerror = () => {
-        // remove listeners
-        tag.onload = tag.onerror = null;
-        // note: if you want the file to be accessible after loading
-        // then comment out bellow line
+      // const tag =
+      //   js == 'js'
+      //     ? _this.createScriptTag(objectURL, assetId)
+      //     : js === 'css'
+      //     ? _this.createCssTag(objectURL, assetId)
+      //     : this.createWasmScriptTag(objectURL, assetId);
+      if (js === 'wasm') {
+        console.log('WASM file preloaded:', objectURL);
         URL.revokeObjectURL(objectURL);
-      };
-      _this.tagMap[asset.file] = tag;
+      } else {
+        const tag =
+          js == 'js'
+            ? _this.createScriptTag(objectURL, assetId)
+            : js === 'css'
+            ? _this.createCssTag(objectURL, assetId)
+            : this.createWasmScriptTag(objectURL, assetId);
 
+        tag.onload = tag.onerror = () => {
+          // remove listeners
+          tag.onload = tag.onerror = null;
+          // note: if you want the file to be accessible after loading
+          // then comment out bellow line
+          console.log('----revoke', asset, js);
+          URL.revokeObjectURL(objectURL);
+        };
+        _this.tagMap[asset.file] = tag;
+      }
       return asset;
     });
   };
@@ -202,16 +235,16 @@ const Bootloader = () => {
       succeeded: [],
       failed: [],
     };
-    return this.loadAssets(cssAssets, false, cb)
+    return this.loadAssets(cssAssets, 'css', cb)
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(cssAssets);
-        return _this.loadAssets(wasmAssets, true, cb);
+        return _this.loadAssets(wasmAssets, 'wasm', cb);
       })
       .then((report) => {
         _this.mergeReport(fullReport, report);
         _this.appendHtmlElements(wasmAssets);
-        return _this.loadAssets(jsAssets, true, cb);
+        return _this.loadAssets(jsAssets, 'js', cb);
       })
       .then((report) => {
         _this.mergeReport(fullReport, report);
