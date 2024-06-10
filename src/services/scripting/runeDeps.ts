@@ -59,7 +59,8 @@ const createRuneDeps = () => {
 
       item$
         .pipe(
-          first((value) => !!value) // Automatically unsubscribes after the first valid value
+          first((value) => !!value), // Automatically unsubscribes after the first valid value
+          tap((v) => console.log('------defferedDependency', name, v))
         )
         .subscribe((value) => {
           resolve(value);
@@ -162,6 +163,7 @@ const createRuneDeps = () => {
     searcByEmbedding: async (text: string, count = 10) => {
       const mlApi = (await defferedDependency('mlApi')) as MlApi;
       await defferedDependency('dbApi');
+      console.log('----searcByEmbedding', text);
       return mlApi.searchByEmbedding(text, count);
     },
     evalScriptFromIpfs,
