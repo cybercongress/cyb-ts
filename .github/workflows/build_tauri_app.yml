@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feat/tauri-app
+  workflow_dispatch:
 
 jobs:
   publish-tauri:
