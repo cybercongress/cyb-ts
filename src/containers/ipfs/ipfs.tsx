@@ -61,6 +61,7 @@ function Ipfs() {
   useEffect(() => {
     if (status === 'completed') {
       (async () => {
+        console.log('----content', content, cid);
         const details = await parseArrayLikeToDetails(
           content,
           cid
@@ -77,6 +78,7 @@ function Ipfs() {
         console.log(
           '---askCompanion',
           cid,
+          ipfsDataDetails,
           ipfsDataDetails?.type,
           ipfsDataDetails?.text
         );
