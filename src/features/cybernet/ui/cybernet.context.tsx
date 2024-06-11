@@ -17,10 +17,10 @@ const contractsConfig = [
   'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
 ];
 
-// const legacy = [
-//   'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
-//   'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
-// ];
+const legacy = [
+  'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
+  'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
+];
 
 const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
@@ -73,7 +73,10 @@ function useCybernetContractWithData(address: string) {
   return {
     address,
     type,
-    metadata: metadataQuery.data,
+    metadata: {
+      ...metadataQuery.data,
+      name: legacy.includes(address) ? '' : name,
+    },
     economy: economyQuery.data,
     isLoading: metadataQuery.loading || economyQuery.loading,
   };
@@ -89,7 +92,10 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   const c1 = useCybernetContractWithData(contractsConfig[0]);
   const c2 = useCybernetContractWithData(contractsConfig[1]);
 
-  const contracts = useMemo(() => [c1, c2], [c1, c2]);
+  const c3 = useCybernetContractWithData(legacy[0]);
+  const c4 = useCybernetContractWithData(legacy[1]);
+
+  const contracts = useMemo(() => [c1, c2, c3, c4], [c1, c2, c3, c4]);
 
   const currentContract =
     nameOrAddress &&

@@ -7,6 +7,7 @@ import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContra
 import styles from '../../Subnet.module.scss';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { routes } from 'src/routes';
+import { useCurrentSubnet } from '../../subnet.context';
 
 const config: { [K in keyof SubnetHyperParameters]: { text: string } } = {
   rho: {
@@ -66,22 +67,12 @@ const config: { [K in keyof SubnetHyperParameters]: { text: string } } = {
 };
 
 function SubnetHyperParams() {
-  const { id: netuid } = useParams();
-
-  const f = netuid === 'board' ? 0 : +netuid;
-
-  const hyperparamsQuery = useCybernetContract<SubnetHyperParameters>({
-    query: {
-      get_subnet_hyperparams: {
-        netuid: f,
-      },
-    },
-  });
+  const { hyperparamsQuery } = useCurrentSubnet();
 
   useAdviserTexts({
     isLoading: hyperparamsQuery.loading,
     error: hyperparamsQuery.error,
-    // defaultText: 'Subnet hyperparams',
+    defaultText: 'Subnet hyperparams',
   });
 
   return (

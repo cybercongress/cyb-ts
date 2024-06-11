@@ -12,13 +12,14 @@ import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import useDelegate from '../../../hooks/useDelegate';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
-import { getAverageGrade, useSubnet } from '../../Subnet/subnet.context';
+import { useSubnet } from '../../Subnet/subnet.context';
 import { routes as subnetRoutes } from '../../../routes';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import { trimString } from 'src/utils/utils';
+import { getAverageGrade } from '../../Subnet/useCurrentSubnetGrades';
 
 type Props = {
   // remove

@@ -10,7 +10,6 @@
 }
 
 .displayTitle {
-  min-height: 70px;
   padding: 10px 0;
   font-size: 20px;
   display: flex;
@@ -27,8 +26,8 @@
 
   &Content {
     display: flex;
+    min-height: 36px;
     align-items: center;
-    min-height: 32px;
     gap: 0 10px;
     line-height: 25px;
     width: 100%;

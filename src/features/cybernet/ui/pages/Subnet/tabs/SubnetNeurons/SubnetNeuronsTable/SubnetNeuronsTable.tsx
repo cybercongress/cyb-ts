@@ -6,7 +6,7 @@ import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
 import { Account, AmountDenom, Tooltip } from 'src/components';
-import { getAverageGrade, useSubnet } from '../../../subnet.context';
+import { useSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
@@ -21,6 +21,7 @@ import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
+import { getAverageGrade } from '../../../useCurrentSubnetGrades';
 
 type Props = {};
 
