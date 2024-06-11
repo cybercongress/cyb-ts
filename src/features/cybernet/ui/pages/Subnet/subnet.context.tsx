@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import {
+  SubnetHyperParameters,
   SubnetInfo,
   SubnetNeuron,
   Weights,
@@ -15,6 +16,7 @@ import {
 import useExecuteCybernetContract from '../../useExecuteCybernetContract';
 import { useAdviser } from 'src/features/adviser/context';
 import { isEqual } from 'lodash';
+import { useAppData } from '../../../../../contexts/appData';
 
 export function getAverageGrade(grades, uid: number) {
   let count = 0;
@@ -39,9 +41,14 @@ export function getAverageGrade(grades, uid: number) {
 // split grades to new hook
 
 const LS_KEY = 'setGrades';
+const LS_KEY2 = 'gradesUpdated';
 
 function getLSKey(address: string) {
   return `${LS_KEY}_${address}`;
+}
+
+function getLSKe2(address: string) {
+  return `${LS_KEY2}_${address}`;
 }
 
 function getLSData(address: string, subnetId: number) {
@@ -50,6 +57,23 @@ function getLSData(address: string, subnetId: number) {
   const parsedData = data ? JSON.parse(data) : null;
 
   return parsedData ? parsedData[subnetId] : null;
+}
+
+function getLSData2(address: string, subnetId: number) {
+  const data = localStorage.getItem(getLSKe2(address));
+
+  const parsedData = data ? JSON.parse(data) : null;
+
+  return parsedData ? parsedData[subnetId] : null;
+}
+
+function saveLSData2(block, address: string, subnetId: number) {
+  const newData = {
+    ...getLSData2(address, subnetId),
+    [subnetId]: block,
+  };
+
+  localStorage.setItem(getLSKe2(address), JSON.stringify(newData));
 }
 
 function saveLSData(data, address: string, subnetId: number) {
@@ -102,11 +126,22 @@ export function useSubnet() {
   return React.useContext(SubnetContext);
 }
 
-function SubnetProvider({ children }: { children: React.ReactNode }) {
+export function useCurrentSubnet() {
   const { id } = useParams();
 
   const f = id === 'board' ? 0 : +id;
   const netuid = Number(f);
+
+  const isRootSubnet = netuid === 0;
+
+  return {
+    netuid,
+    isRootSubnet,
+  };
+}
+
+function SubnetProvider({ children }: { children: React.ReactNode }) {
+  const { netuid } = useCurrentSubnet();
 
   const currentAddress = useCurrentAddress();
 
@@ -118,6 +153,8 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
     const lastGrades = getLSData(currentAddress, netuid);
     return lastGrades;
   }, [currentAddress, netuid]);
+
+  const { block } = useAppData();
 
   useEffect(() => {
     if (!currentAddress) {
@@ -154,6 +191,32 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
       },
     },
   });
+
+  const hyperparamsQuery = useCybernetContract<SubnetHyperParameters>({
+    query: {
+      get_subnet_hyperparams: {
+        netuid,
+      },
+    },
+  });
+
+  console.log(hyperparamsQuery.data?.weights_rate_limit);
+
+  console.log('subnetQuery', subnetQuery.data, block);
+
+  // isRateDisabled;
+
+  useEffect(() => {
+    if (!currentAddress || !netuid) {
+      return;
+    }
+    saveLSData2(block, currentAddress, netuid);
+  }, [currentAddress, netuid, block]);
+
+  const t = getLSData2(currentAddress, netuid);
+  console.log('t', t);
+
+  const isRateDisabled = t === block;
 
   const neuronsQuery = useCybernetContract<SubnetNeuron[]>({
     query: {
@@ -272,6 +335,7 @@ function SubnetProvider({ children }: { children: React.ReactNode }) {
           setGrade,
           save: submit,
           isLoading,
+          isRateDisabled,
           isGradesUpdated: !isEqual(newGrades, gradesFromMe),
         },
       },

@@ -70,7 +70,11 @@ function App() {
 
   useEffect(() => {
     // tabs
-    if (matchPath(routes.senateProposal.path, location.pathname)) {
+    if (
+      [cybernetRoutes.verse.path, routes.senateProposal.path].some((path) => {
+        return matchPath(path, location.pathname);
+      })
+    ) {
       return;
     }
 

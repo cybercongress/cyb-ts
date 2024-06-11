@@ -62,13 +62,6 @@ function DelegatesTable({}: Props) {
 
   const columns = useMemo(() => {
     const cols = [
-      columnHelper.accessor((row) => row, {
-        header: 'card',
-        cell: ({ row }) => {
-          return row.index;
-        },
-      }),
-
       columnHelper.accessor('delegate', {
         header: getText('delegate'),
         enableSorting: false,
@@ -184,11 +177,15 @@ function DelegatesTable({}: Props) {
     ? data
     : data?.filter((mentor) => myMentors.includes(mentor.delegate));
 
-  console.log('renderData', renderData);
-
   return (
     <Table
-      onSelect={(row) => navigate(`./${data.find((_, i) => i == row)?.owner}`)}
+      onSelect={(row) => {
+        const owner = data?.find((_, i) => i == row)?.owner;
+
+        navigate(
+          cybernetRoutes.delegator.getLink('pussy', contractName, owner)
+        );
+      }}
       columns={columns}
       data={renderData || []}
       isLoading={isLoading}
