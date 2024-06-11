@@ -12,7 +12,6 @@ import {
   mergeMap,
   of,
   share,
-  switchMap,
   throwError,
   timeout,
   withLatestFrom,
@@ -46,7 +45,7 @@ import {
   uint8ArrayToTextOrSkip,
 } from '../scripting/services/postProcessing';
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
-// import { CustomHeaders, XCybSourceValues } from './constants';
+import { CustomHeaders, XCybSourceValues } from './constants';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 15000;
@@ -172,13 +171,11 @@ class QueueManager {
       return fetchIpfsContent(cid, source, {
         controller,
         node: this.node,
-        // TODO : disable
-        // headers: {
-        //   [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
-        // },
+        headers: {
+          [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
+        },
       }).then(async (content) => {
         let result = uint8ArrayToTextOrSkip(content);
-
         if (!item.postProcessing) {
           result = content;
         } else {

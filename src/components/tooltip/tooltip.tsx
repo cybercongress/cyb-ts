@@ -12,6 +12,7 @@ export type TooltipProps = {
   tooltip: React.ReactNode;
   hideBorder?: boolean;
   placement?: Popper.Config['placement'];
+  contentStyle?: React.CSSProperties;
 
   /**
    * @deprecated not use
@@ -24,6 +25,7 @@ function Tooltip({
   trigger = 'hover',
   tooltip,
   hideBorder = true,
+  contentStyle = {},
   strategy = 'absolute',
   placement = 'top',
 }: TooltipProps) {
@@ -51,7 +53,9 @@ function Tooltip({
 
   return (
     <>
-      <div ref={setTriggerRef}>{children}</div>
+      <div ref={setTriggerRef} style={contentStyle}>
+        {children}
+      </div>
 
       {mounted && (
         <div
@@ -71,4 +75,5 @@ function Tooltip({
     </>
   );
 }
+
 export default Tooltip;

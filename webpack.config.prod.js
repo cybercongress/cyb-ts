@@ -2,8 +2,8 @@ const { merge } = require('webpack-merge');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
-const BundleInfoPlugin = require('./webpack/BundleInfoPlugin.js');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
@@ -45,4 +45,11 @@ module.exports = merge(commonConfig, {
       //   : []),
     ],
   },
+  plugins: [
+    new WorkboxPlugin.InjectManifest({
+      swSrc: 'src/services/service-worker/service-worker.ts',
+      swDest: 'service-worker.js',
+      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    }),
+  ],
 });
