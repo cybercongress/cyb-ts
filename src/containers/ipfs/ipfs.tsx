@@ -82,7 +82,11 @@ function Ipfs() {
           ipfsDataDetails?.type,
           ipfsDataDetails?.text
         );
-        await askCompanion(cid, ipfsDataDetails?.type, ipfsDataDetails?.text);
+        await askCompanion(
+          cid,
+          ipfsDataDetails?.type,
+          ipfsDataDetails?.text?.substring(0, 255)
+        );
       }
     })();
   }, [cid, askCompanion, ipfsDataDetails]);

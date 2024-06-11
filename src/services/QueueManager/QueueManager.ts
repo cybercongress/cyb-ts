@@ -12,6 +12,7 @@ import {
   mergeMap,
   of,
   share,
+  tap,
   throwError,
   timeout,
   withLatestFrom,
@@ -338,13 +339,15 @@ class QueueManager {
 
     isInitialized$.subscribe((isInitialized) => {
       isInitialized && console.log('🚦 Ipfs QueueManager initialized');
+      this.node?.reconnectToSwarm(true);
     });
 
     this.queue$
       .pipe(
-        // tap(() => console.log('----QUEUE')),
+        tap((v) => console.log('----QUEUE', v.size)),
         withLatestFrom(isInitialized$),
         filter(([, isInitialized]) => isInitialized),
+        tap(([v]) => console.log('----QUEUE2', v.size)),
         debounceTime(this.queueDebounceMs),
         map(([queue]) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {

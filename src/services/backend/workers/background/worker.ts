@@ -91,7 +91,7 @@ const createBackgroundWorkerApi = () => {
       // broadcastApi.postServiceStatus('ml', 'starting');
       const model = mlModelMap[name];
 
-      return pipeline(model.name, model.model, {
+      pipeline(model.name, model.model, {
         progress_callback: (progressData: any) => {
           try {
             const {
@@ -122,15 +122,15 @@ const createBackgroundWorkerApi = () => {
           }
         },
       }).then((model) => {
-        console.log('----model', name, typeof model);
-        getEmbeddingInstance$.next(getEmbedding);
-
         mlInstances[name] = model;
+        console.log('----model', name, typeof model);
+
+        // getEmbeddingInstance$.next(getEmbedding);
 
         return model;
       });
     }
-    console.log(`${name} - already loaded`);
+    console.log(`${name} - loaded`);
     getEmbeddingInstance$.next(getEmbedding);
 
     return mlInstances[name];
@@ -167,7 +167,9 @@ const createBackgroundWorkerApi = () => {
     ])
       .then((result) => {
         console.log('-----------init ml', result);
-        broadcastApi.postServiceStatus('ml', 'started');
+        runeDeps.setInternalDeps({ mlApi });
+
+        setTimeout(() => broadcastApi.postServiceStatus('ml', 'started'), 0);
         return result;
       })
       .catch((e) =>
@@ -291,7 +293,7 @@ const createBackgroundWorkerApi = () => {
     addContent: async (content: string | File) => ipfsNode?.addContent(content),
   };
 
-  runeDeps.setInternalDeps({ ipfsApi, mlApi });
+  runeDeps.setInternalDeps({ ipfsApi });
 
   return {
     init,
