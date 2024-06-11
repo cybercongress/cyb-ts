@@ -8,7 +8,7 @@ import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayT
 import { trimString } from 'src/utils/utils';
 import styles from './Sigma.module.scss';
 import Loader2 from 'src/components/ui/Loader2';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { routes } from 'src/routes';

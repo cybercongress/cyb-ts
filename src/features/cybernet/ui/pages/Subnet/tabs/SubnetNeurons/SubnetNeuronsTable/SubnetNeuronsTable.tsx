@@ -20,6 +20,7 @@ import { getColor } from '../../Weights/WeightsTable/WeightsTable';
 import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 type Props = {};
 
@@ -92,38 +93,13 @@ function SubnetNeuronsTable({}: Props) {
   const {
     netuid,
     metadata,
-    max_weights_limit: maxWeightsLimit,
-    max_allowed_validators: maxAllowedValidators,
+    // max_weights_limit: maxWeightsLimit,
+    // max_allowed_validators: maxAllowedValidators,
   } = subnetQuery?.data || {};
 
   const address = useCurrentAddress();
 
   const neurons = neuronsQuery?.data || [];
-
-  const { validatorStakeBreak, neuronsStake } = useMemo(() => {
-    const neurons = neuronsQuery?.data || [];
-
-    const neuronsStake = neurons.map((n) => {
-      const total = n.stake.reduce((acc, s) => acc + s[1], 0);
-
-      return total;
-    });
-
-    const sorted = neuronsStake.sort((a, b) => b - a);
-
-    const { length } = sorted;
-
-    const validatorStakeBreak =
-      sorted[
-        length <= maxAllowedValidators ? length - 1 : maxAllowedValidators - 1
-      ];
-
-    return { validatorStakeBreak, neuronsStake };
-  }, [maxAllowedValidators, neuronsQuery?.data]);
-
-  function checkIsProfessor(uid: number) {
-    return neuronsStake[uid] >= validatorStakeBreak;
-  }
 
   const { block } = useAppData();
 
@@ -140,8 +116,6 @@ function SubnetNeuronsTable({}: Props) {
 
   const cur = vievedBlocks?.[address]?.[netuid];
 
-  console.log('neurons', neurons);
-
   const columns = useMemo(() => {
     const col = [
       columnHelper.accessor('uid', {
@@ -153,7 +127,7 @@ function SubnetNeuronsTable({}: Props) {
       }),
       columnHelper.accessor('hotkey', {
         header: getText(rootSubnet ? 'rootValidator' : 'delegate'),
-        // size: 200,
+        size: 200,
         enableSorting: false,
         cell: (info) => {
           const hotkey = info.getValue();
@@ -181,9 +155,9 @@ function SubnetNeuronsTable({}: Props) {
               />
 
               {isProfessor && (
-                <Tooltip tooltip="professor">
+                <AdviserHoverWrapper adviserContent="this neuron is professor">
                   <span>💼</span>
-                </Tooltip>
+                </AdviserHoverWrapper>
               )}
             </div>
           );
@@ -339,6 +313,7 @@ function SubnetNeuronsTable({}: Props) {
     <Table
       columns={columns}
       data={neurons}
+      isLoading={neuronsQuery?.loading}
       initialState={{
         sorting: [
           {

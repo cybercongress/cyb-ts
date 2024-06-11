@@ -1,23 +1,17 @@
 import { Route, Routes, useParams } from 'react-router-dom';
-import { Cid, MainContainer, Tabs } from 'src/components';
+import { Tabs } from 'src/components';
 import ActionBar from './SubnetActionBar/SubnetActionBar';
 import Weights from './tabs/Weights/Weights';
 import SubnetInfo from './tabs/SubnetInfo/SubnetInfo';
 import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetProvider, { useSubnet } from './subnet.context';
 import SubnetNeurons from './tabs/SubnetNeurons/SubnetNeurons';
-import useDelegate from '../../hooks/useDelegate';
 import SubnetSubnets from './tabs/SubnetSubnets/SubnetSubnets';
-import { useCybernet } from '../../cybernet.context';
 import useCybernetTexts from '../../useCybernetTexts';
-import Display from 'src/components/containerGradient/Display/Display';
-import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { trimString } from 'src/utils/utils';
 import SubnetHeader from './SubnetHeader/SubnetHeader';
 import Loader2 from 'src/components/ui/Loader2';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 function Subnet() {
   const { id, ...rest } = useParams();

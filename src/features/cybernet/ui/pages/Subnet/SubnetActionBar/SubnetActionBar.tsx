@@ -8,7 +8,7 @@ import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import { ContractTypes } from 'src/features/cybernet/types';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { AmountDenom } from 'src/components';
 import styles from './SubnetActionBar.module.scss';
 

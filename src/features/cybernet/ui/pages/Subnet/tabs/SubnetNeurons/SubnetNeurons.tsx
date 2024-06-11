@@ -1,12 +1,11 @@
 import SubnetNeuronsTable from './SubnetNeuronsTable/SubnetNeuronsTable';
 import { useSubnet } from '../../subnet.context';
 import Display from 'src/components/containerGradient/Display/Display';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { ActionBar } from 'src/components';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 import { useCurrentContract } from 'src/features/cybernet/ui/cybernet.context';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 type Props = {
   addressRegisteredInSubnet: boolean;
@@ -15,7 +14,6 @@ type Props = {
 function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   const { subnetQuery, neuronsQuery } = useSubnet();
 
-  const subnetNeurons = neuronsQuery.data;
   const { network_modality: subnetType, netuid } = subnetQuery.data || {};
 
   const rootSubnet = netuid === 0;
@@ -43,18 +41,8 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
 
   const isMLVerse = checkIsMLVerse(type);
 
-  // fix
-  if (!subnetNeurons || !subnetQuery.data) {
-    return null;
-  }
-
   return (
-    <Display
-      noPaddingX
-      // title={
-      //   <DisplayTitle title={<header>{getText('validator', true)}</header>} />
-      // }
-    >
+    <Display noPaddingX>
       <SubnetNeuronsTable />
 
       {addressRegisteredInSubnet && !rootSubnet && !isMLVerse && (

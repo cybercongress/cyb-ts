@@ -5,7 +5,7 @@ import { SubnetHyperParameters } from 'src/features/cybernet/types';
 import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
 
 import styles from '../../Subnet.module.scss';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { routes } from 'src/routes';
 
 const config: { [K in keyof SubnetHyperParameters]: { text: string } } = {
