@@ -141,6 +141,7 @@ export const createMlApi = (
 
   const init = async () => {
     broadcastApi.postServiceStatus('ml', 'starting');
+    console.time('🔋 ml initialized');
 
     return Promise.all([
       initPipelineInstance('featureExtractor'),
@@ -148,9 +149,9 @@ export const createMlApi = (
       // initMlInstance('qa'),
     ])
       .then((result) => {
-        console.log('-----------init all ml', result);
-
         setTimeout(() => broadcastApi.postServiceStatus('ml', 'started'), 0);
+        console.timeEnd('🔋 ml initialized');
+
         return result;
       })
       .catch((e) =>

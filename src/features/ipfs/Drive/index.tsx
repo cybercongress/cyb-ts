@@ -153,7 +153,7 @@ function Drive() {
       });
       saveAs(blob, 'export.json');
     } catch (e) {
-      console.log('CozoDb: Failed to import', e);
+      console.log('cozoDb: Failed to import', e);
     }
   };
 

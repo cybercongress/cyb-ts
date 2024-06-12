@@ -1,8 +1,8 @@
-import { ProxyMarked, Remote, proxy } from 'comlink';
+import { proxy } from 'comlink';
 
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
-import { BehaviorSubject, ReplaySubject, Subject, shareReplay } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { RuneInnerDeps } from 'src/services/scripting/runeDeps';
 
 import { exposeWorkerApi } from '../factoryMethods';
@@ -13,7 +13,6 @@ import { SyncServiceParams } from '../../services/sync/types';
 import DbApi from '../../services/DbApi/DbApi';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import { SyncEntryName } from '../../types/services';
 import { createIpfsApi } from './api/ipfsApi';
 import { createMlApi } from './api/mlApi';
 import { createRuneApi } from './api/runeApi';
@@ -66,16 +65,17 @@ const createBackgroundWorkerApi = () => {
 
   return {
     injectDb,
-    isInitialized: () => !!ipfsInstance$.value,
+    isIpfsInitialized: () => !!ipfsInstance$.getValue(),
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
     embeddingApi$,
+    ipfsInstance$,
     ipfsQueue: proxy(ipfsQueue),
     setRuneDeps: (
       deps: Partial<Omit<RuneInnerDeps, 'embeddingApi' | 'dbApi'>>
     ) => setInnerDeps(deps),
-    restartSync: (name: SyncEntryName) => syncService.restart(name),
+    // restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
   };

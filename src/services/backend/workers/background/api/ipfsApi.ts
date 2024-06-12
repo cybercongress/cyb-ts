@@ -38,11 +38,17 @@ export const createIpfsApi = (
     try {
       const ipfsNode = ipfsInstance$.getValue();
       if (ipfsNode) {
-        console.log('Ipfs node already started!');
-        await ipfsNode.stop();
+        // console.log('Ipfs node already started!');
+        setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
+        return Promise.resolve();
+        // await ipfsNode.stop();
       }
       broadcastApi.postServiceStatus('ipfs', 'starting');
+      console.time('🔋 ipfs initialized');
+
       const newIpfsNode = await initIpfsNode(ipfsOpts);
+      console.timeEnd('🔋 ipfs initialized');
+
       ipfsInstance$.next(newIpfsNode);
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
@@ -57,7 +63,6 @@ export const createIpfsApi = (
   const api = {
     start: startIpfs,
     stop: stopIpfs,
-    getIpfsNode: async () => proxy(ipfsInstance$.getValue()),
     config: async () => ipfsInstance$.getValue()?.config,
     info: async () => ipfsInstance$.getValue()?.info(),
     fetchWithDetails: async (

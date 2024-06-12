@@ -26,7 +26,7 @@ export const fetchInitialEmbeddings = async (
 
 const migrate = async (db: CybCozoDb) => {
   const version = await db.getDbVersion();
-  console.log('* db version:', version);
+  console.log(`* db version - ${version}`);
   if (version < 1.2) {
     //
     console.log('⚡️ Migrating to 1.1');

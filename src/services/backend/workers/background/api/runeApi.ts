@@ -29,7 +29,6 @@ export const createRuneApi = (
   });
 
   const init = async () => {
-    console.log('-===init rune...');
     broadcastApi.postServiceStatus('rune', 'starting');
 
     await rune.init();

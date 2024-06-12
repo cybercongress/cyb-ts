@@ -87,7 +87,7 @@ function createCozoDb() {
 
     shouldInitialize = relations.length === 0;
     if (shouldInitialize) {
-      cyblogCh.info('CozoDb: apply DB schema', initializeScript);
+      cyblogCh.info('   cozoDb - apply DB schema', initializeScript);
       const result = await runCommand(initializeScript);
 
       relations = await getRelations();
@@ -101,7 +101,7 @@ function createCozoDb() {
     );
 
     dbSchema = Object.fromEntries(schemasMap);
-    cyblogCh.info('CozoDb schema initialized: ', {
+    cyblogCh.info('cozoDb schema initialized: ', {
       data: [dbSchema, relations, schemasMap],
     });
 

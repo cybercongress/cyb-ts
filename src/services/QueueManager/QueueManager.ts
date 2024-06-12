@@ -110,7 +110,11 @@ class QueueManager {
   }
 
   public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
-    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
+    console.log(
+      `* switch node from ${this.node?.nodeType || '<none>'} to ${
+        node.nodeType
+      }`
+    );
     this.node = node;
     this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
@@ -318,7 +322,7 @@ class QueueManager {
     );
 
     isInitialized$.subscribe((isInitialized) => {
-      isInitialized && console.log('🚦 Ipfs QueueManager initialized');
+      isInitialized && console.log('🚦 ipfs queue initialized');
       this.node?.reconnectToSwarm(true);
     });
 

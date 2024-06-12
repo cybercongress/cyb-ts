@@ -18,22 +18,26 @@ const createDbWorkerApi = () => {
     postServiceStatus('starting');
 
     if (isInitialized) {
-      console.log('Db: already initialized!');
+      console.log('cozo db - already initialized!');
       postServiceStatus('started');
-      return;
+      return Promise.resolve();
     }
 
     // callback to sync writes count worker -> main thread
     const onWriteCallback = (writesCount: number) => {};
     // channel.post({ type: 'indexeddb_write', value: writesCount });
+    console.time('🔋 cozo db initialized');
 
     await cozoDb.init(onWriteCallback);
     await migrate(cozoDb);
+    console.timeEnd('🔋 cozo db initialized');
+
     isInitialized = true;
 
     setTimeout(() => {
       postServiceStatus('started');
     }, 0);
+    return Promise.resolve();
   };
 
   const runCommand = async (command: string, immutable?: boolean) =>

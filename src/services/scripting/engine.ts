@@ -115,10 +115,10 @@ function enigine() {
   });
 
   const init = async () => {
-    console.time('⚡️ Rune initialized! 🔋');
+    console.time('🔋 rune initialized');
     await initAsync();
     // window.rune = rune; // debug
-    console.timeEnd('⚡️ Rune initialized! 🔋');
+    console.timeEnd('🔋 rune initialized');
     isInitialized$.next(true);
   };
 
