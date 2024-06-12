@@ -220,7 +220,6 @@ function Soul() {
           highlightErrors(codeMirrorRef.current, result.diagnostics, styles);
         } else {
           addToLog(['🏁 Compiled - OK.']);
-          debugger;
           saveScript(code);
         }
       });

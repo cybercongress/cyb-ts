@@ -33,6 +33,7 @@ export const createRuneApi = (
     broadcastApi.postServiceStatus('rune', 'starting');
 
     await rune.init();
+    setInnerDeps({ rune });
   };
 
   init();

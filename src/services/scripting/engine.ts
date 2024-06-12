@@ -25,9 +25,11 @@ import {
 import runtimeScript from './rune/runtime.rn';
 import {
   BehaviorSubject,
+  ReplaySubject,
   combineLatest,
   distinctUntilChanged,
   map,
+  share,
 } from 'rxjs';
 
 const compileConfig = {
@@ -95,13 +97,18 @@ function enigine() {
 
   const scriptCallbacks = new Map<string, ScriptCallback>();
 
-  const isSoulInitialized$ = combineLatest([isInitialized$, entrypoints$]).pipe(
-    map(
-      ([isInitialized, entrypoints]) =>
-        !!(isInitialized && entrypoints.particle)
-    ),
-    distinctUntilChanged()
-  );
+  const isSoulInitialized$ = new ReplaySubject(1);
+  combineLatest([isInitialized$, entrypoints$])
+    .pipe(
+      map(
+        ([isInitialized, entrypoints]) =>
+          !!(isInitialized && entrypoints.particle)
+      ),
+      distinctUntilChanged()
+    )
+    .subscribe((v) => {
+      isSoulInitialized$.next(v);
+    });
 
   entrypoints$.subscribe((v) => {
     entrypoints = v;
@@ -235,7 +242,6 @@ function enigine() {
       funcName: 'personal_processor',
       funcParams: [cid, contentType, content], //params as EntrypointParams,
     });
-
     const { action, content: outputContent } = output.result;
 
     if (action === 'error') {
@@ -258,6 +264,7 @@ function enigine() {
     funcName: string,
     funcParams: EntrypointParams
   ): Promise<ScriptParticleResult> => {
+    console.log('-----executeFunction rune', funcName, funcParams);
     const output = await run(script, {
       funcName,
       funcParams,

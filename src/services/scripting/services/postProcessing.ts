@@ -1,98 +1,51 @@
 import {
-  IPFSContent,
-  IPFSContentMaybe,
-  IPFSContentMeta,
-  IPFSContentMutated,
+  IPFSContentDetails,
+  IPFSContentDetailsMutated,
 } from 'src/services/ipfs/types';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
-import { QueueItem, QueuePriority } from 'src/services/QueueManager/types';
-import {
-  createTextPreview,
-  mimeToBaseContentType,
-} from 'src/services/ipfs/utils/content';
-import QueueManager from 'src/services/QueueManager/QueueManager';
+import { QueuePriority } from 'src/services/QueueManager/types';
+import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
+import { ParticleCid } from 'src/types/base';
+import { IpfsApi } from 'src/services/backend/workers/background/api/ipfsApi';
 import { RuneEngine } from '../engine';
-import { Option } from 'src/types';
-
-// const contentToStringOrEmpty = (content: IPFSContent, contentType: string) =>
-//   contentType === 'text' && content.result instanceof Uint8Array
-//     ? uint8ArrayToAsciiString(content.result)
-//     : '';
-
-// transform Uint8Array chunks to text
-export const uint8ArrayToTextOrSkip = (
-  content: IPFSContentMaybe
-): Option<IPFSContentMutated> => {
-  if (!content) {
-    return undefined;
-  }
-
-  const contentType = content?.meta?.contentType || 'other';
-
-  if (contentType === 'text' && content.result instanceof Uint8Array) {
-    return {
-      ...content,
-      contentType,
-      result: uint8ArrayToAsciiString(content.result),
-    };
-  }
-
-  return { ...content, contentType };
-};
-
-const contentToStringOrEmpty = (content: IPFSContent) => {
-  const contentType = content?.meta?.contentType || 'other';
-
-  if (contentType !== 'text') {
-    return '';
-  }
-  if (content.result instanceof Uint8Array) {
-    return uint8ArrayToAsciiString(content.result);
-  }
-
-  return content.result as string;
-};
 
 /**
  * Execute 'particle' script to post process item: modify cid or content, or hide from view
  * @param item
- * @param content
+ * @param details
  * @param ipfsQueue
  * @returns
  */
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export async function postProcessIpfContent(
-  item: QueueItem,
-  content: IPFSContent,
+  cid: ParticleCid,
+  details: IPFSContentDetails,
   rune: RuneEngine,
-  ipfsQueue: QueueManager
-): Promise<IPFSContentMutated> {
+  ipfsApi: IpfsApi
+): Promise<IPFSContentDetailsMutated> {
   try {
-    const { cid, controller, source } = item;
-    const { meta } = content;
-    // TODO: refactor
-    // textPreview only some beggining of content
-    // refactor to use all the content
-    // maybe move this outside
+    const { type: contentType, content } = details!;
 
     const mutation = await rune.personalProcessor({
       cid,
-      contentType: meta.contentType,
-      content: contentToStringOrEmpty(content),
+      contentType,
+      content,
     });
 
     if (mutation.action === 'cid_result' && mutation.cid) {
       // refectch content from new cid
-      const result = await ipfsQueue.enqueueAndWait(mutation.cid, {
-        postProcessing: false,
+      const result = await ipfsApi.enqueueAndWait(mutation.cid, {
         priority: QueuePriority.URGENT,
       });
-      console.log('----cid_result', item.cid, content, mutation, result);
+      const mutatedDetails = await parseArrayLikeToDetails(
+        result.result,
+        mutation.cid
+      );
+      // console.log('----cid_result', cid, details, mutation, result);
 
       if (result) {
         return {
-          ...(result.result as IPFSContent),
+          ...mutatedDetails,
           cidBefore: cid,
           mutation: 'modified',
         };
@@ -101,33 +54,32 @@ export async function postProcessIpfContent(
 
     if (mutation.action === 'content_result') {
       // update meta to reflect new content
-      const meta = {
-        type: 'file',
-        size: mutation.content?.length,
-        sizeLocal: mutation.content?.length,
-        mime: 'text/plain',
-        contentType: 'text',
-      } as IPFSContentMeta;
+      // const meta = {
+      //   type: 'file',
+      //   size: mutation.content?.length,
+      //   sizeLocal: mutation.content?.length,
+      //   mime: 'text/plain',
+      //   contentType: 'text',
+      // } as IPFSContentMeta;
       return {
-        ...content,
-        result: mutation.content,
-        textPreview: createTextPreview(mutation.content, 'text'),
-        meta,
+        ...details,
+        content: mutation.content,
+        text: mutation.content,
         mutation: 'modified',
       };
     }
 
     if (mutation.action === 'hide') {
-      return { ...content, mutation: 'hidden' };
+      return { ...details, mutation: 'hidden' };
     }
 
     if (mutation.action === 'error') {
-      return { ...content, mutation: 'error' };
+      return { ...details, mutation: 'error' };
     }
 
-    return content as IPFSContentMutated;
+    return details as IPFSContentDetailsMutated;
   } catch (e) {
     console.log('----exc', e);
-    return { ...content, mutation: 'error' };
+    return { ...details, mutation: 'error' };
   }
 }

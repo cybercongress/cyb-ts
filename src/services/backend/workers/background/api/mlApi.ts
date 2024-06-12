@@ -99,10 +99,10 @@ const createEmbeddingApi$ = (
 
         const searchByEmbedding = async (text: string, count?: number) => {
           const vec = await createEmbedding(text);
-          console.log('----searchByEmbedding', vec);
+          //   console.log('----searchByEmbedding', vec);
 
           const rows = await dbInstance.searchByEmbedding(vec, count);
-          console.log('----searcByEmbedding rows', rows);
+          //   console.log('----searcByEmbedding rows', rows);
 
           return rows;
         };

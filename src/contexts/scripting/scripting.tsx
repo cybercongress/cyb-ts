@@ -1,34 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ScriptMyCampanion, UserContext } from 'src/services/scripting/types';
 import { IPFSContentMutated, IpfsContentType } from 'src/services/ipfs/types';
 import { useBackend } from '../backend/backend';
-import { proxy } from 'comlink';
-import { useAppSelector } from 'src/redux/hooks';
+import { Remote, proxy } from 'comlink';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import {
   selectRuneEntypoints,
   setEntrypoint,
 } from 'src/redux/reducers/scripting';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
-import { useDispatch } from 'react-redux';
+import { RuneEngine } from 'src/services/scripting/engine';
+import { Option } from 'src/types';
 
-export type ScriptingContextType = {
-  status: 'loading' | 'ready' | 'pending' | 'done' | 'error';
-  metaItems: ScriptMyCampanion['metaItems'];
-  askCompanion: (
-    cid: string,
-    contentType?: IpfsContentType,
-    content?: IPFSContentMutated['result']
-  ) => Promise<void>;
-  clearMetaItems: () => void;
+type RuneFrontend = Omit<RuneEngine, 'isSoulInitialized$'>;
+
+type ScriptingContextType = {
+  isSoulInitialized: boolean;
+  rune: Option<Remote<RuneFrontend>>;
 };
 
 const ScriptingContext = React.createContext<ScriptingContextType>({
-  status: 'loading',
-  metaItems: [],
-  askCompanion: async () => {
-    throw new Error('ScriptingProvider not found');
-  },
-  clearMetaItems: () => null,
+  isSoulInitialized: false,
+  rune: undefined,
 });
 
 export function useScripting() {
@@ -36,27 +35,26 @@ export function useScripting() {
 }
 
 function ScriptingProvider({ children }: { children: React.ReactNode }) {
-  const { rune, ipfsApi, isIpfsInitialized } = useBackend();
-  const [isSoulInitialized, setIsSoulInitialized] = useState(false);
-  const [status, setStatus] =
-    useState<ScriptingContextType['status']>('loading');
-  const [metaItems, setMetaItems] = useState<ScriptingContextType['metaItems']>(
-    []
-  );
+  const { rune: runeBackend, ipfsApi, isIpfsInitialized } = useBackend();
 
-  const dispatch = useDispatch();
+  const [isSoulInitialized, setIsSoulInitialized] = useState(false);
+  const runeRef = useRef<Option<Remote<RuneFrontend>>>();
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Get the observable from the worker
-    // Subscribe to the observable
     const setupObservervable = async () => {
-      const observer = await rune.isSoulInitialized$;
+      const { isSoulInitialized$ } = runeBackend;
+
+      const observer = await isSoulInitialized$;
       const subscription = observer.subscribe((v) => {
-        console.log('====SOUL INIT', v);
         setIsSoulInitialized(!!v);
+        if (v) {
+          runeRef.current = runeBackend;
+          console.log('👻 soul initalized');
+        }
       });
 
-      // Return the cleanup function
       return () => {
         subscription.unsubscribe();
       };
@@ -74,17 +72,17 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
       if (citizenship) {
         const particleCid = citizenship.extension.particle;
 
-        await rune.pushContext('user', {
+        await runeBackend.pushContext('user', {
           address: citizenship.owner,
           nickname: citizenship.extension.nickname,
           citizenship,
           particle: particleCid,
         } as UserContext);
       } else {
-        await rune.popContext(['user', 'secrets']);
+        await runeBackend.popContext(['user', 'secrets']);
       }
     })();
-  }, [citizenship, rune]);
+  }, [citizenship, runeBackend]);
 
   useEffect(() => {
     (async () => {
@@ -105,50 +103,15 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
   }, [citizenship, isIpfsInitialized, ipfsApi, dispatch]);
 
   useEffect(() => {
-    rune.setEntrypoints(runeEntryPoints);
-  }, [runeEntryPoints, rune]);
-
-  const askCompanion = useCallback(
-    async (
-      cid: string,
-      contentType?: IpfsContentType,
-      content?: IPFSContentMutated['result']
-    ) => {
-      if (!isSoulInitialized) {
-        return;
-      }
-      if (!contentType || !content || contentType !== 'text') {
-        setStatus('done');
-        setMetaItems([
-          { type: 'text', text: `Skip companion for '${contentType}'.` },
-        ]);
-        return;
-      }
-      await rune
-        ?.askCompanion(
-          cid,
-          contentType,
-          content as string,
-          proxy((data = {}) => console.log('CALLBACK'))
-        )
-        .then((result) => {
-          setMetaItems(result.metaItems);
-          setStatus('done');
-        });
-    },
-    [isSoulInitialized, rune]
-  );
-
-  const clearMetaItems = useCallback(() => setMetaItems([]), [setMetaItems]);
+    runeBackend.setEntrypoints(runeEntryPoints);
+  }, [runeEntryPoints, runeBackend]);
 
   const value = useMemo(() => {
     return {
-      status,
-      metaItems,
-      askCompanion,
-      clearMetaItems,
+      rune: runeRef.current,
+      isSoulInitialized,
     };
-  }, [status, metaItems, askCompanion, clearMetaItems]);
+  }, [isSoulInitialized]);
 
   return (
     <ScriptingContext.Provider value={value}>

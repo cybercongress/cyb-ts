@@ -42,10 +42,7 @@ import { QueueStrategy } from './QueueStrategy';
 import { enqueueParticleSave } from '../backend/channels/BackendQueueChannel/backendQueueSenders';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
 import { RuneEngine } from '../scripting/engine';
-import {
-  postProcessIpfContent,
-  uint8ArrayToTextOrSkip,
-} from '../scripting/services/postProcessing';
+
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { CustomHeaders, XCybSourceValues } from './constants';
 
@@ -93,8 +90,6 @@ class QueueManager {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private node: CybIpfsNode | undefined = undefined;
-
-  private rune: RuneEngine | undefined = undefined;
 
   private strategy: QueueStrategy;
 
@@ -176,21 +171,13 @@ class QueueManager {
         headers: {
           [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
         },
-      }).then(async (content) => {
-        let result = uint8ArrayToTextOrSkip(content);
-        if (!item.postProcessing) {
-          result = content;
-        } else {
-          result = content
-            ? await postProcessIpfContent(item, content, this.rune!, this)
-            : undefined;
-        }
+      }).then((content) => {
         // put saveto db msg into bus
-        if (result && source !== 'db') {
-          enqueueParticleSave(result);
+        if (content && source !== 'db') {
+          enqueueParticleSave(content);
         }
 
-        return result;
+        return content;
       });
     }).pipe(
       timeout({
@@ -291,22 +278,14 @@ class QueueManager {
     {
       strategy,
       queueDebounceMs,
-      rune,
     }: {
       strategy?: QueueStrategy;
       queueDebounceMs?: number;
-      rune: RuneEngine;
     }
   ) {
     ipfsInstance$.subscribe((node) => {
       if (node) {
         this.setNode(node);
-      }
-    });
-
-    rune.isSoulInitialized$.subscribe((v) => {
-      if (v) {
-        this.rune = rune;
       }
     });
 
@@ -332,14 +311,8 @@ class QueueManager {
         this.node!.reconnectToSwarm(true);
       });
 
-    const isInitialized$ = combineLatest([
-      rune.isSoulInitialized$,
-      ipfsInstance$,
-    ]).pipe(
-      map(
-        ([isSoulInitialized, ipfsInstance]) =>
-          !!isSoulInitialized && !!ipfsInstance && ipfsInstance.isStarted
-      ),
+    const isInitialized$ = combineLatest([ipfsInstance$]).pipe(
+      map(([ipfsInstance]) => !!ipfsInstance && ipfsInstance?.isStarted),
       distinctUntilChanged(),
       share()
     );

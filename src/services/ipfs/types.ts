@@ -88,16 +88,19 @@ export type IPFSContentMeta = IpfsFileStats & {
   contentType?: IpfsContentType;
 };
 
-export type IPFSContentDetails =
-  | {
-      text?: string;
-      type?: IpfsContentType;
-      content?: string;
-      link?: string;
-      gateway: boolean;
-      cid: string;
-    }
-  | undefined;
+export type IPFSContentDetails = {
+  text?: string;
+  type?: IpfsContentType;
+  content?: string;
+  link?: string;
+  gateway: boolean;
+  cid: string;
+};
+
+export type IPFSContentDetailsMutated = IPFSContentDetails & {
+  mutation?: 'hidden' | 'modified' | 'error'; // rune pipeline result
+  cidBefore?: string;
+};
 
 export type IPFSContent = {
   availableDownload?: boolean;

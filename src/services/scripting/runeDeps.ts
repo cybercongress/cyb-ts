@@ -61,8 +61,8 @@ const createRuneDeps = () => {
 
       item$
         .pipe(
-          first((value) => !!value), // Automatically unsubscribes after the first valid value
-          tap((v) => console.log('------defferedDependency', name, v))
+          first((value) => !!value) // Automatically unsubscribes after the first valid value
+          // tap((v) => console.log('------defferedDependency', name, v))
         )
         .subscribe((value) => {
           resolve(value);
@@ -70,10 +70,9 @@ const createRuneDeps = () => {
     });
   };
 
-  (async () => {
-    const client = await CyberClient.connect(RPC_URL);
+  CyberClient.connect(RPC_URL).then((client) => {
     subjectDeps.queryClient?.next(client);
-  })();
+  });
 
   const setInnerDeps = (externalDeps: Partial<RuneInnerDeps>) => {
     Object.keys(externalDeps)
@@ -106,13 +105,13 @@ const createRuneDeps = () => {
   ) => {
     try {
       const result = await getIpfsTextConent(cid);
-
       if (result?.content === undefined) {
         return { action: 'error', message: 'Particle not found' };
       }
       // in case of soul script is mixed with markdown
       // need to extract pure script
       const pureScript = extractRuneScript(result.content);
+
       const rune = (await defferedDependency('rune')) as RuneEngine;
 
       return rune.executeFunction(pureScript, funcName, params);
@@ -158,7 +157,7 @@ const createRuneDeps = () => {
         'embeddingApi'
       )) as EmbeddingApi;
       await defferedDependency('dbApi');
-      console.log('----searcByEmbedding', text);
+      // console.log('----searcByEmbedding', text);
       return embeddingApi.searchByEmbedding(text, count);
     },
     evalScriptFromIpfs,

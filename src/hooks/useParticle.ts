@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useBackend } from 'src/contexts/backend/backend';
 import useQueueIpfsContent from './useQueueIpfsContent';
-import { IPFSContentDetails } from 'src/services/ipfs/types';
+import {
+  IPFSContentDetails,
+  IPFSContentDetailsMutated,
+} from 'src/services/ipfs/types';
 import { ParticleCid } from 'src/types/base';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { QueueItemStatus } from 'src/services/QueueManager/types';
 import { Option } from 'src/types';
+import useRuneMutation from './useRuneMutation';
 
 const useParticle = (
   cid: ParticleCid,
@@ -17,23 +21,24 @@ const useParticle = (
     status: queueItemStatus,
     content,
   } = useQueueIpfsContent(parentId);
-  const [details, setDetails] = useState<IPFSContentDetails>();
+  const [details, setDetails] = useState<
+    IPFSContentDetails | IPFSContentDetailsMutated
+  >();
   const [status, setStatus] = useState<QueueItemStatus>('pending');
   const [hidden, setHidden] = useState(false);
-
+  const [mutated, setMutated] = useState(false);
+  const { state, mutatedDetails } = useRuneMutation(cid, details);
   useEffect(() => {
     if (cid && fetchParticle) {
       setStatus('pending');
       setDetails(undefined);
+      setMutated(false);
       fetchParticle(cid, rank);
     }
   }, [cid, fetchParticle, rank]);
 
   useEffect(() => {
     if (queueItemStatus === 'completed') {
-      const hiddenByRune = content?.mutation === 'hidden';
-      setHidden(hiddenByRune);
-      // TODO: exclude from parsing for hidden?
       parseArrayLikeToDetails(
         content,
         cid
@@ -47,7 +52,17 @@ const useParticle = (
     }
   }, [content, queueItemStatus, cid]);
 
-  return { status, details, hidden, content };
+  useEffect(() => {
+    if (state === 'done') {
+      const hiddenByRune =
+        !!mutatedDetails?.mutation && mutatedDetails.mutation === 'hidden';
+      setHidden(hiddenByRune);
+      setDetails(mutatedDetails);
+      setMutated(true);
+    }
+  }, [state, mutatedDetails]);
+
+  return { status, details, hidden, content, mutated };
 };
 
 export default useParticle;
