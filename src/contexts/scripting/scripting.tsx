@@ -17,17 +17,20 @@ import {
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { RuneEngine } from 'src/services/scripting/engine';
 import { Option } from 'src/types';
+import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
 
 type RuneFrontend = Omit<RuneEngine, 'isSoulInitialized$'>;
 
 type ScriptingContextType = {
   isSoulInitialized: boolean;
   rune: Option<Remote<RuneFrontend>>;
+  embeddingApi: Option<EmbeddingApi>;
 };
 
 const ScriptingContext = React.createContext<ScriptingContextType>({
   isSoulInitialized: false,
   rune: undefined,
+  embeddingApi: undefined,
 });
 
 export function useScripting() {
@@ -35,10 +38,16 @@ export function useScripting() {
 }
 
 function ScriptingProvider({ children }: { children: React.ReactNode }) {
-  const { rune: runeBackend, ipfsApi, isIpfsInitialized } = useBackend();
+  const {
+    rune: runeBackend,
+    ipfsApi,
+    isIpfsInitialized,
+    embeddingApi$,
+  } = useBackend();
 
   const [isSoulInitialized, setIsSoulInitialized] = useState(false);
   const runeRef = useRef<Option<Remote<RuneFrontend>>>();
+  const embeddingApiRef = useRef<Option<Remote<EmbeddingApi>>>();
 
   const dispatch = useAppDispatch();
 
@@ -46,8 +55,7 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     const setupObservervable = async () => {
       const { isSoulInitialized$ } = runeBackend;
 
-      const observer = await isSoulInitialized$;
-      const subscription = observer.subscribe((v) => {
+      const soulSubscription = (await isSoulInitialized$).subscribe((v) => {
         setIsSoulInitialized(!!v);
         if (v) {
           runeRef.current = runeBackend;
@@ -55,8 +63,18 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
         }
       });
 
+      const embeddingApiSubscription = (await embeddingApi$).subscribe(
+        proxy((embeddingApi) => {
+          if (embeddingApi) {
+            embeddingApiRef.current = embeddingApi;
+            console.log('+ embedding api initalized', embeddingApi);
+          }
+        })
+      );
+
       return () => {
-        subscription.unsubscribe();
+        soulSubscription.unsubscribe();
+        embeddingApiSubscription.unsubscribe();
       };
     };
 
@@ -109,6 +127,7 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(() => {
     return {
       rune: runeRef.current,
+      embeddingApi: embeddingApiRef.current,
       isSoulInitialized,
     };
   }, [isSoulInitialized]);

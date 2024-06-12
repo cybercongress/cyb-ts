@@ -28,6 +28,7 @@ import { Observable } from 'rxjs';
 import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
 import { SenseApi, createSenseApi } from './services/senseApi';
 import { RuneEngine } from 'src/services/scripting/engine';
+import { Option } from 'src/types';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -54,7 +55,7 @@ type BackendProviderContextType = {
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
   isReady: boolean;
-  embeddingApi$: Observable<EmbeddingApi>;
+  embeddingApi$: Promise<Observable<EmbeddingApi>>;
   rune: Remote<RuneEngine>;
 };
 
@@ -79,9 +80,6 @@ export function useBackend() {
 window.cyb.db = {
   clear: () => indexedDB.deleteDatabase(DB_NAME),
 };
-
-// const dbApi = new DbApiWrapper();
-const bcSender = new BroadcastChannelSender();
 
 function BackendProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
@@ -111,15 +109,22 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [friends, following]);
 
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
-
-  const embeddingApiRef = useRef<Observable<EmbeddingApi>>();
-
+  const [embeddingApi$, setEmbeddingApi] =
+    useState<Option<Observable<EmbeddingApi>>>(undefined);
+  // const embeddingApiRef = useRef<Observable<EmbeddingApi>>();
   useEffect(() => {
     console.log(
       process.env.IS_DEV
         ? '🧪 Starting backend in DEV mode...'
         : '🧬 Starting backend in PROD mode...'
     );
+
+    (async () => {
+      // embeddingApiRef.current = await backgroundWorkerInstance.embeddingApi$;
+      const embeddingApiInstance$ =
+        await backgroundWorkerInstance.embeddingApi$;
+      setEmbeddingApi(embeddingApiInstance$);
+    })();
 
     setupStoragePersistence();
 
@@ -144,10 +149,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       // pass dbApi into background worker
       return backgroundWorkerInstance.injectDb(proxy(dbApi));
     });
-
-    (async () => {
-      embeddingApiRef.current = await backgroundWorkerInstance.embeddingApi$;
-    })();
   }, []);
 
   useEffect(() => {
@@ -168,88 +169,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
-  // const createDbApi = useCallback(() => {
-  //   const dbApi = new DbApiWrapper();
-
-  //   dbApi.init(proxy(cozoDbWorkerInstance));
-  //   setDbApi(dbApi);
-  //   return dbApi;
-  // }, []);
-
-  // const loadIpfs = async () => {
-  //   const ipfsOpts = getIpfsOpts();
-  //   await backgroundWorkerInstance.ipfsApi.stop();
-  //   console.time('🔋 Ipfs started.');
-
-  //   await backgroundWorkerInstance.ipfsApi
-  //     .start(ipfsOpts)
-  //     .then(() => {
-  //       setIpfsError(null);
-  //       console.timeEnd('🔋 Ipfs started.');
-  //     })
-  //     .catch((err) => {
-  //       setIpfsError(err);
-  //       console.log(`☠️ Ipfs error: ${err}`);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   // const channel = new BroadcastChannelListener((msg) => {
-  //   // console.log('--------msg.data', msg.data);
-  //   //   dispatch(msg.data);
-  //   // });
-  //   const channel = new RxBroadcastChannelListener(dispatch);
-
-  //   const loadCozoDb = async () => {
-  //     await cozoDbWorkerInstance
-  //       .init()
-  //       .then(async () => {
-  //         const dbApi = createDbApi();
-  //         // pass dbApi into background worker
-  //         await backgroundWorkerInstance.injectDb(proxy(dbApi));
-  //       })
-  //       .then(() => console.timeEnd('🔋 cozo db initialized'));
-  //   };
-
-  //   (async () => {
-  //     console.log(
-  //       process.env.IS_DEV
-  //         ? '🧪 Starting backend in DEV mode...'
-  //         : '🧬 Starting backend in PROD mode...'
-  //     );
-  //     await setupStoragePersistence();
-
-  //     // const ipfsLoadPromise = async () => {
-  //     //   const isInitialized =
-  //     //     await backgroundWorkerInstance.isIpfsInitialized();
-  //     //   if (isInitialized) {
-  //     //     console.log('🔋 Background worker already active.');
-  //     //     bcSender.postServiceStatus('ipfs', 'started');
-  //     //     bcSender.postServiceStatus('sync', 'started');
-  //     //     return Promise.resolve();
-  //     //   }
-  //     // };
-
-  //     const cozoDbLoadPromise = async () => {
-  //       const isInitialized = await cozoDbWorkerInstance.isInitialized();
-  //       if (isInitialized) {
-  //         console.log('🔋 CozoDb worker already active.');
-  //         bcSender.postServiceStatus('db', 'started');
-  //         createDbApi();
-  //         return Promise.resolve();
-  //       }
-  //       return loadCozoDb();
-  //     };
-
-  //     // Loading non-blocking, when ready  state.backend.services.* should be changef
-  //     Promise.all([cozoDbLoadPromise()]);
-  //   })();
-
-  //   window.q = backgroundWorkerInstance.ipfsQueue;
-  //   return () => channel.close();
-  // }, [dispatch, createDbApi]);
-
   useEffect(() => {
     (async () => {
       backgroundWorkerInstance.setRuneDeps({
@@ -269,9 +188,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const valueMemo = useMemo(
     () =>
       ({
-        // backgroundWorker: backgroundWorkerInstance,
         rune: backgroundWorkerInstance.rune,
-        embeddingApi$: embeddingApiRef.current,
+        embeddingApi$: backgroundWorkerInstance.embeddingApi$,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi,
         dbApi,

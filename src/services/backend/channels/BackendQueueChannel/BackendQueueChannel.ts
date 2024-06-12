@@ -1,4 +1,4 @@
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, Observable, first } from 'rxjs';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 import { IPFSContent } from 'src/services/ipfs/types';
 import { mapParticleToEntity } from 'src/services/CozoDb/mapping';
@@ -10,20 +10,24 @@ import ParticlesResolverQueue from '../../services/sync/services/ParticlesResolv
 import DbApi from '../../services/DbApi/DbApi';
 
 import { SyncQueueItem } from '../../services/sync/services/ParticlesResolverQueue/types';
+import { Option } from 'src/types';
 
 class BackendQueueChannelListener {
   private channel = new BroadcastChannel(CYB_QUEUE_CHANNEL);
 
   private particlesResolver: ParticlesResolverQueue;
 
-  private dbInstance$: BehaviorSubject<DbApi | undefined>;
+  private dbInstance$: BehaviorSubject<Option<DbApi>>;
 
   constructor(
     particlesResolver: ParticlesResolverQueue,
-    dbInstance$: BehaviorSubject<DbApi | undefined>
+    dbInstance$: Observable<DbApi | undefined>
   ) {
     this.particlesResolver = particlesResolver;
-    this.dbInstance$ = dbInstance$;
+    dbInstance$.subscribe((v) => {
+      this.dbInstance$.next(v);
+    });
+    this.dbInstance$ = new BehaviorSubject<Option<DbApi>>(undefined);
 
     this.channel.onmessage = (event) => this.onMessage(event);
 

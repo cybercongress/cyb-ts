@@ -29,6 +29,7 @@ import cozoPresets from './cozo_presets.json';
 import styles from './drive.scss';
 import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
 import useEmbeddingApi from 'src/hooks/useEmbeddingApi';
+import { useScripting } from 'src/contexts/scripting/scripting';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -56,7 +57,8 @@ function Drive() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
   const { cozoDbRemote, isReady, ipfsApi } = useBackend();
-  const embeddigApi = useEmbeddingApi();
+  const { embeddingApi } = useScripting();
+  // const embeddingApi = useEmbeddingApi();
 
   // console.log('-----syncStatus', syncState, dbPendingWrites);
 
@@ -200,7 +202,7 @@ function Drive() {
   // };
 
   const searchByEmbeddingsClick = async () => {
-    const vec = await embeddigApi?.createEmbedding(searchEmbedding);
+    const vec = await embeddingApi?.createEmbedding(searchEmbedding);
     const queryText = `
     e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
     ?[dist, cid, text] := e[dist, cid], *particle{cid, text}

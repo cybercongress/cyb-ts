@@ -44,13 +44,7 @@ const getContentToEmbed = async (content: IPFSContentMutated) => {
 
   // create embedding for allowed content
   if (contentType === 'text') {
-    const details = await parseArrayLikeToDetails(content, content.cid);
-
-    if (details?.content) {
-      // data to be used for embedding
-
-      return [contentType, shortenString(details.content, 512)];
-    }
+    return [contentType, content.textPreview];
   }
 
   return [contentType, undefined];

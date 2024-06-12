@@ -70,7 +70,7 @@ const createBackgroundWorkerApi = () => {
     ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
     embeddingApi$,
-    ipfsInstance$,
+    // ipfsInstance$,
     ipfsQueue: proxy(ipfsQueue),
     setRuneDeps: (
       deps: Partial<Omit<RuneInnerDeps, 'embeddingApi' | 'dbApi'>>
