@@ -1,15 +1,11 @@
 // TODO: refactor needed
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import type {
-  IpfsContentType,
-  IPFSContentDetails,
-} from 'src/services/ipfs/types';
-import { LinksType } from 'src/containers/Search/types';
+import type { IpfsContentType } from 'src/services/ipfs/types';
+import useParticle from 'src/hooks/useParticle';
 
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
+import { LinksType } from 'src/containers/Search/types';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -35,30 +31,13 @@ function ContentItem({
   setType,
   className,
 }: ContentItemProps): JSX.Element {
-  const [details, setDetails] = useState<IPFSContentDetails>(undefined);
-  const { status, content, fetchParticle } = useQueueIpfsContent(parentId);
-  const [isHidden, setIsHidden] = useState(false);
+  const { details, status, hidden, content } = useParticle(cid, parentId);
 
   useEffect(() => {
-    fetchParticle && (async () => fetchParticle(cid, item?.rank))();
-  }, [cid, item?.rank, fetchParticle]);
+    details?.type && setType && setType(details?.type);
+  }, [details]); //TODO: REFACT - setType rise infinite loop
 
-  useEffect(() => {
-    (async () => {
-      const hiddenByRune = content?.mutation === 'hidden';
-      setIsHidden(hiddenByRune);
-
-      const details = await parseArrayLikeToDetails(
-        content,
-        cid
-        // (progress: number) => console.log(`${cid} progress: ${progress}`)
-      );
-      setDetails(details);
-      details?.type && setType && setType(details?.type);
-    })();
-  }, [content, cid]); //TODO: REFACT - setType rise infinite loop
-
-  if (isHidden) {
+  if (hidden) {
     return <div />;
   }
 

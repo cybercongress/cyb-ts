@@ -1,16 +1,14 @@
 import { useParams } from 'react-router-dom';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { useEffect, useMemo, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
 import { encodeSlash } from 'src/utils/utils';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { IPFSContentDetails } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 
 import { useScripting } from 'src/contexts/scripting/scripting';
+import useParticle from 'src/hooks/useParticle';
 
 import { Dots, MainContainer } from '../../components';
 import ContentIpfsCid from './components/ContentIpfsCid';
@@ -22,10 +20,9 @@ import SoulCompanion from './components/SoulCompanion/SoulCompanion';
 function Ipfs() {
   const { query = '' } = useParams();
   const [cid, setCid] = useState<string>('');
+  const { details, status, content } = useParticle(cid);
 
-  const { fetchParticle, status, content } = useQueueIpfsContent(cid);
   const { ipfsApi, isIpfsInitialized, isReady } = useBackend();
-  const [ipfsDataDetails, setIpfsDatDetails] = useState<IPFSContentDetails>();
   const {
     status: runeStatus,
     metaItems,
@@ -46,8 +43,7 @@ function Ipfs() {
       (async () => {
         clearMetaItems();
         const cidFromQuery = (await getIpfsHash(encodeSlash(query))) as string;
-        await ipfsApi!.addContent(query);
-        setIpfsDatDetails(undefined);
+        ipfsApi!.addContent(query);
         setCid(cidFromQuery);
       })();
     }
@@ -55,41 +51,22 @@ function Ipfs() {
 
   useEffect(() => {
     (async () => {
-      cid && fetchParticle && (await fetchParticle(cid));
-    })();
-  }, [cid, fetchParticle]);
-  useEffect(() => {
-    if (status === 'completed') {
-      (async () => {
-        console.log('----content', content, cid);
-        const details = await parseArrayLikeToDetails(
-          content,
-          cid
-          // (progress: number) => console.log(`${cid} progress: ${progress}`)
-        );
-        setIpfsDatDetails(details);
-      })();
-    }
-  }, [content, status, cid, askCompanion]);
-
-  useEffect(() => {
-    (async () => {
-      if (ipfsDataDetails) {
+      if (details) {
         console.log(
           '---askCompanion',
           cid,
-          ipfsDataDetails,
-          ipfsDataDetails?.type,
-          ipfsDataDetails?.text
+          details,
+          details?.type,
+          details?.text
         );
         await askCompanion(
           cid,
-          ipfsDataDetails?.type,
-          ipfsDataDetails?.text?.substring(0, 255)
+          details?.type,
+          details?.text?.substring(0, 255)
         );
       }
     })();
-  }, [cid, askCompanion, ipfsDataDetails]);
+  }, [cid, askCompanion, details]);
 
   useEffect(() => {
     if (!status) {
@@ -113,19 +90,19 @@ function Ipfs() {
       setAdviser(
         <AdviserMeta
           cid={cid}
-          type={ipfsDataDetails?.type}
-          size={content?.meta?.size || ipfsDataDetails?.content?.length}
+          type={details?.type}
+          size={content?.meta?.size || details?.content?.length}
         />,
         'purple'
       );
     }
-  }, [ipfsDataDetails, setAdviser, cid, content, status]);
+  }, [details, setAdviser, cid, content, status]);
 
   return (
     <MainContainer width="62%" resetMaxWidth>
       <div className={styles.wrapper}>
-        {status === 'completed' && ipfsDataDetails ? (
-          <ContentIpfs content={content} details={ipfsDataDetails} cid={cid} />
+        {status === 'completed' && details ? (
+          <ContentIpfs content={content} details={details} cid={cid} />
         ) : isText ? (
           <ContentIpfs
             details={{

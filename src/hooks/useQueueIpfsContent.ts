@@ -19,7 +19,7 @@ import { Option } from 'src/types';
 
 type UseIpfsContentReturn = {
   isReady: boolean;
-  status?: QueueItemStatus;
+  status: QueueItemStatus;
   source?: IpfsContentSource;
   content: Option<IPFSContentMutated>;
   clear?: () => Promise<void>;
@@ -29,10 +29,7 @@ type UseIpfsContentReturn = {
   fetchWithDetails?: FetchWithDetailsFunc;
 };
 
-function useQueueIpfsContent(
-  parentId?: string,
-  skipRune = false
-): UseIpfsContentReturn {
+function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus>();
   const [source, setSource] = useState<IpfsContentSource | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
