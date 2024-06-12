@@ -28,6 +28,7 @@ import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
 import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
+import useEmbeddingApi from 'src/hooks/useEmbeddingApi';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -54,7 +55,8 @@ function Drive() {
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { cozoDbRemote, mlApi, isReady, ipfsApi } = useBackend();
+  const { cozoDbRemote, isReady, ipfsApi } = useBackend();
+  const embeddigApi = useEmbeddingApi();
 
   // console.log('-----syncStatus', syncState, dbPendingWrites);
 
@@ -180,7 +182,7 @@ function Drive() {
   //   // eslint-disable-next-line no-restricted-syntax
   //   for await (const row of data!.rows) {
   //     const [cid, text] = row;
-  //     const vec = await mlApi?.getEmbedding(text as string);
+  //     const vec = await mlApi?.createEmbedding(text as string);
   //     const res = await cozoDbRemote?.executePutCommand('embeddings', [
   //       {
   //         cid,
@@ -198,7 +200,7 @@ function Drive() {
   // };
 
   const searchByEmbeddingsClick = async () => {
-    const vec = await mlApi?.getEmbedding(searchEmbedding);
+    const vec = await embeddigApi?.createEmbedding(searchEmbedding);
     const queryText = `
     e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
     ?[dist, cid, text] := e[dist, cid], *particle{cid, text}

@@ -22,10 +22,13 @@ import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
 import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
-import { GetEmbeddingFunc } from 'src/services/backend/workers/background/worker';
 
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { shortenString } from 'src/utils/string';
+import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
+import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
+import { Option } from 'src/types';
+
 import { IPFSContentMutated } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
@@ -33,11 +36,10 @@ import { SyncQueueItem } from './types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
 import DbApi from '../../../DbApi/DbApi';
-import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
 
 const QUEUE_BATCH_SIZE = 100;
 
-export const getContentToEmbed = async (content: IPFSContentMutated) => {
+const getContentToEmbed = async (content: IPFSContentMutated) => {
   const contentType = content?.meta?.contentType || '';
 
   // create embedding for allowed content
@@ -71,12 +73,12 @@ export const getTextContentIfShouldEmbed = async (
 class ParticlesResolverQueue {
   public isInitialized$: Observable<boolean>;
 
-  private db: DbApi | undefined;
+  private db: Option<DbApi>;
 
-  private getEmbedding: GetEmbeddingFunc | undefined;
+  private embeddingApi: Option<EmbeddingApi>;
 
   private get canEmbed() {
-    return !!this.getEmbedding;
+    return !!this.embeddingApi;
   }
 
   private waitForParticleResolve: FetchIpfsFunc;
@@ -104,8 +106,8 @@ class ParticlesResolverQueue {
 
     this.waitForParticleResolve = deps.waitForParticleResolve;
 
-    deps.getEmbeddingInstance$?.subscribe((f) => {
-      this.getEmbedding = f;
+    deps.embeddingApi$.subscribe((embeddingApi) => {
+      this.embeddingApi = embeddingApi;
       // if embedding function is provided, retriger the queue
       if (this.queue.size > 0) {
         this._syncQueue$.next(this.queue);
@@ -148,7 +150,7 @@ class ParticlesResolverQueue {
       const hasItem = await this.db!.existEmbedding(cid);
 
       if (!hasItem) {
-        const vec = await this.getEmbedding!(text);
+        const vec = await this.embeddingApi!.createEmbedding(text);
 
         const result = await this.db!.putEmbedding(cid, vec);
       }

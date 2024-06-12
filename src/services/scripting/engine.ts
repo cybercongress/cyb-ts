@@ -17,13 +17,18 @@ import {
   ScriptParticleResult,
   // ScriptMyParticleParams,
   ScriptEntrypoints,
-  ScriptExecutionResult,
   EntrypointParams,
   EngineContext,
   ScriptMyCampanion,
 } from './types';
 
 import runtimeScript from './rune/runtime.rn';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+} from 'rxjs';
 
 const compileConfig = {
   budget: 1_000_000,
@@ -48,56 +53,66 @@ export type LoadParams = {
   secrets: TabularKeyValues;
 };
 
-export interface RuneEngine {
-  pushContext<K extends keyof ScriptContext>(
-    key: K,
-    value: ScriptContext[K]
-  ): void;
-  popContext(names: (keyof ScriptContext)[]): void;
-  setEntrypoints(entrypoints: ScriptEntrypoints): void;
-  // getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
+// export interface RuneEngine {
+//   pushContext<K extends keyof ScriptContext>(
+//     key: K,
+//     value: ScriptContext[K]
+//   ): void;
+//   popContext(names: (keyof ScriptContext)[]): void;
+//   setEntrypoints(entrypoints: ScriptEntrypoints): void;
+//   // getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
 
-  load(params: LoadParams): Promise<void>;
-
-  run(
-    script: string,
-    compileParams: Partial<CompilerParams>,
-    callback?: ScriptCallback
-  ): Promise<ScriptExecutionResult>;
-  askCompanion(
-    cid: string,
-    contentType: string,
-    content: string,
-    callback?: ScriptCallback
-  ): Promise<ScriptMyCampanion>;
-  personalProcessor(
-    params: ScriptParticleParams
-  ): Promise<ScriptParticleResult>;
-  executeFunction(
-    script: string,
-    funcName: string,
-    params: EntrypointParams
-  ): Promise<ScriptParticleResult>;
-  executeCallback(refId: string, data: any): Promise<void>;
-}
+//   load(params: LoadParams): Promise<void>;
+//   init(): Promise<void>;
+//   run(
+//     script: string,
+//     compileParams: Partial<CompilerParams>,
+//     callback?: ScriptCallback
+//   ): Promise<ScriptExecutionResult>;
+//   askCompanion(
+//     cid: string,
+//     contentType: string,
+//     content: string,
+//     callback?: ScriptCallback
+//   ): Promise<ScriptMyCampanion>;
+//   personalProcessor(
+//     params: ScriptParticleParams
+//   ): Promise<ScriptParticleResult>;
+//   executeFunction(
+//     script: string,
+//     funcName: string,
+//     params: EntrypointParams
+//   ): Promise<ScriptParticleResult>;
+//   executeCallback(refId: string, data: any): Promise<void>;
+// }
 
 // eslint-disable-next-line import/prefer-default-export
-function enigine(): RuneEngine {
+function enigine() {
   let entrypoints: Partial<ScriptEntrypoints> = {};
   let context: EngineContext = { params: {}, user: {}, secrets: {} };
+  const isInitialized$ = new BehaviorSubject<boolean>(false);
+  const entrypoints$ = new BehaviorSubject<Partial<ScriptEntrypoints>>({});
 
   const scriptCallbacks = new Map<string, ScriptCallback>();
 
-  let rune;
+  const isSoulInitialized$ = combineLatest([isInitialized$, entrypoints$]).pipe(
+    map(
+      ([isInitialized, entrypoints]) =>
+        !!(isInitialized && entrypoints.particle)
+    ),
+    distinctUntilChanged()
+  );
 
-  const load = async (params: LoadParams) => {
-    entrypoints = params.entrypoints;
-    pushContext('secrets', params.secrets);
-    console.log('-----------rune engine initializing');
+  entrypoints$.subscribe((v) => {
+    entrypoints = v;
+  });
+
+  const init = async () => {
     console.time('⚡️ Rune initialized! 🔋');
-    rune = await initAsync();
+    await initAsync();
     // window.rune = rune; // debug
     console.timeEnd('⚡️ Rune initialized! 🔋');
+    isInitialized$.next(true);
   };
 
   const pushContext = <K extends keyof ScriptContext>(
@@ -125,6 +140,7 @@ function enigine(): RuneEngine {
       (v) => ({ ...v, script: extractRuneScript(v.script) }),
       scriptEntrypoints
     );
+    entrypoints$.next(entrypoints);
   };
 
   const defaultCompilerParams: CompilerParams = {
@@ -310,7 +326,8 @@ function enigine(): RuneEngine {
   };
 
   return {
-    load,
+    init,
+    isSoulInitialized$,
     run,
     // particleInference,
     askCompanion,
@@ -328,5 +345,7 @@ function enigine(): RuneEngine {
 }
 
 const scriptEngine = enigine();
+
+export type RuneEngine = typeof scriptEngine;
 
 export default scriptEngine;

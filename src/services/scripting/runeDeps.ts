@@ -1,6 +1,6 @@
 import { ProxyMarked, Remote } from 'comlink';
 
-import { BehaviorSubject, first, tap } from 'rxjs';
+import { BehaviorSubject, Subject, first, tap } from 'rxjs';
 import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
 import { RPC_URL } from 'src/constants/config';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
@@ -11,48 +11,50 @@ import { getPassportByNickname } from 'src/containers/portal/utils';
 import { sendCyberlink } from '../neuron/neuronApi';
 
 import { extractRuneScript } from './helpers';
-import { IpfsApi, MlApi } from '../backend/workers/background/worker';
 import { RuneEngine } from './engine';
 import DbApiWrapper from '../backend/services/DbApi/DbApi';
+import { IpfsApi } from '../backend/workers/background/api/ipfsApi';
+import { EmbeddingApi } from '../backend/workers/background/api/mlApi';
+import { Observable } from '@apollo/client';
 
-type InternalDeps = {
+export type RuneInnerDeps = {
   ipfsApi: Option<IpfsApi>;
   rune: Option<RuneEngine>;
   queryClient: Option<CyberClient>;
-  mlApi: Option<MlApi>;
+  embeddingApi: Option<EmbeddingApi>;
   dbApi: Option<DbApiWrapper>;
-};
-export type ExternalDeps = {
   signingClient: Option<SigningCyberClient & ProxyMarked>;
   // signer?: Option<OfflineSigner>;
   senseApi: Option<SenseApi & ProxyMarked>;
   address: Option<NeuronAddress>;
 };
 
-type Deps = InternalDeps & ExternalDeps;
-
 type SubjectDeps<T> = {
-  [K in keyof T]: BehaviorSubject<T[K]>;
+  [K in keyof T]: BehaviorSubject<T[K]> | Subject<T[K]>;
 };
 
 const createRuneDeps = () => {
-  const subjectDeps: SubjectDeps<Deps> = {
+  const subjectDeps: SubjectDeps<RuneInnerDeps> = {
     // Initialize subjects for each dependency
-    ipfsApi: new BehaviorSubject<InternalDeps['ipfsApi']>(undefined),
-    rune: new BehaviorSubject<InternalDeps['rune']>(undefined),
-    queryClient: new BehaviorSubject<InternalDeps['queryClient']>(undefined),
-    mlApi: new BehaviorSubject<Option<InternalDeps['mlApi']>>(undefined),
-    signingClient: new BehaviorSubject<ExternalDeps['signingClient']>(
+    ipfsApi: new BehaviorSubject<RuneInnerDeps['ipfsApi']>(undefined),
+    rune: new BehaviorSubject<RuneInnerDeps['rune']>(undefined),
+    queryClient: new BehaviorSubject<RuneInnerDeps['queryClient']>(undefined),
+    embeddingApi: new BehaviorSubject<Option<EmbeddingApi>>(undefined),
+    signingClient: new BehaviorSubject<RuneInnerDeps['signingClient']>(
       undefined
     ),
-    senseApi: new BehaviorSubject<ExternalDeps['senseApi']>(undefined),
-    address: new BehaviorSubject<ExternalDeps['address']>(undefined),
-    dbApi: new BehaviorSubject<ExternalDeps['dbApi']>(undefined),
+    senseApi: new BehaviorSubject<RuneInnerDeps['senseApi']>(undefined),
+    address: new BehaviorSubject<RuneInnerDeps['address']>(undefined),
+    dbApi: new BehaviorSubject<RuneInnerDeps['dbApi']>(undefined),
   };
 
-  const defferedDependency = (name: keyof Deps): Promise<Deps[typeof name]> => {
+  const defferedDependency = (
+    name: keyof RuneInnerDeps
+  ): Promise<RuneInnerDeps[typeof name]> => {
     return new Promise((resolve) => {
-      const item$ = subjectDeps[name] as BehaviorSubject<Deps[typeof name]>;
+      const item$ = subjectDeps[name] as BehaviorSubject<
+        RuneInnerDeps[typeof name]
+      >;
       if (item$.getValue()) {
         resolve(item$.getValue());
       }
@@ -73,21 +75,12 @@ const createRuneDeps = () => {
     subjectDeps.queryClient?.next(client);
   })();
 
-  const setExternalDeps = (externalDeps: Partial<ExternalDeps>) => {
+  const setInnerDeps = (externalDeps: Partial<RuneInnerDeps>) => {
     Object.keys(externalDeps)
-      .filter((name) => externalDeps[name as keyof ExternalDeps] !== undefined)
+      .filter((name) => externalDeps[name as keyof RuneInnerDeps] !== undefined)
       .forEach((name) => {
-        const item = externalDeps[name as keyof ExternalDeps];
-        subjectDeps[name as keyof Deps].next(item);
-      });
-  };
-
-  const setInternalDeps = (internalDeps: Partial<InternalDeps>) => {
-    Object.keys(internalDeps)
-      .filter((name) => internalDeps[name as keyof InternalDeps] !== undefined)
-      .forEach((name) => {
-        const item = internalDeps[name as keyof InternalDeps];
-        subjectDeps[name as keyof Deps].next(item);
+        const item = externalDeps[name as keyof RuneInnerDeps];
+        subjectDeps[name as keyof RuneInnerDeps].next(item);
       });
   };
 
@@ -161,10 +154,12 @@ const createRuneDeps = () => {
       return passport;
     },
     searcByEmbedding: async (text: string, count = 10) => {
-      const mlApi = (await defferedDependency('mlApi')) as MlApi;
+      const embeddingApi = (await defferedDependency(
+        'embeddingApi'
+      )) as EmbeddingApi;
       await defferedDependency('dbApi');
       console.log('----searcByEmbedding', text);
-      return mlApi.searchByEmbedding(text, count);
+      return embeddingApi.searchByEmbedding(text, count);
     },
     evalScriptFromIpfs,
     getIpfsTextConent,
@@ -176,7 +171,7 @@ const createRuneDeps = () => {
     executeScriptCallback,
   };
 
-  return { setExternalDeps, setInternalDeps, cybApi };
+  return { setInnerDeps, cybApi };
 };
 
 const runeDeps = createRuneDeps();

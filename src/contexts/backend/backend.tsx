@@ -3,10 +3,11 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import { proxy, Remote } from 'comlink';
+import { proxy, ProxyMarked, Remote } from 'comlink';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
 import { cozoDbWorkerInstance } from 'src/services/backend/workers/db/service';
 import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcastChannelListener';
@@ -24,18 +25,16 @@ import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
+import { Observable, Observer } from 'rxjs';
+import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
+import { SenseApi, createSenseApi } from './services/senseApi';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import {
   selectRuneEntypoints,
-  setContext,
   setEntrypoint,
 } from 'src/redux/reducers/scripting';
-import { RuneEngine } from 'src/services/scripting/engine';
-import runeDeps from 'src/services/scripting/runeDeps';
-
-import { SenseApi, createSenseApi } from './services/senseApi';
-import { useSigningClient } from '../signerClient';
 import { UserContext } from 'src/services/scripting/types';
+import { RuneEngine } from 'src/services/scripting/engine';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -52,14 +51,10 @@ const setupStoragePersistence = async () => {
   return isPersistedStorage;
 };
 
-type IpfsApiRemote = Remote<BackgroundWorker['ipfsApi']> | null;
-
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: SenseApi;
-  mlApi: Remote<BackgroundWorker['mlApi']> | null;
-  ipfsApi: IpfsApiRemote;
-  rune: Remote<RuneEngine> | null;
+  ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
   dbApi: DbApiWrapper | null;
   ipfsNode?: Remote<CybIpfsNode> | null;
   ipfsError?: string | null;
@@ -69,19 +64,19 @@ type BackendProviderContextType = {
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
   isReady: boolean;
+  embeddingApi$: Observable<EmbeddingApi>;
+  rune: Remote<RuneEngine>;
 };
 
 const valueContext = {
   cozoDbRemote: null,
   senseApi: null,
-  rune: null,
   isIpfsInitialized: false,
   isDbInitialized: false,
   isSyncInitialized: false,
   isReady: false,
   dbApi: null,
   ipfsApi: null,
-  mlApi: null,
 };
 
 const BackendContext =
@@ -114,28 +109,26 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     (state) => state.backend.services.sync.status === 'started'
   );
 
-  const isRuneInitialized = useAppSelector(
-    (state) => state.backend.services.rune.status === 'started'
-  );
-
-  const isMlInitialized = useAppSelector(
-    (state) => state.backend.services.ml.status === 'started'
-  );
-
-  const runeEntryPoints = useAppSelector(selectRuneEntypoints);
-
   const myAddress = useAppSelector(selectCurrentAddress);
-  const citizenship = useAppSelector(selectCurrentPassport);
 
   const { friends, following } = useAppSelector(
     (state) => state.backend.community
   );
 
+  // // TODO: preload from DB
   const followings = useMemo(() => {
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
 
   const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
+
+  const embeddingApiRef = useRef<Observable<EmbeddingApi>>();
+
+  useEffect(() => {
+    (async () => {
+      embeddingApiRef.current = await backgroundWorkerInstance.embeddingApi$;
+    })();
+  }, []);
 
   useEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
@@ -143,50 +136,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [myAddress, dispatch]);
 
   useEffect(() => {
-    if (citizenship) {
-      const particleCid = citizenship.extension.particle;
-      backgroundWorkerInstance.rune.pushContext('user', {
-        address: citizenship.owner,
-        nickname: citizenship.extension.nickname,
-        citizenship,
-        particle: particleCid,
-      } as UserContext);
-    } else {
-      backgroundWorkerInstance.rune.popContext(['user', 'secrets']);
-    }
-  }, [citizenship]);
-
-  useEffect(() => {
-    if (citizenship) {
-      const particleCid = citizenship.extension.particle;
-
-      if (particleCid && isIpfsInitialized) {
-        (async () => {
-          const result =
-            await backgroundWorkerInstance.ipfsApi.fetchWithDetails(
-              particleCid,
-              'text'
-            );
-
-          dispatch(
-            setEntrypoint({ name: 'particle', code: result?.content || '' })
-          );
-        })();
-      }
-    }
-  }, [citizenship, isRuneInitialized, isIpfsInitialized, dispatch]);
-
-  useEffect(() => {
-    backgroundWorkerInstance.rune.setEntrypoints(runeEntryPoints);
-  }, [runeEntryPoints]);
-
-  useEffect(() => {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
 
-  const [dbApi, setDbApi] = useState<DbApiWrapper | undefined>(undefined);
-
-  const { signer, signingClient } = useSigningClient();
+  const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
 
   const senseApi = useMemo(() => {
     if (isDbInitialized && dbApi && myAddress) {
@@ -194,17 +147,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     }
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
-
-  useEffect(() => {
-    (async () => {
-      backgroundWorkerInstance.setRuneDeps({
-        address: myAddress,
-        // TODO: proxify particular methods
-        // senseApi: senseApi ? proxy(senseApi) : undefined,
-        // signingClient: signingClient ? proxy(signingClient) : undefined,
-      });
-    })();
-  }, [senseApi, signingClient, myAddress]);
 
   const createDbApi = useCallback(() => {
     const dbApi = new DbApiWrapper();
@@ -246,10 +188,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         .then(async () => {
           const dbApi = createDbApi();
           // pass dbApi into background worker
-          await backgroundWorkerInstance.init(proxy(dbApi), {
-            entrypoints: runeEntryPoints,
-            secrets: {},
-          });
+          await backgroundWorkerInstance.injectDb(proxy(dbApi));
         })
         .then(() => console.timeEnd('🔋 CozoDb worker started.'));
     };
@@ -290,7 +229,18 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
     window.q = backgroundWorkerInstance.ipfsQueue;
     return () => channel.close();
-  }, [dispatch, runeEntryPoints, createDbApi]);
+  }, [dispatch, createDbApi]);
+
+  useEffect(() => {
+    (async () => {
+      backgroundWorkerInstance.setRuneDeps({
+        address: myAddress,
+        // TODO: proxify particular methods
+        // senseApi: senseApi ? proxy(senseApi) : undefined,
+        // signingClient: signingClient ? proxy(signingClient) : undefined,
+      });
+    })();
+  }, [myAddress]);
 
   const ipfsApi = useMemo(
     () => (isIpfsInitialized ? backgroundWorkerInstance.ipfsApi : null),
@@ -303,30 +253,14 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     [isIpfsInitialized]
   );
 
-  const rune = useMemo(
-    () => (isRuneInitialized ? backgroundWorkerInstance.rune : null),
-    [isRuneInitialized]
-  );
-
-  const mlApi = useMemo(
-    () => (isMlInitialized ? backgroundWorkerInstance.mlApi : null),
-    [isMlInitialized]
-  );
-
-  const defferedDbApi = useMemo(
-    () => (isDbInitialized ? backgroundWorkerInstance.defferedDbApi : null),
-    [isDbInitialized]
-  );
-
   const valueMemo = useMemo(
     () =>
       ({
         // backgroundWorker: backgroundWorkerInstance,
+        rune: backgroundWorkerInstance.rune,
+        embeddingApi$: embeddingApiRef.current,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi,
-        mlApi,
-        rune,
-        defferedDbApi,
         ipfsNode,
         restartSync: (name: SyncEntryName) =>
           backgroundWorkerInstance.restartSync(name),
@@ -347,11 +281,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       ipfsError,
       senseApi,
       dbApi,
-      mlApi,
       ipfsApi,
       ipfsNode,
-      rune,
-      loadIpfs,
     ]
   );
 

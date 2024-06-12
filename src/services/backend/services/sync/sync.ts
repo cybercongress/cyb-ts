@@ -31,8 +31,11 @@ export class SyncService {
 
   private loops: Partial<Record<SyncEntryName, BaseSyncLoop>> = {};
 
-  constructor(deps: ServiceDeps, particlesResolver: ParticlesResolverQueue) {
+  constructor(deps: ServiceDeps) {
     const { dbInstance$, ipfsInstance$ } = deps;
+
+    const particlesResolver = new ParticlesResolverQueue(deps).start();
+
     this.isInitialized$ = combineLatest([dbInstance$, ipfsInstance$]).pipe(
       map(([dbInstance, ipfsInstance]) => !!dbInstance && !!ipfsInstance)
     );

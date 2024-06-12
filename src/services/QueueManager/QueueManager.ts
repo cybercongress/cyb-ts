@@ -5,6 +5,7 @@ import {
   catchError,
   combineLatest,
   debounceTime,
+  distinctUntilChanged,
   filter,
   interval,
   map,
@@ -290,11 +291,11 @@ class QueueManager {
     {
       strategy,
       queueDebounceMs,
-      runeInstance$,
+      rune,
     }: {
       strategy?: QueueStrategy;
       queueDebounceMs?: number;
-      runeInstance$: Observable<RuneEngine | undefined>;
+      rune: RuneEngine;
     }
   ) {
     ipfsInstance$.subscribe((node) => {
@@ -303,8 +304,10 @@ class QueueManager {
       }
     });
 
-    runeInstance$.subscribe((rune) => {
-      this.rune = rune;
+    rune.isSoulInitialized$.subscribe((v) => {
+      if (v) {
+        this.rune = rune;
+      }
     });
 
     this.strategy = strategy || strategies.embedded;
@@ -329,11 +332,15 @@ class QueueManager {
         this.node!.reconnectToSwarm(true);
       });
 
-    const isInitialized$ = combineLatest([runeInstance$, ipfsInstance$]).pipe(
+    const isInitialized$ = combineLatest([
+      rune.isSoulInitialized$,
+      ipfsInstance$,
+    ]).pipe(
       map(
-        ([runeInstance, ipfsInstance]) =>
-          !!runeInstance && !!ipfsInstance && ipfsInstance.isStarted
+        ([isSoulInitialized, ipfsInstance]) =>
+          !!isSoulInitialized && !!ipfsInstance && ipfsInstance.isStarted
       ),
+      distinctUntilChanged(),
       share()
     );
 
@@ -344,10 +351,8 @@ class QueueManager {
 
     this.queue$
       .pipe(
-        tap((v) => console.log('----QUEUE', v.size)),
         withLatestFrom(isInitialized$),
         filter(([, isInitialized]) => isInitialized),
-        tap(([v]) => console.log('----QUEUE2', v.size)),
         debounceTime(this.queueDebounceMs),
         map(([queue]) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {

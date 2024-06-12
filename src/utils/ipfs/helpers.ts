@@ -4,6 +4,8 @@ import { isString } from 'lodash';
 import { RemoteIpfsApi } from 'src/services/backend/workers/background/worker';
 import { ParticleCid } from 'src/types/base';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { Remote } from 'comlink';
+import { IpfsApi } from 'src/services/backend/workers/background/api/ipfsApi';
 
 export const isCID = (cid: string): boolean => {
   return cid.match(PATTERN_IPFS_HASH) !== null;
@@ -27,7 +29,7 @@ export const getIpfsHash = (string: string): Promise<ParticleCid> =>
   });
 export const addIfpsMessageOrCid = async (
   message: string | ParticleCid | File,
-  { ipfsApi }: { ipfsApi: RemoteIpfsApi | null }
+  { ipfsApi }: { ipfsApi: Remote<IpfsApi> | null }
 ) => {
   if (!ipfsApi) {
     throw Error('IpfsApi is not initialized');

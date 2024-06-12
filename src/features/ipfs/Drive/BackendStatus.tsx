@@ -91,10 +91,16 @@ function BackendStatus() {
           message={services.ipfs.error || services.ipfs.message}
         />
         <ServiceStatusInfo
+          name="rune"
+          status={services.rune.status}
+          message={services.rune.error || services.rune.message}
+        />
+        <ServiceStatusInfo
           name="ml"
           status={services.sync.status}
           message={services.sync.error || services.sync.message}
         />
+
         {Object.keys(mlState.entryStatus).map((name) => (
           <EntrySatus
             key={`ml_log_${name}`}

@@ -1,8 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ScriptMyCampanion } from 'src/services/scripting/types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ScriptMyCampanion, UserContext } from 'src/services/scripting/types';
 import { IPFSContentMutated, IpfsContentType } from 'src/services/ipfs/types';
 import { useBackend } from '../backend/backend';
 import { proxy } from 'comlink';
+import { useAppSelector } from 'src/redux/hooks';
+import {
+  selectRuneEntypoints,
+  setEntrypoint,
+} from 'src/redux/reducers/scripting';
+import { selectCurrentPassport } from 'src/features/passport/passports.redux';
+import { useDispatch } from 'react-redux';
 
 export type ScriptingContextType = {
   status: 'loading' | 'ready' | 'pending' | 'done' | 'error';
@@ -29,18 +36,87 @@ export function useScripting() {
 }
 
 function ScriptingProvider({ children }: { children: React.ReactNode }) {
-  const { rune } = useBackend();
+  const { rune, ipfsApi, isIpfsInitialized } = useBackend();
+  const [isSoulInitialized, setIsSoulInitialized] = useState(false);
   const [status, setStatus] =
     useState<ScriptingContextType['status']>('loading');
   const [metaItems, setMetaItems] = useState<ScriptingContextType['metaItems']>(
     []
   );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Get the observable from the worker
+    // Subscribe to the observable
+    const setupObservervable = async () => {
+      const observer = await rune.isSoulInitialized$;
+      const subscription = observer.subscribe((v) => {
+        console.log('====SOUL INIT', v);
+        setIsSoulInitialized(!!v);
+      });
+
+      // Return the cleanup function
+      return () => {
+        subscription.unsubscribe();
+      };
+    };
+
+    setupObservervable();
+  }, []);
+
+  const runeEntryPoints = useAppSelector(selectRuneEntypoints);
+
+  const citizenship = useAppSelector(selectCurrentPassport);
+
+  useEffect(() => {
+    (async () => {
+      if (citizenship) {
+        const particleCid = citizenship.extension.particle;
+
+        await rune.pushContext('user', {
+          address: citizenship.owner,
+          nickname: citizenship.extension.nickname,
+          citizenship,
+          particle: particleCid,
+        } as UserContext);
+      } else {
+        await rune.popContext(['user', 'secrets']);
+      }
+    })();
+  }, [citizenship, rune]);
+
+  useEffect(() => {
+    (async () => {
+      if (citizenship && ipfsApi) {
+        const particleCid = citizenship.extension.particle;
+
+        if (particleCid && isIpfsInitialized) {
+          (async () => {
+            const result = await ipfsApi.fetchWithDetails(particleCid, 'text');
+
+            dispatch(
+              setEntrypoint({ name: 'particle', code: result?.content || '' })
+            );
+          })();
+        }
+      }
+    })();
+  }, [citizenship, isIpfsInitialized, ipfsApi, dispatch]);
+
+  useEffect(() => {
+    rune.setEntrypoints(runeEntryPoints);
+  }, [runeEntryPoints, rune]);
+
   const askCompanion = useCallback(
     async (
       cid: string,
       contentType?: IpfsContentType,
       content?: IPFSContentMutated['result']
     ) => {
+      if (!isSoulInitialized) {
+        return;
+      }
       if (!contentType || !content || contentType !== 'text') {
         setStatus('done');
         setMetaItems([
@@ -60,7 +136,7 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
           setStatus('done');
         });
     },
-    [rune]
+    [isSoulInitialized, rune]
   );
 
   const clearMetaItems = useCallback(() => setMetaItems([]), [setMetaItems]);
