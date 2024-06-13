@@ -5,9 +5,8 @@ import styles from './styles.module';
 function Columns({ title, children }) {
   return (
     <div className={styles.columnItem}>
-      <div className={styles.displayContainer}>
-        <Display title={<DisplayTitle title={title} />}></Display>
-      </div>
+      <Display noPaddingY title={<DisplayTitle title={title} />}></Display>
+
       {children}
     </div>
   );
