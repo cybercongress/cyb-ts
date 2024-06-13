@@ -1,6 +1,6 @@
 import { SyncQueueJobType } from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import { IPFSContent, IPFSContentMutated } from 'src/services/ipfs/types';
+import { IPFSContent } from 'src/services/ipfs/types';
 import { LinkDto } from 'src/services/CozoDb/types/dto';
 
 import { getTextContentIfShouldEmbed } from '../../services/sync/services/ParticlesResolverQueue/ParticlesResolverQueue';
@@ -19,9 +19,7 @@ export const createBackendQueueSender = () => {
 
 const busSender = createBackendQueueSender();
 
-export const enqueueParticleEmbeddingMaybe = async (
-  content: IPFSContentMutated
-) => {
+export const enqueueParticleEmbeddingMaybe = async (content: IPFSContent) => {
   const contentToEmbed = await getTextContentIfShouldEmbed(content);
 
   if (contentToEmbed) {
@@ -39,7 +37,7 @@ export const enqueueParticleEmbeddingMaybe = async (
   return !!contentToEmbed;
 };
 
-export const enqueueParticleSave = (content: IPFSContentMutated) => {
+export const enqueueParticleSave = (content: IPFSContent) => {
   busSender.enqueue({
     type: 'particle',
     // TODO: add AsyncIterator serializer

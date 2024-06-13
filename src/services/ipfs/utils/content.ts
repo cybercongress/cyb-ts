@@ -5,12 +5,9 @@ import { Option } from 'src/types';
 
 import {
   IPFSContentDetails,
-  IPFSContentMutated,
-  IpfsBaseContentType,
-  IpfsContentSource,
+  IPFSContent,
   IpfsContentType,
   IpfsGatewayContentType,
-  MimeBasedContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
 import { shortenString } from 'src/utils/string';
@@ -85,7 +82,7 @@ export const mimeToBaseContentType = (
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
-  content: IPFSContentMutated | undefined,
+  content: Option<IPFSContent>,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {

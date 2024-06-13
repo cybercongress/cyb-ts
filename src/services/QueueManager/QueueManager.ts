@@ -307,11 +307,11 @@ class QueueManager {
         )
       )
       .subscribe(() => {
-        console.log(
-          '-----reconnect cnt',
-          this.queue$.value.size,
-          this.queue$.value
-        );
+        // console.log(
+        //   '-----reconnect cnt',
+        //   this.queue$.value.size,
+        //   this.queue$.value
+        // );
         this.node!.reconnectToSwarm(true);
       });
 
@@ -496,12 +496,4 @@ class QueueManager {
   }
 }
 
-// TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
-// const queueManager = new QueueManager<IPFSContentMaybe>();
-
-// if (typeof window !== 'undefined') {
-//   window.qm = queueManager;
-// }
-
-// export { queueManager };
 export default QueueManager;

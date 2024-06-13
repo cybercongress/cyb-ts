@@ -4,7 +4,6 @@ import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 import { Option } from 'src/types';
 import {
   // getIpfsUserGatewanAndNodeType,
-  IPFSContentMaybe,
   IPFSContentMeta,
   CallBackFuncStatus,
   IpfsContentSource,
@@ -28,7 +27,7 @@ import { CYBER_GATEWAY_URL, FILE_SIZE_DOWNLOAD } from '../config';
 // Get data by CID from local storage
 const loadIPFSContentFromDb = async (
   cid: string
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   // TODO: enable, disabled for tests
 
   // TODO: use cursor
@@ -76,7 +75,7 @@ const fetchIPFSContentFromNode = async (
   cid: string,
   node?: IpfsNode,
   controller?: AbortController
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   const controllerLegacy = controller || new AbortController();
   const { signal } = controllerLegacy;
   let timer: NodeJS.Timeout | undefined;
@@ -171,7 +170,7 @@ const fetchIPFSContentFromGateway = async (
   node?: IpfsNode,
   controller?: AbortController,
   headers?: Record<string, string>
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
   const stats = isExternalNode
@@ -235,7 +234,7 @@ async function fetchIpfsContent(
   cid: string,
   source: IpfsContentSource,
   options: fetchContentOptions
-): Promise<IPFSContentMaybe> {
+): Promise<Option<IPFSContent>> {
   const { node, controller, headers } = options;
 
   try {
@@ -260,7 +259,7 @@ const getIPFSContent = async (
   node?: IpfsNode,
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   const dataRsponseDb = await loadIPFSContentFromDb(cid);
   if (dataRsponseDb !== undefined) {
     return dataRsponseDb;

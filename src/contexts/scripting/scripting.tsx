@@ -1,13 +1,5 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { ScriptMyCampanion, UserContext } from 'src/services/scripting/types';
-import { IPFSContentMutated, IpfsContentType } from 'src/services/ipfs/types';
-import { useBackend } from '../backend/backend';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { UserContext } from 'src/services/scripting/types';
 import { Remote, proxy } from 'comlink';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import {
@@ -18,6 +10,7 @@ import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { RuneEngine } from 'src/services/scripting/engine';
 import { Option } from 'src/types';
 import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
+import { useBackend } from '../backend/backend';
 
 type RuneFrontend = Omit<RuneEngine, 'isSoulInitialized$'>;
 

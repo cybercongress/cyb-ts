@@ -1,11 +1,5 @@
-import {
-  IPFSContent,
-  IPFSContentMaybe,
-  IPFSContentMutated,
-  IpfsContentSource,
-} from '../ipfs/types';
-import { LinkDbEntity } from '../CozoDb/types/entities';
-import { LinkDto } from '../CozoDb/types/dto';
+import { Option } from 'src/types';
+import { IPFSContent, IpfsContentSource } from '../ipfs/types';
 
 /* eslint-disable import/no-unused-modules */
 export type QueueItemStatus =
@@ -56,7 +50,7 @@ export type QueueItemCallback = (
   cid: string,
   status: QueueItemStatus,
   source: QueueSource,
-  result?: IPFSContentMaybe
+  result?: Option<IPFSContent>
 ) => void;
 
 export type QueueItem = {
@@ -72,14 +66,14 @@ export type QueueItemResult = {
   item: QueueItem;
   status: QueueItemStatus;
   source: QueueSource;
-  result?: IPFSContent | IPFSContentMutated | undefined;
+  result?: Option<IPFSContent>;
 };
 
 export type QueueItemAsyncResult = Omit<QueueItemResult, 'item'>;
 
 export type QueueItemPostProcessor = (
-  content: IPFSContentMaybe
-) => Promise<IPFSContentMaybe>;
+  content: Option<IPFSContent>
+) => Promise<Option<IPFSContent>>;
 
 export type FetchParticleAsync = (
   cid: string,

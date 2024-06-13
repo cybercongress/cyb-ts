@@ -23,13 +23,11 @@ import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
 import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
-import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
-import { shortenString } from 'src/utils/string';
 import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
 import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
 import { Option } from 'src/types';
 
-import { IPFSContentMutated } from 'src/services/ipfs/types';
+import { IPFSContent } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
 import { SyncQueueItem } from './types';
@@ -39,7 +37,7 @@ import DbApi from '../../../DbApi/DbApi';
 
 const QUEUE_BATCH_SIZE = 100;
 
-const getContentToEmbed = async (content: IPFSContentMutated) => {
+const getContentToEmbed = async (content: IPFSContent) => {
   const contentType = content?.meta?.contentType || '';
 
   // create embedding for allowed content
@@ -50,9 +48,7 @@ const getContentToEmbed = async (content: IPFSContentMutated) => {
   return [contentType, undefined];
 };
 
-export const getTextContentIfShouldEmbed = async (
-  content: IPFSContentMutated
-) => {
+export const getTextContentIfShouldEmbed = async (content: IPFSContent) => {
   const [contentType, data] = await getContentToEmbed(content);
 
   let shouldEmbed = contentType === 'text' && !!data;

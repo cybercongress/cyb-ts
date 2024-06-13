@@ -1,8 +1,4 @@
-import {
-  IPFSContentDetails,
-  IPFSContentMaybe,
-  IPFSContentMutated,
-} from 'src/services/ipfs/types';
+import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
 import { CYBER_GATEWAY } from 'src/constants/config';
 import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import GatewayContent from './component/gateway';
@@ -43,7 +39,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 
 type ContentTabProps = {
   details: IPFSContentDetails;
-  content?: Option<IPFSContentMutated>;
+  content?: Option<IPFSContent>;
   cid: string;
   search?: boolean;
 };

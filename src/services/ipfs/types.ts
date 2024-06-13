@@ -113,14 +113,6 @@ export type IPFSContent = {
   contentType?: IpfsContentType;
 };
 
-export type IPFSContentMutated = Omit<IPFSContent, 'result'> & {
-  result?: Uint8ArrayLike | string;
-  mutation?: 'hidden' | 'modified' | 'error'; // rune pipeline result
-  cidBefore?: string;
-};
-
-export type IPFSContentMaybe = IPFSContent | undefined;
-
 export type FetchWithDetailsFunc = (
   cid: string,
   type?: IpfsContentType,
