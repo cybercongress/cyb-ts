@@ -117,10 +117,13 @@ function App() {
             <div id={PORTAL_ID} className={styles.portal} />
           )}
 
-          {!(
-            ['/'].includes(location.pathname) ||
-            matchPath(cybernetRoutes.verse.path, location.pathname)
-          ) && <AdviserContainer />}
+          {![
+            routes.home.path,
+            routes.teleport.path,
+            cybernetRoutes.verse.path,
+          ].some((path) => {
+            return matchPath(path, location.pathname);
+          }) && <AdviserContainer />}
 
           <Outlet />
         </>
