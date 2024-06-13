@@ -14,6 +14,7 @@ import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import styles from './TextDenom.module.scss';
+import lp from './images/lp.png';
 
 // maybe reuse enum from DenomArr
 const nativeImageMap = {
@@ -23,8 +24,8 @@ const nativeImageMap = {
   a: amperImg,
   hydrogen,
   h: hydrogen,
-  liquidpussy: hydrogen,
-  lp: hydrogen,
+  liquidpussy: lp,
+  lp,
   boot,
   pussy,
   tocyb,
