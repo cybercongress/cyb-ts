@@ -1,4 +1,4 @@
-import useAdviserTexts from './useAdviserTexts';
+import useAdviserTexts from '../../adviser/useAdviserTexts';
 import useExecuteContract from './useExecuteContract';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { Coin } from '@cosmjs/launchpad';

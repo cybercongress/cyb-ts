@@ -8,41 +8,40 @@ import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import { ContractTypes } from 'src/features/cybernet/types';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { AmountDenom } from 'src/components';
 import styles from './SubnetActionBar.module.scss';
+import { useCurrentSubnet } from '../subnet.context';
 
-type Props = {
-  netuid: number;
-  burn: number | undefined;
-  addressSubnetRegistrationStatus: number | undefined | null;
-  refetch: () => void;
-};
+type Props = {};
 
 enum Steps {
   INITIAL,
   REGISTER_CONFIRM,
 }
 
-function SubnetActionBar({
-  netuid,
-  burn,
-  addressSubnetRegistrationStatus,
-  refetch,
-}: Props) {
+function SubnetActionBar({}: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
+
+  const { netuid, subnetQuery, subnetRegistrationQuery } = useCurrentSubnet();
 
   const address = useAppSelector(selectCurrentAddress);
 
   const { setAdviser } = useAdviser();
   const { getText } = useCybernetTexts();
 
-  const notRegistered = addressSubnetRegistrationStatus === null;
+  const notRegistered = subnetRegistrationQuery.data === null;
+
+  const burn = subnetQuery.data?.burn;
 
   function handleSuccess() {
     setAdviser('Registered', 'green');
     setStep(Steps.INITIAL);
-    refetch();
+
+    subnetRegistrationQuery.refetch();
+
+    // think if need
+    subnetQuery.refetch();
   }
 
   const subnetRegisterExecution = useExecuteCybernetContract({

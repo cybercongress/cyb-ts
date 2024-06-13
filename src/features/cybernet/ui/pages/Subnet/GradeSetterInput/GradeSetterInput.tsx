@@ -47,6 +47,7 @@ function GradeSetterInput({ uid }: Props) {
   return (
     <div ref={ref}>
       <InputNumber
+        // disabled={!rootSubnet && !neurons?.[uid]?.validator_permit}
         key={uid}
         maxValue={10}
         value={newGrades?.data?.[uid] || 0}

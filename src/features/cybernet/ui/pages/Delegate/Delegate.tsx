@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { Link, useParams } from 'react-router-dom';
-import { Account, AmountDenom, MainContainer } from 'src/components';
+import { useParams } from 'react-router-dom';
+import { Account, AmountDenom } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 
@@ -10,8 +10,7 @@ import {
   Delegator,
   Delegator as DelegatorType,
 } from 'src/features/cybernet/types';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
-import { routes as cybernetRoutes } from '../../routes';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import Table from 'src/components/Table/Table';
@@ -80,7 +79,6 @@ function Delegator() {
         noPaddingX
         title={
           <DisplayTitle
-            inDisplay={false}
             title={
               <MusicalAddress address={id === 'my' ? currentAddress : id} />
             }
@@ -177,7 +175,7 @@ function Delegator() {
                 ),
               }),
               columnHelper.accessor('amount', {
-                header: 'teaching power',
+                header: 'teach power',
                 cell: (info) => {
                   const value = info.getValue();
 

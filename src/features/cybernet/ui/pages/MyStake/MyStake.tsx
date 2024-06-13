@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { createColumnHelper } from '@tanstack/react-table';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import { StakeInfo } from 'src/features/cybernet/types';

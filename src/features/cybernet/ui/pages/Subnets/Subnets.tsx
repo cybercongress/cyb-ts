@@ -1,15 +1,12 @@
-import { MainContainer, Loading, Tooltip } from 'src/components';
+import { Loading } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import SubnetsTable from './SubnetsTable/SubnetsTable';
-import { SubnetInfo } from 'src/features/cybernet/types';
-import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
-import QuestionBtn from 'src/components/Rank/QuestionBtn/QuestionBtn';
 import styles from './Subnets.module.scss';
 import { Helmet } from 'react-helmet';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCybernet } from '../../cybernet.context';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 function Subnets() {
   const {

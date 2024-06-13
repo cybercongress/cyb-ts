@@ -11,16 +11,7 @@ import {
 import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { isPussyAddress } from 'src/utils/address';
 import { cybernetRoutes } from './routes';
-
-const contractsConfig = [
-  'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0',
-  'pussy1guj27rm0uj2mhwnnsr8j7cz6uvsz2d759kpalgqs60jahfzwgjcs4l28cw',
-];
-
-// const legacy = [
-//   'pussy155k695hqnzl05lx79kg9754k8cguw7wled38u2qacpxl62mrkfasy3k6x5',
-//   'pussy1xemzpkq2qd6a5e08xxy5ffcwx9r4xn5fqe6v02rkte883f9xhg5q29ye9y',
-// ];
+import { CYBERVER_CONTRACTS_LEGACY, CYBERVER_CONTRACTS } from '../constants';
 
 const CybernetContext = React.createContext<{
   contracts: ContractWithData[];
@@ -73,7 +64,10 @@ function useCybernetContractWithData(address: string) {
   return {
     address,
     type,
-    metadata: metadataQuery.data,
+    metadata: {
+      ...metadataQuery.data,
+      name: CYBERVER_CONTRACTS_LEGACY.includes(address) ? '' : name,
+    },
     economy: economyQuery.data,
     isLoading: metadataQuery.loading || economyQuery.loading,
   };
@@ -81,15 +75,18 @@ function useCybernetContractWithData(address: string) {
 
 function CybernetProvider({ children }: { children: React.ReactNode }) {
   const [selectedContractAddress, setSelectedContractAddress] = useState(
-    contractsConfig[0]
+    CYBERVER_CONTRACTS[0]
   );
 
   const { nameOrAddress } = useParams();
 
-  const c1 = useCybernetContractWithData(contractsConfig[0]);
-  const c2 = useCybernetContractWithData(contractsConfig[1]);
+  const c1 = useCybernetContractWithData(CYBERVER_CONTRACTS[0]);
+  const c2 = useCybernetContractWithData(CYBERVER_CONTRACTS[1]);
 
-  const contracts = useMemo(() => [c1, c2], [c1, c2]);
+  const c3 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[0]);
+  const c4 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[1]);
+
+  const contracts = useMemo(() => [c1, c2, c3, c4], [c1, c2, c3, c4]);
 
   const currentContract =
     nameOrAddress &&

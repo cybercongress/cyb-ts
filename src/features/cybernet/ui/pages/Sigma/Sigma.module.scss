@@ -13,6 +13,14 @@
   }
 }
 
+.legacy {
+  color: gray;
+  font-size: 14px;
+
+  position: relative;
+  top: 2.5px;
+}
+
 .item {
   display: flex;
   align-items: center;

@@ -1,22 +1,15 @@
-import React from 'react';
 import Display from 'src/components/containerGradient/Display/Display';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import styles from '../../Subnet.module.scss';
 import { SubnetInfo, SubnetNeuron } from 'src/features/cybernet/types';
 import { Link, useParams } from 'react-router-dom';
-import useCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import SubnetNeurons from '../SubnetNeurons/SubnetNeuronsTable/SubnetNeuronsTable';
 import { routes } from 'src/routes';
-import { Cid } from 'src/components';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
 import SubnetHyperParams from '../SubnetHyperParams/SubnetHyperParams';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 import MusicalAddress from 'src/components/MusicalAddress/MusicalAddress';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { useCurrentSubnet } from '../../subnet.context';
 
-type Props = {
-  data: SubnetInfo;
-  neurons: SubnetNeuron[];
-};
+type Props = {};
 
 const config: { [K in keyof SubnetInfo]: { text: string } } = {
   blocks_since_last_step: {
@@ -72,8 +65,10 @@ const config: { [K in keyof SubnetInfo]: { text: string } } = {
   },
 };
 
-function SubnetInfo({ data: subnetInfoData }: Props) {
-  const { id } = useParams();
+function SubnetInfo({}: Props) {
+  const {
+    subnetQuery: { data: subnetInfoData },
+  } = useCurrentSubnet();
 
   const { getText } = useCybernetTexts();
 
@@ -83,10 +78,7 @@ function SubnetInfo({ data: subnetInfoData }: Props) {
 
   return (
     <>
-      <Display
-        noPaddingX
-        // title={<DisplayTitle title={`${getText('subnetwork')} info`} />}
-      >
+      <Display noPaddingX>
         <ul className={styles.list}>
           {subnetInfoData &&
             Object.keys(subnetInfoData).map((item) => {

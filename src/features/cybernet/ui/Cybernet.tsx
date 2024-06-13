@@ -1,12 +1,4 @@
-import React from 'react';
-import {
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  redirect,
-  Navigate,
-} from 'react-router-dom';
+import { Outlet, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import Main from './pages/Main/Main';
 import Subnet from './pages/Subnet/Subnet';
 import Delegates from './pages/Delegates/Delegates';
@@ -14,10 +6,7 @@ import Delegate from './pages/Delegate/Delegate';
 import Subnets from './pages/Subnets/Subnets';
 import MyStake from './pages/MyStake/MyStake';
 import { Helmet } from 'react-helmet';
-import CybernetProvider, {
-  useCurrentContract,
-  useCybernet,
-} from './cybernet.context';
+import CybernetProvider, { useCurrentContract } from './cybernet.context';
 import Verses from './pages/Verses/Verses';
 import Verse from './pages/Verse/Verse';
 import { cybernetRoutes } from './routes';

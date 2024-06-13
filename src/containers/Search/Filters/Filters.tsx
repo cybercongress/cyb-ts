@@ -168,18 +168,18 @@ function Filters({
               tooltip: 'show only particles from my neuron',
             },
             {
+              label: '🌏',
+              name: NeuronFilterType.all,
+              checked: !neuron,
+              tooltip: 'show all particles',
+            },
+            {
               label: '👤',
               name: NeuronFilterType.neuron,
               checked:
                 (!!neuron && neuron !== currentAddress) ||
                 isNeuronChooserOpened,
               tooltip: 'show only particles from this neuron',
-            },
-            {
-              label: '🌏',
-              name: NeuronFilterType.all,
-              checked: !neuron,
-              tooltip: 'show all particles',
             },
           ]}
           onChange={(name) => {

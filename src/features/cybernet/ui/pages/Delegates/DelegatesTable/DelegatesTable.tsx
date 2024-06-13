@@ -53,7 +53,7 @@ function DelegatesTable({}: Props) {
 
   // maybe rename
   function getYieldValue(value: number) {
-    return Number(((value / 1_000_000_000) * 365).toFixed(2));
+    return Number(((value / 1_000_000_000) * 100 * 365).toFixed(2));
   }
 
   const subnets = subnetsQuery.data || [];
@@ -62,13 +62,6 @@ function DelegatesTable({}: Props) {
 
   const columns = useMemo(() => {
     const cols = [
-      columnHelper.accessor((row) => row, {
-        header: 'card',
-        cell: ({ row }) => {
-          return row.index;
-        },
-      }),
-
       columnHelper.accessor('delegate', {
         header: getText('delegate'),
         enableSorting: false,
@@ -131,7 +124,7 @@ function DelegatesTable({}: Props) {
       }),
 
       columnHelper.accessor('nominators', {
-        header: 'teaching power',
+        header: 'teach power',
         id: columnsIds.stake,
         sortingFn: (rowA, rowB) => {
           const totalA = getTotalStake(rowA.original.nominators);
@@ -184,11 +177,15 @@ function DelegatesTable({}: Props) {
     ? data
     : data?.filter((mentor) => myMentors.includes(mentor.delegate));
 
-  console.log('renderData', renderData);
-
   return (
     <Table
-      onSelect={(row) => navigate(`./${data.find((_, i) => i == row)?.owner}`)}
+      onSelect={(row) => {
+        const owner = data?.find((_, i) => i == row)?.owner;
+
+        navigate(
+          cybernetRoutes.delegator.getLink('pussy', contractName, owner)
+        );
+      }}
       columns={columns}
       data={renderData || []}
       isLoading={isLoading}

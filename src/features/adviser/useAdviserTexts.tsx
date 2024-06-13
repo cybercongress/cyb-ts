@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
@@ -12,7 +13,9 @@ type Props = {
 };
 
 function useAdviserTexts({ isLoading, error, defaultText, txHash }: Props) {
-  const { setAdviser } = useAdviser();
+  const { setAdviserNew } = useAdviser();
+
+  const key = useRef(uuidv4()).current;
 
   useEffect(() => {
     let adviserText = '';
@@ -35,8 +38,8 @@ function useAdviserTexts({ isLoading, error, defaultText, txHash }: Props) {
       adviserText = defaultText || '';
     }
 
-    setAdviser(adviserText, color);
-  }, [setAdviser, isLoading, error, defaultText, txHash]);
+    setAdviserNew(key, adviserText, color);
+  }, [setAdviserNew, isLoading, error, defaultText, txHash, key]);
 
   return null;
 }

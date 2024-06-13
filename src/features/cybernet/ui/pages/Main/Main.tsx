@@ -1,20 +1,13 @@
 import Display from 'src/components/containerGradient/Display/Display';
-import {
-  Input,
-  LinkWindow,
-  MainContainer,
-  OptionSelect,
-  Select,
-} from 'src/components';
+import { LinkWindow } from 'src/components';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import useAdviserTexts from 'src/features/cybernet/_move/useAdviserTexts';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { cybernetRoutes } from '../../routes';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
 import useDelegate from '../../hooks/useDelegate';
-import { routes } from 'src/routes';
 import ContractsTable from './ContractsTable/ContractsTable';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCybernet } from '../../cybernet.context';

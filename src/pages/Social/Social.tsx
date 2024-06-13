@@ -21,7 +21,7 @@ function Social() {
 
   return (
     <MainContainer>
-      <Display title={<DisplayTitle title="Socials" />}>
+      <Display title={<DisplayTitle title="Socials" />} noPaddingX>
         <div className={styles.wrapper}>
           <div className={styles.main}>
             <Discord />
