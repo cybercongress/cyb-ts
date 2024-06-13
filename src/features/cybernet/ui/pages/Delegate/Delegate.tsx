@@ -79,7 +79,6 @@ function Delegator() {
         noPaddingX
         title={
           <DisplayTitle
-            inDisplay={false}
             title={
               <MusicalAddress address={id === 'my' ? currentAddress : id} />
             }
