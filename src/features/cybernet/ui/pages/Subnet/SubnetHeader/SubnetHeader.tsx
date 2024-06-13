@@ -67,7 +67,7 @@ function SubnetHeader() {
         </div>
         <Cid cid={description}>description</Cid>
         <Item
-          title="teaching power"
+          title="teach power"
           content={<IconsNumber value={totalNeuronsStake} type="pussy" />}
         />
       </div>

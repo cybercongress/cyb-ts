@@ -222,7 +222,7 @@ function SubnetNeuronsTable({}: Props) {
         }),
         // TODO: refactor to use neuronStake
         columnHelper.accessor('stake', {
-          header: 'teaching power',
+          header: 'teach power',
           id: 'stake',
           sortingFn: (rowA, rowB) => {
             const a = rowA.original.stake.reduce((acc, s) => acc + s[1], 0);

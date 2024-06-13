@@ -124,7 +124,7 @@ function DelegatesTable({}: Props) {
       }),
 
       columnHelper.accessor('nominators', {
-        header: 'teaching power',
+        header: 'teach power',
         id: columnsIds.stake,
         sortingFn: (rowA, rowB) => {
           const totalA = getTotalStake(rowA.original.nominators);

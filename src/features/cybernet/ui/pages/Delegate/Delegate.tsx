@@ -175,7 +175,7 @@ function Delegator() {
                 ),
               }),
               columnHelper.accessor('amount', {
-                header: 'teaching power',
+                header: 'teach power',
                 cell: (info) => {
                   const value = info.getValue();
 
