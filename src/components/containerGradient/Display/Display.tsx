@@ -13,6 +13,7 @@ type Props = {
   status?: ColorLamp;
 
   noPaddingX?: boolean;
+  noPaddingY?: boolean;
 
   sideSaber?: 'left' | 'right';
 
@@ -26,6 +27,7 @@ function Display({
   isVertical,
   title,
   noPaddingX,
+  noPaddingY,
   sideSaber,
   color = Colors.GREEN,
   status,
@@ -37,18 +39,12 @@ function Display({
       className={cx(styles.wrapper, styles[colorTemp], {
         [styles.vertical]: isVertical,
         [styles.noPaddingX]: noPaddingX,
+        [styles.noPaddingY]: noPaddingY,
         [sideSaber ? styles[sideSaber] : undefined]: sideSaber,
       })}
     >
       {title && (
-        <header
-          className={cx(styles.header, {
-            // add padding that was reset by prop
-            [styles.withPaddingX]: noPaddingX,
-          })}
-        >
-          {React.cloneElement(title, { inDisplay: true })}
-        </header>
+        <header>{React.cloneElement(title, { inDisplay: true })}</header>
       )}
 
       <div className={styles.inner}>{children}</div>

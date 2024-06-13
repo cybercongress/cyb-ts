@@ -131,13 +131,10 @@ function Sigma() {
         isOwner: isCurrentOwner,
       }}
     >
-      <div
-        style={{
-          overflowX: 'auto',
-        }}
-      >
+      <div className={styles.wrapper}>
         <Display
-          color="green"
+          noPaddingX
+          noPaddingY
           title={
             <DisplayTitle
               title={superSigma ? 'Supersigma' : 'Sigma'}
@@ -150,19 +147,17 @@ function Sigma() {
             </DisplayTitle>
           }
         >
-          <div className={styles.addresses}>
-            {accountsData?.map(({ bech32: address }) => {
-              return (
-                <CardPassport
-                  key={address}
-                  address={address}
-                  passport={currentPassport}
-                  selectAddress={isCurrentOwner ? selectAddress : undefined}
-                  selectedAddress={selectedAddress}
-                />
-              );
-            })}
-          </div>
+          {accountsData?.map(({ bech32: address }) => {
+            return (
+              <CardPassport
+                key={address}
+                address={address}
+                passport={currentPassport}
+                selectAddress={isCurrentOwner ? selectAddress : undefined}
+                selectedAddress={selectedAddress}
+              />
+            );
+          })}
         </Display>
       </div>
 

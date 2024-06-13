@@ -3,10 +3,10 @@
 @import '../Display/Display.module.scss';
 
 .noPaddingWrapper {
-  $offset: -$display-padding-x - $saber-border-width;
   position: relative;
+  $offset: -$saber-border-width;
   left: $offset;
-  margin-right: $offset;
+  // margin-right: $offset;
 }
 
 .displayTitle {
@@ -17,6 +17,7 @@
 
   position: relative;
   padding-left: $display-padding-x;
+  padding-right: $display-padding-x;
 
   @each $color in $valid-colors {
     &.#{$color} {

@@ -3,11 +3,8 @@
 @import '../../../style/mixins.scss';
 
 .wrapper {
-  padding: $display-padding-top $display-padding-x 0;
-
   // TODO: remove this
   z-index: 0;
-
   max-height: 100%;
 
   &:not(.vertical) {
@@ -42,23 +39,27 @@
     border-left: unset !important;
   }
 
+  .inner {
+    padding: $display-padding-top $display-padding-x;
+    overflow: auto;
+
+    // unclear gap, because of overflow:auto
+    margin-top: -0.5px;
+
+    @include blueScroll;
+  }
+
   &.noPaddingX {
-    padding-left: unset;
-    padding-right: unset;
+    .inner {
+      padding-left: unset;
+      padding-right: unset;
+    }
   }
-}
 
-.header {
-  position: relative;
-  top: -$display-padding-top;
-
-  &.withPaddingX {
-    padding-left: $display-padding-x;
+  &.noPaddingY {
+    .inner {
+      padding-top: unset;
+      padding-bottom: unset;
+    }
   }
-}
-
-.inner {
-  overflow: auto;
-  @include blueScroll;
-  padding-bottom: 24px;
 }
