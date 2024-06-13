@@ -1,5 +1,5 @@
 import { useAppSelector } from 'src/redux/hooks';
-import useQueryClientMethod from './useQueryClientMethod';
+import useQueryClientMethod from '../useQueryClientMethod';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { QueryDelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { CyberClient } from '@cybercongress/cyber-js';

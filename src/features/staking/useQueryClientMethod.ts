@@ -15,7 +15,12 @@ function useQueryClientMethod<TData>(
   const { isLoading, data, error } = useQuery<unknown, unknown, TData>(
     ['queryClientMethod', methodName, memoParams],
     () => {
-      return queryClient![methodName](...memoParams);
+      // refactor
+      if (memoParams) {
+        return queryClient![methodName](...memoParams);
+      }
+
+      return queryClient![methodName]();
     },
     {
       enabled: !!queryClient,
