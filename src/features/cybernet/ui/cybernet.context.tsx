@@ -83,10 +83,10 @@ function CybernetProvider({ children }: { children: React.ReactNode }) {
   const c1 = useCybernetContractWithData(CYBERVER_CONTRACTS[0]);
   const c2 = useCybernetContractWithData(CYBERVER_CONTRACTS[1]);
 
-  const c3 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[0]);
-  const c4 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[1]);
+  // const c3 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[0]);
+  // const c4 = useCybernetContractWithData(CYBERVER_CONTRACTS_LEGACY[1]);
 
-  const contracts = useMemo(() => [c1, c2, c3, c4], [c1, c2, c3, c4]);
+  const contracts = useMemo(() => [c1, c2], [c1, c2]);
 
   const currentContract =
     nameOrAddress &&
