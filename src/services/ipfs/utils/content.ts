@@ -31,13 +31,18 @@ export const detectContentType = (
     if (mime.includes('audio')) {
       return 'audio';
     }
+
+    if (mime.includes('epub')) {
+      return 'epub';
+    }
   }
+
   return 'other';
 };
 
 const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 
-function isHtml(string) {
+function isHtml(string: string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
 }
@@ -55,13 +60,10 @@ export const chunksToBlob = (
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
   content: IPFSContentMaybe,
-  // rawDataResponse: Uint8ArrayLike | undefined,
-  // mime: string | undefined,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
   try {
-    // console.log('------parseArrayLikeToDetails', cid, content);
     const mime = content?.meta?.mime;
     const response: IPFSContentDetails = {
       link: `/ipfs/${cid}`,
@@ -69,15 +71,13 @@ export const parseArrayLikeToDetails = async (
       cid,
     };
     const initialType = detectContentType(mime);
-    if (['video', 'audio'].indexOf(initialType) > -1) {
+    if (['video', 'audio', 'epub'].indexOf(initialType) > -1) {
       return { ...response, type: initialType, gateway: true };
     }
 
     const rawData = content?.result
       ? await getResponseResult(content.result, onProgress)
       : undefined;
-
-    // console.log(rawData);
 
     if (!mime) {
       response.text = `Can't detect MIME for ${cid.toString()}`;

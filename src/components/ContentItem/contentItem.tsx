@@ -1,13 +1,13 @@
 // TODO: refactor needed
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { $TsFixMe } from 'src/types/tsfix';
+import { LinksType } from 'src/containers/Search/types';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import type {
-  IpfsContentType,
   IPFSContentDetails,
+  IpfsContentType,
 } from 'src/services/ipfs/types';
-import { LinksType } from 'src/containers/Search/types';
+import { $TsFixMe } from 'src/types/tsfix';
 
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
