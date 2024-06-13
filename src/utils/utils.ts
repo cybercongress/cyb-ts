@@ -115,10 +115,7 @@ export const consensusPubkey = (pubKey: string) => {
   return toBech32(BECH32_PREFIX_VAL_CONS, addressData);
 };
 
-const trimString = (address, firstArg, secondArg) => {
-  const first = firstArg || 3;
-  const second = secondArg || 8;
-
+const trimString = (address: string, first = 3, second = 8) => {
   if (address && address.length > 11) {
     return `${address.substring(0, first)}...${address.substring(
       address.length - second
