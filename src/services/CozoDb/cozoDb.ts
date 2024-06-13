@@ -51,7 +51,7 @@ function createCozoDb() {
     await initCozoDb();
     await loadCozoDb();
 
-    await initialMigrate();
+    await performHardReset();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -82,24 +82,14 @@ function createCozoDb() {
     return tableSchema;
   };
 
-  const initDbSchema = async (): Promise<void> => {
-    let relations = await getRelations();
-
-    shouldInitialize = relations.length === 0;
-    if (shouldInitialize) {
-      cyblogCh.info('   cozoDb - apply DB schema', initializeScript);
-      const result = await runCommand(initializeScript);
-
-      relations = await getRelations();
-    }
-
+  const loadDbSchema = async () => {
+    const relations = await getRelations();
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
         const tableSchema = await createSchema(table);
         return [table, tableSchema];
       })
     );
-
     dbSchema = Object.fromEntries(schemasMap);
     cyblogCh.info('cozoDb schema initialized: ', {
       data: [dbSchema, relations, schemasMap],
@@ -107,9 +97,26 @@ function createCozoDb() {
 
     commandFactory = createCozoDbCommandFactory(dbSchema);
 
+    cyblogCh.info('cozoDb schema initialized: ', {
+      data: [dbSchema, relations, schemasMap],
+    });
+
+    return dbSchema;
+  };
+
+  const initDbSchema = async (): Promise<void> => {
+    await loadDbSchema();
+
+    shouldInitialize = Object.keys(dbSchema).length === 0;
     if (shouldInitialize) {
+      cyblogCh.info('   cozoDb - apply DB schema', initializeScript);
+      const result = await runCommand(initializeScript);
+
+      await loadDbSchema();
+
       // if initialized set initial version
       await setDbVersion(DB_VERSION);
+
       await fetchInitialEmbeddings(async (items: Partial<DbEntity>[]) => {
         console.log(' [initial]save initial particles...');
         await put('sync_queue', items);
@@ -141,7 +148,7 @@ function createCozoDb() {
     return result;
   };
 
-  const initialMigrate = async () => {
+  const performHardReset = async () => {
     // if (!dbSchema.community) {
     //   const result = await runCommand(communityScript);
     //   console.log('CozoDb >>> migration: creating community relation....');
@@ -241,6 +248,7 @@ function createCozoDb() {
     exportRelations,
     getDbVersion,
     setDbVersion,
+    loadDbSchema,
   };
 }
 

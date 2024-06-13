@@ -29,7 +29,10 @@ const createDbWorkerApi = () => {
     console.time('🔋 cozo db initialized');
 
     await cozoDb.init(onWriteCallback);
-    await migrate(cozoDb);
+    const reinitializeDbSchema = await migrate(cozoDb);
+    if (reinitializeDbSchema) {
+      await cozoDb.loadDbSchema();
+    }
     console.timeEnd('🔋 cozo db initialized');
 
     isInitialized = true;

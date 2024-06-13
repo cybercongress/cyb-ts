@@ -35,7 +35,7 @@ const migrate = async (db: CybCozoDb) => {
         ?[id,status,priority, job_type, data] := *sync_queue{id,status,priority}, job_type=0, data='';
         :replace sync_queue {
             id: String,
-            job_type: Int =>
+            job_type: Int default 0 =>
             data: String default '',
             status: Int default 0,
             priority: Float default 0,
@@ -75,9 +75,12 @@ const migrate = async (db: CybCozoDb) => {
         }
     `);
     console.log(`       ok: ${res4.ok}`);
+    await db.setDbVersion(DB_VERSION);
+
+    return true;
   }
 
-  await db.setDbVersion(DB_VERSION);
+  return false;
 };
 
 export default migrate;

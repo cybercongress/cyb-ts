@@ -91,7 +91,6 @@ const createEmbeddingApi$ = (
     ([dbInstance, featureExtractor]) => {
       if (dbInstance && featureExtractor) {
         const createEmbedding = async (text: string) => {
-          console.log('----createEmbedding', text, featureExtractor);
           const output = await featureExtractor(text, {
             pooling: 'mean',
             normalize: true,
@@ -102,7 +101,7 @@ const createEmbeddingApi$ = (
 
         const searchByEmbedding = async (text: string, count?: number) => {
           const vec = await createEmbedding(text);
-          console.log('----searchByEmbedding', vec);
+          // console.log('----searchByEmbedding', vec);
 
           const rows = await dbInstance.searchByEmbedding(vec, count);
           //   console.log('----searcByEmbedding rows', rows);
