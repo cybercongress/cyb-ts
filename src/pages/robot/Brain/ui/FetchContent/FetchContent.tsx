@@ -1,4 +1,4 @@
-import { Dots } from 'src/components';
+import { Cid, Dots } from 'src/components';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import useParticleDetails from 'src/features/particle/useParticleDetails';
 
@@ -11,17 +11,21 @@ function FetchContent({ cid, parentId }: { cid: string; parentId: string }) {
     parentId
   );
 
+  let content;
+
   if (loading) {
-    return (
+    content = (
       <span>
         resolving particle <Dots />
       </span>
     );
+  } else {
+    content = (
+      <ContentIpfs details={data} cid={cid} content={data?.content} search />
+    );
   }
 
-  return (
-    <ContentIpfs details={data} cid={cid} content={data?.content} search />
-  );
+  return <Cid cid={cid}>{content}</Cid>;
 }
 
 export default FetchContent;

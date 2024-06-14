@@ -13,7 +13,9 @@ function TreedItem({
   return (
     <Display>
       <div className={styles.wrapper}>
-        <FetchContentFrom cid={link.from} parentId={address} />
+        <div className={styles.cidFrom}>
+          <FetchContentFrom cid={link.from} parentId={address} />
+        </div>
         <div className={styles.content}>
           <FetchContent cid={link.to} parentId={address} />
         </div>

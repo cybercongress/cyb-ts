@@ -17,16 +17,18 @@ function FetchContentFrom({
     parentId
   );
 
+  let content = trimString(cid);
+
   if (
     !loading &&
     data?.type === 'text' &&
     data.content &&
     data.content?.length <= 100
   ) {
-    return <span>{data.content}</span>;
+    content = data.content;
   }
 
-  return <Cid cid={cid}>{trimString(cid)}</Cid>;
+  return <Cid cid={cid}>{content}</Cid>;
 }
 
 export default FetchContentFrom;

@@ -4,6 +4,17 @@
   gap: 20px;
   align-items: center;
   justify-items: flex-end;
+
+  &>div>a {
+    color: #fff;
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.cidFrom {
+  width: 100%;
 }
 
 

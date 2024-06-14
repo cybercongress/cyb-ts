@@ -31,9 +31,11 @@ function Brain() {
 
   const setGraphViewFc = () => setGraphView((item) => !item);
 
+  const textButton = graphView ? 'treed' : 'graph';
+
   return (
     <div className={styles.wrapper}>
-      <Button onClick={setGraphViewFc} text="change view" />
+      <Button onClick={setGraphViewFc} text={`${textButton} view`} />
       {content}
     </div>
   );
