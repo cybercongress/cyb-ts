@@ -4,6 +4,13 @@ import PillUsers from './ui/PillUsers';
 import styles from './TabsNotOwner.module.scss';
 
 const tabsPages = {
+  sense: {
+    text: 'sense',
+    link: './sense',
+    icon: '🧬',
+    description: 'unread',
+    name: 'sense',
+  },
   brain: {
     text: 'brain',
     link: './brain',
