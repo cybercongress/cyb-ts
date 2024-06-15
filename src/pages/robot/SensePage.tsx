@@ -8,7 +8,7 @@ function SensePage() {
     (store) => store.pocket.defaultAccount.account?.cyber.keys
   );
 
-  if (keys === 'read-only') {
+  if (!keys || keys === 'read-only') {
     return <Taverna />;
   }
 
