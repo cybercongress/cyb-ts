@@ -16,7 +16,7 @@ import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
 import { LEDGER } from 'src/utils/config';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
-import ConnectWalletModal from './connectWalletModal';
+import ConnectWalletModal from './ConnectWalletModal';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
@@ -122,7 +122,7 @@ function ActionBarConnect({
     }
   };
 
-  const connectKeplrFromMnemonic = async (mnemonic: string) => {
+  const connectKeplrFromMnemonic = async (name: string, mnemonic: string) => {
     const offlineSigner = await getOfflineSigner(mnemonic);
     localStorage.setItem('cyb:mnemonic', mnemonic);
     if (offlineSigner) {
@@ -134,7 +134,7 @@ function ActionBarConnect({
         pk,
         keys: 'keplr',
         path: HDPATH,
-        name: 'offline',
+        name,
         bech32: address,
       };
 

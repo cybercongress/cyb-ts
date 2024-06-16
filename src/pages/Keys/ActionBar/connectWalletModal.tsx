@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { ClipboardEventHandler, useCallback, useEffect, useState } from 'react';
 import { Button, Display, Input } from 'src/components';
 import Dropdown from 'src/components/Dropdown/Dropdown';
 
@@ -10,7 +10,7 @@ const columnsIndexes24 = [
 const columns = { '12': columnsIndexes12, '24': columnsIndexes24 };
 
 interface ConnectWalletModalProps {
-  onAdd(mnemonic: string): void | Promise<void>;
+  onAdd(name: string, mnemonic: string): void | Promise<void>;
 }
 
 export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
@@ -20,6 +20,26 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
   const [values, setValues] = useState<Record<number, string>>(
     columnsIndexes.reduce((acc, index) => ({ ...acc, [index]: '' }), {})
   );
+  const [name, setName] = useState('');
+
+  const onMnemonicsPaste = useCallback<ClipboardEventHandler<HTMLDivElement>>(
+    (event) => {
+      event.preventDefault();
+
+      const paste = (event.clipboardData || window.clipboardData).getData(
+        'text'
+      );
+      console.log('ON PASTE', paste);
+      const words = paste.split(' ');
+      const newValues = { ...values };
+      for (let i = 0; i < words.length; i++) {
+        newValues[i] = words[i];
+      }
+
+      setValues(newValues);
+    },
+    [values]
+  );
 
   useEffect(() => {
     setColumnsIndexes(columns[mnemonicsLength]);
@@ -27,11 +47,11 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
 
   const onAddClick = useCallback(async () => {
     try {
-      await onAdd(Object.values(values).join(' '));
+      await onAdd(name, Object.values(values).join(' '));
     } catch (error) {
       console.error('Failed to add mnemonics:', error);
     }
-  }, [values, onAdd]);
+  }, [onAdd, name, values]);
 
   return (
     <div
@@ -46,22 +66,29 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
         zIndex: 10000,
         // opacity: 0.95,
       }}
+      onPaste={onMnemonicsPaste}
     >
       <Display
         title={
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h3 style={{ padding: '15px' }}>Enter your seed phrase</h3>
-            <div style={{ paddingTop: '15px' }}>
-              <Dropdown
-                value={mnemonicsLength}
-                options={[
-                  { label: '12', value: '12' },
-                  { label: '24', value: '24' },
-                ]}
-                onChange={setMnemonicsLength}
-              />
+          <>
+            <div>
+              <h3 style={{ padding: '15px' }}>Enter your name</h3>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-          </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <h3 style={{ padding: '15px' }}>Enter your seed phrase</h3>
+              <div style={{ paddingTop: '15px' }}>
+                <Dropdown
+                  value={mnemonicsLength}
+                  options={[
+                    { label: '12', value: '12' },
+                    { label: '24', value: '24' },
+                  ]}
+                  onChange={setMnemonicsLength}
+                />
+              </div>
+            </div>
+          </>
         }
       >
         <div

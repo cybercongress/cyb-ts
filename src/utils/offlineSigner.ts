@@ -8,7 +8,6 @@ export class OfflineSigner extends DirectSecp256k1HdWallet {
     signerAddress: string,
     signDoc: SignDoc
   ) => {
-    prompt('Podpisatj?');
     console.log({ signerAddress, signDoc });
 
     return super.signDirect(signerAddress, signDoc);
@@ -20,7 +19,7 @@ export const getOfflineSigner = (mnemonic: string) =>
     prefix: defaultNetworks.bostrom.BECH32_PREFIX,
   });
 
-export const initOfflineSigner = () => {
+export const initTestOfflineSigner = () => {
   return getOfflineSigner(
     // 'walk pilot space strike parrot fuel involve mass air bronze bitter morning hockey trial room focus stamp indicate penalty sketch juice volume rather donor'
     'program vast lesson soldier lucky power cost tragic train combine minute wonder'

@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
-import SenseList from 'src/features/sense/ui/SenseList/SenseList';
-import styles from './Sense.module.scss';
-import { useAdviser } from 'src/features/adviser/context';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import ActionBar from './ActionBar/ActionBar';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useBackend } from 'src/contexts/backend/backend';
+import { useAdviser } from 'src/features/adviser/context';
 import {
   getSenseChat,
   getSenseList,
 } from 'src/features/sense/redux/sense.redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import SenseList from 'src/features/sense/ui/SenseList/SenseList';
+import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { convertTimestampToString } from 'src/utils/date';
+import ActionBar from './ActionBar/ActionBar';
+import styles from './Sense.module.scss';
 
 export type AdviserProps = {
   adviser: {
@@ -99,6 +99,8 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   };
 
   useEffect(() => {
+    console.log('senseApi', senseApi);
+
     if (!senseApi) {
       return;
     }

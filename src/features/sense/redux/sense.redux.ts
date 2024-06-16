@@ -4,21 +4,20 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { SenseApi } from 'src/contexts/backend/services/senseApi';
-import {
-  SenseItemLinkMeta,
-  SenseListItem,
-  SenseListItemTransactionMeta,
-  SenseUnread,
-} from 'src/services/backend/types/sense';
-import { isParticle } from '../../particle/utils';
-import { SenseItemId } from '../types/sense';
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import type { SenseApi } from 'src/contexts/backend/services/senseApi';
+import type { RootState } from 'src/redux/store';
 import {
   MsgMultiSendValue,
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
-import { RootState } from 'src/redux/store';
+import {
+  SenseItemLinkMeta,
+  SenseListItem,
+  SenseListItemTransactionMeta,
+} from 'src/services/backend/types/sense';
+import { EntryType } from 'src/services/CozoDb/types/entities';
+import { isParticle } from '../../particle/utils';
+import { SenseItemId } from '../types/sense';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -137,7 +136,7 @@ function formatApiData(item: SenseListItem): SenseItem {
       Object.assign(formatted, {
         type: 'cyber.graph.v1beta1.MsgCyberlink',
         from: meta.neuron,
-        meta: meta,
+        meta,
         fromLog: true,
       });
 
@@ -454,7 +453,7 @@ const selectUnreadCounts = createSelector(
 export const { addSenseItem, updateSenseItem, updateSenseList, reset } =
   slice.actions;
 
-export { getSenseList, getSenseChat, markAsRead };
+export { getSenseChat, getSenseList, markAsRead };
 
 // selectors
 export { selectUnreadCounts };

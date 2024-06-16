@@ -1,3 +1,5 @@
+import type { Store } from 'src/redux/store';
+
 export type Option<T> = T | undefined;
 export type Nullable<T> = T | null | undefined;
 export type ArrayElement<ArrayType extends readonly unknown[]> =
@@ -5,5 +7,6 @@ export type ArrayElement<ArrayType extends readonly unknown[]> =
 declare global {
   interface Window {
     __TAURI__: any;
+    store: Store;
   }
 }

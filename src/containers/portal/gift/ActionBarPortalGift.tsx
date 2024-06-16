@@ -17,6 +17,7 @@ import { PATTERN_CYBER } from 'src/constants/patterns';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { Nullable } from 'src/types';
+import { CHAIN_ID } from 'src/constants/config';
 import {
   Dots,
   ButtonIcon,
@@ -45,7 +46,6 @@ import {
 } from '../../../features/passport/passports.redux';
 import { ClaimMsg } from './type';
 import { TxHash } from '../hook/usePingTxs';
-import { CHAIN_ID } from 'src/constants/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -529,6 +529,36 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarSteps>
+        <BtnGrd
+          text="Test signer"
+          onClick={async () => {
+            if (!signer) {
+              console.log('Signer is not set');
+              return;
+            }
+            console.log('Signer is set OK');
+
+            if (!signingClient) {
+              console.log('SigningClient is not set');
+              return;
+            }
+            console.log('SigningClient is set OK');
+
+            try {
+              const [account] = await signer.getAccounts();
+              if (!account) {
+                console.log('Account is not found');
+                return;
+              }
+              console.log('Account is found', account);
+
+              const { address } = account;
+              signingClient.signAndBroadcast(address, [], 'auto');
+            } catch (error) {
+              console.error('Test signer failed', error);
+            }
+          }}
+        />
         <BtnGrd
           disabled={isProve}
           onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
