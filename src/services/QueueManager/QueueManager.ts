@@ -1,43 +1,43 @@
 import {
   BehaviorSubject,
-  map,
-  timeout,
-  throwError,
-  of,
-  catchError,
   EMPTY,
   Observable,
-  mergeMap,
+  catchError,
   debounceTime,
-  merge,
-  tap,
-  interval,
   filter,
+  interval,
+  map,
+  merge,
+  mergeMap,
+  of,
+  throwError,
+  timeout,
 } from 'rxjs';
 
 import * as R from 'ramda';
 
-import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
 import { CybIpfsNode, IpfsContentSource } from 'src/services/ipfs/types';
+import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
 import { ParticleCid } from 'src/types/base';
 
 import { promiseToObservable } from '../../utils/rxjs/helpers';
 
 import type {
+  IDeferredDbSaver,
   QueueItem,
-  QueueItemResult,
+  QueueItemAsyncResult,
   QueueItemCallback,
   QueueItemOptions,
-  QueueStats,
+  QueueItemResult,
   QueueSource,
-  IDeferredDbSaver,
-  QueueItemAsyncResult,
+  QueueStats,
 } from './types';
 
 import { QueueStrategy } from './QueueStrategy';
 
-import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
+import { QueueItemTimeoutError } from './QueueItemTimeoutError';
+import { CustomHeaders, XCybSourceValues } from './constants';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 5000;
@@ -70,7 +70,7 @@ const strategies = {
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 6 * 1000, maxConcurrentExecutions: 50 }, //TODO: set to 60
+      node: { timeout: 6 * 1000, maxConcurrentExecutions: 50 }, // TODO: set to 60
       gateway: { timeout: 3 * 1000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
@@ -168,6 +168,9 @@ class QueueManager {
         const res = await fetchIpfsContent(cid, source, {
           controller,
           node: this.node,
+          headers: {
+            [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
+          },
         }).then((content) => {
           this.defferedDbSaver?.enqueueIpfsContent(content);
 

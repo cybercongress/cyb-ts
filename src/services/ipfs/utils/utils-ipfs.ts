@@ -101,7 +101,7 @@ const fetchIPFSContentFromNode = async (
       }
       default: {
         // Get sample of content
-        const { value: firstChunk, done } = await node
+        const { value: firstChunk } = await node
           .cat(cid, { signal, length: 2048, offset: 0 })
           [Symbol.asyncIterator]()
           .next();
@@ -154,7 +154,8 @@ const fetchIPFSContentFromNode = async (
 const fetchIPFSContentFromGateway = async (
   cid: string,
   node?: IpfsNode,
-  controller?: AbortController
+  controller?: AbortController,
+  headers?: Record<string, string>
 ): Promise<IPFSContentMaybe> => {
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
@@ -166,6 +167,7 @@ const fetchIPFSContentFromGateway = async (
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
+    headers,
   });
 
   if (response && response.body) {
@@ -210,6 +212,7 @@ const fetchIPFSContentFromGateway = async (
 type fetchContentOptions = {
   controller?: AbortController;
   node?: IpfsNode;
+  headers?: Record<string, string>;
 };
 
 async function fetchIpfsContent(
@@ -217,7 +220,7 @@ async function fetchIpfsContent(
   source: IpfsContentSource,
   options: fetchContentOptions
 ): Promise<IPFSContentMaybe> {
-  const { node, controller } = options;
+  const { node, controller, headers } = options;
 
   try {
     switch (source) {
@@ -226,7 +229,7 @@ async function fetchIpfsContent(
       case 'node':
         return fetchIPFSContentFromNode(cid, node, controller);
       case 'gateway':
-        return fetchIPFSContentFromGateway(cid, node, controller);
+        return fetchIPFSContentFromGateway(cid, node, controller, headers);
       default:
         return undefined;
     }
