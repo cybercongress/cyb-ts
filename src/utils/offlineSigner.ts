@@ -1,21 +1,22 @@
+/* eslint-disable import/no-unused-modules */
 /* eslint-disable import/prefer-default-export */
-import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing/build/directsecp256k1hdwallet';
 import { SignDoc } from '@keplr-wallet/types/build/cosmjs';
 import defaultNetworks from 'src/constants/defaultNetworks';
 
-export class OfflineSigner extends DirectSecp256k1HdWallet {
+export class CybOfflineSigner extends DirectSecp256k1HdWallet {
   signDirect: DirectSecp256k1HdWallet['signDirect'] = (
     signerAddress: string,
     signDoc: SignDoc
   ) => {
-    console.log({ signerAddress, signDoc });
+    console.log('SIGN OFFLINE', { signerAddress, signDoc });
 
     return super.signDirect(signerAddress, signDoc);
   };
 }
 
 export const getOfflineSigner = (mnemonic: string) =>
-  OfflineSigner.fromMnemonic(mnemonic, {
+  CybOfflineSigner.fromMnemonic(mnemonic, {
     prefix: defaultNetworks.bostrom.BECH32_PREFIX,
   });
 

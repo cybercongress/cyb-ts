@@ -17,6 +17,7 @@ import { AccountValue } from 'src/types/defaultAccount';
 import { LEDGER } from 'src/utils/config';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
 import ConnectWalletModal from './ConnectWalletModal';
+import { ConnectMethod } from './types';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
@@ -33,9 +34,8 @@ function ActionBarConnect({
   const { signer, setSigner } = useContext(SignerClientContext);
   const [stage, setStage] = useState(STAGE_INIT);
   const [valueInputAddres, setValueInputAddres] = useState('');
-  const [selectMethod, setSelectMethod] = useState('');
+  const [connectMethod, setConnectMethod] = useState<ConnectMethod | ''>('');
   const selectNetwork = 'cyber';
-  const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
 
   const dispatch = useDispatch();
@@ -54,10 +54,14 @@ function ActionBarConnect({
     }
   }, [valueInputAddres]);
 
-  const connctAddress = () => {
-    switch (selectMethod) {
+  const connectAddress = () => {
+    switch (connectMethod) {
       case 'keplr':
-        window.__TAURI__ ? setStage(STAGE_OPEN_MODAL) : connectKeplr();
+        connectKeplr();
+        break;
+
+      case 'wallet':
+        setStage(STAGE_OPEN_MODAL);
         break;
 
       default:
@@ -69,8 +73,7 @@ function ActionBarConnect({
   const clearState = () => {
     setStage(STAGE_INIT);
     setValueInputAddres('');
-    setSelectMethod('');
-    setAddCyberAddress(false);
+    setConnectMethod('');
     setValidAddressAddedUser(true);
   };
 
@@ -153,11 +156,11 @@ function ActionBarConnect({
     }
   };
 
-  const selectMethodFunc = (method: string) => {
-    if (method !== selectMethod) {
-      setSelectMethod(method);
+  const selectMethodFunc = (method: ConnectMethod) => {
+    if (method !== connectMethod) {
+      setConnectMethod(method);
     } else {
-      setSelectMethod('');
+      setConnectMethod('');
     }
   };
 
@@ -169,9 +172,9 @@ function ActionBarConnect({
     return (
       <ConnectAddress
         selectMethodFunc={selectMethodFunc}
-        selectMethod={selectMethod}
+        selectMethod={connectMethod}
         selectNetwork={selectNetwork}
-        connctAddress={connctAddress}
+        connectAddress={connectAddress}
         keplr={signer}
         onClickBack={onClickBack}
       />

@@ -19,8 +19,12 @@ import ActionBarContainer from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import { ConnectMethod } from 'src/pages/Keys/ActionBar/types';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Option } from 'src/types';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
+const imgWallet = require('../../image/wallet-outline.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 
 const T = new LocalizedStrings(i18n);
@@ -401,32 +405,53 @@ export function RewardsDelegators({
   );
 }
 
+interface ConnectAddressProps {
+  selectMethodFunc: (method: ConnectMethod) => void,
+  selectMethod: ConnectMethod | '',
+  selectNetwork: string,
+  connectAddress:() => void,
+  keplr: Option<OfflineSigner>,
+  onClickBack: () => void,
+}
+
 export function ConnectAddress({
   selectMethodFunc,
   selectMethod,
   selectNetwork,
-  connctAddress,
+  connectAddress,
   keplr,
   onClickBack,
-}) {
+}: ConnectAddressProps) {
   return (
     <ActionBarContainer
       button={{
         disabled: !selectNetwork || !selectMethod,
         text: 'Connect',
-        onClick: connctAddress,
+        onClick: connectAddress,
       }}
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {keplr || window.__TAURI__ ? (
+        {keplr && (
           <ButtonIcon
             onClick={() => selectMethodFunc('keplr')}
             active={selectMethod === 'keplr'}
             img={imgKeplr}
             text="keplr"
           />
-        ) : (
+        )}
+
+        {/* {(!keplr || window.__TAURI__) && ( */}
+        {(
+          <ButtonIcon
+            onClick={() => selectMethodFunc('wallet')}
+            active={selectMethod === 'wallet'}
+            img={imgWallet}
+            text="wallet"
+          />
+        )}
+
+        {/* {!keplr && !window.__TAURI__ && (
           <LinkWindow to="https://www.keplr.app/">
             <Pane marginRight={5} width={34} height={30}>
               <img
@@ -436,7 +461,7 @@ export function ConnectAddress({
               />
             </Pane>
           </LinkWindow>
-        )}
+        )} */}
 
         <ButtonIcon
           onClick={() => selectMethodFunc('read-only')}

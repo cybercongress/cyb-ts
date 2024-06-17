@@ -46,6 +46,7 @@ import {
 } from '../../../features/passport/passports.redux';
 import { ClaimMsg } from './type';
 import { TxHash } from '../hook/usePingTxs';
+import SignerModal from 'src/containers/application/SignerModal';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -116,6 +117,7 @@ function ActionBarPortalGift({
   progressClaim,
   currentBonus,
 }: Props) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const navigate = useNavigate();
@@ -529,34 +531,39 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarSteps>
+        <SignerModal
+          isOpen={isModalOpen}
+          onAdd={() => {
+            console.log('Add');
+            setIsModalOpen(false);
+          }}
+        />
         <BtnGrd
           text="Test signer"
           onClick={async () => {
-            if (!signer) {
-              console.log('Signer is not set');
-              return;
-            }
-            console.log('Signer is set OK');
-
-            if (!signingClient) {
-              console.log('SigningClient is not set');
-              return;
-            }
-            console.log('SigningClient is set OK');
-
-            try {
-              const [account] = await signer.getAccounts();
-              if (!account) {
-                console.log('Account is not found');
-                return;
-              }
-              console.log('Account is found', account);
-
-              const { address } = account;
-              signingClient.signAndBroadcast(address, [], 'auto');
-            } catch (error) {
-              console.error('Test signer failed', error);
-            }
+            setIsModalOpen(true);
+            // if (!signer) {
+            //   console.log('Signer is not set');
+            //   return;
+            // }
+            // console.log('Signer is set OK');
+            // if (!signingClient) {
+            //   console.log('SigningClient is not set');
+            //   return;
+            // }
+            // console.log('SigningClient is set OK');
+            // try {
+            //   const [account] = await signer.getAccounts();
+            //   if (!account) {
+            //     console.log('Account is not found');
+            //     return;
+            //   }
+            //   console.log('Account is found', account);
+            //   const { address } = account;
+            //   signingClient.signAndBroadcast(address, [], 'auto');
+            // } catch (error) {
+            //   console.error('Test signer failed', error);
+            // }
           }}
         />
         <BtnGrd

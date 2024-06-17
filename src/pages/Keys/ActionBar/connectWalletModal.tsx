@@ -29,7 +29,7 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
       const paste = (event.clipboardData || window.clipboardData).getData(
         'text'
       );
-      console.log('ON PASTE', paste);
+
       const words = paste.split(' ');
       const newValues = { ...values };
       for (let i = 0; i < words.length; i++) {

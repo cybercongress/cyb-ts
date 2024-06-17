@@ -12,7 +12,7 @@ export type Props = {
   placement?: TooltipProps['placement'];
   styleContainer?: $TsFixMe;
   style?: CSSProperties;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 function ButtonIcon({

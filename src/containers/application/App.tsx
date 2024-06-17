@@ -1,23 +1,21 @@
 import { useEffect } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
-import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
+import { initPocket } from 'src/redux/features/pocket';
+import { AppDispatch } from 'src/redux/store';
 
-import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
-import { setCommunity } from 'src/redux/features/currentAccount';
-import { getPassport } from 'src/features/passport/passports.redux';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useAdviser } from 'src/features/adviser/context';
-import { routes } from 'src/routes';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useAdviser } from 'src/features/adviser/context';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { routes } from 'src/routes';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 
-import styles from './styles.scss';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import styles from './styles.scss';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
@@ -110,7 +108,7 @@ function App() {
           <div id={PORTAL_ID} className={styles.portal} />
         )}
 
-        {!(location.pathname === '/') && <AdviserContainer />}
+        {location.pathname !== '/' && <AdviserContainer />}
 
         <Outlet />
       </>

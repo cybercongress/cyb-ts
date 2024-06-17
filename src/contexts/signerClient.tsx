@@ -125,36 +125,40 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectAddress]);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const windowKeplr = await getKeplr();
+  //     if (windowKeplr) {
+  //       initSigner();
+  //     }
+  //   })();
+  // }, [initSigner]);
+
+  // useEffect(() => {
+  //   window.addEventListener('keplr_keystorechange', initSigner);
+  // }, [initSigner]);
+
   useEffect(() => {
     (async () => {
-      const windowKeplr = await getKeplr();
-      if (windowKeplr) {
-        initSigner();
-      }
-    })();
-  }, [initSigner]);
+      // if (window.__TAURI__ || !window.keplr) {
+      console.log('Init signing client');
+      try {
+        const mnemonic = localStorage.getItem('cyb:mnemonic');
+        if (mnemonic) {
+          const signer = await getOfflineSigner(mnemonic);
+          const clientJs = await createClient(signer);
 
-  useEffect(() => {
-    window.addEventListener('keplr_keystorechange', initSigner);
-  }, [initSigner]);
+          window.signer = signer;
+          window.signingClient = clientJs;
 
-  useEffect(() => {
-    (async () => {
-      if (window.__TAURI__) {
-        console.log('Init signing client');
-        try {
-          const mnemonic = localStorage.getItem('cyb:mnemonic');
-          if (mnemonic) {
-            const signer = await getOfflineSigner(mnemonic);
-            const clientJs = await createClient(signer);
-
-            setSigner(signer);
-            setSigningClient(clientJs);
-          }
-        } catch (e) {
-          console.error('Failed to init signer client:', e);
+          setSigner(signer);
+          setSigningClient(clientJs);
+          console.log('Signing client init success');
         }
+      } catch (e) {
+        console.error('Failed to init signer client:', e);
       }
+      // }
     })();
   }, []);
 
