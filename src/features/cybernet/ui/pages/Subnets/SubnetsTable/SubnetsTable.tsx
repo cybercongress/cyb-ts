@@ -1,14 +1,13 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { SubnetInfo } from '../../../../types';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
 
 import { Account, Cid, Tooltip } from 'src/components';
 
-import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import useDelegate from '../../../hooks/useDelegate';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
@@ -20,6 +19,7 @@ import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import { trimString } from 'src/utils/utils';
 import { getAverageGrade } from '../../Subnet/useCurrentSubnetGrades';
+import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {
   // remove
@@ -172,30 +172,6 @@ function SubnetsTable({ data }: Props) {
             return <F value={current} maxValue={max} />;
           },
         })
-
-        // columnHelper.accessor('emission_values', {
-        //   header: 'Emission block',
-        //   sortingFn: (rowA, rowB) => {
-        //     const a = rowA.original.emission_values;
-        //     const b = rowB.original.emission_values;
-
-        //     return a - b;
-        //   },
-
-        //   cell: (info) =>
-        //     `${parseFloat(
-        //       ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
-        //     )}%`,
-        // }),
-        // columnHelper.accessor('netuid', {
-        //   header: 'link',
-        //   cell: (info) => <Link to={'./' + info.getValue()}>link</Link>,
-        // }),
-
-        //   columnHelper.accessor('tempo', {
-        //     header: 'tempo',
-        //     cell: (info) => info.getValue(),
-        //   })
       );
     }
 
@@ -257,6 +233,7 @@ function SubnetsTable({ data }: Props) {
 
   return (
     <Table
+      id={tableIDs.cyberver.subnets}
       onSelect={(row) => {
         const netuid = data[row].netuid;
         navigate(subnetRoutes.subnet.getLink('pussy', contractName, netuid));

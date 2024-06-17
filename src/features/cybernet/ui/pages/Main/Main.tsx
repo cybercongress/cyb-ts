@@ -60,7 +60,11 @@ function Main() {
       <Banner />
 
       <div className={styles.verses}>
-        <Display noPaddingX title={<DisplayTitle title="choose verse" />}>
+        <Display
+          noPaddingX
+          noPaddingY
+          title={<DisplayTitle title="choose verse" />}
+        >
           <ContractsTable />
         </Display>
       </div>

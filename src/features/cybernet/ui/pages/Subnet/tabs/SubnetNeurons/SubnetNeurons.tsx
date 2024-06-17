@@ -27,7 +27,7 @@ function SubnetNeurons({ addressRegisteredInSubnet }: Props) {
   });
 
   return (
-    <Display noPaddingX>
+    <Display noPaddingX noPaddingY>
       <SubnetNeuronsTable />
 
       {addressRegisteredInSubnet && !isRootSubnet && !isMLVerse && (

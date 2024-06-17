@@ -22,6 +22,7 @@ import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import { getAverageGrade } from '../../../useCurrentSubnetGrades';
+import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {};
 
@@ -312,6 +313,7 @@ function SubnetNeuronsTable({}: Props) {
 
   return (
     <Table
+      id={tableIDs.cyberver.subnetNeurons}
       columns={columns}
       data={neurons}
       isLoading={neuronsQuery?.loading}

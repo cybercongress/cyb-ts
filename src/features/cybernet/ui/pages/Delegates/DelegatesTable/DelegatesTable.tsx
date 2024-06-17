@@ -16,6 +16,7 @@ import IconsNumber from '../../../../../../components/IconsNumber/IconsNumber';
 import SubnetPreview, {
   SubnetPreviewGroup,
 } from '../../../components/SubnetPreview/SubnetPreview';
+import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {};
 
@@ -179,6 +180,7 @@ function DelegatesTable({}: Props) {
 
   return (
     <Table
+      id={tableIDs.cyberver.delegates}
       onSelect={(row) => {
         const owner = data?.find((_, i) => i == row)?.owner;
 
