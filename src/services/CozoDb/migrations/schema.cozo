@@ -62,7 +62,9 @@
 
 {
     :create sync_queue {
-        id: String =>
+        id: String,
+        job_type: Int =>
+        data: String default '',
         status: Int default 0,
         priority: Float default 0,
     }
@@ -76,5 +78,19 @@
         name: String default '',
         following: Bool,
         follower: Bool
+    }
+}
+{
+    :create embeddings {
+        cid: String =>
+        vec: <F32; 384>
+    }
+}
+{
+    ::hnsw create embeddings:semantic{
+        fields: [vec],
+        dim: 384,
+        ef: 100,
+        m: 16
     }
 }

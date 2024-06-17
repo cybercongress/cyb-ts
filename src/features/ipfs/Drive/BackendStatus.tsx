@@ -6,7 +6,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 // import { ServiceStatus, SyncEntryStatus } from 'src/services/backend/types';
 import {
   ProgressTracking,
-  ServiceStatus,
+  ServiceStatus as ServiceStatusInfo,
   SyncEntryName,
   SyncProgress,
 } from 'src/services/backend/types/services';
@@ -16,6 +16,10 @@ import styles from './drive.scss';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 import { Button } from 'src/components';
 import { downloadJson } from 'src/utils/json';
+import { useBackend } from 'src/contexts/backend/backend';
+import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
+import { isObject } from 'lodash';
+import { promptToOpenAI } from 'src/services/scripting/services/llmRequests/openai';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {
@@ -29,13 +33,13 @@ const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   )}% (${estimatedTimeStr})`;
 };
 
-function ServiceStatus({
+function ServiceStatusInfo({
   name,
   status,
   message,
 }: {
   name: string;
-  status: ServiceStatus;
+  status: ServiceStatusInfo;
   message?: string;
 }) {
   const icon = status === 'error' ? '❌' : status === 'starting' ? '⏳' : '';
@@ -52,12 +56,18 @@ function EntrySatus({
 }) {
   const msg = progress.error || progress.message ? `- ${progress.message}` : '';
   const text = `${syncEntryNameToReadable(name)}: ${progress.status} ${msg}
-  ${getProgressTrackingInfo(progress.progress)}`;
+  ${
+    !isObject(progress.progress)
+      ? progress.progress
+        ? `(${progress.progress}%)`
+        : ''
+      : getProgressTrackingInfo(progress.progress)
+  }`;
   return <div className={styles.tabbed}>{text}</div>;
 }
 
 function BackendStatus() {
-  const { syncState, dbPendingWrites, services } = useAppSelector(
+  const { syncState, dbPendingWrites, services, mlState } = useAppSelector(
     (store) => store.backend
   );
 
@@ -70,17 +80,35 @@ function BackendStatus() {
     <Display color={Colors.GREEN}>
       <div className={styles.list}>
         <h3>Backend status</h3>
-        <ServiceStatus
+        <ServiceStatusInfo
           name="db"
           status={services.db.status}
           message={services.db.error || `(queries: ${dbPendingWrites})`}
         />
-        <ServiceStatus
+        <ServiceStatusInfo
           name="ipfs"
           status={services.ipfs.status}
           message={services.ipfs.error || services.ipfs.message}
         />
-        <ServiceStatus
+        <ServiceStatusInfo
+          name="rune"
+          status={services.rune.status}
+          message={services.rune.error || services.rune.message}
+        />
+        <ServiceStatusInfo
+          name="ml"
+          status={services.sync.status}
+          message={services.sync.error || services.sync.message}
+        />
+
+        {Object.keys(mlState.entryStatus).map((name) => (
+          <EntrySatus
+            key={`ml_log_${name}`}
+            name={name}
+            progress={mlState.entryStatus[name]}
+          />
+        ))}
+        <ServiceStatusInfo
           name="sync"
           status={services.sync.status}
           message={services.sync.error || services.sync.message}

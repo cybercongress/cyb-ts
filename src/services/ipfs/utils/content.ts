@@ -1,12 +1,16 @@
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { Option } from 'src/types';
+
 import {
   IPFSContentDetails,
-  IPFSContentMaybe,
+  IPFSContent,
   IpfsContentType,
+  IpfsGatewayContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
+import { shortenString } from 'src/utils/string';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
@@ -20,9 +24,9 @@ function createImgData(rawData: Uint8Array, type: string) {
 }
 
 // eslint-disable-next-line import/no-unused-modules
-export const detectContentType = (
+export const detectGatewayContentType = (
   mime: string | undefined
-): IpfsContentType => {
+): Option<IpfsGatewayContentType> => {
   if (mime) {
     if (mime.includes('video')) {
       return 'video';
@@ -32,18 +36,14 @@ export const detectContentType = (
       return 'audio';
     }
   }
-  return 'other';
+  return undefined;
 };
 
 const basic = /\s?<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+/i;
 
-function isHtml(string) {
+function isHtml(string: string) {
   const newString = string.trim().slice(0, 1000);
   return basic.test(newString);
-}
-
-function shortenString(string: string, length = 300) {
-  return string.length > length ? `${string.slice(0, length)}...` : string;
 }
 
 // eslint-disable-next-line import/no-unused-modules
@@ -52,85 +52,154 @@ export const chunksToBlob = (
   mime: string | undefined
 ) => new Blob(chunks, mime ? { type: mime } : {});
 
+// eslint-disable-next-line import/no-unused-modules
+export const mimeToBaseContentType = (
+  mime: string | undefined
+): IpfsContentType => {
+  if (!mime) {
+    return 'other';
+  }
+
+  const initialType = detectGatewayContentType(mime);
+  if (initialType) {
+    return initialType;
+  }
+
+  if (
+    mime.indexOf('text/plain') !== -1 ||
+    mime.indexOf('application/xml') !== -1
+  ) {
+    return 'text';
+  }
+  if (mime.indexOf('image') !== -1) {
+    return 'image';
+  }
+  if (mime.indexOf('application/pdf') !== -1) {
+    return 'pdf';
+  }
+  return 'other';
+};
+
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
 export const parseArrayLikeToDetails = async (
-  content: IPFSContentMaybe,
-  // rawDataResponse: Uint8ArrayLike | undefined,
-  // mime: string | undefined,
+  content: Option<IPFSContent>,
   cid: string,
   onProgress?: onProgressCallback
 ): Promise<IPFSContentDetails> => {
-  try {
-    // console.log('------parseArrayLikeToDetails', cid, content);
-    const mime = content?.meta?.mime;
-    const response: IPFSContentDetails = {
-      link: `/ipfs/${cid}`,
-      gateway: false,
+  // try {
+  if (!content || !content?.result) {
+    return {
+      gateway: true,
+      text: cid.toString(),
       cid,
     };
-    const initialType = detectContentType(mime);
-    if (['video', 'audio'].indexOf(initialType) > -1) {
-      return { ...response, type: initialType, gateway: true };
-    }
-
-    const rawData = content?.result
-      ? await getResponseResult(content.result, onProgress)
-      : undefined;
-
-    // console.log(rawData);
-
-    if (!mime) {
-      response.text = `Can't detect MIME for ${cid.toString()}`;
-      response.gateway = true; // ???
-    } else if (
-      mime.indexOf('text/plain') !== -1 ||
-      mime.indexOf('application/xml') !== -1
-    ) {
-      if (isSvg(Buffer.from(rawData))) {
-        response.type = 'image';
-        response.content = createImgData(rawData, 'image/svg+xml'); // file
-      } else {
-        const dataBase64 = uint8ArrayToAsciiString(rawData);
-        // TODO: search can bel longer for 42???!
-        // also cover ipns links
-        response.link =
-          dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
-
-        if (dataBase64.match(PATTERN_IPFS_HASH)) {
-          response.gateway = true;
-          response.type = 'other';
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (dataBase64.match(PATTERN_HTTP)) {
-          response.type = 'link';
-          response.gateway = false;
-          response.content = dataBase64;
-          response.link = `/ipfs/${cid}`;
-        } else if (isHtml(dataBase64)) {
-          response.type = 'other';
-          response.gateway = true;
-          response.content = cid.toString();
-        } else {
-          response.type = 'text';
-          response.content = dataBase64;
-          response.text = shortenString(dataBase64);
-        }
-      }
-    } else if (mime.indexOf('image') !== -1) {
-      response.content = createImgData(rawData, mime); // file
-      response.type = 'image';
-      response.gateway = false;
-    } else if (mime.indexOf('application/pdf') !== -1) {
-      response.type = 'pdf';
-      response.content = createObjectURL(rawData, mime); // file
-      response.gateway = true; // ???
-    }
-
-    return response;
-  } catch (e) {
-    console.log('----parseRawIpfsData', e, cid);
-    return undefined;
   }
+
+  const { result, meta } = content;
+
+  const { mime, contentType } = meta;
+
+  if (!mime) {
+    return {
+      cid,
+      gateway: true,
+      text: `Can't detect MIME for ${cid.toString()}`,
+    };
+  }
+  const contentCid = content.cid;
+
+  const response: IPFSContentDetails = {
+    link: `/ipfs/${cid}`,
+    gateway: false,
+    cid: contentCid,
+    type: contentType,
+  };
+
+  if (detectGatewayContentType(mime)) {
+    return { ...response, gateway: true };
+  }
+
+  const rawData =
+    typeof result !== 'string'
+      ? await getResponseResult(result, onProgress)
+      : result;
+
+  const isStringData = typeof rawData === 'string';
+
+  // console.log(rawData);
+  if (!rawData) {
+    return {
+      ...response,
+      gateway: true,
+      text: `Can't parse content for ${cid.toString()}`,
+    };
+  }
+
+  // clarify text-content subtypes
+  if (response.type === 'text') {
+    // render svg as image
+    if (!isStringData && isSvg(Buffer.from(rawData))) {
+      return {
+        ...response,
+        type: 'image',
+        content: createImgData(rawData, 'image/svg+xml'),
+      };
+    }
+
+    const str = isStringData ? rawData : uint8ArrayToAsciiString(rawData);
+
+    if (str.match(PATTERN_IPFS_HASH)) {
+      return {
+        ...response,
+        type: 'cid',
+        content: str,
+      };
+    }
+    if (str.match(PATTERN_HTTP)) {
+      return {
+        ...response,
+        type: 'link',
+        content: str,
+      };
+    }
+    if (isHtml(str)) {
+      return {
+        ...response,
+        type: 'html',
+        gateway: true,
+        content: cid.toString(),
+      };
+    }
+
+    // TODO: search can bel longer for 42???!
+    // also cover ipns links
+    return {
+      ...response,
+      link: str.length > 42 ? `/ipfs/${cid}` : `/search/${str}`,
+      type: 'text',
+      text: shortenString(str),
+      content: str,
+    };
+  }
+
+  if (!isStringData) {
+    if (response.type === 'image') {
+      return { ...response, content: createImgData(rawData, mime) }; // file
+    }
+    if (response.type === 'pdf') {
+      return {
+        ...response,
+        content: createObjectURL(rawData, mime),
+        gateway: true,
+      }; // file
+    }
+  }
+
+  return response;
+  // } catch (e) {
+  //   console.log('----parseRawIpfsData', e, cid);
+  //   return undefined;
+  // }
 };
 
 export const contentToUint8Array = async (
@@ -144,11 +213,17 @@ export const contentToUint8Array = async (
 };
 
 export const createTextPreview = (
-  array: Uint8Array | undefined,
-  mime?: string,
+  array: Uint8Array | undefined | string,
+  contentType: IpfsContentType,
   previewLength = 150
 ) => {
-  return array && mime && mime === 'text/plain'
+  if (!array) {
+    return undefined;
+  }
+  if (typeof array === 'string') {
+    return array.slice(0, previewLength);
+  }
+  return contentType && contentType === 'text'
     ? uint8ArrayToAsciiString(array).slice(0, previewLength)
     : undefined;
 };

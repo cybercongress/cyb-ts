@@ -4,18 +4,16 @@ import { useParams } from 'react-router-dom';
 import Display from 'src/components/containerGradient/Display/Display';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
-import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/services/ipfs/types';
-import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
 import useIsOnline from 'src/hooks/useIsOnline';
-import { encodeSlash } from '../../utils/utils';
 import ActionBarContainer from './ActionBarContainer';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
 import FirstItems from './_FirstItems.refactor';
 import { initialContentTypeFilterState } from './constants';
+import { getSearchQuery } from 'src/utils/search/utils';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
 
@@ -89,15 +87,9 @@ function SearchResults({
     setContentType({});
 
     (async () => {
-      let keywordHashTemp = '';
+      const keywordHash = await getSearchQuery(query);
 
-      if (query.match(PATTERN_IPFS_HASH)) {
-        keywordHashTemp = query;
-      } else {
-        keywordHashTemp = await getIpfsHash(encodeSlash(query));
-      }
-
-      setKeywordHash(keywordHashTemp);
+      setKeywordHash(keywordHash);
     })();
   }, [query]);
 

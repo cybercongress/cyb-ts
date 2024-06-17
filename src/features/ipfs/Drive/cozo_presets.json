@@ -53,6 +53,7 @@
   ],
   "[sys]config": "?[key, group_key, value] := *config{key, group_key, value}",
   "[sys] sync queue": [
-    "?[id, status, priority] := *sync_queue{id, status, priority}"
+    "?[id, status, job_type, data, priority] := *sync_queue{id, status, priority, job_type, data}",
+    ":order status, -priority"
   ]
 }

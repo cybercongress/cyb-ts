@@ -63,9 +63,9 @@ function Learn() {
 
   const { balacesResource } = useGetSlots(address);
 
-  const passport = useAppSelector(selectCurrentPassport);
+  const citizenship = useAppSelector(selectCurrentPassport);
 
-  const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
+  const noPassport = CHAIN_ID === Networks.BOSTROM && !citizenship;
 
   const [tx, setTx] = useState({
     hash: '',

@@ -1,0 +1,34 @@
+pub fn pass() {
+    #{ "action": "pass" }
+}
+
+pub fn hide() {
+    #{ "action": "hide" }
+}
+
+pub fn cid_result(cid) {
+    #{ "cid": cid, "action": "cid_result" }
+}
+
+pub fn content_result(content) {
+    // #{ "content": json::to_string(content)?, "action": "content_result" }
+    #{ "content": content, "action": "content_result" }
+}
+
+pub fn error(message) {
+    #{ "message": message, "action": "error" }
+}
+
+pub fn meta_text(text) {
+    #{ "text": text, "type": "text" }
+}
+
+pub fn meta_link(url, title) {
+    #{ "url": url, "title": title, "type": "link" }
+}
+
+pub async fn async_callback(data) {
+    cyb::log("asyc callback from rune");
+
+    //    cyb::callback(cyb::ref_id, data).await
+}
