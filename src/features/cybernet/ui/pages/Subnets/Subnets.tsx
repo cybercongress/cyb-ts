@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet';
 import useCybernetTexts from '../../useCybernetTexts';
 import { useCybernet } from '../../cybernet.context';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 function Subnets() {
   const {
@@ -33,15 +34,14 @@ function Subnets() {
 
       {rootSubnet && (
         <Display
-          noPaddingX
+          noPadding
           title={
             <DisplayTitle
               title={
                 <header className={styles.header}>
+                  {/* <AdviserHoverWrapper adviserContent=""> */}
                   {getText('root')}
-                  {/* <Tooltip tooltip="Root subnet - ...">
-                    <QuestionBtn />
-                  </Tooltip> */}
+                  {/* </AdviserHoverWrapper> */}
                 </header>
               }
             />
@@ -53,15 +53,14 @@ function Subnets() {
 
       {!!graphSubnets?.length && (
         <Display
-          noPaddingX
+          noPadding
           title={
             <DisplayTitle
               title={
                 <header className={styles.header}>
+                  {/* <AdviserHoverWrapper adviserContent=""> */}
                   {getText('subnetwork', true)}
-                  {/* <Tooltip tooltip="Graph subnets - ...">
-                    <QuestionBtn />
-                  </Tooltip> */}
+                  {/* </AdviserHoverWrapper> */}
                 </header>
               }
             />

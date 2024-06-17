@@ -8,6 +8,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { queryClient } from '../../../../../../../.storybook/preview';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import useDelegate from '../../../hooks/useDelegate';
 
 enum Steps {
   INITIAL,
@@ -28,6 +29,9 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const queryClient = useQueryClient();
+
+  const query = useDelegate(address);
+  const stakingEnabled = !!query?.data;
 
   const balance = useGetBalance(queryClient, currentAddress);
   const availableBalance = balance?.liquid?.amount;
@@ -77,6 +81,10 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   switch (step) {
     case Steps.INITIAL:
+      if (!stakingEnabled) {
+        break;
+      }
+
       content = (
         <>
           <Button

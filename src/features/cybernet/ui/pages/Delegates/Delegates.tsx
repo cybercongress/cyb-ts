@@ -12,6 +12,7 @@ function Delegates() {
 
   useAdviserTexts({
     isLoading: loading,
+    loadingText: `loading ${getText('delegate', true)}`,
     error,
     defaultText: `choose ${getText('delegate')} for learning`,
   });
@@ -19,6 +20,7 @@ function Delegates() {
   return (
     <Display
       noPaddingX
+      noPaddingY
       title={<DisplayTitle title={getText('delegate', true)} />}
     >
       <DelegatesTable />

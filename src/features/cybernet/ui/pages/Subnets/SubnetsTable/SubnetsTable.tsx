@@ -22,14 +22,19 @@ import { getAverageGrade } from '../../Subnet/useCurrentSubnetGrades';
 import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {
-  // remove
-  data: Props['subnets'];
-  subnets: SubnetInfo[];
+  data: SubnetInfo[];
 };
 
 const columnHelper = createColumnHelper<SubnetInfo>();
 
-function F({ value, maxValue }) {
+// don't know good name
+function CurrentToMax({
+  value,
+  maxValue,
+}: {
+  value: number;
+  maxValue: number;
+}) {
   return (
     <div>
       {value}{' '}
@@ -153,7 +158,12 @@ function SubnetsTable({ data }: Props) {
 
             const current = info.row.original.subnetwork_n;
 
-            return <F value={current >= max ? max : current} maxValue={max} />;
+            return (
+              <CurrentToMax
+                value={current >= max ? max : current}
+                maxValue={max}
+              />
+            );
           },
         }),
         columnHelper.accessor('max_allowed_uids', {
@@ -168,8 +178,17 @@ function SubnetsTable({ data }: Props) {
             const max = info.getValue();
 
             const current = info.row.original.subnetwork_n;
+            const maxAllowedValidators =
+              info.row.original.max_allowed_validators;
 
-            return <F value={current} maxValue={max} />;
+            const diff = current - maxAllowedValidators;
+
+            return (
+              <CurrentToMax
+                value={diff >= 0 ? diff : 0}
+                maxValue={max - maxAllowedValidators}
+              />
+            );
           },
         })
       );
@@ -227,7 +246,6 @@ function SubnetsTable({ data }: Props) {
     myAddressJoinedRootSubnet,
     grades?.all?.data,
     rootSubnet,
-    selectedContract,
     getText,
   ]);
 
@@ -235,7 +253,8 @@ function SubnetsTable({ data }: Props) {
     <Table
       id={tableIDs.cyberver.subnets}
       onSelect={(row) => {
-        const netuid = data[row].netuid;
+        const { netuid } = data[row];
+
         navigate(subnetRoutes.subnet.getLink('pussy', contractName, netuid));
       }}
       columns={columns}

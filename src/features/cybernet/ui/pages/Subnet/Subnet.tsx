@@ -20,15 +20,16 @@ function Subnet() {
   const { subnetQuery, neuronsQuery, subnetRegistrationQuery, isRootSubnet } =
     useCurrentSubnet();
 
+  const { getText } = useCybernetTexts();
+
   useAdviserTexts({
     isLoading: subnetQuery.loading,
+    loadingText: `loading ${getText('subnetwork')}`,
     error: subnetQuery.error || neuronsQuery.error,
     // defaultText: 'subnet',
   });
 
   const addressRegisteredInSubnet = subnetRegistrationQuery.data !== null;
-
-  const { getText } = useCybernetTexts();
 
   const tabs = [
     {

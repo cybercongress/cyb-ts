@@ -7,6 +7,7 @@ type ContextType = {
     color?: AdviserProps['color']
   ) => void;
   setAdviserNew: (
+    id: string,
     content: AdviserProps['children'],
     color?: AdviserProps['color']
   ) => void;

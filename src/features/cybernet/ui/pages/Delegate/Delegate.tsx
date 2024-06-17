@@ -45,16 +45,14 @@ function Delegator() {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const f = id !== 'my' ? id : currentAddress;
+  const address = id !== 'my' ? id : currentAddress;
 
-  const { loading, data, error, refetch } = useDelegate(f);
+  const { loading, data, error, refetch } = useDelegate(address);
   const { getText } = useCybernetTexts();
-
-  const { subnetsQuery } = useCybernet();
-  const { network, contractName } = useCurrentContract();
 
   useAdviserTexts({
     isLoading: loading,
+    loadingText: `loading ${getText('delegate')}`,
     error,
     defaultText: `${getText('delegate')} info`,
   });
@@ -77,13 +75,7 @@ function Delegator() {
 
       <Display
         noPaddingX
-        title={
-          <DisplayTitle
-            title={
-              <MusicalAddress address={id === 'my' ? currentAddress : id} />
-            }
-          />
-        }
+        title={<DisplayTitle title={<MusicalAddress address={address} />} />}
       >
         {!loading && !data && (
           <div
@@ -91,7 +83,7 @@ function Delegator() {
               textAlign: 'center',
             }}
           >
-            no mentor info
+            no mentor
           </div>
         )}
 
@@ -211,7 +203,7 @@ function Delegator() {
       )}
 
       <DelegateActionBar
-        address={f}
+        address={address}
         stakedAmount={myStake}
         onSuccess={refetch}
       />

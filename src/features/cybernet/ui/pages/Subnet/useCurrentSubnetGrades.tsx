@@ -166,7 +166,6 @@ function useCurrentSubnetGrades({
   const weightsRateLimit = hyperparamsQuery.data?.weights_rate_limit;
 
   const gradesSetBlockNumber = getLSData2(currentAddress, netuid);
-  console.log(gradesSetBlockNumber);
 
   let blocksLeftToSetGrades = 0;
   if (gradesSetBlockNumber && weightsRateLimit && block) {

@@ -83,7 +83,7 @@ const itemsMenu = () => {
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
     {
       name: 'cyberver',
-      icon: temple,
+      icon: require('./images/cyberver.png'),
       to: '/cyberver',
       subItems: [
         {
@@ -187,7 +187,7 @@ const itemsMenu = () => {
       ],
     });
   }
-  return listItemMenu;
+  return listItemMenu.filter((item) => item);
 };
 
 export type MenuItems = ReturnType<typeof itemsMenu>;
