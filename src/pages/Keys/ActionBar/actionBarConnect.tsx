@@ -165,7 +165,14 @@ function ActionBarConnect({
   };
 
   if (stage === STAGE_OPEN_MODAL) {
-    return <ConnectWalletModal onAdd={connectKeplrFromMnemonic} />;
+    return (
+      <ConnectWalletModal
+        onAdd={connectKeplrFromMnemonic}
+        onCancel={() => {
+          setStage(STAGE_INIT);
+        }}
+      />
+    );
   }
 
   if (stage === STAGE_INIT) {

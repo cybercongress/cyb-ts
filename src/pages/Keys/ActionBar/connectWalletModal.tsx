@@ -11,9 +11,13 @@ const columns = { '12': columnsIndexes12, '24': columnsIndexes24 };
 
 interface ConnectWalletModalProps {
   onAdd(name: string, mnemonic: string): void | Promise<void>;
+  onCancel(): void;
 }
 
-export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
+export default function ConnectWalletModal({
+  onAdd,
+  onCancel,
+}: ConnectWalletModalProps) {
   const [mnemonicsLength, setMnemonicsLength] =
     useState<keyof typeof columns>('12');
   const [columnsIndexes, setColumnsIndexes] = useState(columnsIndexes12);
@@ -52,6 +56,10 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
       console.error('Failed to add mnemonics:', error);
     }
   }, [onAdd, name, values]);
+
+  const canAdd =
+    !!name &&
+    Object.values(values).filter(Boolean).length === Number(mnemonicsLength);
 
   return (
     <div
@@ -118,7 +126,10 @@ export default function ConnectWalletModal({ onAdd }: ConnectWalletModalProps) {
             justifyContent: 'flex-end',
           }}
         >
-          <Button onClick={onAddClick}>Add</Button>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onAddClick} disabled={!canAdd}>
+            Add
+          </Button>
         </div>
       </Display>
     </div>
