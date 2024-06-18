@@ -29,7 +29,11 @@ import { SenseApi, createSenseApi } from './services/senseApi';
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
   if (!isPersistedStorage) {
-    await navigator.permissions.query({ name: 'persistent-storage' });
+    try {
+      await navigator.permissions.query({ name: 'persistent-storage' });
+    } catch (error) {
+      console.log('❌ setupStoragePersistence permission failed', error);
+    }
     isPersistedStorage = await navigator.storage.persisted();
   }
   const message = isPersistedStorage
@@ -172,7 +176,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           // pass dbApi into background worker
           await backgroundWorkerInstance.init(proxy(dbApi));
         })
-        .then(() => console.timeEnd('🔋 CozoDb worker started.'));
+        .then(() => console.timeEnd('🔋 CozoDb worker started.'))
+        .catch((error) => {
+          console.log('❌ failed to start CozoDb worker', error);
+        });
     };
 
     (async () => {
@@ -181,7 +188,10 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
           ? '🧪 Starting backend in DEV mode...'
           : '🧬 Starting backend in PROD mode...'
       );
-      await setupStoragePersistence();
+
+      await setupStoragePersistence().then((error) => {
+        console.log('[Shared worker] storage initialization failed', error);
+      });
 
       const ipfsLoadPromise = async () => {
         const isInitialized = await backgroundWorkerInstance.isInitialized();

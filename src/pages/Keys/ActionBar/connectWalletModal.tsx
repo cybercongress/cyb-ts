@@ -72,7 +72,6 @@ export default function ConnectWalletModal({
         minHeight: '80vh',
         backgroundColor: 'black',
         zIndex: 10000,
-        // opacity: 0.95,
       }}
       onPaste={onMnemonicsPaste}
     >
@@ -92,7 +91,7 @@ export default function ConnectWalletModal({
                     { label: '12', value: '12' },
                     { label: '24', value: '24' },
                   ]}
-                  onChange={setMnemonicsLength}
+                  onChange={setMnemonicsLength as any}
                 />
               </div>
             </div>

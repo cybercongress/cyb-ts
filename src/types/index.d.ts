@@ -8,5 +8,6 @@ declare global {
   interface Window {
     __TAURI__: any;
     store: Store;
+    clipboardData?: DataTransfer;
   }
 }

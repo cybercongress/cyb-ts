@@ -99,8 +99,6 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   };
 
   useEffect(() => {
-    console.log('senseApi', senseApi);
-
     if (!senseApi) {
       return;
     }
