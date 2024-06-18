@@ -182,7 +182,8 @@ function DelegatesTable({}: Props) {
     <Table
       id={tableIDs.cyberver.delegates}
       onSelect={(row) => {
-        const owner = data?.find((_, i) => i == row)?.owner;
+        const index = Number(row);
+        const { owner } = renderData!.find((_, i) => i === index)!;
 
         navigate(
           cybernetRoutes.delegator.getLink('pussy', contractName, owner)
