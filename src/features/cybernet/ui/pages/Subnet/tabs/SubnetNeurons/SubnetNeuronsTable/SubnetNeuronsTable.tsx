@@ -10,7 +10,7 @@ import { useCurrentSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 import {
   useCurrentContract,
@@ -23,6 +23,8 @@ import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import { getAverageGrade } from '../../../useCurrentSubnetGrades';
 import { tableIDs } from 'src/components/Table/tableIDs';
+import { useDelegates } from 'src/features/cybernet/ui/hooks/useDelegate';
+import { SubnetPreviewGroup } from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
 
 type Props = {};
 
@@ -35,6 +37,7 @@ enum TableColumnIDs {
   jobDone = 'jobDone',
   grade = 'grade',
   setGrade = 'setGrade',
+  registrations = 'registrations',
 }
 
 const columnHelper = createColumnHelper<SubnetNeuron>();
@@ -120,9 +123,11 @@ function SubnetNeuronsTable({}: Props) {
 
   const { getText } = useCybernetTexts();
 
+  const { data: delegatesData } = useDelegates();
+
   const neurons = useMemo(() => {
-    return neuronsQuery?.data || [];
-  }, [neuronsQuery]);
+    return neuronsQuery.data || [];
+  }, [neuronsQuery.data]);
 
   const stakeByNeurons = useMemo(() => {
     const stakes = neurons.reduce<Record<string, number>>((acc, neuron) => {
@@ -322,6 +327,47 @@ function SubnetNeuronsTable({}: Props) {
           })
         );
       }
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (delegatesData) {
+        cols.push(
+          // @ts-ignore
+          columnHelper.accessor('uid', {
+            header: 'Registrations',
+            id: TableColumnIDs.registrations,
+            sortingFn: (rowA, rowB) => {
+              const aUid = rowA.original.uid;
+              const bUid = rowB.original.uid;
+
+              const a = delegatesData[aUid].registrations.length;
+              const b = delegatesData[bUid].registrations.length;
+
+              return a - b;
+            },
+            cell: (info) => {
+              const uid = info.getValue();
+              const delegator = delegatesData[uid];
+
+              const subnets = delegator?.registrations.filter((r) => r !== 0);
+
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {subnets.length > 0 ? (
+                    <SubnetPreviewGroup uids={subnets} />
+                  ) : (
+                    '-'
+                  )}
+                </div>
+              );
+            },
+          })
+        );
+      }
     }
 
     return cols;
@@ -330,19 +376,25 @@ function SubnetNeuronsTable({}: Props) {
     isMLVerse,
     stakeByNeurons,
     getText,
+    delegatesData,
     selectedContract,
-    // block,
-    // cur,
     metadata,
     netuid,
     addressRegisteredInSubnet,
     isRootSubnet,
     address,
+    // block,
+    // cur,
   ]);
 
   let order;
   if (isRootSubnet) {
-    order = [TableColumnIDs.uid, TableColumnIDs.hotkey, TableColumnIDs.stake];
+    order = [
+      TableColumnIDs.uid,
+      TableColumnIDs.hotkey,
+      TableColumnIDs.registrations,
+      TableColumnIDs.stake,
+    ];
   } else {
     order = [
       TableColumnIDs.uid,
