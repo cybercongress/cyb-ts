@@ -1,7 +1,9 @@
 .wrapper {
   display: grid;
-  grid-template-columns: 110px 1fr;
+  // grid-template-columns: 110px 1fr;
+  grid-template-columns: 1fr 1fr;
   justify-items: end;
+  align-items: center;
   gap: 7px;
   padding: 0 5px;
   font-size: 14px;

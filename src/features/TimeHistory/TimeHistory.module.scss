@@ -14,11 +14,12 @@
   text-align: end;
   display: grid;
   justify-content: flex-end;
-  gap: 20px;
+  gap: 15px;
   width: 220px;
   height: 220px;
   padding-top: 5px;
   padding-bottom: 20px;
+  padding-right: 5px;
 
   position: absolute;
   bottom: 20px;
@@ -30,27 +31,30 @@
 
 }
 
-.rotate>div {
-  @include rotate();
-}
+// .rotate>div {
+//   @include rotate();
+// }
 
 .rotate>div:nth-child(1) {
-  --r: calc(2 * var(--i));
+  // --r: calc(2 * var(--i));
   color: var(--grayscale-disabled);
 }
 
 .rotate>div:nth-child(2) {
-  --r: calc(1 * var(--i));
+  // --r: calc(1 * var(--i));
+  padding-right: 10px;
   color: var(--grayscale-dark);
 }
 
 .rotate>div:nth-child(3) {
-  --r: calc(0 * var(--i));
+  // --r: calc(0 * var(--i));
+  padding-right: 15px;
   color: var(--grayscale-secondary);
 }
 
 .rotate>div:nth-child(4) {
-  --r: calc(-1 * var(--i));
+  // --r: calc(-1 * var(--i));
+  padding-right: 10px;
 }
 
 .rotate>div:nth-child(5) {
