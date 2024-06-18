@@ -22,6 +22,7 @@ import useCybernetTexts from '../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../cybernet.context';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import { SubnetPreviewGroup } from '../../components/SubnetPreview/SubnetPreview';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 const columnHelper = createColumnHelper<Delegator>();
 
@@ -143,7 +144,9 @@ function Delegator() {
             <DisplayTitle
               title={
                 <div className={styles.nominatorsHeader}>
-                  <h3>{getText('delegator', true)}</h3>
+                  <AdviserHoverWrapper adviserContent={'learner - '}>
+                    <h3>{getText('delegator', true)}</h3>
+                  </AdviserHoverWrapper>
 
                   <div>
                     <IconsNumber value={totalStake} type="pussy" />

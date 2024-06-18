@@ -1,35 +1,51 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
-import { useAdviser } from 'src/features/adviser/context';
+import { useAdviser, useSetAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { Dots } from 'src/components';
+import useId from '../cybernet/_move/useId';
 
-type Props = {
-  isLoading?: boolean;
-  loadingText?: string;
-  error?: string | undefined;
-  defaultText?: string;
-  txHash?: string;
-};
+type Props =
+  | {
+      isLoading?: boolean;
+      loadingText?: string;
+      error?: string | undefined;
+      defaultText?: string;
+      successText?: string;
+      txHash?: string;
+    }
+  | undefined;
 
-function useAdviserTexts({
-  isLoading,
-  error,
-  defaultText,
-  txHash,
-  loadingText,
-}: Props) {
-  const { setAdviserNew } = useAdviser();
+function useAdviserTexts(
+  {
+    isLoading,
+    error,
+    defaultText,
+    txHash,
+    loadingText,
+    successText,
+    priority,
+  } = {} as Props
+) {
+  const setAdviserNew = useSetAdviser();
 
-  const key = useRef(uuidv4()).current;
+  const [messageShowed, setMessageShowed] = useState(false);
+
+  const set2 = useCallback(() => {
+    setTimeout(() => {
+      debugger;
+      setMessageShowed(true);
+    }, 4 * 1000);
+  }, [setMessageShowed]);
+
+  const key = useId();
 
   useEffect(() => {
     let adviserText = '';
     let color;
 
-    if (error) {
+    if (error && !messageShowed) {
       adviserText = (
         <p>
           {error}{' '}
@@ -49,12 +65,39 @@ function useAdviserTexts({
         'Loading...'
       );
       color = 'yellow';
+    } else if (successText && !messageShowed) {
+      adviserText = successText;
+      color = 'green';
     } else {
       adviserText = defaultText || '';
     }
 
-    setAdviserNew(key, adviserText, color);
-  }, [setAdviserNew, isLoading, error, defaultText, txHash, key, loadingText]);
+    setAdviserNew(key, adviserText, color, priority);
+
+    if (!messageShowed && (error || successText)) {
+      debugger;
+      set2();
+    }
+  }, [
+    setAdviserNew,
+    set2,
+    priority,
+    isLoading,
+    error,
+    defaultText,
+    messageShowed,
+    txHash,
+    key,
+    loadingText,
+    successText,
+  ]);
+
+  const setAdviser = useCallback(
+    (content: string, color: string) => {
+      setAdviserNew(key, content, color);
+    },
+    [setAdviserNew, key]
+  );
 
   useEffect(() => {
     return () => {
@@ -62,7 +105,9 @@ function useAdviserTexts({
     };
   }, [setAdviserNew, key]);
 
-  return null;
+  return {
+    setAdviser,
+  };
 }
 
 export default useAdviserTexts;

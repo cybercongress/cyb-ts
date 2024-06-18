@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react';
-import { Button, InputNumber } from 'src/components';
+import { useState } from 'react';
+import { AmountDenom, Button, InputNumber } from 'src/components';
 
 import ActionBar from 'src/components/actionBar';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import { useGetBalance } from 'src/containers/sigma/hooks/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { queryClient } from '../../../../../../../.storybook/preview';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useDelegate from '../../../hooks/useDelegate';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 enum Steps {
   INITIAL,
@@ -38,6 +38,8 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   const [amount, setAmount] = useState(0);
 
+  const { setAdviser } = useAdviserTexts();
+
   function handleSuccess() {
     setStep(Steps.INITIAL);
     setAmount(0);
@@ -58,6 +60,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       },
     ],
     onSuccess: handleSuccess,
+    successMessage: 'Stake has been successfully added',
   });
 
   const executeUnstake = useExecuteCybernetContract({
@@ -68,6 +71,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       },
     },
     onSuccess: handleSuccess,
+    successMessage: 'Stake has been successfully removed',
   });
 
   let button;
@@ -107,6 +111,8 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
         </>
       );
 
+      setAdviser('Stake or unstake');
+
       break;
 
     case Steps.STAKE: {
@@ -122,6 +128,21 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       );
 
       onClickBack = handleClickBack;
+
+      setAdviser(
+        <>
+          <p>Stake</p>
+          <p
+            style={{
+              display: 'flex',
+              gap: '0 7px',
+            }}
+          >
+            Available balance:{' '}
+            <AmountDenom amountValue={availableBalance} denom="pussy" />
+          </p>
+        </>
+      );
 
       button = {
         text: 'Stake',
@@ -146,6 +167,21 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       );
 
       onClickBack = handleClickBack;
+
+      setAdviser(
+        <>
+          <p>Unstake</p>
+          <p
+            style={{
+              display: 'flex',
+              gap: '0 7px',
+            }}
+          >
+            Available balance:{' '}
+            <AmountDenom amountValue={stakedAmount} denom="pussy" />
+          </p>
+        </>
+      );
 
       button = {
         text: 'Unstake',

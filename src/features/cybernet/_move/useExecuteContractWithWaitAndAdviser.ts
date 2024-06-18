@@ -15,6 +15,7 @@ function useExecuteContractWithWaitAndAdviser({
   query,
   funds,
   onSuccess,
+  successMessage,
 }: Props) {
   const { isLoading, isReady, error, mutate, transactionHash } =
     useExecuteContract({
@@ -23,16 +24,27 @@ function useExecuteContractWithWaitAndAdviser({
       funds,
     });
 
+  console.log(successMessage);
+
   const waitForTx = useWaitForTransaction({
     hash: transactionHash,
     onSuccess,
   });
 
+  console.log(waitForTx.data);
+
   const e = error || waitForTx.error;
   useAdviserTexts({
     isLoading: isLoading || waitForTx.isLoading,
+    loadingText: isLoading
+      ? 'Wallet confirmation'
+      : waitForTx.isLoading
+      ? 'Transaction confirmation'
+      : undefined,
     error: e,
+    successText: !!waitForTx.data && successMessage,
     txHash: e && transactionHash,
+    priority: true,
   });
 
   return {

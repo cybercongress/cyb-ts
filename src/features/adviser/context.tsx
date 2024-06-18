@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Props as AdviserProps } from './Adviser/Adviser';
 
 type ContextType = {
@@ -29,6 +29,8 @@ const AdviserContext = React.createContext<ContextType>({
   setIsOpen: () => {},
 });
 
+const AdviserContext2 = React.createContext<ContextType>({});
+
 export function useAdviser() {
   const context = React.useContext(AdviserContext);
   if (!context) {
@@ -37,10 +39,28 @@ export function useAdviser() {
   return context;
 }
 
+export function useSetAdviser() {
+  const setAdviserNew = useContext(AdviserContext2);
+
+  // const t = useCallback(
+  //   (...rest) => {
+  //     setAdviserNew(...rest);
+  //   },
+  //   [setAdviserNew]
+  // );
+
+  return setAdviserNew;
+}
+
+enum Priority {
+  HIGH,
+}
+
 type StateItem = {
   id: string;
   content: AdviserProps['children'];
   color?: AdviserProps['color'];
+  isPriority: boolean;
 };
 
 type State = StateItem[];
@@ -52,25 +72,29 @@ function AdviserProvider({ children }: { children: React.ReactNode }) {
 
   const [state, setState] = useState<State>([]);
 
-  const handleSetAdviser = useCallback((id: string, content, color) => {
-    setState((prev) => {
-      const newState = prev.filter((item) => item.id !== id);
+  const handleSetAdviser = useCallback(
+    (id: string, content, color, priority) => {
+      setState((prev) => {
+        const newState = prev.filter((item) => item.id !== id);
 
-      const n = [...newState];
+        const n = [...newState];
 
-      if (content) {
-        n.push({
-          id,
-          content,
-          color,
-        });
-      }
+        if (content) {
+          n.push({
+            id,
+            content,
+            color,
+            isPriority: priority,
+          });
+        }
 
-      return n;
-    });
+        return n;
+      });
 
-    setIsOpen(true);
-  }, []);
+      setIsOpen(true);
+    },
+    []
+  );
 
   const handleSetAdviserLegacy = useCallback(
     (content, color) => {
@@ -79,7 +103,8 @@ function AdviserProvider({ children }: { children: React.ReactNode }) {
     [handleSetAdviser]
   );
 
-  const lastItem = state[state.length - 1];
+  const priorityItem = [...state].reverse().find((item) => item.isPriority);
+  const lastItem = priorityItem || state[state.length - 1];
 
   console.log(state);
 
@@ -98,7 +123,11 @@ function AdviserProvider({ children }: { children: React.ReactNode }) {
   }, [content, color, isOpen, handleSetAdviser, handleSetAdviserLegacy]);
 
   return (
-    <AdviserContext.Provider value={value}>{children}</AdviserContext.Provider>
+    <AdviserContext.Provider value={value}>
+      <AdviserContext2.Provider value={handleSetAdviser}>
+        {children}
+      </AdviserContext2.Provider>
+    </AdviserContext.Provider>
   );
 }
 
