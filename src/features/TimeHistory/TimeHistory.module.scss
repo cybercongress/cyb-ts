@@ -1,16 +1,58 @@
-.wrapper {
+.rotate {
+  --i: -25deg;
+  --r: calc(2 * $i);
+  --diameter: -21px;
   display: grid;
+  grid-area: 1/1;
+}
+
+@mixin rotate() {
+  transform: rotate(var(--r)) translateX(var(--diameter)) rotate(calc(-1 * var(--r)));
+}
+
+.wrapper {
+  text-align: end;
+  display: grid;
+  justify-content: flex-end;
   gap: 20px;
-  width: 200px;
-  height: 160px;
+  width: 220px;
+  height: 220px;
   padding-top: 5px;
   padding-bottom: 20px;
 
   position: absolute;
   bottom: 20px;
-  overflow: hidden scroll;
+  // overflow: hidden scroll;
   right: -5vw;
 
   background-color: rgba(0, 0, 0, 0.5490196078);
   backdrop-filter: blur(7px);
+
+}
+
+.rotate>div {
+  @include rotate();
+}
+
+.rotate>div:nth-child(1) {
+  --r: calc(2 * var(--i));
+  color: var(--grayscale-disabled);
+}
+
+.rotate>div:nth-child(2) {
+  --r: calc(1 * var(--i));
+  color: var(--grayscale-dark);
+}
+
+.rotate>div:nth-child(3) {
+  --r: calc(0 * var(--i));
+  color: var(--grayscale-secondary);
+}
+
+.rotate>div:nth-child(4) {
+  --r: calc(-1 * var(--i));
+}
+
+.rotate>div:nth-child(5) {
+  --r: calc(-2 * var(--i));
 }

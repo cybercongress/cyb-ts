@@ -2,8 +2,10 @@ $size-img: 20px;
 
 .wrapper {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: 70px $size-img;
+  color: unset;
+  align-items: center;
 
   span {
     overflow-x: hidden;

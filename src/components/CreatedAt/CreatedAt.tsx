@@ -17,9 +17,9 @@ function CreatedAt({ timeAt }: Props) {
   const timeSinceValue = timeSince(timeAgoInMS);
 
   return (
-    <div className={styles.createdAt}>
+    <span className={styles.createdAt}>
       {timeSinceValue === 'now' ? timeSinceValue : `${timeSinceValue} ago`}
-    </div>
+    </span>
   );
 }
 

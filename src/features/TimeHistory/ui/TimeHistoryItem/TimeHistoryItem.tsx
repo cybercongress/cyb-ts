@@ -21,9 +21,8 @@ function TimeHistoryItem({ time, action }: Props) {
   return (
     <div className={styles.wrapper}>
       <div>{actionValue}</div>
-      <span>
-        <CreatedAt timeAt={time} />
-      </span>
+
+      <CreatedAt timeAt={time} />
     </div>
   );
 }

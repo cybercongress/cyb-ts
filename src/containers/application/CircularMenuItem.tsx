@@ -14,7 +14,12 @@ const CircularMenuItem = ({ item, onClick, selected }: Props) => {
       <NavLink to={item.to} onClick={onClick} style={{ position: 'inherit' }}>
         <img
           src={item.icon}
-          style={{ width: 30, height: 30, objectFit: 'fill' }}
+          style={{
+            width: 30,
+            height: 30,
+            objectFit: 'fill',
+            borderRadius: '50%',
+          }}
           alt="img"
         />
       </NavLink>
