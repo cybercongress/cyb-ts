@@ -10,6 +10,7 @@ $size-img: 20px;
   span {
     overflow-x: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   img {

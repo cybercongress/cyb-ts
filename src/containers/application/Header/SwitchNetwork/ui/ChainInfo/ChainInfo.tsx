@@ -1,17 +1,11 @@
-import { CHAIN_ID } from 'src/constants/config';
 import { BandwidthBar } from 'src/components';
 import styles from './ChainInfo.module.scss';
+import CurrentApp from '../CurrentApp/CurrentApp';
 
 function ChainInfo() {
   return (
     <div className={styles.containerInfoSwitch}>
-      <button
-        className={styles.btnContainerText}
-        type="button"
-        style={{ fontSize: '20px' }}
-      >
-        {CHAIN_ID}
-      </button>
+      <CurrentApp />
       <div className={styles.containerBandwidthBar}>
         <BandwidthBar tooltipPlacement="bottom" />
       </div>
