@@ -80,6 +80,13 @@ const itemsMenu = () => {
     //   ],
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+
+    {
+      name: 'Cyberver 🟣',
+      icon: require('./images/cyberver.png'),
+      to: 'https://spacepussy.ai/cyberver',
+      subItems: [],
+    },
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
