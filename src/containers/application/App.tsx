@@ -19,6 +19,7 @@ import styles from './styles.scss';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
+import SignerModal from './SignerModal';
 
 export const PORTAL_ID = 'portal';
 
@@ -109,6 +110,8 @@ function App() {
         )}
 
         {location.pathname !== '/' && <AdviserContainer />}
+
+        <SignerModal />
 
         <Outlet />
       </>

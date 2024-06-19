@@ -1,13 +1,16 @@
 import { ChangeEventHandler, useCallback, useState } from 'react';
 import { Button, Input } from 'src/components';
 import Modal from 'src/components/modal/Modal';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { closeSignerModal } from 'src/redux/reducers/signer';
 
-interface SignerModalProps {
-  isOpen: boolean;
-  onAdd(): void | Promise<void>;
-}
-
-export default function SignerModal({ isOpen, onAdd }: SignerModalProps) {
+export default function SignerModal() {
+  const dispatch = useAppDispatch();
+  const {
+    open: isOpen,
+    resolve,
+    reject,
+  } = useAppSelector((state) => state.signer);
   const [memo, setMemo] = useState('');
 
   const onMemoChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
@@ -16,6 +19,22 @@ export default function SignerModal({ isOpen, onAdd }: SignerModalProps) {
     },
     [setMemo]
   );
+
+  const onAdd = useCallback(() => {
+    if (!resolve) {
+      return;
+    }
+
+    resolve({});
+  }, [resolve]);
+
+  const onDiscard = useCallback(() => {
+    if (!reject) {
+      return;
+    }
+    dispatch(closeSignerModal());
+    reject(new Error('User rejected transaction'));
+  }, [dispatch, reject]);
 
   return (
     <Modal isOpen={isOpen}>
@@ -35,7 +54,7 @@ export default function SignerModal({ isOpen, onAdd }: SignerModalProps) {
             justifyContent: 'space-between',
           }}
         >
-          <Button onClick={onAdd}>Discard</Button>
+          <Button onClick={onDiscard}>Discard</Button>
           <Button onClick={onAdd}>Approve</Button>
         </div>
       </div>

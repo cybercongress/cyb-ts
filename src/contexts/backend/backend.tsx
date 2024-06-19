@@ -195,6 +195,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
       const ipfsLoadPromise = async () => {
         const isInitialized = await backgroundWorkerInstance.isInitialized();
+        console.log('backgroundWorkerInstance', isInitialized);
+
         if (isInitialized) {
           console.log('🔋 Background worker already active.');
           bcSender.postServiceStatus('ipfs', 'started');

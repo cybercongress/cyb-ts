@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { Keplr } from '@keplr-wallet/types';
@@ -47,8 +48,8 @@ export const SignerClientContext = React.createContext<SignerClientContextType>(
     signer: undefined,
     signingClient: undefined,
     signerReady: false,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     initSigner: () => {},
+    setSigner: () => {},
   }
 );
 

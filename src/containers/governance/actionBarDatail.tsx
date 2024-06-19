@@ -196,7 +196,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
         <BtnGrd
           text="Deposit"
           disabled={!parseFloat(valueDeposit) > 0}
-          onClick={() => generateTxKeplr()}
+          onClick={generateTxKeplr}
         />
       </ActionBar>
     );
