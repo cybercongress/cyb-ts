@@ -34,7 +34,6 @@ function useAdviserTexts(
 
   const set2 = useCallback(() => {
     setTimeout(() => {
-      debugger;
       setMessageShowed(true);
     }, 4 * 1000);
   }, [setMessageShowed]);
@@ -75,7 +74,6 @@ function useAdviserTexts(
     setAdviserNew(key, adviserText, color, priority);
 
     if (!messageShowed && (error || successText)) {
-      debugger;
       set2();
     }
   }, [

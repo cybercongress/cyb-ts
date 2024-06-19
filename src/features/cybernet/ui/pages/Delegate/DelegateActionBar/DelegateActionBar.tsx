@@ -9,6 +9,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useDelegate from '../../../hooks/useDelegate';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { Link } from 'react-router-dom';
 
 enum Steps {
   INITIAL,
@@ -132,15 +133,17 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       setAdviser(
         <>
           <p>Stake</p>
-          <p
-            style={{
-              display: 'flex',
-              gap: '0 7px',
-            }}
-          >
-            Available balance:{' '}
-            <AmountDenom amountValue={availableBalance} denom="pussy" />
-          </p>
+          {availableBalance >= 0 && (
+            <p
+              style={{
+                display: 'flex',
+                gap: '0 7px',
+              }}
+            >
+              Available balance:{' '}
+              <AmountDenom amountValue={availableBalance} denom="pussy" />
+            </p>
+          )}
         </>
       );
 
