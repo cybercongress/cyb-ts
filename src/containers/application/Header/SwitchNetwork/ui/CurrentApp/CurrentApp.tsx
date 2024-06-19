@@ -4,7 +4,7 @@ import { PATTERN_CYBER } from 'src/constants/patterns';
 import { routes } from 'src/routes';
 import itemsMenu from 'src/utils/appsMenu';
 import findApp from 'src/utils/findApp';
-import styles from './CurrentApp.module.scss'
+import styles from './CurrentApp.module.scss';
 
 function CurrentApp() {
   let { pathname } = useLocation();
