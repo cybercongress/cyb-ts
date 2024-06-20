@@ -29,13 +29,11 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const queryClient = useQueryClient();
-
   const query = useDelegate(address);
   const isDelegateExists = !query.loading && !!query?.data;
 
-  const balance = useGetBalance(queryClient, currentAddress);
-  const availableBalance = balance?.liquid?.amount;
+  const balanceQuery = useGetBalance(currentAddress);
+  const availableBalance = balanceQuery.data?.liquid?.amount;
 
   const { getText } = useCybernetTexts();
 
@@ -48,7 +46,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   function handleSuccess() {
     setStep(Steps.INITIAL);
     setAmount(0);
-
+    balanceQuery.refetch();
     onSuccess();
   }
 
@@ -156,7 +154,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       onClickBack = handleClickBack;
 
       setAdviser(
-        <>
+        <div>
           <p>Stake</p>
           {availableBalance >= 0 && (
             <p
@@ -169,7 +167,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
               <AmountDenom amountValue={availableBalance} denom="pussy" />
             </p>
           )}
-        </>
+        </div>
       );
 
       button = {
@@ -197,7 +195,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       onClickBack = handleClickBack;
 
       setAdviser(
-        <>
+        <div>
           <p>Unstake</p>
           <p
             style={{
@@ -208,7 +206,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
             Available balance:{' '}
             <AmountDenom amountValue={stakedAmount} denom="pussy" />
           </p>
-        </>
+        </div>
       );
 
       button = {

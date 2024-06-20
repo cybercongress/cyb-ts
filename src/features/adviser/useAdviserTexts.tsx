@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useAdviser, useSetAdviser } from 'src/features/adviser/context';
+import { useSetAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { Dots } from 'src/components';
 import useId from '../cybernet/_move/useId';
@@ -28,17 +28,25 @@ function useAdviserTexts(
     priority,
   } = {} as Props
 ) {
-  const setAdviserNew = useSetAdviser();
+  const { setAdviser } = useSetAdviser();
 
   const [messageShowed, setMessageShowed] = useState(false);
+
+  const key = useId();
+
+  const setAdviserFunc = useCallback(
+    // use adviser props
+    (content: string | Element, color?: string) => {
+      setAdviser(key, content, color);
+    },
+    [setAdviser, key]
+  );
 
   const set2 = useCallback(() => {
     setTimeout(() => {
       setMessageShowed(true);
     }, 4 * 1000);
   }, [setMessageShowed]);
-
-  const key = useId();
 
   useEffect(() => {
     let adviserText = '';
@@ -71,13 +79,13 @@ function useAdviserTexts(
       adviserText = defaultText || '';
     }
 
-    setAdviserNew(key, adviserText, color, priority);
+    setAdviserFunc(adviserText, color, priority);
 
     if (!messageShowed && (error || successText)) {
       set2();
     }
   }, [
-    setAdviserNew,
+    setAdviserFunc,
     set2,
     priority,
     isLoading,
@@ -85,26 +93,18 @@ function useAdviserTexts(
     defaultText,
     messageShowed,
     txHash,
-    key,
     loadingText,
     successText,
   ]);
 
-  const setAdviser = useCallback(
-    (content: string, color: string) => {
-      setAdviserNew(key, content, color);
-    },
-    [setAdviserNew, key]
-  );
-
   useEffect(() => {
     return () => {
-      setAdviserNew(key, null);
+      setAdviserFunc(key, null);
     };
-  }, [setAdviserNew, key]);
+  }, [setAdviserFunc, key]);
 
   return {
-    setAdviser,
+    setAdviser: setAdviserFunc,
   };
 }
 

@@ -21,7 +21,7 @@ const AdviserContext = React.createContext<ContextType>({
   content: '',
 
   /*
-   * @deprecated use setAdviser2
+   * @deprecated use setAdviserNew
    */
   setAdviser: () => {},
   setAdviserNew: () => {},
@@ -29,7 +29,7 @@ const AdviserContext = React.createContext<ContextType>({
   setIsOpen: () => {},
 });
 
-const AdviserContext2 = React.createContext<ContextType>({});
+const AdviserContext2 = React.createContext<ContextType['setAdviserNew']>({});
 
 export function useAdviser() {
   const context = React.useContext(AdviserContext);
@@ -40,21 +40,14 @@ export function useAdviser() {
 }
 
 export function useSetAdviser() {
-  const setAdviserNew = useContext(AdviserContext2);
+  const setAdviser = useContext(AdviserContext2);
 
-  // const t = useCallback(
-  //   (...rest) => {
-  //     setAdviserNew(...rest);
-  //   },
-  //   [setAdviserNew]
-  // );
-
-  return setAdviserNew;
+  return { setAdviser };
 }
 
-enum Priority {
-  HIGH,
-}
+// enum Priority {
+//   HIGH,
+// }
 
 type StateItem = {
   id: string;
@@ -124,6 +117,7 @@ function AdviserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AdviserContext.Provider value={value}>
+      {/* second context to prevent rerenders */}
       <AdviserContext2.Provider value={handleSetAdviser}>
         {children}
       </AdviserContext2.Provider>

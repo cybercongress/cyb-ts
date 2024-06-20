@@ -75,7 +75,7 @@ function Delegator() {
       )}
 
       <Display
-        noPaddingX
+        noPadding
         title={<DisplayTitle title={<MusicalAddress address={address} />} />}
       >
         {!loading && !data && (
@@ -139,12 +139,12 @@ function Delegator() {
 
       {!!nominators?.length && (
         <Display
-          noPaddingX
+          noPadding
           title={
             <DisplayTitle
               title={
                 <div className={styles.nominatorsHeader}>
-                  <AdviserHoverWrapper adviserContent={'learner - '}>
+                  <AdviserHoverWrapper adviserContent="learners">
                     <h3>{getText('delegator', true)}</h3>
                   </AdviserHoverWrapper>
 
