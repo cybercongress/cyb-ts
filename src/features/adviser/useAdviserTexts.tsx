@@ -99,7 +99,7 @@ function useAdviserTexts(
 
   useEffect(() => {
     return () => {
-      setAdviserFunc(key, null);
+      setAdviserFunc(null);
     };
   }, [setAdviserFunc, key]);
 
