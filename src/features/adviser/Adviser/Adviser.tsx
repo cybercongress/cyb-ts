@@ -61,19 +61,24 @@ function Adviser({
     >
       <span className={styles.summary}>Adviser</span>
       <div className={styles.content}>
-        <TypeIt
-          // for resetting the animation
-          key={children}
-          as="div"
-          className={styles.typer}
-          options={{
-            speed: 30,
-            cursor: false,
-            waitUntilVisible: true,
-          }}
-        >
-          {children}
-        </TypeIt>
+        {/* {color !== AdviserColors.purple ? (
+          <TypeIt
+            // for resetting the animation
+            key={children + children?.length}
+            as="div"
+            className={styles.typer}
+            options={{
+              speed: 30,
+              cursor: false,
+              waitUntilVisible: true,
+            }}
+          >
+            {children}
+          </TypeIt>
+        ) : (
+          children
+        )} */}
+        {children}
       </div>
     </button>
   );

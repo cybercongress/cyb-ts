@@ -2,8 +2,9 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { Coin } from '@cosmjs/launchpad';
 import { useMutation } from '@tanstack/react-query';
+import { keplrConstants } from 'src/constants/keplr';
 
-export type Props = {
+type Props = {
   contractAddress: string;
   query: any;
   funds?: Coin[] | undefined;
@@ -32,11 +33,16 @@ function useExecuteContract({ contractAddress, query, funds }: Props) {
     },
   });
 
+  let formattedError = error?.message;
+  if (formattedError === keplrConstants.errors.REQUEST_REJECTED) {
+    formattedError = '';
+  }
+
   return {
     isLoading,
     isReady: Boolean(signer && signingClient),
     transactionHash: data?.transactionHash as string | undefined,
-    error: error?.message,
+    error: formattedError,
     mutate,
   };
 }

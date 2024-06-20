@@ -84,7 +84,7 @@ function Delegator() {
               textAlign: 'center',
             }}
           >
-            no mentor
+            no {getText('delegate')} found, or staking not enabled
           </div>
         )}
 

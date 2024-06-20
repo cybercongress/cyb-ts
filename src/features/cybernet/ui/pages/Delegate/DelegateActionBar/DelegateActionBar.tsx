@@ -9,7 +9,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useDelegate from '../../../hooks/useDelegate';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
-import { Link } from 'react-router-dom';
+import useCybernetTexts from '../../../useCybernetTexts';
 
 enum Steps {
   INITIAL,
@@ -32,10 +32,14 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
   const queryClient = useQueryClient();
 
   const query = useDelegate(address);
-  const stakingEnabled = !!query?.data;
+  const isDelegateExists = !query.loading && !!query?.data;
 
   const balance = useGetBalance(queryClient, currentAddress);
   const availableBalance = balance?.liquid?.amount;
+
+  const { getText } = useCybernetTexts();
+
+  const isOwner = currentAddress === address;
 
   const [amount, setAmount] = useState(0);
 
@@ -75,6 +79,16 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
     successMessage: 'Stake has been successfully removed',
   });
 
+  const executeBecomeDelegate = useExecuteCybernetContract({
+    query: {
+      become_delegate: {
+        hotkey: currentAddress,
+      },
+    },
+    // onSuccess: handleSuccess,
+    successMessage: `You have successfully became a ${getText('delegate')}`,
+  });
+
   let button;
   let content;
   let onClickBack;
@@ -86,7 +100,16 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   switch (step) {
     case Steps.INITIAL:
-      if (!stakingEnabled) {
+      if (!isDelegateExists && isOwner) {
+        content = (
+          <Button
+            onClick={executeBecomeDelegate.mutate}
+            pending={executeBecomeDelegate.isLoading}
+          >
+            Become {getText('delegate')}
+          </Button>
+        );
+
         break;
       }
 
