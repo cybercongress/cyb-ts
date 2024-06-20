@@ -80,7 +80,7 @@ export default function IconsNumber({ value, type }) {
 
   return (
     <>
-      {number} {i}
+      {number} <div>{i}</div>
     </>
   );
 }
