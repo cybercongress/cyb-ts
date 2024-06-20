@@ -21,7 +21,6 @@ import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
-import { getAverageGrade } from '../../../useCurrentSubnetGrades';
 import { tableIDs } from 'src/components/Table/tableIDs';
 import { useDelegates } from 'src/features/cybernet/ui/hooks/useDelegate';
 import { SubnetPreviewGroup } from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
@@ -106,7 +105,7 @@ function SubnetNeuronsTable({}: Props) {
     isRootSubnet,
     netuid,
     grades: {
-      all: { data: allGrades },
+      all: { averageGrades },
     },
   } = useCurrentSubnet();
 
@@ -291,19 +290,19 @@ function SubnetNeuronsTable({}: Props) {
           header: 'grade',
           id: TableColumnIDs.grade,
           sortingFn: (rowA, rowB) => {
-            const a = getAverageGrade(allGrades, rowA.original.uid);
-            const b = getAverageGrade(allGrades, rowB.original.uid);
+            const a = averageGrades[rowA.original.uid];
+            const b = averageGrades[rowB.original.uid];
 
             return a - b;
           },
           cell: (info) => {
             const uid = info.getValue();
 
-            if (!allGrades) {
-              return null;
-            }
+            // if (!allGrades) {
+            //   return null;
+            // }
 
-            const avg = getAverageGrade(allGrades, uid);
+            const avg = averageGrades[uid];
 
             const color = getColor(avg);
 
@@ -372,7 +371,7 @@ function SubnetNeuronsTable({}: Props) {
 
     return cols;
   }, [
-    allGrades,
+    averageGrades,
     isMLVerse,
     stakeByNeurons,
     getText,

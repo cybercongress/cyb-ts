@@ -18,7 +18,6 @@ import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import { trimString } from 'src/utils/utils';
-import { getAverageGrade } from '../../Subnet/useCurrentSubnetGrades';
 import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {
@@ -55,6 +54,9 @@ function SubnetsTable({ data }: Props) {
   const address = useCurrentAddress();
 
   const { grades, subnetQuery } = useSubnet();
+
+  // debug
+  const { averageGrades } = grades?.all || {};
 
   const { getText } = useCybernetTexts();
 
@@ -201,25 +203,22 @@ function SubnetsTable({ data }: Props) {
           header: 'Grade (average)',
           id: 'grade',
           sortingFn: (rowA, rowB) => {
-            const a = rowA.original.netuid;
-            const b = rowB.original.netuid;
+            const a = averageGrades[rowA.original.netuid];
+            const b = averageGrades[rowB.original.netuid];
 
-            const avgA = getAverageGrade(grades.all.data, a);
-            const avgB = getAverageGrade(grades.all.data, b);
-
-            return avgA - avgB;
+            return a - b;
           },
           cell: (info) => {
             const uid = info.getValue();
 
-            // fix
-            if (!grades.all?.data) {
-              return 0;
-            }
+            // // fix
+            // if (!grades.all?.data) {
+            //   return 0;
+            // }
 
-            const avg = getAverageGrade(grades.all.data, uid);
+            const v = averageGrades[uid];
 
-            return avg;
+            return v;
           },
         })
       );
@@ -244,7 +243,7 @@ function SubnetsTable({ data }: Props) {
   }, [
     myCurrentSubnetsJoined,
     myAddressJoinedRootSubnet,
-    grades?.all?.data,
+    averageGrades,
     rootSubnet,
     getText,
   ]);

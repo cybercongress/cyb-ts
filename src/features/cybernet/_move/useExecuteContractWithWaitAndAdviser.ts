@@ -24,14 +24,10 @@ function useExecuteContractWithWaitAndAdviser({
       funds,
     });
 
-  console.log(successMessage);
-
   const waitForTx = useWaitForTransaction({
     hash: transactionHash,
     onSuccess,
   });
-
-  console.log(waitForTx.data);
 
   const e = error || waitForTx.error;
   useAdviserTexts({
