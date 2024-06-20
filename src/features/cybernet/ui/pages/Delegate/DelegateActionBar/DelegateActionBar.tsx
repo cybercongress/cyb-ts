@@ -100,15 +100,17 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   switch (step) {
     case Steps.INITIAL:
-      if (!isDelegateExists && isOwner) {
-        content = (
-          <Button
-            onClick={executeBecomeDelegate.mutate}
-            pending={executeBecomeDelegate.isLoading}
-          >
-            Become {getText('delegate')}
-          </Button>
-        );
+      if (!isDelegateExists) {
+        if (isOwner) {
+          content = (
+            <Button
+              onClick={executeBecomeDelegate.mutate}
+              pending={executeBecomeDelegate.isLoading}
+            >
+              Become {getText('delegate')}
+            </Button>
+          );
+        }
 
         break;
       }
