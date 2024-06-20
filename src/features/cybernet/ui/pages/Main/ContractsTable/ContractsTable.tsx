@@ -71,6 +71,7 @@ function ContractsTable() {
 
             columnHelper.accessor('metadata.particle', {
               header: '',
+              size: 300,
               cell: (info) => {
                 const value = info.getValue();
                 const row = info.row.original;

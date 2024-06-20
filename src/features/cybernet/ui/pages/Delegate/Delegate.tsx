@@ -22,6 +22,7 @@ import useCybernetTexts from '../../useCybernetTexts';
 import { useCurrentContract, useCybernet } from '../../cybernet.context';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import { SubnetPreviewGroup } from '../../components/SubnetPreview/SubnetPreview';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 const columnHelper = createColumnHelper<Delegator>();
 
@@ -45,16 +46,14 @@ function Delegator() {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const f = id !== 'my' ? id : currentAddress;
+  const address = id !== 'my' ? id : currentAddress;
 
-  const { loading, data, error, refetch } = useDelegate(f);
+  const { loading, data, error, refetch } = useDelegate(address);
   const { getText } = useCybernetTexts();
-
-  const { subnetsQuery } = useCybernet();
-  const { network, contractName } = useCurrentContract();
 
   useAdviserTexts({
     isLoading: loading,
+    loadingText: `loading ${getText('delegate')}`,
     error,
     defaultText: `${getText('delegate')} info`,
   });
@@ -76,14 +75,8 @@ function Delegator() {
       )}
 
       <Display
-        noPaddingX
-        title={
-          <DisplayTitle
-            title={
-              <MusicalAddress address={id === 'my' ? currentAddress : id} />
-            }
-          />
-        }
+        noPadding
+        title={<DisplayTitle title={<MusicalAddress address={address} />} />}
       >
         {!loading && !data && (
           <div
@@ -91,7 +84,7 @@ function Delegator() {
               textAlign: 'center',
             }}
           >
-            no mentor info
+            no {getText('delegate')} found, or staking not enabled
           </div>
         )}
 
@@ -146,12 +139,14 @@ function Delegator() {
 
       {!!nominators?.length && (
         <Display
-          noPaddingX
+          noPadding
           title={
             <DisplayTitle
               title={
                 <div className={styles.nominatorsHeader}>
-                  <h3>{getText('delegator', true)}</h3>
+                  <AdviserHoverWrapper adviserContent="learners">
+                    <h3>{getText('delegator', true)}</h3>
+                  </AdviserHoverWrapper>
 
                   <div>
                     <IconsNumber value={totalStake} type="pussy" />
@@ -211,7 +206,7 @@ function Delegator() {
       )}
 
       <DelegateActionBar
-        address={f}
+        address={address}
         stakedAmount={myStake}
         onSuccess={refetch}
       />

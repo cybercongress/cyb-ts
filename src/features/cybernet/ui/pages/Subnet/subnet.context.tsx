@@ -22,6 +22,7 @@ const SubnetContext = React.createContext<{
   subnetRegistrationQuery: ReturnType<
     typeof useCybernetContract<number | null>
   >;
+  grades: ReturnType<typeof useCurrentSubnetGrades>;
 
   // refetch: () => void;
 }>({

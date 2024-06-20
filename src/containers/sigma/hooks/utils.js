@@ -7,6 +7,7 @@ import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
 import { useStake as useVerseStake } from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
 import { CYBERVER_CONTRACTS } from 'src/features/cybernet/constants';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const initValue = {
   denom: BASE_DENOM,
@@ -96,8 +97,10 @@ function useCyberverBalance({ address }) {
   return totalCyberver;
 }
 
-export const useGetBalance = (client, addressBech32) => {
-  const { data, isFetching } = useQuery(
+export const useGetBalance = (addressBech32) => {
+  const client = useQueryClient();
+
+  const { data, isFetching, refetch } = useQuery(
     ['getBalance', addressBech32],
     async () => {
       const responsegetBalance = await client.getBalance(
@@ -159,7 +162,7 @@ export const useGetBalance = (client, addressBech32) => {
 
   // TODO: refactor below
   if (isFetching) {
-    return { ...initValueMainToken };
+    return { data: initValueMainToken, refetch };
   }
 
   const result = {
@@ -183,5 +186,8 @@ export const useGetBalance = (client, addressBech32) => {
     amount: total,
   };
 
-  return result;
+  return {
+    data: result,
+    refetch,
+  };
 };

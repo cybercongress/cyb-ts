@@ -1,6 +1,3 @@
-// seems use contract call
-export const BLOCK_REWARD = 4_200_000;
-
 const CYBERVER_CONTRACT_GRAPH =
   'pussy1j9qku20ssfjdzgl3y5hl0vfxzsjwzwn7d7us2t2n4ejgc6pesqcqhnxsz0';
 const CYBERVER_CONTRACT_ML =

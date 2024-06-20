@@ -1,13 +1,15 @@
-import { useMemo, useState } from 'react';
-import { Button, InputNumber } from 'src/components';
+import { useState } from 'react';
+import { AmountDenom, Button, InputNumber } from 'src/components';
 
 import ActionBar from 'src/components/actionBar';
 import useExecuteCybernetContract from '../../../useExecuteCybernetContract';
 import { useGetBalance } from 'src/containers/sigma/hooks/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { queryClient } from '../../../../../../../.storybook/preview';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import useDelegate from '../../../hooks/useDelegate';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import useCybernetTexts from '../../../useCybernetTexts';
 
 enum Steps {
   INITIAL,
@@ -27,17 +29,24 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   const currentAddress = useAppSelector(selectCurrentAddress);
 
-  const queryClient = useQueryClient();
+  const query = useDelegate(address);
+  const isDelegateExists = !query.loading && !!query?.data;
 
-  const balance = useGetBalance(queryClient, currentAddress);
-  const availableBalance = balance?.liquid?.amount;
+  const balanceQuery = useGetBalance(currentAddress);
+  const availableBalance = balanceQuery.data?.liquid?.amount;
+
+  const { getText } = useCybernetTexts();
+
+  const isOwner = currentAddress === address;
 
   const [amount, setAmount] = useState(0);
+
+  const { setAdviser } = useAdviserTexts();
 
   function handleSuccess() {
     setStep(Steps.INITIAL);
     setAmount(0);
-
+    balanceQuery.refetch();
     onSuccess();
   }
 
@@ -54,6 +63,7 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       },
     ],
     onSuccess: handleSuccess,
+    successMessage: 'Stake has been successfully added',
   });
 
   const executeUnstake = useExecuteCybernetContract({
@@ -64,6 +74,17 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       },
     },
     onSuccess: handleSuccess,
+    successMessage: 'Stake has been successfully removed',
+  });
+
+  const executeBecomeDelegate = useExecuteCybernetContract({
+    query: {
+      become_delegate: {
+        hotkey: currentAddress,
+      },
+    },
+    // onSuccess: handleSuccess,
+    successMessage: `You have successfully became a ${getText('delegate')}`,
   });
 
   let button;
@@ -77,6 +98,21 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
 
   switch (step) {
     case Steps.INITIAL:
+      if (!isDelegateExists) {
+        if (isOwner) {
+          content = (
+            <Button
+              onClick={executeBecomeDelegate.mutate}
+              pending={executeBecomeDelegate.isLoading}
+            >
+              Become {getText('delegate')}
+            </Button>
+          );
+        }
+
+        break;
+      }
+
       content = (
         <>
           <Button
@@ -99,6 +135,8 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
         </>
       );
 
+      setAdviser('Stake or unstake');
+
       break;
 
     case Steps.STAKE: {
@@ -114,6 +152,23 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       );
 
       onClickBack = handleClickBack;
+
+      setAdviser(
+        <div>
+          <p>Stake</p>
+          {availableBalance >= 0 && (
+            <p
+              style={{
+                display: 'flex',
+                gap: '0 7px',
+              }}
+            >
+              Available balance:{' '}
+              <AmountDenom amountValue={availableBalance} denom="pussy" />
+            </p>
+          )}
+        </div>
+      );
 
       button = {
         text: 'Stake',
@@ -138,6 +193,21 @@ function DelegateActionBar({ address, stakedAmount, onSuccess }: Props) {
       );
 
       onClickBack = handleClickBack;
+
+      setAdviser(
+        <div>
+          <p>Unstake</p>
+          <p
+            style={{
+              display: 'flex',
+              gap: '0 7px',
+            }}
+          >
+            Available balance:{' '}
+            <AmountDenom amountValue={stakedAmount} denom="pussy" />
+          </p>
+        </div>
+      );
 
       button = {
         text: 'Unstake',

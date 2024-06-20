@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useContext,
-  useState,
-  useMemo,
-} from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   formatGradeToWeight,
   formatWeightToGrade,
@@ -14,29 +8,8 @@ import { useAdviser } from 'src/features/adviser/context';
 import { isEqual } from 'lodash';
 import { useAppData } from '../../../../../contexts/appData';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import { useCurrentSubnet } from './subnet.context';
 import useCybernetContract from '../../useQueryCybernetContract.refactor';
-import { Weights } from '../../types';
-
-export function getAverageGrade(grades, uid: number) {
-  let count = 0;
-
-  const sum = grades.reduce((acc, w) => {
-    const grade = w[uid];
-
-    if (grade === undefined) {
-      return acc;
-    }
-
-    count++;
-
-    return acc + grade;
-  }, 0);
-
-  const avg = sum ? (sum / count).toFixed(2) : 0;
-
-  return Number(avg);
-}
+import { SubnetNeuron, Weights } from '../../../types';
 
 const LS_KEY = 'setGrades';
 const LS_KEY2 = 'gradesUpdated';
@@ -111,7 +84,7 @@ function saveLSData(data, address: string, subnetId: number) {
 
 type Props = {
   netuid: number;
-  neuronsQuery: any;
+  neuronsQuery: ReturnType<typeof useCybernetContract<SubnetNeuron[]>>;
   hyperparamsQuery: any;
 };
 /*
@@ -139,7 +112,7 @@ function useCurrentSubnetGrades({
     (n) => n.hotkey === currentAddress
   )?.uid;
 
-  const weightsQuery = useCybernetContract<Weights>({
+  const weightsQuery = useCybernetContract<Weights[]>({
     query: {
       get_weights_sparse: {
         netuid,
@@ -166,7 +139,6 @@ function useCurrentSubnetGrades({
   const weightsRateLimit = hyperparamsQuery.data?.weights_rate_limit;
 
   const gradesSetBlockNumber = getLSData2(currentAddress, netuid);
-  console.log(gradesSetBlockNumber);
 
   let blocksLeftToSetGrades = 0;
   if (gradesSetBlockNumber && weightsRateLimit && block) {
@@ -176,29 +148,44 @@ function useCurrentSubnetGrades({
     blocksLeftToSetGrades = t > 0 ? t : 0;
   }
 
-  const grades = useMemo(() => {
-    return weightsQuery.data?.map((w) => {
-      if (!w.length) {
-        return {};
+  const { gradesFromNeurons, gradesToNeurons } = useMemo(() => {
+    type Item = {
+      [uid: string]: number;
+    };
+
+    const gradesToNeurons = Array.from<unknown, Item>(
+      { length: weightsQuery.data?.length || 0 },
+      () => ({})
+    );
+    const gradesFromNeurons = Array.from<unknown, Item>(
+      { length: weightsQuery.data?.length || 0 },
+      () => ({})
+    );
+
+    weightsQuery.data?.forEach((weightsFromNeuron, index) => {
+      if (!weightsFromNeuron.length) {
+        return;
       }
 
-      return w.reduce<{
-        [uid: string]: number;
-      }>((acc, [uid, weight]) => {
+      weightsFromNeuron.forEach(([uid, weight]) => {
         const grade = formatWeightToGrade(weight, 65535);
 
-        acc[uid] = grade;
-
-        return acc;
-      }, {});
+        gradesFromNeurons[index][uid] = grade;
+        gradesToNeurons[uid][index] = grade;
+      });
     });
+
+    return {
+      gradesFromNeurons,
+      gradesToNeurons,
+    };
   }, [weightsQuery.data]);
 
   const gradesFromMe = useMemo(() => {
     const lastGrades = getLastGrades();
 
-    return lastGrades || grades?.[myUid] || {};
-  }, [grades, myUid, getLastGrades]);
+    return lastGrades || gradesFromNeurons?.[myUid] || {};
+  }, [gradesFromNeurons, myUid, getLastGrades]);
 
   useEffect(() => {
     setNewGrades(gradesFromMe);
@@ -255,11 +242,49 @@ function useCurrentSubnetGrades({
     },
   });
 
+  const averageGrades = useMemo(() => {
+    if (!neuronsQuery.data) {
+      return {};
+    }
+
+    return gradesToNeurons.reduce((acc, item, index) => {
+      const { total, count } = Object.entries(item).reduce(
+        (acc, [uid, grade]) => {
+          const isProfessor = neuronsQuery.data[uid]?.validator_permit;
+
+          if (isProfessor || netuid === 0) {
+            acc.total += grade;
+            acc.count++;
+          }
+
+          return acc;
+        },
+        { total: 0, count: 0 }
+      );
+
+      const avg = Number((total / count).toFixed(2)) || 0;
+
+      // if (Number.isNaN(avg)) {
+      //   debugger;
+      // }
+      acc[index] = avg;
+
+      return acc;
+    }, {});
+  }, [gradesToNeurons, neuronsQuery.data, netuid]);
+
+  console.log('weigths', weightsQuery.data);
+  console.log('gradesFromNeurons', gradesFromNeurons);
+  console.log('gradesToNeurons', gradesToNeurons);
+  console.log('averageGrades', averageGrades);
+
   const value = useMemo(() => {
     return {
       all: {
         ...weightsQuery,
-        data: grades,
+        data: gradesFromNeurons,
+        gradesToNeurons,
+        averageGrades,
       },
       my: {
         fromMe: gradesFromMe,
@@ -277,7 +302,9 @@ function useCurrentSubnetGrades({
     };
   }, [
     weightsQuery,
-    grades,
+    averageGrades,
+    gradesFromNeurons,
+    gradesToNeurons,
     gradesFromMe,
     newGrades,
     setGrade,

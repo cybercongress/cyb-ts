@@ -6,21 +6,48 @@ import {
   flexRender,
   getSortedRowModel,
   InitialTableState,
+  SortingState,
+  TableOptions,
+  SortingOptions,
 } from '@tanstack/react-table';
 
 import styles from './Table.module.scss';
 import Loader2 from '../ui/Loader2';
 import NoItems from '../ui/noItems';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import cx from 'classnames';
 import Triangle from '../atoms/Triangle/Triangle';
+import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
+import { tableIDs } from './tableIDs';
+
+const storage = sessionStorage;
+const SS_KEY = sessionStorageKeys.tableSorting;
+
+type TableIDs = typeof tableIDs;
+
+function getDataFromStorage(): Record<keyof TableIDs, SortingState> {
+  return JSON.parse(storage.getItem(SS_KEY) || '{}');
+}
+
+function saveDataToStorage(id: string, sorting: SortingState) {
+  storage.setItem(
+    SS_KEY,
+    JSON.stringify({
+      ...getDataFromStorage(),
+      [id]: sorting,
+    })
+  );
+}
 
 export type Props<T extends object> = {
   columns: ColumnDef<T>[];
   data: T[];
   isLoading?: boolean;
   onSelect?: (id: string | null) => void;
+
+  // prefer not use
   style?: any;
+  id?: keyof TableIDs;
 
   initialState?: InitialTableState;
 
@@ -35,9 +62,30 @@ function Table<T extends object>({
   style,
   onSelect,
   initialState,
+  id,
   enableSorting = true,
 }: Props<T>) {
   const [selected, setSelected] = useState<string | null>(null);
+
+  const savedSorting = id && getDataFromStorage()[id];
+  const [sorting, setSorting] = useState<SortingState>(
+    savedSorting || initialState?.sorting || []
+  );
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    saveDataToStorage(id, sorting);
+  }, [sorting, id]);
+
+  const handleSortingChange = useCallback(
+    (sorting: TableOptions<any>['onSortingChange']) => {
+      setSorting(sorting);
+    },
+    []
+  );
 
   const table = useReactTable({
     // debugTable: true,
@@ -45,6 +93,7 @@ function Table<T extends object>({
     data,
     state: {
       rowSelection: {},
+      sorting,
     },
     initialState,
     enableSorting,
@@ -56,6 +105,7 @@ function Table<T extends object>({
 
     // enableColumnResizing: true,
     // columnResizeMode: 'onChange',
+    onSortingChange: handleSortingChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });

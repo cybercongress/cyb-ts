@@ -1,14 +1,13 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { SubnetInfo } from '../../../../types';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { routes } from 'src/routes';
 
 import { Account, Cid, Tooltip } from 'src/components';
 
-import { BLOCK_REWARD } from 'src/features/cybernet/constants';
 import useDelegate from '../../../hooks/useDelegate';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
@@ -19,17 +18,22 @@ import { useCurrentContract, useCybernet } from '../../../cybernet.context';
 import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import { trimString } from 'src/utils/utils';
-import { getAverageGrade } from '../../Subnet/useCurrentSubnetGrades';
+import { tableIDs } from 'src/components/Table/tableIDs';
 
 type Props = {
-  // remove
-  data: Props['subnets'];
-  subnets: SubnetInfo[];
+  data: SubnetInfo[];
 };
 
 const columnHelper = createColumnHelper<SubnetInfo>();
 
-function F({ value, maxValue }) {
+// don't know good name
+function CurrentToMax({
+  value,
+  maxValue,
+}: {
+  value: number;
+  maxValue: number;
+}) {
   return (
     <div>
       {value}{' '}
@@ -50,6 +54,9 @@ function SubnetsTable({ data }: Props) {
   const address = useCurrentAddress();
 
   const { grades, subnetQuery } = useSubnet();
+
+  // debug
+  const { averageGrades } = grades?.all || {};
 
   const { getText } = useCybernetTexts();
 
@@ -153,7 +160,12 @@ function SubnetsTable({ data }: Props) {
 
             const current = info.row.original.subnetwork_n;
 
-            return <F value={current >= max ? max : current} maxValue={max} />;
+            return (
+              <CurrentToMax
+                value={current >= max ? max : current}
+                maxValue={max}
+              />
+            );
           },
         }),
         columnHelper.accessor('max_allowed_uids', {
@@ -168,34 +180,19 @@ function SubnetsTable({ data }: Props) {
             const max = info.getValue();
 
             const current = info.row.original.subnetwork_n;
+            const maxAllowedValidators =
+              info.row.original.max_allowed_validators;
 
-            return <F value={current} maxValue={max} />;
+            const diff = current - maxAllowedValidators;
+
+            return (
+              <CurrentToMax
+                value={diff >= 0 ? diff : 0}
+                maxValue={max - maxAllowedValidators}
+              />
+            );
           },
         })
-
-        // columnHelper.accessor('emission_values', {
-        //   header: 'Emission block',
-        //   sortingFn: (rowA, rowB) => {
-        //     const a = rowA.original.emission_values;
-        //     const b = rowB.original.emission_values;
-
-        //     return a - b;
-        //   },
-
-        //   cell: (info) =>
-        //     `${parseFloat(
-        //       ((info.getValue() / BLOCK_REWARD) * 100).toFixed(2)
-        //     )}%`,
-        // }),
-        // columnHelper.accessor('netuid', {
-        //   header: 'link',
-        //   cell: (info) => <Link to={'./' + info.getValue()}>link</Link>,
-        // }),
-
-        //   columnHelper.accessor('tempo', {
-        //     header: 'tempo',
-        //     cell: (info) => info.getValue(),
-        //   })
       );
     }
 
@@ -206,25 +203,22 @@ function SubnetsTable({ data }: Props) {
           header: 'Grade (average)',
           id: 'grade',
           sortingFn: (rowA, rowB) => {
-            const a = rowA.original.netuid;
-            const b = rowB.original.netuid;
+            const a = averageGrades[rowA.original.netuid];
+            const b = averageGrades[rowB.original.netuid];
 
-            const avgA = getAverageGrade(grades.all.data, a);
-            const avgB = getAverageGrade(grades.all.data, b);
-
-            return avgA - avgB;
+            return a - b;
           },
           cell: (info) => {
             const uid = info.getValue();
 
-            // fix
-            if (!grades.all?.data) {
-              return 0;
-            }
+            // // fix
+            // if (!grades.all?.data) {
+            //   return 0;
+            // }
 
-            const avg = getAverageGrade(grades.all.data, uid);
+            const v = averageGrades[uid];
 
-            return avg;
+            return v;
           },
         })
       );
@@ -249,16 +243,17 @@ function SubnetsTable({ data }: Props) {
   }, [
     myCurrentSubnetsJoined,
     myAddressJoinedRootSubnet,
-    grades?.all?.data,
+    averageGrades,
     rootSubnet,
-    selectedContract,
     getText,
   ]);
 
   return (
     <Table
+      id={tableIDs.cyberver.subnets}
       onSelect={(row) => {
-        const netuid = data[row].netuid;
+        const { netuid } = data[row];
+
         navigate(subnetRoutes.subnet.getLink('pussy', contractName, netuid));
       }}
       columns={columns}

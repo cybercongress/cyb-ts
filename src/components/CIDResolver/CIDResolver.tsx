@@ -24,7 +24,7 @@ function CIDResolver({ cid }: Props) {
     );
   }
 
-  return data.content;
+  return <Cid cid={cid}>{data.content}</Cid>;
 }
 
 export default CIDResolver;

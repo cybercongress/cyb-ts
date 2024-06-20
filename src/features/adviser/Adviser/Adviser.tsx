@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import cx from 'classnames';
 import styles from './Adviser.module.scss';
+// import TypeIt from 'typeit-react';
+import TypeIt from './typeit.js';
 
 export enum AdviserColors {
   blue = 'blue',
@@ -59,7 +61,24 @@ function Adviser({
     >
       <span className={styles.summary}>Adviser</span>
       <div className={styles.content}>
-        <div>{children}</div>
+        {/* {color !== AdviserColors.purple ? (
+          <TypeIt
+            // for resetting the animation
+            key={children + children?.length}
+            as="div"
+            className={styles.typer}
+            options={{
+              speed: 30,
+              cursor: false,
+              waitUntilVisible: true,
+            }}
+          >
+            {children}
+          </TypeIt>
+        ) : (
+          children
+        )} */}
+        {children}
       </div>
     </button>
   );

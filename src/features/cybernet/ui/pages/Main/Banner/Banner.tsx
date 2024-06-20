@@ -9,7 +9,7 @@ function Banner() {
 
   const totalPaid = contracts.reduce(
     (acc, contract) =>
-      acc + Number(contract.economy?.total_rewards?.amount) || 0,
+      acc + Number(contract.economy?.total_rewards?.amount || 0),
     0
   );
 

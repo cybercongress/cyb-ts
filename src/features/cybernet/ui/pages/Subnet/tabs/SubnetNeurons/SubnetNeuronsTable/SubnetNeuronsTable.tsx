@@ -1,16 +1,16 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link } from 'react-router-dom';
-import { SubnetNeuron, Weight } from 'src/features/cybernet/types';
+import { SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
-import { Account, AmountDenom, Tooltip } from 'src/components';
-import { useSubnet } from '../../../subnet.context';
+import { Account, Tooltip } from 'src/components';
+import { useCurrentSubnet } from '../../../subnet.context';
 import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
 import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 import {
   useCurrentContract,
@@ -21,12 +21,27 @@ import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
-import { getAverageGrade } from '../../../useCurrentSubnetGrades';
+import { tableIDs } from 'src/components/Table/tableIDs';
+import { useDelegates } from 'src/features/cybernet/ui/hooks/useDelegate';
+import { SubnetPreviewGroup } from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
 
 type Props = {};
 
+enum TableColumnIDs {
+  uid = 'uid',
+  hotkey = 'hotkey',
+  stake = 'stake',
+  trust = 'trust',
+  lastRewards = 'lastRewards',
+  jobDone = 'jobDone',
+  grade = 'grade',
+  setGrade = 'setGrade',
+  registrations = 'registrations',
+}
+
 const columnHelper = createColumnHelper<SubnetNeuron>();
 
+// need refacfor
 const key = 'subnetNeuronViewedBlock';
 
 function getKey(address: string) {
@@ -86,48 +101,62 @@ function SubnetNeuronsTable({}: Props) {
     subnetQuery,
     addressRegisteredInSubnet,
     neuronsQuery,
-    grades: {
-      all: { data: allGrades },
-    },
-  } = useSubnet();
 
-  const {
+    isRootSubnet,
     netuid,
-    metadata,
-    // max_weights_limit: maxWeightsLimit,
-    // max_allowed_validators: maxAllowedValidators,
-  } = subnetQuery?.data || {};
+    grades: {
+      all: { averageGrades },
+    },
+  } = useCurrentSubnet();
+
+  const { metadata } = subnetQuery?.data || {};
 
   const address = useCurrentAddress();
 
-  const neurons = neuronsQuery?.data || [];
-
   const { block } = useAppData();
 
-  const { getText } = useCybernetTexts();
-
-  const rootSubnet = netuid === 0;
-
-  const vievedBlocks = getData(address);
   const { selectedContract } = useCybernet();
 
   const { type } = useCurrentContract();
-
   const isMLVerse = checkIsMLVerse(type);
 
-  const cur = vievedBlocks?.[address]?.[netuid];
+  const { getText } = useCybernetTexts();
+
+  const { data: delegatesData } = useDelegates();
+
+  const neurons = useMemo(() => {
+    return neuronsQuery.data || [];
+  }, [neuronsQuery.data]);
+
+  const stakeByNeurons = useMemo(() => {
+    const stakes = neurons.reduce<Record<string, number>>((acc, neuron) => {
+      const { stake } = neuron;
+      const total = stake.reduce((acc, s) => acc + s[1], 0);
+
+      acc[neuron.uid] = total;
+
+      return acc;
+    }, {});
+
+    return stakes;
+  }, [neurons]);
+
+  const viewedBlocks = getData(address);
+  const cur = viewedBlocks?.[address]?.[netuid];
 
   const columns = useMemo(() => {
-    const col = [
+    const cols = [
       columnHelper.accessor('uid', {
         header: getText('uid'),
+        id: TableColumnIDs.uid,
         cell: (info) => {
           const uid = info.getValue();
           return uid;
         },
       }),
       columnHelper.accessor('hotkey', {
-        header: getText(rootSubnet ? 'rootValidator' : 'delegate'),
+        header: getText(isRootSubnet ? 'rootValidator' : 'delegate'),
+        id: TableColumnIDs.hotkey,
         size: 200,
         enableSorting: false,
         cell: (info) => {
@@ -164,14 +193,31 @@ function SubnetNeuronsTable({}: Props) {
           );
         },
       }),
+
+      columnHelper.accessor('uid', {
+        header: 'teach power',
+        id: TableColumnIDs.stake,
+        sortingFn: (rowA, rowB) => {
+          const a = stakeByNeurons[rowA.original.uid];
+          const b = stakeByNeurons[rowB.original.uid];
+
+          return a - b;
+        },
+        cell: (info) => {
+          const uid = info.getValue();
+          const total = stakeByNeurons[uid];
+
+          return <IconsNumber value={total} type="pussy" />;
+        },
+      }),
     ];
 
-    if (!rootSubnet) {
-      col.push(
+    if (!isRootSubnet) {
+      cols.push(
         // @ts-ignore
         columnHelper.accessor('hotkey', {
           header: 'job done',
-          id: 'metadata',
+          id: TableColumnIDs.jobDone,
           enableSorting: false,
           cell: (info) => {
             const hotkey = info.getValue();
@@ -220,25 +266,10 @@ function SubnetNeuronsTable({}: Props) {
             );
           },
         }),
-        // TODO: refactor to use neuronStake
-        columnHelper.accessor('stake', {
-          header: 'teach power',
-          id: 'stake',
-          sortingFn: (rowA, rowB) => {
-            const a = rowA.original.stake.reduce((acc, s) => acc + s[1], 0);
-            const b = rowB.original.stake.reduce((acc, s) => acc + s[1], 0);
 
-            return a - b;
-          },
-          cell: (info) => {
-            const stake = info.getValue();
-
-            const total = stake.reduce((acc, s) => acc + s[1], 0);
-            return <IconsNumber value={total} type="pussy" />;
-          },
-        }),
         columnHelper.accessor('validator_trust', {
-          header: `trust`,
+          header: 'trust',
+          id: TableColumnIDs.trust,
           cell: (info) => {
             const validatorTrust = info.getValue();
             const formatted = ((validatorTrust / 65536) * 100).toFixed(2);
@@ -248,6 +279,7 @@ function SubnetNeuronsTable({}: Props) {
         }),
         columnHelper.accessor('emission', {
           header: 'last rewards',
+          id: TableColumnIDs.lastRewards,
           cell: (info) => {
             const emission = info.getValue();
             return <IconsNumber value={emission} type="pussy" />;
@@ -256,21 +288,21 @@ function SubnetNeuronsTable({}: Props) {
 
         columnHelper.accessor('uid', {
           header: 'grade',
-          id: 'grade',
+          id: TableColumnIDs.grade,
           sortingFn: (rowA, rowB) => {
-            const a = getAverageGrade(allGrades, rowA.original.uid);
-            const b = getAverageGrade(allGrades, rowB.original.uid);
+            const a = averageGrades[rowA.original.uid];
+            const b = averageGrades[rowB.original.uid];
 
             return a - b;
           },
           cell: (info) => {
             const uid = info.getValue();
 
-            if (!allGrades) {
-              return null;
-            }
+            // if (!allGrades) {
+            //   return null;
+            // }
 
-            const avg = getAverageGrade(allGrades, uid);
+            const avg = averageGrades[uid];
 
             const color = getColor(avg);
 
@@ -280,11 +312,11 @@ function SubnetNeuronsTable({}: Props) {
       );
 
       if (addressRegisteredInSubnet && !isMLVerse) {
-        col.push(
+        cols.push(
           // @ts-ignore
           columnHelper.accessor('uid', {
-            id: 'setGrade',
             header: 'Set grade',
+            id: TableColumnIDs.setGrade,
             enableSorting: false,
             cell: (info) => {
               const uid = info.getValue();
@@ -294,31 +326,98 @@ function SubnetNeuronsTable({}: Props) {
           })
         );
       }
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (delegatesData) {
+        cols.push(
+          // @ts-ignore
+          columnHelper.accessor('uid', {
+            header: 'Registrations',
+            id: TableColumnIDs.registrations,
+            sortingFn: (rowA, rowB) => {
+              const aUid = rowA.original.uid;
+              const bUid = rowB.original.uid;
+
+              const a = delegatesData[aUid].registrations.length;
+              const b = delegatesData[bUid].registrations.length;
+
+              return a - b;
+            },
+            cell: (info) => {
+              const uid = info.getValue();
+              const delegator = delegatesData[uid];
+
+              const subnets = delegator?.registrations.filter((r) => r !== 0);
+
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {subnets.length > 0 ? (
+                    <SubnetPreviewGroup uids={subnets} />
+                  ) : (
+                    '-'
+                  )}
+                </div>
+              );
+            },
+          })
+        );
+      }
     }
 
-    return col;
+    return cols;
   }, [
-    allGrades,
+    averageGrades,
     isMLVerse,
-    // block,
+    stakeByNeurons,
+    getText,
+    delegatesData,
     selectedContract,
-    // cur,
     metadata,
     netuid,
     addressRegisteredInSubnet,
-    rootSubnet,
+    isRootSubnet,
     address,
+    // block,
+    // cur,
   ]);
+
+  let order;
+  if (isRootSubnet) {
+    order = [
+      TableColumnIDs.uid,
+      TableColumnIDs.hotkey,
+      TableColumnIDs.registrations,
+      TableColumnIDs.stake,
+    ];
+  } else {
+    order = [
+      TableColumnIDs.uid,
+      TableColumnIDs.hotkey,
+      TableColumnIDs.jobDone,
+      TableColumnIDs.stake,
+      TableColumnIDs.lastRewards,
+      TableColumnIDs.trust,
+      TableColumnIDs.grade,
+      TableColumnIDs.setGrade,
+    ];
+  }
 
   return (
     <Table
+      id={tableIDs.cyberver.subnetNeurons}
       columns={columns}
       data={neurons}
       isLoading={neuronsQuery?.loading}
       initialState={{
+        columnOrder: order,
         sorting: [
           {
-            id: 'grade',
+            id: !isRootSubnet ? TableColumnIDs.grade : TableColumnIDs.stake,
             desc: true,
           },
         ],

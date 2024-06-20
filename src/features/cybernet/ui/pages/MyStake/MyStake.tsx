@@ -1,17 +1,11 @@
-/* eslint-disable react/no-unstable-nested-components */
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
-import { createColumnHelper } from '@tanstack/react-table';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
-import { StakeInfo } from 'src/features/cybernet/types';
 import { Helmet } from 'react-helmet';
 import DelegatesTable from '../Delegates/DelegatesTable/DelegatesTable';
 import { HeaderItem } from '../Subnet/SubnetHeader/SubnetHeader';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
-
-type T = StakeInfo[0];
-const columnHelper = createColumnHelper<T>();
 
 function MyStake() {
   const { loading, error, data } = useCurrentAccountStake();
@@ -22,9 +16,15 @@ function MyStake() {
     defaultText: 'my learner',
   });
 
-  const total =
-    data?.reduce((acc, item) => {
-      return acc + item.stake;
+  let length = 0;
+
+  const totalStake =
+    data?.reduce((acc, { stake }) => {
+      if (stake > 0) {
+        length += 1;
+      }
+
+      return acc + stake;
     }, 0) || 0;
 
   return (
@@ -40,15 +40,15 @@ function MyStake() {
             justifyContent: 'space-between',
           }}
         >
-          <HeaderItem title="mentors" content={data?.length} />
+          <HeaderItem title="mentors" content={length} />
 
           <HeaderItem
             title="total stake"
-            content={<IconsNumber value={total} type="pussy" />}
+            content={<IconsNumber value={totalStake} type="pussy" />}
           />
         </div>
       </Display>
-      <Display noPaddingX title={<DisplayTitle title="My stake" />}>
+      <Display noPadding title={<DisplayTitle title="My stake" />}>
         <DelegatesTable />
       </Display>
     </>
