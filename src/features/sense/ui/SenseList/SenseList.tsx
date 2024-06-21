@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-import { useAppSelector } from 'src/redux/hooks';
-import styles from './SenseList.module.scss';
+import cx from 'classnames';
 import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
-import cx from 'classnames';
-import SenseListFilters from './SenseListFilters/SenseListFilters';
-import { Filters } from '../types';
-import { AdviserProps } from '../Sense';
-import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 import { isParticle } from 'src/features/particle/utils';
+import { useAppSelector } from 'src/redux/hooks';
+import type { AdviserProps } from '../Sense';
+import { Filters } from '../types';
+import styles from './SenseList.module.scss';
+import SenseListFilters from './SenseListFilters/SenseListFilters';
+import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 
 type Props = {
   select: (id: string) => void;

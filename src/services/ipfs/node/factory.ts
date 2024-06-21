@@ -29,15 +29,23 @@ export async function initIpfsNode(
     ipfsNodeType === 'external'
       ? CYBERNODE_SWARM_ADDR_TCP
       : CYBERNODE_SWARM_ADDR_WSS;
+  console.log('[Worker] initIpfsNode', { swarmPeerId, swarmPeerAddress });
 
   const EnhancedClass = withCybFeatures(nodeClassMap[ipfsNodeType], {
     swarmPeerId,
     swarmPeerAddress,
   });
+  console.log('[Worker] initIpfsNode', { EnhancedClass });
 
   const instance = new EnhancedClass();
+  console.log('[Worker] initIpfsNode before init', { instance });
 
-  await instance.init({ url: restOptions.urlOpts });
+  try {
+    await instance.init({ url: restOptions.urlOpts });
+  } catch (error) {
+    console.log('[Worker] initIpfsNode instance init failed', error);
+  }
+  console.log('[Worker] initIpfsNode after instance init');
   // TODO: REFACT
   //   instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
   // window.ipfs = instance;

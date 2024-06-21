@@ -25,7 +25,7 @@ export const getKeplr = async (): Promise<Keplr | undefined> => {
   });
 };
 
-const configKeplr = (prefix) => {
+const configKeplr = (prefix: string) => {
   return {
     // Chain-id of the Cosmos SDK chain.
     chainId: CHAIN_ID,

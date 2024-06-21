@@ -11,6 +11,7 @@ import senseReducer from '../../features/sense/redux/sense.redux';
 import warpReducer from '../features/warp';
 import ibcDenomReducer from '../features/ibcDenom';
 import hubReducer from '../../pages/Hub/redux/hub';
+import signerReducer from './signer';
 
 const rootReducer = {
   gol: golReducer,
@@ -24,6 +25,7 @@ const rootReducer = {
   warp: warpReducer,
   ibcDenom: ibcDenomReducer,
   hub: hubReducer,
+  signer: signerReducer,
 };
 
 export default rootReducer;

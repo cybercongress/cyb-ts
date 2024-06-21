@@ -74,13 +74,21 @@ const createBackgroundWorkerApi = () => {
   };
 
   const startIpfs = async (ipfsOpts: IpfsOptsType) => {
+    console.log('[Worker] startIpfs', { ipfsOpts, ipfsNode });
+
     try {
       if (ipfsNode) {
-        console.log('Ipfs node already started!');
+        console.log('[Worker] Ipfs node already started!');
         await ipfsNode.stop();
       }
       broadcastApi.postServiceStatus('ipfs', 'starting');
-      ipfsNode = await initIpfsNode(ipfsOpts);
+      console.log('[Worker] startIpfs before initIpfsNode');
+      try {
+        ipfsNode = await initIpfsNode(ipfsOpts);
+      } catch (error) {
+        console.log('[Worker] initIpfsNode failed', error);
+      }
+      console.log('[Worker] startIpfs after initIpfsNode');
 
       ipfsInstance$.next(ipfsNode);
 

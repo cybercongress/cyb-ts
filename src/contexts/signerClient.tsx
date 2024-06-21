@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { SigningCyberClient } from '@cybercongress/cyber-js';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Keplr } from '@keplr-wallet/types';
+import _ from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -5,17 +10,14 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import _ from 'lodash';
-import { SigningCyberClient } from '@cybercongress/cyber-js';
-import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
-import { Option } from 'src/types';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import { Keplr } from '@keplr-wallet/types';
-import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
-import { accountsKeplr } from 'src/utils/utils';
+import { BECH32_PREFIX, CHAIN_ID, RPC_URL } from 'src/constants/config';
 import usePrevious from 'src/hooks/usePrevious';
-import { RPC_URL, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
+import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { Option } from 'src/types';
+import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
+import { getOfflineSigner } from 'src/utils/offlineSigner';
+import { accountsKeplr } from 'src/utils/utils';
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
 //   keplr: Keplr;
@@ -26,6 +28,7 @@ type SignerClientContextType = {
   readonly signer: Option<OfflineSigner>;
   readonly signerReady: boolean;
   initSigner: () => void;
+  setSigner(signer: Option<OfflineSigner>): void;
 };
 
 async function createClient(
@@ -40,13 +43,15 @@ async function createClient(
   return client;
 }
 
-const SignerClientContext = React.createContext<SignerClientContextType>({
-  signer: undefined,
-  signingClient: undefined,
-  signerReady: false,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  initSigner: () => {},
-});
+export const SignerClientContext = React.createContext<SignerClientContextType>(
+  {
+    signer: undefined,
+    signingClient: undefined,
+    signerReady: false,
+    initSigner: () => {},
+    setSigner: () => {},
+  }
+);
 
 export function useSigningClient() {
   const signingClient = useContext(SignerClientContext);
@@ -121,24 +126,46 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectAddress]);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const windowKeplr = await getKeplr();
+  //     if (windowKeplr) {
+  //       initSigner();
+  //     }
+  //   })();
+  // }, [initSigner]);
+
+  // useEffect(() => {
+  //   window.addEventListener('keplr_keystorechange', initSigner);
+  // }, [initSigner]);
+
   useEffect(() => {
     (async () => {
-      const windowKeplr = await getKeplr();
-      if (windowKeplr) {
-        initSigner();
-      }
-    })();
-  }, [initSigner]);
+      // if (window.__TAURI__ || !window.keplr) {
+      console.log('Init signing client');
+      try {
+        const mnemonic = localStorage.getItem('cyb:mnemonic');
+        if (mnemonic) {
+          const signer = await getOfflineSigner(mnemonic);
+          const clientJs = await createClient(signer);
 
-  useEffect(() => {
-    window.addEventListener('keplr_keystorechange', () => {
-      initSigner();
-    });
-  }, [initSigner]);
+          window.signer = signer;
+          window.signingClient = clientJs;
+
+          setSigner(signer);
+          setSigningClient(clientJs);
+          console.log('Signing client init success');
+        }
+      } catch (e) {
+        console.error('Failed to init signer client:', e);
+      }
+      // }
+    })();
+  }, []);
 
   const value = useMemo(
-    () => ({ initSigner, signer, signingClient, signerReady }),
-    [signer, signingClient, signerReady, initSigner]
+    () => ({ initSigner, signer, signingClient, signerReady, setSigner }),
+    [signer, signingClient, signerReady, initSigner, setSigner]
   );
 
   return (

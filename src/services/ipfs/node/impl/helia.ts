@@ -1,7 +1,7 @@
 import { Helia, Pin, createHelia } from 'helia';
 import { IDBBlockstore } from 'blockstore-idb';
 import { IDBDatastore } from 'datastore-idb';
-import { Libp2p, createLibp2p } from 'libp2p';
+import { createLibp2p } from 'libp2p';
 import { noise } from '@chainsafe/libp2p-noise';
 import { yamux } from '@chainsafe/libp2p-yamux';
 // import { mplex } from '@libp2p/mplex';
@@ -41,63 +41,71 @@ const libp2pFactory = async (
   datastore: IDBDatastore,
   bootstrapList: string[] = []
 ) => {
-  const libp2p = await createLibp2p({
-    datastore,
-    // addresses: {
-    //   listen: [
-    //     '/ip4/127.0.0.1/tcp/0',
-    //     '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
-    //   ],
-    // },
-    transports: [
-      webSockets(),
-      webTransport(),
-      webRTC({
-        rtcConfiguration: {
-          iceServers: [
-            {
-              urls: [
-                'stun:stun.l.google.com:19302',
-                'stun:global.stun.twilio.com:3478',
-                'STUN:freestun.net:3479',
-                'STUN:stun.bernardoprovenzano.net:3478',
-                'STUN:stun.aa.net.uk:3478',
-              ],
-            },
-            {
-              credential: 'free',
-              username: 'free',
-              urls: ['TURN:freestun.net:3479', 'TURNS:freestun.net:5350'],
-            },
-          ],
+  console.log('[Worker] createLibp2p before');
+
+  try {
+    const libp2p = await createLibp2p({
+      datastore,
+      // addresses: {
+      //   listen: [
+      //     '/ip4/127.0.0.1/tcp/0',
+      //     '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
+      //   ],
+      // },
+      transports: [
+        webSockets(),
+        webTransport(),
+        webRTC({
+          rtcConfiguration: {
+            iceServers: [
+              {
+                urls: [
+                  'stun:stun.l.google.com:19302',
+                  'stun:global.stun.twilio.com:3478',
+                  'STUN:freestun.net:3479',
+                  'STUN:stun.bernardoprovenzano.net:3478',
+                  'STUN:stun.aa.net.uk:3478',
+                ],
+              },
+              {
+                credential: 'free',
+                username: 'free',
+                urls: ['TURN:freestun.net:3479', 'TURNS:freestun.net:5350'],
+              },
+            ],
+          },
+        }),
+        webRTCDirect(),
+        circuitRelayTransport({
+          discoverRelays: 1,
+        }),
+      ],
+      connectionEncryption: [noise()],
+      streamMuxers: [yamux()],
+      connectionGater: {
+        denyDialMultiaddr: () => {
+          return false;
+          // by default we refuse to dial local addresses from the browser since they
+          // are usually sent by remote peers broadcasting undialable multiaddrs but
+          // here we are explicitly connecting to a local node so do not deny dialing
+          // any discovered address
         },
-      }),
-      webRTCDirect(),
-      circuitRelayTransport({
-        discoverRelays: 1,
-      }),
-    ],
-    connectionEncryption: [noise()],
-    streamMuxers: [yamux()],
-    connectionGater: {
-      denyDialMultiaddr: () => {
-        return false;
-        // by default we refuse to dial local addresses from the browser since they
-        // are usually sent by remote peers broadcasting undialable multiaddrs but
-        // here we are explicitly connecting to a local node so do not deny dialing
-        // any discovered address
       },
-    },
-    peerDiscovery: [
-      bootstrap({
-        list: bootstrapList,
-      }),
-    ],
-    services: {
-      identify: identifyService(),
-    },
-  });
-  return libp2p;
+      peerDiscovery: [
+        bootstrap({
+          list: bootstrapList,
+        }),
+      ],
+      services: {
+        identify: identifyService(),
+      },
+    });
+    console.log('[Worker] createLibp2p after', libp2p);
+    return libp2p;
+  } catch (error) {
+    console.log('[Worker] createLibp2p failed', error);
+    return null;
+  }
 };
 
 const addOptionsV0: Partial<AddOptions> = {
@@ -123,6 +131,7 @@ class HeliaNode implements IpfsNode {
   private fs?: UnixFS;
 
   async init() {
+    console.log('[Worker] HeliaNode before init');
     const blockstore = new IDBBlockstore('helia-bs');
     await blockstore.open();
 
@@ -136,7 +145,13 @@ class HeliaNode implements IpfsNode {
       '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
       '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
     ];
-    const libp2p = await libp2pFactory(datastore, bootstrapList);
+    let libp2p;
+    try {
+      libp2p = await libp2pFactory(datastore, bootstrapList);
+    } catch (error) {
+      console.log('[Worker] HeliaNode libp2pFactory failed', error);
+    }
+    console.log('[Worker] HeliaNode after init');
 
     this.node = await createHelia({ blockstore, datastore, libp2p });
 
