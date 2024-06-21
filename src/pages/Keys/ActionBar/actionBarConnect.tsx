@@ -16,7 +16,7 @@ import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
 import { LEDGER } from 'src/utils/config';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
-import ConnectWalletModal from './ConnectWalletModal';
+import ConnectWalletModal from './ConnectWalletModal/ConnectWalletModal';
 import { ConnectMethod } from './types';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
