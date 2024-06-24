@@ -31,32 +31,20 @@
 
 }
 
-// .rotate>div {
-//   @include rotate();
-// }
+.rotate>div {
+  padding-right: 5px;
+}
 
 .rotate>div:nth-child(1) {
   // --r: calc(2 * var(--i));
+  padding-right: unset;
   color: var(--grayscale-disabled);
 }
 
 .rotate>div:nth-child(2) {
-  // --r: calc(1 * var(--i));
-  padding-right: 10px;
   color: var(--grayscale-dark);
 }
 
 .rotate>div:nth-child(3) {
-  // --r: calc(0 * var(--i));
-  padding-right: 15px;
   color: var(--grayscale-secondary);
-}
-
-.rotate>div:nth-child(4) {
-  // --r: calc(-1 * var(--i));
-  padding-right: 10px;
-}
-
-.rotate>div:nth-child(5) {
-  --r: calc(-2 * var(--i));
 }

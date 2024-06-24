@@ -7,7 +7,6 @@ type optionsProps = {
   onClick?: () => void;
   key: string;
   text?: ReactNode;
-  disable?: boolean;
 };
 
 export type Props = {
@@ -35,7 +34,6 @@ function Tabs({ options, selected }: Props) {
             to={item.to}
             onClick={item.onClick}
             text={item.text || item.key}
-            disable={item.disable}
           />
         );
       })}

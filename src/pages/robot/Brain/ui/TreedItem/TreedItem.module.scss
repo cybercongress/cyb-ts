@@ -4,9 +4,11 @@
   gap: 20px;
   align-items: center;
   justify-items: flex-end;
+  max-height: 200px;
 
   &>div>a {
     color: #fff;
+
     &:hover {
       color: var(--primary-color);
     }

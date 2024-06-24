@@ -33,8 +33,6 @@ function TabItem({
     type: 'button',
   };
 
-  let onClickFunc: (e: Event) => void = () => onClick;
-
   if (to) {
     Component = Link;
     componentProps = {
@@ -43,13 +41,16 @@ function TabItem({
   }
 
   if (disable && to) {
-    onClickFunc = (e) => e.preventDefault();
+    componentProps = {
+      ...componentProps,
+      onClick: (e) => e.preventDefault(),
+    };
   }
 
   return (
     <Component
       to={to}
-      onClick={onClickFunc}
+      onClick={onClick}
       className={cx(
         styles.tabButton,
         type && styles[`${type}`],

@@ -26,6 +26,7 @@ $activeLineWidth: 2px;
     }
 
     .count {
+      display: inline-flex;
       color: var(--grayscale-primary);
     }
 

@@ -1,25 +1,41 @@
-import { useLocation, NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { MenuItem } from 'src/types/menu';
-import styles from './SubMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
+import { useMemo } from 'react';
+import styles from './SubMenu.module.scss';
 
 interface Props {
-  subItems: MenuItem['subItems'];
+  selectedApp: MenuItem;
   closeMenu: () => void;
 }
 
-const SubMenu = ({ subItems, closeMenu }: Props) => {
-  const location = useLocation();
+function SubMenu({ selectedApp, closeMenu }: Props) {
+  const renderData = useMemo(
+    () =>
+      selectedApp.subItems.length
+        ? [
+            {
+              name: 'main',
+              to: selectedApp.to,
+            },
+            ...selectedApp.subItems,
+          ]
+        : [],
+    [selectedApp]
+  );
 
   return (
     <div className={styles.subMenu}>
-      {subItems.map((item) => (
+      {renderData.map((item) => (
         <NavLink
           key={item.name}
           to={item.to}
+          end
           className={({ isActive }) =>
-            cx(styles.bookmarks__item, { [styles.active]: isActive })
+            cx(styles.bookmarks__item, {
+              [styles.active]: isActive,
+            })
           }
           onClick={closeMenu}
         >
@@ -55,6 +71,6 @@ const SubMenu = ({ subItems, closeMenu }: Props) => {
       ))}
     </div>
   );
-};
+}
 
 export default SubMenu;

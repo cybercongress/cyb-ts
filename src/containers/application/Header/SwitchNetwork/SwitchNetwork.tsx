@@ -46,10 +46,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
 
       {getRoute && getRoute[0] && (
         <div className={cx(styles.containerSubItems, styles.tooltipContainer)}>
-          <SubMenu
-            subItems={getRoute[0].subItems}
-            closeMenu={onClickOpenMenu}
-          />
+          <SubMenu selectedApp={getRoute[0]} closeMenu={onClickOpenMenu} />
         </div>
       )}
     </>

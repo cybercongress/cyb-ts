@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
-import { Button } from 'src/components';
+import { Tabs } from 'src/components';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
@@ -9,33 +9,42 @@ import GraphView from './ui/GraphView';
 
 function Brain() {
   const { address } = useRobotContext();
-  const [graphView, setGraphView] = useState(false);
+  const [selected, setSelected] = useState('treed');
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
     setAdviser(
       <>
         neurons public knowledge cybergraph <br />
-        {graphView && (
+        {selected === 'graph' && (
           <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
         )}
       </>
     );
-  }, [setAdviser, graphView]);
+  }, [setAdviser, selected]);
 
-  let content = <GraphView address={address} />;
+  let content;
 
-  if (!graphView) {
+  console.log('selected', selected);
+
+  if (selected === 'treed') {
     content = <TreedView address={address} />;
   }
 
-  const setGraphViewFc = () => setGraphView((item) => !item);
-
-  const textButton = graphView ? 'treed' : 'graph';
+  if (selected === 'graph') {
+    content = <GraphView address={address} />;
+  }
 
   return (
     <div className={styles.wrapper}>
-      <Button onClick={setGraphViewFc} text={`${textButton} view`} />
+      <div className={styles.tabs}>
+        <Tabs
+          options={['treed', 'graph'].map((item) => {
+            return { key: item, onClick: () => setSelected(item) };
+          })}
+          selected={selected}
+        />
+      </div>
       {content}
     </div>
   );
