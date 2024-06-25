@@ -1,19 +1,20 @@
 import { useAppSelector } from 'src/redux/hooks';
-import useQueryClientMethod from '../useQueryClientMethod';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { QueryDelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
-import { CyberClient } from '@cybercongress/cyber-js';
+import useQueryClientMethod from '../../../hooks/useQueryClientMethod';
 
-type Params = Parameters<CyberClient['delegation']>;
+const methodName = 'delegation';
 
-// TODO: improve types
-// rename to better name
+type Params = NonNullable<
+  Parameters<typeof useQueryClientMethod<typeof methodName>>[1]
+>;
+
+// TODO: seems possible to improve types
 function useDelegationFunc(
   delegatorAddress: Params['0'],
   validatorAddress: Params['1']
 ) {
-  const { data, ...rest } = useQueryClientMethod<QueryDelegationResponse>(
-    'delegation',
+  const { data, ...rest } = useQueryClientMethod<typeof methodName>(
+    methodName,
     [delegatorAddress, validatorAddress]
   );
 
