@@ -7,9 +7,7 @@ import { Networks } from 'src/types/networks';
 function useGetPoolsWarp(queryClient?: CyberClient) {
   const { data } = useQuery({
     queryKey: ['useFindPool', 'pools', Networks.BOSTROM],
-    queryFn: async () => {
-      return queryClient?.pools() as Option<QueryLiquidityPoolsResponse>;
-    },
+    queryFn: () => queryClient?.pools() as Option<QueryLiquidityPoolsResponse>,
     enabled: Boolean(queryClient),
   });
 
