@@ -15,7 +15,7 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 import { useBackend } from 'src/contexts/backend/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
-import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
+import networkStyles from '../CurrentApp/CurrentApp.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';

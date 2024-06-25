@@ -1,36 +1,54 @@
+$icon-size: 30px;
+
 .subMenu {
   position: absolute;
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
-.bookmarks__item {
-  > div {
-    align-items: center;
-    flex-shrink: 0;
-  }
+@mixin active-el() {
+  content: '';
+  left: 0;
+  height: 100%;
+  width: 3px;
+  background-color: #4ed6ae;
+  filter: blur(0.7px);
+  box-shadow: 3px 0px 20px 1.5px #4ed6ae;
+  position: absolute;
+}
+
+.navLinkItem {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding-left: 20px;
+  font-size: 18px;
+  // >div {
+  //   align-items: center;
+  //   flex-shrink: 0;
+  // }
+
   position: relative;
 
   color: #777777;
-  text-decoration: none;
-  font-size: 14px;
+
+  .icon {
+    width: $icon-size;
+    height: $icon-size;
+    object-fit: contain;
+  }
+
+  .nameApp {
+    white-space: nowrap;
+  }
 
   &.active {
     color: #fff;
 
     &::before {
-      content: '';
-      left: 0;
-      height: 100%;
-      width: 3px;
-      background-color: #4ed6ae;
-      filter: blur(0.7px);
-      box-shadow: 3px 0px 20px 1.5px #4ed6ae;
-      position: absolute;
+      @include active-el();
     }
-  }
-
-  &:hover {
-    color: #32d9ae;
   }
 }

@@ -10,16 +10,17 @@
   transform: rotate(var(--r)) translateX(var(--diameter)) rotate(calc(-1 * var(--r)));
 }
 
+$size: 220px;
+
 .wrapper {
   text-align: end;
   display: grid;
   justify-content: flex-end;
+  align-items: flex-end;
   gap: 15px;
-  width: 220px;
-  height: 220px;
-  padding-top: 5px;
-  padding-bottom: 20px;
-  padding-right: 5px;
+  width: $size;
+  height: $size;
+  padding: 5px 5px 20px 0px;
 
   position: absolute;
   bottom: 20px;

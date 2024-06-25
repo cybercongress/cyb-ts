@@ -8,14 +8,14 @@ import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddre
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import SubMenu from 'src/components/appMenu/SubMenu';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
-import styles from './SwitchNetwork.module.scss';
+import styles from './CurrentApp.module.scss';
 import { selectNetworkImg } from '../../../../utils/utils';
 import ChainInfo from './ui/ChainInfo/ChainInfo';
 import findSelectAppByUrl from './utils/findSelectAppByUrl';
 
 export const menuButtonId = 'menu-button';
 
-function SwitchNetwork({ onClickOpenMenu, openMenu }) {
+function CurrentApp({ onClickOpenMenu, openMenu }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const location = useLocation();
   const address = useAppSelector(selectCurrentAddress);
@@ -53,4 +53,4 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   );
 }
 
-export default SwitchNetwork;
+export default CurrentApp;

@@ -33,40 +33,16 @@ function SubMenu({ selectedApp, closeMenu }: Props) {
           to={item.to}
           end
           className={({ isActive }) =>
-            cx(styles.bookmarks__item, {
+            cx(styles.navLinkItem, {
               [styles.active]: isActive,
             })
           }
           onClick={closeMenu}
         >
-          <Pane display="flex" paddingY={5} alignItems="center" key={item.name}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '30px 1fr',
-                gap: 10,
-                alignItems: 'center',
-                paddingLeft: 15,
-              }}
-            >
-              {item.icon && (
-                <img
-                  src={item.icon}
-                  style={{ width: 30, height: 30, objectFit: 'contain' }}
-                  alt="img"
-                />
-              )}
-              <Pane
-                alignItems="center"
-                whiteSpace="nowrap"
-                flexGrow={1}
-                fontSize={18}
-                display="flex"
-              >
-                {item.name}
-              </Pane>
-            </div>
-          </Pane>
+          {item.icon && (
+            <img src={item.icon} className={styles.icon} alt="icon" />
+          )}
+          <span className={styles.nameApp}>{item.name}</span>
         </NavLink>
       ))}
     </div>
