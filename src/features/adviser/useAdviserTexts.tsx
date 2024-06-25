@@ -11,7 +11,7 @@ type Props =
       isLoading?: boolean;
       loadingText?: string;
       error?: string | undefined;
-      defaultText?: string;
+      defaultText?: string | Element;
       successText?: string;
       txHash?: string;
     }
