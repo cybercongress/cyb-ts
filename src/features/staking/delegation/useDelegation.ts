@@ -4,15 +4,13 @@ import useQueryClientMethod from '../../../hooks/useQueryClientMethod';
 
 const methodName = 'delegation';
 
-type Params = NonNullable<
+type MethodParams = NonNullable<
   Parameters<typeof useQueryClientMethod<typeof methodName>>[1]
 >;
 
-// TODO: seems possible to improve types
-function useDelegationFunc(
-  delegatorAddress: Params['0'],
-  validatorAddress: Params['1']
-) {
+type Params = MethodParams;
+
+function useDelegationFunc(...[delegatorAddress, validatorAddress]: Params) {
   const { data, ...rest } = useQueryClientMethod<typeof methodName>(
     methodName,
     [delegatorAddress, validatorAddress]

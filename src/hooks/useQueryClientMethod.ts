@@ -15,7 +15,7 @@ function useQueryClientMethod<T extends keyof CyberClient>(
   const { isLoading, data, error } = useQuery<
     unknown,
     unknown,
-    ReturnType<CyberClient[T]>
+    Awaited<ReturnType<CyberClient[T]>>
   >(
     ['queryClientMethod', methodName, memoParams],
     () => {
