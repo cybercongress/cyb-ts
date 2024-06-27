@@ -5,9 +5,9 @@ import { routes } from 'src/routes';
 import itemsMenu from 'src/utils/appsMenu';
 import findApp from 'src/utils/findApp';
 import { Helmet } from 'react-helmet';
-import styles from './CurrentApp.module.scss';
+import styles from './AppName.module.scss';
 
-function CurrentApp() {
+function AppName() {
   let { pathname } = useLocation();
   const isRobot = pathname.includes('@') || pathname.includes('neuron/');
 
@@ -34,4 +34,4 @@ function CurrentApp() {
   );
 }
 
-export default CurrentApp;
+export default AppName;

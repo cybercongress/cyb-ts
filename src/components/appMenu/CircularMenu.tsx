@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import itemsMenu from 'src/utils/appsMenu';
-import CircularMenuItem from 'src/containers/application/CircularMenuItem';
 import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import { useLocation } from 'react-router-dom';
 import _ from 'lodash';
+import CircularMenuItem from './CircularMenuItem';
 
 declare module 'react' {
   interface CSSProperties {
@@ -21,7 +21,7 @@ function CircularMenu({ circleSize }) {
 
   const calculateDiameter = (index, circleSize) => {
     const menuCircleDiameter = circleSize / 2 + 40 * (index + 1) - 10;
-    const nextLevelMenuAngle = index === 1 ? 12 : 0;
+    const nextLevelMenuAngle = index === 1 ? 11 : 0;
     return { menuCircleDiameter, nextLevelMenuAngle };
   };
 

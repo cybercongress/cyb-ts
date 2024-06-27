@@ -85,7 +85,7 @@ const itemsMenu = () => {
 
     {
       name: 'Cyberver 🟣',
-      icon: require('./images/cyberver.png'),
+      icon: require('../containers/application/images/cyberver.png'),
       to: 'https://spacepussy.ai/cyberver',
       subItems: [],
     },
