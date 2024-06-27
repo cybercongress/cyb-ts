@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const WorkerUrlPlugin = require('worker-url/plugin');
+const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
@@ -18,8 +18,6 @@ const config = {
   devtool: 'cheap-module-source-map',
   entry: {
     main: [path.join(__dirname, 'src', 'index.tsx')],
-    // helia: 'helia',
-    // cozodb: 'cyb-cozo-lib-wasm',
   },
   output: {
     filename: '[name].js',
@@ -200,6 +198,10 @@ const config = {
         test: /\.(graphql|gql)$/,
         exclude: /node_modules/,
         use: 'graphql-tag/loader',
+      },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
       },
     ],
   },

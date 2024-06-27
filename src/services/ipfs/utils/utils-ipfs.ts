@@ -4,11 +4,11 @@ import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 import { Option } from 'src/types';
 import {
   // getIpfsUserGatewanAndNodeType,
-  IPFSContentMaybe,
   IPFSContentMeta,
   CallBackFuncStatus,
   IpfsContentSource,
   IpfsNode,
+  IpfsFileStats,
 } from '../types';
 
 import { getMimeFromUint8Array, toAsyncIterableWithMime } from './stream';
@@ -16,14 +16,18 @@ import { getMimeFromUint8Array, toAsyncIterableWithMime } from './stream';
 import ipfsCacheDb from './ipfsCacheDb';
 import cyberCluster from './cluster';
 
-import { contentToUint8Array, createTextPreview } from './content';
+import {
+  contentToUint8Array,
+  createTextPreview,
+  mimeToBaseContentType,
+} from './content';
 
 import { CYBER_GATEWAY_URL, FILE_SIZE_DOWNLOAD } from '../config';
 
 // Get data by CID from local storage
 const loadIPFSContentFromDb = async (
   cid: string
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   // TODO: enable, disabled for tests
 
   // TODO: use cursor
@@ -31,13 +35,16 @@ const loadIPFSContentFromDb = async (
   if (data && data.length) {
     // TODO: use cursor
     const mime = await getMimeFromUint8Array(data);
-    const textPreview = createTextPreview(data, mime);
+    const contentType = mimeToBaseContentType(mime);
+
+    const textPreview = createTextPreview(data, contentType);
 
     const meta: IPFSContentMeta = {
       type: 'file', // `TODO: ipfs refactor dir support ?
       size: data.length,
       sizeLocal: data.length,
       mime,
+      contentType,
     };
     return { result: data, cid, meta, source: 'db', textPreview };
   }
@@ -45,30 +52,30 @@ const loadIPFSContentFromDb = async (
   return undefined;
 };
 
-const emptyMeta: IPFSContentMeta = {
+const emptyStats: IpfsFileStats = {
   type: 'file',
   size: undefined,
-  local: undefined,
   sizeLocal: undefined,
+  blocks: undefined,
 };
 
-const fetchIPFSContentMeta = async (
+const fetchIPFSContentStat = async (
   cid: string,
   node?: IpfsNode,
   signal?: AbortSignal
-): Promise<IPFSContentMeta> => {
+): Promise<IpfsFileStats> => {
   if (node) {
-    const meta = await node.stat(cid, { signal });
-    return meta;
+    const stats = await node.stat(cid, { signal });
+    return stats;
   }
-  return emptyMeta;
+  return emptyStats;
 };
 
 const fetchIPFSContentFromNode = async (
   cid: string,
   node?: IpfsNode,
   controller?: AbortController
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   const controllerLegacy = controller || new AbortController();
   const { signal } = controllerLegacy;
   let timer: NodeJS.Timeout | undefined;
@@ -88,29 +95,31 @@ const fetchIPFSContentFromNode = async (
   try {
     // const stat = await node.files.stat(path, { signal });
     const startTime = Date.now();
-    const meta = await fetchIPFSContentMeta(cid, node, signal);
+    const stats = await fetchIPFSContentStat(cid, node, signal);
+    const meta = stats as IPFSContentMeta;
     const statsDoneTime = Date.now();
     meta.statsTime = statsDoneTime - startTime;
-    const allowedSize = meta.size ? meta.size < FILE_SIZE_DOWNLOAD : false;
+    const allowedSize = stats.size ? stats.size < FILE_SIZE_DOWNLOAD : false;
     timer && clearTimeout(timer);
 
-    switch (meta.type) {
+    switch (stats.type) {
       case 'directory': {
         // TODO: return directory structure
-        return { cid, availableDownload: true, source: 'node', meta };
+        return { cid, availableDownload: true, source: 'node', meta: stats };
       }
       default: {
         // Get sample of content
-        const { value: firstChunk, done } = await node
+        const { value: firstChunk } = await node
           .cat(cid, { signal, length: 2048, offset: 0 })
           [Symbol.asyncIterator]()
           .next();
 
-        const mime = await getMimeFromUint8Array(firstChunk);
+        meta.mime = await getMimeFromUint8Array(firstChunk);
+        meta.contentType = mimeToBaseContentType(meta.mime);
         const fullyDownloaded =
-          meta.size && meta.size > -1 && firstChunk.length >= meta.size;
+          stats.size && stats.size > -1 && firstChunk.length >= stats.size;
 
-        const textPreview = createTextPreview(firstChunk, mime);
+        const textPreview = createTextPreview(firstChunk, meta.contentType);
 
         if (fullyDownloaded) {
           await ipfsCacheDb.add(cid, uint8ArrayConcat([firstChunk]));
@@ -139,7 +148,7 @@ const fetchIPFSContentFromNode = async (
           result: stream,
           textPreview,
           cid,
-          meta: { ...meta, mime },
+          meta,
           source: 'node',
         };
         // }
@@ -147,27 +156,33 @@ const fetchIPFSContentFromNode = async (
     }
   } catch (error) {
     console.debug('error fetchIPFSContentFromNode', error);
-    return { cid, availableDownload: true, source: 'node', meta: emptyMeta };
+    return {
+      cid,
+      availableDownload: true,
+      source: 'node',
+      meta: { ...emptyStats } as IPFSContentMeta,
+    };
   }
 };
 
 const fetchIPFSContentFromGateway = async (
   cid: string,
   node?: IpfsNode,
-  controller?: AbortController
-): Promise<IPFSContentMaybe> => {
+  controller?: AbortController,
+  headers?: Record<string, string>
+): Promise<Option<IPFSContent>> => {
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
-  const meta = isExternalNode
-    ? await fetchIPFSContentMeta(cid, node, controller?.signal)
-    : emptyMeta;
+  const stats = isExternalNode
+    ? await fetchIPFSContentStat(cid, node, controller?.signal)
+    : emptyStats;
 
   const contentUrl = `${CYBER_GATEWAY_URL}/ipfs/${cid}`;
   const response = await fetch(contentUrl, {
     method: 'GET',
     signal: controller?.signal,
+    headers,
   });
-
   if (response && response.body) {
     // fetch doesn't provide any headers in our case :(
 
@@ -193,11 +208,13 @@ const fetchIPFSContentFromGateway = async (
       flushResults
     );
 
-    const textPreview = createTextPreview(firstChunk, mime);
+    const contentType = mimeToBaseContentType(mime);
+
+    const textPreview = createTextPreview(firstChunk, contentType);
     return {
       cid,
       textPreview,
-      meta: { ...meta, mime },
+      meta: { ...stats, mime, contentType },
       result,
       source: 'gateway',
       contentUrl,
@@ -210,14 +227,15 @@ const fetchIPFSContentFromGateway = async (
 type fetchContentOptions = {
   controller?: AbortController;
   node?: IpfsNode;
+  headers?: Record<string, string>;
 };
 
 async function fetchIpfsContent(
   cid: string,
   source: IpfsContentSource,
   options: fetchContentOptions
-): Promise<IPFSContentMaybe> {
-  const { node, controller } = options;
+): Promise<Option<IPFSContent>> {
+  const { node, controller, headers } = options;
 
   try {
     switch (source) {
@@ -226,7 +244,7 @@ async function fetchIpfsContent(
       case 'node':
         return fetchIPFSContentFromNode(cid, node, controller);
       case 'gateway':
-        return fetchIPFSContentFromGateway(cid, node, controller);
+        return fetchIPFSContentFromGateway(cid, node, controller, headers);
       default:
         return undefined;
     }
@@ -241,7 +259,7 @@ const getIPFSContent = async (
   node?: IpfsNode,
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
-): Promise<IPFSContentMaybe> => {
+): Promise<Option<IPFSContent>> => {
   const dataRsponseDb = await loadIPFSContentFromDb(cid);
   if (dataRsponseDb !== undefined) {
     return dataRsponseDb;

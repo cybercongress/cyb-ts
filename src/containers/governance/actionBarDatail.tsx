@@ -9,7 +9,11 @@ import {
   VoteOption,
   ProposalStatus,
 } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
-import { DEFAULT_GAS_LIMITS, BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
+import {
+  DEFAULT_GAS_LIMITS,
+  BASE_DENOM,
+  MEMO_KEPLR,
+} from 'src/constants/config';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -215,7 +219,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
             <option value={VoteOption.VOTE_OPTION_NO}>No</option>
             <option value={VoteOption.VOTE_OPTION_ABSTAIN}>Abstain</option>
             <option value={VoteOption.VOTE_OPTION_NO_WITH_VETO}>
-              NoWithVeto
+              No With Veto
             </option>
           </select>
         </ActionBarContentText>
@@ -242,7 +246,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       </ActionBar>
     );
   }
-
 
   if (stage === STAGE_SUBMITTED) {
     return (

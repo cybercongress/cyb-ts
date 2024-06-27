@@ -14,6 +14,7 @@ import UnderConstruction from './UnderConstruction/UnderConstruction';
 import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
+import Soul from './Soul/Soul';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
@@ -28,7 +29,7 @@ function RobotRoutes() {
         ) : (
           <Route element={<LayoutRoot />}>
             <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
-            <Route path="soul" element={<UnderConstruction />} />
+            <Route path="soul" element={<Soul />} />
             <Route path="energy/*" element={<RoutedEnergy />} />
             <Route path="swarm" element={<Follows />} />
             <Route path="security" element={<Heroes />} />

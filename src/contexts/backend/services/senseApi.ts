@@ -194,7 +194,7 @@ export const createSenseApi = (
     await dbApi.putSyncStatus(newItem);
     new BroadcastChannelSender().postSenseUpdate([newItem]);
   },
-  putCyberlinsks: (links: LinkDto | LinkDto[]) => dbApi.putCyberlinks(links),
+  putCyberlink: (links: LinkDto | LinkDto[]) => dbApi.putCyberlinks(links),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getFriendItems: async (userAddress: NeuronAddress) => {
     if (!myAddress) {

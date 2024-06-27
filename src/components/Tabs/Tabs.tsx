@@ -9,7 +9,7 @@ type optionsProps = {
   text?: ReactNode;
 };
 
-export type Props = {
+type Props = {
   options: optionsProps[];
   selected: string;
 };

@@ -6,7 +6,10 @@ import {
   BehaviorSubject,
 } from 'rxjs';
 
-import { EntryType } from 'src/services/CozoDb/types/entities';
+import {
+  EntryType,
+  SyncQueueJobType,
+} from 'src/services/CozoDb/types/entities';
 
 import { NeuronAddress } from 'src/types/base';
 import { QueuePriority } from 'src/services/QueueManager/types';
@@ -170,6 +173,7 @@ class SyncMyFriendsLoop extends BaseSyncLoop {
           const particles = links.map((t) => t.to);
           await this.particlesResolver!.enqueueBatch(
             particles,
+            SyncQueueJobType.particle,
             QueuePriority.HIGH
           );
 

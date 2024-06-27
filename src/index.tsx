@@ -40,10 +40,12 @@ import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
 import BackendProvider from './contexts/backend/backend';
+
 import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
 
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
+import ScriptingProvider from './contexts/scripting/scripting';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -111,12 +113,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <BackendProvider>
-                          <DeviceProvider>
-                            <AdviserProvider>
-                              {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                              {children}
-                            </AdviserProvider>
-                          </DeviceProvider>
+                          <ScriptingProvider>
+                            <DeviceProvider>
+                              <AdviserProvider>
+                                {/* <ErrorBoundary>{children}</ErrorBoundary> */}
+                                {children}
+                              </AdviserProvider>
+                            </DeviceProvider>
+                          </ScriptingProvider>
                         </BackendProvider>
                       </ApolloProvider>
                     </DataProvider>

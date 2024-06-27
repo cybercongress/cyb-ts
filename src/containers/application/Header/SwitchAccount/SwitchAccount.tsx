@@ -1,16 +1,17 @@
-import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useMemo, useRef } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
+import { Link, useLocation } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
-import { useAppSelector } from 'src/redux/hooks';
 import Pill from 'src/components/Pill/Pill';
 import { useSigningClient } from 'src/contexts/signerClient';
+import useIsOnline from 'src/hooks/useIsOnline';
+import { useAppSelector } from 'src/redux/hooks';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { useBackend } from 'src/contexts/backend/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
@@ -91,6 +92,7 @@ function AccountItem({
 function SwitchAccount() {
   const { signerReady } = useSigningClient();
   const { isIpfsInitialized } = useBackend();
+  const isOnline = useIsOnline();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -179,9 +181,10 @@ function SwitchAccount() {
               </button>
             )}
             {isReadOnly && <Pill color="yellow" text="read only" />}
-            {!isReadOnly && !signerReady && (
+            {!isReadOnly && !signerReady && isOnline && (
               <Pill color="red" text="switch keplr" />
             )}
+            {!isOnline && <Pill color="red" text="offline" />}
             <Karma address={useGetAddress} />
           </div>
         )}
@@ -195,8 +198,10 @@ function SwitchAccount() {
         >
           <div
             className={cx(styles.containerAvatarConnect, {
-              [styles.containerAvatarConnectFalse]: !isIpfsInitialized,
-              [styles.containerAvatarConnectTrueGreen]: isIpfsInitialized,
+              [styles.containerAvatarConnectFalse]:
+                !isIpfsInitialized || !isOnline,
+              [styles.containerAvatarConnectTrueGreen]:
+                isIpfsInitialized && isOnline,
             })}
           >
             <AvataImgIpfs

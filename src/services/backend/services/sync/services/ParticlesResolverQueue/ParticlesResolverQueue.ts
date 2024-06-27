@@ -8,27 +8,68 @@ import {
   combineLatest,
   share,
   EMPTY,
+  Subject,
+  first,
 } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { broadcastStatus } from 'src/services/backend/channels/broadcastStatus';
 import { ParticleCid } from 'src/types/base';
-import { SyncQueueStatus } from 'src/services/CozoDb/types/entities';
+import {
+  SyncQueueJobType,
+  SyncQueueStatus,
+} from 'src/services/CozoDb/types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { asyncIterableBatchProcessor } from 'src/utils/async/iterable';
 
-import DbApi from '../../../DbApi/DbApi';
+import { enqueueParticleEmbeddingMaybe } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
+import { PATTERN_COSMOS, PATTERN_CYBER } from 'src/constants/patterns';
+import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
+import { Option } from 'src/types';
+
+import { IPFSContent } from 'src/services/ipfs/types';
 import { FetchIpfsFunc } from '../../types';
 import { ServiceDeps } from '../types';
 import { SyncQueueItem } from './types';
 import { MAX_DATABASE_PUT_SIZE } from '../consts';
 
+import DbApi from '../../../DbApi/DbApi';
+
 const QUEUE_BATCH_SIZE = 100;
+
+const getContentToEmbed = async (content: IPFSContent) => {
+  const contentType = content?.meta?.contentType || '';
+
+  // create embedding for allowed content
+  if (contentType === 'text') {
+    return [contentType, content.textPreview];
+  }
+
+  return [contentType, undefined];
+};
+
+export const getTextContentIfShouldEmbed = async (content: IPFSContent) => {
+  const [contentType, data] = await getContentToEmbed(content);
+
+  let shouldEmbed = contentType === 'text' && !!data;
+
+  shouldEmbed =
+    shouldEmbed &&
+    (!data!.match(PATTERN_COSMOS) || !data!.match(PATTERN_CYBER));
+
+  return shouldEmbed ? data : undefined;
+};
 
 class ParticlesResolverQueue {
   public isInitialized$: Observable<boolean>;
 
-  private db: DbApi | undefined;
+  private db: Option<DbApi>;
+
+  private embeddingApi: Option<EmbeddingApi>;
+
+  private get canEmbed() {
+    return !!this.embeddingApi;
+  }
 
   private waitForParticleResolve: FetchIpfsFunc;
 
@@ -55,10 +96,22 @@ class ParticlesResolverQueue {
 
     this.waitForParticleResolve = deps.waitForParticleResolve;
 
-    deps.dbInstance$.subscribe(async (db) => {
-      this.db = db;
-      await this.loadSyncQueue();
+    deps.embeddingApi$.subscribe((embeddingApi) => {
+      this.embeddingApi = embeddingApi;
+      // if embedding function is provided, retriger the queue
+      if (this.queue.size > 0) {
+        this._syncQueue$.next(this.queue);
+      }
     });
+
+    deps.dbInstance$
+      .pipe(
+        first((value) => value !== undefined) // Automatically unsubscribes after the first valid value
+      )
+      .subscribe(async (db) => {
+        this.db = db;
+        await this.loadSyncQueue();
+      });
 
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
@@ -66,6 +119,37 @@ class ParticlesResolverQueue {
     ]).pipe(
       map(([dbInstance, ipfsInstance]) => !!ipfsInstance && !!dbInstance)
     );
+  }
+
+  private async resolveIpfsParticle(id: ParticleCid, priority: QueuePriority) {
+    return this.waitForParticleResolve(id, priority)
+      .then(async ({ status, result }) => {
+        const isResolved = status !== 'not_found';
+        if (!isResolved || !result) {
+          return false;
+        }
+
+        await enqueueParticleEmbeddingMaybe(result);
+        return true;
+      })
+      .catch(() => false);
+  }
+
+  private async saveEmbedding(cid: ParticleCid, text: string) {
+    try {
+      const hasItem = await this.db!.existEmbedding(cid);
+
+      if (!hasItem) {
+        const vec = await this.embeddingApi!.createEmbedding(text);
+
+        const result = await this.db!.putEmbedding(cid, vec);
+      }
+
+      return true;
+    } catch (err) {
+      console.error(`saveEmbedding error: ${cid} - ${text} `, err.toString());
+      return false;
+    }
   }
 
   private async processSyncQueue(pendingItems: SyncQueueItem[]) {
@@ -81,32 +165,40 @@ class ParticlesResolverQueue {
     let i = batchSize;
     await Promise.all(
       pendingItems.map(async (item) => {
-        const { id } = item;
+        const { id, jobType, data } = item;
+
+        let jobPromise = Promise.resolve(false);
+
+        if (jobType === SyncQueueJobType.embedding && data) {
+          jobPromise = this.saveEmbedding(id, data as string);
+        } else if (jobType === SyncQueueJobType.particle) {
+          jobPromise = this.resolveIpfsParticle(id, QueuePriority.MEDIUM);
+        }
+
         // eslint-disable-next-line no-await-in-loop
-        return this.waitForParticleResolve(id, QueuePriority.MEDIUM).then(
-          async (result) => {
-            if (result.status === 'not_found') {
-              await this.db!.updateSyncQueue({
-                id,
-                status: SyncQueueStatus.error,
-              });
-            } else {
-              await this.db!.removeSyncQueue(id);
-            }
-
-            const queue = this._syncQueue$.value;
-            queue.delete(id);
-            i--;
-            this._syncQueue$.next(queue);
-
-            this.statusApi.sendStatus(
-              'in-progress',
-              `processing batch ${batchSize - i}/${batchSize} batch. ${
-                this.queue.size
-              } pending...`
-            );
+        return jobPromise.then(async (result) => {
+          if (result) {
+            await this.db!.removeSyncQueue({ id, jobType });
+          } else {
+            await this.db!.updateSyncQueue({
+              id,
+              jobType,
+              status: SyncQueueStatus.error,
+            });
           }
-        );
+
+          const queue = this._syncQueue$.value;
+          queue.delete(id);
+          i--;
+          this._syncQueue$.next(queue);
+
+          this.statusApi.sendStatus(
+            'in-progress',
+            `processing batch ${batchSize - i}/${batchSize} batch. ${
+              this.queue.size
+            } pending...`
+          );
+        });
       })
     );
   }
@@ -127,9 +219,15 @@ class ParticlesResolverQueue {
 
         const batchSize = QUEUE_BATCH_SIZE - executingCount;
 
+        const jobTypeFilter = (i: SyncQueueItem) =>
+          i.jobType === SyncQueueJobType.particle ||
+          (i.jobType === SyncQueueJobType.embedding && this.canEmbed);
+
         if (batchSize > 0) {
           const pendingItems = list
-            .filter((i) => i.status === SyncQueueStatus.pending)
+            .filter(
+              (i) => i.status === SyncQueueStatus.pending && jobTypeFilter(i)
+            )
             .sort((a, b) => {
               return a.priority - b.priority;
             })
@@ -166,11 +264,11 @@ class ParticlesResolverQueue {
     return this;
   }
 
-  public async fetchDirect(cid: ParticleCid) {
-    return this.waitForParticleResolve(cid, QueuePriority.URGENT);
-  }
-
-  public async enqueueBatch(cids: ParticleCid[], priority: QueuePriority) {
+  public async enqueueBatch(
+    cids: ParticleCid[],
+    jobType: SyncQueueJobType,
+    priority: QueuePriority
+  ) {
     return asyncIterableBatchProcessor(
       cids,
       (cids) =>
@@ -178,6 +276,7 @@ class ParticlesResolverQueue {
           cids.map((cid) => ({
             id: cid /* from is tweet */,
             priority,
+            jobType,
           }))
         ),
       MAX_DATABASE_PUT_SIZE
@@ -188,7 +287,9 @@ class ParticlesResolverQueue {
     if (items.length === 0) {
       return;
     }
-    await this.db!.putSyncQueue(items);
+
+    const result = await this.db!.putSyncQueue(items);
+
     const queue = this._syncQueue$.value;
 
     items.forEach((item) =>

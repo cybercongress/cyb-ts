@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { AppDispatch } from 'src/redux/store';
 import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
@@ -68,6 +68,11 @@ function App() {
   // }, [communityLoaded, community, dispatch]);
 
   useEffect(() => {
+    // tabs
+    if (matchPath(routes.senateProposal.path, location.pathname)) {
+      return;
+    }
+
     window.scrollTo(0, 0);
   }, [location.pathname]);
 

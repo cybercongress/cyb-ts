@@ -1,6 +1,8 @@
 // import { combineReducers } from 'redux';
 
 import commanderReducer from 'src/containers/application/Header/Commander/commander.redux';
+import scriptingReducer from 'src/redux/reducers/scripting';
+
 import golReducer from './gol';
 import bandwidthReducer from './bandwidth';
 import pocketReducer from '../features/pocket';
@@ -24,6 +26,7 @@ const rootReducer = {
   sense: senseReducer,
   warp: warpReducer,
   ibcDenom: ibcDenomReducer,
+  scripting: scriptingReducer,
   hub: hubReducer,
   timeHistory: timeHistoryReducer,
 };

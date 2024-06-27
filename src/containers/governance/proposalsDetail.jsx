@@ -1,7 +1,7 @@
 /* eslint-disable react/no-children-prop */
 import { useEffect, useState } from 'react';
 import { Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -15,7 +15,6 @@ import {
   getTallying,
   getProposalsDetail,
   getProposer,
-  getMinDeposit,
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
@@ -28,6 +27,7 @@ import { MainContainer } from '../portal/components';
 import ProposalsRoutes from './proposalsRoutes';
 
 import styles from './proposalsDetail.module.scss';
+import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -74,7 +74,7 @@ function ProposalsDetail({ defaultAccount }) {
   });
 
   const [totalDeposit, setTotalDeposit] = useState(0);
-  const [minDeposit, setMinDeposit] = useState(0);
+  const { paramData: minDeposit, isLoading, error } = useGovParam('deposit');
 
   useEffect(() => {
     const getProposalsInfo = async () => {
@@ -159,21 +159,6 @@ function ProposalsDetail({ defaultAccount }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
 
-  useEffect(() => {
-    const getDeposit = async () => {
-      let minDepositAmount = 0;
-      const minDepositData = await getMinDeposit();
-      if (minDepositData !== null) {
-        minDepositAmount = parseFloat(
-          minDepositData.deposit_params.min_deposit[0].amount
-        );
-      }
-
-      setMinDeposit(minDepositAmount);
-    };
-    getDeposit();
-  }, [updateFunc]);
-
   const getSubStr = (str) => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
@@ -182,15 +167,6 @@ function ProposalsDetail({ defaultAccount }) {
     }
     return string;
   };
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (location.pathname === `/senate/${proposalId}`) {
-      navigate(`/senate/${proposalId}/comments`);
-    }
-  }, [location.pathname]);
 
   return (
     <>
@@ -291,7 +267,6 @@ function ProposalsDetail({ defaultAccount }) {
         />
 
         <ProposalsRoutes
-          proposalId={proposalId}
           proposals={proposals}
           tallying={tallying}
           tally={tally}
@@ -310,23 +285,25 @@ function ProposalsDetail({ defaultAccount }) {
           update={() => setUpdateFunc((item) => item + 1)}
           addressActive={addressActive}
         />
-      ) : addressActive === null ? (
-        <ActionBar>
-          <Pane>
-            <Link
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                display: 'block',
-              }}
-              className="btn"
-              to="/keys"
-            >
-              connect
-            </Link>
-          </Pane>
-        </ActionBar>
-      ) : null}
+      ) : (
+        !addressActive && (
+          <ActionBar>
+            <Pane>
+              <Link
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  display: 'block',
+                }}
+                className="btn"
+                to="/keys"
+              >
+                connect
+              </Link>
+            </Pane>
+          </ActionBar>
+        )
+      )}
     </>
   );
 }

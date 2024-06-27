@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   FetchParticleAsync,
-  QueueItemAsyncResult,
   QueueItemOptions,
   QueueItemStatus,
   QueuePriority,
@@ -9,17 +8,18 @@ import {
 
 import {
   FetchWithDetailsFunc,
-  IPFSContentMaybe,
+  IPFSContent,
   IpfsContentSource,
 } from 'src/services/ipfs/types';
 import { useBackend } from 'src/contexts/backend/backend';
 import { proxy } from 'comlink';
+import { Option } from 'src/types';
 
 type UseIpfsContentReturn = {
   isReady: boolean;
-  status?: QueueItemStatus;
+  status: QueueItemStatus;
   source?: IpfsContentSource;
-  content: IPFSContentMaybe;
+  content: Option<IPFSContent>;
   clear?: () => Promise<void>;
   cancel?: (cid: string) => Promise<void>;
   fetchParticle?: (cid: string, rank?: number) => Promise<void>;
@@ -30,7 +30,7 @@ type UseIpfsContentReturn = {
 function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus>();
   const [source, setSource] = useState<IpfsContentSource | undefined>();
-  const [content, setContent] = useState<IPFSContentMaybe>();
+  const [content, setContent] = useState<Option<IPFSContent>>();
   const prevParentIdRef = useRef<string | undefined>();
 
   const {
@@ -49,7 +49,7 @@ function useQueueIpfsContent(parentId?: string): UseIpfsContentReturn {
         cid: string,
         status: QueueItemStatus,
         source: IpfsContentSource,
-        result: IPFSContentMaybe
+        result: Option<IPFSContent>
       ) => {
         setStatus(status);
         setSource(source);
