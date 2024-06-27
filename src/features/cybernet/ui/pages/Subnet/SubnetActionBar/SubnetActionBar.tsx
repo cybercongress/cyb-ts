@@ -23,7 +23,8 @@ enum Steps {
 function SubnetActionBar({}: Props) {
   const [step, setStep] = useState(Steps.INITIAL);
 
-  const { netuid, subnetQuery, subnetRegistrationQuery } = useCurrentSubnet();
+  const { netuid, subnetQuery, subnetRegistrationQuery, neuronsQuery } =
+    useCurrentSubnet();
 
   const address = useAppSelector(selectCurrentAddress);
 
@@ -39,6 +40,7 @@ function SubnetActionBar({}: Props) {
     setStep(Steps.INITIAL);
 
     subnetRegistrationQuery.refetch();
+    neuronsQuery.refetch();
 
     // think if need
     subnetQuery.refetch();

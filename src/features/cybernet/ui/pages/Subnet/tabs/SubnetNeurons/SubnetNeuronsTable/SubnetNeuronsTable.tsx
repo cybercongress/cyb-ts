@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link } from 'react-router-dom';
-import { SubnetNeuron } from 'src/features/cybernet/types';
+import { Delegator, SubnetNeuron } from 'src/features/cybernet/types';
 import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -140,6 +140,18 @@ function SubnetNeuronsTable({}: Props) {
 
     return stakes;
   }, [neurons]);
+
+  const registrationsByNeuron = useMemo(() => {
+    return delegatesData?.reduce<
+      Record<Delegator['delegate'], Delegator['registrations']>
+    >((acc, delegator) => {
+      const { registrations, delegate } = delegator;
+
+      acc[delegate] = registrations;
+
+      return acc;
+    }, {});
+  }, [delegatesData]);
 
   const viewedBlocks = getData(address);
   const cur = viewedBlocks?.[address]?.[netuid];
@@ -328,26 +340,23 @@ function SubnetNeuronsTable({}: Props) {
       }
     } else {
       // eslint-disable-next-line no-lonely-if
-      if (delegatesData) {
+      if (registrationsByNeuron) {
         cols.push(
           // @ts-ignore
-          columnHelper.accessor('uid', {
+          columnHelper.accessor('hotkey', {
             header: 'Registrations',
             id: TableColumnIDs.registrations,
             sortingFn: (rowA, rowB) => {
-              const aUid = rowA.original.uid;
-              const bUid = rowB.original.uid;
-
-              const a = delegatesData[aUid].registrations.length;
-              const b = delegatesData[bUid].registrations.length;
+              const a = registrationsByNeuron[rowA.original.hotkey].length;
+              const b = registrationsByNeuron[rowB.original.hotkey].length;
 
               return a - b;
             },
             cell: (info) => {
-              const uid = info.getValue();
-              const delegator = delegatesData[uid];
+              const hotkey = info.getValue();
+              const registrations = registrationsByNeuron[hotkey];
 
-              const subnets = delegator?.registrations.filter((r) => r !== 0);
+              const subnetsWithoutRoot = registrations.filter((r) => r !== 0);
 
               return (
                 <div
@@ -356,8 +365,8 @@ function SubnetNeuronsTable({}: Props) {
                     justifyContent: 'center',
                   }}
                 >
-                  {subnets.length > 0 ? (
-                    <SubnetPreviewGroup uids={subnets} />
+                  {subnetsWithoutRoot.length > 0 ? (
+                    <SubnetPreviewGroup uids={subnetsWithoutRoot} />
                   ) : (
                     '-'
                   )}
@@ -375,7 +384,7 @@ function SubnetNeuronsTable({}: Props) {
     isMLVerse,
     stakeByNeurons,
     getText,
-    delegatesData,
+    registrationsByNeuron,
     selectedContract,
     metadata,
     netuid,

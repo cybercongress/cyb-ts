@@ -1,10 +1,7 @@
-import useQueryClientMethod from './useQueryClientMethod';
-import { CyberClient } from '@cybercongress/cyber-js';
-
-type Params = Parameters<CyberClient['stakingParams']>;
+import useQueryClientMethod from '../../hooks/useQueryClientMethod';
 
 function useStakingParams() {
-  return useQueryClientMethod<Params>('stakingParams');
+  return useQueryClientMethod<'stakingParams'>('stakingParams');
 }
 
 export default useStakingParams;

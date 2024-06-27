@@ -247,6 +247,12 @@ function useCurrentSubnetGrades({
       return {};
     }
 
+    const professorsCount = neuronsQuery.data.reduce((acc, item) => {
+      return acc + Number(item.validator_permit);
+    }, 0);
+
+    console.log('professorsCount', professorsCount);
+
     return gradesToNeurons.reduce((acc, item, index) => {
       const { total, count } = Object.entries(item).reduce(
         (acc, [uid, grade]) => {
@@ -262,7 +268,7 @@ function useCurrentSubnetGrades({
         { total: 0, count: 0 }
       );
 
-      const avg = Number((total / count).toFixed(2)) || 0;
+      const avg = Number((total / professorsCount).toFixed(2)) || 0;
 
       // if (Number.isNaN(avg)) {
       //   debugger;
