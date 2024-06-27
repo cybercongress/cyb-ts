@@ -55,31 +55,32 @@ const listConfig = {
     title: 'decentralized ai is alive',
     text: (
       <>
-        behold the new{' '}
-        <Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>
+        {/*behold the new{' '}*/}
+        {/*<Link to={routes.oracle.ask.getLink('truth')}>truth medium</Link>*/}
+        <Link to={'/cyberver'}>cyberver</Link>
       </>
     ),
     description: (
       <>
-        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> is the
+        <Link to={'https://github.com/cybercongress/cyber'}>cyber</Link> is the
         protocol for unified, provable, collective learning
       </>
     ),
   },
 };
 
-const QUERY_KEY = 'type';
+// const QUERY_KEY = 'type';
 
 function OracleLanding() {
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get(QUERY_KEY);
+  // const [searchParams] = useSearchParams();
+  // const type = searchParams.get(QUERY_KEY);
 
   const [titleType, setTitleType] = useState<TitleType>(TitleType.ai);
 
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
   const { viewportWidth } = useDevice();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();

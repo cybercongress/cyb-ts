@@ -107,16 +107,30 @@ function useGetBalance(address, updateAddress) {
             addressActive
           );
           if (rewardsPropsise.total && rewardsPropsise.total.length > 0) {
-            setBalance((item) => ({
-              ...item,
-              rewards: Math.floor(
-                coinDecimals(parseFloat(rewardsPropsise.total[0].amount))
-              ),
-              total: Math.floor(
-                item.total +
+            if (rewardsPropsise.total.length === 1 || rewardsPropsise.total[0].denom === BASE_DENOM) {
+              setBalance((item) => ({
+                ...item,
+                rewards: Math.floor(
                   coinDecimals(parseFloat(rewardsPropsise.total[0].amount))
-              ),
-            }));
+                ),
+                total: Math.floor(
+                  item.total +
+                  coinDecimals(parseFloat(rewardsPropsise.total[0].amount))
+                ),
+              }));
+            }
+            else {
+              setBalance((item) => ({
+                ...item,
+                rewards: Math.floor(
+                  coinDecimals(parseFloat(rewardsPropsise.total[1].amount))
+                ),
+                total: Math.floor(
+                  item.total +
+                  coinDecimals(parseFloat(rewardsPropsise.total[1].amount))
+                ),
+              }));
+            }
           }
           const dataValidatorAddress = fromBech32(
             addressActive,
@@ -134,7 +148,7 @@ function useGetBalance(address, updateAddress) {
               ),
               total: Math.floor(
                 item.total +
-                  coinDecimals(parseFloat(commission.commission[0].amount))
+                coinDecimals(parseFloat(commission.commission[0].amount))
               ),
             }));
           }

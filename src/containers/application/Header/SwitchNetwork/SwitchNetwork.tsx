@@ -199,8 +199,8 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
               </div>
             );
           }}
-        </Transition> */}
-      {/* )} */}
+        </Transition>
+      )} */}
     </>
   );
 }

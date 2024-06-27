@@ -21,7 +21,7 @@ function Social() {
 
   return (
     <MainContainer>
-      <Display title={<DisplayTitle title="Socials" />}>
+      <Display title={<DisplayTitle title="Socials" />} noPaddingX>
         <div className={styles.wrapper}>
           <div className={styles.main}>
             <Discord />
@@ -41,16 +41,7 @@ function Social() {
             <div>👾</div>
             <span>Hub links</span>
           </LinkWindow>
-          <br />
-          <DisplayTitle inDisplay title="other" />
-          <a
-            href="mailto:info.cyb.ai@protonmail.com"
-            target="_blank"
-            rel="noreferrer noopener"
-            className={styles.email}
-          >
-            info.cyb.ai@protonmail.com
-          </a>
+
         </div>
       </Display>
     </MainContainer>

@@ -41,6 +41,7 @@ type Props = {
     onClick?: () => void;
     link?: string;
     disabled?: boolean;
+    pending?: boolean;
   };
 };
 
@@ -139,6 +140,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {button?.text && (
         <Button
           disabled={button.disabled}
+          pending={button.pending}
           link={button.link}
           onClick={button.onClick}
         >

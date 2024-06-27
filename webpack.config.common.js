@@ -9,6 +9,8 @@ const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
+console.log(process.env.CHAIN_ID);
+
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
@@ -123,6 +125,7 @@ const config = {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         include: /src/,
+        // include: [/src/, /node_modules\/typeit-react/],
         use: {
           loader: 'esbuild-loader',
           options: {

@@ -7,7 +7,7 @@ import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 function TootipContent() {
   return (
     <div style={{ width: 200 }}>
-      you receive H form staked BOOT, you can use H for investmint A and V
+      you receive {DENOM_LIQUID} form staked {BASE_DENOM}, you can use {DENOM_LIQUID} for investmint A and V
     </div>
   );
 }

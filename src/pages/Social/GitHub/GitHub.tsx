@@ -63,7 +63,7 @@ export function GitHub() {
           zIndex: 4,
         }}
       >
-        <LinkWindow to="https://github.com/cybercongress/cyb-ts">
+        <LinkWindow to="https://github.com/Snedashkovsky/pussy-ts">
           <img
             alt="github"
             style={{ width: 30, height: 30 }}
@@ -72,13 +72,21 @@ export function GitHub() {
           <span>app</span>
         </LinkWindow>
 
+        <LinkWindow to="https://github.com/greatweb/space-pussy">
+          <img
+            alt="github"
+            style={{ width: 30, height: 30 }}
+            src={githubIcon}
+          />
+          <span>node</span>
+        </LinkWindow>
+
         <LinkWindow to="https://github.com/cybercongress">
           <img
             alt="github"
             style={{ width: 30, height: 30 }}
             src={githubIcon}
           />
-
           <span>congress</span>
         </LinkWindow>
       </div>

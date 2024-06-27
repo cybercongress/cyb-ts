@@ -98,7 +98,7 @@ function Mint() {
         )}
         <br />
         choose <ValueImg text="milliampere" /> or <ValueImg text="millivolt" />{' '}
-        to mint, the amount of <ValueImg text="hydrogen" /> to invest, and the
+        to mint, the amount of <ValueImg text={DENOM_LIQUID} /> to invest, and the
         timeframe
       </p>
     );

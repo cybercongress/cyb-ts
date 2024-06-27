@@ -12,6 +12,8 @@ function useRank(cid: string) {
         return;
       }
 
+      return;
+
       const response = await queryClient.rank(cid);
 
       setRank(Number(response.rank));

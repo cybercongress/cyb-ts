@@ -1,0 +1,5 @@
+@import '../../../../../../style/mixins.scss';
+
+.installBtn {
+  @include withShareIcon;
+}

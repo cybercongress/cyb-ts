@@ -21,6 +21,8 @@ import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
+import { PreviousPageProvider } from 'src/contexts/previousPage';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 
 export const PORTAL_ID = 'portal';
 
@@ -68,7 +70,11 @@ function App() {
 
   useEffect(() => {
     // tabs
-    if (matchPath(routes.senateProposal.path, location.pathname)) {
+    if (
+      [cybernetRoutes.verse.path, routes.senateProposal.path].some((path) => {
+        return matchPath(path, location.pathname);
+      })
+    ) {
       return;
     }
 
@@ -101,20 +107,28 @@ function App() {
   // };
 
   return (
-    <MainLayout>
-      <>
-        {/* not move portal order */}
-        {(location.pathname.includes('/brain') ||
-          location.pathname.includes('/oracle2') ||
-          location.pathname.includes('/graph')) && (
-          <div id={PORTAL_ID} className={styles.portal} />
-        )}
+    <PreviousPageProvider>
+      <MainLayout>
+        <>
+          {/* not move portal order */}
+          {(location.pathname.includes('/brain') ||
+            location.pathname.includes('/oracle2') ||
+            location.pathname.includes('/graph')) && (
+            <div id={PORTAL_ID} className={styles.portal} />
+          )}
 
-        {!(location.pathname === '/') && <AdviserContainer />}
+          {![
+            routes.home.path,
+            routes.teleport.path,
+            // cybernetRoutes.verse.path,
+          ].some((path) => {
+            return matchPath(path, location.pathname);
+          }) && <AdviserContainer />}
 
-        <Outlet />
-      </>
-    </MainLayout>
+          <Outlet />
+        </>
+      </MainLayout>
+    </PreviousPageProvider>
   );
 }
 

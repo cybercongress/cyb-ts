@@ -1,7 +1,7 @@
 import { NetworkConfig, Networks } from 'src/types/networks';
 
 type NetworksList = {
-  [key in Networks.BOSTROM | Networks.SPACE_PUSSY]: NetworkConfig;
+  [key in Networks.SPACE_PUSSY | Networks.BOSTROM]: NetworkConfig;
 };
 
 const defaultNetworks: NetworksList = {
