@@ -1,5 +1,6 @@
 import { Citizenship } from 'src/types/citizenship';
 import { KeyValueString, TabularKeyValues } from 'src/types/data';
+import { JsonRecord } from 'src/utils/localStorage';
 
 type ParamsContext = {
   path?: string[];
@@ -17,7 +18,7 @@ export type UserContext = {
 type ScriptContext = {
   params: ParamsContext;
   user: UserContext;
-  secrets: TabularKeyValues;
+  secrets: JsonRecord;
 };
 
 type EngineContext = Omit<ScriptContext, 'secrets'> & {

@@ -34,7 +34,8 @@ export async function jsAddContenToIpfs(content) {
   return runeDeps.addContenToIpfs(content);
 }
 
-export async function jsPromptToOpenAI(prompt, apiKey, params) {
+export async function jsPromptToOpenAI(prompt, apiKey, params, refId) {
+  console.log('jsPromptToOpenAI', prompt, apiKey, params, refId);
   const result = await promptToOpenAI(prompt, apiKey, params);
   return result;
 }

@@ -41,7 +41,10 @@ console.log('----isParticleScriptEnabled', isParticleScriptEnabled);
 const initialScriptEntrypoints: ScriptEntrypoints = {
   particle: {
     title: 'Personal processor',
-    script: loadStringFromLocalStorage('particle', defaultParticleScript),
+    script: loadStringFromLocalStorage(
+      'particle',
+      defaultParticleScript
+    ) as string,
     enabled: !!isParticleScriptEnabled,
   },
   // myParticle: {
@@ -62,12 +65,12 @@ const initialState: SliceState = {
   },
 };
 
-export function setSecrets(secrets: TabularKeyValues): AppThunk {
-  return (dispatch) => {
-    saveJsonToLocalStorage('secrets', secrets);
-    dispatch(setContext({ name: 'secrets', item: secrets }));
-  };
-}
+// export function setSecrets(secrets: TabularKeyValues): AppThunk {
+//   return (dispatch) => {
+//     saveJsonToLocalStorage('secrets', secrets);
+//     dispatch(setContext({ name: 'secrets', item: secrets }));
+//   };
+// }
 
 const slice = createSlice({
   name: 'scripting',
@@ -93,6 +96,17 @@ const slice = createSlice({
         state.scripts.entrypoints[name].script = code;
       }
     },
+    setSecret: (
+      state,
+      { payload }: PayloadAction<{ key: string; value: string }>
+    ) => {
+      state.context.secrets[payload.key] = payload.value;
+      saveJsonToLocalStorage('secrets', state.context.secrets);
+    },
+    removeSecret: (state, { payload }: PayloadAction<{ key: string }>) => {
+      delete state.context.secrets[payload.key];
+      saveJsonToLocalStorage('secrets', state.context.secrets);
+    },
     setEntrypointEnabled: (
       state,
       {
@@ -115,7 +129,12 @@ export const selectRuneEntypoints = (store: RootState) =>
 
 export type ScriptingActionTypes = SliceActions<typeof slice.actions>;
 
-export const { setEntrypoint, setEntrypointEnabled, setContext } =
-  slice.actions;
+export const {
+  setEntrypoint,
+  setEntrypointEnabled,
+  setContext,
+  setSecret,
+  removeSecret,
+} = slice.actions;
 
 export default slice.reducer;

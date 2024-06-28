@@ -5,6 +5,8 @@ import { ActionBar, Pane, Text } from '@cybercongress/gravity';
 import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { useBackend } from 'src/contexts/backend/backend';
 import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
+import { KEY_TYPE } from 'src/pages/Keys/types';
+
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -22,6 +24,7 @@ import AddFileButton from '../buttons/AddFile/AddFile';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
+const imgSecrets = require('../../image/secrets.svg');
 
 const T = new LocalizedStrings(i18n);
 
@@ -405,7 +408,7 @@ export function ConnectAddress({
   selectMethodFunc,
   selectMethod,
   selectNetwork,
-  connctAddress,
+  connectAddress,
   keplr,
   onClickBack,
 }) {
@@ -413,16 +416,16 @@ export function ConnectAddress({
     <ActionBarContainer
       button={{
         disabled: !selectNetwork || !selectMethod,
-        text: 'Connect',
-        onClick: connctAddress,
+        text: selectMethod === KEY_TYPE.secrets ? 'Add' : 'Connect',
+        onClick: connectAddress,
       }}
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
         {keplr ? (
           <ButtonIcon
-            onClick={() => selectMethodFunc('keplr')}
-            active={selectMethod === 'keplr'}
+            onClick={() => selectMethodFunc(KEY_TYPE.keplr)}
+            active={selectMethod === KEY_TYPE.keplr}
             img={imgKeplr}
             text="keplr"
           />
@@ -439,10 +442,16 @@ export function ConnectAddress({
         )}
 
         <ButtonIcon
-          onClick={() => selectMethodFunc('read-only')}
-          active={selectMethod === 'read-only'}
+          onClick={() => selectMethodFunc(KEY_TYPE.readOnly)}
+          active={selectMethod === KEY_TYPE.readOnly}
           img={imgRead}
           text="read-only"
+        />
+        <ButtonIcon
+          onClick={() => selectMethodFunc(KEY_TYPE.secrets)}
+          active={selectMethod === KEY_TYPE.secrets}
+          img={imgSecrets}
+          text="secrets"
         />
       </Pane>
       <span style={{ fontSize: '18px' }}>in</span>

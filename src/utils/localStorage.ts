@@ -8,6 +8,8 @@ type StringTypeKeys =
   | `${ScriptEntrypointNames[0]}_enabled`
   | `${ScriptEntrypointNames[1]}_enabled`;
 
+export type JsonRecord = Record<string, string | number | boolean>;
+
 const jsonKeyMap: Record<JsonTypeKeys, string> = {
   secrets: 'secrets',
 };
@@ -25,13 +27,13 @@ const keyValuesToObject = (data: KeyValueString[]) => {
   );
 };
 
-const saveJsonToLocalStorage = (storageKey: JsonTypeKeys, data: Object) => {
+const saveJsonToLocalStorage = (storageKey: JsonTypeKeys, data: JsonRecord) => {
   localStorage.setItem(jsonKeyMap[storageKey], JSON.stringify(data));
 };
 
 const loadJsonFromLocalStorage = (
   storageKey: JsonTypeKeys,
-  defaultData: Object
+  defaultData: JsonRecord = {}
 ) => {
   const raw = localStorage.getItem(jsonKeyMap[storageKey]);
   return raw ? JSON.parse(raw) : defaultData;

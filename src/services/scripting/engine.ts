@@ -4,11 +4,21 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { TabularKeyValues } from 'src/types/data';
 import { keyValuesToObject } from 'src/utils/localStorage';
+import { entityToDto } from 'src/utils/dto';
 
 import { mapObjIndexed } from 'ramda';
 import { removeBrokenUnicode } from 'src/utils/string';
 
-import { extractRuneScript } from './helpers';
+import {
+  BehaviorSubject,
+  ReplaySubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+} from 'rxjs';
+
+import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
+import runtimeScript from 'src/services/scripting/rune/runtime.rn';
 
 import {
   ScriptCallback,
@@ -22,29 +32,33 @@ import {
   ScriptMyCampanion,
 } from './types';
 
-import runtimeScript from './rune/runtime.rn';
-import {
-  BehaviorSubject,
-  ReplaySubject,
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  share,
-} from 'rxjs';
+import { extractRuneScript } from './helpers';
 
-const compileConfig = {
-  budget: 1_000_000,
-  experimental: false,
-  instructions: true,
-  options: [],
-};
-
-type CompilerParams = {
+type RuneEntrypoint = {
   readOnly: boolean;
   execute: boolean;
   funcName: string;
   funcParams: EntrypointParams;
-  config: typeof compileConfig;
+  params: Object; // context data
+  input: string; // main code
+  script: string; // runtime code
+};
+
+const compileConfig = {
+  budget: 1_000_000,
+  experimental: false,
+  instructions: false,
+  options: [],
+};
+
+const defaultRuneEntrypoint: RuneEntrypoint = {
+  readOnly: false,
+  execute: true,
+  funcName: 'main',
+  funcParams: {},
+  params: {},
+  input: defaultParticleScript,
+  script: runtimeScript,
 };
 
 const toRecord = (item: TabularKeyValues) =>
@@ -54,39 +68,6 @@ export type LoadParams = {
   entrypoints: ScriptEntrypoints;
   secrets: TabularKeyValues;
 };
-
-// export interface RuneEngine {
-//   pushContext<K extends keyof ScriptContext>(
-//     key: K,
-//     value: ScriptContext[K]
-//   ): void;
-//   popContext(names: (keyof ScriptContext)[]): void;
-//   setEntrypoints(entrypoints: ScriptEntrypoints): void;
-//   // getSingleDep<T extends keyof EngineDeps>(name: T): EngineDeps[T];
-
-//   load(params: LoadParams): Promise<void>;
-//   init(): Promise<void>;
-//   run(
-//     script: string,
-//     compileParams: Partial<CompilerParams>,
-//     callback?: ScriptCallback
-//   ): Promise<ScriptExecutionResult>;
-//   askCompanion(
-//     cid: string,
-//     contentType: string,
-//     content: string,
-//     callback?: ScriptCallback
-//   ): Promise<ScriptMyCampanion>;
-//   personalProcessor(
-//     params: ScriptParticleParams
-//   ): Promise<ScriptParticleResult>;
-//   executeFunction(
-//     script: string,
-//     funcName: string,
-//     params: EntrypointParams
-//   ): Promise<ScriptParticleResult>;
-//   executeCallback(refId: string, data: any): Promise<void>;
-// }
 
 // eslint-disable-next-line import/prefer-default-export
 function enigine() {
@@ -150,17 +131,9 @@ function enigine() {
     entrypoints$.next(entrypoints);
   };
 
-  const defaultCompilerParams: CompilerParams = {
-    readOnly: false,
-    execute: true,
-    funcName: 'main',
-    funcParams: {},
-    config: compileConfig,
-  };
-
   const run = async (
     script: string,
-    compileParams: Partial<CompilerParams>,
+    compileParams: Partial<RuneEntrypoint>,
     callback?: ScriptCallback
   ) => {
     const refId = uuidv4().toString();
@@ -171,22 +144,23 @@ function enigine() {
       refId,
     };
     const compilerParams = {
-      ...defaultCompilerParams,
+      ...defaultRuneEntrypoint,
       ...compileParams,
+      input: script,
+      script: runtimeScript,
+      params: scriptParams,
     };
-    const outputData = await compile(
-      script,
-      runtimeScript,
-      scriptParams,
-      compilerParams
-    );
+
+    const outputData = await compile(compilerParams, compileConfig);
+
+    // Parse the JSON string
     const { result, error } = outputData;
 
     try {
       scriptCallbacks.delete(refId);
 
       return {
-        ...outputData,
+        ...entityToDto(outputData),
         error,
         result: result
           ? JSON.parse(removeBrokenUnicode(result))
