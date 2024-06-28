@@ -12,7 +12,7 @@ function Weights({}: Props) {
 
   return (
     <div>
-      <Display noPaddingX>
+      <Display noPadding>
         <WeightsTable />
       </Display>
 
