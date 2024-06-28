@@ -1,7 +1,5 @@
-@import '../../components/containerGradient/Display/Display.module.scss';
-
-.addresses {
-  position: relative;
-  top: -$display-padding-top;
-  margin-bottom: -(calc($display-padding-top * 2));
+.wrapper {
+  > div {
+    padding-right: 20px;
+  }
 }

@@ -187,3 +187,9 @@ $animation-time: 2.3s;
     opacity: 1;
   }
 }
+
+.typer {
+  &::before {
+    position: absolute;
+  }
+}

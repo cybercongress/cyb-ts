@@ -174,7 +174,6 @@ function ContainerGradient({
                   })}
                 >
                   <DisplayTitle
-                    // inDisplay
                     title={useTitle(state)}
                     animationState={state}
                     color={styleLampTitle}

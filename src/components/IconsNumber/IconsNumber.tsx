@@ -2,15 +2,17 @@ import BigNumber from 'bignumber.js';
 import hydrogen from '../../image/hydrogen.svg';
 import { boot } from 'images/large-green.png';
 import React from 'react';
+import Tooltip from '../tooltip/tooltip';
 
 enum TypesEnum {
   'karma' = 'karma',
   'hydrogen' = 'hydrogen',
   'energy' = 'energy',
   'boot' = 'boot',
+  'pussy' = 'pussy',
 }
 
-type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
+// type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
 
 const icons = {
   [TypesEnum.karma]: '🔮',
@@ -26,6 +28,7 @@ const icons = {
     />
   ),
   [TypesEnum.energy]: '🔋',
+  [TypesEnum.pussy]: '🟣',
 };
 
 // TODO: refactor
@@ -80,7 +83,17 @@ export default function IconsNumber({ value, type }) {
 
   return (
     <>
-      {number} {i}
+      {number}{' '}
+      <Tooltip
+        contentStyle={{
+          display: 'inline-block',
+        }}
+        tooltip={
+          value?.toLocaleString()?.replaceAll(',', ' ') + ' ' + icons[type]
+        }
+      >
+        {i}
+      </Tooltip>
     </>
   );
 }

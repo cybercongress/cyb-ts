@@ -15,6 +15,8 @@ import getHeroes from './getHeroesHook';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import styles from './Validators.module.scss';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
+import useStakingParams from 'src/features/staking/useStakingParams';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -40,16 +42,26 @@ function Validators({ defaultAccount }) {
 
   const { setAdviser } = useAdviser();
 
+  const { data: stakingParamsData } = useStakingParams();
+  const unbondingDays =
+    stakingParamsData &&
+    stakingParamsData.params.unbondingTime.seconds / 60 / 60 / 24;
+
   useEffect(() => {
     setAdviser(
       <div className={styles.info}>
-        the current undelegation period is <strong>42 days</strong>
-        <br />
-        you need to burn 1 <DenomArr denomValue="hydrogen" onlyImg /> to unstake
-        1 <DenomArr denomValue="boot" onlyImg />
+        {unbondingDays && (
+          <>
+            the current undelegation period is{' '}
+            <strong>{unbondingDays} days</strong>
+            <br />
+          </>
+        )}
+        you need to burn 1 <DenomArr denomValue={DENOM_LIQUID} onlyImg /> to
+        unstake 1 <DenomArr denomValue={BASE_DENOM} onlyImg />
       </div>
     );
-  }, [setAdviser]);
+  }, [setAdviser, unbondingDays]);
 
   useEffect(() => {
     setValidatorsData(validators);
