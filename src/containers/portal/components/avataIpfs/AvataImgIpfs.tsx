@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
-function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
+function AvatarImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   const { fetchWithDetails } = useQueueIpfsContent();
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
 
@@ -36,4 +36,4 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   );
 }
 
-export default AvataImgIpfs;
+export default AvatarImgIpfs;

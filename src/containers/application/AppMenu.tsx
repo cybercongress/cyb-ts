@@ -15,6 +15,7 @@ import hub from '../../image/temple/hub.png';
 import congress from './images/congress.png';
 
 import { routes } from '../../routes';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
 
 const itemsMenu = () => {
@@ -81,12 +82,54 @@ const itemsMenu = () => {
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
 
-    {
-      name: 'Cyberver 🟣',
-      icon: require('./images/cyberver.png'),
-      to: 'https://spacepussy.ai/cyberver',
-      subItems: [],
-    },
+    CHAIN_ID === Networks.BOSTROM
+      ? {
+          name: 'Cyberver 🟣',
+          icon: require('./images/cyberver.png'),
+          to: 'https://spacepussy.ai/cyberver',
+          subItems: [],
+        }
+      : {
+          name: 'cyberver',
+          icon: require('./images/cyberver.png'),
+          to: '/cyberver',
+          subItems: [
+            {
+              name: '👑  board',
+              to: '/cyberver/faculties/board',
+              // not good, fix
+              matchPathname: cybernetRoutes.subnet.path.replace(
+                ':nameOrUid',
+                'board'
+              ),
+            },
+            {
+              name: '🏫  faculties',
+              to: '/cyberver/faculties',
+              matchPathname: cybernetRoutes.subnets.path,
+            },
+            {
+              name: '💼  mentors',
+              to: '/cyberver/mentors',
+              matchPathname: cybernetRoutes.delegators.path,
+            },
+            {
+              name: '👨‍🎓  my mentor',
+              to: '/cyberver/mentors/my',
+              matchPathname: cybernetRoutes.myMentor.path,
+            },
+            {
+              name: '👨‍🎓  my learner',
+              to: '/cyberver/learners/my',
+              matchPathname: cybernetRoutes.myLearner.path,
+            },
+            {
+              name: '𝚺 sigma',
+              to: '/cyberver/sigma',
+            },
+          ],
+        },
+
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
@@ -146,7 +189,7 @@ const itemsMenu = () => {
       ],
     });
   }
-  return listItemMenu;
+  return listItemMenu.filter((item) => item);
 };
 
 export type MenuItems = ReturnType<typeof itemsMenu>;

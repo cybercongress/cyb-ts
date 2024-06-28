@@ -6,6 +6,7 @@ import React, { useState, useRef } from 'react';
 import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 import styles from './Select.module.scss';
 import { SelectContext, useSelectContext } from './selectContext';
+
 import useOnClickOutside from '../../hooks/useOnClickOutside';
 import LinearGradientContainer, {
   Color,
@@ -48,7 +49,7 @@ export type SelectOption = {
 
 type SelectProps = {
   valueSelect: $TsFixMe;
-  onChangeSelect: $TsFixMeFunc;
+  onChangeSelect?: $TsFixMeFunc;
   children?: React.ReactNode;
   width?: string;
   disabled?: boolean;
@@ -119,7 +120,10 @@ function Select({
     >
       <div
         style={{ width: width || '120px' }}
-        className={classNames(styles.dropDown, { [styles.small]: small })}
+        className={classNames(styles.dropDown, {
+          [styles.small]: small,
+          [styles.disabled]: disabled,
+        })}
         ref={selectContainerRef}
       >
         <div className={styles.dropDownContainer}>
@@ -130,7 +134,7 @@ function Select({
           >
             <LinearGradientContainer
               active={isOpen}
-              color={color}
+              color={disabled ? Color.Black : color}
               title={title}
             >
               <span className={styles.dropDownHeader}>{renderTitle()}</span>

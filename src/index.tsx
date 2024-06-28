@@ -46,6 +46,7 @@ import HubProvider from './contexts/hub';
 
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import ScriptingProvider from './contexts/scripting/scripting';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -99,8 +100,7 @@ if (container === null) {
 
 const root = createRoot(container);
 
-// for Storybook, WIP
-export function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <NetworksProvider>
@@ -116,8 +116,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                           <ScriptingProvider>
                             <DeviceProvider>
                               <AdviserProvider>
-                                {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                                {children}
+                                <ErrorBoundary>{children}</ErrorBoundary>
                               </AdviserProvider>
                             </DeviceProvider>
                           </ScriptingProvider>
