@@ -7,16 +7,21 @@ import styles from './Brain.module.scss';
 import { LIMIT_GRAPH } from './utils';
 import GraphView from './ui/GraphView';
 
+enum TabsKey {
+  list = 'list',
+  graph = 'graph',
+}
+
 function Brain() {
   const { address } = useRobotContext();
-  const [selected, setSelected] = useState('treed');
+  const [selected, setSelected] = useState(TabsKey.list);
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
     setAdviser(
       <>
         neurons public knowledge cybergraph <br />
-        {selected === 'graph' && (
+        {selected === TabsKey.graph && (
           <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
         )}
       </>
@@ -25,13 +30,11 @@ function Brain() {
 
   let content;
 
-  console.log('selected', selected);
-
-  if (selected === 'treed') {
+  if (selected === TabsKey.list) {
     content = <TreedView address={address} />;
   }
 
-  if (selected === 'graph') {
+  if (selected === TabsKey.graph) {
     content = <GraphView address={address} />;
   }
 
@@ -39,7 +42,7 @@ function Brain() {
     <div className={styles.wrapper}>
       <div className={styles.tabs}>
         <Tabs
-          options={['treed', 'graph'].map((item) => {
+          options={[TabsKey.list, TabsKey.graph].map((item) => {
             return { key: item, onClick: () => setSelected(item) };
           })}
           selected={selected}
