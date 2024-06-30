@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Nullable } from 'src/types';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
+import { getPassport } from 'src/services/passports/lcd';
 
 const AMOUNT_ALL_STAGE = 90;
 const NEW_RELEASE = 1000; // release 1% every 1k claims
@@ -148,10 +149,11 @@ const checkGift = async (address) => {
 
 const queryContractSmartPassport = async (client, query) => {
   try {
-    const response = await client.queryContractSmart(
-      CONTRACT_ADDRESS_PASSPORT,
-      query
-    );
+    const response = await getPassport(query);
+    // const response = await client.queryContractSmart(
+    //   CONTRACT_ADDRESS_PASSPORT,
+    //   query
+    // );
     return response;
   } catch (error) {
     console.log('error', error);

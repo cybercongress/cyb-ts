@@ -34,7 +34,7 @@ function SoulCompanion({
       if (details.type && details.type !== 'text' && details.text) {
         setStatus('done');
         setMetaItems([
-          { type: 'text', text: `Skip companion for '${details.content}'.` },
+          [{ type: 'text', text: `Skip companion for '${details.content}'.` }],
         ]);
         return;
       }
@@ -65,21 +65,23 @@ function SoulCompanion({
     );
   }
   return (
-    <div>
-      <ul className={styles.itemLinks}>
-        {metaItems.map((item, index) => (
-          <li key={`soul_comp_${index}`}>
-            {item.type === 'text' && (
-              <p className={styles.itemText}>{item.text}</p>
-            )}
-            {item.type === 'link' && (
-              <Link className={styles.itemLink} to={item.url}>
-                {shortenString(item.title, 64)}
-              </Link>
-            )}
-          </li>
-        ))}
-      </ul>
+    <div className={styles.soulCompanion}>
+      {metaItems.map((row, index) => (
+        <ul className={styles.itemLinks} key={`soul_comp_row_${index}`}>
+          {row.map((item, index) => (
+            <li key={`soul_comp_col_${index}`}>
+              {item.type === 'text' && (
+                <p className={styles.itemText}>{item.text}</p>
+              )}
+              {item.type === 'link' && (
+                <Link className={styles.itemLink} to={item.url}>
+                  {shortenString(item.title, 64)}
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      ))}
     </div>
   );
 }

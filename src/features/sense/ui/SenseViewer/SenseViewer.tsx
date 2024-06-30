@@ -113,7 +113,10 @@ function SenseViewer({ adviser, selected }: Props) {
                 <Karma address={selected} />
               </div>
 
-              <Account address={selected} avatar />
+              {/* fix this check in parent */}
+              {selected?.includes('bostrom') && (
+                <Account address={selected} avatar />
+              )}
               <Link to={routes.neuron.getLink(selected)}>
                 <HydrogenBalance address={selected} />
               </Link>

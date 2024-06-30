@@ -15,7 +15,6 @@ import { RuneEngine } from './engine';
 import DbApiWrapper from '../backend/services/DbApi/DbApi';
 import { IpfsApi } from '../backend/workers/background/api/ipfsApi';
 import { EmbeddingApi } from '../backend/workers/background/api/mlApi';
-import { Observable } from '@apollo/client';
 
 export type RuneInnerDeps = {
   ipfsApi: Option<IpfsApi>;

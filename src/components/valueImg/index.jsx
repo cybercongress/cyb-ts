@@ -12,8 +12,9 @@ const pool = require('../../image/gravitydexPool.png');
 const ibc = require('../../image/ibc-unauth.png');
 const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
-const pussy = require('../../image/large-purple-circle.png');
 const customNetwork = require('../../image/large-orange-circle.png');
+
+const pussy = '🟣';
 
 function ValueImg({
   text,

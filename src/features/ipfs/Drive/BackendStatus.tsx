@@ -19,7 +19,7 @@ import { downloadJson } from 'src/utils/json';
 import { useBackend } from 'src/contexts/backend/backend';
 import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
 import { isObject } from 'lodash';
-import { promptToOpenAI } from 'src/services/scripting/services/llmRequests/openai';
+import { openAICompletion } from 'src/services/scripting/services/llmRequests/openai';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {

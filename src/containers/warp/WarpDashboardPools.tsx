@@ -35,7 +35,7 @@ function WarpDashboardPools() {
     } else {
       setAdviser(
         <span>
-          warp is power dex for all things cyber.{' '}
+          warp is power dex for all things cyber <br />
           <LinkWindow to="https://api.warp-dex.cyb.ai/docs">
             api docs
           </LinkWindow>

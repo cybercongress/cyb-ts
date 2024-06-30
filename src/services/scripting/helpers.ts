@@ -1,4 +1,5 @@
 import { Nullable } from 'src/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function getScriptFromParticle(cid?: Nullable<string>) {
   throw new Error('Not implemented');
@@ -50,3 +51,5 @@ export function extractRuneScript(markdown: string) {
   // if no rune tag, consider this like pure script
   return hasRune ? script : md;
 }
+
+export const generateRefId = () => uuidv4().toString();

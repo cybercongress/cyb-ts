@@ -4,20 +4,20 @@ import { localStorageKeys } from 'src/constants/localStorageKeys';
 import Header from 'src/containers/application/Header/Header';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
-import { Link } from 'react-router-dom';
-import Commander from 'src/containers/application/Header/Commander/Commander';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 import TimeFooter from 'src/features/TimeFooter/TimeFooter';
+import { Networks } from 'src/types/networks';
+import { CHAIN_ID } from 'src/constants/config';
+import { Link } from 'react-router-dom';
+import CircularMenu from 'src/components/appMenu/CircularMenu';
+import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
-import styles from './Main.module.scss';
-import ActionBar from './ui/ActionBar';
-import CircularMenu from 'src/components/appMenu/CircularMenu';
-import TimeHistory from 'src/features/TimeHistory/TimeHistory';
+import styles from './Main.module.scss'; 
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -30,6 +30,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
+
 
   // for new user show menu, else no + animation
   const [openMenu, setOpenMenu] = useState(
@@ -86,8 +87,13 @@ function MainLayout({ children }: { children: JSX.Element }) {
           isOpen: openMenu,
         }}
       />
-      <SenseButton className={styles.senseBtn} />
+
+      {CHAIN_ID === Networks.BOSTROM && (
+        <SenseButton className={styles.senseBtn} />
+      )}
       <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
+
+
       {children}
       <footer>
         <CircularMenu circleSize={graphSize} />
