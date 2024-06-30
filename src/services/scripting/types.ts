@@ -76,7 +76,7 @@ type MetaTextComponent = {
 
 type ScriptMyCampanion = {
   action: 'pass' | 'answer' | 'error';
-  metaItems: (MetaLinkComponent | MetaTextComponent)[];
+  metaItems: (MetaLinkComponent | MetaTextComponent)[][];
 };
 
 // type ScriptScopeParams = {

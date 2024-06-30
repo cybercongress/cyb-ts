@@ -105,13 +105,9 @@ function enigine() {
 
   const pushContext = <K extends keyof ScriptContext>(
     name: K,
-    value: ScriptContext[K] | TabularKeyValues
+    value: ScriptContext[K] //| TabularKeyValues
   ) => {
-    if (name === 'secrets') {
-      context[name] = toRecord(value as TabularKeyValues);
-      return;
-    }
-
+    // context[name] =  toRecord(value as TabularKeyValues);
     context[name] = value;
   };
 
@@ -151,6 +147,7 @@ function enigine() {
       params: scriptParams,
     };
 
+    // console.log('-----run', scriptParams);
     const outputData = await compile(compilerParams, compileConfig);
 
     // Parse the JSON string
@@ -270,7 +267,7 @@ function enigine() {
     if (resultType === 'error') {
       return {
         action: 'error',
-        metaItems: [{ type: 'text', text: 'No particle entrypoint' }],
+        metaItems: [[{ type: 'text', text: 'No particle entrypoint' }]],
       };
     }
 
@@ -291,7 +288,7 @@ function enigine() {
       console.error('---askCompanion error', output);
       return {
         action: 'error',
-        metaItems: [{ type: 'text', text: output.error }],
+        metaItems: [[{ type: 'text', text: output.error }]],
       };
     }
 

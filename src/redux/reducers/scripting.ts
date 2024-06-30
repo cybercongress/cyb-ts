@@ -56,7 +56,7 @@ const initialScriptEntrypoints: ScriptEntrypoints = {
 
 const initialState: SliceState = {
   context: {
-    secrets: loadJsonFromLocalStorage('secrets', {}) as TabularKeyValues,
+    secrets: loadJsonFromLocalStorage('secrets', {}),
     params: {},
     user: {},
   },

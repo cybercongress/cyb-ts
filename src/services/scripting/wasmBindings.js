@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unused-modules */
 import { getFromLink, getToLink } from 'src/utils/search/utils';
 import runeDeps from './runeDeps';
-import { promptToOpenAI } from './services/llmRequests/openai';
+import { openAICompletion } from './services/llmRequests/openai';
 
 // let runeDeps;
 
@@ -34,9 +34,8 @@ export async function jsAddContenToIpfs(content) {
   return runeDeps.addContenToIpfs(content);
 }
 
-export async function jsPromptToOpenAI(prompt, apiKey, params, refId) {
-  console.log('jsPromptToOpenAI', prompt, apiKey, params, refId);
-  const result = await promptToOpenAI(prompt, apiKey, params);
+export async function jsOpenAICompletions(messages, apiKey, params, refId) {
+  const result = await openAICompletion(messages, apiKey, params);
   return result;
 }
 

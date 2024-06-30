@@ -45,15 +45,17 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    runeBackend.pushContext('secrets', secrets);
+
     const setupObservervable = async () => {
       const { isSoulInitialized$ } = runeBackend;
 
       const soulSubscription = (await isSoulInitialized$).subscribe((v) => {
-        setIsSoulInitialized(!!v);
         if (v) {
           runeRef.current = runeBackend;
           console.log('👻 soul initalized');
         }
+        setIsSoulInitialized(!!v);
       });
 
       const embeddingApiSubscription = (await embeddingApi$).subscribe(
@@ -72,28 +74,38 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     };
 
     setupObservervable();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const runeEntryPoints = useAppSelector(selectRuneEntypoints);
 
   const citizenship = useAppSelector(selectCurrentPassport);
+  const secrets = useAppSelector((state) => state.scripting.context.secrets);
 
   useEffect(() => {
-    (async () => {
-      if (citizenship) {
-        const particleCid = citizenship.extension.particle;
+    if (!isSoulInitialized || !runeRef.current) {
+      return;
+    }
 
-        await runeBackend.pushContext('user', {
-          address: citizenship.owner,
-          nickname: citizenship.extension.nickname,
-          citizenship,
-          particle: particleCid,
-        } as UserContext);
-      } else {
-        await runeBackend.popContext(['user', 'secrets']);
-      }
-    })();
-  }, [citizenship, runeBackend]);
+    if (citizenship) {
+      const particleCid = citizenship.extension.particle;
+
+      runeRef.current.pushContext('user', {
+        address: citizenship.owner,
+        nickname: citizenship.extension.nickname,
+        citizenship,
+        particle: particleCid,
+      } as UserContext);
+    } else {
+      runeRef.current.popContext(['user']);
+    }
+  }, [citizenship, isSoulInitialized]);
+
+  useEffect(() => {
+    if (isSoulInitialized && runeRef.current) {
+      runeRef.current.pushContext('secrets', secrets);
+    }
+  }, [secrets, isSoulInitialized]);
 
   useEffect(() => {
     (async () => {
