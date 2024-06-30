@@ -1,5 +1,7 @@
 import { FormatNumberTokens } from 'src/components';
 import styles from './styles.module.scss';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import { Link } from 'react-router-dom';
 
 const iconObj = {
   liquid: '💧',
@@ -7,6 +9,7 @@ const iconObj = {
   melting: '☀️',
   growth: '🎋',
   commission: '💫',
+  cyberver: '❄️',
 };
 
 function RowItem({ text, value, cap }) {
@@ -14,7 +17,12 @@ function RowItem({ text, value, cap }) {
     <div className={styles.containerRowItem}>
       <div className={styles.containerRowItemValueBalance}>
         <div className={styles.containerRowItemValueBalanceText}>
-          {text} {iconObj[text] ? iconObj[text] : ''}
+          {text === 'cyberver' ? (
+            <Link to={cybernetRoutes.sigma.getLink()}>{text}</Link>
+          ) : (
+            text
+          )}{' '}
+          {iconObj[text] ? iconObj[text] : ''}
         </div>
         <div className={styles.containerRowItemValueBalanceValue}>
           <FormatNumberTokens value={value.amount} />

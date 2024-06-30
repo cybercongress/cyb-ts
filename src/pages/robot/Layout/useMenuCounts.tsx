@@ -35,7 +35,7 @@ function useMenuCounts(address: string | null) {
   async function getTweetCount() {
     try {
       const response = await getTweet(address);
-      setTweetsCount(response.total_count);
+      setTweetsCount(response?.total_count);
     } catch (error) {
       console.error(error);
     }
@@ -105,7 +105,7 @@ function useMenuCounts(address: string | null) {
       const addressHash = await getIpfsHash(address);
       const response = await getFollowers(addressHash);
 
-      if (response.total_count) {
+      if (response?.total_count) {
         setFollowers(response.total_count);
       }
     } catch (error) {

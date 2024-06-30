@@ -1,8 +1,9 @@
 import cx from 'classnames';
 import { $TsFixMe } from 'src/types/tsfix';
+import React, { ComponentProps } from 'react';
+import { Link } from 'react-router-dom';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
-import { Link, LinkProps } from 'react-router-dom';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
@@ -41,7 +42,6 @@ export type Props = {
   link?: string;
   onClick?: () => void;
   small?: boolean;
-  reloadDocument?: LinkProps['reloadDocument'];
 };
 
 function Button({
@@ -54,7 +54,6 @@ function Button({
   onClick,
   link,
   className,
-  reloadDocument,
   small,
   ...props
 }: Props) {
@@ -92,21 +91,26 @@ function Button({
     type: 'button',
   };
 
-  // if http: will need to add <a> tag
-  // TODO: http is supported by Link
   // link can't be disabled, it is button
-  if (link && !link.includes('http:') && !disabled) {
+  if (link && !disabled) {
     Component = Link;
-    componentProps = {
+
+    const linkProps: ComponentProps<typeof Link> = {
       to: link,
-      reloadDocument,
     };
+
+    if (link.startsWith('http')) {
+      linkProps.target = '_blank';
+      linkProps.rel = 'noreferrer noopener';
+    }
+
+    componentProps = linkProps;
   }
 
   return (
     <Component
       type="button"
-      id="BtnGrd"
+      // id="BtnGrd"
       onClick={handleClick}
       className={cx(styles.containerBtnGrd, className, {
         [styles.smallBtn]: small,
