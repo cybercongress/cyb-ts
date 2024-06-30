@@ -20,7 +20,7 @@ class JsIpfsNode implements IpfsNode {
     return { gatewayUrl: CYBER_GATEWAY_URL };
   }
 
-  private _isStarted: boolean = false;
+  private _isStarted = false;
 
   get isStarted() {
     return this._isStarted;

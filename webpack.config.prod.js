@@ -32,17 +32,17 @@ module.exports = merge(commonConfig, {
         cache: true,
         sourceMap: true,
       }),
-      ...(!process.env.IPFS_DEPLOY
-        ? [
-          new CompressionWebpackPlugin({
-            filename: '[path][base].gz',
-            algorithm: 'gzip',
-            test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
-            threshold: 10240,
-            minRatio: 0.8,
-          }),
-        ]
-        : []),
+      // ...(!process.env.IPFS_DEPLOY
+      //   ? [
+      //       new CompressionWebpackPlugin({
+      //         filename: '[path][base].gz',
+      //         algorithm: 'gzip',
+      //         test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
+      //         threshold: 10240,
+      //         minRatio: 0.8,
+      //       }),
+      //     ]
+      //   : []),
     ],
   },
   plugins: [

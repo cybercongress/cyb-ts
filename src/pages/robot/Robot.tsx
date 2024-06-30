@@ -15,6 +15,7 @@ import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
 import Karma from './Karma/Karma';
 import SensePage from './SensePage';
+import Soul from './Soul/Soul';
 
 function RobotRoutes() {
   const { isOwner, isLoading, address } = useRobotContext();
@@ -47,7 +48,7 @@ function RobotRoutes() {
         <Route path="swarm" element={<FollowsTab />} />
         <Route path="brain" element={<Brain />} />
         <Route path="karma" element={<Karma />} />
-        <Route path="soul" element={<UnderConstruction />} />
+        <Route path="soul" element={<Soul />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

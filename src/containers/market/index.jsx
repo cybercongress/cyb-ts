@@ -16,6 +16,7 @@ import { coinDecimals } from '../../utils/utils';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useBackend } from 'src/contexts/backend/backend';
 import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 function ContainerGrid({ children }) {
   return (
@@ -52,7 +53,6 @@ const reduceSearchResults = (data, query) => {
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
-  const { defferedDbApi } = useBackend();
 
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
@@ -82,7 +82,8 @@ function Market({ defaultAccount }) {
           setLoadingSearch(false);
           setAllPage(Math.ceil(parseFloat(response.pagination.total) / 10));
           setPage((item) => item + 1);
-          defferedDbApi?.importCyberlinks(
+
+          enqueueLinksSave(
             response.result.map((l) => mapLinkToLinkDto(hash, l.particle))
           );
         } else {
@@ -95,7 +96,7 @@ function Market({ defaultAccount }) {
       }
     };
     getFirstItem();
-  }, [queryClient, tab, defferedDbApi, update]);
+  }, [queryClient, tab, update]);
 
   const fetchMoreData = async () => {
     // a fake async api call like which sends
@@ -104,7 +105,8 @@ function Market({ defaultAccount }) {
     const response = await searchByHash(queryClient, keywordHash, page);
     if (response.result) {
       links = reduceSearchResults(response, tab);
-      defferedDbApi?.importCyberlinks(
+
+      enqueueLinksSave(
         response.result.map((l) => mapLinkToLinkDto(keywordHash, l.particle))
       );
     }

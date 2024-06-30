@@ -12,7 +12,7 @@ function useGetPassportByAddress(accounts: any) {
   // temp for debug
   if (typeof address === 'object') {
     address = '';
-    debugger;
+    // debugger;
   }
 
   const { data, loading, error } = usePassportContract<Citizenship>({

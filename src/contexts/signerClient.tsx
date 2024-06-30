@@ -16,6 +16,7 @@ import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
 import { accountsKeplr } from 'src/utils/utils';
 import usePrevious from 'src/hooks/usePrevious';
 import { RPC_URL, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
+
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
 //   keplr: Keplr;

@@ -1,0 +1,27 @@
+.itemLinks {
+  display: flex;
+
+  list-style-type: none;
+  font-size: 14px;
+}
+
+.soulCompanion {
+  margin: -10px 0;
+}
+
+.itemText {
+  font-size: 14px;
+  display: block;
+}
+
+.itemLink {
+  margin: 0 5px;
+  display: block;
+  // white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 158px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

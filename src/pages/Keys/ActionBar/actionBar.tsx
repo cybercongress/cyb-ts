@@ -10,6 +10,8 @@ import { deleteAddress } from 'src/redux/features/pocket';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import ActionBarConnect from './actionBarConnect';
 import ActionBarKeplr from './actionBarKeplr';
+import { KEY_LIST_TYPE, KEY_TYPE } from '../types';
+import { removeSecret } from 'src/redux/reducers/scripting';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -40,9 +42,8 @@ type Props = {
   selectAccount: any;
 
   hoverCard?: string;
-  refreshTweet?: any;
-  updateTweetFunc?: any;
   updateAddress: () => void;
+  keyType: string;
 
   selectedAddress?: string;
 
@@ -58,9 +59,7 @@ function ActionBar({
   selectCard,
   selectAccount,
   hoverCard,
-  // actionBar tweet
-  refreshTweet,
-  updateTweetFunc,
+  keyType,
   selectedAddress,
   // global props
   updateAddress,
@@ -184,39 +183,28 @@ function ActionBar({
     </Button>
   );
 
+  const onDeleteClick = () => {
+    if (!selectedAddress) {
+      return;
+    }
+
+    if (keyType === KEY_LIST_TYPE.key) {
+      dispatch(deleteAddress(selectedAddress));
+      updateAddress();
+    }
+
+    dispatch(removeSecret({ key: selectedAddress }));
+  };
+
   if (selectedAddress) {
     return (
       <ActionBarGravity>
         <Pane display="flex">
           {defaultAccount.account?.cyber?.bech32 !== selectedAddress &&
+            keyType === KEY_LIST_TYPE.key &&
             buttonActivate}
 
-          <Button
-            onClick={() => {
-              dispatch(deleteAddress(selectedAddress));
-              updateAddress();
-            }}
-          >
-            Delete
-          </Button>
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === '' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane display="flex">
-          {buttonConnect}
-          {/* {defaultAccounts !== null && defaultAccounts.cyber && (
-            <Button
-              style={{ margin: '0 10px' }}
-              onClick={() => onClickDefaultAccountSend()}
-            >
-              Send
-            </Button>
-          )} */}
+          <Button onClick={onDeleteClick}>Delete</Button>
         </Pane>
       </ActionBarGravity>
     );
@@ -233,47 +221,66 @@ function ActionBar({
     );
   }
 
-  if (typeActionBar === 'noCyber' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          {connect && buttonConnect}
-          {makeActive && buttonActivate}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
+  if (stage === STAGE_INIT) {
+    if (typeActionBar === '') {
+      return (
+        <ActionBarGravity>
+          <Pane display="flex">
+            {buttonConnect}
+            {/* {defaultAccounts !== null && defaultAccounts.cyber && (
+              <Button
+                style={{ margin: '0 10px' }}
+                onClick={() => onClickDefaultAccountSend()}
+              >
+                Send
+              </Button>
+            )} */}
+          </Pane>
+        </ActionBarGravity>
+      );
+    }
 
-  if (typeActionBar === 'keplr' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          {connect && buttonConnect}
-          {keplr && (
+    if (typeActionBar === 'noCyber') {
+      return (
+        <ActionBarGravity>
+          <Pane>
+            {connect && buttonConnect}
+            {makeActive && buttonActivate}
+          </Pane>
+        </ActionBarGravity>
+      );
+    }
+    if (typeActionBar === KEY_TYPE.keplr) {
+      return (
+        <ActionBarGravity>
+          <Pane>
+            {connect && buttonConnect}
+            {keplr && (
+              <ButtonImgText
+                img={imgKeplr}
+                onClick={() => setStage(STAGE_SEND_KEPLR)}
+              />
+            )}
+            {makeActive && buttonActivate}
+          </Pane>
+        </ActionBarGravity>
+      );
+    }
+
+    if (typeActionBar === KEY_TYPE.readOnly) {
+      return (
+        <ActionBarGravity>
+          <Pane>
+            {connect && buttonConnect}
             <ButtonImgText
-              img={imgKeplr}
-              onClick={() => setStage(STAGE_SEND_KEPLR)}
+              img={imgRead}
+              onClick={() => setStage(STAGE_SEND_READ_ONLY)}
             />
-          )}
-          {makeActive && buttonActivate}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === 'read-only' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          {connect && buttonConnect}
-          <ButtonImgText
-            img={imgRead}
-            onClick={() => setStage(STAGE_SEND_READ_ONLY)}
-          />
-          {makeActive && buttonActivate}
-        </Pane>
-      </ActionBarGravity>
-    );
+            {makeActive && buttonActivate}
+          </Pane>
+        </ActionBarGravity>
+      );
+    }
   }
 
   if (stage === STAGE_SEND_KEPLR) {

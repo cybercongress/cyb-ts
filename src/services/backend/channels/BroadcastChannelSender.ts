@@ -34,6 +34,14 @@ class BroadcastChannelSender {
     this.channel.postMessage({ type: 'sync_entry', value: { entry, state } });
   }
 
+  public postMlSyncEntryProgress(entry: string, state: SyncProgress) {
+    // console.log('postMlSyncEntryProgress', entry, state);
+    this.channel.postMessage({
+      type: 'sync_ml_entry',
+      value: { entry, state },
+    });
+  }
+
   public postSenseUpdate(senseList: SenseListItem[]) {
     // console.log('postSenseUpdate', senseList);
     if (senseList.length > 0) {
