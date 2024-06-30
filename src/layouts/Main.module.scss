@@ -1,18 +1,74 @@
 .wrapper {
   footer {
-    a {
-      position: fixed;
-      z-index: 2;
-      right: 5vw;
-      bottom: 35px;
-      display: flex;
-      align-items: center;
+    display: flex;
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    bottom: 0px;
+    height: 40px;
+    background-color: #000;
+
+    // a {
+    //   position: fixed;
+    //   z-index: 2;
+    //   right: 5vw;
+    //   bottom: 35px;
+    //   display: flex;
+    //   align-items: center;
+    // }
+  }
+
+  .Time {
+    display: flex;
+    position: fixed;
+    right: 5vw;
+  }
+}
+
+@mixin positionFixed() {
+  position: fixed;
+  z-index: 3;
+  top: 45%;
+}
+
+.senseBtn {
+  @include positionFixed();
+}
+
+.hydrogenBtn {
+  @include positionFixed();
+  display: flex;
+  right: 0px;
+  align-items: center;
+  padding: 40px 10px;
+  background: linear-gradient(to left, black 90%, rgb(255, 255, 255, 0.5) 100%);
+  backdrop-filter: blur(15px);
+  border-radius: 50px;
+
+  > span {
+    font-size: 14px;
+    margin-top: 5px;
+    color: white;
+
+    &:last-of-type {
+      margin-top: 4px;
+      font-size: 16px;
+    }
+  }
+
+  &:hover {
+    transition: all 0.3s;
+    padding-left: 30px;
+
+    background-color: var(--green-light);
+    span {
+      color: var(--green-light);
     }
   }
 }
 
-.senseBtn {
-  position: fixed;
-  top: 45%;
-  z-index: 3;
+.hydrogenBtn div {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
 }

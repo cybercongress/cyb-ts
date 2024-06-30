@@ -7,12 +7,13 @@ import { Networks } from 'src/types/networks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import ButtonIcon from '../buttons/ButtonIcon';
-import styles from './styles.module.scss';
-import Button from '../btnGrd';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { trimString } from 'src/utils/utils';
 import { CHAIN_ID } from 'src/constants/config';
+import ButtonIcon from '../buttons/ButtonIcon';
+import styles from './styles.module.scss';
+import Button from '../btnGrd';
+import { createPortal } from 'react-dom';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -121,7 +122,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   const content = text || children;
 
-  return (
+  const contentPortal = (
     <ActionBarContainer>
       {/* <Telegram /> */}
 
@@ -150,6 +151,12 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {/* <GitHub /> */}
     </ActionBarContainer>
   );
+
+  // const portalEl = document.getElementById('portalActionBar');
+
+  // return portalEl ? createPortal(contentPortal, portalEl) : contentPortal;
+
+  return contentPortal;
 }
 
 export default ActionBar;

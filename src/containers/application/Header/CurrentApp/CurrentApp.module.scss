@@ -33,6 +33,9 @@
   border: none;
   background: transparent;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   &::before {
@@ -116,7 +119,7 @@
   padding-left: 15px;
   width: 250px;
   padding-bottom: 15px;
-  opacity: 0;
+  // opacity: 0;
   transition: 0.2s;
   backdrop-filter: blur(7px);
 
@@ -164,9 +167,8 @@
 
 .tooltipContainer {
   position: absolute;
-  left: 0px !important;
-  // top: unset !important;
-  top: 90px !important;
+  left: 0px;
+  top: 130px;
   z-index: 3;
 }
 
@@ -178,8 +180,29 @@
 }
 
 .buttonWrapper {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  height: 100px;
+
+  @media (width < 768px) {
+    grid-template-columns: 100px;
+  }
+
+}
+
+.buttonWrapper {
   @media (max-width: 480px) {
     height: unset !important;
     grid-template-columns: unset !important;
   }
+}
+
+.containerSubItems {
+  display: flex;
+  flex-direction: column;
+  background: #0000008c;
+  width: 250px;
+  backdrop-filter: blur(7px);
 }

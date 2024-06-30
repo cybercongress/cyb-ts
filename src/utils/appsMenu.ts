@@ -1,20 +1,16 @@
+import nebulaIcon from 'images/temple/nebula.png';
+import teleport from 'images/temple/teleport.png';
+import hfr from 'images/temple/hfr.png';
+import temple from 'images/temple/temple.png';
+import robot from 'images/temple/robot.png';
+import shpere from 'images/temple/shpere.png';
+import senate from 'images/temple/senate.png';
+import portal from 'images/space-pussy.svg';
+import oracle from 'images/temple/oracle.png';
+import warp from 'images/temple/warp.png';
+import congress from 'images/congress.png';
+import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
-import { Bookmarks } from '../../components/appMenu/AppMenu';
-
-import nebulaIcon from '../../image/temple/nebula.png';
-import teleport from '../../image/temple/teleport.png';
-import hfr from '../../image/temple/hfr.png';
-import temple from '../../image/temple/temple.png';
-import robot from '../../image/temple/robot.png';
-import shpere from '../../image/temple/shpere.png';
-import senate from '../../image/temple/senate.png';
-import portal from '../../image/space-pussy.svg';
-import oracle from '../../image/temple/oracle.png';
-import warp from '../../image/temple/warp.png';
-import hub from '../../image/temple/hub.png';
-import congress from './images/congress.png';
-
-import { routes } from '../../routes';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
 
@@ -24,7 +20,12 @@ const itemsMenu = () => {
       name: 'My robot',
       icon: robot,
       to: '/robot',
-      subItems: [],
+      subItems: [
+        { name: 'sense', to: 'sense' },
+        { name: 'brain', to: 'brain' },
+        { name: 'time', to: 'time' },
+        { name: 'sigma', to: 'sigma' },
+      ],
       // subItems: myRobotLinks,
     },
     {
@@ -85,13 +86,13 @@ const itemsMenu = () => {
     CHAIN_ID === Networks.BOSTROM
       ? {
           name: 'Cyberver 🟣',
-          icon: require('./images/cyberver.png'),
+          icon: require('../containers/application/images/cyberver.png'),
           to: 'https://spacepussy.ai/cyberver',
           subItems: [],
         }
       : {
           name: 'cyberver',
-          icon: require('./images/cyberver.png'),
+          icon: require('../containers/application/images/cyberver.png'),
           to: '/cyberver',
           subItems: [
             {
@@ -192,22 +193,4 @@ const itemsMenu = () => {
   return listItemMenu.filter((item) => item);
 };
 
-export type MenuItems = ReturnType<typeof itemsMenu>;
-export type MenuItem = MenuItems[0];
-
-function AppMenu({ addressActive, closeMenu }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        height: '100%',
-      }}
-    >
-      <Bookmarks items={itemsMenu(addressActive)} closeMenu={closeMenu} />
-    </div>
-  );
-}
-
-export default AppMenu;
+export default itemsMenu;

@@ -1,0 +1,40 @@
+@import '../../../../layouts/variables.module.scss';
+
+$robotHeaderHeight: 130px;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 335px 1fr;
+  grid-template-rows: 1fr;
+  justify-content: center;
+  margin-right: -2px;
+
+  height: 70vh;
+  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight);
+
+  //Display
+
+  > :first-child {
+    >div {
+      height: 100%;
+    }
+
+    >div {
+      // don't understand this scroll
+      overflow-x: hidden;
+    }
+  }
+
+  > :nth-child(2) {
+    left: -2px;
+    position: relative;
+    overflow-x: auto;
+  }
+
+}

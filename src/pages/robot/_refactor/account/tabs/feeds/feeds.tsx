@@ -1,13 +1,14 @@
-import { useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import { useAdviser } from 'src/features/adviser/context';
 import Loader2 from 'src/components/ui/Loader2';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Spark from 'src/components/search/Spark/Spark';
-import { RegistryTypes } from 'src/services/soft.js/types';
-import { Display, NoItems } from '../../../../../components';
-import useGetLog from '../hooks/useGetLog';
+import DateTitle from 'src/features/sense/ui/SenseViewer/Messages/DateTitle/DateTitle';
+import { Display, NoItems } from '../../../../../../components';
+import useGetLog from '../../hooks/useGetLog';
 import styles from './feeds.module.scss';
+import { mapLogData, reduceByDate } from './utils';
+import LogItemContent from './ui/LogItemContent';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
@@ -34,26 +35,7 @@ function FeedsTab() {
   }, [setAdviser, error]);
 
   const logRows = useMemo(() => {
-    return data.map((item, i) => {
-      // add txs types
-      let cyberLinkMessage = item.tx.body.messages[0];
-
-      if (!cyberLinkMessage) {
-        return null;
-      }
-
-      if (cyberLinkMessage['@type'] === RegistryTypes.MsgExec) {
-        [cyberLinkMessage] = cyberLinkMessage.msgs;
-      }
-
-      const cid = cyberLinkMessage.links[0].to;
-
-      if (!cid) {
-        return null;
-      }
-
-      return <Spark selfLinks key={i} cid={cid} itemData={item} query="log" />;
-    });
+    return reduceByDate(mapLogData(data));
   }, [data]);
 
   useEffect(() => {
@@ -76,7 +58,18 @@ function FeedsTab() {
         loader={<Loader2 />}
         className={styles.containerLogRows}
       >
-        {logRows}
+        {logRows.map(([date, items]) => {
+          return (
+            <Fragment key={date}>
+              {items.map((itemLog) => {
+                return (
+                  <LogItemContent key={itemLog.txhash} logItem={itemLog} />
+                );
+              })}
+              <DateTitle date={new Date(date)} />
+            </Fragment>
+          );
+        })}
       </InfiniteScroll>
     );
   } else {

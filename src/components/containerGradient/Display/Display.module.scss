@@ -30,6 +30,7 @@
       content: '';
       display: none;
     }
+
     border-right: unset !important;
   }
 
@@ -38,6 +39,7 @@
       content: '';
       display: none;
     }
+
     border-left: unset !important;
   }
 
@@ -67,4 +69,6 @@
       padding-bottom: unset;
     }
   }
+
+  @include blueScroll;
 }

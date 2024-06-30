@@ -13,6 +13,7 @@ import senseReducer from '../../features/sense/redux/sense.redux';
 import warpReducer from '../features/warp';
 import ibcDenomReducer from '../features/ibcDenom';
 import hubReducer from '../../pages/Hub/redux/hub';
+import timeHistoryReducer from '../../features/TimeHistory/redux/TimeHistory.redux';
 
 const rootReducer = {
   gol: golReducer,
@@ -27,6 +28,7 @@ const rootReducer = {
   ibcDenom: ibcDenomReducer,
   scripting: scriptingReducer,
   hub: hubReducer,
+  timeHistory: timeHistoryReducer,
 };
 
 export default rootReducer;
