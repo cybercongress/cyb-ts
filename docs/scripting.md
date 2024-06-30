@@ -85,11 +85,14 @@ cyb::search_by_embedding(text:string, count: int) -> string[];
 
 #### Experemental
 
-OpenAI promts(beta, in developement)
+OpenAI promts(beta)
+
+- api key should be added using cyb-keys
+- this is wrapper around [openai api](https://platform.openai.com/docs/api-reference/chat/create)
 
 ```
 // Apply prompt OpenAI and get result
-cyb::open_ai_prompt(prompt: string;  params: json) -> string;
+cyb::open_ai_completions(messages: object[]; apiKey: string;  params: json) -> string | AsyncIterable<string>;
 ```
 
 #### Debug

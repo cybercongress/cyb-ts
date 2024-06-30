@@ -31,7 +31,7 @@ import ScriptingActionBar from './ScriptingActionBar/ScriptingActionBar';
 // import 'codemirror/theme/tomorrow-night-bright.css';
 // import 'codemirror/theme/the-matrix.css';
 
-import { extractRuneContent } from 'src/services/scripting/helpers';
+// import { extractRuneContent } from 'src/services/scripting/helpers';
 import { useBackend } from 'src/contexts/backend/backend';
 
 import defaultParticleScript from 'src/services/scripting/rune/default/particle.rn';
@@ -43,9 +43,6 @@ import 'codemirror/theme/tomorrow-night-eighties.css';
 
 import './codeMirror.css';
 import styles from './Soul.module.scss';
-
-const defaultBio =
-  'Hello, _##name##_!\r\nYou can fill any info about yourself using **markdown**.';
 
 const entrypointName = 'particle';
 
@@ -91,10 +88,8 @@ function Soul() {
   const [log, setLog] = useState<string[]>([]);
   const [isChanged, setIsChanged] = useState(false);
   const [code, setCode] = useState<string>('');
-  // const [bio, setBio] = useState<string>('');
 
   const [isLoaded, setIsLoaded] = useState(true);
-
   const addToLog = useCallback(
     (lines: string[]) => setLog((log) => [...log, ...lines]),
     []

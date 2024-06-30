@@ -23,6 +23,7 @@ pub async fn moon_domain_resolver() {
 pub async fn ask_companion(cid, content_type, content) {
     // plain text item
     let links = [meta_text("similar: ")];
+    let rows = [links];
 
     // search closest 5 particles using local data from the brain
     let similar_results = cyb::search_by_embedding(content, 5).await;
@@ -37,7 +38,24 @@ pub async fn ask_companion(cid, content_type, content) {
         links = [meta_text("no similar particles found")];
     }
 
-    return content_result(links)
+	let secrets = cyb::context.secrets;
+    if let Some(api_key) = secrets.get("openAI_key") {
+        let messages = [
+            #{
+                "role": "system",
+                "content": "You should give description or summary of any content. aswer should not exceed 32 words"
+            },
+            #{
+                "role": "user",
+                "content": content
+            }
+        ];
+
+        let inference = cyb::open_ai_completions(messages, api_key, #{"model": "gpt-3.5-turbo"}).await;
+        rows.push([meta_text(`inference: ${inference}`)]);
+    }
+
+    return content_result(rows)
 }
 
 // Transform content of the particle

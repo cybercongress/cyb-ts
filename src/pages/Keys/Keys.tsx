@@ -6,15 +6,22 @@ import ActionBar from 'src/pages/Keys/ActionBar/actionBar';
 import { initPocket } from 'src/redux/features/pocket';
 import styles from './Keys.module.scss';
 import { useState } from 'react';
+import KeyItemSecrets from './KeyItem/KeyItemSecrets';
+import { KEY_LIST_TYPE } from './types';
 
 function Keys() {
   const { accounts } = useSelector((state: RootState) => state.pocket);
+  const { secrets } = useSelector(
+    (state: RootState) => state.scripting.context
+  );
 
   const [selectedKey, setSelectedKey] = useState<string | null>();
+  const [keyType, setKeyType] = useState<string>(KEY_LIST_TYPE.key);
 
   const dispatch = useDispatch();
 
-  function selectKey(address: string) {
+  function selectKey(keyType: string, address: string) {
+    setKeyType(keyType);
     setSelectedKey(selectedKey === address ? null : address);
   }
 
@@ -32,7 +39,7 @@ function Keys() {
                   key={account.bech32}
                   account={account}
                   selected={selectedKey === account.bech32}
-                  selectKey={selectKey}
+                  selectKey={(addr) => selectKey(KEY_LIST_TYPE.key, addr)}
                 />
               );
             })
@@ -42,12 +49,26 @@ function Keys() {
               add your first key by connecting your wallet
             </p>
           )}
+          {Object.keys(secrets).map((name) => {
+            return (
+              <KeyItemSecrets
+                key={name}
+                name={name}
+                value={secrets[name]}
+                selected={selectedKey === name}
+                selectKey={(keyName) =>
+                  selectKey(KEY_LIST_TYPE.secret, keyName)
+                }
+              />
+            );
+          })}
         </div>
       </Display>
 
       <ActionBar
         selectCard="pubkey"
         hoverCard="pubkey"
+        keyType={keyType}
         selectAccount={null}
         selectedAddress={selectedKey}
         updateAddress={() => {
