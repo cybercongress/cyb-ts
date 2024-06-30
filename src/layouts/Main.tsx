@@ -93,7 +93,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
       )}
       <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
 
-
       {children}
       <footer>
         <CircularMenu circleSize={graphSize} />

@@ -12,7 +12,6 @@ type Props = {
    */
   status?: ColorLamp;
 
-  noPadding?: boolean;
   noPaddingX?: boolean;
   noPaddingY?: boolean;
   noPadding?: boolean;
@@ -28,7 +27,6 @@ function Display({
   children,
   isVertical,
   title,
-  noPadding,
   noPaddingX,
   noPaddingY,
   noPadding,
