@@ -5,7 +5,6 @@ import {
   Slider,
 } from 'src/components';
 import Select, { OptionSelect } from 'src/components/Select';
-import { CYBER } from 'src/utils/config';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import BigNumber from 'bignumber.js';
@@ -21,10 +20,11 @@ import {
 } from '../components/containers/Containers';
 import { TypeTxsT } from '../type';
 import ActionBar from './actionBar.bridge';
-import HistoryContextProvider from '../../../services/ibc-history/historyContext';
+import HistoryContextProvider from '../../../features/ibc-history/historyContext';
 import DataIbcHistory from './components/dataIbcHistory/DataIbcHistory';
 import InputNumberDecimalScale from '../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
+import { CHAIN_ID } from 'src/constants/config';
 
 type Query = {
   networkFrom: string;
@@ -33,13 +33,13 @@ type Query = {
   amount?: string;
 };
 
-const ibcDenomAtom =
+export const ibcDenomAtom =
   'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159';
 
-const isCyberChain = (chainId: string) => chainId === CYBER.CHAIN_ID;
+const isCyberChain = (chainId: string) => chainId === CHAIN_ID;
 
 function Bridge() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { channels } = useChannels();
   const { totalSupplyProofList, accountBalances, refreshBalances } =
     useTeleport();
@@ -128,7 +128,7 @@ function Bridge() {
   const networkOptions = useCallback(
     () =>
       channels
-        ? [CYBER.CHAIN_ID, ...Object.keys(channels)].map((key) => ({
+        ? [CHAIN_ID, ...Object.keys(channels)].map((key) => ({
             value: key,
             text: (
               <DenomArr
@@ -236,11 +236,14 @@ function Bridge() {
   );
 
   useEffect(() => {
+    const [{ coinDecimals }] = tracesDenom(tokenSelect);
+    setTokenACoinDecimals(coinDecimals);
+  }, [tokenSelect, tracesDenom]);
+
+  useEffect(() => {
     const token = getDenomToken(networkA);
     setTokenA(token);
-    const [{ coinDecimals }] = traseDenom(token);
-    setTokenACoinDecimals(coinDecimals);
-  }, [networkA, traseDenom, getDenomToken]);
+  }, [networkA, getDenomToken]);
 
   useEffect(() => {
     const token = getDenomToken(networkB);
@@ -275,6 +278,7 @@ function Bridge() {
     denomIbc,
     sourceChannel,
     networkB,
+    coinDecimals: tokenACoinDecimals,
   };
 
   return (

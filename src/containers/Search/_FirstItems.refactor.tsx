@@ -5,7 +5,7 @@ import {
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_BLOCK,
-} from 'src/utils/config';
+} from 'src/constants/patterns';
 import { trimString, formatNumber } from 'src/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 

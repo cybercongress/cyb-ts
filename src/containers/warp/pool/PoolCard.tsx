@@ -2,10 +2,9 @@ import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Option } from 'src/types';
 import { ObjKeyValue } from 'src/types/data';
-import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { Coin } from '@cosmjs/launchpad';
-import { ContainerGradient, FormatNumberTokens } from 'src/components';
-import tokenList from '../../../utils/tokenList';
+import { Display, DisplayTitle, FormatNumberTokens } from 'src/components';
+import { useHub } from 'src/contexts/hub';
 import { exponentialToDecimal } from '../../../utils/utils';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
@@ -25,7 +24,7 @@ function PoolCard({
   accountBalances,
   vol24,
 }: PoolCardProps) {
-  const { traseDenom } = useIbcDenom();
+  const { tokens } = useHub();
 
   const [sharesToken, setSharesToken] = useState(null);
 
@@ -55,17 +54,7 @@ function PoolCard({
       if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
         reserveCoinDenoms.forEach((itemCoin) => {
           if (itemCoin.includes('ibc')) {
-            const [{ denom, path }] = traseDenom(itemCoin);
-            const result = tokenList.find((item) => item.denom === denom);
-            if (result !== undefined) {
-              const { counterpartyChainId, destChannelId } = result;
-              const pathFromList = `${counterpartyChainId}/${destChannelId}`;
-              if (pathFromList !== path) {
-                status = true;
-              }
-            } else {
-              status = true;
-            }
+            status = !Boolean(tokens && tokens[itemCoin]);
           }
         });
       }
@@ -75,15 +64,20 @@ function PoolCard({
       console.log('error', error);
       return false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool]);
+  }, [pool, tokens]);
 
   return (
-    <ContainerGradient
-      togglingDisable
-      userStyleContent={{ minHeight: '120px', height: 'auto' }}
+    <Display
       title={
-        <TitlePool useInactive={useInactive} pool={pool} totalCap={pool.cap} />
+        <DisplayTitle
+          title={
+            <TitlePool
+              useInactive={useInactive}
+              pool={pool}
+              totalCap={pool.cap}
+            />
+          }
+        />
       }
     >
       <div>
@@ -113,7 +107,7 @@ function PoolCard({
           </div>
         </div>
       )}
-    </ContainerGradient>
+    </Display>
   );
 }
 

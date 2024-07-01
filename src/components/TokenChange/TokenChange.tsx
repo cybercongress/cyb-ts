@@ -1,8 +1,8 @@
-import { CYBER } from 'src/utils/config';
 import { formatNumber } from 'src/utils/utils';
 import cx from 'classnames';
 import styles from './TokenChange.module.scss';
 import FormatNumberTokens from '../FormatNumberTokens/FormatNumberTokens';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 export type Props = {
   total: number;
@@ -25,7 +25,7 @@ function TokenChange({ total, change = 0, className }: Props) {
         </div>
       )}
 
-      <FormatNumberTokens value={total} text={CYBER.DENOM_LIQUID_TOKEN} />
+      <FormatNumberTokens value={total} text={DENOM_LIQUID} />
     </div>
   );
 }

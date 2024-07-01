@@ -1,6 +1,8 @@
 import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+import type { IpfsContentType } from 'src/services/ipfs/types';
 import ContentItem from 'src/components/ContentItem/contentItem';
+import { LinksType } from 'src/containers/Search/types';
+
 import { useHover } from 'src/hooks/useHover';
 import cx from 'classnames';
 
@@ -12,9 +14,11 @@ import RankButton from './LeftMeta/RankButton/RankButton';
 type Props = {
   cid: string;
   handleContentType: (type: IpfsContentType) => void;
-  handleRankClick: (cid: string) => void;
+  handleRankClick?: (cid: string) => void;
   itemData: {};
   query: string;
+  linkType: LinksType;
+  selfLinks?: boolean;
 };
 
 function Spark({
@@ -25,6 +29,7 @@ function Spark({
   rankSelected,
   handleContentType,
   handleRankClick,
+  selfLinks,
 }: Props) {
   const { isMobile } = useDevice();
   const [ref, hovering] = useHover();
@@ -34,12 +39,14 @@ function Spark({
       {!isMobile && hovering && (
         <>
           <div className={styles.left}>
-            <Creator cid={cid} />
-            <RankButton
-              cid={cid}
-              rankSelected={rankSelected}
-              handleRankClick={handleRankClick}
-            />
+            <Creator cid={cid} onlyTime={selfLinks} />
+            {handleRankClick && (
+              <RankButton
+                cid={cid}
+                rankSelected={rankSelected}
+                handleRankClick={handleRankClick}
+              />
+            )}
           </div>
 
           {/* TODO: refact. meta should be moved inside contentItem and exclude fetchParticle from that  */}

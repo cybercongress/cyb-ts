@@ -1,12 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect } from 'react';
-import { SigningStargateClient } from '@cosmjs/stargate';
+import { GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
-import { CYBER } from '../../../utils/config';
+import { Decimal } from '@cosmjs/math';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
+import { CHAIN_ID } from 'src/constants/config';
 
 function useSetupIbcClient(denom, network) {
   const { signingClient } = useSigningClient();
@@ -18,12 +19,25 @@ function useSetupIbcClient(denom, network) {
       setIbcClient(null);
 
       let client = null;
-      if (network && network !== CYBER.CHAIN_ID) {
+      if (network && network !== CHAIN_ID) {
         const keplr = await getKeplr();
         const { rpc, prefix, chainId } = networks[network];
         await keplr.enable(chainId);
         const offlineSigner = await keplr.getOfflineSignerAuto(chainId);
-        const options = { prefix };
+
+        const chainInfos = await keplr.getChainInfosWithoutEndpoints();
+        const chainInfoA = chainInfos.find((item) => item.chainId === chainId);
+        const feeCurrenciesA = chainInfoA.feeCurrencies[0];
+
+        const GasPriceA = new GasPrice(
+          Decimal.fromUserInput(
+            feeCurrenciesA.gasPriceStep?.average.toString() || '0',
+            3
+          ),
+          feeCurrenciesA?.coinMinimalDenom
+        );
+
+        const options = { prefix, gasPrice: GasPriceA };
         client = await SigningStargateClient.connectWithSigner(
           rpc,
           offlineSigner,

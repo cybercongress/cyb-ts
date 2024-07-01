@@ -2,12 +2,18 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import useGetBackLink from 'src/containers/ipfs/hooks/useGetBackLink';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { getRankGrade, searchByHash } from 'src/utils/search/utils';
-import { LinksTypeFilter } from '../types';
+import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
 import { coinDecimals } from 'src/utils/utils';
+import { useBackend } from 'src/contexts/backend/backend';
+
+import { LinksTypeFilter } from '../types';
 import { merge } from './shared';
+
+const PER_PAGE_LIMIT = 10;
 
 const useSearch = (hash: string, { skip = false } = {}) => {
   const cid = hash;
+  const { defferedDbApi } = useBackend();
 
   const queryClient = useQueryClient();
 
@@ -23,16 +29,24 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     ['useSearch', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const response = await searchByHash(queryClient, cid, pageParam, {
-        storeToCozo: true,
-      });
-
+      const response = await searchByHash(
+        queryClient,
+        cid,
+        pageParam,
+        PER_PAGE_LIMIT
+      );
+      const result = response?.result || [];
+      result &&
+        defferedDbApi?.importCyberlinks(
+          result.map((l) => mapLinkToLinkDto(hash, l.particle))
+        );
       return { data: response, page: pageParam };
     },
     {
       enabled: Boolean(queryClient && cid) && !skip,
       getNextPageParam: (lastPage) => {
-        if (!lastPage.data.pagination?.total) {
+        const total = lastPage?.data?.pagination?.total || 0;
+        if (total === 0 || lastPage.page >= total - 1) {
           return undefined;
         }
 
@@ -43,21 +57,22 @@ const useSearch = (hash: string, { skip = false } = {}) => {
 
   return {
     data:
-      data?.pages
+      (data?.pages || [])
         .reduce((acc, page) => {
           return acc.concat(
-            page.data.result?.map((item) => {
+            (page.data?.result || []).map((item) => {
+              const rank = coinDecimals(item.rank);
               return {
                 cid: item.particle,
-                rank: coinDecimals(item.rank),
-                grade: getRankGrade(coinDecimals(item.rank)),
+                rank,
+                grade: getRankGrade(rank),
                 type: 'from',
               };
             })
           );
         }, [])
         .filter(Boolean) || [],
-    total: data?.pages[0].data.pagination?.total || 0,
+    total: data?.pages?.[0].data?.pagination?.total || 0,
     fetchNextPage,
     error,
     refetch,

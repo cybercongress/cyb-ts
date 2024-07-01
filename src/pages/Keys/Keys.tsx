@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
 import KeyItem from './KeyItem/KeyItem';
-import { MainContainer } from 'src/components';
+import { Display, DisplayTitle, MainContainer } from 'src/components';
 import ActionBar from 'src/pages/Keys/ActionBar/actionBar';
 import { initPocket } from 'src/redux/features/pocket';
 import styles from './Keys.module.scss';
@@ -23,25 +23,27 @@ function Keys() {
 
   return (
     <>
-      <div className={styles.wrapper}>
-        {bostromAccounts && bostromAccounts.length > 0 ? (
-          bostromAccounts.map(({ cyber: account }) => {
-            return (
-              <KeyItem
-                key={account.bech32}
-                account={account}
-                selected={selectedKey === account.bech32}
-                selectKey={selectKey}
-              />
-            );
-          })
-        ) : (
-          <p>
-            you have no keys added yet <br />
-            add your first key by connecting your wallet
-          </p>
-        )}
-      </div>
+      <Display title={<DisplayTitle title="Keys" />}>
+        <div className={styles.wrapper}>
+          {bostromAccounts && bostromAccounts.length > 0 ? (
+            bostromAccounts.map(({ cyber: account }) => {
+              return (
+                <KeyItem
+                  key={account.bech32}
+                  account={account}
+                  selected={selectedKey === account.bech32}
+                  selectKey={selectKey}
+                />
+              );
+            })
+          ) : (
+            <p>
+              you have no keys added yet <br />
+              add your first key by connecting your wallet
+            </p>
+          )}
+        </div>
+      </Display>
 
       <ActionBar
         selectCard="pubkey"

@@ -16,7 +16,6 @@ import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import useGetBalances from 'src/hooks/getBalances';
-import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
@@ -32,13 +31,14 @@ import {
   calculateCounterPairAmount,
 } from './utils';
 import { useAdviser } from 'src/features/adviser/context';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 
-const tokenADefaultValue = CYBER.DENOM_CYBER;
-const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
+const tokenADefaultValue = BASE_DENOM;
+const tokenBDefaultValue = DENOM_LIQUID;
 
 function Warp() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { defaultAccount } = useSelector((state: RootState) => state.pocket);
   const [searchParams, setSearchParams] = useSearchParams();
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
@@ -55,8 +55,11 @@ function Warp() {
   const [tokenBAmount, setTokenBAmount] = useState<string | number>('');
   const [tokenAPoolAmount, setTokenAPoolAmount] = useState<number>(0);
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState<number>(0);
+  const [tokenACoinDecimals, setTokenACoinDecimals] = useState<number>(0);
+  const [tokenBCoinDecimals, setTokenBCoinDecimals] = useState<number>(0);
   const [selectedPool, setSelectedPool] = useState<Pool | undefined>(undefined);
   const [isExceeded, setIsExceeded] = useState<boolean>(false);
+  const [isEmptyPool, setIsEmptyPool] = useState<boolean>(false);
   const [amountPoolCoin, setAmountPoolCoin] = useState<string | number>('');
   const [myPools, setMyPools] =
     useState<Option<{ [key: string]: MyPoolsT }>>(undefined);
@@ -100,6 +103,16 @@ function Warp() {
   }, [setAdviser, tab]);
 
   useEffect(() => {
+    const [{ coinDecimals }] = tracesDenom(tokenA);
+    setTokenACoinDecimals(coinDecimals);
+  }, [tracesDenom, tokenA]);
+
+  useEffect(() => {
+    const [{ coinDecimals }] = tracesDenom(tokenB);
+    setTokenBCoinDecimals(coinDecimals);
+  }, [tracesDenom, tokenB]);
+
+  useEffect(() => {
     if (firstEffectOccured.current) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const query = {
@@ -124,40 +137,47 @@ function Warp() {
   }, [tokenA, tokenB, setSearchParams, searchParams, tab]);
 
   useEffect(() => {
-    const getBalancesPoolCurrentPair = async () => {
-      setTokenAPoolAmount(0);
-      setTokenBPoolAmount(0);
-
-      if (queryClient && selectedPool) {
-        const getAllBalancesPromise = await queryClient.getAllBalances(
-          selectedPool.reserveAccountAddress
-        );
-        const dataReduceBalances = reduceBalances(getAllBalancesPromise);
-        if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(dataReduceBalances[tokenA]);
-          setTokenBPoolAmount(dataReduceBalances[tokenB]);
-        }
-      }
-    };
-    getBalancesPoolCurrentPair();
-  }, [queryClient, tokenA, tokenB, selectedPool, update]);
-
-  useEffect(() => {
     // find pool for current pair
     setSelectedPool(undefined);
-    if (poolsData && poolsData.length > 0) {
-      if (tokenA.length > 0 && tokenB.length > 0) {
-        const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
-        poolsData.forEach((item) => {
-          if (
-            item.reserveCoinDenoms.join() === arrangedReserveCoinDenoms.join()
-          ) {
-            setSelectedPool(item);
-          }
-        });
-      }
+
+    if (!poolsData || !poolsData.length) {
+      return;
+    }
+
+    if (tokenA.length > 0 && tokenB.length > 0) {
+      const findPool = poolsData.find(
+        (item) =>
+          sortReserveCoinDenoms(
+            item.reserveCoinDenoms[0],
+            item.reserveCoinDenoms[1]
+          ).join() === sortReserveCoinDenoms(tokenA, tokenB).join()
+      );
+      setSelectedPool(findPool);
     }
   }, [poolsData, tokenA, tokenB]);
+
+  useEffect(() => {
+    (async () => {
+      setTokenAPoolAmount(0);
+      setTokenBPoolAmount(0);
+      setIsEmptyPool(false);
+
+      if (!queryClient || !selectedPool) {
+        return;
+      }
+
+      const getAllBalancesPromise = await queryClient.getAllBalances(
+        selectedPool.reserveAccountAddress
+      );
+
+      setIsEmptyPool(!getAllBalancesPromise.length);
+
+      const dataReduceBalances = reduceBalances(getAllBalancesPromise);
+
+      setTokenAPoolAmount(dataReduceBalances[tokenA] || 0);
+      setTokenBPoolAmount(dataReduceBalances[tokenB] || 0);
+    })();
+  }, [queryClient, tokenA, tokenB, selectedPool, update]);
 
   useEffect(() => {
     if (accountBalances !== null && poolsData && poolsData !== null) {
@@ -181,9 +201,6 @@ function Warp() {
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
     if (accountBalances !== null) {
-      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
-
       const validTokensAB =
         Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
         Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
@@ -191,10 +208,10 @@ function Warp() {
         accountBalances[tokenB] > 0;
 
       const validTokenAmountAB =
-        parseFloat(getDisplayAmountReverce(tokenAAmount, coinDecimalsA)) <=
+        parseFloat(getDisplayAmountReverce(tokenAAmount, tokenACoinDecimals)) <=
           myATokenBalance &&
         Number(tokenAAmount) > 0 &&
-        parseFloat(getDisplayAmountReverce(tokenBAmount, coinDecimalsB)) <=
+        parseFloat(getDisplayAmountReverce(tokenBAmount, tokenBCoinDecimals)) <=
           myATokenBalanceB &&
         Number(tokenBAmount) > 0;
 
@@ -208,12 +225,21 @@ function Warp() {
         exceeded = false;
       }
 
+      // valid add-liquidity in empty pool
+      if (
+        tab === 'add-liquidity' &&
+        isEmptyPool &&
+        resultValidSelectTokens &&
+        swapPrice === 0
+      ) {
+        exceeded = false;
+      }
+
       if (tab === 'create-pool' && resultValidSelectTokens) {
         exceeded = false;
       }
     }
     setIsExceeded(exceeded);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountBalances,
     tokenA,
@@ -222,32 +248,51 @@ function Warp() {
     tokenAAmount,
     tokenBAmount,
     swapPrice,
+    tokenACoinDecimals,
+    tokenBCoinDecimals,
+    isEmptyPool,
   ]);
 
   const amountChangeHandler = useCallback(
-    (values: string, e: React.ChangeEvent) => {
-      const inputAmount = values;
-
+    (inputAmount: string, e: React.ChangeEvent) => {
+      let counterPairValue = new BigNumber(0);
       const isReverse = e.target.id !== 'tokenAAmount';
-      const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
 
-      let { counterPairAmount } = calculateCounterPairAmount(
-        inputAmount,
-        e,
-        state
-      );
-      counterPairAmount = Math.abs(
-        parseFloat(Number(counterPairAmount).toFixed(4))
-      );
+      if (Number(inputAmount) > 0 && tokenAPoolAmount && tokenBPoolAmount) {
+        const state = {
+          tokenAPoolAmount,
+          tokenBPoolAmount,
+          tokenA,
+          tokenB,
+          tokenACoinDecimals,
+          tokenBCoinDecimals,
+          isReverse,
+        };
+
+        const { counterPairAmount } = calculateCounterPairAmount(
+          inputAmount,
+          state
+        );
+
+        counterPairValue = counterPairAmount;
+      }
+
       if (isReverse) {
         setTokenBAmount(new BigNumber(inputAmount).toNumber());
-        setTokenAAmount(counterPairAmount);
+        setTokenAAmount(counterPairValue.toString(10));
       } else {
         setTokenAAmount(new BigNumber(inputAmount).toNumber());
-        setTokenBAmount(counterPairAmount);
+        setTokenBAmount(counterPairValue.toString(10));
       }
     },
-    [tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA]
+    [
+      tokenAPoolAmount,
+      tokenBPoolAmount,
+      tokenB,
+      tokenA,
+      tokenACoinDecimals,
+      tokenBCoinDecimals,
+    ]
   );
 
   const amountChangeHandlerCreatePool = useCallback(
@@ -357,7 +402,11 @@ function Warp() {
             {tab === 'add-liquidity' && (
               <DepositCreatePool
                 stateProps={stateProps}
-                amountChangeHandler={amountChangeHandler}
+                amountChangeHandler={
+                  isEmptyPool
+                    ? amountChangeHandlerCreatePool
+                    : amountChangeHandler
+                }
               />
             )}
             {tab === 'create-pool' && (

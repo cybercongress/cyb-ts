@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { useNewsToday } from 'src/pages/robot/Layout/tweet.temp';
 import { useGetBalance } from 'src/pages/robot/_refactor/account/hooks';
 import useGetGol from 'src/containers/gol/getGolHooks';
 import { useGetIpfsInfo } from 'src/features/ipfs/ipfsSettings/ipfsComponents/infoIpfsNode';
@@ -10,14 +9,16 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
 
 import {
-  getCyberlinks,
+  getCyberlinksTotal,
   getFollowers,
-  getIpfsHash,
   getTweet,
 } from 'src/utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 import { useRobotContext } from '../robot.context';
+import { useAppSelector } from 'src/redux/hooks';
+import { selectUnreadCounts } from 'src/features/sense/redux/sense.redux';
 
 function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();
@@ -28,6 +29,8 @@ function useMenuCounts(address: string | null) {
 
   const location = useLocation();
   const { addRefetch, isOwner } = useRobotContext();
+
+  const { total: unreadSenseTotal } = useAppSelector(selectUnreadCounts);
 
   async function getTweetCount() {
     try {
@@ -56,7 +59,6 @@ function useMenuCounts(address: string | null) {
   // const { staking } = useGetHeroes(address);
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
   const { repoSizeValue } = useGetIpfsInfo();
-  const news = useNewsToday(address);
   const { balance } = useGetBalance(address);
 
   const { data: karma } = useGetKarma(address);
@@ -68,7 +70,7 @@ function useMenuCounts(address: string | null) {
 
   async function getCyberlinksCount() {
     try {
-      const response = await getCyberlinks(address);
+      const response = await getCyberlinksTotal(address);
       setCyberlinksCount(response);
     } catch (error) {
       console.error(error);
@@ -133,7 +135,7 @@ function useMenuCounts(address: string | null) {
     cyberlinks: cyberlinksCount,
     passport: accounts ? Object.keys(accounts).length : 0,
     drive: (isOwner && repoSizeValue) || '-',
-    sense: news.count,
+    sense: isOwner ? unreadSenseTotal : 0, // 0 is temp
     karma: karma || 0,
     txs: sequence,
     rewards: balance.rewards,

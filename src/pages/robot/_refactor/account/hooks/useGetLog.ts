@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { CID_TWEET } from 'src/constants/app';
 import { useMemo } from 'react';
-import { CID_TWEET } from 'src/utils/config';
 import { getTransactions } from 'src/utils/search/utils';
 
 const LIMIT = 20;

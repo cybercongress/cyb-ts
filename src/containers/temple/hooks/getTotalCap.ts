@@ -2,16 +2,16 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
-import { CYBER } from '../../../utils/config';
 import {
-  findDenomInTokenList,
-  getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
+import { BASE_DENOM } from 'src/constants/config';
+import { ibcDenomAtom } from 'src/pages/teleport/bridge/bridge';
+
 
 function useGetTotalCap() {
   const { marketData, dataTotalSupply } = useAppData();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [capData, setCapData] = useState({
     currentCap: 0,
     change: { amount: 0, time: 0 },
@@ -30,7 +30,7 @@ function useGetTotalCap() {
       let cap = 0;
       Object.keys(dataTotalSupply).forEach((key) => {
         const amount = dataTotalSupply[key];
-        const [{ coinDecimals }] = traseDenom(key);
+        const [{ coinDecimals }] = tracesDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (Object.prototype.hasOwnProperty.call(marketData, key)) {
           const poolPrice = new BigNumber(marketData[key]);
@@ -85,14 +85,11 @@ function useGetTotalCap() {
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
-      const denomInfo = findDenomInTokenList('uatom');
-      const path = `transfer/${denomInfo.destChannelId}`;
-      const ibcDenomAtom = getDenomHash(path, denomInfo.coinMinimalDenom);
       if (
         Object.prototype.hasOwnProperty.call(marketData, ibcDenomAtom) &&
-        Object.prototype.hasOwnProperty.call(marketData, CYBER.DENOM_CYBER)
+        Object.prototype.hasOwnProperty.call(marketData, BASE_DENOM)
       ) {
-        const priceBoot = new BigNumber(marketData[CYBER.DENOM_CYBER]);
+        const priceBoot = new BigNumber(marketData[BASE_DENOM]);
         const priceAtom = new BigNumber(marketData[ibcDenomAtom]);
         const priceBootForAtom = priceAtom
           .dividedBy(priceBoot)

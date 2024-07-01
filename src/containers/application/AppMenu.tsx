@@ -1,6 +1,5 @@
 import { Networks } from 'src/types/networks';
 import { Bookmarks } from '../../components/appMenu/AppMenu';
-import { CYBER } from '../../utils/config';
 
 import nebulaIcon from '../../image/temple/nebula.png';
 import teleport from '../../image/temple/teleport.png';
@@ -16,6 +15,7 @@ import hub from '../../image/temple/hub.png';
 import congress from './images/congress.png';
 
 import { routes } from '../../routes';
+import { CHAIN_ID } from 'src/constants/config';
 
 const itemsMenu = () => {
   const listItemMenu = [
@@ -80,6 +80,13 @@ const itemsMenu = () => {
     //   ],
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+
+    {
+      name: 'Cyberver 🟣',
+      icon: require('./images/cyberver.png'),
+      to: 'https://spacepussy.ai/cyberver',
+      subItems: [],
+    },
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
     // {
     //   name: 'Help',
@@ -127,10 +134,7 @@ const itemsMenu = () => {
     // },
   ];
 
-  if (
-    CYBER.CHAIN_ID === Networks.BOSTROM ||
-    CYBER.CHAIN_ID === Networks.SPACE_PUSSY
-  ) {
+  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,

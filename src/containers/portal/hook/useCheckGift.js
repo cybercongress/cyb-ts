@@ -14,7 +14,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
 
   useEffect(() => {
     const createObjGift = async () => {
-      if (citizenship !== null && addressActive !== null) {
+      if (citizenship && addressActive !== null) {
         setLoadingGift(true);
         setTotalGift(null);
         setTotalGiftAmount(null);
@@ -171,7 +171,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
 
   const funcCheckGiftLoop = useCallback(async () => {
     const result = {};
-    if (citizenship !== null) {
+    if (citizenship) {
       const { addresses } = citizenship.extension;
       if (addresses !== null) {
         for (let index = 0; index < addresses.length; index++) {

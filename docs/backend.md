@@ -6,9 +6,11 @@ graph TD;
     subgraph frontend["frontend(main thread)"]
         App["Frontend"]-->Hook["useBackend()"];
         Hook-->methods("startSync()\nloadIpfs()\n...\nisReady\nipfsError\n...");
-        Hook--odbApi[/"dbApi(proxy)"/];
-        Hook--obackendApiFront[/"backendApi(proxy)"/];
         Hook-.broadcast channel\n(any worker).->reducer["redux(state)"]
+        Hook-.save history from app.->defferedDbApiFront[/"DefferedDbApi(proxy)"/]
+        Hook--osenseApi["senseApi"];
+        Hook--oipfsApiFront[/"ipfsApi(proxy)"/];
+        senseApi--odbApi[/"dbApi(proxy)"/];
     end
 
     dbApi<-.message channel.->dbWorker["dbApi"];
@@ -16,16 +18,23 @@ graph TD;
         dbWorker<-.bindings(webApi).->cozodb{{"CozoDb(wasm)"}}
     end
 
-    backendApiFront<-.message channel.->backendApi;
-
+    defferedDbApiFront-.->defferedDbApi;
+    ipfsApiFront<-.->ipfsApi;
     subgraph backgroundWorker["cyb~backend(worker)"]
-        backendApi--oipfsApi;
-        backendApi--oimporterApi;
-        importerApi;
-        ipfsApi;
-        importerApi-->ipfsApi;
+        subgraph sync["sync service"]
+            ipfsNode["ipfs node"];
+            links;
+            transactions;
+        end
+        sync--oparticleResolver[["Particle resolver"]]
+        particleResolver--oqueue;
+        particleResolver--odbProxyWorker;
+        sync--oipfsApi;
+        sync--odbProxyWorker[/"dbApi(proxy)"/];
+        defferedDbApi[["defferedDbApi"]]-->dbProxyWorker;
+        queue-->defferedDbApi;
         ipfsApi--oqueue[["queue"]];
-        ipfsApi--o node["node"];
+        ipfsApi--onode["node"];
         queue--balancer-->node;
         node--embedded-->helia;
         node--rpc-->kubo;
@@ -36,7 +45,6 @@ graph TD;
             js-ipfs;
         end
 
-        importerApi--odbProxyWorker[/"dbApi(proxy)"/];
         dbProxyWorker<-.message channel.->dbWorker
     end
 

@@ -30,3 +30,14 @@
   justify-content: center;
   gap: 10px 0;
 }
+
+.containerStatistics {
+  display: flex;
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  justify-items: center;
+  width: 100%;
+  /* align-items: center; */
+  margin-bottom: 20px;
+}

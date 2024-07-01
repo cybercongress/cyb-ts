@@ -1,4 +1,5 @@
 import { Pane, Text } from '@cybercongress/gravity';
+import { BASE_DENOM } from 'src/constants/config';
 import {
   IconStatus,
   Votes,
@@ -6,7 +7,6 @@ import {
   ContainerGradientText,
 } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
 
 const iconPie = require('../../image/ionicons_svg_ios-pie.svg');
 const iconPieActive = require('../../image/ionicons_svg_ios-pie-active.svg');
@@ -23,7 +23,7 @@ function ProposalsDetailProgressBar({
   tallying,
   tally,
 }) {
-  const { quorum, threshold, veto } = tallying;
+  const { quorum, threshold, veto_threshold } = tallying;
   const { yes, abstain, no, noWithVeto, participation } = tally;
 
   return (
@@ -59,8 +59,7 @@ function ProposalsDetailProgressBar({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()}{' '}
-            MinDeposit
+            {formatNumber(minDeposit)} {BASE_DENOM.toUpperCase()} MinDeposit
           </Text>
         </Pane>
       </ContainerGradientText>
@@ -90,11 +89,11 @@ function ProposalsDetailProgressBar({
           <Pane display="flex" alignItems="center" marginRight={15}>
             <img
               style={{ width: 20, marginRight: 5 }}
-              src={noWithVeto > veto * 100 ? iconPieActive : iconPie}
+              src={noWithVeto > veto_threshold * 100 ? iconPieActive : iconPie}
               alt="pie"
             />
             <Text color="#c7c7c7">
-              NoWithVeto {toFixedNumber(veto * 100, 2)}%
+              No With Veto {toFixedNumber(veto_threshold * 100, 2)}%
             </Text>
           </Pane>
         </Pane>
@@ -126,7 +125,7 @@ function ProposalsDetailProgressBar({
               color="#fff"
               marginX={5}
               marginY={5}
-            >{`NoWithVeto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
+            >{`No With Veto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
           </Pane>
         </Pane>
       </ContainerGradientText>

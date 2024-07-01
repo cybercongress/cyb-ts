@@ -4,7 +4,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GasPrice, coins } from '@cosmjs/launchpad';
+import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
@@ -12,19 +12,17 @@ import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
 import { RootState } from 'src/redux/store';
-import { useBackend } from 'src/contexts/backend';
-import txs from '../../../utils/txs';
+import { useBackend } from 'src/contexts/backend/backend';
+import { PATTERN_CYBER } from 'src/constants/patterns';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import BigNumber from 'bignumber.js';
+import { Nullable } from 'src/types';
 import {
   Dots,
   ButtonIcon,
   ActionBar as ActionBarSteps,
   BtnGrd,
 } from '../../../components';
-import {
-  CYBER,
-  DEFAULT_GAS_LIMITS,
-  PATTERN_CYBER,
-} from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
 import {
   CONSTITUTION_HASH,
@@ -45,10 +43,9 @@ import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import mssgsClaim from '../utilsMsgs';
 import { ClaimMsg } from './type';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
-import BigNumber from 'bignumber.js';
+import { TxHash } from '../hook/usePingTxs';
+import { CHAIN_ID } from 'src/constants/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -91,14 +88,14 @@ type Props = {
   addressActive?: {
     bech32: string;
   };
-  citizenship: Citizenship | null;
-  updateTxHash?: () => void;
+  citizenship: Nullable<Citizenship>;
+  updateTxHash?: (data: TxHash) => void;
   isClaimed: any;
   selectedAddress?: string;
   currentGift: any;
   activeStep: any;
   setStepApp: any;
-  setLoading: any;
+
   setLoadingGift: any;
   loadingGift: any;
   progressClaim: number;
@@ -114,13 +111,12 @@ function ActionBarPortalGift({
   currentGift,
   activeStep,
   setStepApp,
-  setLoading,
   setLoadingGift,
   loadingGift,
   progressClaim,
   currentBonus,
 }: Props) {
-  const { isIpfsInitialized, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const navigate = useNavigate();
   const { signer, signingClient, initSigner } = useSigningClient();
@@ -163,7 +159,7 @@ function ActionBarPortalGift({
   }, [signer, addressActive, selectMethod, activeStep]);
 
   const useAddressOwner = useMemo(() => {
-    if (citizenship !== null && addressActive !== null) {
+    if (citizenship && addressActive !== null) {
       const { owner } = citizenship;
       const { name } = addressActive;
       if (name !== undefined && name !== null) {
@@ -188,7 +184,7 @@ function ActionBarPortalGift({
 
   const signMsgKeplr = useCallback(async () => {
     const keplrWindow = await getKeplr();
-    if (keplrWindow && citizenship !== null && selectNetwork !== '') {
+    if (keplrWindow && citizenship && selectNetwork !== '') {
       const { owner, extension } = citizenship;
       const { addresses } = extension;
 
@@ -229,7 +225,7 @@ function ActionBarPortalGift({
   }, [citizenship, selectNetwork]);
 
   const signMsgETH = useCallback(async () => {
-    if (window.ethereum && citizenship !== null) {
+    if (window.ethereum && citizenship) {
       const { owner, extension } = citizenship;
       const { addresses } = extension;
 
@@ -267,12 +263,7 @@ function ActionBarPortalGift({
   }, [citizenship]);
 
   const sendSignedMessage = useCallback(async () => {
-    if (
-      signer &&
-      signingClient &&
-      citizenship !== null &&
-      signedMessageKeplr !== null
-    ) {
+    if (signer && signingClient && citizenship && signedMessageKeplr !== null) {
       const { nickname } = citizenship.extension;
 
       const msgObject = proofAddressMsg(
@@ -311,9 +302,6 @@ function ActionBarPortalGift({
           });
 
           setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
-          if (setLoading) {
-            setLoading(true);
-          }
           if (setLoadingGift) {
             setLoadingGift(true);
           }
@@ -327,7 +315,7 @@ function ActionBarPortalGift({
           });
         }
         if (isIpfsInitialized) {
-          ipfsNode?.addContent(signedMessageKeplr.address);
+          ipfsApi?.addContent(signedMessageKeplr.address);
         }
       } catch (error) {
         console.log('error', error);
@@ -339,9 +327,8 @@ function ActionBarPortalGift({
     signingClient,
     citizenship,
     signedMessageKeplr,
-    setLoading,
     isIpfsInitialized,
-    ipfsNode,
+    ipfsApi,
   ]);
 
   const claim = useCallback(async () => {
@@ -357,7 +344,7 @@ function ActionBarPortalGift({
         signingClient &&
         selectedAddress !== null &&
         currentGift !== null &&
-        citizenship !== null
+        citizenship
       ) {
         const { nickname } = citizenship.extension;
         if (Object.keys(currentGift).length > 0) {
@@ -368,7 +355,7 @@ function ActionBarPortalGift({
             msgs.push(msgObject);
           });
           const { bech32Address, isNanoLedger } = await signer.keplr.getKey(
-            CYBER.CHAIN_ID
+            CHAIN_ID
           );
 
           if (!msgs.length) {
@@ -433,7 +420,7 @@ function ActionBarPortalGift({
   ]);
 
   const isProve = useMemo(() => {
-    if (citizenship !== null && !citizenship.extension.addresses) {
+    if (citizenship && !citizenship.extension.addresses) {
       return false;
     }
 

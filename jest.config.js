@@ -33,6 +33,7 @@ module.exports = {
     '^src(.*)$': '<rootDir>/src/$1',
     '^rune$': '<rootDir>/rune_build',
     '#(.*)': '<rootDir>/node_modules/$1',
+    '^uint8arrays/(.*)$': '<rootDir>/node_modules/uint8arrays/dist/src/$1',
   },
   preset: 'ts-jest',
   resolver: 'ts-jest-resolver',

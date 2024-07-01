@@ -4,6 +4,10 @@
 :root {
   // greens
   --primary-color: #36d6ae;
+  --primary-color-r: 54;
+  --primary-color-g: 214;
+  --primary-color-b: 174;
+
   --green-light: #76ff03;
   --green-2: #7afaa1;
 
@@ -11,8 +15,14 @@
   --blue-light: #1fcbff;
 
   --yellow: #fcf000;
+  --yellow-r: 252;
+  --yellow-g: 240;
+  --yellow-b: 0;
 
   --red: #ff5c00;
+  --red-r: 255;
+  --red-g: 92;
+  --red-b: 13;
 
   --grayscale-disabled: #616161;
   --grayscale-dark: #808080;

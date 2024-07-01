@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { PATTERN_CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { getPassport } from '../passports.redux';
 
@@ -9,14 +9,28 @@ type Props = {
 };
 
 // add 'refresh' prop
-function usePassportByAddress(address: Props['address']) {
+function usePassportByAddress(
+  address: Props['address'],
+  {
+    skip,
+  }: {
+    skip?: boolean;
+  } = { skip: false }
+) {
   const queryClient = useQueryClient();
 
-  const passports = useAppSelector((state) => state.passports);
+  const currentPassport = useAppSelector((state) =>
+    address ? state.passports[address] : null
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!queryClient || !address) {
+    if (
+      !queryClient ||
+      !address ||
+      skip ||
+      (currentPassport && currentPassport.loading)
+    ) {
       return;
     }
 
@@ -24,16 +38,18 @@ function usePassportByAddress(address: Props['address']) {
       return;
     }
 
-    if (!passports[address]) {
+    if (!currentPassport || currentPassport.data === undefined) {
       dispatch(getPassport({ address, queryClient }));
     }
-  }, [address, queryClient, dispatch, passports]);
+  }, [address, queryClient, dispatch, currentPassport, skip]);
 
-  const { data, loading } = (address && passports[address]) || {};
+  const data = currentPassport?.data;
 
   return {
+    // TODO: remove 'passport' prop
     passport: data,
-    loading,
+    data,
+    loading: currentPassport?.loading || false,
     // error: null,
   };
 }

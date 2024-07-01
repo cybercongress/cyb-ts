@@ -2,8 +2,8 @@ const { merge } = require('webpack-merge');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
-const BundleInfoPlugin = require('./webpack/BundleInfoPlugin.js');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
@@ -34,15 +34,22 @@ module.exports = merge(commonConfig, {
       }),
       ...(!process.env.IPFS_DEPLOY
         ? [
-            new CompressionWebpackPlugin({
-              filename: '[path][base].gz',
-              algorithm: 'gzip',
-              test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
-              threshold: 10240,
-              minRatio: 0.8,
-            }),
-          ]
+          new CompressionWebpackPlugin({
+            filename: '[path][base].gz',
+            algorithm: 'gzip',
+            test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
+            threshold: 10240,
+            minRatio: 0.8,
+          }),
+        ]
         : []),
     ],
   },
+  plugins: [
+    new WorkboxPlugin.InjectManifest({
+      swSrc: 'src/services/service-worker/service-worker.ts',
+      swDest: 'service-worker.js',
+      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    }),
+  ],
 });

@@ -29,19 +29,19 @@ function InputNumberDecimalScale({
   validAmountMessageText,
   ...props
 }: Props) {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const [fixed, setFixed] = useState(false);
 
   useEffect(() => {
-    if (traseDenom && tokenSelect) {
-      const [{ coinDecimals }] = traseDenom(tokenSelect);
+    if (tracesDenom && tokenSelect) {
+      const [{ coinDecimals }] = tracesDenom(tokenSelect);
       if (coinDecimals > 0) {
         setFixed(true);
         return;
       }
     }
     setFixed(false);
-  }, [traseDenom, tokenSelect]);
+  }, [tracesDenom, tokenSelect]);
 
   if (validAmountMessage) {
     return (

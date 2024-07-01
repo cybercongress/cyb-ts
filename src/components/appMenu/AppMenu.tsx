@@ -13,6 +13,8 @@ interface Props {
 }
 
 function Items({ item, selected, onClick }: Props) {
+  const isExternal = item.to.startsWith('http');
+
   return (
     <NavLink
       to={item.to}
@@ -20,6 +22,7 @@ function Items({ item, selected, onClick }: Props) {
         return cx(styles.bookmarks__item, { [styles.active]: selected });
       }}
       onClick={onClick}
+      {...(isExternal && { target: '_blank', rel: 'noreferrer noopener' })}
     >
       <Pane display="flex" paddingY={5} alignItems="center" key={item.name}>
         <div
@@ -46,6 +49,8 @@ function Items({ item, selected, onClick }: Props) {
             display="flex"
           >
             {item.name}
+
+            {isExternal && <span className={styles.external}></span>}
           </Pane>
         </div>
       </Pane>

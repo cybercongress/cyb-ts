@@ -3,8 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
-import { IPFSContentDetails } from 'src/services/ipfs/ipfs';
+import type {
+  IpfsContentType,
+  IPFSContentDetails,
+} from 'src/services/ipfs/types';
+import { LinksType } from 'src/containers/Search/types';
+
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 
 import SearchItem from '../SearchItem/searchItem';
@@ -18,6 +22,7 @@ type ContentItemProps = {
   grade?: $TsFixMe;
   className?: string;
   parent?: string;
+  linkType: LinksType;
   setType?: (type: IpfsContentType) => void;
 };
 

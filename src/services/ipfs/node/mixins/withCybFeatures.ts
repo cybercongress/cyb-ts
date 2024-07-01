@@ -1,4 +1,4 @@
-import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../ipfs';
+import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../types';
 import { parseArrayLikeToDetails } from '../../utils/content';
 import { addContenToIpfs, getIPFSContent } from '../../utils/utils-ipfs';
 
@@ -14,9 +14,7 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   return class CybIpfsNodeMixin extends Base implements CybIpfsNode {
     async fetchWithDetails(cid: string, parseAs?: IpfsContentType) {
       const response = await getIPFSContent(cid, this);
-      const details = response?.result
-        ? await parseArrayLikeToDetails(response, cid)
-        : undefined;
+      const details = await parseArrayLikeToDetails(response, cid);
 
       return !parseAs
         ? details

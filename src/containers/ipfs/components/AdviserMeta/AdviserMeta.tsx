@@ -18,12 +18,14 @@ function AdviserMeta({ cid, type, size }: Props) {
   return (
     <div className={styles.meta}>
       <div className={styles.left}>
-        {type}
+        <span>{type}</span>
 
         {!!rank && (
           <div className={styles.rank}>
-            with rank
-            <span>{rank.toLocaleString().replaceAll(',', ' ')}</span>
+            <span>with rank</span>
+            <span className={styles.number}>
+              {rank.toLocaleString().replaceAll(',', ' ')}
+            </span>
             <Rank hash={cid} rank={rank} />
           </div>
         )}

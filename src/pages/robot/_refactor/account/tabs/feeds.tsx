@@ -1,12 +1,13 @@
 import { useEffect, useMemo } from 'react';
-import { ContainerGradientText } from 'src/components/containerGradient/ContainerGradient';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import { useAdviser } from 'src/features/adviser/context';
 import Loader2 from 'src/components/ui/Loader2';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Dots, NoItems, SearchSnippet } from '../../../../../components';
+import Spark from 'src/components/search/Spark/Spark';
+import { RegistryTypes } from 'src/services/soft.js/types';
+import { Display, NoItems } from '../../../../../components';
 import useGetLog from '../hooks/useGetLog';
-import { RegistryTypes } from 'src/soft.js/types';
+import styles from './feeds.module.scss';
 
 function FeedsTab() {
   const { address, addRefetch } = useRobotContext();
@@ -32,8 +33,6 @@ function FeedsTab() {
     };
   }, [setAdviser, error]);
 
-  const onClickRank = () => {};
-
   const logRows = useMemo(() => {
     return data.map((item, i) => {
       // add txs types
@@ -53,14 +52,7 @@ function FeedsTab() {
         return null;
       }
 
-      return (
-        <SearchSnippet
-          key={i}
-          cid={cid}
-          data={item}
-          onClickRank={onClickRank}
-        />
-      );
+      return <Spark selfLinks key={i} cid={cid} itemData={item} query="log" />;
     });
   }, [data]);
 
@@ -82,6 +74,7 @@ function FeedsTab() {
         hasMore={Boolean(hasNextPage)}
         next={fetchNextPage}
         loader={<Loader2 />}
+        className={styles.containerLogRows}
       >
         {logRows}
       </InfiniteScroll>
@@ -90,13 +83,7 @@ function FeedsTab() {
     content = <NoItems text="No feeds" />;
   }
 
-  return (
-    <ContainerGradientText>
-      <div className="container-contentItem" style={{ width: '100%' }}>
-        {content}
-      </div>
-    </ContainerGradientText>
-  );
+  return <Display>{content}</Display>;
 }
 
 export default FeedsTab;

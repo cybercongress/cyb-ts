@@ -4,14 +4,14 @@ import {
   createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
-import { queryPassportContract } from 'src/soft.js/api/passport';
+import { queryPassportContract } from 'src/services/soft.js/api/passport';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { RootState } from 'src/redux/store';
 import { AppThunk } from 'src/redux/types';
-import { selectFollowings } from 'src/redux/features/currentAccount';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
+import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
 
 export type SliceState = {
   // address
@@ -25,8 +25,11 @@ const initialState: SliceState = {};
 
 export function getCommunityPassports(queryClient: CyberClient): AppThunk {
   return (dispatch, getState) => {
-    const { currentAccount, passports } = getState();
-    const { following, followers, friends } = currentAccount.community;
+    const {
+      backend: { community },
+      passports,
+    } = getState();
+    const { following, followers, friends } = community;
     [...friends, ...following, ...followers].forEach((address) => {
       const passport = passports[address];
       if (!passport?.data && !passport?.loading) {
@@ -136,24 +139,27 @@ const slice = createSlice({
     });
 
     builder.addCase(getPassport.fulfilled, (state, action) => {
-      state[action.meta.arg.address] = {
+      Object.assign(state[action.meta.arg.address]!, {
         loading: false,
         data: action.payload,
-      };
+      });
     });
 
     builder.addCase(getPassport.rejected, (state, action) => {
-      console.error(action);
+      if (action.error.message !== PASSPORT_NOT_EXISTS_ERROR) {
+        console.error(action);
+      }
 
-      state[action.meta.arg.address] = {
+      Object.assign(state[action.meta.arg.address]!, {
         loading: false,
-      };
+        data: null,
+      });
     });
   },
 });
 
 export const selectCommunityPassports = createSelector(
-  (state: RootState) => state.currentAccount.community,
+  (state: RootState) => state.backend.community,
   (state: RootState) => state.passports,
   (community, passports) => {
     const { following, followers, friends } = community;

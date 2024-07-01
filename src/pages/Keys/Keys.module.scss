@@ -1,13 +1,11 @@
 .wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 62%;
-  margin: 0 auto;
-  padding-bottom: 130px;
+  display: grid;
+  align-content: flex-start;
+  width: 100%;
   gap: 20px;
   min-height: 70vh;
 
-  > p {
+  >p {
     margin: auto;
     position: relative;
     top: 65px;

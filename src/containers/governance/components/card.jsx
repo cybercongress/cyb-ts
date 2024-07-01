@@ -5,8 +5,8 @@ import {
   Tooltip,
   ContainerGradientText,
 } from '../../../components';
-import { PROPOSAL_STATUS } from '../../../utils/config';
 import Display from 'src/components/containerGradient/Display/Display';
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
@@ -85,19 +85,20 @@ function TypeProps({ type }) {
           {textType}
         </div>
       }
+      style={{ paddingBottom: '20px' }}
     >
       <img style={{ width: 25, height: 25 }} src={typeImg} alt="type" />
     </Tooltip>
   );
 }
 
-function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
+function AcceptedCard({ id, name, votes, type, timeEnd }) {
   return (
     <Display>
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={5}>
@@ -112,13 +113,13 @@ function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
   );
 }
 
-function RejectedCard({ id, name, votes, type, amount, timeEnd }) {
+function RejectedCard({ id, name, votes, type, timeEnd }) {
   return (
     <Display color="red">
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={5}>
@@ -137,20 +138,16 @@ function ActiveCard({
   id,
   name,
   state,
-  votes,
   type = '',
-  amount = 0,
   timeEndDeposit,
   timeEndVoting,
-  totalDeposit,
-  minDeposit,
 }) {
   return (
     <Display color="blue">
       <Pane position="absolute" right="5px" top="5px">
         <TypeProps type={type} />
       </Pane>
-      <Pane fontSize="20px" marginBottom={15}>
+      <Pane fontSize="20px" marginTop="10px" marginBottom={15}>
         #{id} {name}
       </Pane>
       <Pane marginBottom={2}>
@@ -166,13 +163,13 @@ function ActiveCard({
         </Pane>
       </Pane>
 
-      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
+      {state === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
         <Pane>
           <Pane marginBottom={2}>Deposit End Time:</Pane>
           <Pane>{timeEndDeposit}</Pane>
         </Pane>
       )}
-      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD && (
+      {state === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD && (
         <Pane>
           <Pane marginBottom={2}>Voting End Time:</Pane>
           <Pane>{timeEndVoting}</Pane>

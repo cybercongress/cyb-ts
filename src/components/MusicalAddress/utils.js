@@ -7,7 +7,7 @@ import {
   PATTERN_OSMOS,
   PATTERN_TERRA,
   PATTERN_CYBER_VALOPER,
-} from '../../utils/config';
+} from 'src/constants/patterns';
 
 const DICTIONARY_ABC = {
   a: { note: 'E3', height: 16, gain: 1, color: '#36D6AE' },

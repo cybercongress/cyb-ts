@@ -3,6 +3,8 @@ import { ActionBar as ActionBarContainer, Tab } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
+import { PATTERN_CYBER, PATTERN_CYBER_CONTRACT } from 'src/constants/patterns';
+import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import {
   Dots,
   ActionBarContentText,
@@ -15,12 +17,7 @@ import {
   ActionBar as ActionBarCenter,
   Input,
 } from '../../../components';
-import {
-  LEDGER,
-  PATTERN_CYBER,
-  PATTERN_CYBER_CONTRACT,
-  DEFAULT_GAS_LIMITS,
-} from '../../../utils/config';
+import { LEDGER } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';
@@ -241,9 +238,12 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
 
   if (stage === STAGE_INIT && selected === 'myEnegy') {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => navigate(routes.hfr.path)}>Investmint</Button>
-      </ActionBarContainer>
+      <ActionBarCenter
+        button={{
+          text: 'Investmint',
+          link: routes.hfr.path,
+        }}
+      />
     );
   }
 
@@ -253,9 +253,12 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     Object.keys(selectedRoute).length === 0
   ) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => setStage(STAGE_ADD_ROUTER)}>Add Route</Button>
-      </ActionBarContainer>
+      <ActionBarCenter
+        button={{
+          onClick: () => setStage(STAGE_ADD_ROUTER),
+          text: 'Add Route',
+        }}
+      />
     );
   }
 
@@ -265,7 +268,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     Object.keys(selectedRoute).length > 0
   ) {
     return (
-      <ActionBarContainer>
+      <ActionBarCenter>
         <Button
           style={{
             margin: '0 10px',
@@ -282,7 +285,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
         >
           Delete Route
         </Button>
-      </ActionBarContainer>
+      </ActionBarCenter>
     );
   }
 
