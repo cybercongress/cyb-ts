@@ -6,16 +6,28 @@ import styles from './styles.module.scss';
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
-function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
+type Props = {
+  cidAvatar?: string;
+  img?: string;
+  addressCyber?: string;
+  className?: string;
+};
+
+function AvatarImgIpfs({
+  img = '',
+  cidAvatar,
+  addressCyber,
+  className,
+  ...props
+}: Props) {
   const { fetchWithDetails } = useQueueIpfsContent();
 
   const { data: avatar } = useQuery(
     ['getAvatar', cidAvatar],
-    () =>
-      fetchWithDetails!(cidAvatar, 'image').then((details) => {
-        return details?.content;
-      }),
-
+    async () => {
+      const details = await fetchWithDetails!(cidAvatar!, 'image');
+      return details?.content || null;
+    },
     {
       enabled: Boolean(fetchWithDetails && cidAvatar),
     }
@@ -30,11 +42,11 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   return (
     <img
       {...props}
-      className={cx(styles.imgAvatar, props.className)}
-      alt="img-avatar"
       src={avatarImage}
+      className={cx(styles.imgAvatar, className)}
+      alt="img-avatar"
     />
   );
 }
 
-export default AvataImgIpfs;
+export default AvatarImgIpfs;
