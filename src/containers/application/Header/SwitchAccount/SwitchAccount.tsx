@@ -9,17 +9,17 @@ import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
 
 import Pill from 'src/components/Pill/Pill';
-import { useBackend } from 'src/contexts/backend/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
 import useIsOnline from 'src/hooks/useIsOnline';
 import { useAppSelector } from 'src/redux/hooks';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { useBackend } from 'src/contexts/backend/backend';
+import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
+import styles from './SwitchAccount.module.scss';
+import networkStyles from '../CurrentApp/CurrentApp.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
-import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import Karma from '../../Karma/Karma';
-import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
-import styles from './SwitchAccount.module.scss';
 
 // should be refactored
 function AccountItem({

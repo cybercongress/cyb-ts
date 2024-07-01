@@ -1,10 +1,10 @@
 @import '../../../layouts//variables.module.scss';
 
 .wrapper {
+  width: 60%;
+  margin: 0 auto;
   display: grid;
-  justify-content: center;
   align-items: flex-start;
-  grid-template-columns: 1fr minmax(200px, 62%) 1fr;
 
   // padding for action bar, if scroll bottom
   padding-bottom: $actionBarHeight;

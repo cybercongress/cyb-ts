@@ -16,13 +16,17 @@ import { clearIndexedDBStore, toListOfObjects } from './utils';
 import { createCozoDbCommandFactory } from './cozoDbCommandFactory';
 
 import initializeScript from './migrations/schema.cozo';
+import { fetchInitialEmbeddings } from './migrations/migrations';
 
 export const DB_NAME = 'cyb-cozo-idb';
 
 const DB_STORE_NAME = 'cozodb';
-const DB_VERSION = '1.1';
+
+export const DB_VERSION = 1.2;
 
 type OnWrite = (writesCount: number) => void;
+
+let shouldInitialize = false;
 
 function createCozoDb() {
   let db: CozoDb | undefined;
@@ -40,7 +44,6 @@ function createCozoDb() {
       onIndexedDbWrite
     );
     await initDbSchema();
-    commandFactory = createCozoDbCommandFactory(dbSchema);
   };
 
   async function init(onWrite?: OnWrite): Promise<void> {
@@ -48,7 +51,7 @@ function createCozoDb() {
     await initCozoDb();
     await loadCozoDb();
 
-    await migrate();
+    await performHardReset();
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -79,30 +82,49 @@ function createCozoDb() {
     return tableSchema;
   };
 
-  const initDbSchema = async (): Promise<void> => {
-    let relations = await getRelations();
-
-    if (relations.length === 0) {
-      cyblogCh.info('CozoDb: apply DB schema', initializeScript);
-      const result = await runCommand(initializeScript);
-
-      relations = await getRelations();
-    }
-
+  const loadDbSchema = async () => {
+    const relations = await getRelations();
     const schemasMap = await Promise.all(
       relations.map(async (table) => {
         const tableSchema = await createSchema(table);
         return [table, tableSchema];
       })
     );
-
     dbSchema = Object.fromEntries(schemasMap);
-    cyblogCh.info('CozoDb schema initialized: ', {
+    cyblogCh.info('cozoDb schema initialized: ', {
       data: [dbSchema, relations, schemasMap],
     });
+
+    commandFactory = createCozoDbCommandFactory(dbSchema);
+
+    cyblogCh.info('cozoDb schema initialized: ', {
+      data: [dbSchema, relations, schemasMap],
+    });
+
+    return dbSchema;
   };
 
-  const getVersion = async () => {
+  const initDbSchema = async (): Promise<void> => {
+    await loadDbSchema();
+
+    shouldInitialize = Object.keys(dbSchema).length === 0;
+    if (shouldInitialize) {
+      cyblogCh.info('   cozoDb - apply DB schema', initializeScript);
+      const result = await runCommand(initializeScript);
+
+      await loadDbSchema();
+
+      // if initialized set initial version
+      await setDbVersion(DB_VERSION);
+
+      await fetchInitialEmbeddings(async (items: Partial<DbEntity>[]) => {
+        console.log(' [initial]save initial particles...');
+        await put('sync_queue', items);
+      });
+    }
+  };
+
+  const getDbVersion = async () => {
     const versionData = await get(
       'config',
       ['value'],
@@ -110,27 +132,35 @@ function createCozoDb() {
       ['key']
     );
 
-    return (versionData.rows[0][0] as string) || DB_VERSION;
+    return (versionData.rows?.[0]?.[0] as number) || 0;
   };
 
-  const migrate = async () => {
+  const setDbVersion = async (version: number) => {
+    const result = await put('config', [
+      {
+        key: 'DB_VERSION',
+        group_key: 'system',
+        value: version,
+      },
+    ]);
+
+    // console.log('CozoDb >>> setDbVersion', version, result);
+    return result;
+  };
+
+  const performHardReset = async () => {
     // if (!dbSchema.community) {
     //   const result = await runCommand(communityScript);
     //   console.log('CozoDb >>> migration: creating community relation....');
     //   dbSchema.community = await createSchema('community');
     // }
-
     if (!dbSchema.transaction.values.includes('block_height')) {
       cyblogCh.info('💀 HARD RESET experemental db...');
       await clearIndexedDBStore(DB_NAME, DB_STORE_NAME);
       await init(onIndexedDbWrite);
-      await put('config', [
-        {
-          key: 'DB_VERSION',
-          group_key: 'system',
-          value: DB_VERSION,
-        },
-      ]);
+      await setDbVersion(DB_VERSION);
+
+      // await setDbVersion(DB_VERSION);
     }
     // const version = await getVersion();
     // console.log(`DB Version ${version}`);
@@ -145,7 +175,6 @@ function createCozoDb() {
     }
     const resultStr = await db.run(command, '', immutable);
     const result = JSON.parse(resultStr);
-    // console.log('----> runCommand ', command, result);
 
     if (!result.ok) {
       console.log('----> runCommand error ', command, result);
@@ -158,8 +187,18 @@ function createCozoDb() {
   const put = async (
     tableName: string,
     array: Partial<DbEntity>[]
-  ): Promise<IDBResult> =>
-    runCommand(commandFactory!.generatePut(tableName, array));
+  ): Promise<IDBResult> => {
+    if (array.length === 0) {
+      throw new DBResultError({
+        code: '-1',
+        message: `cant PUT [] into ${tableName}`,
+        display: '',
+        severity: '',
+        ok: false,
+      });
+    }
+    return runCommand(commandFactory!.generatePut(tableName, array));
+  };
 
   const rm = async (
     tableName: string,
@@ -183,8 +222,8 @@ function createCozoDb() {
     runCommand(
       commandFactory!.generateGet(
         tableName,
-        conditions,
         selectFields,
+        conditions,
         conditionFields,
         options
       ),
@@ -207,7 +246,14 @@ function createCozoDb() {
     getCommandFactory: () => commandFactory,
     importRelations,
     exportRelations,
+    getDbVersion,
+    setDbVersion,
+    loadDbSchema,
   };
 }
+
+// const cozoDb = createCozoDb();
+
+export type CybCozoDb = ReturnType<typeof createCozoDb>;
 
 export default createCozoDb();

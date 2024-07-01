@@ -1,8 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
-function useParticleDetails(cid: string, { skip = false } = {}) {
-  const { fetchWithDetails } = useQueueIpfsContent(cid);
+function useParticleDetails(
+  cid: string,
+  { skip = false } = {},
+  parentId?: string
+) {
+  const { fetchWithDetails } = useQueueIpfsContent(parentId || cid);
 
   const { data, isLoading, error } = useQuery(
     ['particleDetails', cid],

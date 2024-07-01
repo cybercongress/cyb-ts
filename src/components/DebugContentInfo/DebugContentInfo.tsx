@@ -1,5 +1,6 @@
-import { IPFSContentMaybe, IpfsContentSource } from 'src/utils/ipfs/ipfs';
+import { IpfsContent, IpfsContentSource } from 'src/utils/ipfs/ipfs';
 import styles from './DebugContentInfo.module.scss';
+import { Option } from 'src/types';
 
 function DebugContentInfo({
   cid,
@@ -8,9 +9,9 @@ function DebugContentInfo({
   status,
 }: {
   cid: string;
-  source: IpfsContentSource | undefined;
-  content: IPFSContentMaybe;
-  status: string | undefined;
+  source: Option<IpfsContentSource>;
+  content: Option<IpfsContent>;
+  status: Option<string>;
 }) {
   const meta = content ? content.meta : undefined;
   const measurementInfo =

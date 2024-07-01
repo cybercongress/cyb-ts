@@ -24,7 +24,7 @@ const PREFIXES = [
 ];
 
 export function useGetIpfsInfo() {
-  const { isIpfsInitialized, ipfsApi, ipfsNode } = useBackend();
+  const { isIpfsInitialized, ipfsApi } = useBackend();
   const [repoSizeValue, setRepoSizeValue] = useState<number | string>(0);
   const [idIpfs, setIdIpfs] = useState({ id: '', agentVersion: '' });
   const [loading, setLoading] = useState(true);
@@ -33,8 +33,6 @@ export function useGetIpfsInfo() {
     (async () => {
       setLoading(true);
       if (isIpfsInitialized) {
-        // console.log('-----uu', ipfsNode, ipfsApi.info, await ipfsApi.info());
-
         const { id, agentVersion, repoSize } = await ipfsApi.info();
         setIdIpfs({ id, agentVersion });
         const repoSizeString =

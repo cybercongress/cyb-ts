@@ -1,11 +1,13 @@
 .wrapper {
+  width: 100%;
   // Display
   > div {
-    padding: 0;
-
-    display: flex;
-    overflow-x: hidden;
-    flex-direction: column;
+    > div {
+      display: flex;
+      overflow-x: hidden;
+      flex-direction: column;
+      // height: auto !important;
+    }
 
     // Display title
     > header {

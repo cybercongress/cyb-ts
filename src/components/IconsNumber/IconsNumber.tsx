@@ -1,16 +1,17 @@
 import BigNumber from 'bignumber.js';
-import hydrogen from '../../image/hydrogen.svg';
-import { boot } from 'images/large-green.png';
 import React from 'react';
+import hydrogen from '../../image/hydrogen.svg';
+import Tooltip from '../tooltip/tooltip';
 
 enum TypesEnum {
   'karma' = 'karma',
   'hydrogen' = 'hydrogen',
   'energy' = 'energy',
   'boot' = 'boot',
+  'pussy' = 'pussy',
 }
 
-type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
+// type Types = TypesEnum.karma | TypesEnum.hydrogen | TypesEnum.energy;
 
 const icons = {
   [TypesEnum.karma]: '🔮',
@@ -26,6 +27,7 @@ const icons = {
     />
   ),
   [TypesEnum.energy]: '🔋',
+  [TypesEnum.pussy]: '🟣',
 };
 
 // TODO: refactor
@@ -60,7 +62,7 @@ const PREFIXES = [
   },
 ];
 
-export default function IconsNumber({ value, type }) {
+export default function IconsNumber({ value, type, isVertical }) {
   const { prefix = 1, power = 1 } =
     PREFIXES.find((powerItem) => value >= powerItem.power) || {};
 
@@ -80,7 +82,21 @@ export default function IconsNumber({ value, type }) {
 
   return (
     <>
-      {number} {i}
+      {number}{' '}
+      <Tooltip
+        contentStyle={{
+          display: 'flex',
+          flexDirection: isVertical ? 'column' : 'row',
+        }}
+        tooltip={
+          <span style={{ whiteSpace: 'nowrap' }}>
+            {value?.toLocaleString()?.replaceAll(',', ' ')}
+            {icons[type]}
+          </span>
+        }
+      >
+        {i}
+      </Tooltip>
     </>
   );
 }

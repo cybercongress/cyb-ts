@@ -13,7 +13,7 @@
   background-repeat: no-repeat;
   background-position: right 1.5px;
   background-size: 20px;
-  padding-right: 20px;
+  padding-right: 25px;
 }
 
 @mixin blueScroll {
@@ -22,5 +22,6 @@
   }
   &::-webkit-scrollbar {
     width: 2px;
+    height: 2px;
   }
 }
