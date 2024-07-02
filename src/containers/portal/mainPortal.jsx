@@ -10,6 +10,9 @@ import styles from './styles.scss';
 // const rocketSpacePussy = require('../../image/rocket.svg');
 import RocketSpacePussy from './RocketSpacePussy';
 import { useAdviser } from 'src/features/adviser/context';
+import { Dots } from 'src/components/ui/Dots';
+import { Display } from 'src/components';
+import { displayValue } from '@tanstack/react-query-devtools/build/lib/utils';
 
 const spacePussy = require('../../image/space-pussy.svg');
 const portalPussyEnter = require('../../sounds/portalPussyEnter.mp3');
@@ -109,7 +112,17 @@ function MainPartal({ defaultAccount }) {
   };
 
   if (stagePortal === STAGE_LOADING) {
-    return <div>...</div>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Dots />
+      </div>
+    );
   }
 
   if (stagePortal === STAGE_INIT) {

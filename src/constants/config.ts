@@ -1,10 +1,20 @@
 import { Networks } from 'src/types/networks';
 import defaultNetworks from './defaultNetworks';
 
-const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
-  Networks.BOSTROM;
+// FIXME: seems temp
+function isWorker() {
+  return (
+    typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope
+  );
+}
 
-export const CHAIN_ID = process.env.CHAIN_ID || DEFAULT_CHAIN_ID;
+const LOCALSTORAGE_CHAIN_ID = !isWorker() && localStorage.getItem('chainId');
+
+const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
+  LOCALSTORAGE_CHAIN_ID || process.env.CHAIN_ID || Networks.BOSTROM;
+
+export const CHAIN_ID = DEFAULT_CHAIN_ID;
 
 export const LCD_URL =
   process.env.LCD_URL || defaultNetworks[DEFAULT_CHAIN_ID].LCD_URL;

@@ -3,7 +3,7 @@
   background: transparent;
   border: unset;
   // height: 20px;
-  font-size: 16px;
+  font-size: 14px;
   // padding: 100px;
   color: var(--primary-color);
 
@@ -28,9 +28,9 @@
 
 .containerSignatures {
   &ItemNote {
-    width: 7px;
+    width: 3px;
     border-radius: 2px;
-    max-height: 20px;
+    max-height: 15px;
 
     @media (max-width: 800px) {
       width: 5px;

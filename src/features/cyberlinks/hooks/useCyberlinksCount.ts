@@ -1,15 +1,15 @@
 import { useCyberlinksCountByParticleQuery } from 'src/generated/graphql';
 
-const getVar = (type: 'from' | 'to', cid: string) => {
-  return { [`particle_${type}`]: { _eq: cid } };
+const getVar = (type: 'from' | 'to', cid: string, neuron) => {
+  return { [`particle_${type}`]: { _eq: cid }, neuron: { _eq: neuron } };
 };
 
-function useCyberlinksCount(cid: string) {
+function useCyberlinksCount(cid: string, neuron) {
   const toCountQuery = useCyberlinksCountByParticleQuery({
-    variables: { where: getVar('to', cid) },
+    variables: { where: getVar('to', cid, neuron) },
   });
   const fromCountQuery = useCyberlinksCountByParticleQuery({
-    variables: { where: getVar('from', cid) },
+    variables: { where: getVar('from', cid, neuron) },
   });
 
   return {

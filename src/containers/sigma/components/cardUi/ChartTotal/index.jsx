@@ -22,6 +22,17 @@ const getProcent = (curent, total) => {
 function ChartTotal({ balance }) {
   const { total } = balance;
 
+  const frozen = {
+    ...balance.frozen,
+  };
+  if (balance.frozen && balance.cyberver?.amount) {
+    const amount = new BigNumber(balance.frozen.amount).plus(
+      new BigNumber(balance.cyberver.amount)
+    );
+
+    frozen.amount = amount.toString();
+  }
+
   if (Object.keys(balance).length >= 4 && total?.amount > 0) {
     return (
       <div className={styles.containerChartTotal}>
@@ -31,10 +42,12 @@ function ChartTotal({ balance }) {
             style={{ width: `${getProcent(balance.liquid, total)}%` }}
           />
         )}
-        {balance.frozen && (
+        {frozen?.amount && (
           <div
             className={styles.containerChartTotalFrozen}
-            style={{ width: `${getProcent(balance.frozen, total)}%` }}
+            style={{
+              width: `${getProcent(frozen, total)}%`,
+            }}
           />
         )}
         {balance.melting && (

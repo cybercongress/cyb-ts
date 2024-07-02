@@ -39,6 +39,7 @@ import {
 import useGetSendTxsByAddressByLcd from '../hooks/useGetSendTxsByAddressByLcd';
 import { useTeleport } from '../Teleport.context';
 import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const tokenDefaultValue = BASE_DENOM;
 
@@ -232,6 +233,10 @@ function Send() {
     },
     [tokenAmount, tokenACoinDecimals]
   );
+
+  useAdviserTexts({
+    defaultText: 'send tokens',
+  });
 
   const stateActionBar = {
     tokenAmount,

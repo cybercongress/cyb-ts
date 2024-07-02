@@ -15,4 +15,9 @@
   color: var(--primary-color);
   padding: 0;
   white-space: nowrap;
+
+  width: 100%;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }

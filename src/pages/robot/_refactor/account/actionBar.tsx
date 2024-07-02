@@ -309,12 +309,12 @@ class ActionBarContainer extends Component<Props> {
           );
         }
 
-        if (follow) {
-          content.push(followBtn);
-        }
+        // if (follow) {
+        //   content.push(followBtn);
+        // }
       }
 
-      if (type === 'log') {
+      if (!type) {
         if (follow) {
           content.push(followBtn);
         }

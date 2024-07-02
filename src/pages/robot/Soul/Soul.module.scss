@@ -1,0 +1,45 @@
+.actionPanel {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  .stepWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    button {
+      margin-left: 25px;
+    }
+  }
+
+  .stepWraperJustified {
+    @extend .stepWrapper;
+    justify-content: space-between;
+  }
+}
+
+.logArea {
+  margin-top: 20px;
+  padding: 10px;
+  box-shadow: none;
+  border-top: rgb(54, 214, 174) solid 1px;
+  border-radius: 0;
+  font-family: monospace !important;
+  resize: vertical;
+}
+
+.errorHighlight {
+  background: #735603;
+  border-bottom: yellow 2px dotted;
+  padding: 0px 3px;
+}
+
+.tabInner {
+  padding-top: 20px;
+}
+
+.settingsPanel {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+}

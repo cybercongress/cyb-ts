@@ -61,7 +61,7 @@ function useBalanceToken(address, updateAddress) {
   const [balanceToken, setBalanceToken] = useState(initValueToken);
 
   useEffect(() => {
-    if (address !== null) {
+    if (address) {
       if (address.bech32) {
         setAddressActive(address.bech32);
       } else {

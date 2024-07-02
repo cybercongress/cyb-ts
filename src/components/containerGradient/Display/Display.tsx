@@ -13,6 +13,8 @@ type Props = {
   status?: ColorLamp;
 
   noPaddingX?: boolean;
+  noPaddingY?: boolean;
+  noPadding?: boolean;
 
   sideSaber?: 'left' | 'right';
 
@@ -26,6 +28,8 @@ function Display({
   isVertical,
   title,
   noPaddingX,
+  noPaddingY,
+  noPadding,
   sideSaber,
   color = Colors.GREEN,
   status,
@@ -36,17 +40,16 @@ function Display({
     <div
       className={cx(styles.wrapper, styles[colorTemp], {
         [styles.vertical]: isVertical,
-        [styles.noPaddingX]: noPaddingX,
+        [styles.noPaddingX]: noPaddingX || noPadding,
+        [styles.noPaddingY]: noPaddingY || noPadding,
         [sideSaber ? styles[sideSaber] : undefined]: sideSaber,
       })}
     >
       {title && (
-        <header className={styles.header}>
-          {React.cloneElement(title, { inDisplay: true })}
-        </header>
+        <header>{React.cloneElement(title, { inDisplay: true })}</header>
       )}
 
-      {children}
+      <div className={styles.inner}>{children}</div>
     </div>
   );
 }

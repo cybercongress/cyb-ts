@@ -2,7 +2,7 @@ import cx from 'classnames';
 import styles from './styles.scss';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { useRef } from 'react';
-import { menuButtonId } from './Header/SwitchNetwork/SwitchNetwork';
+import { menuButtonId } from './Header/CurrentApp/CurrentApp';
 
 interface Props {
   children: React.ReactNode;

@@ -81,7 +81,17 @@ function Block() {
   }, [data]);
 
   if (loading) {
-    return <Dots />;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Dots />
+      </div>
+    );
   }
 
   if (error) {

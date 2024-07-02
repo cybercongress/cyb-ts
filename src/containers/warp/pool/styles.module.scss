@@ -50,7 +50,7 @@
       font-weight: 600;
     }
   }
-  
+
   &Inactive {
     position: absolute;
     right: 0px;
@@ -78,4 +78,9 @@
     justify-content: center;
     margin-top: 10px;
   }
+}
+
+.pools {
+  display: grid;
+  gap: 15px 0;
 }

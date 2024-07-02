@@ -12,6 +12,7 @@ import {
 } from 'src/features/sense/redux/sense.redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 
 export type AdviserProps = {
   adviser: {
@@ -25,6 +26,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const { senseId: paramSenseId } = useParams<{
     senseId: string;
   }>();
+  const { isOwner } = useRobotContext();
 
   const navigate = useNavigate();
 
@@ -119,21 +121,23 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   return (
     <>
       <div className={styles.wrapper}>
-        <SenseList
-          select={(id: string) => {
-            setSelected(id);
+        {isOwner && (
+          <SenseList
+            select={(id: string) => {
+              setSelected(id);
 
-            if (!paramSenseId) {
-              navigate(`./${id}`);
-            } else {
-              navigate(`../${id}`, {
-                relative: 'path',
-              });
-            }
-          }}
-          selected={selected}
-          adviser={adviserProps}
-        />
+              if (!paramSenseId) {
+                navigate(`./${id}`);
+              } else {
+                navigate(`../${id}`, {
+                  relative: 'path',
+                });
+              }
+            }}
+            selected={selected}
+            adviser={adviserProps}
+          />
+        )}
         <SenseViewer selected={selected} adviser={adviserProps} />
       </div>
 

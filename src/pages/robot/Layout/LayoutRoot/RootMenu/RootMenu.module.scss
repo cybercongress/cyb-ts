@@ -1,0 +1,70 @@
+$icon-size: 50px;
+$activeLineWidth: 2px;
+
+.links {
+  a {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: var(--grayscale-secondary);
+
+
+    >div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      &:first-child {
+        gap: 20px;
+      }
+    }
+
+
+    .icon {
+      font-size: $icon-size;
+    }
+
+    .count {
+      display: inline-flex;
+      color: var(--grayscale-primary);
+    }
+
+    .description {
+      color: var(--grayscale-dark);
+    }
+
+    &::after {
+      content: '';
+      opacity: 0;
+      display: block;
+      right: -$activeLineWidth;
+      height: 100%;
+      position: absolute;
+      transition: opacity 0.3s;
+    }
+
+    &:hover,
+    &.active {
+      .text {
+        color: var(--grayscale-primary);
+        font-size: 16px;
+      }
+    }
+
+    &.active {
+      &::after,
+      &::before {
+        opacity: 1;
+      }
+
+      &::after {
+        background: linear-gradient(90deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(255, 255, 255, 0.08) 100%);
+
+        width: 50%;
+      }
+    }
+  }
+}

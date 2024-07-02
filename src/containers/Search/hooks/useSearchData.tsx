@@ -7,6 +7,7 @@ import useLinksByDate from './useLinksByDate';
 
 const useSearchData = (
   hash: string,
+  neuron: string | null,
   {
     sortBy = SortBy.rank,
     linksType = LinksTypeFilter.all,
@@ -15,7 +16,7 @@ const useSearchData = (
     linksType?: LinksTypeFilter;
   }
 ) => {
-  const linksByDate = useLinksByDate(hash, linksType, {
+  const linksByDate = useLinksByDate(hash, linksType, neuron, {
     skip: sortBy !== SortBy.date,
   });
 

@@ -5,6 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
 import { fromBech32 } from '../../../utils/utils';
+import { useStake as useVerseStake } from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
+import { CYBERVER_CONTRACTS } from 'src/features/cybernet/constants';
+import { useQueryClient } from 'src/contexts/queryClient';
 
 const initValue = {
   denom: BASE_DENOM,
@@ -17,6 +20,7 @@ export const initValueMainToken = {
   melting: { ...initValue },
   growth: { ...initValue },
   total: { ...initValue },
+  cyberver: { ...initValue },
 };
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
@@ -71,88 +75,119 @@ const getCommissionAmount = (data) => {
   return initValueResponseFunc(BASE_DENOM, commissionAmount.toString());
 };
 
-export const useGetBalance = (client, addressBech32) => {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data, isFetching } = useQuery(
-      ['getBalance', addressBech32],
-      async () => {
-        const responsegetBalance = await client.getBalance(
-          addressBech32,
-          BASE_DENOM
-        );
+function useCyberverBalance({ address }) {
+  // will be refactored to loop
+  const s1 = useVerseStake({
+    address,
+    contractAddress: CYBERVER_CONTRACTS[0],
+    skip: !address,
+  });
 
-        const responsedelegatorDelegations = await getDelegatorDelegations(
-          client,
-          addressBech32
-        );
+  const s2 = useVerseStake({
+    address,
+    contractAddress: CYBERVER_CONTRACTS[1],
+    skip: !address,
+  });
 
-        const delegationsAmount = getDelegationsAmount(
-          responsedelegatorDelegations
-        );
+  const total1 = s1.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
+  const total2 = s2.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
 
-        const responsedelegatorUnbondingDelegations =
-          await client.delegatorUnbondingDelegations(addressBech32);
+  const totalCyberver = (total1 + total2).toString();
 
-        const unbondingAmount = getUnbondingAmount(
-          responsedelegatorUnbondingDelegations
-        );
+  return totalCyberver;
+}
 
-        const responsedelegationTotalRewards =
-          await client.delegationTotalRewards(addressBech32);
+export const useGetBalance = (addressBech32) => {
+  const client = useQueryClient();
 
-        const rewardsAmount = getRewardsAmount(responsedelegationTotalRewards);
+  const { data, isFetching, refetch } = useQuery(
+    ['getBalance', addressBech32],
+    async () => {
+      const responsegetBalance = await client.getBalance(
+        addressBech32,
+        BASE_DENOM
+      );
 
-        const dataValidatorAddress = fromBech32(
-          addressBech32,
-          BECH32_PREFIX_VALOPER
-        );
+      const responsedelegatorDelegations = await getDelegatorDelegations(
+        client,
+        addressBech32
+      );
 
-        const responsevalidatorCommission = await client.validatorCommission(
-          dataValidatorAddress
-        );
+      const delegationsAmount = getDelegationsAmount(
+        responsedelegatorDelegations
+      );
 
-        const commissionAmount = getCommissionAmount(
-          responsevalidatorCommission
-        );
+      const responsedelegatorUnbondingDelegations =
+        await client.delegatorUnbondingDelegations(addressBech32);
 
-        const resultBalance = {
-          liquid: responsegetBalance,
-          frozen: delegationsAmount,
-          melting: unbondingAmount,
-          growth: rewardsAmount,
-        };
+      const unbondingAmount = getUnbondingAmount(
+        responsedelegatorUnbondingDelegations
+      );
 
-        if (commissionAmount.amount > 0) {
-          resultBalance.commission = commissionAmount;
-        }
+      const responsedelegationTotalRewards =
+        await client.delegationTotalRewards(addressBech32);
 
-        const total = Object.values(resultBalance).reduce((acc, item) => {
-          return new BigNumber(acc).plus(item.amount).toString();
-        }, 0);
+      const rewardsAmount = getRewardsAmount(responsedelegationTotalRewards);
 
-        return {
-          ...resultBalance,
-          total: {
-            denom: BASE_DENOM,
-            amount: total,
-          },
-        };
-      },
-      {
-        enabled: Boolean(client && addressBech32),
+      const dataValidatorAddress = fromBech32(
+        addressBech32,
+        BECH32_PREFIX_VALOPER
+      );
+
+      const responsevalidatorCommission = await client.validatorCommission(
+        dataValidatorAddress
+      );
+
+      const commissionAmount = getCommissionAmount(responsevalidatorCommission);
+
+      const resultBalance = {
+        liquid: responsegetBalance,
+        frozen: delegationsAmount,
+        melting: unbondingAmount,
+        growth: rewardsAmount,
+      };
+
+      if (commissionAmount.amount > 0) {
+        resultBalance.commission = commissionAmount;
       }
-    );
 
-    if (data && data !== null && !isFetching) {
-      return data;
+      return resultBalance;
+    },
+    {
+      enabled: Boolean(client && addressBech32),
     }
+  );
 
-    return undefined;
-  } catch (error) {
-    console.log(`error`, error);
-    const tempObj = { ...initValueMainToken };
-    delete tempObj.total;
-    return { ...tempObj };
+  const totalCyberver = useCyberverBalance({ address: addressBech32 });
+
+  // TODO: refactor below
+  if (isFetching) {
+    return { data: initValueMainToken, refetch };
   }
+
+  const result = {
+    ...initValueMainToken,
+    ...data,
+  };
+
+  if (data && totalCyberver) {
+    result.cyberver = {
+      denom: BASE_DENOM,
+      amount: totalCyberver,
+    };
+  }
+
+  const total = Object.values(result).reduce((acc, item) => {
+    return new BigNumber(acc).plus(item.amount).toString();
+  }, 0);
+
+  result.total = {
+    denom: BASE_DENOM,
+    amount: total,
+  };
+
+  return {
+    data: result,
+    refetch,
+  };
 };

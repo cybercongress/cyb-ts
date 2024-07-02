@@ -17,6 +17,7 @@ function Dropdown({ options = [], value, onChange }: Props) {
 
   return (
     <div className={styles.dropdown}>
+      {/*  REFACTOR: use Triangle component */}
       <button type="button" onClick={() => setIsOpen(!isOpen)}>
         {value
           ? options.find((option) => option.value === value)?.label

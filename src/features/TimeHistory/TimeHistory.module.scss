@@ -1,0 +1,51 @@
+.rotate {
+  --i: -25deg;
+  --r: calc(2 * $i);
+  --diameter: -21px;
+  display: grid;
+  grid-area: 1/1;
+}
+
+@mixin rotate() {
+  transform: rotate(var(--r)) translateX(var(--diameter)) rotate(calc(-1 * var(--r)));
+}
+
+$size: 220px;
+
+.wrapper {
+  text-align: end;
+  display: grid;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 15px;
+  width: $size;
+  height: $size;
+  padding: 5px 5px 20px 0px;
+
+  position: absolute;
+  bottom: 20px;
+  // overflow: hidden scroll;
+  right: -5vw;
+
+  background-color: rgba(0, 0, 0, 0.5490196078);
+  backdrop-filter: blur(7px);
+
+}
+
+.rotate>div {
+  padding-right: 5px;
+}
+
+.rotate>div:nth-child(1) {
+  // --r: calc(2 * var(--i));
+  padding-right: unset;
+  color: var(--grayscale-disabled);
+}
+
+.rotate>div:nth-child(2) {
+  color: var(--grayscale-dark);
+}
+
+.rotate>div:nth-child(3) {
+  color: var(--grayscale-secondary);
+}

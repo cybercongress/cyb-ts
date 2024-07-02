@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Input,
-  Button,
-  Display,
-  DisplayTitle,
-} from 'src/components';
+import { Input, Button, Display, DisplayTitle } from 'src/components';
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
@@ -24,6 +19,7 @@ import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend/backend';
 import { IPFSNodes } from 'src/services/ipfs/types';
+import { getIpfsOpts } from 'src/services/ipfs/config';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
@@ -31,7 +27,7 @@ function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState(IPFSNodes.HELIA);
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
-  const { isIpfsInitialized, ipfsError: failed, loadIpfs } = useBackend();
+  const { isIpfsInitialized, ipfsError: failed, ipfsApi } = useBackend();
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
@@ -80,7 +76,10 @@ function IpfsSettings() {
   }, [valueInputGateway]);
 
   const onClickReConnect = () => {
-    loadIpfs();
+    ipfsApi
+      ?.stop()
+      .then(() => ipfsApi?.start(getIpfsOpts()))
+      .then();
   };
 
   const stateProps = {

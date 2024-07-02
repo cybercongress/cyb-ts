@@ -29,7 +29,7 @@ yarn-error.log*
 src/.DS_Store
 
 storybook-static
-.env
+.env.*.local
 
 # Local Netlify folder
 .netlify

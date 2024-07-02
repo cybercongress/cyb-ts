@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { LsResult } from 'ipfs-core-types/dist/src/pin';
+import { Option } from 'src/types';
 
 export type CallBackFuncStatus = (a: string) => void;
 
@@ -56,25 +57,6 @@ export type getIpfsUserGatewanAndNodeType = {
   userGateway: string | undefined;
 };
 
-export type IPFSContentMeta = IpfsFileStats & {
-  blockSizes?: never[]; // ???
-  data?: string; // ???
-  mime?: string;
-  local?: boolean;
-  statsTime?: number;
-  catTime?: number;
-  pinTime?: number;
-};
-
-type IPFSData =
-  | Blob
-  | Buffer
-  | string
-  | ReadableStream<Uint8Array>
-  | Uint8Array
-  | File
-  | Blob[];
-
 export type Uint8ArrayWithMime = {
   mime: string;
   rawData: Uint8Array;
@@ -83,26 +65,42 @@ export type Uint8ArrayWithMime = {
 export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | ReadableStream<Uint8Array>
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
-export type IpfsContentType =
+
+export type IpfsGatewayContentType = 'video' | 'audio';
+export type MimeBasedContentType = 'image' | 'pdf' | 'text' | 'other';
+export type IpfsBaseContentType =
+  | IpfsGatewayContentType
   | 'image'
   | 'pdf'
-  | 'link'
   | 'text'
-  | 'video'
-  | 'audio'
-  | 'html'
   | 'other';
 
-export type IPFSContentDetails =
-  | {
-      text?: string;
-      type?: IpfsContentType;
-      content?: string;
-      link?: string;
-      gateway: boolean;
-      cid: string;
-    }
-  | undefined;
+export type IpfsContentType = IpfsBaseContentType | 'link' | 'html' | 'cid';
+
+export type IPFSContentMeta = IpfsFileStats & {
+  blockSizes?: never[]; // ???
+  data?: string; // ???
+  mime?: string;
+  local?: boolean;
+  statsTime?: number;
+  catTime?: number;
+  pinTime?: number;
+  contentType?: IpfsContentType;
+};
+
+export type IPFSContentDetails = {
+  text?: string;
+  type?: IpfsContentType;
+  content?: string;
+  link?: string;
+  gateway: boolean;
+  cid: string;
+};
+
+export type IPFSContentDetailsMutated = IPFSContentDetails & {
+  mutation?: 'hidden' | 'modified' | 'error'; // rune pipeline result
+  cidBefore?: string;
+};
 
 export type IPFSContent = {
   availableDownload?: boolean;
@@ -112,13 +110,13 @@ export type IPFSContent = {
   source: IpfsContentSource;
   contentUrl?: string;
   textPreview?: string;
+  contentType?: IpfsContentType;
 };
-
-export type IPFSContentMaybe = IPFSContent | undefined;
 
 export type FetchWithDetailsFunc = (
   cid: string,
-  type?: IpfsContentType
+  type?: IpfsContentType,
+  controller?: AbortController
 ) => Promise<IPFSContentDetails>;
 
 export interface IpfsNode {
@@ -140,7 +138,7 @@ export interface IpfsNode {
 
 export interface CybIpfsNode extends IpfsNode {
   isConnectedToSwarm(): Promise<boolean>;
-  reconnectToSwarm(lastConnectedTimestamp?: number): Promise<void>;
+  reconnectToSwarm(forced: Option<boolean>): Promise<void>;
   fetchWithDetails: FetchWithDetailsFunc;
   addContent(content: File | string): Promise<string | undefined>;
 }

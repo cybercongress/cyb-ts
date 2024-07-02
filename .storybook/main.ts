@@ -56,6 +56,10 @@ const config: StorybookConfig = {
             test: /\.cozo$/,
             use: 'raw-loader',
           },
+          {
+            test: /\.rn$/,
+            type: 'asset/source',
+          },
         ],
       },
     };

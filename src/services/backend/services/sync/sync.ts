@@ -20,6 +20,7 @@ import { SyncEntryName } from '../../types/services';
 import BaseSyncLoop from './services/BaseSyncLoop/BaseSyncLoop';
 import createCommunitySync$ from './services/CommunitySync/CommunitySync';
 import { createCyblogChannel } from 'src/utils/logging/cyblog';
+import BackendQueueChannelListener from '../../channels/BackendQueueChannel/BackendQueueChannel';
 
 const cyblogCh = createCyblogChannel({ thread: 'bckd' });
 
@@ -33,6 +34,14 @@ export class SyncService {
 
   constructor(deps: ServiceDeps) {
     const { dbInstance$, ipfsInstance$ } = deps;
+
+    const particlesResolver = new ParticlesResolverQueue(deps).start();
+
+    const queueListener = new BackendQueueChannelListener(
+      particlesResolver,
+      dbInstance$
+    );
+
     this.isInitialized$ = combineLatest([dbInstance$, ipfsInstance$]).pipe(
       map(([dbInstance, ipfsInstance]) => !!dbInstance && !!ipfsInstance)
     );
@@ -43,8 +52,6 @@ export class SyncService {
       },
       error: (err) => this.channelApi.postServiceStatus('sync', 'error', err),
     });
-
-    const particlesResolver = new ParticlesResolverQueue(deps).start();
 
     const communitySync$ = createCommunitySync$(deps);
     communitySync$.subscribe((community) => {

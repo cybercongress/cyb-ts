@@ -9,6 +9,8 @@ import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import Tooltip from '../tooltip/tooltip';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -16,11 +18,7 @@ function useGetValidatorInfo(address: string) {
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      if (!queryClient) {
-        return null;
-      }
-
-      const response = await queryClient.validator(address);
+      const response = await queryClient!.validator(address);
       return response;
     },
     {
@@ -47,6 +45,8 @@ type Props = {
   containerClassName?: string;
   avatarClassName?: string;
   monikerClassName?: string;
+  link?: string;
+  markCurrentAddress?: boolean;
 };
 
 function Account({
@@ -56,12 +56,14 @@ function Account({
   onlyAvatar,
   avatar,
   margin,
+  link,
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
   disabled,
   containerClassName,
   avatarClassName,
+  markCurrentAddress,
   monikerClassName,
 }: Props) {
   const { data: dataValidInfo } = useGetValidatorInfo(address);
@@ -74,7 +76,13 @@ function Account({
     return trimString(address, trimAddressParam[0], trimAddressParam[1]);
   }, [address, trimAddressParam]);
 
+  const currentAddress = useCurrentAddress();
+
   const linkAddress = useMemo(() => {
+    if (link) {
+      return link;
+    }
+
     if (address?.includes(BECH32_PREFIX_VALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
@@ -84,7 +92,7 @@ function Account({
     }
 
     return `/network/bostrom/contract/${address}`;
-  }, [address, moniker]);
+  }, [address, moniker, link]);
 
   const cidAvatar = useMemo(() => {
     if (dataPassport !== undefined && dataPassport !== null) {
@@ -125,6 +133,10 @@ function Account({
         >
           {!moniker ? trimAddress : moniker}
         </Link>
+      )}
+
+      {markCurrentAddress && currentAddress === address && (
+        <Tooltip tooltip="your account">🔑</Tooltip>
       )}
       {children}
     </div>

@@ -37,6 +37,7 @@
     "FileReader": true,
     "cyblog": "readonly"
   },
+
   "rules": {
     "valid-jsdoc": "off",
     "no-shadow": "off",

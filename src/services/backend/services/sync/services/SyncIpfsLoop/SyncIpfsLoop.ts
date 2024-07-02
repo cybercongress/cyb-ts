@@ -12,6 +12,7 @@ import { createLoopObservable } from '../utils/rxjs/loop';
 import { IPFS_SYNC_INTERVAL } from '../consts';
 import { fetchPins } from './services';
 import ParticlesResolverQueue from '../ParticlesResolverQueue/ParticlesResolverQueue';
+import { SyncQueueJobType } from 'src/services/CozoDb/types/entities';
 
 class SyncIpfsLoop {
   private isInitialized$: Observable<boolean>;
@@ -112,6 +113,7 @@ class SyncIpfsLoop {
         await this.particlesResolver!.enqueue(
           particlesToAdd.map((cid) => ({
             id: cid,
+            jobType: SyncQueueJobType.particle,
             priority: QueuePriority.LOW,
           }))
         );

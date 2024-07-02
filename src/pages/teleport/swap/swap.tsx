@@ -25,6 +25,7 @@ import useGetSendTxsByAddressByType from '../hooks/useGetSendTxsByAddress';
 import DataSwapTxs from './components/dataSwapTxs/DataSwapTxs';
 import { useTeleport } from '../Teleport.context';
 import Slippage from './components/slippage/Slippage';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const tokenADefaultValue = BASE_DENOM;
 const tokenBDefaultValue = DENOM_LIQUID;
@@ -344,6 +345,10 @@ function Swap() {
     swapPrice,
     poolPrice,
   };
+
+  useAdviserTexts({
+    defaultText: 'swap tokens',
+  });
 
   return (
     <>

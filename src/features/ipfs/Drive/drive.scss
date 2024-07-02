@@ -65,7 +65,7 @@
   // padding-left: 25px;
 }
 
-h3 {
+.list h3 {
   padding-bottom: 16px;
 }
 
@@ -78,4 +78,12 @@ h3 {
   padding-top: 16px;
   // justify-content: center;
   display: flex;
+}
+
+.centerPanel {
+  padding: 16px;
+  // justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }

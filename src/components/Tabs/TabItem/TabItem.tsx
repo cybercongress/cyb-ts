@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
+import { ReactNode } from 'react';
 import styles from './TabItem.module.scss';
 
 export const enum Position {
@@ -9,7 +10,7 @@ export const enum Position {
 
 export type Props = {
   type?: Position;
-  text: string | JSX.Element;
+  text: string | ReactNode;
   step?: number;
   isSelected: boolean;
   to?: string;
@@ -36,6 +37,13 @@ function TabItem({
     Component = Link;
     componentProps = {
       to,
+    };
+  }
+
+  if (disable && to) {
+    componentProps = {
+      ...componentProps,
+      onClick: (e) => e.preventDefault(),
     };
   }
 

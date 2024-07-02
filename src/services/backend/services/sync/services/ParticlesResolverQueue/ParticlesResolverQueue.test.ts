@@ -29,6 +29,7 @@ describe('ParticlesResolverQueue', () => {
       {
         id: 'mockId',
         priority: 1,
+        jobType: 1,
       },
     ];
     const mockServiceDeps: ServiceDeps = {
@@ -83,10 +84,12 @@ describe('ParticlesResolverQueue', () => {
       {
         id: 'mockToOk',
         priority: 1,
+        jobType: 1,
       },
       {
         id: 'mockToNotFound',
         priority: 1,
+        jobType: 1,
       },
     ];
     syncQueue.enqueue(mockItems);

@@ -8,6 +8,7 @@ import {
   LinkDbEntity,
   SyncQueueDbEntity,
   CommunityDbEntity,
+  SyncQueueKey,
 } from './entities';
 
 export type PinDto = EntityToDto<PinDbEntity>;
@@ -17,4 +18,6 @@ export type ParticleDto = EntityToDto<ParticleDbEntity>;
 export type ConfigDto = EntityToDto<ConfigDbEntity>;
 export type LinkDto = EntityToDto<LinkDbEntity>;
 export type SyncQueueDto = EntityToDto<SyncQueueDbEntity>;
+export type SyncQueueKeyDto = EntityToDto<SyncQueueKey>;
+
 export type CommunityDto = EntityToDto<CommunityDbEntity>;

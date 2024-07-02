@@ -18,9 +18,10 @@ export type Props = {
   error?: string;
   value: string;
   maxValue?: number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlurFnc?: () => void;
   onFocusFnc?: () => void;
+  disabled?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const dataPercentAttribute = 'data-percent';
@@ -36,6 +37,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       type = 'text',
       value,
       autoFocus,
+      disabled,
       className,
       classNameTextbox,
       focusedProps,
@@ -105,7 +107,6 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       <div
         className={cx(
           styles.textbox,
-          color && styles[color],
           focused && styles.focused,
           isTextarea && styles.textarea,
           classNameTextbox
@@ -114,7 +115,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       >
         <LinearGradientContainer
           active={focusedProps || focused}
-          color={color}
+          color={disabled ? Color.Black : color}
           title={title}
         >
           {focused && !!maxValue && (
@@ -141,6 +142,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
             value={value}
             className={className}
             onChange={onChange}
+            disabled={disabled}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={autoFocus}
             onFocus={handlerOnFocused}

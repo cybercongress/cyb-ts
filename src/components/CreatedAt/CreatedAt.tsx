@@ -1,14 +1,15 @@
-import { getNowUtcTime, timeSince } from 'src/utils/utils';
+import { timeSince } from 'src/utils/utils';
+import { dateToUtcNumber, getNowUtcNumber } from 'src/utils/date';
 import styles from './CreatedAt.module.scss';
 
 export type Props = {
-  timeAt: string | number;
+  timeAt: string;
 };
 
 function CreatedAt({ timeAt }: Props) {
   let timeAgoInMS = 0;
 
-  const time = getNowUtcTime() - new Date(timeAt).getTime();
+  const time = getNowUtcNumber() - dateToUtcNumber(timeAt);
   if (time && time > 0) {
     timeAgoInMS = time;
   }
@@ -16,9 +17,9 @@ function CreatedAt({ timeAt }: Props) {
   const timeSinceValue = timeSince(timeAgoInMS);
 
   return (
-    <div className={styles.createdAt}>
+    <span className={styles.createdAt}>
       {timeSinceValue === 'now' ? timeSinceValue : `${timeSinceValue} ago`}
-    </div>
+    </span>
   );
 }
 

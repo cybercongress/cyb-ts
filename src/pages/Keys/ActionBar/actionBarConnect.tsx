@@ -15,11 +15,14 @@ import { useDispatch } from 'react-redux';
 import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
 import { CHAIN_ID } from 'src/constants/config';
+import { KEY_TYPE } from '../types';
+import ActionBarSecrets from './actionBarSecrets';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
 const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
+const STAGE_ADD_SECRETS = 100;
 
 const checkAddress = (obj, network, address) =>
   Object.keys(obj).some((k) => {
@@ -58,12 +61,14 @@ function ActionBarConnect({
     }
   }, [valueInputAddres]);
 
-  const connctAddress = () => {
+  const connectAddress = () => {
     switch (selectMethod) {
-      case 'keplr':
+      case KEY_TYPE.keplr:
         connectKeplr();
         break;
-
+      case KEY_TYPE.secrets:
+        onClickToggleSecrets();
+        break;
       default:
         onClickAddAddressUser();
         break;
@@ -80,6 +85,14 @@ function ActionBarConnect({
 
   const onClickAddAddressUser = () => {
     setStage(STAGE_ADD_ADDRESS_USER);
+  };
+
+  const onClickToggleSecrets = () => {
+    setStage(STAGE_ADD_SECRETS);
+  };
+
+  const onClickAddSecrets = () => {
+    console.log('onClickAddSecrets');
   };
 
   const onClickAddAddressUserToLocalStr = async () => {
@@ -144,7 +157,7 @@ function ActionBarConnect({
         selectMethodFunc={selectMethodFunc}
         selectMethod={selectMethod}
         selectNetwork={selectNetwork}
-        connctAddress={connctAddress}
+        connectAddress={connectAddress}
         keplr={signer}
         onClickBack={onClickBack}
       />
@@ -179,6 +192,10 @@ function ActionBarConnect({
         </Pane>
       </ActionBar>
     );
+  }
+
+  if (stage === STAGE_ADD_SECRETS) {
+    return <ActionBarSecrets onClickBack={() => setStage(STAGE_INIT)} />;
   }
 
   if (stage === STAGE_ADD_ADDRESS_OK) {

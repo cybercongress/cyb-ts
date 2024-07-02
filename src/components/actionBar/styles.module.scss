@@ -4,14 +4,12 @@
   justify-content: center;
   width: 100%;
   position: fixed;
-  bottom: 0;
+  bottom: 20px;
   left: 0;
   padding: 10px 0;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.93) 76%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.93) 76%,
+      rgba(0, 0, 0, 0) 100%);
   z-index: 2;
 
   &Content {
@@ -49,4 +47,31 @@
 .chooseAccount {
   padding: 0 5px;
   color: var(--primary-color);
+}
+
+.ActionBarWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62%;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  // padding: 10px 0;
+  background: #000;
+  z-index: 3;
+
+  &Content {
+    max-width: 1000px;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 0.7fr 1fr;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 10px 0px;
+   
+  }
+
 }

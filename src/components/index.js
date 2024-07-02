@@ -54,6 +54,7 @@ import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
+import Time from './time/time';
 import Row, { RowsContainer } from './Row/Row';
 import Display from './containerGradient/Display/Display';
 import DisplayTitle from './containerGradient/DisplayTitle/DisplayTitle';
@@ -110,6 +111,7 @@ export {
   Slider,
   CreatedAt,
   Tabs,
+  Time,
   Row,
   RowsContainer,
   Display,

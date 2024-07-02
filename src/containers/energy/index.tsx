@@ -92,29 +92,22 @@ function RoutedEnergy() {
 
   return (
     <>
-      <div
-        style={{
-          display: 'grid',
-          rowGap: '20px',
-        }}
-      >
-        <ContainerGradientText>
-          <Statistics
-            active={selected}
-            myEnegy={balacesResource.milliampere * balacesResource.millivolt}
-            outcome={
-              convertResources(sourceEnergy.milliampere) *
-              convertResources(sourceEnergy.millivolt)
-            }
-            income={
-              convertResources(destinationEnergy.milliampere) *
-              convertResources(destinationEnergy.millivolt)
-            }
-          />
-        </ContainerGradientText>
+      <Display color="blue">
+        <Statistics
+          active={selected}
+          myEnegy={balacesResource.milliampere * balacesResource.millivolt}
+          outcome={
+            convertResources(sourceEnergy.milliampere) *
+            convertResources(sourceEnergy.millivolt)
+          }
+          income={
+            convertResources(destinationEnergy.milliampere) *
+            convertResources(destinationEnergy.millivolt)
+          }
+        />
 
-        <Display noPaddingX>{content}</Display>
-      </div>
+        {content}
+      </Display>
 
       <div
         style={{
