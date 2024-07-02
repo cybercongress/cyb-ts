@@ -27,7 +27,7 @@ function AppName() {
   return (
     <>
       <Helmet>
-        <title>{content || ''}</title>
+        <title>{content ? `${content.toLowerCase()} | cyb` : ''}</title>
       </Helmet>
       <span className={styles.wrapper}>{content}</span>
     </>

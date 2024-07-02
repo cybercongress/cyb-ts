@@ -47,7 +47,7 @@ import {
 } from '../../../features/passport/passports.redux';
 import { ClaimMsg } from './type';
 import { TxHash } from '../hook/usePingTxs';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { CHAIN_ID } from 'src/constants/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');

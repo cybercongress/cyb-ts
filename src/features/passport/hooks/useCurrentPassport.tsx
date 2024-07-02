@@ -1,5 +1,5 @@
 import { useAppSelector } from 'src/redux/hooks';
-import useCurrentAddress from './useCurrentAddress';
+import useCurrentAddress from '../../../hooks/useCurrentAddress';
 import { fromBech32 } from 'src/utils/utils';
 
 function useCurrentPassport() {

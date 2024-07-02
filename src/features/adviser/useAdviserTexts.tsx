@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useSetAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { Dots } from 'src/components';
-import useId from '../cybernet/_move/useId';
+import useId from 'src/hooks/useId';
 
 type Props =
   | {

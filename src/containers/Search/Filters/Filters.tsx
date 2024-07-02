@@ -6,10 +6,9 @@ import { initialContentTypeFilterState } from '../constants';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { Account, Tooltip } from 'src/components';
 import { AccountInput } from 'src/pages/teleport/components/Inputs';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import { useAppSelector } from 'src/redux/hooks';
-import useCurrentPassport from 'src/features/cybernet/_move/useCurrentPassport';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import useCurrentPassport from 'src/features/passport/hooks/useCurrentPassport';
 
 enum NeuronFilterType {
   me = 'me',

@@ -9,7 +9,7 @@ import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import Tooltip from '../tooltip/tooltip';
 
 function useGetValidatorInfo(address: string) {
@@ -18,11 +18,7 @@ function useGetValidatorInfo(address: string) {
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      if (!queryClient) {
-        return null;
-      }
-
-      const response = await queryClient.validator(address);
+      const response = await queryClient!.validator(address);
       return response;
     },
     {

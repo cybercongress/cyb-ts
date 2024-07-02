@@ -1,6 +1,6 @@
 import useExecuteContractWithWaitAndAdviser, {
   Props as ExecuteContractProps,
-} from '../_move/useExecuteContractWithWaitAndAdviser';
+} from '../../../hooks/contract/useExecuteContractWithWaitAndAdviser';
 import { useCybernet } from './cybernet.context';
 
 type Props = Omit<ExecuteContractProps, 'contractAddress'>;
