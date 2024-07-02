@@ -1,0 +1,22 @@
+// @import '../../style/mixins.scss';
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.logArea {
+  margin-top: 20px;
+  padding: 10px;
+  box-shadow: none;
+  border-top: rgb(54, 214, 174) solid 1px;
+  border-radius: 0;
+  font-family: monospace !important;
+  resize: vertical;
+}
+
+.errorHighlight {
+  background: #735603;
+  border-bottom: yellow 2px dotted;
+  padding: 0px 3px;
+}

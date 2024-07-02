@@ -44,6 +44,14 @@ type RuneEntrypoint = {
   script: string; // runtime code
 };
 
+type RuneRunResult = {
+  output: string;
+  diagnosticsOutput: string;
+  diagnostics: any[];
+  error: string;
+  result: any;
+};
+
 const compileConfig = {
   budget: 1_000_000,
   experimental: false,
@@ -162,7 +170,7 @@ function enigine() {
         result: result
           ? JSON.parse(removeBrokenUnicode(result))
           : { action: 'error', message: 'No result' },
-      };
+      } as RuneRunResult;
     } catch (e) {
       scriptCallbacks.delete(refId);
 
@@ -176,7 +184,7 @@ function enigine() {
         diagnosticsOutput: `scripting engine error ${e}`,
         ...outputData,
         result: { action: 'error', message: e?.toString() || 'Unknown error' },
-      };
+      } as RuneRunResult;
     }
   };
 
