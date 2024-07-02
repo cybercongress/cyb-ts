@@ -1,3 +1,4 @@
+/* stylelint-disable custom-property-empty-line-before */
 @import url('./libs/index.scss');
 
 :root {
@@ -33,6 +34,7 @@
   --text-opacity-4: 0.38;
 }
 
+/* stylelint-disable */
 :export {
   primaryColor: var(--primary-color);
   greenLightColor: var(--green-light);
