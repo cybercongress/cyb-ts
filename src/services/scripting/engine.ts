@@ -151,7 +151,7 @@ function enigine() {
       ...defaultRuneEntrypoint,
       ...compileParams,
       input: script,
-      script: runtimeScript,
+      scripts: [runtimeScript],
       params: scriptParams,
     };
 
