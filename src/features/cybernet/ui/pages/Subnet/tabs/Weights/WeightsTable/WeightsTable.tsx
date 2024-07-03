@@ -15,6 +15,7 @@ import {
   useCybernet,
 } from 'src/features/cybernet/ui/cybernet.context';
 import colorStyles from './temp.module.scss';
+import SubnetPreview from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
 
 type Props = {};
 
@@ -39,12 +40,14 @@ function WeightsTable({}: Props) {
 
   const { subnetQuery, grades, neuronsQuery } = useSubnet();
 
-  const { selectedContract, subnetsQuery } = useCybernet();
+  const { subnetsQuery } = useCybernet();
 
   const uid = subnetQuery.data?.netuid;
   const isRootSubnet = uid === 0;
 
-  const neurons = neuronsQuery.data || [];
+  const neurons = useMemo(() => {
+    return neuronsQuery.data || [];
+  }, [neuronsQuery.data]);
 
   const currentContract = useCurrentContract();
 
@@ -105,24 +108,7 @@ function WeightsTable({}: Props) {
                 id: `t${uid}`,
                 header: () => {
                   if (isRootSubnet) {
-                    const {
-                      metadata: { name: contractName },
-                    } = selectedContract;
-
-                    const name = subnetsQuery.data?.find(
-                      (subnet) => subnet.netuid === uid
-                    ).metadata?.name;
-                    return (
-                      <Link
-                        to={cybernetRoutes.subnet.getLink(
-                          'pussy',
-                          contractName,
-                          uid
-                        )}
-                      >
-                        {name}
-                      </Link>
-                    );
+                    return <SubnetPreview subnetUID={uid} withName />;
                   }
 
                   const hotkey = neurons[uid].hotkey;
@@ -169,7 +155,7 @@ function WeightsTable({}: Props) {
                 },
               });
             })
-            // [columns, address, isRootSubnet]
+            // [columns, address, isRootSubnet, neurons, currentContract]
             // )
           }
           data={data}
