@@ -46,9 +46,9 @@ function getQueueItemTotalPriority(item: QueueItem): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
 }
 
-const debugCid = (cid: ParticleCid, prefix: string, ...args) => {
-  console.log(`>>> ${prefix}: ${cid}`, ...args);
-};
+// const debugCid = (cid: ParticleCid, prefix: string, ...args) => {
+//   console.log(`>>> ${prefix}: ${cid}`, ...args);
+// };
 
 const strategies = {
   external: new QueueStrategy(
@@ -178,7 +178,7 @@ class QueueManager {
         });
         return res;
       } catch (e) {
-        // console.log('---promtoo', e);
+        console.log('---promtoo', e);
         throw e;
       }
     }).pipe(

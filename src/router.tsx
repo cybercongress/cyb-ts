@@ -56,6 +56,7 @@ import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
 import Settings from './pages/Settings/Settings';
+import Sign from './pages/Sign/Sign';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -117,6 +118,8 @@ function AppRouter() {
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
+
+          <Route path="/sign" element={<Sign />} />
 
           <Route path={routes.temple.path} element={<Temple />} />
           <Route path={routes.neuron.path} element={<Robot />} />

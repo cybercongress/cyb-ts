@@ -15,6 +15,7 @@ import usePrevious from 'src/hooks/usePrevious';
 import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
+import { CybSignerClient } from 'src/utils/CybSignerClient';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
 import { accountsKeplr } from 'src/utils/utils';
@@ -24,18 +25,16 @@ import { accountsKeplr } from 'src/utils/utils';
 // };
 
 type SignerClientContextType = {
-  readonly signingClient: Option<SigningCyberClient>;
+  readonly signingClient: Option<CybSignerClient>;
   readonly signer: Option<OfflineSigner>;
   readonly signerReady: boolean;
   initSigner: () => void;
   setSigner(signer: Option<OfflineSigner>): void;
 };
 
-async function createClient(
-  signer: OfflineSigner
-): Promise<SigningCyberClient> {
+async function createClient(signer: OfflineSigner): Promise<CybSignerClient> {
   const options = { prefix: BECH32_PREFIX };
-  const client = await SigningCyberClient.connectWithSigner(
+  const client = await CybSignerClient.connectWithSigner(
     RPC_URL,
     signer,
     options
@@ -154,6 +153,7 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
 
           setSigner(signer);
           setSigningClient(clientJs);
+          setSignerReady(true);
           console.log('Signing client init success');
         }
       } catch (e) {

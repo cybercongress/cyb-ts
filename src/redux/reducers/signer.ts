@@ -4,30 +4,41 @@ type ResolveType = (value: any) => void;
 type RejectType = (reason?: any) => void;
 
 type InitialState = {
-  open: boolean;
   resolve?: ResolveType;
   reject?: RejectType;
+  actionBarState?: number;
+  memo: string;
 };
-const initialState = { open: false } as InitialState;
+const initialState = { memo: '' } as InitialState;
 
 const signerSlice = createSlice({
   name: 'signer',
   initialState,
   reducers: {
-    openSignerModal(
+    shareSignerPromise(
       state,
       { payload }: PayloadAction<{ resolve: ResolveType; reject: RejectType }>
     ) {
-      state.open = true;
       state.resolve = payload.resolve;
       state.reject = payload.reject;
     },
-    closeSignerModal() {
+    resetSignerState() {
       return { ...initialState };
+    },
+    setActionBarState(state, { payload }: PayloadAction<number>) {
+      state.actionBarState = payload;
+    },
+    updateMemo(state, { payload }: PayloadAction<string>) {
+      state.memo = payload;
     },
   },
 });
 
-export const { openSignerModal, closeSignerModal } = signerSlice.actions;
+export const {
+  shareSignerPromise,
+  resetSignerState,
+  setActionBarState,
+  updateMemo,
+} = signerSlice.actions;
 
 export default signerSlice.reducer;

@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 import MainLayout from 'src/layouts/Main';
 import { initPocket } from 'src/redux/features/pocket';
@@ -11,15 +17,14 @@ import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useAdviser } from 'src/features/adviser/context';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { routes } from 'src/routes';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
 
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import styles from './styles.scss';
-
-// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
-import SignerModal from './SignerModal';
+import { setNavigate } from 'src/utils/shareNavigation';
+import AdviserContainer from 'src/features/adviser/AdviserContainer';
+
+import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
 
@@ -40,10 +45,15 @@ function App() {
   useSenseManager();
 
   const { ipfsError } = useBackend();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(initPocket());
   }, []);
+
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
 
   useEffect(() => {
     if (!address || !queryClient) {
@@ -110,8 +120,6 @@ function App() {
         )}
 
         {location.pathname !== '/' && <AdviserContainer />}
-
-        <SignerModal />
 
         <Outlet />
       </>

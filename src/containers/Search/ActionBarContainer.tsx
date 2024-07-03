@@ -1,27 +1,28 @@
 /* eslint-disable */
+import { ActionBar, Pane } from '@cybercongress/gravity';
 import React, { Component } from 'react';
-import { Pane, ActionBar } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import {
-  TransactionSubmitted,
+  ActionBarContentText,
+  ButtonImgText,
   Confirmed,
+  Dots,
   StartStageSearchActionBar,
   TransactionError,
-  ActionBarContentText,
-  Dots,
-  ButtonImgText,
+  TransactionSubmitted,
 } from '../../components';
 
 import { getTxs } from '../../utils/search/utils';
 
-import { LEDGER } from '../../utils/config';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
-import { trimString } from '../../utils/utils';
-import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
-import { DefaultAccount } from 'src/types/defaultAccount';
-import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
+import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
+import { setActionBarState } from 'src/redux/reducers/signer';
+import type { RootState } from 'src/redux/store';
+import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { LEDGER } from '../../utils/config';
+import { trimString } from '../../utils/utils';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -40,9 +41,7 @@ const STAGE_IPFS_HASH = 3.1;
 const STAGE_KEPLR_APPROVE = 3.2;
 
 // generated
-interface Props {
-  defaultAccount: DefaultAccount;
-
+interface Props extends ConnectedProps<typeof connector> {
   textBtn?: string;
   placeholder?: string;
   rankLink?: string;
@@ -59,7 +58,7 @@ class ActionBarContainer extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      stage: STAGE_INIT,
+      stage: this.props.actionBarState ?? STAGE_INIT,
       addressLocalStor: null,
       contentHash: '',
       txHeight: null,
@@ -83,6 +82,7 @@ class ActionBarContainer extends Component<Props, any> {
     const { defaultAccount } = this.props;
 
     if (stage === STAGE_IPFS_HASH) {
+      debugger;
       if (toCid !== null && fromCid !== null) {
         this.generateTx();
       }
@@ -168,6 +168,7 @@ class ActionBarContainer extends Component<Props, any> {
       this.setState({
         stage: STAGE_KEPLR_APPROVE,
       });
+      this.props.setActionBarState(STAGE_KEPLR_APPROVE);
       if (signer && signingClient) {
         const { address } = (await signer.getAccounts())[0];
 
@@ -430,10 +431,14 @@ class ActionBarContainer extends Component<Props, any> {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
+const connector = connect(
+  (state: RootState) => ({
+    defaultAccount: state.pocket.defaultAccount,
+    actionBarState: state.signer.actionBarState,
+  }),
+  { setActionBarState }
+);
 
-export default withIpfsAndKeplr(connect(mapStateToProps)(ActionBarContainer));
+const ActionBarHOC = withIpfsAndKeplr(connector(ActionBarContainer));
+
+export default ActionBarHOC;

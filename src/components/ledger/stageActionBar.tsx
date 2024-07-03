@@ -406,12 +406,12 @@ export function RewardsDelegators({
 }
 
 interface ConnectAddressProps {
-  selectMethodFunc: (method: ConnectMethod) => void,
-  selectMethod: ConnectMethod | '',
-  selectNetwork: string,
-  connectAddress:() => void,
-  keplr: Option<OfflineSigner>,
-  onClickBack: () => void,
+  selectMethodFunc: (method: ConnectMethod) => void;
+  selectMethod: ConnectMethod | '';
+  selectNetwork: string;
+  connectAddress: () => void;
+  keplr: Option<OfflineSigner>;
+  onClickBack: () => void;
 }
 
 export function ConnectAddress({
@@ -442,14 +442,13 @@ export function ConnectAddress({
         )}
 
         {/* {(!keplr || window.__TAURI__) && ( */}
-        {(
-          <ButtonIcon
-            onClick={() => selectMethodFunc('wallet')}
-            active={selectMethod === 'wallet'}
-            img={imgWallet}
-            text="wallet"
-          />
-        )}
+
+        <ButtonIcon
+          onClick={() => selectMethodFunc('wallet')}
+          active={selectMethod === 'wallet'}
+          img={imgWallet}
+          text="wallet"
+        />
 
         {/* {!keplr && !window.__TAURI__ && (
           <LinkWindow to="https://www.keplr.app/">

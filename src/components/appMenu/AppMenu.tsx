@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useLocation, NavLink } from 'react-router-dom';
-import styles from './AppMenu.module.scss';
 import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
+import { useEffect, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { MenuItem, MenuItems } from 'src/containers/application/AppMenu';
+import { v4 as uuidv4 } from 'uuid';
+import styles from './AppMenu.module.scss';
 
 interface Props {
   item: MenuItem | MenuItem['subItems'][0];
