@@ -19,23 +19,6 @@ function Main() {
 
   const { getText } = useCybernetTexts();
 
-  useAdviserTexts({
-    defaultText: (
-      <div>
-        Rewards are currently not being distributed because
-        <br /> contract execution is exceeding the block gas limit
-        <br />
-        This issue{' '}
-        <Link
-          to="https://x.com/cyber_devs/status/1805173737970405599"
-          target="_blank"
-        >
-          will be resolved soon
-        </Link>
-      </div>
-    ),
-  });
-
   const { data } = useDelegate(address);
   const currentAddressIsDelegator = !!data;
 
