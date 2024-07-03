@@ -68,7 +68,7 @@ function Select({
   options,
   currentValue,
   small,
-  color = Color.Green,
+  color = Color.Yellow,
   title,
 }: SelectProps) {
   const selectContainerRef = useRef<HTMLDivElement>(null);
