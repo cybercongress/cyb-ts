@@ -120,7 +120,7 @@ function App() {
           {![
             routes.home.path,
             routes.teleport.path,
-            // cybernetRoutes.verse.path,
+            cybernetRoutes.verse.path,
           ].some((path) => {
             return matchPath(path, location.pathname);
           }) && <AdviserContainer />}
