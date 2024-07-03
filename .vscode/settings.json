@@ -15,6 +15,22 @@
     "stylelint",
     "superintelligence",
     "websockets",
-    "cyberver"
-  ]
+    "cyberver",
+    "websockets"
+  ],
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "stylelint.snippet": ["css", "scss", "postcss"],
+  "stylelint.validate": ["css", "scss", "postcss"]
 }
