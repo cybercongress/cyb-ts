@@ -30,7 +30,10 @@ function RobotRoutes() {
           <Route element={<LayoutRoot />}>
             <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
             <Route path="soul" element={<Soul />} />
-            <Route path="energy/*" element={<RoutedEnergy />} />
+            {['energy', 'energy/:pageId'].map((path) => (
+              <Route key={path} path={path} element={<RoutedEnergy />} />
+            ))}
+
             <Route path="swarm" element={<Follows />} />
             <Route path="security" element={<Heroes />} />
             <Route path="rights" element={<UnderConstruction />} />

@@ -1,7 +1,11 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
+import { formatNumber } from 'src/utils/utils';
+import getPrefixNumber from 'src/utils/getPrefixNumber';
+import cx from 'classnames';
 import hydrogen from '../../image/hydrogen.svg';
 import Tooltip from '../tooltip/tooltip';
+import styles from './IconsNumber.module.scss';
 
 enum TypesEnum {
   'karma' = 'karma',
@@ -30,44 +34,22 @@ const icons = {
   [TypesEnum.pussy]: '🟣',
 };
 
-// TODO: refactor
-const PREFIXES = [
-  {
-    prefix: 7,
-    power: 10 ** 21,
-  },
-  {
-    prefix: 6,
-    power: 10 ** 18,
-  },
-  {
-    prefix: 5,
-    power: 10 ** 15,
-  },
-  {
-    prefix: 4,
-    power: 10 ** 12,
-  },
-  {
-    prefix: 3,
-    power: 10 ** 9,
-  },
-  {
-    prefix: 2,
-    power: 10 ** 6,
-  },
-  {
-    prefix: 1,
-    power: 10 ** 3,
-  },
-];
+const POWER = new BigNumber(1000);
 
-export default function IconsNumber({ value, type, isVertical }) {
-  const { prefix = 1, power = 1 } =
-    PREFIXES.find((powerItem) => value >= powerItem.power) || {};
+type Props = {
+  type: keyof typeof TypesEnum;
+  value: string | number;
+  isVertical?: boolean;
+};
+
+export default function IconsNumber({ value, type, isVertical }: Props) {
+  const prefix = getPrefixNumber(
+    POWER.toNumber(),
+    new BigNumber(value || 0).toNumber()
+  );
 
   const number = new BigNumber(value)
-    .dividedBy(power)
+    .dividedBy(POWER.pow(prefix))
     .dp(0, BigNumber.ROUND_FLOOR)
     .toNumber();
 
@@ -84,18 +66,16 @@ export default function IconsNumber({ value, type, isVertical }) {
     <>
       {number}{' '}
       <Tooltip
-        contentStyle={{
-          display: 'flex',
-          flexDirection: isVertical ? 'column' : 'row',
-        }}
         tooltip={
-          <span style={{ whiteSpace: 'nowrap' }}>
-            {value?.toLocaleString()?.replaceAll(',', ' ')}
+          <span className={styles.tooltipWrapper}>
+            {formatNumber(value?.toLocaleString()?.replaceAll(',', ' ')) || 0}
             {icons[type]}
           </span>
         }
       >
-        {i}
+        <div className={cx(styles.icon, { [styles.vertical]: isVertical })}>
+          {i}
+        </div>
       </Tooltip>
     </>
   );

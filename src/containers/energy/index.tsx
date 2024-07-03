@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MyEnergy, Income, Outcome } from './tab';
-import { Statistics, ActionBar } from './component';
-import useGetSlots from '../mint/useGetSlots';
-import useGetSourceRoutes from './hooks/useSourceRouted';
-import { convertResources } from '../../utils/utils';
-import { ContainerGradientText } from 'src/components';
+import { useParams } from 'react-router-dom';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import Display from 'src/components/containerGradient/Display/Display';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAdviser } from 'src/features/adviser/context';
+import { MyEnergy, Income, Outcome } from './tab';
+import useGetSlots from '../mint/useGetSlots';
+import { Statistics, ActionBar } from './component';
+import useGetSourceRoutes from './hooks/useSourceRouted';
+import { convertResources } from '../../utils/utils';
 
 function RoutedEnergy() {
-  const location = useLocation();
-  const [selected, setSelected] = useState('myEnegy');
+  const { pageId } = useParams();
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
   const { address } = useRobotContext();
 
@@ -36,7 +34,7 @@ function RoutedEnergy() {
   const {
     slotsData,
     loadingAuthAccounts,
-    balacesResource,
+    balancesResource,
     update: updateSlots,
   } = useGetSlots(address);
   const {
@@ -50,38 +48,23 @@ function RoutedEnergy() {
   const selectedRoute =
     selectedIndex !== null && sourceRouted[Number(selectedIndex)];
 
-  useEffect(() => {
-    const { pathname } = location;
-    if (pathname.match(/income/gm) && pathname.match(/income/gm).length > 0) {
-      setSelected('income');
-    } else if (
-      pathname.match(/outcome/gm) &&
-      pathname.match(/outcome/gm).length > 0
-    ) {
-      setSelected('outcome');
-    } else {
-      setSelected('myEnegy');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
   let content;
 
-  if (selected === 'myEnegy') {
+  if (!pageId) {
     content = (
       <MyEnergy
         slotsData={slotsData}
-        balacesResource={balacesResource}
+        balancesResource={balancesResource}
         loadingAuthAccounts={loadingAuthAccounts}
       />
     );
   }
 
-  if (selected === 'income') {
+  if (pageId === 'income') {
     content = <Income destinationRoutes={destinationRoutes} />;
   }
 
-  if (selected === 'outcome') {
+  if (pageId === 'outcome') {
     content = (
       <Outcome
         sourceRouted={sourceRouted}
@@ -94,8 +77,8 @@ function RoutedEnergy() {
     <>
       <Display color="blue">
         <Statistics
-          active={selected}
-          myEnegy={balacesResource.milliampere * balacesResource.millivolt}
+          active={pageId}
+          myEnergy={balancesResource.milliampere * balancesResource.millivolt}
           outcome={
             convertResources(sourceEnergy.milliampere) *
             convertResources(sourceEnergy.millivolt)
@@ -117,7 +100,7 @@ function RoutedEnergy() {
       >
         {isOwner && (
           <ActionBar
-            selected={selected}
+            selected={pageId}
             addressActive={address}
             selectedRoute={selectedRoute}
             updateFnc={() => {

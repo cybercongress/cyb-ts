@@ -99,7 +99,7 @@ function AdviserProvider({ children }: { children: React.ReactNode }) {
   const priorityItem = [...state].reverse().find((item) => item.isPriority);
   const lastItem = priorityItem || state[state.length - 1];
 
-  console.log(state);
+  // console.log(state);
 
   const { content, color } = lastItem || {};
 
