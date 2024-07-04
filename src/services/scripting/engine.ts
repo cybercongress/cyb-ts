@@ -138,7 +138,8 @@ function enigine() {
   const run = async (
     script: string,
     compileParams: Partial<RuneEntrypoint>,
-    callback?: ScriptCallback
+    callback?: ScriptCallback,
+    scripts: Record<string, string> = {}
   ) => {
     const refId = uuidv4().toString();
 
@@ -151,7 +152,7 @@ function enigine() {
       ...defaultRuneEntrypoint,
       ...compileParams,
       input: script,
-      scripts: [runtimeScript],
+      scripts: { ...scripts, runtime: runtimeScript },
       params: scriptParams,
     };
 

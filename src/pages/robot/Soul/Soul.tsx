@@ -25,7 +25,7 @@ import defaultParticleScript from 'src/services/scripting/rune/default/particle.
 import ScriptingActionBar from './ScriptingActionBar/ScriptingActionBar';
 
 import styles from './Soul.module.scss';
-import RuneIde, { RuneIdeHandle } from './RuneIde/RuneIde';
+import RuneIde, { SoulIdeHandle } from './RuneEditor/SoulIde/SoulIde';
 
 const entrypointName = 'particle';
 
@@ -35,7 +35,7 @@ function Soul() {
 
   const { ipfsApi } = useBackend();
 
-  const runeIdeRef = useRef<RuneIdeHandle | null>(null);
+  const runeIdeRef = useRef<SoulIdeHandle | null>(null);
 
   const { signer, signingClient } = useSigningClient();
 
@@ -159,7 +159,7 @@ function Soul() {
           />
         </div>
         <RuneIde
-          runeCode={code}
+          mainCode={code}
           readOnly={!isLoaded}
           ref={runeIdeRef}
           onChange={() => setIsChanged(true)}
