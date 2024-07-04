@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import cx from 'classnames';
 import styles from './Adviser.module.scss';
 // import TypeIt from 'typeit-react';
-import TypeIt from './typeit.js';
 
 export enum AdviserColors {
   blue = 'blue',
@@ -21,6 +20,23 @@ export type Props = {
   isOpen?: boolean;
   openCallback?: (isOpen: boolean) => void;
 };
+
+const synth = window.speechSynthesis;
+
+function play(text: string) {
+  // replace emoji
+  const cleanText = text.replace(/[\u{1F600}-\u{1F64F}]/gu, '');
+
+  const utterThis = new SpeechSynthesisUtterance(cleanText);
+  utterThis.lang = 'en-US';
+
+  // woman voice
+  utterThis.voice = synth
+    .getVoices()
+    .find((voice) => voice.name === 'Google US English');
+
+  synth.speak(utterThis);
+}
 
 function Adviser({
   children,
@@ -49,6 +65,20 @@ function Adviser({
     };
   }, [openCallback, isOpen, forceOpen]);
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const text = ref.current?.textContent;
+
+    if (text && color === AdviserColors.blue && isOpen) {
+      play(text);
+    }
+
+    return () => {
+      synth.cancel();
+    };
+  }, [children, ref, color, isOpen]);
+
   return (
     // maybe try use <details> tag
     <button
@@ -60,7 +90,7 @@ function Adviser({
       onClick={() => setIsOpen(!isOpen)}
     >
       <span className={styles.summary}>Adviser</span>
-      <div className={styles.content}>
+      <div className={styles.content} ref={ref}>
         {/* {color !== AdviserColors.purple ? (
           <TypeIt
             // for resetting the animation
