@@ -17,6 +17,7 @@ import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 import { ColItem, RowItem, NebulaImg } from './components';
 import { useAdviser } from 'src/features/adviser/context';
 import { DENOM_LIQUID } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 function Title({
   capData,
@@ -46,11 +47,9 @@ function Nebula() {
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser('nebula');
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'welcome to nebula',
+  });
 
   useEffect(() => {
     if (Object.keys(dataTotalSupply).length > 0) {

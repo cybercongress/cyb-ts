@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import cx from 'classnames';
+import axios from 'axios';
 import styles from './Adviser.module.scss';
 // import TypeIt from 'typeit-react';
 
@@ -21,6 +22,21 @@ export type Props = {
   openCallback?: (isOpen: boolean) => void;
 };
 
+function prepareText(text: string) {
+  let t = text;
+
+  // replace '\n' with .
+  t = t.replace(/\n/g, '. ');
+
+  // replace emoji
+  t = t.replace(
+    /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+    ''
+  );
+
+  return t;
+}
+
 const synth = window.speechSynthesis;
 
 function play(text: string) {
@@ -37,6 +53,8 @@ function play(text: string) {
 
   synth.speak(utterThis);
 }
+
+let audioTag;
 
 function Adviser({
   children,
@@ -68,14 +86,49 @@ function Adviser({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const text = ref.current?.textContent;
+    const te = ref.current?.innerText;
+    console.log(te);
+    if (!te) {
+      return;
+    }
+    const text = prepareText(te as string);
+    console.log(text);
 
     if (text && color === AdviserColors.blue && isOpen) {
-      play(text);
+      (async () => {
+        try {
+          throw new Error('skip');
+          const response = await axios.post(
+            'http://localhost:3000/text-to-speech',
+            {
+              text,
+            }
+          );
+
+          const { audioUrl } = response.data;
+
+          if (audioUrl) {
+            audioTag = new Audio(audioUrl);
+            audioTag.play();
+          } else {
+            throw new Error('No audioUrl');
+          }
+        } catch (err) {
+          console.log('Error:', err);
+
+          play(text);
+        }
+      })();
     }
 
     return () => {
       synth.cancel();
+
+      if (audioTag) {
+        audioTag.pause();
+        audioTag.currentTime = 0;
+        audioTag = null;
+      }
     };
   }, [children, ref, color, isOpen]);
 
