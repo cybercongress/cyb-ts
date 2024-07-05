@@ -11,6 +11,7 @@ import {
 import defaultAiScript from 'src/services/scripting/rune/default/ai.rn';
 import defaultPlaygroundScript from 'src/services/scripting/rune/default/playground.rn';
 import styles from './Freestyle.module.scss';
+import { proxy } from 'comlink';
 
 function FreestyleIde() {
   const libCodeRef = useRef<RuneCodeHandle | null>(null);
@@ -21,32 +22,46 @@ function FreestyleIde() {
 
   const [libCode, setLibCode] = useState<string>(defaultAiScript);
   const [testCode, setTestCode] = useState<string>(defaultPlaygroundScript);
-  const clearLog = () => outputRef.current?.clear();
 
-  const test = async (funcName: string, funcParams: any[] = []) => {
-    outputRef.current?.scrollIntoView();
+  const runCode = async () => {
+    const outputLog = outputRef.current;
+    outputLog?.clear();
+    outputLog?.scrollIntoView();
 
-    outputRef.current?.put([`🚧 Execute your '${funcName}'.`]);
+    outputLog?.put(['🚧 executing...']);
     return rune
-      ?.run(libCode, {
-        execute: true,
-        funcName,
-        funcParams,
-      })
+      ?.run(
+        testCode,
+        {
+          execute: true,
+          funcName: 'main',
+          funcParams: [],
+        },
+        proxy((result) => outputLog?.put([`callback: ${result}`])),
+
+        { customRuntime: libCode }
+      )
       .then((result) => {
         const isOk = !result.diagnosticsOutput && !result.error;
-        libCodeRef.current?.highlightErrors(result.diagnostics);
+        if (result.diagnostics.length > 0) {
+          if (result.diagnostics.at(0)?.name === 'main_entry') {
+            testCodeRef.current?.highlightErrors(result.diagnostics);
+          } else {
+            libCodeRef.current?.highlightErrors(result.diagnostics);
+          }
+        }
+
         if (!isOk) {
-          outputRef.current?.put([
-            '⚠️ Errors:',
-            `   ${result.diagnosticsOutput}`,
+          outputLog?.put([
+            '⚠️ errors:',
+            `   ${result.diagnosticsOutput || result.error}`,
           ]);
         } else {
-          outputRef.current?.put(
+          outputLog?.put(
             [
-              '🏁 Result:',
+              '🏁 result:',
               `   ${JSON.stringify(result.result)}`,
-              '🧪 Raw output:',
+              '🧪 raw output:',
               result?.output || 'no output.',
             ],
             '\r\n'
@@ -58,33 +73,8 @@ function FreestyleIde() {
   };
 
   const save = async () => {
-    clearLog();
-    if (!libCode) {
-      outputRef.current?.put([`🚫 Can't save empty code`]);
-      return undefined;
-    }
-
-    return rune
-      ?.run(libCode, {
-        execute: false,
-      })
-      .then((result) => {
-        if (result.diagnosticsOutput || result.error) {
-          outputRef.current?.put([
-            '⚠️ Errors:',
-            `   ${result.diagnosticsOutput}`,
-          ]);
-          libCodeRef.current?.highlightErrors(result.diagnostics);
-          return undefined;
-        }
-        outputRef.current?.put(['🏁 Compiled - OK.']);
-        return libCode;
-      });
+    outputRef.current?.put([`saving not implemented yet.`]);
   };
-
-  const setRuneCode = useCallback((code: string) => {
-    setLibCode(code);
-  }, []);
 
   return (
     <>
@@ -109,7 +99,7 @@ function FreestyleIde() {
         </ContainerGradientText>
       </main>
       <ActionBar>
-        <Button>Run</Button>
+        <Button onClick={runCode}>Run</Button>
         <Button>Save</Button>
       </ActionBar>
     </>

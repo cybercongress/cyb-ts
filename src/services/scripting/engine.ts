@@ -38,7 +38,7 @@ type RuneEntrypoint = {
   readOnly: boolean;
   execute: boolean;
   funcName: string;
-  funcParams: EntrypointParams;
+  funcParams: any[];
   params: Object; // context data
   input: string; // main code
   script: string; // runtime code
@@ -155,7 +155,6 @@ function enigine() {
       scripts: { ...scripts, runtime: runtimeScript },
       params: scriptParams,
     };
-
     // console.log('-----run', scriptParams);
     const outputData = await compile(compilerParams, compileConfig);
 
@@ -169,7 +168,9 @@ function enigine() {
         ...entityToDto(outputData),
         error,
         result: result
-          ? JSON.parse(removeBrokenUnicode(result))
+          ? result === '()'
+            ? ''
+            : JSON.parse(removeBrokenUnicode(result))
           : { action: 'error', message: 'No result' },
       } as RuneRunResult;
     } catch (e) {

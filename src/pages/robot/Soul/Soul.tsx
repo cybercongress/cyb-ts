@@ -51,9 +51,9 @@ function Soul() {
   const [isLoaded, setIsLoaded] = useState(true);
 
   const saveScriptToPassport = async (scriptCode: string) => {
-    runeIdeRef.current!.putToLog(['⚓️ Saving to IPFS ...']);
+    runeIdeRef.current!.putToLog(['⚓️ saving to IPFS ...']);
     const cid = await ipfsApi?.addContent(scriptCode);
-    runeIdeRef.current!.putToLog([`🏁 Saving '${cid}' to passport ...`]);
+    runeIdeRef.current!.putToLog([`🏁 saving '${cid}' to passport ...`]);
     const nickname = passport?.extension.nickname;
     if (cid && nickname) {
       updatePassportParticle(nickname, cid, {
@@ -63,13 +63,13 @@ function Soul() {
         .then((result) => {
           runeIdeRef.current!.putToLog([
             '',
-            `☑️ Saved as particle into your passport.`,
+            `☑️ saved as particle into your passport.`,
           ]);
         })
         .catch((error) => {
           runeIdeRef.current!.putToLog([
             '',
-            `🚫 Particle was not saved: ${error}.`,
+            `🚫 particle was not saved: ${error}.`,
           ]);
         });
     }
@@ -77,13 +77,13 @@ function Soul() {
 
   const saveScript = async (script: string) => {
     try {
-      runeIdeRef.current!.putToLog(['Saving code...']);
+      runeIdeRef.current!.putToLog(['saving code...']);
       setIsLoaded(false);
 
       saveStringToLocalStorage(entrypointName, script);
 
       if (!currentEntrypoint.enabled) {
-        runeIdeRef.current!.putToLog(['', '☑️ Saved to local storage.']);
+        runeIdeRef.current!.putToLog(['', '☑️ saved to local storage.']);
         dispatch(setEntrypoint({ name: entrypointName, code: script }));
       } else {
         await saveScriptToPassport(script);
@@ -96,7 +96,7 @@ function Soul() {
   };
 
   const onResetToDefault = async () => {
-    runeIdeRef.current!.putToLog(['Resetting to default...']);
+    runeIdeRef.current!.putToLog(['resetting to default...']);
     setIsLoaded(false);
     setIsChanged(false);
     setCode(defaultParticleScript);
