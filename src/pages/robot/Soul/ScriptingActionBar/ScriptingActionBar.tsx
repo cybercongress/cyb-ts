@@ -57,9 +57,9 @@ function ScriptingActionBar({
       return;
     }
     addToLog([
-      '💡 Prepare data....',
+      '💡 prepare data....',
       '',
-      `🚧 Fetching particle '${testCid}'...`,
+      `🚧 fetching particle '${testCid}'...`,
     ]);
 
     const result = await ipfsApi?.fetchWithDetails(testCid);
@@ -70,10 +70,10 @@ function ScriptingActionBar({
         content!.length > 144 ? `${content!.slice(1, 144)}....` : content;
 
       addToLog([
-        `   ☑️ Content-type: ${type}`,
-        `   ☑️ Preview: ${preview}`,
+        `   ☑️ content-type: ${type}`,
+        `   ☑️ preview: ${preview}`,
         '',
-        '💭 Execute script....',
+        '💭 execute script....',
       ]);
 
       compileAndTest('personal_processor', [testCid, type, content]);
@@ -114,7 +114,7 @@ function ScriptingActionBar({
       <Input
         value={testCid}
         onChange={(e) => seTestCid(e.target.value)}
-        placeholder="Enter particle CID to apply script...."
+        placeholder="enter particle CID to apply script...."
       />
       <Button onClick={onTestClick}>Test particle processor</Button>
     </div>,

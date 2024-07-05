@@ -38,10 +38,18 @@ type RuneEntrypoint = {
   readOnly: boolean;
   execute: boolean;
   funcName: string;
-  funcParams: EntrypointParams;
+  funcParams: any[];
   params: Object; // context data
   input: string; // main code
   script: string; // runtime code
+};
+
+type RuneRunResult = {
+  output: string;
+  diagnosticsOutput: string;
+  diagnostics: any[];
+  error: string;
+  result: any;
 };
 
 const compileConfig = {
@@ -130,7 +138,8 @@ function enigine() {
   const run = async (
     script: string,
     compileParams: Partial<RuneEntrypoint>,
-    callback?: ScriptCallback
+    callback?: ScriptCallback,
+    scripts: Record<string, string> = {}
   ) => {
     const refId = uuidv4().toString();
 
@@ -143,10 +152,9 @@ function enigine() {
       ...defaultRuneEntrypoint,
       ...compileParams,
       input: script,
-      script: runtimeScript,
+      scripts: { ...scripts, runtime: runtimeScript },
       params: scriptParams,
     };
-
     // console.log('-----run', scriptParams);
     const outputData = await compile(compilerParams, compileConfig);
 
@@ -160,9 +168,11 @@ function enigine() {
         ...entityToDto(outputData),
         error,
         result: result
-          ? JSON.parse(removeBrokenUnicode(result))
+          ? result === '()'
+            ? ''
+            : JSON.parse(removeBrokenUnicode(result))
           : { action: 'error', message: 'No result' },
-      };
+      } as RuneRunResult;
     } catch (e) {
       scriptCallbacks.delete(refId);
 
@@ -176,7 +186,7 @@ function enigine() {
         diagnosticsOutput: `scripting engine error ${e}`,
         ...outputData,
         result: { action: 'error', message: e?.toString() || 'Unknown error' },
-      };
+      } as RuneRunResult;
     }
   };
 

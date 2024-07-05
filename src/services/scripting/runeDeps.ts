@@ -47,6 +47,8 @@ const createRuneDeps = () => {
     dbApi: new BehaviorSubject<RuneInnerDeps['dbApi']>(undefined),
   };
 
+  let abortController: Option<AbortController>;
+
   const defferedDependency = (
     name: keyof RuneInnerDeps
   ): Promise<RuneInnerDeps[typeof name]> => {
@@ -128,7 +130,17 @@ const createRuneDeps = () => {
     }
   };
 
+  const createAbortController = () => {
+    abortController = new AbortController();
+    return abortController;
+  };
+
+  const abort = () => {
+    abortController?.abort();
+  };
+
   const cybApi = {
+    createAbortController,
     graphSearch,
     cyberlink: async (from: string, to: string) => {
       const address = subjectDeps.address.getValue();
@@ -169,7 +181,7 @@ const createRuneDeps = () => {
     executeScriptCallback,
   };
 
-  return { setInnerDeps, cybApi };
+  return { setInnerDeps, cybApi, abort };
 };
 
 const runeDeps = createRuneDeps();

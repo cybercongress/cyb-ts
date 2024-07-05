@@ -39,7 +39,7 @@ pub async fn ask_companion(cid, content_type, content) {
     }
 
 	let secrets = cyb::context.secrets;
-    if let Some(api_key) = secrets.get("openAI_key") {
+    if let Some(api_key) = secrets.get("open_ai_key") {
         let messages = [
             #{
                 "role": "system",

@@ -1,6 +1,6 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
-import rune, { LoadParams, RuneEngine } from 'src/services/scripting/engine';
+import rune from 'src/services/scripting/engine';
 import runeDeps, { RuneInnerDeps } from 'src/services/scripting/runeDeps';
 import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { EmbeddingApi } from './mlApi';
@@ -37,5 +37,5 @@ export const createRuneApi = (
 
   init();
 
-  return { rune, setInnerDeps };
+  return { rune, setInnerDeps, abort: runeDeps.abort };
 };

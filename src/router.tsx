@@ -57,6 +57,7 @@ import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
 // import Cybernet from './features/cybernet/ui/Cybernet';
 import Settings from './pages/Settings/Settings';
+import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -115,6 +116,7 @@ function AppRouter() {
       <Routes>
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<OracleLanding />} />
+          <Route path="/ide" element={<FreestyleIde />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
