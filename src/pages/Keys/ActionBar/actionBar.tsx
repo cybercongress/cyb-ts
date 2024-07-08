@@ -190,10 +190,10 @@ function ActionBar({
 
     if (keyType === KEY_LIST_TYPE.key) {
       dispatch(deleteAddress(selectedAddress));
-      updateAddress();
+    } else {
+      dispatch(removeSecret({ key: selectedAddress }));
     }
-
-    dispatch(removeSecret({ key: selectedAddress }));
+    updateAddress();
   };
 
   if (selectedAddress) {
