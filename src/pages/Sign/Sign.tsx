@@ -2,7 +2,7 @@ import { ChangeEventHandler, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionBar, Button, Input, MainContainer } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import { resetSignerState, updateMemo } from 'src/redux/reducers/signer';
+import { resetSignerState, updateMemo } from 'src/redux/features/signer';
 
 export default function Sign() {
   const navigate = useNavigate();

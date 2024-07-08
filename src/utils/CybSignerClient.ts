@@ -7,7 +7,7 @@ import {
 import {
   resetSignerState,
   shareSignerPromise,
-} from 'src/redux/reducers/signer';
+} from 'src/redux/features/signer';
 import store from 'src/redux/store';
 import { getNavigate } from './shareNavigation';
 
@@ -15,13 +15,13 @@ import { getNavigate } from './shareNavigation';
 export class CybSignerClient extends SigningCyberClient {
   signAndBroadcast(
     ...args: Parameters<SigningCyberClient['signAndBroadcast']>
-  ): Promise<string[]> {
+  ) {
     return new Promise((resolve, reject) => {
       store.dispatch(shareSignerPromise({ resolve, reject }));
       getNavigate()?.('/sign');
-    }).then(({ memo }) => {
+    }).then(() => {
       const [signerAddress, messages, fee] = args;
-      console.log('MEMO', memo, fee);
+      const { memo } = store.getState().signer;
 
       return super
         .signAndBroadcast(signerAddress, messages, fee, memo ?? '')

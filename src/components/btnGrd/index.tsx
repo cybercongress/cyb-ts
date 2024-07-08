@@ -1,8 +1,9 @@
 import cx from 'classnames';
 import { $TsFixMe } from 'src/types/tsfix';
+import { Link, LinkProps } from 'react-router-dom';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
-import { Link, LinkProps } from 'react-router-dom';
+import { CSSProperties } from 'react';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
@@ -42,6 +43,7 @@ export type Props = {
   onClick?: () => void;
   small?: boolean;
   reloadDocument?: LinkProps['reloadDocument'];
+  style?: CSSProperties;
 };
 
 function Button({

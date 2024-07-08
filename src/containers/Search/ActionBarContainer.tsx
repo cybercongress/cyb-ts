@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-expect-error
 import { ActionBar, Pane } from '@cybercongress/gravity';
 import React, { Component } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -17,28 +18,26 @@ import { getTxs } from '../../utils/search/utils';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
-import { setActionBarState } from 'src/redux/reducers/signer';
+import {
+  clearActionBarState,
+  setActionBarStage,
+  setContentHash,
+  setErrorMessage,
+  setFromCid,
+  setLSAddress,
+  setToCid,
+  setTxHash,
+  setTxHeight,
+} from 'src/redux/features/action-bar';
 import type { RootState } from 'src/redux/store';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { LEDGER } from '../../utils/config';
 import { trimString } from '../../utils/utils';
+import { ActionBarStates } from './constants';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
-
-const {
-  STAGE_INIT,
-  STAGE_READY,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-  STAGE_ERROR,
-} = LEDGER;
-
-const STAGE_IPFS_HASH = 3.1;
-const STAGE_KEPLR_APPROVE = 3.2;
 
 // generated
 interface Props extends ConnectedProps<typeof connector> {
@@ -53,21 +52,28 @@ interface Props extends ConnectedProps<typeof connector> {
   keywordHash: string;
 }
 
+class TxError extends Error {
+  height?: string | null;
+
+  constructor(message: string, height?: string) {
+    super(message);
+
+    this.height = height;
+  }
+}
+
 // TODO: REFACT
-class ActionBarContainer extends Component<Props, any> {
+class ActionBarContainer extends Component<Props, { file: File | null }> {
+  timeOut: any;
+  inputOpenFileRef: any;
+  transport: any;
+
   constructor(props: Props) {
     super(props);
     this.state = {
-      stage: this.props.actionBarState ?? STAGE_INIT,
-      addressLocalStor: null,
-      contentHash: '',
-      txHeight: null,
-      txHash: null,
-      errorMessage: null,
       file: null,
-      fromCid: null,
-      toCid: null,
     };
+
     this.timeOut = null;
     this.inputOpenFileRef = React.createRef();
     this.transport = null;
@@ -77,196 +83,201 @@ class ActionBarContainer extends Component<Props, any> {
     this.checkAddressLocalStorage();
   }
 
-  componentDidUpdate(prevProps) {
-    const { stage, fromCid, toCid } = this.state;
+  componentDidUpdate(prevProps: Props) {
     const { defaultAccount } = this.props;
 
-    if (stage === STAGE_IPFS_HASH) {
-      debugger;
-      if (toCid !== null && fromCid !== null) {
-        this.generateTx();
-      }
-    }
     if (prevProps.defaultAccount.name !== defaultAccount.name) {
       this.checkAddressLocalStorage();
     }
   }
 
   checkAddressLocalStorage = async () => {
-    const { defaultAccount } = this.props;
+    const { defaultAccount, setLSAddress } = this.props;
     const { account } = defaultAccount;
     if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
+      account === null ||
+      !('cyber' in account) ||
+      account?.cyber?.keys === 'read-only'
     ) {
-      const { keys, bech32 } = account.cyber;
-      if (keys !== 'read-only') {
-        this.setState({
-          addressLocalStor: { address: bech32, keys },
-        });
-      } else {
-        this.setState({
-          addressLocalStor: null,
-        });
-      }
-    } else {
-      this.setState({
-        addressLocalStor: null,
-      });
+      setLSAddress(undefined);
+      return;
     }
+
+    const { keys, bech32 } = account.cyber;
+    setLSAddress({
+      address: bech32,
+      keys,
+    });
   };
 
   calculationIpfsTo = async () => {
-    const { contentHash, file } = this.state;
-    const { ipfsApi } = this.props;
-    let content = '';
+    const { file } = this.state;
+    const { ipfsApi, contentHash, setToCid } = this.props;
+    let content: string | File = '';
     let toCid;
 
     content = contentHash;
     if (file !== null) {
       content = file;
     }
+
     console.log('toCid', content);
-    if (file === null && content.match(PATTERN_IPFS_HASH)) {
+
+    if (
+      file === null &&
+      typeof content === 'string' &&
+      content.match(PATTERN_IPFS_HASH)
+    ) {
       toCid = content;
     } else {
       toCid = await ipfsApi.addContent(content);
     }
 
-    this.setState({
-      toCid,
-    });
+    setToCid(toCid ?? null);
   };
 
   calculationIpfsFrom = async () => {
-    const { keywordHash, ipfsApi } = this.props;
+    const { keywordHash, ipfsApi, setFromCid } = this.props;
 
     let fromCid = keywordHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
+      // @ts-expect-error
       fromCid = await ipfsApi.addContent(fromCid);
     }
 
-    this.setState({
-      fromCid,
-    });
+    setFromCid(fromCid);
   };
 
   onClickInitKeplr = () => {
     this.calculationIpfsFrom();
     this.calculationIpfsTo();
-    this.setState({
-      stage: STAGE_IPFS_HASH,
-    });
+
+    setActionBarStage(ActionBarStates.STAGE_IPFS_HASH);
+
+    const { toCid, fromCid } = this.props;
+    if (toCid !== null && fromCid !== null) {
+      this.generateTx();
+    }
   };
 
   generateTx = async () => {
+    const {
+      signer,
+      signingClient,
+      senseApi,
+      setActionBarStage,
+      setTxHash,
+      setErrorMessage,
+    } = this.props;
+
     try {
-      const { signer, signingClient, senseApi } = this.props;
-      const { fromCid, toCid, addressLocalStor } = this.state;
+      const { fromCid, toCid, address: addressLocalStor } = this.props;
 
-      this.setState({
-        stage: STAGE_KEPLR_APPROVE,
-      });
-      this.props.setActionBarState(STAGE_KEPLR_APPROVE);
-      if (signer && signingClient) {
-        const { address } = (await signer.getAccounts())[0];
+      setActionBarStage(ActionBarStates.STAGE_KEPLR_APPROVE);
 
-        console.log('address', address);
-        if (addressLocalStor !== null && addressLocalStor.address === address) {
-          const txHash = await sendCyberlink(address, fromCid, toCid, {
-            signingClient,
-            senseApi,
-          })
-            .then((txHash) => {
-              console.log('hash :>> ', txHash);
-              this.setState({ stage: STAGE_SUBMITTED, txHash });
-              this.timeOut = setTimeout(this.confirmTx, 1500);
-            })
-            .catch((e) => {
-              this.setState({
-                txHash: null,
-                stage: STAGE_ERROR,
-                errorMessage: e.message,
-              });
-              console.log('result: ', e.message, e);
-            });
-        } else {
-          this.setState({
-            stage: STAGE_ERROR,
-            errorMessage: `Add address ${trimString(
-              address,
-              9,
-              5
-            )} to your pocket or make active `,
-          });
-        }
+      if (!signer || !signingClient) {
+        throw new TxError(`${signer ? 'Signer' : 'Signing client'} is not set`);
       }
-    } catch (e) {
-      console.log(`e`, e);
-      this.setState({
-        stage: STAGE_ERROR,
-        txBody: null,
-        errorMessage: e.toString(),
+
+      const { address } = (await signer.getAccounts())[0];
+
+      if (
+        addressLocalStor === null ||
+        addressLocalStor?.address !== address ||
+        !fromCid ||
+        !toCid
+      ) {
+        throw new TxError(this.getGenerateTxErrorMessage(address));
+      }
+
+      const txHash = await sendCyberlink(address, fromCid, toCid, {
+        signingClient,
+        senseApi,
       });
+
+      console.log('hash :>> ', txHash);
+
+      setActionBarStage(ActionBarStates.STAGE_SUBMITTED);
+      setTxHash(txHash);
+
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    } catch (error) {
+      console.log(`[ActionBarContainer] generateTx error:`, error);
+
+      setActionBarStage(ActionBarStates.STAGE_ERROR);
+      setTxHash(null);
+      setErrorMessage(error instanceof Error ? error.message : 'unknown error');
     }
   };
 
+  private getGenerateTxErrorMessage(address: string) {
+    return `Add address ${trimString(
+      address,
+      9,
+      5
+    )} to your pocket or make active `;
+  }
+
   confirmTx = async () => {
-    const { update } = this.props;
-    if (this.state.txHash !== null) {
-      this.setState({ stage: STAGE_CONFIRMING });
-      const data = await getTxs(this.state.txHash);
-      if (data !== null) {
-        if (data.logs) {
-          this.setState({
-            stage: STAGE_CONFIRMED,
-            txHeight: data.height,
-          });
-          if (update) {
-            update();
-          }
-          return;
-        }
-        if (data.code) {
-          this.setState({
-            stage: STAGE_ERROR,
-            txHeight: data.height,
-            errorMessage: data.raw_log,
-          });
-          return;
-        }
+    const { update, txHash, setActionBarStage, setErrorMessage, setTxHeight } =
+      this.props;
+
+    try {
+      if (txHash === null) {
+        throw new TxError('txHash is null');
       }
+
+      setActionBarStage(ActionBarStates.STAGE_CONFIRMING);
+
+      const data = await getTxs(txHash);
+      if (data === null || data?.code || !data?.logs) {
+        const message = this.getConfirmTxErrorMessage(data);
+
+        throw new TxError(message, data?.height);
+      }
+
+      setActionBarStage(ActionBarStates.STAGE_CONFIRMED);
+      setTxHeight(data.txHeight);
+
+      update?.();
+    } catch (error) {
+      setActionBarStage(ActionBarStates.STAGE_ERROR);
+      if (error instanceof TxError && error.height) {
+        setTxHeight(error.height);
+      }
+      setErrorMessage(error instanceof Error ? error.message : 'unknown error');
     }
+
+    // FIXME: WTF? Neverend story 🦄
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async (e) => {
+  private getConfirmTxErrorMessage(
+    data: { code?: string; raw_log?: string } | null
+  ): string {
+    return data === null
+      ? 'Transaction data is null'
+      : data.code && data.raw_log
+      ? data.raw_log
+      : 'Data logs are empty';
+  }
+
+  onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    this.setState({
-      contentHash: value,
-    });
+
+    this.props.setContentHash(value);
   };
 
   clearState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      contentHash: '',
-      txHeight: null,
-      txHash: null,
-      errorMessage: null,
-      file: null,
-      fromCid: null,
-      toCid: null,
-    });
+    this.props.clearActionBarState();
     this.timeOut = null;
   };
 
   onClickInitStage = () => {
     this.clearState();
-    this.setState({
-      stage: STAGE_INIT,
-    });
+
+    this.props.setActionBarStage(ActionBarStates.STAGE_INIT);
   };
 
   onClickClear = () => {
@@ -279,8 +290,8 @@ class ActionBarContainer extends Component<Props, any> {
     this.inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = (files) => {
-    const file = files.current.files[0];
+  onFilePickerChange = (fileInputRef: React.RefObject<HTMLInputElement>) => {
+    const file = fileInputRef.current?.files?.[0] ?? null;
 
     this.setState({
       file,
@@ -288,45 +299,42 @@ class ActionBarContainer extends Component<Props, any> {
   };
 
   onClickBtnRank = async () => {
-    const { addressLocalStor } = this.state;
-    const { rankLink } = this.props;
+    const { rankLink, address, setContentHash } = this.props;
     if (rankLink !== null) {
-      await this.setState({
-        contentHash: rankLink,
-      });
+      setContentHash(rankLink ?? '');
     }
 
-    if (addressLocalStor.keys === 'keplr') {
+    if (address?.keys === 'keplr') {
       this.onClickInitKeplr();
     }
   };
 
   onClickInit = () => {
-    const { addressLocalStor } = this.state;
+    const { address } = this.props;
 
-    if (addressLocalStor.keys === 'keplr') {
+    if (address?.keys === 'keplr') {
       this.onClickInitKeplr();
     }
   };
 
   render() {
+    const { file } = this.state;
+    const { contentHash, address } = this.props;
     const {
-      contentHash,
-      stage,
+      actionBarStage: stage,
       txHeight,
       txHash,
       errorMessage,
-      file,
-      addressLocalStor,
-    } = this.state;
+    } = this.props;
 
     const { textBtn, placeholder, rankLink } = this.props;
 
-    if (stage === STAGE_INIT && rankLink && rankLink !== null) {
+    if (stage === ActionBarStates.STAGE_INIT && rankLink && rankLink !== null) {
       let keys = 'ledger';
-      if (addressLocalStor !== null) {
-        keys = addressLocalStor.keys;
+      if (address?.keys) {
+        keys = address?.keys;
       }
+
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -354,11 +362,11 @@ class ActionBarContainer extends Component<Props, any> {
       );
     }
 
-    if (stage === STAGE_INIT) {
+    if (stage === ActionBarStates.STAGE_INIT) {
       return (
         <StartStageSearchActionBar
           textBtn={textBtn || 'Cyberlink'}
-          keys={addressLocalStor !== null ? addressLocalStor.keys : false}
+          keys={address?.keys}
           onClickBtn={this.onClickInit}
           contentHash={file?.name || contentHash}
           onChangeInputContentHash={this.onChangeInput}
@@ -372,7 +380,7 @@ class ActionBarContainer extends Component<Props, any> {
       );
     }
 
-    if (stage === STAGE_IPFS_HASH) {
+    if (stage === ActionBarStates.STAGE_IPFS_HASH) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -382,7 +390,7 @@ class ActionBarContainer extends Component<Props, any> {
       );
     }
 
-    if (stage === STAGE_KEPLR_APPROVE) {
+    if (stage === ActionBarStates.STAGE_KEPLR_APPROVE) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -392,7 +400,7 @@ class ActionBarContainer extends Component<Props, any> {
       );
     }
 
-    if (stage === STAGE_READY) {
+    if (stage === ActionBarStates.STAGE_READY) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -402,27 +410,30 @@ class ActionBarContainer extends Component<Props, any> {
       );
     }
 
-    if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnClose={this.onClickInitStage} />;
+    if (
+      stage === ActionBarStates.STAGE_SUBMITTED ||
+      stage === ActionBarStates.STAGE_CONFIRMING
+    ) {
+      return <TransactionSubmitted />;
     }
 
-    if (stage === STAGE_CONFIRMED) {
+    if (stage === ActionBarStates.STAGE_CONFIRMED) {
       return (
         <Confirmed
+          // FIXME: need proper types
+          cosmos={undefined}
           txHash={txHash}
           txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
           onClickBtnClose={this.onClickInitStage}
         />
       );
     }
 
-    if (stage === STAGE_ERROR && errorMessage !== null) {
+    if (stage === ActionBarStates.STAGE_ERROR && errorMessage !== null) {
       return (
         <TransactionError
           errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
-          onClickBtnClose={this.onClickInitStage}
         />
       );
     }
@@ -434,9 +445,26 @@ class ActionBarContainer extends Component<Props, any> {
 const connector = connect(
   (state: RootState) => ({
     defaultAccount: state.pocket.defaultAccount,
-    actionBarState: state.signer.actionBarState,
+    actionBarStage: state.actionBar.stage,
+    address: state.actionBar.address,
+    contentHash: state.actionBar.contentHash,
+    toCid: state.actionBar.toCid,
+    fromCid: state.actionBar.fromCid,
+    txHash: state.actionBar.txHash,
+    txHeight: state.actionBar.txHeight,
+    errorMessage: state.actionBar.errorMessage,
   }),
-  { setActionBarState }
+  {
+    setActionBarStage,
+    setToCid,
+    setFromCid,
+    setTxHash,
+    setTxHeight,
+    setLSAddress,
+    setContentHash,
+    setErrorMessage,
+    clearActionBarState,
+  }
 );
 
 const ActionBarHOC = withIpfsAndKeplr(connector(ActionBarContainer));

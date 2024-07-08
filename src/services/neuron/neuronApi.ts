@@ -27,7 +27,6 @@ export const sendCyberlink = async (
   },
   fee: StdFee = defaultFee
 ) => {
-  debugger;
   const response = await signingClient!.cyberlink(neuron, from, to, fee);
   const result = throwErrorOrResponse(response);
 

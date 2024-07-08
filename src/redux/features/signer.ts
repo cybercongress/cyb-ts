@@ -6,7 +6,6 @@ type RejectType = (reason?: any) => void;
 type InitialState = {
   resolve?: ResolveType;
   reject?: RejectType;
-  actionBarState?: number;
   memo: string;
 };
 const initialState = { memo: '' } as InitialState;
@@ -25,20 +24,13 @@ const signerSlice = createSlice({
     resetSignerState() {
       return { ...initialState };
     },
-    setActionBarState(state, { payload }: PayloadAction<number>) {
-      state.actionBarState = payload;
-    },
     updateMemo(state, { payload }: PayloadAction<string>) {
       state.memo = payload;
     },
   },
 });
 
-export const {
-  shareSignerPromise,
-  resetSignerState,
-  setActionBarState,
-  updateMemo,
-} = signerSlice.actions;
+export const { shareSignerPromise, resetSignerState, updateMemo } =
+  signerSlice.actions;
 
 export default signerSlice.reducer;
