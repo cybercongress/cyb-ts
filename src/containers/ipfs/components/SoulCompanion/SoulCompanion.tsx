@@ -43,7 +43,7 @@ function SoulCompanion({
         ?.askCompanion(
           cid,
           details!.type!,
-          details!.text!.substring(0, 255),
+          (details!.text! || '').substring(0, 255),
           proxy((data = {}) => console.log('CALLBACK'))
         )
         .then((result) => {
