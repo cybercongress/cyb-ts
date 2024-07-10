@@ -7,6 +7,7 @@ export enum IPFSNodes {
   EXTERNAL = 'external',
   EMBEDDED = 'embedded',
   HELIA = 'helia',
+  TAURI = 'tauri',
 }
 
 export type IpfsNodeType = 'embedded' | 'external' | 'helia';

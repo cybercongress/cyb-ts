@@ -1,30 +1,29 @@
 /* eslint-disable */
-import React, { Component } from 'react';
 import { ActionBar } from '@cybercongress/gravity';
+import React, { Component } from 'react';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import {
-  TransactionSubmitted,
+  ActionBar as ActionBarComp,
+  ActionBarContentText,
+  Button,
   Confirmed,
+  Dots,
   RewardsDelegators,
-  Cyberlink,
   StartStageSearchActionBar,
   TransactionError,
-  Dots,
-  ActionBarContentText,
-  ActionBar as ActionBarComp,
-  Button,
+  TransactionSubmitted,
 } from '../../../../components';
 import { LEDGER } from '../../../../utils/config';
-import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 
 import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
 
-import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
-import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
-import { routes } from 'src/routes';
 import { createSearchParams } from 'react-router-dom';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
+import { DEFAULT_GAS_LIMITS, DIVISOR_CYBER_G } from 'src/constants/config';
+import { routes } from 'src/routes';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
 import { AccountValue } from 'src/types/defaultAccount';
-import { DIVISOR_CYBER_G, DEFAULT_GAS_LIMITS } from 'src/constants/config';
+import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
 
 const {
   STAGE_INIT,
@@ -285,7 +284,11 @@ class ActionBarContainer extends Component<Props> {
     const isOwner = defaultAccount && defaultAccount.bech32 === addressSend;
 
     if (stage === STAGE_INIT) {
-      const followBtn = <Button onClick={this.onClickSend}>Follow</Button>;
+      const followBtn = (
+        <Button key={'action-bar-button-follow'} onClick={this.onClickSend}>
+          Follow
+        </Button>
+      );
 
       const content = [];
 
@@ -294,6 +297,7 @@ class ActionBarContainer extends Component<Props> {
         if (!isOwner) {
           content.push(
             <Button
+              key={'action-bar-button-send'}
               link={
                 routes.teleport.send.path +
                 '?' +
@@ -341,7 +345,14 @@ class ActionBarContainer extends Component<Props> {
       }
 
       if (type === 'security' && isOwner && defaultAccount.keys === 'keplr') {
-        content.push(<Button onClick={this.onClickSend}>Claim rewards</Button>);
+        content.push(
+          <Button
+            key={'action-bar-button-claim-rewards'}
+            onClick={this.onClickSend}
+          >
+            Claim rewards
+          </Button>
+        );
       }
 
       return <ActionBarComp>{content}</ActionBarComp>;

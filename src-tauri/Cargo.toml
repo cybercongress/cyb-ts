@@ -17,7 +17,12 @@ tauri-build = { version = "1.5.2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+reqwest = { version = "0.12.5", features = ["blocking", "json"] }
 tauri = { version = "1.6.3", features = ["api-all"] }
+futures = "0.3"
+ipfs-api = "0.17.0"
+ipfs-api-backend-hyper = "0.6"
+dirs = "5.0.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

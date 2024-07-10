@@ -28,6 +28,8 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
     }
 
     async isConnectedToSwarm() {
+      console.log('--------isConnectedToSwarm--------', Base);
+
       return !!(await super.getPeers()).find(
         (peerId) => peerId === options.swarmPeerId
       );

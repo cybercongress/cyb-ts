@@ -25,6 +25,7 @@ import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChann
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
 import { SenseApi, createSenseApi } from './services/senseApi';
+import { invoke } from '@tauri-apps/api/tauri';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -92,6 +93,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   // const { defaultAccount } = useAppSelector((state) => state.pocket);
 
   const [ipfsError, setIpfsError] = useState(null);
+  const [needIPFSInitialize, setNeedPFSInitialize] = useState(
+    !!window.__TAURI__
+  );
 
   const isDbInitialized = useAppSelector(
     (state) => state.backend.services.db.status === 'started'
@@ -114,7 +118,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
 
-  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
+  const isReady =
+    isDbInitialized &&
+    isIpfsInitialized &&
+    isSyncInitialized &&
+    !needIPFSInitialize;
 
   useEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
@@ -124,6 +132,36 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     isReady && console.log('🟢 Backend started.');
   }, [isReady]);
+
+  useEffect(() => {
+    if (window.__TAURI__) {
+      console.log('[Backend] need initialize IPFS for TAURI env');
+      (async () => {
+        try {
+          const isIPFSRunning = await invoke('is_ipfs_running');
+
+          if (isIPFSRunning) {
+            setNeedPFSInitialize(false);
+            console.log('[Backend] IPFS is already running');
+            return;
+          }
+
+          console.log('[Backend] check if IPFS binary is downloaded');
+          const ipfsExists = await invoke('check_ipfs');
+          if (!ipfsExists) {
+            await invoke('download_and_extract_ipfs');
+            console.log('[Backend] IPFS downloaded successfully');
+          }
+
+          console.log('[Backend] start IPFS...');
+          await invoke('start_ipfs');
+          console.log('[Backend] IPFS is successfully started');
+        } catch (error) {
+          console.error('Failed to run kubo IPFS', error);
+        }
+      })();
+    }
+  }, []);
 
   const [dbApi, setDbApi] = useState<DbApiWrapper | null>(null);
 

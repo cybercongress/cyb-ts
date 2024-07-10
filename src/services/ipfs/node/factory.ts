@@ -29,7 +29,11 @@ export async function initIpfsNode(
     ipfsNodeType === 'external'
       ? CYBERNODE_SWARM_ADDR_TCP
       : CYBERNODE_SWARM_ADDR_WSS;
-  console.log('[Worker] initIpfsNode', { swarmPeerId, swarmPeerAddress });
+  console.log('[Worker] initIpfsNode', {
+    swarmPeerId,
+    swarmPeerAddress,
+    ipfsNodeType,
+  });
 
   const EnhancedClass = withCybFeatures(nodeClassMap[ipfsNodeType], {
     swarmPeerId,
