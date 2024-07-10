@@ -9,6 +9,7 @@ import {
   IpfsContentSource,
   IpfsNode,
   IpfsFileStats,
+  IPFSContent,
 } from '../types';
 
 import { getMimeFromUint8Array, toAsyncIterableWithMime } from './stream';
@@ -173,6 +174,7 @@ const fetchIPFSContentFromGateway = async (
 ): Promise<Option<IPFSContent>> => {
   // fetch META only from external node(toooo slow), TODO: fetch meta from cybernode
   const isExternalNode = node?.nodeType === 'external';
+
   const stats = isExternalNode
     ? await fetchIPFSContentStat(cid, node, controller?.signal)
     : emptyStats;
