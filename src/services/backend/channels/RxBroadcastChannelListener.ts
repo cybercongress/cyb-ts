@@ -11,13 +11,9 @@ import {
 import { CYB_BROADCAST_CHANNEL } from './consts';
 
 const shouldTrottle = (msg: MessageEvent<BroadcastChannelMessage>) =>
-  [
-    'sync_entry',
-    'service_status',
-    'sync_status',
-    'indexeddb_write',
-    'sync_ml_entry',
-  ].some((name) => name === msg.data.type);
+  ['sync_entry', 'sync_status', 'indexeddb_write', 'sync_ml_entry'].some(
+    (name) => name === msg.data.type
+  );
 
 class RxBroadcastChannelListener {
   private subscription: Subscription;
@@ -54,8 +50,9 @@ class RxBroadcastChannelListener {
       bufferTime(0)
     );
 
-    this.subscription = merge(bufferedMessages, normalMessages).subscribe(
-      (messages) => {
+    this.subscription = merge(bufferedMessages, normalMessages)
+      .pipe(filter((m) => m.length > 0))
+      .subscribe((messages) => {
         if (messages.length > 0) {
           const items = new Map<string, BroadcastChannelMessage>();
           messages.forEach((msg) => {
@@ -64,8 +61,7 @@ class RxBroadcastChannelListener {
           });
           items.forEach(dispatch);
         }
-      }
-    );
+      });
   }
 
   close() {
