@@ -234,6 +234,7 @@
     "react-localization": "^1.0.15",
     "react-markdown": "^7.1.1",
     "react-number-format": "^5.1.2",
+    "react-reader": "^2.0.10",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.9.0",
     "react-textarea-autosize": "^8.2.0",
