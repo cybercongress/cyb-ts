@@ -26,6 +26,10 @@ export const getIpfsOpts = () => {
     ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
   }
 
+  if (window?.__TAURI__) {
+    ipfsOpts.ipfsNodeType = IPFSNodes.EXTERNAL;
+  }
+
   localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
 
   return ipfsOpts as IpfsOptsType;
