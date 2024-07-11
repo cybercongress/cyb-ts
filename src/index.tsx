@@ -23,15 +23,15 @@ import { Provider } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import AppRouter from './router';
 import store from './redux/store';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 import './style/main.css';
 import './style/index.scss';
 import './image/favicon.ico';
 
-// for bootloading
+// for boot loading
 import './image/robot.svg';
 
-// import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import DataProvider from './contexts/appData';
@@ -99,8 +99,7 @@ if (container === null) {
 
 const root = createRoot(container);
 
-// for Storybook, WIP
-export function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <NetworksProvider>
@@ -116,8 +115,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                           <ScriptingProvider>
                             <DeviceProvider>
                               <AdviserProvider>
-                                {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                                {children}
+                                <ErrorBoundary>{children}</ErrorBoundary>
                               </AdviserProvider>
                             </DeviceProvider>
                           </ScriptingProvider>

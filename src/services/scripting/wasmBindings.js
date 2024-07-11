@@ -34,8 +34,20 @@ export async function jsAddContenToIpfs(content) {
   return runeDeps.addContenToIpfs(content);
 }
 
+export async function jsExecuteScriptCallback(refId, data) {
+  console.log('exec deps callback', refId);
+  return runeDeps.cybApi.executeScriptCallback(refId, data);
+}
+
 export async function jsOpenAICompletions(messages, apiKey, params, refId) {
-  const result = await openAICompletion(messages, apiKey, params);
+  const callback = async (data) => jsExecuteScriptCallback(refId, data);
+  const result = await openAICompletion(
+    messages,
+    apiKey,
+    params,
+    callback,
+    runeDeps.cybApi.createAbortController()
+  );
   return result;
 }
 
@@ -51,9 +63,4 @@ export async function jsCyberLinksFrom(cid) {
 export async function jsCyberLinksTo(cid) {
   const result = await getToLink(cid);
   return result;
-}
-
-export async function jsExecuteScriptCallback(refId, data) {
-  console.log('exec deps callback', refId);
-  return runeDeps.cybApi.executeScriptCallback(refId, data);
 }

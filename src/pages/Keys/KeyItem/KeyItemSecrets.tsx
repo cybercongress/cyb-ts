@@ -24,19 +24,20 @@ function KeyItemSecrets({ name, value, selected, selectKey }: Props) {
     >
       <div className={styles.imageWrapper}>
         <img src={require('./images/secrets.png')} alt="" />
-
-        <Pill text="secret" color="blue" className={styles.active} />
       </div>
 
       <div className={styles.content}>
         secret <Pill color="white" text={name || 'noname'} /> <br />
         contains value{' '}
-        <span
-          className={styles.pointer}
+        <button
+          className={cx(styles.pointer, styles.button)}
           onClick={() => setShowValue(!showValue)}
         >
-          <Pill text={!showValue ? '******' : value} />
-        </span>
+          <Pill text={!showValue ? '***********' : value} />
+        </button>
+        <br />
+        injects into <Pill color="green" text={'rune'} /> script scenarios in
+        the app
         <br />
       </div>
     </div>
