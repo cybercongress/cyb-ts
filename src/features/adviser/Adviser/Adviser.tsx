@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import cx from 'classnames';
-import axios from 'axios';
 import styles from './Adviser.module.scss';
 // import TypeIt from 'typeit-react';
 
@@ -54,8 +53,6 @@ function play(text: string) {
   synth.speak(utterThis);
 }
 
-let audioTag;
-
 function Adviser({
   children,
   color = AdviserColors.blue,
@@ -86,49 +83,19 @@ function Adviser({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const te = ref.current?.innerText;
-    console.log(te);
-    if (!te) {
+    const t = ref.current?.innerText;
+
+    if (!t) {
       return;
     }
-    const text = prepareText(te as string);
-    console.log(text);
+    const text = prepareText(t);
 
     if (text && color === AdviserColors.blue && isOpen) {
-      (async () => {
-        try {
-          throw new Error('skip');
-          const response = await axios.post(
-            'http://localhost:3000/text-to-speech',
-            {
-              text,
-            }
-          );
-
-          const { audioUrl } = response.data;
-
-          if (audioUrl) {
-            audioTag = new Audio(audioUrl);
-            audioTag.play();
-          } else {
-            throw new Error('No audioUrl');
-          }
-        } catch (err) {
-          console.log('Error:', err);
-
-          play(text);
-        }
-      })();
+      play(text);
     }
 
     return () => {
       synth.cancel();
-
-      if (audioTag) {
-        audioTag.pause();
-        audioTag.currentTime = 0;
-        audioTag = null;
-      }
     };
   }, [children, ref, color, isOpen]);
 
