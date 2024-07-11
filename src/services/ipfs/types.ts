@@ -91,6 +91,7 @@ export type IpfsContentType =
   | 'video'
   | 'audio'
   | 'html'
+  | 'epub'
   | 'other';
 
 export type IPFSContentDetails =
