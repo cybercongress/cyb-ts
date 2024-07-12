@@ -3,10 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import Card from '../ui/card';
 import { formatNumber } from '../../../utils/utils';
 
-function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
+type Props = {
+  myEnergy: number;
+  income: number;
+  outcome: number;
+  active?: string;
+};
+
+function Statistics({ myEnergy = 0, income = 0, outcome = 0, active }: Props) {
   const navigate = useNavigate();
 
-  const freeEnergy = myEnegy + income - outcome;
+  const freeEnergy = myEnergy + income - outcome;
+
+  const onClickNavigate = (to?: string) => {
+    if (!active) {
+      navigate(`./${to || ''}`);
+    } else {
+      navigate(`../${to || ''}`, { relative: 'path' });
+    }
+  };
 
   return (
     <Pane
@@ -18,10 +33,10 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
       flex-irection="row"
     >
       <Card
-        active={active === 'myEnegy'}
+        active={!active}
         title="Enegy"
-        value={`${formatNumber(myEnegy)} W`}
-        onClick={() => navigate('./')}
+        value={`${formatNumber(myEnergy)} W`}
+        onClick={() => onClickNavigate()}
       />
       <Pane marginX={5} fontSize="20px">
         +
@@ -30,7 +45,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'income'}
         title="Income"
         value={`${formatNumber(income)} W`}
-        onClick={() => navigate('./income')}
+        onClick={() => onClickNavigate('income')}
       />
       <Pane marginX={5} fontSize="20px">
         -
@@ -39,7 +54,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'outcome'}
         title="Outcome"
         value={`${formatNumber(outcome)} W`}
-        onClick={() => navigate('./outcome')}
+        onClick={() => onClickNavigate('outcome')}
       />
       <Pane marginX={5} fontSize="20px">
         =

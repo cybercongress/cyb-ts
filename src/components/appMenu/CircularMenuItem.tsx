@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
-import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
+import styles from './CircularMenuItem.module.scss';
 
 interface Props {
   item: MenuItem;
@@ -9,7 +9,7 @@ interface Props {
   selected: boolean;
 }
 
-const CircularMenuItem = ({ item, onClick, selected }: Props) => {
+function CircularMenuItem({ item, onClick, selected }: Props) {
   const isExternal = item.to.startsWith('http');
 
   return (
@@ -17,14 +17,14 @@ const CircularMenuItem = ({ item, onClick, selected }: Props) => {
       <NavLink
         to={item.to}
         onClick={onClick}
-        style={{ position: 'inherit' }}
+        className={styles.itemContainer}
         {...(isExternal && { target: '_blank', rel: 'noreferrer noopener' })}
       >
         <img src={item.icon} className={styles.icon} alt="img" />
-        {isExternal && <span className={styles.external}></span>}
+        {isExternal && <span className={styles.external} />}
       </NavLink>
     </div>
   );
-};
+}
 
 export default CircularMenuItem;

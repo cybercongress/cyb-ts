@@ -236,7 +236,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     );
   }
 
-  if (stage === STAGE_INIT && selected === 'myEnegy') {
+  if (stage === STAGE_INIT && !selected) {
     return (
       <ActionBarCenter
         button={{

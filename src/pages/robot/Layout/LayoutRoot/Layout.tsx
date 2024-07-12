@@ -4,7 +4,6 @@ import styles from './Layout.module.scss';
 import { useRobotContext } from '../../robot.context';
 import RootMenu from './RootMenu/RootMenu';
 import useMenuCounts from '../useMenuCounts';
-import RobotHeader from '../RobotHeader/RobotHeader';
 
 function Layout() {
   const { address, isLoading } = useRobotContext();
@@ -16,7 +15,6 @@ function Layout() {
         <Loader2 />
       ) : (
         <>
-          {/* <RobotHeader menuCounts={counts} /> */}
 
           <div className={styles.content}>
             <RootMenu counts={counts} />
