@@ -1,0 +1,16 @@
+.wrapper {
+  display: flex;
+  gap: 5px;
+  font-size: 20px;
+
+  &:hover {
+    >span {
+      color: var(--primary-color);
+    }
+  }
+
+}
+
+.utcTIme {
+  color: var(--blue-light);
+}

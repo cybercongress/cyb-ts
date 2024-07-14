@@ -25,13 +25,13 @@ import {
   fromBech32,
   trimString,
   convertAmountReverce,
-  getNowUtcTime,
 } from '../../../utils/utils';
 import networks from '../../../utils/networkListIbc';
 
 import { TxsType, TypeTxsT } from '../type';
 import ActionBarPingTxs from '../components/actionBarPingTxs';
 import { useIbcHistory } from '../../../features/ibc-history/historyContext';
+import { getNowUtcNumber } from 'src/utils/date';
 
 const { STAGE_INIT, STAGE_ERROR, STAGE_SUBMITTED } = LEDGER;
 
@@ -150,7 +150,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           destChainId: networkB,
           sender: address,
           recipient: counterpartyAccount,
-          createdAt: getNowUtcTime(),
+          createdAt: getNowUtcNumber(),
           amount: coinFunc(amount, tokenSelect),
         };
         pingTxsIbc(ibcClient, transferData);
@@ -220,7 +220,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           destChainId: networkB,
           sender: address,
           recipient: counterpartyAccount,
-          createdAt: getNowUtcTime(),
+          createdAt: getNowUtcNumber(),
           amount: transferAmount,
         };
         pingTxsIbc(signingClient, transferData);

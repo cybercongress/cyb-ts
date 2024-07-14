@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import dateFormat from 'dateformat';
 import { getNowUtcTime } from 'src/utils/utils';
 import { useAppSelector } from 'src/redux/hooks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { routes } from 'src/routes';
 import { Time } from 'src/components';
+import { Link } from 'react-router-dom';
+import styles from './TimeFooter.module.scss';
 
 function TimeFooter() {
   const { defaultAccount } = useAppSelector((state) => state.pocket);
@@ -36,7 +39,14 @@ function TimeFooter() {
     };
   }, []);
 
-  return <Time msTime={timeSeconds} linkTo={linkTime} />;
+  return (
+    <Link to={linkTime} className={styles.wrapper}>
+      <Time msTime={timeSeconds} />
+      <span className={styles.utcTIme}>
+        {dateFormat(new Date(timeSeconds), 'HH:MM')}
+      </span>
+    </Link>
+  );
 }
 
 export default TimeFooter;

@@ -3,13 +3,15 @@ import { dateToUtcNumber, getNowUtcNumber } from 'src/utils/date';
 import styles from './CreatedAt.module.scss';
 
 export type Props = {
-  timeAt: string;
+  timeAt: string | number;
 };
 
 function CreatedAt({ timeAt }: Props) {
   let timeAgoInMS = 0;
 
-  const time = getNowUtcNumber() - dateToUtcNumber(timeAt);
+  const timeUtc = typeof timeAt === 'string' ? dateToUtcNumber(timeAt) : timeAt;
+
+  const time = getNowUtcNumber() - timeUtc;
   if (time && time > 0) {
     timeAgoInMS = time;
   }
