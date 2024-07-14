@@ -12,7 +12,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy, Tabs } from '../../components';
+import { Loading, Copy, Tabs, MainContainer } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -245,7 +245,7 @@ class ValidatorsDetails extends React.PureComponent {
 
     return (
       <div>
-        <main className="block-body">
+        <MainContainer>
           <Pane
             marginBottom={40}
             display="flex"
@@ -278,7 +278,7 @@ class ValidatorsDetails extends React.PureComponent {
               <Leadership accountUser={validatorInfo.delegateAddress} />
             )}
           </Pane>
-        </main>
+        </MainContainer>
         <ActionBarContainer
           updateTable={this.update}
           validators={validatorInfo}

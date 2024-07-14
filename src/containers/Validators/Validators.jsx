@@ -6,7 +6,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
-import { DenomArr } from 'src/components';
+import { DenomArr, MainContainer } from 'src/components';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
@@ -216,7 +216,7 @@ function Validators({ defaultAccount }) {
 
   return (
     <div>
-      <main className="block-body" style={{ paddingTop: 0 }}>
+      <MainContainer>
         <InfoBalance
           balance={balance}
           loadingBalanceInfo={loadingBalanceInfo}
@@ -255,7 +255,7 @@ function Validators({ defaultAccount }) {
               );
             })}
         </TableHeroes>
-      </main>
+      </MainContainer>
       <ActionBarContainer
         updateFnc={updateFnc}
         validators={validatorSelect}

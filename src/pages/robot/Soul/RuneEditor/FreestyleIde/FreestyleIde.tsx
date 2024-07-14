@@ -7,6 +7,7 @@ import {
   Button,
   ContainerGradientText,
   DisplayTitle,
+  MainContainer,
 } from 'src/components';
 import defaultAiScript from 'src/services/scripting/rune/default/ai.rn';
 import defaultPlaygroundScript from 'src/services/scripting/rune/default/playground.rn';
@@ -78,7 +79,7 @@ function FreestyleIde() {
 
   return (
     <>
-      <main className="block-body">
+      <MainContainer>
         <ContainerGradientText title={<DisplayTitle title="IDE" />}>
           <div className={styles.header}>library code</div>
           <RuneCode
@@ -97,7 +98,7 @@ function FreestyleIde() {
           <div className={styles.header}>output</div>
           <RuneOutput ref={outputRef} />
         </ContainerGradientText>
-      </main>
+      </MainContainer>
       <ActionBar>
         <Button onClick={runCode}>Run</Button>
         <Button>Save</Button>
