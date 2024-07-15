@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Pane, ActionBar as ActionBarGravity } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
+import { ActionBar as ActionBarContainer } from 'src/components';
 import { useSigningClient } from 'src/contexts/signerClient';
 import imgKeplr from 'src/image/keplr-icon.svg';
 import imgRead from 'src/image/duplicate-outline.svg';
@@ -198,7 +199,7 @@ function ActionBar({
 
   if (selectedAddress) {
     return (
-      <ActionBarGravity>
+      <ActionBarContainer>
         <Pane display="flex">
           {defaultAccount.account?.cyber?.bech32 !== selectedAddress &&
             keyType === KEY_LIST_TYPE.key &&
@@ -206,7 +207,7 @@ function ActionBar({
 
           <Button onClick={onDeleteClick}>Delete</Button>
         </Pane>
-      </ActionBarGravity>
+      </ActionBarContainer>
     );
   }
 
@@ -224,7 +225,7 @@ function ActionBar({
   if (stage === STAGE_INIT) {
     if (typeActionBar === '') {
       return (
-        <ActionBarGravity>
+        <ActionBarContainer>
           <Pane display="flex">
             {buttonConnect}
             {/* {defaultAccounts !== null && defaultAccounts.cyber && (
@@ -236,23 +237,23 @@ function ActionBar({
               </Button>
             )} */}
           </Pane>
-        </ActionBarGravity>
+        </ActionBarContainer>
       );
     }
 
     if (typeActionBar === 'noCyber') {
       return (
-        <ActionBarGravity>
+        <ActionBarContainer>
           <Pane>
             {connect && buttonConnect}
             {makeActive && buttonActivate}
           </Pane>
-        </ActionBarGravity>
+        </ActionBarContainer>
       );
     }
     if (typeActionBar === KEY_TYPE.keplr) {
       return (
-        <ActionBarGravity>
+        <ActionBarContainer>
           <Pane>
             {connect && buttonConnect}
             {keplr && (
@@ -263,13 +264,13 @@ function ActionBar({
             )}
             {makeActive && buttonActivate}
           </Pane>
-        </ActionBarGravity>
+        </ActionBarContainer>
       );
     }
 
     if (typeActionBar === KEY_TYPE.readOnly) {
       return (
-        <ActionBarGravity>
+        <ActionBarContainer>
           <Pane>
             {connect && buttonConnect}
             <ButtonImgText
@@ -278,7 +279,7 @@ function ActionBar({
             />
             {makeActive && buttonActivate}
           </Pane>
-        </ActionBarGravity>
+        </ActionBarContainer>
       );
     }
   }
