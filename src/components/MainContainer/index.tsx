@@ -1,36 +1,24 @@
 import React from 'react';
-import cx from 'classnames';
+import { Helmet } from 'react-helmet';
 import styles from './styles.module.scss';
 
 interface MainContainerProps {
   children: React.ReactNode;
-  minHeight?: string;
   width?: string;
-
-  // temp maybe
-  resetMaxWidth?: boolean;
+  title?: string;
 }
 
-function MainContainer({
-  children,
-  minHeight = 'calc(100vh - 162px)',
-  width = '62%',
-  resetMaxWidth,
-}: MainContainerProps) {
+function MainContainer({ children, width = '62%', title }: MainContainerProps) {
   return (
-    <main
-      style={{
-        minHeight,
-        overflow: 'hidden',
-      }}
-      className={cx('block-body', {
-        [styles.noMaxWidth]: resetMaxWidth,
-      })}
-    >
-      <div style={{ width }} className={styles.containerContent}>
-        {children}
-      </div>
-    </main>
+    <div style={{ width }} className={styles.wrapper}>
+      {title && (
+        <Helmet>
+          <title>{title}</title>
+        </Helmet>
+      )}
+
+      <main>{children}</main>
+    </div>
   );
 }
 

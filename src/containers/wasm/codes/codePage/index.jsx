@@ -7,6 +7,7 @@ import CodeInfo from './CodeInfo';
 import TableInstance from './TableInstance';
 import styles from './styles.scss';
 import { FlexWrapCantainer } from '../../ui/ui';
+import { MainContainer } from 'src/components';
 
 const initDetails = {
   checksum: '',
@@ -73,7 +74,7 @@ function CodePage() {
   );
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <FlexWrapCantainer
         style={{ flexDirection: 'column', width: '60%', boxShadow: 'none' }}
       >
@@ -101,7 +102,7 @@ function CodePage() {
       </FlexWrapCantainer>
 
       <TableInstance contracts={contracts} />
-    </main>
+    </MainContainer>
   );
 }
 
