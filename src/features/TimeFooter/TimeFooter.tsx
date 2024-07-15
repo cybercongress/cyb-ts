@@ -42,7 +42,7 @@ function TimeFooter() {
   return (
     <Link to={linkTime} className={styles.wrapper}>
       <Time msTime={timeSeconds} />
-      <span className={styles.utcTIme}>
+      <span className={styles.utcTime}>
         {dateFormat(new Date(timeSeconds), 'HH:MM')}
       </span>
     </Link>
