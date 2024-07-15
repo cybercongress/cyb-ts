@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import cx from 'classnames';
 import styles from './Adviser.module.scss';
 // import TypeIt from 'typeit-react';
-import TypeIt from './typeit.js';
 
 export enum AdviserColors {
   blue = 'blue',
@@ -21,6 +20,39 @@ export type Props = {
   isOpen?: boolean;
   openCallback?: (isOpen: boolean) => void;
 };
+
+function prepareText(text: string) {
+  let t = text;
+
+  // replace '\n' with .
+  t = t.replace(/\n/g, '. ');
+
+  // replace emoji
+  // TODO: RGI_Emoji can be used in ECMAScript 2024 soon
+  t = t.replace(
+    /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+    ''
+  );
+
+  return t;
+}
+
+const synth = window.speechSynthesis;
+
+function play(text: string) {
+  // replace emoji
+  const cleanText = text.replace(/[\u{1F600}-\u{1F64F}]/gu, '');
+
+  const utterThis = new SpeechSynthesisUtterance(cleanText);
+  utterThis.lang = 'en-US';
+
+  // woman voice
+  utterThis.voice = synth
+    .getVoices()
+    .find((voice) => voice.name === 'Google US English');
+
+  synth.speak(utterThis);
+}
 
 function Adviser({
   children,
@@ -49,6 +81,25 @@ function Adviser({
     };
   }, [openCallback, isOpen, forceOpen]);
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = ref.current?.innerText;
+
+    if (!t) {
+      return;
+    }
+    const text = prepareText(t);
+
+    if (text && color === AdviserColors.blue && isOpen) {
+      play(text);
+    }
+
+    return () => {
+      synth.cancel();
+    };
+  }, [children, ref, color, isOpen]);
+
   return (
     // maybe try use <details> tag
     <button
@@ -60,7 +111,7 @@ function Adviser({
       onClick={() => setIsOpen(!isOpen)}
     >
       <span className={styles.summary}>Adviser</span>
-      <div className={styles.content}>
+      <div className={styles.content} ref={ref}>
         {/* {color !== AdviserColors.purple ? (
           <TypeIt
             // for resetting the animation
