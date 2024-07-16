@@ -18,6 +18,7 @@ import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
+import MobileMenu from 'src/components/appMenu/MobileMenu';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -92,7 +93,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
 
       {children}
       <footer>
-        <CircularMenu circleSize={graphSize} />
+        {isMobile ? <MobileMenu /> : <CircularMenu circleSize={graphSize} />}
         {!isMobile && (
           <Link
             to={routes.brain.path}

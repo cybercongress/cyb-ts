@@ -1,0 +1,95 @@
+@import '../../style/mixins.scss';
+
+.mobileMenu {
+  position: fixed;
+  padding: 20px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  justify-content: space-between;
+
+  &.closed {
+    pointer-events: none;
+
+    .menuButton {
+      pointer-events: auto;
+    }
+  }
+
+  &.open {
+    pointer-events: auto;
+  }
+}
+
+.menuButton {
+  visibility: visible !important;
+  grid-area: 2/ 1/ 2/ 1;
+
+  background-color: #101010;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 13px #ffffff54;
+
+  &.active {
+    border: 1px solid #ffffff6b;
+    box-shadow: 0px 0px 8px #ffffff4d inset, 0px 0px 13px #ffffff4d;
+  }
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  object-fit: fill;
+  border-radius: 50%;
+}
+
+.menuContent {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  grid-gap: 20px;
+}
+
+.menuItem {
+  background-color: #101010;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 13px #ffffff54;
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.visible {
+  visibility: visible;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.external {
+  display: block;
+  position: absolute;
+  bottom: 200px;
+  right: 0;
+  transform: translate(50%, 50%);
+  width: 200px;
+  height: 200px;
+
+  @include withShareIcon;
+}
