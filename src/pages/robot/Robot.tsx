@@ -15,12 +15,19 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
+import { useAdviser } from 'src/features/adviser/context';
+import { useEffect } from 'react';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
 
   const newUser = !isLoading && !address;
 
+  const { setAdviser } = useAdviser();
+
+  useEffect(() => {
+    setAdviser(<>my robot</>);
+  }, [setAdviser]);
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

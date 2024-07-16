@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
 import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 interface Props {
   item: MenuItem;
@@ -14,15 +15,17 @@ const CircularMenuItem = ({ item, onClick, selected }: Props) => {
 
   return (
     <div className={cx(styles.menu_item, { [styles.active]: selected })}>
-      <NavLink
-        to={item.to}
-        onClick={onClick}
-        style={{ position: 'inherit' }}
-        {...(isExternal && { target: '_blank', rel: 'noreferrer noopener' })}
-      >
-        <img src={item.icon} className={styles.icon} alt="img" />
-        {isExternal && <span className={styles.external}></span>}
-      </NavLink>
+      <AdviserHoverWrapper adviserContent={item.name}>
+        <NavLink
+          to={item.to}
+          onClick={onClick}
+          style={{ position: 'inherit' }}
+          {...(isExternal && { target: '_blank', rel: 'noreferrer noopener' })}
+        >
+          <img src={item.icon} className={styles.icon} alt="img" />
+          {isExternal && <span className={styles.external}></span>}
+        </NavLink>
+      </AdviserHoverWrapper>
     </div>
   );
 };
