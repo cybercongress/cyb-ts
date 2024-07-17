@@ -167,7 +167,7 @@ function Learn() {
   }
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <div className={styles.wrapper}>
         <div className={styles.info}>
           <h3 className={styles.titleText}>
