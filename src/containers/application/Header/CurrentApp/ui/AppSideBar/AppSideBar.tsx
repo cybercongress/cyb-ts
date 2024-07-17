@@ -2,9 +2,9 @@ import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { useRef } from 'react';
 import useMediaQuery from 'src/hooks/useMediaQuery';
-import styles from './styles.scss';
-import { menuButtonId } from './Header/CurrentApp/utils/const';
-import BurgerIcon from './Header/CurrentApp/ui/BurgerIcon/BurgerIcon';
+import styles from './AppSideBar.module.scss';
+import { menuButtonId } from '../../utils/const';
+import BurgerIcon from '../BurgerIcon/BurgerIcon';
 
 interface Props {
   children: React.ReactNode;

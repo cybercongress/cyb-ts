@@ -11,7 +11,7 @@ import styles from './CurrentApp.module.scss';
 import { selectNetworkImg } from '../../../../utils/utils';
 import ChainInfo from './ui/ChainInfo/ChainInfo';
 import findSelectAppByUrl from './utils/findSelectAppByUrl';
-import AppSideBar from '../../AppSideBar';
+import AppSideBar from './ui/AppSideBar/AppSideBar';
 import { menuButtonId } from './utils/const';
 
 function CurrentApp() {
