@@ -26,6 +26,22 @@ const imgSecrets = require('../../image/secrets_icon.png');
 
 const T = new LocalizedStrings(i18n);
 
+export function ActionBarContentText({ children, ...props }) {
+  return (
+    <Pane
+      display="flex"
+      fontSize="20px"
+      justifyContent="center"
+      alignItems="center"
+      flexGrow={1}
+      marginRight="15px"
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
+
 // const toPascalCase = (str) =>
 //   str
 //     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
