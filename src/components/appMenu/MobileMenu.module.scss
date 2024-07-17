@@ -85,11 +85,9 @@
 .external {
   display: block;
   position: absolute;
-  bottom: 200px;
-  right: 0;
   transform: translate(50%, 50%);
-  width: 200px;
-  height: 200px;
+  width: 20px;
+  height: 20px;
 
   @include withShareIcon;
 }
