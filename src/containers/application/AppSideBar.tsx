@@ -1,13 +1,18 @@
 import cx from 'classnames';
-import styles from './styles.scss';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { useRef } from 'react';
-import { menuButtonId } from './Header/CurrentApp/CurrentApp';
+import useMediaQuery from 'src/hooks/useMediaQuery';
+import styles from './styles.scss';
+import { menuButtonId } from './Header/CurrentApp/utils/const';
+import BurgerIcon from './Header/CurrentApp/ui/BurgerIcon/BurgerIcon';
 
 interface Props {
   children: React.ReactNode;
-  openMenu: boolean;
-  closeMenu: () => void;
+  menuProps: {
+    isOpen: boolean;
+    toggleMenu: () => void;
+    closeMenu: () => void;
+  };
 }
 
 function findElementInParents(element: HTMLElement, targetSelector: string) {
@@ -22,10 +27,16 @@ function findElementInParents(element: HTMLElement, targetSelector: string) {
   return null;
 }
 
-function AppSideBar({ children, openMenu, closeMenu }: Props) {
+function AppSideBar({ children, menuProps }: Props) {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
+  const { isOpen, closeMenu, toggleMenu } = menuProps;
   const ref = useRef<HTMLElement>(null);
 
   useOnClickOutside(ref, (e) => {
+    if (mediaQuery) {
+      return;
+    }
+
     const buttonMenu = findElementInParents(e.target, `#${menuButtonId}`);
 
     if (buttonMenu) {
@@ -39,9 +50,14 @@ function AppSideBar({ children, openMenu, closeMenu }: Props) {
     <aside
       ref={ref}
       className={cx(styles.sideBar, {
-        [styles.sideBarHide]: !openMenu,
+        [styles.sideBarHide]: !isOpen,
       })}
     >
+      {!mediaQuery && (
+        <button className={styles.toggleBtn} onClick={toggleMenu} type="button">
+          <BurgerIcon openMenu={isOpen} />
+        </button>
+      )}
       {children}
     </aside>
   );

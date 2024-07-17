@@ -17,7 +17,7 @@ import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
-import styles from './Main.module.scss'; 
+import styles from './Main.module.scss';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -30,7 +30,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
-
 
   // for new user show menu, else no + animation
   const [openMenu, setOpenMenu] = useState(
@@ -119,7 +118,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
         {/* <ActionBar /> */}
 
         <div className={styles.Time}>
-          <TimeHistory />
+          {!isMobile && <TimeHistory />}
           <TimeFooter />
         </div>
         {/* <Link to={routes.social.path}>contacts</Link> */}
