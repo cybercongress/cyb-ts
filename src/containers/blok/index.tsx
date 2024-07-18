@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Dots, TextTable } from '../../components';
+import { Dots, MainContainer, TextTable } from 'src/components';
 import Table from 'src/components/Table/Table';
 import { trimString, formatNumber } from '../../utils/utils';
 import { useBlocksQuery } from 'src/generated/graphql';
@@ -99,7 +99,7 @@ function Block() {
   }
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <InfiniteScroll
         dataLength={data?.block.length || 0}
         next={fetchMoreData}
@@ -122,7 +122,7 @@ function Block() {
           }))}
         />
       </InfiniteScroll>
-    </main>
+    </MainContainer>
   );
 }
 

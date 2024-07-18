@@ -4,7 +4,7 @@ import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAppData } from 'src/contexts/appData';
-import { CardStatisics, Dots } from '../../components';
+import { CardStatisics, Dots, MainContainer } from '../../components';
 import Txs from '../brain/tx';
 import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
@@ -129,7 +129,7 @@ function Home() {
   }, [linksCount, cidsCount]);
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <ContainerGrid>
         <CardStatisics
           value={status === 'loading' ? <Dots /> : `${negentropy?.negentropy || 0} bits`}
@@ -217,7 +217,7 @@ function Home() {
           // styleContainer={{ minWidth: 'unset' }}
         />
       </ContainerGrid>
-    </main>
+    </MainContainer>
   );
 }
 

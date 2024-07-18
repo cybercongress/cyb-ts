@@ -6,11 +6,11 @@ import { Stars } from 'src/containers/portal/components';
 function Layout() {
   return (
     <div>
+      <Stars />
+
       <header className={styles.header}>
         <TabListTeleport />
       </header>
-
-      {/* <Stars /> */}
 
       <Outlet />
     </div>

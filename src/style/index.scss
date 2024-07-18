@@ -1,3 +1,4 @@
+/* stylelint-disable custom-property-empty-line-before */
 @import url('./libs/index.scss');
 
 :root {
@@ -35,6 +36,7 @@
   --pink: #f62bfd;
 }
 
+/* stylelint-disable */
 :export {
   primaryColor: var(--primary-color);
   greenLightColor: var(--green-light);

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { Dots } from 'src/components';
-import getPrefixNumber from './utils/utils';
+import getPrefixNumber from 'src/utils/getPrefixNumber';
 
 const POWER = 1000;
 

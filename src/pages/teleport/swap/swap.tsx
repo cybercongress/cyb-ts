@@ -352,7 +352,7 @@ function Swap() {
 
   return (
     <>
-      <MainContainer width="62%">
+      <MainContainer>
         <TeleportContainer>
           <TokenSetterSwap
             id={TokenSetterId.tokenAAmount}

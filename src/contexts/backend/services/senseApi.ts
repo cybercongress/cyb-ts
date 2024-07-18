@@ -87,10 +87,10 @@ export const createSenseApi = (
 ) => ({
   getList: async () => {
     const result = await dbApi.getSenseList(myAddress);
-    console.log(
-      '--- getList unread',
-      result.filter((r) => r.unreadCount > 0)
-    );
+    // console.log(
+    //   '--- getList unread',
+    //   result.filter((r) => r.unreadCount > 0)
+    // );
     return result;
   },
   markAsRead: async (

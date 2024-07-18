@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
-import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
+import styles from './CircularMenuItem.module.scss';
 
 interface Props {
   item: MenuItem;
@@ -10,7 +10,7 @@ interface Props {
   selected: boolean;
 }
 
-const CircularMenuItem = ({ item, onClick, selected }: Props) => {
+function CircularMenuItem({ item, onClick, selected }: Props) {
   const isExternal = item.to.startsWith('http');
 
   return (
@@ -26,8 +26,9 @@ const CircularMenuItem = ({ item, onClick, selected }: Props) => {
           {isExternal && <span className={styles.external}></span>}
         </NavLink>
       </AdviserHoverWrapper>
+
     </div>
   );
-};
+}
 
 export default CircularMenuItem;

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Time } from 'src/components';
 import BigNumber from 'bignumber.js';
 import { getNowUtcNumber } from 'src/utils/date';
+import { Link } from 'react-router-dom';
 import useGetTimeCreatePassport from './api/api';
 
 type Props = {
@@ -31,7 +32,11 @@ function FirstTx({ address }: Props) {
     return null;
   }
 
-  return <Time msTime={time} linkTo="./time" />;
+  return (
+    <Link to="./time">
+      <Time msTime={time} />
+    </Link>
+  );
 }
 
 export default FirstTx;

@@ -24,7 +24,7 @@ import AddFileButton from '../buttons/AddFile/AddFile';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
-const imgSecrets = require('../../image/secrets.svg');
+const imgSecrets = require('../../image/secrets_icon.png');
 
 const T = new LocalizedStrings(i18n);
 
