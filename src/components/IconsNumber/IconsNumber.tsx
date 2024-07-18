@@ -63,7 +63,7 @@ export default function IconsNumber({ value, type, isVertical }: Props) {
   });
 
   return (
-    <>
+    <span className={styles.wrapper}>
       {number}{' '}
       <Tooltip
         tooltip={
@@ -77,6 +77,6 @@ export default function IconsNumber({ value, type, isVertical }: Props) {
           {i}
         </div>
       </Tooltip>
-    </>
+    </span>
   );
 }

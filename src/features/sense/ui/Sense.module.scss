@@ -4,9 +4,9 @@
   display: flex;
   align-content: stretch;
 
-  height: 60vh;
+  height: 100%;
   margin-right: -2px;
-  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
+  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight);
 
   // Display
   >div>div {

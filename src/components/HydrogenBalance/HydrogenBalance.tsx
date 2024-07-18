@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
 import IconsNumber from '../IconsNumber/IconsNumber';
 
-function HydrogenBalance({ address, className }) {
+function HydrogenBalance({ address, className, isVertical }) {
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
 
   return (
@@ -11,7 +11,7 @@ function HydrogenBalance({ address, className }) {
       <IconsNumber
         value={totalAmountInLiquid.currentCap}
         type="hydrogen"
-        isVertical
+        isVertical={isVertical}
       />
     </Link>
   );
