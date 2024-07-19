@@ -17,7 +17,8 @@ import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
-import styles from './Main.module.scss'; 
+import styles from './Main.module.scss';
+import MobileMenu from 'src/components/appMenu/MobileMenu';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -30,7 +31,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const graphSize = 220;
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
-
 
   // for new user show menu, else no + animation
   const [openMenu, setOpenMenu] = useState(
@@ -88,14 +88,12 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      {CHAIN_ID === Networks.BOSTROM && (
-        <SenseButton className={styles.senseBtn} />
-      )}
-      <HydrogenBalance className={styles.hydrogenBtn} address={addressBech32} />
+      {CHAIN_ID === Networks.BOSTROM && <SenseButton />}
+      <HydrogenBalance address={addressBech32} />
 
       {children}
       <footer>
-        <CircularMenu circleSize={graphSize} />
+        {isMobile ? <MobileMenu /> : <CircularMenu circleSize={graphSize} />}
         {!isMobile && (
           <Link
             to={routes.brain.path}

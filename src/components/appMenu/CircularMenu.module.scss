@@ -20,7 +20,8 @@
 
 .menu li {
   grid-area: 1/1;
-  transform: rotate(calc(var(--r) + var(--delta))) translateX(var(--diameter)) rotate(calc(-1 * (var(--r) + var(--delta))));
+  transform: rotate(calc(var(--r) + var(--delta))) translateX(var(--diameter))
+    rotate(calc(-1 * (var(--r) + var(--delta))));
 }
 
 .menu li:nth-child(1) {
@@ -50,3 +51,4 @@
 .menu li:nth-child(7) {
   --r: calc(1 * var(--i));
 }
+
