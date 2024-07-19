@@ -6,14 +6,7 @@ import SwitchAccount from './SwitchAccount/SwitchAccount';
 import Commander from './Commander/Commander';
 import styles from './Header.module.scss';
 
-type Props = {
-  menuProps: {
-    isOpen: boolean;
-    toggleMenu: () => void;
-  };
-};
-
-function Header({ menuProps }: Props) {
+function Header() {
   const [scroll, setScroll] = useState(false);
 
   useEffect(() => {
@@ -41,10 +34,7 @@ function Header({ menuProps }: Props) {
         [styles.scroll]: scroll,
       })}
     >
-      <CurrentApp
-        openMenu={menuProps.isOpen}
-        onClickOpenMenu={menuProps.toggleMenu}
-      />
+      <CurrentApp />
 
       <Commander />
 

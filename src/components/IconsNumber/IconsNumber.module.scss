@@ -1,3 +1,9 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
 .icon {
   display: flex;
   flex-direction: row;

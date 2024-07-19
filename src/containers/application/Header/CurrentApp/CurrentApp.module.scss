@@ -61,25 +61,6 @@
   position: relative;
 }
 
-.networkBtnImgIconMenu {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transition: 0.2s;
-  transform: translate(-50%, -50%) rotate(-90deg);
-
-  &Close {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  div {
-    width: 35px;
-    height: 5px;
-    background-color: black;
-    margin: 6px 0;
-  }
-}
-
 .btnContainerText {
   border: none;
   font-size: 16px;

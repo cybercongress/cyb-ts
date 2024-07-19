@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import withRouter from 'src/components/helpers/withRouter';
 import { useBlockByHeightQuery } from 'src/generated/graphql';
-import InformationBlock from './informationBlock';
-import { CardTemplate, MainContainer, TextTable } from '../../components';
-import ActionBarContainer from '../Search/ActionBarContainer';
 import Table from 'src/components/Table/Table';
 import StatusTxs from 'src/components/TableTxsInfinite/component/StatusTxs';
 import TxHash from 'src/components/TableTxsInfinite/component/txHash';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import ActionBarContainer from '../Search/ActionBarContainer';
+import { MainContainer, TextTable } from '../../components';
+import InformationBlock from './informationBlock';
 
 const initialState = {
   height: null,
@@ -64,7 +64,7 @@ function BlockDetails({ router }) {
 
   return (
     <div>
-      <MainContainer width="100%">
+      <MainContainer>
         <InformationBlock numbTx={blockInfo.transactions} data={blockInfo} />
         <Display color="blue" title={<DisplayTitle title="Transactions" />}>
           <Table

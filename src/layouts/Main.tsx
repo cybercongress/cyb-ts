@@ -117,7 +117,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
         {/* <ActionBar /> */}
 
         <div className={styles.Time}>
-          <TimeHistory />
+          {!isMobile && <TimeHistory />}
           <TimeFooter />
         </div>
         {/* <Link to={routes.social.path}>contacts</Link> */}

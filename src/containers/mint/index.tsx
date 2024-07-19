@@ -168,7 +168,7 @@ function Mint() {
 
   return (
     <>
-      <MainContainer width="100%">
+      <MainContainer>
         <Statistics amount={{ vestedA, vestedV }} />
 
         <Display>

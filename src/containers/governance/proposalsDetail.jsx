@@ -7,6 +7,8 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
+import { useGovParam } from 'src/hooks/governance/params/useGovParams';
+import { useAppSelector } from 'src/redux/hooks';
 import {
   ActionBar,
   ContainerGradientText,
@@ -30,9 +32,6 @@ import { MainContainer } from '../portal/components';
 import ProposalsRoutes from './proposalsRoutes';
 
 import styles from './proposalsDetail.module.scss';
-import { useGovParam } from 'src/hooks/governance/params/useGovParams';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
-import { useAppSelector } from 'src/redux/hooks';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -180,7 +179,7 @@ function ProposalsDetail() {
 
   return (
     <>
-      <MainContainer width="100%">
+      <MainContainer>
         <Pane display="flex" alignItems="center">
           <Text fontSize="25px" color="#fff">
             {proposals.title && ` #${proposalId} ${proposals.title}`}

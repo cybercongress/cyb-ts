@@ -133,7 +133,7 @@ function SenseViewer({ adviser, selected }: Props) {
 
   return (
     <div className={styles.wrapper}>
-      <Display title={title}>
+      <Display title={title} noPadding>
         {selected && !!messages?.length ? (
           <Messages messages={messages} currentChatId={selected} />
         ) : loading ? (

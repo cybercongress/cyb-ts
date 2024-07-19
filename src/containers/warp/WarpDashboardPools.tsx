@@ -1,23 +1,20 @@
 /* eslint-disable no-restricted-syntax */
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useSelector } from 'react-redux';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
 import { NoItems, MainContainer, LinkWindow } from 'src/components';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import { Coin } from '@cosmjs/launchpad';
 import useGetBalances from 'src/hooks/getBalances';
+import Loader2 from 'src/components/ui/Loader2';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { PoolsInfo, PoolCard } from './pool';
 import styles from './pool/styles.module.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
-import Loader2 from 'src/components/ui/Loader2';
-import { useAdviser } from 'src/features/adviser/context';
-import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
 
 function WarpDashboardPools() {
   const currentAddress = useCurrentAddress();
@@ -76,7 +73,7 @@ function WarpDashboardPools() {
   }, [poolsData, vol24ByPool, accountBalances, totalSupplyAll]);
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <div className={styles.PoolDataContainer}>
         <PoolsInfo
           myCap={myCap}

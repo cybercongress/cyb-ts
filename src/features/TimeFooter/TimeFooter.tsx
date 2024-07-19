@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
 import { getNowUtcTime } from 'src/utils/utils';
+import { useDevice } from 'src/contexts/device';
 import { useAppSelector } from 'src/redux/hooks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { routes } from 'src/routes';
@@ -10,6 +11,7 @@ import styles from './TimeFooter.module.scss';
 
 function TimeFooter() {
   const { defaultAccount } = useAppSelector((state) => state.pocket);
+  const { isMobile: mobile } = useDevice();
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
   const { passport } = usePassportByAddress(useGetAddress);
   const useGetName = passport?.extension.nickname;
@@ -41,7 +43,7 @@ function TimeFooter() {
 
   return (
     <Link to={linkTime} className={styles.wrapper}>
-      <Time msTime={timeSeconds} />
+      {!mobile && <Time msTime={timeSeconds} />}
       <span className={styles.utcTime}>
         {dateFormat(new Date(timeSeconds), 'HH:MM')}
       </span>
