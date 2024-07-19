@@ -1,19 +1,22 @@
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
-import { Link } from 'react-router-dom';
+import SideButtonLink from '../sideButtonLink/SideButtonLink';
 import { routes } from 'src/routes';
 import IconsNumber from '../IconsNumber/IconsNumber';
 
-function HydrogenBalance({ address, className, isVertical }) {
+function HydrogenBalance({ address, isVertical }) {
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
 
   return (
-    <Link to={`${routes.neuron.getLink(address)}/sigma`} className={className}>
+    <SideButtonLink
+      to={`${routes.neuron.getLink(address)}/sigma`}
+      buttonType="hydrogen"
+    >
       <IconsNumber
         value={totalAmountInLiquid.currentCap}
         type="hydrogen"
         isVertical={isVertical}
       />
-    </Link>
+    </SideButtonLink>
   );
 }
 

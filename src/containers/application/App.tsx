@@ -121,8 +121,8 @@ function App() {
           )}
 
           {![
-            routes.home.path,
-            routes.teleport.path,
+            /* routes.home.path, */
+            /* routes.teleport.path, */
             // cybernetRoutes.verse.path,
           ].some((path) => {
             return matchPath(path, location.pathname);
