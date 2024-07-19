@@ -1,11 +1,10 @@
-@import '../../../../layouts/variables.module.scss';
+@import '../../../../layouts/variables.module';
 
 $robotHeaderHeight: 130px;
 
 .wrapper {
   display: flex;
   flex-direction: column;
-
 }
 
 .content {
@@ -14,18 +13,18 @@ $robotHeaderHeight: 130px;
   grid-template-rows: 1fr;
   justify-content: center;
   margin-right: -2px;
-
   height: 70vh;
-  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight);
+  max-height: calc(
+    100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight
+  );
 
   //Display
-
   > :first-child {
-    >div {
+    > div {
       height: 100%;
     }
 
-    >div {
+    > div > div {
       // don't understand this scroll
       overflow-x: hidden;
     }
@@ -36,5 +35,4 @@ $robotHeaderHeight: 130px;
     position: relative;
     overflow-x: auto;
   }
-
 }
