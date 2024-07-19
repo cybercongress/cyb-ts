@@ -5,8 +5,8 @@
   opacity: 1;
   background-color: #101010;
   border-radius: 50%;
-  width: 38px;
-  height: 38px;
+  width: var(--button-size, 38px);
+  height: var(--button-size, 38px);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -30,8 +30,8 @@
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: var(--icon-size, 30px);
+  height: var(--icon-size, 30px);
   object-fit: fill;
   border-radius: 50%;
   justify-content: center;
