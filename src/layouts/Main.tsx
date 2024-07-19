@@ -28,7 +28,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
-  const graphSize = 220;
+  const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
