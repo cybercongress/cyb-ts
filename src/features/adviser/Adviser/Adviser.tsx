@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import cx from 'classnames';
+import { localStorageKeys } from 'src/constants/localStorageKeys';
 import styles from './Adviser.module.scss';
 // import TypeIt from 'typeit-react';
+
+const adviserAudioKey = localStorageKeys.settings.adviserAudio;
+const adviserVoiceKey = localStorageKeys.settings.adviserVoice;
 
 export enum AdviserColors {
   blue = 'blue',
@@ -46,10 +50,11 @@ function play(text: string) {
   const utterThis = new SpeechSynthesisUtterance(cleanText);
   utterThis.lang = 'en-US';
 
-  // woman voice
-  utterThis.voice = synth
-    .getVoices()
-    .find((voice) => voice.name === 'Google US English');
+  const voiceLS = localStorage.getItem(adviserVoiceKey);
+
+  utterThis.voice =
+    synth.getVoices().find((voice) => voice.name === voiceLS) ||
+    synth.getVoices()[0];
 
   synth.speak(utterThis);
 }
@@ -84,6 +89,12 @@ function Adviser({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const audioEnabled = localStorage.getItem(adviserAudioKey) === 'true';
+
+    if (!audioEnabled) {
+      return;
+    }
+
     const t = ref.current?.innerText;
 
     if (!t) {

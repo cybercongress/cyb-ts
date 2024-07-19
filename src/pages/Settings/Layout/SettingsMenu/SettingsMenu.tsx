@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
-import styles from './SettingsMenu.module.scss';
 import { Display } from 'src/components';
+import styles from './SettingsMenu.module.scss';
 
 type MenuItem = {
   text: string;
@@ -39,6 +39,13 @@ const links: Array<MenuItem[]> = [
       text: 'Channels',
       link: './channels',
       icon: '📡',
+    },
+  ],
+  [
+    {
+      text: 'Audio',
+      link: './audio',
+      icon: '🔊',
     },
   ],
 ];
