@@ -21,6 +21,9 @@
 
   &.open {
     pointer-events: auto;
+    background: #0000008c;
+    backdrop-filter: blur(7px);
+    z-index: 2;
   }
 }
 

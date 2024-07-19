@@ -13,6 +13,11 @@
 
   display: flex;
   justify-content: center;
+
+  @media (max-width: 540px) {
+    margin-top: unset;
+    
+  }
 }
 
 .blurWrapper {

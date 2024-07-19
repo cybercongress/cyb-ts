@@ -1,6 +1,4 @@
 .wrapper {
-  width: 100%;
-  
   width: 62%;
   transform: translate(-50%, -80%);
   background: rgb(0 0 0 / 79%);
@@ -9,6 +7,13 @@
   position: absolute;
   top: 50%;
   z-index: 1;
+  // width left and right sideBar , gap and paddings 
+  max-width: calc(100vw - 200px - 300px - 100px);
+
+  @media (max-width: 540px) {
+    width: 40%;
+    max-width: unset;
+  }
 }
 
 .input {
