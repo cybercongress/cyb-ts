@@ -153,18 +153,13 @@ function SwitchAccount() {
 
   return (
     <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
-      <div
-        className={styles.containerSwichAccount}
-        style={{
-          gridTemplateColumns: !mediaQuery ? '1fr' : '1fr 105px',
-        }}
-      >
-        {!useGetAddress && (
+      <div className={styles.containerSwichAccount}>
+        {(!useGetAddress || !mediaQuery) && (
           <Link
             className={networkStyles.btnContainerText}
             to={routes.settings.path}
           >
-            Settings
+            {mediaQuery ? 'Settings' : '⚙️'}
           </Link>
         )}
         {mediaQuery && useGetAddress && (

@@ -14,11 +14,11 @@ import { CHAIN_ID } from 'src/constants/config';
 import { Link } from 'react-router-dom';
 import CircularMenu from 'src/components/appMenu/CircularMenu';
 import TimeHistory from 'src/features/TimeHistory/TimeHistory';
+import MobileMenu from 'src/components/appMenu/MobileMenu';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
-import MobileMenu from 'src/components/appMenu/MobileMenu';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -28,7 +28,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
-  const graphSize = 220;
+  const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
@@ -88,8 +88,8 @@ function MainLayout({ children }: { children: JSX.Element }) {
         }}
       />
 
-      {CHAIN_ID === Networks.BOSTROM && <SenseButton />}
-      <HydrogenBalance address={addressBech32} />
+      {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
+      {!isMobile && <HydrogenBalance address={addressBech32} />}
 
       {children}
       <footer>

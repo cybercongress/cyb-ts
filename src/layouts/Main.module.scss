@@ -22,5 +22,9 @@
     display: flex;
     position: fixed;
     right: 1vw;
+
+    @media (max-width: 540px) {
+      right: 2vw;
+    }
   }
 }

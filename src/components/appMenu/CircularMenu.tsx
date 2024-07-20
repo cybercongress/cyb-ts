@@ -10,6 +10,8 @@ declare module 'react' {
   interface CSSProperties {
     '--diameter'?: string;
     '--delta'?: string;
+    '--icon-size'?: string;
+    '--button-size'?: string;
   }
 }
 
@@ -18,6 +20,9 @@ function CircularMenu({ circleSize }) {
   const chunkSize = 7;
   const linkChunks = _.chunk(itemsMenu(), chunkSize);
   const location = useLocation();
+
+  const buttonSize = Math.min(circleSize * 0.15, 38);
+  const iconSize = buttonSize - 8;
 
   const calculateDiameter = (index, circleSize) => {
     const menuCircleDiameter = circleSize / 2 + 40 * (index + 1) - 10;
@@ -68,6 +73,8 @@ function CircularMenu({ circleSize }) {
               style={{
                 '--diameter': `${menuCircleDiameter}px`,
                 '--delta': `${nextLevelMenuAngle}deg`,
+                '--icon-size': `${iconSize}px`,
+                '--button-size': `${buttonSize}px`,
               }}
             >
               {chunk.map((item, index) => {

@@ -1,3 +1,5 @@
+@import '../../../layouts/variables.module.scss';
+
 $mobile-breakpoint: 480px;
 
 :export {
@@ -9,7 +11,7 @@ $mobile-breakpoint: 480px;
   flex-direction: column;
   justify-content: space-between;
   // header, footer widths, TODO: use variables
-  min-height: calc(100vh - 120px - 60px - 100px + 45px);
+  min-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   padding: 0 10px;
 

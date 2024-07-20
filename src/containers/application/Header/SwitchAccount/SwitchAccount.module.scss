@@ -35,11 +35,17 @@
   align-items: center;
   height: 105px;
 
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr 60px;
+    gap: 10px;
+    height: 60px;
+  }
+
   .noAccount {
     color: var(--primary-color);
   }
 
-  & + & {
+  &+& {
     margin-top: -30px;
   }
 
@@ -123,6 +129,7 @@
 
   &True {
     width: 100%;
+
     &::before {
       @include before-Avatar;
       box-shadow: 0px 0px 20px #1fcbff66;

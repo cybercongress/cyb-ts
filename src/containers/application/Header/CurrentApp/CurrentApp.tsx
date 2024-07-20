@@ -19,7 +19,7 @@ function CurrentApp() {
   const location = useLocation();
   const address = useAppSelector(selectCurrentAddress);
   const { passport } = usePassportByAddress(address);
-  const [openMenu, setOpenMenu] = useState(true);
+  const [openMenu, setOpenMenu] = useState(false);
 
   const getRoute = useMemo(() => {
     const { pathname } = location;
