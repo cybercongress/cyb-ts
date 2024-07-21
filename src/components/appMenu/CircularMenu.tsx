@@ -10,8 +10,7 @@ declare module 'react' {
   interface CSSProperties {
     '--diameter'?: string;
     '--delta'?: string;
-    '--icon-size'?: string;
-    '--button-size'?: string;
+    '--i'?: string;
   }
 }
 
@@ -21,13 +20,11 @@ function CircularMenu({ circleSize }) {
   const linkChunks = _.chunk(itemsMenu(), chunkSize);
   const location = useLocation();
 
-  const buttonSize = Math.min(circleSize * 0.15, 38);
-  const iconSize = buttonSize - 8;
-
   const calculateDiameter = (index, circleSize) => {
-    const menuCircleDiameter = circleSize / 2 + 40 * (index + 1) - 10;
-    const nextLevelMenuAngle = index === 1 ? 11 : 0;
-    return { menuCircleDiameter, nextLevelMenuAngle };
+    const menuCircleDiameter = circleSize / 2 + 45 * (index + 1) - 10;
+    const nextLevelMenuAngle = index === 1 ? -28 : 0; // decreases the angle of second menu layer
+    const menuItemsAngle = index === 1 ? 16 : 23; // angle in wich menu items spreads around brain
+    return { menuCircleDiameter, nextLevelMenuAngle, menuItemsAngle };
   };
 
   const isActiveItem = (item: MenuItem) => {
@@ -58,10 +55,8 @@ function CircularMenu({ circleSize }) {
   return (
     <div>
       {linkChunks.map((chunk, index) => {
-        const { menuCircleDiameter, nextLevelMenuAngle } = calculateDiameter(
-          index,
-          circleSize
-        );
+        const { menuCircleDiameter, nextLevelMenuAngle, menuItemsAngle } =
+          calculateDiameter(index, circleSize);
         return (
           <div
             key={index}
@@ -73,8 +68,7 @@ function CircularMenu({ circleSize }) {
               style={{
                 '--diameter': `${menuCircleDiameter}px`,
                 '--delta': `${nextLevelMenuAngle}deg`,
-                '--icon-size': `${iconSize}px`,
-                '--button-size': `${buttonSize}px`,
+                '--i': `${menuItemsAngle}deg`,
               }}
             >
               {chunk.map((item, index) => {
