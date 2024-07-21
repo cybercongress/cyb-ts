@@ -10,16 +10,14 @@
   transform: rotate(var(--r)) translateX(var(--diameter)) rotate(calc(-1 * var(--r)));
 }
 
-$size: 220px;
-
 .wrapper {
   text-align: end;
   display: grid;
   justify-content: flex-end;
   align-items: flex-end;
   gap: 15px;
-  width: $size;
-  height: $size;
+  width: 200px;
+  height: 170px;
   padding: 5px 5px 20px 0px;
 
   position: absolute;
@@ -37,9 +35,11 @@ $size: 220px;
 }
 
 .rotate>div:nth-child(1) {
-  // --r: calc(2 * var(--i));
-  padding-right: unset;
   color: var(--grayscale-disabled);
+
+  &>span {
+    padding-right: unset;
+  }
 }
 
 .rotate>div:nth-child(2) {
