@@ -18,6 +18,7 @@ export class CybSignerClient extends SigningCyberClient {
   ) {
     return new Promise((resolve, reject) => {
       store.dispatch(shareSignerPromise({ resolve, reject }));
+      debugger;
       getNavigate()?.('/sign');
     }).then(() => {
       const [signerAddress, messages, fee] = args;

@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-expect-error
 import { ActionBar, Pane } from '@cybercongress/gravity';
-import React, { Component } from 'react';
+import React, { Component, FC, useCallback, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
   ActionBarContentText,
@@ -34,6 +34,8 @@ import { BackgroundWorker } from 'src/services/backend/workers/background/worker
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
 import { trimString } from '../../utils/utils';
 import { ActionBarStates } from './constants';
+import { useAppDispatch } from 'src/redux/hooks';
+import { OfflineSigner } from '@cosmjs/proto-signing';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -45,7 +47,7 @@ interface Props extends ConnectedProps<typeof connector> {
   placeholder?: string;
   rankLink?: string;
   update: () => void;
-  signer: any;
+  signer?: OfflineSigner;
   ipfsApi: BackgroundWorker['ipfsApi'];
   senseApi: SenseApi;
   signingClient: any;
@@ -58,129 +60,106 @@ class TxError extends Error {
   constructor(message: string, height?: string) {
     super(message);
 
-    this.height = height;
+    height = height;
   }
 }
 
+const getConfirmTxErrorMessage = (
+  data: { code?: string; raw_log?: string } | null
+): string =>
+  data === null
+    ? 'Transaction data is null'
+    : data.code && data.raw_log
+    ? data.raw_log
+    : 'Data logs are empty';
+const getGenerateTxErrorMessage = (address: string) =>
+  `Add address ${trimString(address, 9, 5)} to your pocket or make active `;
+
 // TODO: REFACT
-class ActionBarContainer extends Component<Props, { file: File | null }> {
-  timeOut: any;
-  inputOpenFileRef: any;
-  transport: any;
+let timeOut: any = null;
+let transport: any = null;
+const ActionBarContainer: FC<Props> = ({
+  defaultAccount,
+  ipfsApi,
+  contentHash,
+  address,
+  actionBarStage: stage,
+  txHeight,
+  txHash,
+  errorMessage,
+  textBtn,
+  placeholder,
+  rankLink,
+  keywordHash,
+  toCid,
+  fromCid,
+  signer,
+  signingClient,
+  senseApi,
+  address: addressLocalStor,
+  update,
+}) => {
+  const dispatch = useAppDispatch();
+  const inputOpenFileRef: any = React.createRef();
+  const [file, setFile] = useState<File | null>(null);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      file: null,
-    };
+  useEffect(() => {
+    checkAddressLocalStorage();
+  }, [defaultAccount]);
 
-    this.timeOut = null;
-    this.inputOpenFileRef = React.createRef();
-    this.transport = null;
-  }
-
-  componentDidMount() {
-    this.checkAddressLocalStorage();
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    const { defaultAccount } = this.props;
-
-    if (prevProps.defaultAccount.name !== defaultAccount.name) {
-      this.checkAddressLocalStorage();
-    }
-  }
-
-  checkAddressLocalStorage = async () => {
-    const { defaultAccount, setLSAddress } = this.props;
+  const checkAddressLocalStorage = useCallback(async () => {
     const { account } = defaultAccount;
     if (
       account === null ||
       !('cyber' in account) ||
       account?.cyber?.keys === 'read-only'
     ) {
-      setLSAddress(undefined);
+      dispatch(setLSAddress(undefined));
       return;
     }
 
     const { keys, bech32 } = account.cyber;
-    setLSAddress({
-      address: bech32,
-      keys,
-    });
-  };
+    dispatch(
+      setLSAddress({
+        address: bech32,
+        keys,
+      })
+    );
+  }, [defaultAccount]);
 
-  calculationIpfsTo = async () => {
-    const { file } = this.state;
-    const { ipfsApi, contentHash, setToCid } = this.props;
-    let content: string | File = '';
-    let toCid;
-
-    content = contentHash;
-    if (file !== null) {
-      content = file;
-    }
+  const calculationIpfsTo = useCallback(async () => {
+    const content: string | File = file !== null ? file : contentHash;
+    const shouldNotAdd =
+      file === null &&
+      typeof content === 'string' &&
+      content.match(PATTERN_IPFS_HASH);
 
     console.log('toCid', content);
 
-    if (
-      file === null &&
-      typeof content === 'string' &&
-      content.match(PATTERN_IPFS_HASH)
-    ) {
-      toCid = content;
-    } else {
-      toCid = await ipfsApi.addContent(content);
-    }
+    const newToCid = shouldNotAdd
+      ? content
+      : (await ipfsApi.addContent(content)) ?? null;
 
-    setToCid(toCid ?? null);
-  };
+    dispatch(setToCid(newToCid));
+  }, [file, contentHash, ipfsApi]);
 
-  calculationIpfsFrom = async () => {
-    const { keywordHash, ipfsApi, setFromCid } = this.props;
+  const calculationIpfsFrom = useCallback(async () => {
+    const newFromCid = !keywordHash.match(PATTERN_IPFS_HASH)
+      ? (await ipfsApi.addContent(keywordHash)) ?? null
+      : keywordHash;
 
-    let fromCid = keywordHash;
+    dispatch(setFromCid(newFromCid));
+  }, [file, keywordHash, ipfsApi]);
 
-    if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      // @ts-expect-error
-      fromCid = await ipfsApi.addContent(fromCid);
-    }
-
-    setFromCid(fromCid);
-  };
-
-  onClickInitKeplr = () => {
-    this.calculationIpfsFrom();
-    this.calculationIpfsTo();
-
-    setActionBarStage(ActionBarStates.STAGE_IPFS_HASH);
-
-    const { toCid, fromCid } = this.props;
-    if (toCid !== null && fromCid !== null) {
-      this.generateTx();
-    }
-  };
-
-  generateTx = async () => {
-    const {
-      signer,
-      signingClient,
-      senseApi,
-      setActionBarStage,
-      setTxHash,
-      setErrorMessage,
-    } = this.props;
-
+  const generateTx = async () => {
     try {
-      const { fromCid, toCid, address: addressLocalStor } = this.props;
-
-      setActionBarStage(ActionBarStates.STAGE_KEPLR_APPROVE);
+      dispatch(setActionBarStage(ActionBarStates.STAGE_KEPLR_APPROVE));
 
       if (!signer || !signingClient) {
         throw new TxError(`${signer ? 'Signer' : 'Signing client'} is not set`);
       }
 
-      const { address } = (await signer.getAccounts())[0];
+      const [{ address }] = await signer.getAccounts();
 
       if (
         addressLocalStor === null ||
@@ -188,7 +167,7 @@ class ActionBarContainer extends Component<Props, { file: File | null }> {
         !fromCid ||
         !toCid
       ) {
-        throw new TxError(this.getGenerateTxErrorMessage(address));
+        throw new TxError(getGenerateTxErrorMessage(address));
       }
 
       const txHash = await sendCyberlink(address, fromCid, toCid, {
@@ -198,274 +177,237 @@ class ActionBarContainer extends Component<Props, { file: File | null }> {
 
       console.log('hash :>> ', txHash);
 
-      setActionBarStage(ActionBarStates.STAGE_SUBMITTED);
-      setTxHash(txHash);
+      dispatch(setActionBarStage(ActionBarStates.STAGE_SUBMITTED));
+      dispatch(setTxHash(txHash));
 
-      this.timeOut = setTimeout(this.confirmTx, 1500);
+      timeOut = setTimeout(confirmTx, 1500);
     } catch (error) {
       console.log(`[ActionBarContainer] generateTx error:`, error);
 
-      setActionBarStage(ActionBarStates.STAGE_ERROR);
-      setTxHash(null);
-      setErrorMessage(error instanceof Error ? error.message : 'unknown error');
+      dispatch(setActionBarStage(ActionBarStates.STAGE_ERROR));
+      dispatch(setTxHash(null));
+      dispatch(
+        setErrorMessage(
+          error instanceof Error ? error.message : 'unknown error'
+        )
+      );
     }
   };
 
-  private getGenerateTxErrorMessage(address: string) {
-    return `Add address ${trimString(
-      address,
-      9,
-      5
-    )} to your pocket or make active `;
-  }
+  const onClickInitKeplr = () => {
+    calculationIpfsFrom();
+    calculationIpfsTo();
 
-  confirmTx = async () => {
-    const { update, txHash, setActionBarStage, setErrorMessage, setTxHeight } =
-      this.props;
+    dispatch(setActionBarStage(ActionBarStates.STAGE_IPFS_HASH));
+    debugger;
+    if (toCid !== null && fromCid !== null) {
+      generateTx();
+    }
+  };
 
+  const confirmTx = async () => {
     try {
       if (txHash === null) {
         throw new TxError('txHash is null');
       }
 
-      setActionBarStage(ActionBarStates.STAGE_CONFIRMING);
+      dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMING));
 
       const data = await getTxs(txHash);
       if (data === null || data?.code || !data?.logs) {
-        const message = this.getConfirmTxErrorMessage(data);
+        const message = getConfirmTxErrorMessage(data);
 
         throw new TxError(message, data?.height);
       }
 
-      setActionBarStage(ActionBarStates.STAGE_CONFIRMED);
-      setTxHeight(data.txHeight);
+      dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMED));
+      dispatch(setTxHeight(data.txHeight));
 
       update?.();
     } catch (error) {
-      setActionBarStage(ActionBarStates.STAGE_ERROR);
+      dispatch(setActionBarStage(ActionBarStates.STAGE_ERROR));
       if (error instanceof TxError && error.height) {
-        setTxHeight(error.height);
+        dispatch(setTxHeight(error.height));
       }
-      setErrorMessage(error instanceof Error ? error.message : 'unknown error');
+      dispatch(
+        setErrorMessage(
+          error instanceof Error ? error.message : 'unknown error'
+        )
+      );
     }
 
     // FIXME: WTF? Neverend story 🦄
-    this.timeOut = setTimeout(this.confirmTx, 1500);
+    timeOut = setTimeout(confirmTx, 1500);
   };
 
-  private getConfirmTxErrorMessage(
-    data: { code?: string; raw_log?: string } | null
-  ): string {
-    return data === null
-      ? 'Transaction data is null'
-      : data.code && data.raw_log
-      ? data.raw_log
-      : 'Data logs are empty';
-  }
-
-  onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    this.props.setContentHash(value);
+  const onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setContentHash(e.target.value));
   };
 
-  clearState = () => {
-    this.props.clearActionBarState();
-    this.timeOut = null;
+  const clearState = () => {
+    dispatch(clearActionBarState());
+    clearTimeout(timeOut);
   };
 
-  onClickInitStage = () => {
-    this.clearState();
+  const onClickInitStage = () => {
+    clearState();
 
-    this.props.setActionBarStage(ActionBarStates.STAGE_INIT);
+    dispatch(setActionBarStage(ActionBarStates.STAGE_INIT));
   };
 
-  onClickClear = () => {
-    this.setState({
-      file: null,
-    });
+  const onClickClear = () => {
+    setFile(null);
   };
 
-  showOpenFileDlg = () => {
-    this.inputOpenFileRef.current.click();
+  const showOpenFileDlg = () => {
+    inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = (fileInputRef: React.RefObject<HTMLInputElement>) => {
+  const onFilePickerChange = (
+    fileInputRef: React.RefObject<HTMLInputElement>
+  ) => {
     const file = fileInputRef.current?.files?.[0] ?? null;
 
-    this.setState({
-      file,
-    });
+    setFile(file);
   };
 
-  onClickBtnRank = async () => {
-    const { rankLink, address, setContentHash } = this.props;
+  const onClickBtnRank = async () => {
     if (rankLink !== null) {
-      setContentHash(rankLink ?? '');
+      dispatch(setContentHash(rankLink ?? ''));
     }
 
     if (address?.keys === 'keplr') {
-      this.onClickInitKeplr();
+      onClickInitKeplr();
     }
   };
 
-  onClickInit = () => {
-    const { address } = this.props;
-
+  const onClickInit = () => {
     if (address?.keys === 'keplr') {
-      this.onClickInitKeplr();
+      onClickInitKeplr();
     }
   };
 
-  render() {
-    const { file } = this.state;
-    const { contentHash, address } = this.props;
-    const {
-      actionBarStage: stage,
-      txHeight,
-      txHash,
-      errorMessage,
-    } = this.props;
+  if (stage === ActionBarStates.STAGE_INIT && rankLink && rankLink !== null) {
+    const image =
+      !address?.keys || address?.keys === 'ledger' ? imgLedger : imgKeplr;
 
-    const { textBtn, placeholder, rankLink } = this.props;
-
-    if (stage === ActionBarStates.STAGE_INIT && rankLink && rankLink !== null) {
-      let keys = 'ledger';
-      if (address?.keys) {
-        keys = address?.keys;
-      }
-
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <ButtonImgText
-              text={
-                <Pane alignItems="center" display="flex">
-                  Learn{' '}
-                  <img
-                    src={imgCyber}
-                    alt="cyber"
-                    style={{
-                      width: 20,
-                      height: 20,
-                      marginLeft: '5px',
-                      paddingTop: '2px',
-                    }}
-                  />
-                </Pane>
-              }
-              onClick={() => this.onClickBtnRank()}
-              img={keys === 'ledger' ? imgLedger : imgKeplr}
-            />
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (stage === ActionBarStates.STAGE_INIT) {
-      return (
-        <StartStageSearchActionBar
-          textBtn={textBtn || 'Cyberlink'}
-          keys={address?.keys}
-          onClickBtn={this.onClickInit}
-          contentHash={file?.name || contentHash}
-          onChangeInputContentHash={this.onChangeInput}
-          inputOpenFileRef={this.inputOpenFileRef}
-          showOpenFileDlg={this.showOpenFileDlg}
-          onChangeInput={this.onFilePickerChange}
-          onClickClear={this.onClickClear}
-          file={file}
-          placeholder={placeholder}
-        />
-      );
-    }
-
-    if (stage === ActionBarStates.STAGE_IPFS_HASH) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            adding content to IPFS <Dots big />
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (stage === ActionBarStates.STAGE_KEPLR_APPROVE) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            approve TX <Dots big />
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (stage === ActionBarStates.STAGE_READY) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            transaction generation <Dots big />
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (
-      stage === ActionBarStates.STAGE_SUBMITTED ||
-      stage === ActionBarStates.STAGE_CONFIRMING
-    ) {
-      return <TransactionSubmitted />;
-    }
-
-    if (stage === ActionBarStates.STAGE_CONFIRMED) {
-      return (
-        <Confirmed
-          // FIXME: need proper types
-          cosmos={undefined}
-          txHash={txHash}
-          txHeight={txHeight}
-          onClickBtnClose={this.onClickInitStage}
-        />
-      );
-    }
-
-    if (stage === ActionBarStates.STAGE_ERROR && errorMessage !== null) {
-      return (
-        <TransactionError
-          errorMessage={errorMessage}
-          onClickBtn={this.onClickInitStage}
-        />
-      );
-    }
-
-    return null;
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <ButtonImgText
+            text={
+              <Pane alignItems="center" display="flex">
+                Learn{' '}
+                <img
+                  src={imgCyber}
+                  alt="cyber"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '5px',
+                    paddingTop: '2px',
+                  }}
+                />
+              </Pane>
+            }
+            onClick={onClickBtnRank}
+            img={image}
+          />
+        </ActionBarContentText>
+      </ActionBar>
+    );
   }
-}
 
-const connector = connect(
-  (state: RootState) => ({
-    defaultAccount: state.pocket.defaultAccount,
-    actionBarStage: state.actionBar.stage,
-    address: state.actionBar.address,
-    contentHash: state.actionBar.contentHash,
-    toCid: state.actionBar.toCid,
-    fromCid: state.actionBar.fromCid,
-    txHash: state.actionBar.txHash,
-    txHeight: state.actionBar.txHeight,
-    errorMessage: state.actionBar.errorMessage,
-  }),
-  {
-    setActionBarStage,
-    setToCid,
-    setFromCid,
-    setTxHash,
-    setTxHeight,
-    setLSAddress,
-    setContentHash,
-    setErrorMessage,
-    clearActionBarState,
+  if (stage === ActionBarStates.STAGE_INIT) {
+    return (
+      <StartStageSearchActionBar
+        textBtn={textBtn || 'Cyberlink'}
+        keys={address?.keys}
+        onClickBtn={onClickInit}
+        contentHash={file?.name || contentHash}
+        onChangeInputContentHash={onChangeInput}
+        inputOpenFileRef={inputOpenFileRef}
+        showOpenFileDlg={showOpenFileDlg}
+        onChangeInput={onFilePickerChange}
+        onClickClear={onClickClear}
+        file={file}
+        placeholder={placeholder}
+      />
+    );
   }
-);
+
+  if (stage === ActionBarStates.STAGE_IPFS_HASH) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          adding content to IPFS <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (stage === ActionBarStates.STAGE_KEPLR_APPROVE) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          approve TX <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (stage === ActionBarStates.STAGE_READY) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          transaction generation <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (
+    stage === ActionBarStates.STAGE_SUBMITTED ||
+    stage === ActionBarStates.STAGE_CONFIRMING
+  ) {
+    return <TransactionSubmitted />;
+  }
+
+  if (stage === ActionBarStates.STAGE_CONFIRMED) {
+    return (
+      <Confirmed
+        // FIXME: need proper types
+        cosmos={undefined}
+        txHash={txHash}
+        txHeight={txHeight}
+        onClickBtnClose={onClickInitStage}
+      />
+    );
+  }
+
+  if (stage === ActionBarStates.STAGE_ERROR && errorMessage !== null) {
+    return (
+      <TransactionError
+        errorMessage={errorMessage}
+        onClickBtn={onClickInitStage}
+      />
+    );
+  }
+
+  return null;
+};
+
+const connector = connect((state: RootState) => ({
+  defaultAccount: state.pocket.defaultAccount,
+  actionBarStage: state.actionBar.stage,
+  address: state.actionBar.address,
+  contentHash: state.actionBar.contentHash,
+  toCid: state.actionBar.toCid,
+  fromCid: state.actionBar.fromCid,
+  txHash: state.actionBar.txHash,
+  txHeight: state.actionBar.txHeight,
+  errorMessage: state.actionBar.errorMessage,
+}));
 
 const ActionBarHOC = withIpfsAndKeplr(connector(ActionBarContainer));
 
