@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import itemsMenu from 'src/utils/appsMenu';
 import styles from './MobileMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import cx from 'classnames';
-
+import useOnClickOutside from 'src/hooks/useOnClickOutside';
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const location = useLocation();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -33,8 +34,11 @@ const MobileMenu = () => {
     setActiveItem(activeMenuItem || null);
   }, [location]);
 
+  useOnClickOutside(menuRef, () => setIsOpen(false));
+
   return (
     <div
+      ref={menuRef}
       className={cx(styles.mobileMenu, {
         [styles.open]: isOpen,
         [styles.closed]: !isOpen,
@@ -50,7 +54,7 @@ const MobileMenu = () => {
           className={cx(styles.menuButton, { [styles.active]: isOpen })}
           onClick={toggleMenu}
         >
-          <img src={activeItem?.icon} className={styles.icon} />
+          <img src={activeItem?.icon} className={styles.icon} alt="menu icon" />
         </button>
         {itemsMenu().map((item, index) => {
           const isExternal = item.to.startsWith('http');
@@ -66,7 +70,11 @@ const MobileMenu = () => {
                   rel: 'noreferrer noopener',
                 })}
               >
-                <img src={item.icon} className={styles.icon} alt="img" />
+                <img
+                  src={item.icon}
+                  className={styles.icon}
+                  alt="menu item icon"
+                />
                 {isExternal && <span className={styles.external}></span>}
               </NavLink>
             )
