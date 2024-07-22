@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
+import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
@@ -7,6 +8,35 @@ type Props = {
   // currentAddress?: string;
   size?: number;
 };
+
+function HoverInfo({ node }) {
+  if (!node) {
+    return null;
+  }
+
+  console.log(node);
+
+  const isCid = node.id.startsWith('Qm');
+
+  if (!isCid) {
+    return null;
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        backgroundColor: 'gray',
+        padding: '10px',
+        borderRadius: '5px',
+      }}
+    >
+      <CIDResolver cid={node.id} />
+    </div>
+  );
+}
 
 // before zoom in
 const INITIAL_CAMERA_DISTANCE = 2500;
@@ -17,6 +47,7 @@ const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
 function CyberlinksGraph({ data, size }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
+  const [hoverNode, setHoverNode] = useState(null);
 
   const fgRef = useRef();
 
@@ -153,10 +184,13 @@ function CyberlinksGraph({ data, size }: Props) {
     setRendering(false);
   }, []);
 
+  // console.log(data);
+
   return (
     <div
       style={{
         minHeight: size,
+        position: 'relative',
       }}
     >
       {isRendering && (
@@ -179,6 +213,7 @@ function CyberlinksGraph({ data, size }: Props) {
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={8}
+        onNodeHover={setHoverNode}
         linkColor={
           // not working
           (link) =>
@@ -186,7 +221,7 @@ function CyberlinksGraph({ data, size }: Props) {
             //   ? 'red'
             'rgba(9,255,13,1)'
         }
-        linkLabel={''}
+        linkLabel=""
         linkWidth={4}
         linkCurvature={0.2}
         linkOpacity={0.7}
@@ -204,6 +239,8 @@ function CyberlinksGraph({ data, size }: Props) {
         onLinkRightClick={handleLinkClick}
         onEngineStop={handleEngineStop}
       />
+
+      <HoverInfo node={hoverNode} />
     </div>
   );
 }
