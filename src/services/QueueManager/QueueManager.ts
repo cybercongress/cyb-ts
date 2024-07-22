@@ -41,7 +41,6 @@ import { QueueStrategy } from './QueueStrategy';
 
 import { enqueueParticleSave } from '../backend/channels/BackendQueueChannel/backendQueueSenders';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
-import { RuneEngine } from '../scripting/engine';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { CustomHeaders, XCybSourceValues } from './constants';
@@ -406,7 +405,6 @@ class QueueManager {
         callbacks: [callback],
         source, // initial method to fetch
         status: 'pending',
-        postProcessing: true, // by default rune-post-processing enabled
         ...options,
       };
 
