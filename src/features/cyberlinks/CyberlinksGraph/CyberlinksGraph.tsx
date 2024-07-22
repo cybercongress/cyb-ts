@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
+import * as THREE from 'three';
 import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
@@ -9,31 +10,34 @@ type Props = {
   size?: number;
 };
 
-function HoverInfo({ node }) {
-  if (!node) {
+function HoverInfo({ node, camera, size }) {
+  if (!node || !camera) {
     return null;
   }
 
-  console.log(node);
+  // Convert 3D coordinates to 2D screen coordinates
+  const { x, y, z } = node;
+  const vector = new THREE.Vector3(x, y, z);
+  // debugger;
+  vector.project(camera);
+
+  const widthHalf = window.innerWidth / 2;
+  const heightHalf = window.innerHeight / 2;
+
+  const posX = vector.x * widthHalf + widthHalf;
+  const posY = -(vector.y * heightHalf) + heightHalf;
 
   const isCid = node.id.startsWith('Qm');
 
-  if (!isCid) {
-    return null;
-  }
-
   return (
     <div
+      className={styles.hoverInfo}
       style={{
-        position: 'absolute',
-        top: '40%',
-        left: '50%',
-        backgroundColor: 'gray',
-        padding: '10px',
-        borderRadius: '5px',
+        top: posY,
+        left: posX,
       }}
     >
-      <CIDResolver cid={node.id} />
+      {isCid ? <CIDResolver cid={node.id} /> : node.id}
     </div>
   );
 }
@@ -184,8 +188,6 @@ function CyberlinksGraph({ data, size }: Props) {
     setRendering(false);
   }, []);
 
-  // console.log(data);
-
   return (
     <div
       style={{
@@ -209,7 +211,7 @@ function CyberlinksGraph({ data, size }: Props) {
         enableNodeDrag={false}
         enablePointerInteraction
         enableNavigationControls
-        nodeLabel="id"
+        // nodeLabel="id"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={8}
@@ -240,7 +242,11 @@ function CyberlinksGraph({ data, size }: Props) {
         onEngineStop={handleEngineStop}
       />
 
-      <HoverInfo node={hoverNode} />
+      <HoverInfo
+        node={hoverNode}
+        camera={fgRef.current?.camera()}
+        size={size || window.innerWidth}
+      />
     </div>
   );
 }

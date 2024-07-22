@@ -10,3 +10,23 @@
   z-index: 1;
   font-size: 22px;
 }
+
+.hoverInfo {
+  &::before {
+    filter: blur(10px);
+
+    // background-color: rgb(255 255 255 / 50%);
+    background-color: red;
+    height: 100%;
+    width: 100%;
+    content: ' ';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  position: absolute;
+  padding: 10px;
+  max-width: 480px;
+  border-radius: 5px;
+}
