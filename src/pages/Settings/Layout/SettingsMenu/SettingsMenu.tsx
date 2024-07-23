@@ -41,13 +41,13 @@ const links: Array<MenuItem[]> = [
       icon: '📡',
     },
   ],
-  [
-    {
-      text: 'Audio',
-      link: './audio',
-      icon: '🔊',
-    },
-  ],
+  // [
+  //   {
+  //     text: 'Audio',
+  //     link: './audio',
+  //     icon: '🔊',
+  //   },
+  // ],
 ];
 
 function SettingsMenu() {
