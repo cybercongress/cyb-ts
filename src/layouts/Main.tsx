@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-
-import { localStorageKeys } from 'src/constants/localStorageKeys';
+import { useEffect, useRef, useState } from 'react';
 import Header from 'src/containers/application/Header/Header';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 import TimeFooter from 'src/features/TimeFooter/TimeFooter';
 import { Networks } from 'src/types/networks';
 import { CHAIN_ID } from 'src/constants/config';
@@ -19,6 +16,7 @@ import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
+import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
@@ -31,18 +29,6 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
-
-  // for new user show menu, else no + animation
-  const [openMenu, setOpenMenu] = useState(
-    !localStorage.getItem(localStorageKeys.MENU_SHOW)
-  );
-
-  function toggleMenu(isOpen: boolean) {
-    const newState = isOpen;
-
-    setOpenMenu(newState);
-    localStorage.setItem(localStorageKeys.MENU_SHOW, newState.toString());
-  }
 
   useEffect(() => {
     dispatch(setFocus(true));
@@ -64,32 +50,12 @@ function MainLayout({ children }: { children: JSX.Element }) {
     ref.current.style.setProperty('--graph-size', `${graphSize}px`);
   }, [ref, graphSize]);
 
-  // for initial animation
-  useEffect(() => {
-    const isMenuOpenPreference = localStorage.getItem(
-      localStorageKeys.MENU_SHOW
-    );
-
-    const timeout = setTimeout(() => {
-      toggleMenu(isMenuOpenPreference === 'true');
-    }, 500);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, []);
-
   return (
     <div className={styles.wrapper} ref={ref}>
-      <Header
-        menuProps={{
-          toggleMenu: useMemo(() => () => toggleMenu(!openMenu), [openMenu]),
-          isOpen: openMenu,
-        }}
-      />
+      <Header />
 
       {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
-      {!isMobile && <HydrogenBalance address={addressBech32} />}
+      {!isMobile && <SideHydrogenBtn address={addressBech32} />}
 
       {children}
       <footer>

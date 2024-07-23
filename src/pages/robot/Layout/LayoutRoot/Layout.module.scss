@@ -1,9 +1,9 @@
 @import '../../../../layouts/variables.module';
 
-$robotHeaderHeight: 130px;
+$robot-max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
 @mixin max-height-screen() {
-  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight );
+  max-height: calc($robot-max-height - $robotHeaderHeight);
 }
 
 .wrapper {
@@ -20,14 +20,18 @@ $robotHeaderHeight: 130px;
   height: 70vh;
   @include max-height-screen();
 
+  &.NotOwner {
+    max-height: calc($robot-max-height - $robotHeaderHeightNotOwner);
+  }
+
   //Display
   > :first-child {
-    >div {
+    > div {
       height: 100%;
       @include max-height-screen();
     }
 
-    >div>div {
+    > div > div {
       // don't understand this scroll
       overflow-x: hidden;
     }

@@ -3,7 +3,7 @@
   grid-template-columns: 100px 1fr;
   gap: 25px;
   align-items: center;
-  height: 100px;
+  height: 90px;
   border: none;
   background: transparent;
   color: rgb(31, 203, 255);
@@ -13,8 +13,8 @@
   &:hover {
     .networkBtn {
       &::before {
-        width: 105px;
-        height: 105px;
+        width: 95px;
+        height: 95px;
       }
     }
 
@@ -40,8 +40,8 @@
 
   &::before {
     content: '';
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     background: #000000;
     box-shadow: 0px 0px 20px rgba(31, 203, 255, 0.4);
     position: absolute;
@@ -165,12 +165,11 @@
   gap: 25px;
   grid-template-columns: 100px 1fr;
   align-items: center;
-  height: 100px;
+  height: 90px;
 
   @media (width < 768px) {
     grid-template-columns: 100px;
   }
-
 }
 
 .buttonWrapper {

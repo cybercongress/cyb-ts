@@ -5,17 +5,23 @@
   align-content: stretch;
 
   height: 100%;
-  margin-right: -2px;
-  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight);
+  max-height: calc(
+    100vh - $reservedTopHeight - $actionBarHeight
+  );
+
+  &.NotOwner {
+    max-height: calc(
+      100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeightNotOwner
+    );
+  }
 
   // Display
-  >div>div {
+  > div > div {
     height: 100%;
-
   }
 
   > :first-child {
-    >div {
+    > div {
       // don't understand this scroll
       overflow-x: hidden;
     }
