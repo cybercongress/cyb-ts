@@ -10,7 +10,8 @@
     height: $size;
     width: $size;
     transform: translateX(calc(-50% + 0.3vw));
-    box-shadow: 0 0 20px 10px var(--primary-color);
+
+    // box-shadow: 0 0 20px 10px var(--primary-color);
     left: 50%;
     font-size: 0.1px;
 
