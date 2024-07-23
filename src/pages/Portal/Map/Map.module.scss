@@ -10,8 +10,7 @@
     height: $size;
     width: $size;
     transform: translateX(calc(-50% + 0.3vw));
-
-    // box-shadow: 0 0 20px 10px var(--primary-color);
+    box-shadow: 0 0 20px 10px var(--primary-color);
     left: 50%;
     font-size: 0.1px;
 
@@ -77,10 +76,13 @@
 
   .boot,
   .millivolt,
+  .cyberlink2,
   .milliampere,
   .hydrogen {
-    width: 20px;
-    height: 20px;
+    $size: 1.5vw;
+
+    width: $size;
+    height: $size;
   }
 
   .hydrogen {
@@ -98,6 +100,12 @@
   .boot {
     left: 6.8vw;
     top: 36vw;
+  }
+
+  .cyberlink2 {
+    top: 3vw;
+    right: 7.5vw;
+    left: unset;
   }
 }
 

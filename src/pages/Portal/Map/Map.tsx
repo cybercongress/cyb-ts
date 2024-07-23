@@ -85,6 +85,12 @@ const linksConfig = [
     to: routes.oracle.ask.getLink('milliampere'),
     className: styles.milliampere,
   },
+
+  {
+    name: 'cyberlink2',
+    to: routes.oracle.ask.getLink('cyberlink'),
+    className: styles.cyberlink2,
+  },
 ];
 
 function MapLink({ className, to, name }) {
