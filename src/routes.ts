@@ -42,6 +42,9 @@ export const routes = {
       sense: {
         path: '/robot/sense',
       },
+      energy: {
+        path: '/robot/energy',
+      },
     },
   },
   robotPassport: {
