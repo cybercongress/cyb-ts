@@ -10,7 +10,7 @@
 
 .menu {
   --diameter: 140px;
-  --i: 22deg; //elements angle
+  --i: 23deg; //elements angle
   --delta: 0deg; //second menu layer angle
   list-style-type: none;
   padding: 0;
@@ -51,4 +51,3 @@
 .menu li:nth-child(7) {
   --r: calc(1 * var(--i));
 }
-
