@@ -186,6 +186,7 @@ const itemsMenu = () => {
       subItems: [
         { name: 'Citizenship', to: '/citizenship' },
         { name: 'Gift', to: '/gift' },
+        { name: 'Map', to: routes.portal.routes.map.path },
         // { name: 'Release', to: '/release' },
       ],
     });

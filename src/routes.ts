@@ -50,6 +50,11 @@ export const routes = {
   },
   portal: {
     path: '/portal',
+    routes: {
+      map: {
+        path: '/portal/map',
+      },
+    },
   },
   search: {
     path: '/search',
