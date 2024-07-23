@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import itemsMenu from 'src/utils/appsMenu';
 import styles from './MobileMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
+
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -29,32 +29,29 @@ const MobileMenu = () => {
     return item.subItems?.some((subItem) => location.pathname === subItem.to);
   };
 
-  useEffect(() => {
-    const activeMenuItem = itemsMenu().find((item) => isActiveItem(item));
-    setActiveItem(activeMenuItem || null);
-  }, [location]);
+  const getActiveItem = () => {
+    return itemsMenu().find((item) => isActiveItem(item)) || null;
+  };
+
+  const activeItem = getActiveItem();
 
   useOnClickOutside(menuRef, () => setIsOpen(false));
 
   return (
     <div
       ref={menuRef}
-      className={cx(styles.mobileMenu, {
-        [styles.open]: isOpen,
-        [styles.closed]: !isOpen,
-      })}
+      className={cx(styles.mobileMenu, { [styles.open]: isOpen })}
     >
-      <div
-        className={cx(styles.menuContent, {
-          [styles.visible]: isOpen,
-          [styles.hidden]: !isOpen,
-        })}
-      >
+      <div className={cx(styles.menuContent, { [styles.visible]: isOpen })}>
         <button
           className={cx(styles.menuButton, { [styles.active]: isOpen })}
           onClick={toggleMenu}
         >
-          <img src={activeItem?.icon} className={styles.icon} alt="menu icon" />
+          <img
+            src={activeItem?.icon}
+            className={styles.icon}
+            alt={`${activeItem?.name} menu active icon`}
+          />
         </button>
         {itemsMenu().map((item, index) => {
           const isExternal = item.to.startsWith('http');
@@ -73,7 +70,7 @@ const MobileMenu = () => {
                 <img
                   src={item.icon}
                   className={styles.icon}
-                  alt="menu item icon"
+                  alt={`${item.name} menu icon`}
                 />
                 {isExternal && <span className={styles.external}></span>}
               </NavLink>

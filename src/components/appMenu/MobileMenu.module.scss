@@ -10,14 +10,7 @@
   justify-content: center;
   display: flex;
   justify-content: space-between;
-
-  &.closed {
-    pointer-events: none;
-
-    .menuButton {
-      pointer-events: auto;
-    }
-  }
+  pointer-events: none;
 
   &.open {
     pointer-events: auto;
@@ -40,6 +33,8 @@
   align-items: center;
   box-shadow: 0px 0px 13px #ffffff54;
 
+  pointer-events: auto;
+
   &.active {
     border: 1px solid #ffffff6b;
     box-shadow: 0px 0px 8px #ffffff4d inset, 0px 0px 13px #ffffff4d;
@@ -59,6 +54,11 @@
   grid-template-rows: repeat(2, 1fr);
   grid-auto-flow: column;
   grid-gap: 20px;
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
 }
 
 .menuItem {
@@ -75,14 +75,6 @@
     width: 30px;
     height: 30px;
   }
-}
-
-.visible {
-  visibility: visible;
-}
-
-.hidden {
-  visibility: hidden;
 }
 
 .external {
