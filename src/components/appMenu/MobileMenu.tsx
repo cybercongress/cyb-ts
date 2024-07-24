@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 import styles from './MobileMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import cx from 'classnames';
@@ -30,7 +30,7 @@ const MobileMenu = () => {
   };
 
   const getActiveItem = () => {
-    return itemsMenu().find((item) => isActiveItem(item)) || null;
+    return getMenuItems().find((item) => isActiveItem(item)) || null;
   };
 
   const activeItem = getActiveItem();
@@ -53,7 +53,7 @@ const MobileMenu = () => {
             alt={`${activeItem?.name} menu active icon`}
           />
         </button>
-        {itemsMenu().map((item, index) => {
+        {getMenuItems().map((item, index) => {
           const isExternal = item.to.startsWith('http');
           return (
             !isActiveItem(item) && (

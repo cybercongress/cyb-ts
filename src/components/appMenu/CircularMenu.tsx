@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 import styles from './CircularMenu.module.scss';
 import { MenuItem } from 'src/types/menu';
 import { useLocation } from 'react-router-dom';
@@ -17,7 +17,7 @@ declare module 'react' {
 function CircularMenu({ circleSize }) {
   const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const chunkSize = 7;
-  const linkChunks = _.chunk(itemsMenu(), chunkSize);
+  const linkChunks = _.chunk(getMenuItems(), chunkSize);
   const location = useLocation();
 
   const calculateDiameter = (index, circleSize) => {
@@ -44,7 +44,7 @@ function CircularMenu({ circleSize }) {
   };
 
   useEffect(() => {
-    const activeMenuItem = itemsMenu().find((item) => isActiveItem(item));
+    const activeMenuItem = getMenuItems().find((item) => isActiveItem(item));
     setActiveItem(activeMenuItem || null);
   }, [location]);
 

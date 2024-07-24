@@ -4,7 +4,7 @@ import { Nullable, Option } from 'src/types';
 import { Citizenship } from 'src/types/citizenship';
 import { MenuItem, MenuItems } from 'src/types/menu';
 import { Networks } from 'src/types/networks';
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 
 const reduceRobotSubItems = (
   passport: Nullable<Citizenship>,
@@ -19,7 +19,7 @@ const reduceRobotSubItems = (
     linkApp = routes.neuron.getLink(address);
   }
 
-  return itemsMenu().reduce((acc: MenuItems, item: MenuItem) => {
+  return getMenuItems().reduce((acc: MenuItems, item: MenuItem) => {
     if (item.to === routes.robot.path) {
       item.subItems = !linkApp
         ? []

@@ -1,4 +1,4 @@
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 import DEFAULT_IMG from 'images/large-orange-circle.png';
 import { Link } from 'react-router-dom';
 import findApp from 'src/utils/findApp';
@@ -7,7 +7,7 @@ import styles from './RouteItem.module.scss';
 
 function RouteItem({ value }: { value: RouteItemT }) {
   const { url } = value;
-  const app = findApp(itemsMenu(), url);
+  const app = findApp(getMenuItems(), url);
 
   return (
     <Link to={url} className={styles.wrapper}>
