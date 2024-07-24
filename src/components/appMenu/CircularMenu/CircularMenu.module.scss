@@ -1,11 +1,12 @@
 .circle {
   position: fixed;
   bottom: 0px;
-  z-index: -1;
   width: 220px;
   height: 220px;
   display: inline-flex;
   border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
 }
 
 .menu {
@@ -20,34 +21,35 @@
 
 .menu li {
   grid-area: 1/1;
-  transform: rotate(calc(var(--r) + var(--delta))) translateX(var(--diameter))
-    rotate(calc(-1 * (var(--r) + var(--delta))));
+  transform: rotate(calc(var(--rotation-angle) + var(--delta)))
+    translateX(var(--diameter))
+    rotate(calc(-1 * (var(--rotation-angle) + var(--delta))));
 }
 
 .menu li:nth-child(1) {
-  --r: calc(-5 * var(--i));
+  --rotation-angle: calc(-5 * var(--i));
 }
 
 .menu li:nth-child(2) {
-  --r: calc(-4 * var(--i));
+  --rotation-angle: calc(-4 * var(--i));
 }
 
 .menu li:nth-child(3) {
-  --r: calc(-3 * var(--i));
+  --rotation-angle: calc(-3 * var(--i));
 }
 
 .menu li:nth-child(4) {
-  --r: calc(-2 * var(--i));
+  --rotation-angle: calc(-2 * var(--i));
 }
 
 .menu li:nth-child(5) {
-  --r: calc(-1 * var(--i));
+  --rotation-angle: calc(-1 * var(--i));
 }
 
 .menu li:nth-child(6) {
-  --r: calc(0 * var(--i));
+  --rotation-angle: calc(0 * var(--i));
 }
 
 .menu li:nth-child(7) {
-  --r: calc(1 * var(--i));
+  --rotation-angle: calc(1 * var(--i));
 }

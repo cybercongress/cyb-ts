@@ -1,6 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { MenuItem } from 'src/types/menu';
-import { Pane } from '@cybercongress/gravity';
 import cx from 'classnames';
 import { useMemo } from 'react';
 import styles from './SubMenu.module.scss';

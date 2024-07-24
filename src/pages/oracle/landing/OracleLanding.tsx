@@ -15,7 +15,7 @@ import KeywordButton from './components/KeywordButton/KeywordButton';
 import Stats from './Stats/Stats';
 // import graphDataPrepared from './graphDataPrepared.json';
 import { TitleType } from './type';
-import { useAdviser } from 'src/features/adviser/context';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const mapTitleTypeToTitle = {
   [TitleType.search]: 'search',
@@ -89,11 +89,9 @@ function OracleLanding() {
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser(<>ask your question</>);
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'ask your question',
+  });
   // useEffect(() => {
   //   dispatch(setFocus(true));
 

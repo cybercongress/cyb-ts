@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { CHAIN_ID } from 'src/constants/config';
 import { PATTERN_CYBER } from 'src/constants/patterns';
 import { routes } from 'src/routes';
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 import findApp from 'src/utils/findApp';
 import { Helmet } from 'react-helmet';
 import styles from './AppName.module.scss';
@@ -20,7 +20,7 @@ function AppName() {
         : findItem;
   }
 
-  const value = findApp(itemsMenu(), pathname);
+  const value = findApp(getMenuItems(), pathname);
 
   const content = value[0]?.name || CHAIN_ID;
 

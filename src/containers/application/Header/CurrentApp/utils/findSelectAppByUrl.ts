@@ -12,13 +12,13 @@ const findSelectAppByUrl = (
   let pathname = url;
   const isRobot = url.includes('@') || url.includes('neuron/');
 
-  const itemsMenuObj = reduceRobotSubItems(passport, address);
+  const getMenuItemsObj = reduceRobotSubItems(passport, address);
 
   if (isRobot) {
     pathname = routes.robot.path;
   }
 
-  const value = findApp(itemsMenuObj, pathname);
+  const value = findApp(getMenuItemsObj, pathname);
 
   return value;
 };

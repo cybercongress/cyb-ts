@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 import styles from './CircularMenu.module.scss';
-import { MenuItem } from 'src/types/menu';
-import { useLocation } from 'react-router-dom';
 import _ from 'lodash';
 import CircularMenuItem from './CircularMenuItem';
+import { useActiveMenuItem } from 'src/hooks/useActiveMenuItem';
 
 declare module 'react' {
   interface CSSProperties {
@@ -15,41 +13,16 @@ declare module 'react' {
 }
 
 function CircularMenu({ circleSize }) {
-  const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const chunkSize = 7;
-  const linkChunks = _.chunk(itemsMenu(), chunkSize);
-  const location = useLocation();
+  const linkChunks = _.chunk(getMenuItems(), chunkSize);
+
+  const { isActiveItem, activeItem } = useActiveMenuItem(getMenuItems());
 
   const calculateDiameter = (index, circleSize) => {
     const menuCircleDiameter = circleSize / 2 + 45 * (index + 1) - 10;
     const nextLevelMenuAngle = index === 1 ? -28 : 0; // decreases the angle of second menu layer
-    const menuItemsAngle = index === 1 ? 16 : 23; // angle in wich menu items spreads around brain
+    const menuItemsAngle = index === 1 ? 16 : 23; // angle in which menu items spread around the brain
     return { menuCircleDiameter, nextLevelMenuAngle, menuItemsAngle };
-  };
-
-  const isActiveItem = (item: MenuItem) => {
-    if (location.pathname === item.to) {
-      return true;
-    }
-    if (
-      item.to === '/robot' &&
-      (location.pathname.includes('@') || location.pathname.includes('neuron/'))
-    ) {
-      return true;
-    }
-    if (item.to === '/senate' && location.pathname.startsWith('/senate/')) {
-      return true;
-    }
-    return item.subItems?.some((subItem) => location.pathname === subItem.to);
-  };
-
-  useEffect(() => {
-    const activeMenuItem = itemsMenu().find((item) => isActiveItem(item));
-    setActiveItem(activeMenuItem || null);
-  }, [location]);
-
-  const handleItemClick = (item: MenuItem) => {
-    setActiveItem(item);
   };
 
   return (
@@ -77,7 +50,7 @@ function CircularMenu({ circleSize }) {
                   <li key={index}>
                     <CircularMenuItem
                       item={item}
-                      onClick={() => handleItemClick(item)}
+                      onClick={() => isActiveItem(item)}
                       selected={isSelected}
                     />
                   </li>
