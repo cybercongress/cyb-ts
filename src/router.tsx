@@ -58,6 +58,7 @@ import Brain from './pages/Brain/Brain';
 // import Cybernet from './features/cybernet/ui/Cybernet';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
+import Map from './pages/Portal/Map/Map';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -199,6 +200,8 @@ function AppRouter() {
           <Route path="/gift" element={<PortalGift />} />
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
+          <Route path="/portal/map" element={<Map />} />
+
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />

@@ -16,7 +16,7 @@ export enum AdviserColors {
 }
 
 export type Props = {
-  children: React.ReactNode | string;
+  children: React.ReactNode | string | Element | null;
   color?: AdviserColors | keyof typeof AdviserColors;
   disabled?: boolean;
   className?: string;
