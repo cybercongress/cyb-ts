@@ -1,7 +1,7 @@
 @mixin before-Avatar {
   content: '';
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   background: #000000;
   position: absolute;
   border-radius: 50%;
@@ -33,7 +33,7 @@
   grid-template-columns: 1fr 105px;
   gap: 25px;
   align-items: center;
-  height: 105px;
+  height: 95px;
 
   @media (max-width: 540px) {
     grid-template-columns: 1fr 60px;
@@ -60,8 +60,8 @@
 
     .containerAvatarConnectTrue {
       &::before {
-        width: 105px;
-        height: 105px;
+        width: 95px;
+        height: 95px;
       }
     }
   }
@@ -103,8 +103,8 @@
 }
 
 .containerAvatarConnect {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   // padding: 5px;
   transition: all 0.2s;
   position: relative;

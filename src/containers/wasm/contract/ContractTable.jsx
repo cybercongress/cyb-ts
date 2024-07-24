@@ -62,6 +62,7 @@ function ContractTable({ contracts, count, setOffset }) {
           style={{
             borderSpacing: '5px 16px',
             borderCollapse: 'separate',
+            width: '100%',
           }}
           className="table"
         >

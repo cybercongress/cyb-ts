@@ -5,7 +5,6 @@
     z-index: 2;
     width: 100%;
     bottom: 0px;
-    height: 40px;
     background-color: #000;
 
     // a {
@@ -22,6 +21,8 @@
     display: flex;
     position: fixed;
     right: 1vw;
+    height: 40px;
+    bottom: 0px;
 
     @media (max-width: 540px) {
       right: 2vw;

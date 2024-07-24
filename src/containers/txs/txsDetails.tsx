@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
+import { MainContainer } from 'src/components';
+import { useAdviser } from 'src/features/adviser/context';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import { MainContainer } from '../portal/components';
 import { getTxs } from './api/data';
 import { ValueInformation } from './type';
 import { mapResponseDataGetTxs } from './api/mapping';
-import { useAdviser } from 'src/features/adviser/context';
 
 function TxsDetails() {
   const { isMobile: mobile } = useDevice();
@@ -35,7 +35,7 @@ function TxsDetails() {
 
   return (
     <>
-      <MainContainer width="82%">
+      <MainContainer>
         <InformationTxs data={information} />
         {msgs && <Msgs data={msgs} />}
       </MainContainer>

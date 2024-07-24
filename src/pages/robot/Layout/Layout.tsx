@@ -7,7 +7,8 @@ import useMenuCounts from './useMenuCounts';
 import RobotHeader from './RobotHeader/RobotHeader';
 
 function Layout() {
-  const { address, isLoading, nickname } = useRobotContext();
+  const { address, isLoading, nickname, isOwner } = useRobotContext();
+
   const counts = useMenuCounts(address);
 
   const title = `robot ${nickname || address || ''}`;
@@ -18,7 +19,7 @@ function Layout() {
         <Loader2 />
       ) : (
         <>
-          <RobotHeader menuCounts={counts} />
+          {!isOwner && <RobotHeader menuCounts={counts} />}
           <Outlet />
 
           <WrappedActionBar />
