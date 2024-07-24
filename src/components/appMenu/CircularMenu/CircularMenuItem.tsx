@@ -14,7 +14,7 @@ function CircularMenuItem({ item, onClick, selected }: Props) {
   const isExternal = item.to.startsWith('http');
 
   return (
-    <div className={cx(styles.menu_item, { [styles.active]: selected })}>
+    <div className={cx(styles.menuItem, { [styles.active]: selected })}>
       <AdviserHoverWrapper adviserContent={item.name}>
         <NavLink
           to={item.to}

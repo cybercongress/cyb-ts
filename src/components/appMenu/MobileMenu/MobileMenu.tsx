@@ -1,39 +1,18 @@
 import { useState, useRef } from 'react';
-import { useLocation, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import getMenuItems from 'src/utils/appsMenu';
 import styles from './MobileMenu.module.scss';
-import { MenuItem } from 'src/types/menu';
 import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
+import { useActiveMenuItem } from 'src/hooks/useActiveMenuItem';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const isActiveItem = (item: MenuItem) => {
-    if (location.pathname === item.to) {
-      return true;
-    }
-    if (
-      item.to === '/robot' &&
-      (location.pathname.includes('@') || location.pathname.includes('neuron/'))
-    ) {
-      return true;
-    }
-    if (item.to === '/senate' && location.pathname.startsWith('/senate/')) {
-      return true;
-    }
-    return item.subItems?.some((subItem) => location.pathname === subItem.to);
-  };
-
-  const getActiveItem = () => {
-    return getMenuItems().find((item) => isActiveItem(item)) || null;
-  };
-
-  const activeItem = getActiveItem();
+  const { isActiveItem, activeItem } = useActiveMenuItem(getMenuItems());
 
   useOnClickOutside(menuRef, () => setIsOpen(false));
 
