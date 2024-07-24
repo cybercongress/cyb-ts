@@ -26,7 +26,6 @@ function CircularMenuItem({ item, onClick, selected }: Props) {
           {isExternal && <span className={styles.external}></span>}
         </NavLink>
       </AdviserHoverWrapper>
-
     </div>
   );
 }
