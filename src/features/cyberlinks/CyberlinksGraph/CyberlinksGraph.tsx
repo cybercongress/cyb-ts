@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import CIDResolver from 'src/components/CIDResolver/CIDResolver';
-import * as THREE from 'three';
+import GraphHoverInfo from './GraphHoverInfo/GraphHoverInfo';
+
 import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
@@ -9,38 +9,6 @@ type Props = {
   // currentAddress?: string;
   size?: number;
 };
-
-function HoverInfo({ node, camera, size }) {
-  if (!node || !camera) {
-    return null;
-  }
-
-  // Convert 3D coordinates to 2D screen coordinates
-  const { x, y, z } = node;
-  const vector = new THREE.Vector3(x, y, z);
-  // debugger;
-  vector.project(camera);
-
-  const widthHalf = window.innerWidth / 2;
-  const heightHalf = window.innerHeight / 2;
-
-  const posX = vector.x * widthHalf + widthHalf;
-  const posY = -(vector.y * heightHalf) + heightHalf;
-
-  const isCid = node.id.startsWith('Qm');
-
-  return (
-    <div
-      className={styles.hoverInfo}
-      style={{
-        top: posY,
-        left: posX,
-      }}
-    >
-      {isCid ? <CIDResolver cid={node.id} /> : node.id}
-    </div>
-  );
-}
 
 // before zoom in
 const INITIAL_CAMERA_DISTANCE = 2500;
@@ -242,7 +210,7 @@ function CyberlinksGraph({ data, size }: Props) {
         onEngineStop={handleEngineStop}
       />
 
-      <HoverInfo
+      <GraphHoverInfo
         node={hoverNode}
         camera={fgRef.current?.camera()}
         size={size || window.innerWidth}

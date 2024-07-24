@@ -3,6 +3,8 @@ import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
 import Sigma from 'src/containers/sigma';
 import RoutedEnergy from 'src/containers/energy';
 import TableDiscipline from 'src/containers/gol/table';
+import { useAdviser } from 'src/features/adviser/context';
+import { useEffect } from 'react';
 import Layout from './Layout/Layout';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
@@ -15,8 +17,6 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
-import { useAdviser } from 'src/features/adviser/context';
-import { useEffect } from 'react';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
@@ -56,7 +56,7 @@ function RobotRoutes() {
           <Route key={path} path={path} element={<SensePage />} />
         ))}
 
-        <Route path="brain" element={<Brain />} />
+        <Route path="brain/*" element={<Brain />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>
