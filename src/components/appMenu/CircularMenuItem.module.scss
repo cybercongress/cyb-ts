@@ -10,6 +10,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
+  pointer-events: auto;
 }
 
 .menu_item.active {
