@@ -60,22 +60,18 @@ export function TransactionSubmitted() {
 export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
   return (
     <ActionBar button={{ text: ' Fuck Google', onClick: onClickBtnClose }}>
-      <Pane display="inline">Transaction</Pane>{' '}
-      {cosmos ? (
-        <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
-          {trimString(txHash, 6, 6)}
-        </LinkWindow>
-      ) : (
-        <Link to={`/network/bostrom/tx/${txHash}`}>
-          {trimString(txHash, 6, 6)}
-        </Link>
-      )}{' '}
-      {txHeight && (
-        <Pane display="inline">
-          was included in the block <br /> at height{' '}
-          {formatNumber(parseFloat(txHeight))}
-        </Pane>
-      )}
+      <span>
+        Transaction
+        {cosmos ? (
+          <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
+            {trimString(txHash, 6, 6)}
+          </LinkWindow>
+        ) : (
+          <Link to={`/network/bostrom/tx/${txHash}`}>
+            {trimString(txHash, 6, 6)}
+          </Link>
+        )}
+      </span>
     </ActionBar>
   );
 }
