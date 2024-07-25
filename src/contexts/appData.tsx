@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import useGetMarketData from 'src/hooks/useGetMarketData';
+import useConvertMarketData from 'src/hooks/warp/useConvertMarketData';
 import { ObjKeyValue } from 'src/types/data';
 import { useWebsockets } from 'src/websockets/context';
 
@@ -28,8 +29,13 @@ export function useAppData() {
 
 function DataProvider({ children }: { children: React.ReactNode }) {
   const { marketData, dataTotal } = useGetMarketData();
+  const convertMarketData = useConvertMarketData(marketData);
   const { cyber } = useWebsockets();
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
+
+  const resultMarketData = Object.keys(convertMarketData).length
+    ? convertMarketData
+    : marketData;
 
   useEffect(() => {
     if (!cyber?.connected) {
@@ -68,11 +74,11 @@ function DataProvider({ children }: { children: React.ReactNode }) {
 
   const valueMemo = useMemo(
     () => ({
-      marketData,
+      marketData: resultMarketData,
       dataTotalSupply: dataTotal,
       block: blockHeight,
     }),
-    [marketData, dataTotal, blockHeight]
+    [resultMarketData, dataTotal, blockHeight]
   );
 
   return (
