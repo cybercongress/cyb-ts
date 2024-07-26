@@ -1,15 +1,15 @@
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 
-import Message from './Message';
-import useParticleDetails from '../../../../../particle/useParticleDetails';
 import ContentIpfs from 'src/components/contentIpfs/contentIpfs';
 import { Account, Dots } from 'src/components';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
-import { formatSenseItemDataToUI } from '../../../utils/format';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { useEffect, useState } from 'react';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { formatSenseItemDataToUI } from '../../../utils/format';
+import useParticleDetails from '../../../../../particle/useParticleDetails';
+import Message from './Message';
 import styles from './Message.container.module.scss';
 
 type Props = {
@@ -61,11 +61,14 @@ function MessageContainer({ senseItem, currentChatId }: Props) {
       );
     } else if (data) {
       if (isFollow) {
-        const address = data.content;
+        // some CIDs are not addresses
+        // /sense/@master
+        const address = data.content?.includes('bostrom') && data.content;
 
         content = (
           <div className={styles.follow}>
-            <span>💚</span> <Account address={address} avatar sizeAvatar={20} />
+            <span>💚</span>{' '}
+            {address && <Account address={address} avatar sizeAvatar={20} />}
           </div>
         );
       } else {
