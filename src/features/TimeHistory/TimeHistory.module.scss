@@ -7,10 +7,9 @@
 }
 
 @mixin rotate() {
-  transform: rotate(var(--r)) translateX(var(--diameter)) rotate(calc(-1 * var(--r)));
+  transform: rotate(var(--r)) translateX(var(--diameter))
+    rotate(calc(-1 * var(--r)));
 }
-
-$size: 220px;
 
 .wrapper {
   text-align: end;
@@ -18,34 +17,35 @@ $size: 220px;
   justify-content: flex-end;
   align-items: flex-end;
   gap: 15px;
-  width: $size;
-  height: $size;
-  padding: 5px 5px 20px 0px;
+  width: 200px;
+  height: 170px;
+  padding: 5px 0px 20px 0px;
 
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   // overflow: hidden scroll;
   right: 0vw;
 
   background-color: rgba(0, 0, 0, 0.5490196078);
   backdrop-filter: blur(7px);
-
 }
 
-.rotate>div {
-  padding-right: 5px;
-}
+// .rotate>div {
+//   padding-right: 5px;
+// }
 
-.rotate>div:nth-child(1) {
-  // --r: calc(2 * var(--i));
-  padding-right: unset;
+.rotate > div:nth-child(1) {
   color: var(--grayscale-disabled);
+
+  & > span {
+    margin-right: -5px;
+  }
 }
 
-.rotate>div:nth-child(2) {
+.rotate > div:nth-child(2) {
   color: var(--grayscale-dark);
 }
 
-.rotate>div:nth-child(3) {
+.rotate > div:nth-child(3) {
   color: var(--grayscale-secondary);
 }

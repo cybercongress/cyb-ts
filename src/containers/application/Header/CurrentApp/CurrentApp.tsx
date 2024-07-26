@@ -5,7 +5,7 @@ import { CHAIN_ID } from 'src/constants/config';
 import { useAppSelector } from 'src/redux/hooks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
-import SubMenu from 'src/components/appMenu/SubMenu';
+import SubMenu from 'src/components/appMenu/SubMenu/SubMenu';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './CurrentApp.module.scss';
 import { selectNetworkImg } from '../../../../utils/utils';

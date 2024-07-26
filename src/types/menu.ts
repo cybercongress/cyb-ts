@@ -1,4 +1,4 @@
-import itemsMenu from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu';
 
-export type MenuItems = ReturnType<typeof itemsMenu>;
+export type MenuItems = ReturnType<typeof getMenuItems>;
 export type MenuItem = MenuItems[0];

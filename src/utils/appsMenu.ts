@@ -14,7 +14,7 @@ import { Networks } from 'src/types/networks';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
 
-const itemsMenu = () => {
+const getMenuItems = () => {
   const listItemMenu = [
     {
       name: 'My robot',
@@ -186,6 +186,7 @@ const itemsMenu = () => {
       subItems: [
         { name: 'Citizenship', to: '/citizenship' },
         { name: 'Gift', to: '/gift' },
+        { name: 'Map', to: routes.portal.routes.map.path },
         // { name: 'Release', to: '/release' },
       ],
     });
@@ -193,4 +194,4 @@ const itemsMenu = () => {
   return listItemMenu.filter((item) => item);
 };
 
-export default itemsMenu;
+export default getMenuItems;

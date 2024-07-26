@@ -68,7 +68,7 @@ function SoulCompanion({
     <div className={styles.soulCompanion}>
       {metaItems.map((row, index) => (
         <ul className={styles.itemLinks} key={`soul_comp_row_${index}`}>
-          {row.map((item, index) => (
+          {(Array.isArray(row) ? row : [row]).map((item, index) => (
             <li key={`soul_comp_col_${index}`}>
               {item.type === 'text' && (
                 <p className={styles.itemText}>{item.text}</p>

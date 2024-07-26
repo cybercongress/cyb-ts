@@ -3,8 +3,7 @@ import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
 import Sigma from 'src/containers/sigma';
 import RoutedEnergy from 'src/containers/energy';
 import TableDiscipline from 'src/containers/gol/table';
-import { useAdviser } from 'src/features/adviser/context';
-import { useEffect } from 'react';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import Layout from './Layout/Layout';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
@@ -23,11 +22,10 @@ function RobotRoutes() {
 
   const newUser = !isLoading && !address;
 
-  const { setAdviser } = useAdviser();
+  useAdviserTexts({
+    defaultText: 'my robot',
+  });
 
-  useEffect(() => {
-    setAdviser(<>my robot</>);
-  }, [setAdviser]);
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

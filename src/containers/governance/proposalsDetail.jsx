@@ -14,6 +14,7 @@ import {
   ContainerGradientText,
   IconStatus,
   Item,
+  MainContainer,
 } from '../../components';
 
 import {
@@ -28,7 +29,6 @@ import ActionBarDetail from './actionBarDatail';
 import { formatNumber } from '../../utils/utils';
 
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
-import { MainContainer } from '../portal/components';
 import ProposalsRoutes from './proposalsRoutes';
 
 import styles from './proposalsDetail.module.scss';

@@ -1,6 +1,10 @@
 @import '../../../../layouts/variables.module';
 
-$robotHeaderHeight: 130px;
+$robot-max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
+
+@mixin max-height-screen() {
+  max-height: calc($robot-max-height - $robotHeaderHeight);
+}
 
 .wrapper {
   display: flex;
@@ -14,14 +18,17 @@ $robotHeaderHeight: 130px;
   justify-content: center;
   margin-right: -2px;
   height: 70vh;
-  max-height: calc(
-    100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeight
-  );
+  @include max-height-screen();
+
+  &.NotOwner {
+    max-height: calc($robot-max-height - $robotHeaderHeightNotOwner);
+  }
 
   //Display
   > :first-child {
     > div {
       height: 100%;
+      @include max-height-screen();
     }
 
     > div > div {

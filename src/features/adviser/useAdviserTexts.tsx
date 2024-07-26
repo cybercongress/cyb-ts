@@ -5,6 +5,7 @@ import { useSetAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { Dots } from 'src/components';
 import useId from 'src/hooks/useId';
+import { Props as AdviserProps } from 'src/features/adviser/Adviser/Adviser';
 
 type Props =
   | {
@@ -35,8 +36,7 @@ function useAdviserTexts(
   const key = useId();
 
   const setAdviserFunc = useCallback(
-    // use adviser props
-    (content: string | Element, color?: string) => {
+    (content: AdviserProps['children'], color?: AdviserProps['color']) => {
       setAdviser(key, content, color);
     },
     [setAdviser, key]
