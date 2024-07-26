@@ -1,19 +1,10 @@
-.hoverInfo {
-  z-index: 0;
+@import '../../../../style/mixins';
 
-  &::before {
-    filter: blur(10px);
-    background-color: rgb(255 255 255 / 15%);
-    height: 100%;
-    width: 100%;
-    content: ' ';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
+.hoverInfo {
+  @include glassBackground;
 
   position: absolute;
-  padding: 10px;
+  z-index: 0;
   max-width: 480px;
   border-radius: 5px;
 }

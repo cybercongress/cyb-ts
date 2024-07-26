@@ -49,12 +49,7 @@ function HoverInfo({ node, camera, size }: Props) {
         left: posX,
       }}
     >
-      {isCid ? (
-        // <CIDResolver cid={node.id} />
-        <ContentItem cid={node.id} />
-      ) : (
-        <Display>{node.id}</Display>
-      )}
+      {isCid ? <ContentItem cid={node.id} /> : <Display>{node.id}</Display>}
     </div>
   );
 }
