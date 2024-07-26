@@ -1,11 +1,10 @@
 // TODO: refactor needed
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { $TsFixMe } from 'src/types/tsfix';
-import type { IpfsContentType } from 'src/services/ipfs/types';
-import useParticle from 'src/hooks/useParticle';
-
 import { LinksType } from 'src/containers/Search/types';
+import useParticle from 'src/hooks/useParticle';
+import type { IpfsContentType } from 'src/services/ipfs/types';
+import { $TsFixMe } from 'src/types/tsfix';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -35,7 +34,7 @@ function ContentItem({
 
   useEffect(() => {
     details?.type && setType && setType(details?.type);
-  }, [details]); //TODO: REFACT - setType rise infinite loop
+  }, [details]); // TODO: REFACT - setType rise infinite loop
 
   if (hidden) {
     return <div />;

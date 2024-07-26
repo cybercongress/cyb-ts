@@ -3,6 +3,7 @@ import isSvg from 'is-svg';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { Option } from 'src/types';
 
+import { shortenString } from 'src/utils/string';
 import {
   IPFSContentDetails,
   IPFSContent,
@@ -10,7 +11,6 @@ import {
   IpfsGatewayContentType,
 } from '../types';
 import { getResponseResult, onProgressCallback } from './stream';
-import { shortenString } from 'src/utils/string';
 
 function createObjectURL(rawData: Uint8Array, type: string) {
   const blob = new Blob([rawData], { type });
@@ -34,6 +34,10 @@ export const detectGatewayContentType = (
 
     if (mime.includes('audio')) {
       return 'audio';
+    }
+
+    if (mime.includes('epub')) {
+      return 'epub';
     }
   }
   return undefined;
