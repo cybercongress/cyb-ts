@@ -152,6 +152,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
             console.log('[Backend] IPFS downloaded successfully');
           }
 
+          console.log('[Backend] check if IPFS is initialized');
+          const ipfsInitialized = await invoke('is_ipfs_initialized');
+          if (!ipfsInitialized) {
+            await invoke('init_ipfs');
+            console.log('[Backend] IPFS is initialized successfully');
+          }
+
           console.log('[Backend] start IPFS...');
           await invoke('start_ipfs');
           console.log('[Backend] IPFS is successfully started');

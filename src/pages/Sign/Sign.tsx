@@ -7,7 +7,7 @@ import { resetSignerState, updateMemo } from 'src/redux/features/signer';
 export default function Sign() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { resolve, reject } = useAppSelector((state) => state.signer);
+  const { resolve, reject, fee } = useAppSelector((state) => state.signer);
   const memo = useAppSelector((state) => state.signer.memo);
 
   const onMemoChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
@@ -45,7 +45,7 @@ export default function Sign() {
             <Input value={memo} onChange={onMemoChange} />
           </div>
           <div style={{ textAlign: 'center', marginTop: '15px' }}>
-            TxFee 0 Boot
+            TxFee {typeof fee === 'number' ? fee : fee?.amount?.[0] ?? 0} Boot
           </div>
         </div>
       </MainContainer>

@@ -6,6 +6,7 @@ import {
 } from '@cybercongress/cyber-js';
 import {
   resetSignerState,
+  setFee,
   shareSignerPromise,
 } from 'src/redux/features/signer';
 import store from 'src/redux/store';
@@ -18,12 +19,12 @@ export class CybSignerClient extends SigningCyberClient {
   ) {
     return new Promise((resolve, reject) => {
       store.dispatch(shareSignerPromise({ resolve, reject }));
-      debugger;
+      store.dispatch(setFee(args[2]));
+
       getNavigate()?.('/sign');
     }).then(() => {
       const [signerAddress, messages, fee] = args;
       const { memo } = store.getState().signer;
-
       return super
         .signAndBroadcast(signerAddress, messages, fee, memo ?? '')
         .finally(() => {

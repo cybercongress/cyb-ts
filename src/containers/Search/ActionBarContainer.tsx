@@ -20,6 +20,7 @@ import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
 import {
   clearActionBarState,
+  LSAddress,
   setActionBarStage,
   setContentHash,
   setErrorMessage,
@@ -141,6 +142,8 @@ const ActionBarContainer: FC<Props> = ({
       : (await ipfsApi.addContent(content)) ?? null;
 
     dispatch(setToCid(newToCid));
+
+    return newToCid;
   }, [file, contentHash, ipfsApi]);
 
   const calculationIpfsFrom = useCallback(async () => {
@@ -149,9 +152,11 @@ const ActionBarContainer: FC<Props> = ({
       : keywordHash;
 
     dispatch(setFromCid(newFromCid));
+
+    return newFromCid;
   }, [file, keywordHash, ipfsApi]);
 
-  const generateTx = async () => {
+  const generateTx = async (to: any, from: any) => {
     try {
       dispatch(setActionBarStage(ActionBarStates.STAGE_KEPLR_APPROVE));
 
@@ -164,13 +169,13 @@ const ActionBarContainer: FC<Props> = ({
       if (
         addressLocalStor === null ||
         addressLocalStor?.address !== address ||
-        !fromCid ||
-        !toCid
+        !from ||
+        !to
       ) {
         throw new TxError(getGenerateTxErrorMessage(address));
       }
 
-      const txHash = await sendCyberlink(address, fromCid, toCid, {
+      const txHash = await sendCyberlink(address, from, to, {
         signingClient,
         senseApi,
       });
@@ -194,14 +199,13 @@ const ActionBarContainer: FC<Props> = ({
     }
   };
 
-  const onClickInitKeplr = () => {
-    calculationIpfsFrom();
-    calculationIpfsTo();
+  const onClickInitKeplr = async () => {
+    const newFromCID = await calculationIpfsFrom();
+    const newToCID = await calculationIpfsTo();
 
-    dispatch(setActionBarStage(ActionBarStates.STAGE_IPFS_HASH));
-    debugger;
-    if (toCid !== null && fromCid !== null) {
-      generateTx();
+    if (newToCID !== null && newFromCID !== null) {
+      dispatch(setActionBarStage(ActionBarStates.STAGE_IPFS_HASH));
+      generateTx(newToCID, newFromCID);
     }
   };
 
@@ -276,13 +280,19 @@ const ActionBarContainer: FC<Props> = ({
       dispatch(setContentHash(rankLink ?? ''));
     }
 
-    if (address?.keys === 'keplr') {
+    const addr = (address ??
+      (await signer?.getAccounts())?.[0].address) as unknown as LSAddress;
+
+    if (addr?.keys === 'keplr') {
       onClickInitKeplr();
     }
   };
 
-  const onClickInit = () => {
-    if (address?.keys === 'keplr') {
+  const onClickInit = async () => {
+    const addr = (address ??
+      (await signer?.getAccounts())?.[0].address) as unknown as LSAddress;
+
+    if (addr?.keys === 'keplr') {
       onClickInitKeplr();
     }
   };

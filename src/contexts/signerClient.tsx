@@ -151,6 +151,8 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
           window.signer = signer;
           window.signingClient = clientJs;
 
+          console.log('Signer is set');
+
           setSigner(signer);
           setSigningClient(clientJs);
           setSignerReady(true);

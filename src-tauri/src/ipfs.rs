@@ -1,3 +1,4 @@
+use serde::Serialize;
 use std::fs::{self, File};
 use std::io::copy;
 use std::process::Command;
@@ -57,16 +58,36 @@ pub async fn download_and_extract_ipfs() -> Result<(), String> {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub enum IpfsError {
+    AlreadyRunning,
+    HomeDirNotFound,
+    // CommandFailed(String),
+    ConfigError(String),
+    Other(String),
+}
+
 #[tauri::command]
-pub fn start_ipfs() -> Result<(), String> {
-    let home_dir = dirs::home_dir().ok_or("Cannot find home directory")?;
+pub fn start_ipfs() -> Result<(), IpfsError> {
+    let home_dir = dirs::home_dir().ok_or(IpfsError::HomeDirNotFound)?;
     let cyb_dir = home_dir.join(".cyb");
     let ipfs_binary = cyb_dir.join("kubo/ipfs"); // Adjust based on the extracted path
 
+    // Check if IPFS is already running
+    let is_running = Command::new("pgrep")
+        .arg("ipfs")
+        .output()
+        .map_err(|e| IpfsError::Other(e.to_string()))?;
+
+    if is_running.status.success() {
+        return Err(IpfsError::AlreadyRunning);
+    }
+
+    // Start the IPFS daemon
     Command::new(&ipfs_binary)
         .arg("daemon")
         .spawn()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| IpfsError::Other(e.to_string()))?;
 
     // Configure IPFS to allow all origins
     let config_output1 = Command::new(&ipfs_binary)
@@ -75,10 +96,12 @@ pub fn start_ipfs() -> Result<(), String> {
         .arg("API.HTTPHeaders.Access-Control-Allow-Origin")
         .arg(r#"["*"]"#)
         .output()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| IpfsError::Other(e.to_string()))?;
 
     if !config_output1.status.success() {
-        return Err(String::from_utf8_lossy(&config_output1.stderr).into());
+        return Err(IpfsError::ConfigError(
+            String::from_utf8_lossy(&config_output1.stderr).into(),
+        ));
     }
 
     // Configure IPFS to allow specific HTTP methods
@@ -88,12 +111,14 @@ pub fn start_ipfs() -> Result<(), String> {
         .arg("API.HTTPHeaders.Access-Control-Allow-Methods")
         .arg(r#"["PUT", "POST", "GET"]"#)
         .output()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| IpfsError::Other(e.to_string()))?;
 
     if config_output2.status.success() {
         Ok(())
     } else {
-        Err(String::from_utf8_lossy(&config_output2.stderr).into())
+        Err(IpfsError::ConfigError(
+            String::from_utf8_lossy(&config_output2.stderr).into(),
+        ))
     }
 }
 
@@ -125,6 +150,39 @@ pub fn check_ipfs() -> Result<bool, String> {
 pub fn is_ipfs_running() -> Result<bool, String> {
     let output = Command::new("pgrep")
         .arg("ipfs")
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    Ok(output.status.success())
+}
+
+#[tauri::command]
+pub fn init_ipfs() -> Result<(), String> {
+    let home_dir = dirs::home_dir().ok_or("Cannot find home directory")?;
+    let cyb_dir = home_dir.join(".cyb");
+    let ipfs_binary = cyb_dir.join("kubo/ipfs"); // Adjust based on the extracted path
+
+    let output = Command::new(&ipfs_binary)
+        .arg("init")
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).into())
+    }
+}
+
+#[tauri::command]
+pub fn is_ipfs_initialized() -> Result<bool, String> {
+    let home_dir = dirs::home_dir().ok_or("Cannot find home directory")?;
+    let cyb_dir = home_dir.join(".cyb");
+    let ipfs_binary = cyb_dir.join("kubo/ipfs"); // Adjust based on the extracted path
+
+    let output = Command::new(&ipfs_binary)
+        .arg("config")
+        .arg("show")
         .output()
         .map_err(|e| e.to_string())?;
 

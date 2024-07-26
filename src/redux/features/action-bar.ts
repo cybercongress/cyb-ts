@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { ActionBarStates } from 'src/containers/Search/constants';
 import { AccountValue } from 'src/types/defaultAccount';
 
-interface LSAddress {
+export interface LSAddress {
   address: string;
   keys: AccountValue['keys'];
 }
