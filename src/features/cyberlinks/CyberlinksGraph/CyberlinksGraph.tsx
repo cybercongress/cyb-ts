@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
+import GraphHoverInfo from './GraphHoverInfo/GraphHoverInfo';
+
 import styles from './CyberlinksGraph.module.scss';
 
 type Props = {
@@ -17,6 +19,7 @@ const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
 function CyberlinksGraph({ data, size }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
+  const [hoverNode, setHoverNode] = useState(null);
 
   const fgRef = useRef();
 
@@ -157,6 +160,7 @@ function CyberlinksGraph({ data, size }: Props) {
     <div
       style={{
         minHeight: size,
+        position: 'relative',
       }}
     >
       {isRendering && (
@@ -175,10 +179,11 @@ function CyberlinksGraph({ data, size }: Props) {
         enableNodeDrag={false}
         enablePointerInteraction
         enableNavigationControls
-        nodeLabel="id"
+        // nodeLabel="id"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={8}
+        onNodeHover={setHoverNode}
         linkColor={
           // not working
           (link) =>
@@ -186,7 +191,7 @@ function CyberlinksGraph({ data, size }: Props) {
             //   ? 'red'
             'rgba(9,255,13,1)'
         }
-        linkLabel={''}
+        linkLabel=""
         linkWidth={4}
         linkCurvature={0.2}
         linkOpacity={0.7}
@@ -203,6 +208,12 @@ function CyberlinksGraph({ data, size }: Props) {
         onLinkClick={handleLinkRightClick}
         onLinkRightClick={handleLinkClick}
         onEngineStop={handleEngineStop}
+      />
+
+      <GraphHoverInfo
+        node={hoverNode}
+        camera={fgRef.current?.camera()}
+        size={size || window.innerWidth}
       />
     </div>
   );

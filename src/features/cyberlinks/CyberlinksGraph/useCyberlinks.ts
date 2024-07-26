@@ -86,20 +86,18 @@ function useCyberlinks(
     const to = cyberlinks.map((a) => a.to);
 
     const object = Array.from(new Set(from.concat(to))).map((value) => ({
-      id: valueByKeyOrSelf(value, particlesPreview),
+      // id: valueByKeyOrSelf(value, particlesPreview),
+      id: value,
     }));
-
-    // console.log(
-    //   '---obj',
-    //   object.filter((o) => o.id.indexOf('Qm') === 0).map((o) => o.id)
-    // );
 
     const links = [];
 
     for (let i = 0; i < cyberlinks.length; i++) {
       links[i] = {
-        source: valueByKeyOrSelf(cyberlinks[i].from, particlesPreview),
-        target: valueByKeyOrSelf(cyberlinks[i].to, particlesPreview),
+        // source: valueByKeyOrSelf(cyberlinks[i].from, particlesPreview),
+        // target: valueByKeyOrSelf(cyberlinks[i].to, particlesPreview),
+        source: cyberlinks[i].from,
+        target: cyberlinks[i].to,
         name: cyberlinks[i].transaction_hash,
         subject: cyberlinks[i].neuron,
         // curvative: getRandomInt(20, 500) / 1000,
@@ -110,7 +108,7 @@ function useCyberlinks(
       nodes: object,
       links,
     };
-  }, [cyberlinks, isLoading, particlesPreview]);
+  }, [cyberlinks]);
 
   return {
     data,

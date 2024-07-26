@@ -13,12 +13,12 @@ import { getRankGrade } from '../../utils/search/utils';
 import ContentIpfs from '../contentIpfs/contentIpfs';
 
 type ContentItemProps = {
-  item: $TsFixMe;
+  item?: $TsFixMe;
   cid: string;
   grade?: $TsFixMe;
   className?: string;
   parent?: string;
-  linkType: LinksType;
+  linkType?: LinksType;
   setType?: (type: IpfsContentType) => void;
 };
 
@@ -35,7 +35,7 @@ function ContentItem({
 
   useEffect(() => {
     details?.type && setType && setType(details?.type);
-  }, [details]); //TODO: REFACT - setType rise infinite loop
+  }, [details]); // TODO: REFACT - setType rise infinite loop
 
   if (hidden) {
     return <div />;

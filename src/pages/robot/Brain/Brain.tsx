@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useAdviser } from 'src/features/adviser/context';
 import { Tabs } from 'src/components';
+import { Route, Routes, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
-import { LIMIT_GRAPH } from './utils';
 import GraphView from './ui/GraphView';
+import { LIMIT_GRAPH } from './utils';
 
 enum TabsKey {
   list = 'list',
@@ -14,41 +15,54 @@ enum TabsKey {
 
 function Brain() {
   const { address } = useRobotContext();
-  const [selected, setSelected] = useState(TabsKey.list);
-  const { setAdviser } = useAdviser();
 
-  useEffect(() => {
-    setAdviser(
-      <>
-        neurons public knowledge cybergraph <br />
-        {selected === TabsKey.graph && (
-          <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
-        )}
-      </>
-    );
-  }, [setAdviser, selected]);
+  const params = useParams();
 
-  let content;
+  const selected = params['*'] || TabsKey.graph;
 
-  if (selected === TabsKey.list) {
-    content = <TreedView address={address} />;
-  }
-
-  if (selected === TabsKey.graph) {
-    content = <GraphView address={address} />;
-  }
+  useAdviserTexts({
+    defaultText: useMemo(
+      () => (
+        <>
+          neurons public knowledge cybergraph <br />
+          {selected === TabsKey.graph && (
+            <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
+          )}
+        </>
+      ),
+      [selected]
+    ),
+  });
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.tabs}>
         <Tabs
-          options={[TabsKey.list, TabsKey.graph].map((item) => {
-            return { key: item, onClick: () => setSelected(item) };
-          })}
+          options={[
+            {
+              key: TabsKey.graph,
+              to: './graph',
+            },
+            {
+              key: TabsKey.list,
+              to: './list',
+            },
+          ]}
           selected={selected}
         />
       </div>
-      {content}
+
+      <Routes>
+        {['/', 'graph'].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={<GraphView address={address} />}
+          />
+        ))}
+
+        <Route path="list" element={<TreedView address={address} />} />
+      </Routes>
     </div>
   );
 }

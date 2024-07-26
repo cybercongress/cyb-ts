@@ -1,0 +1,10 @@
+@import '../../../../components/atoms/glass/mixins';
+
+.hoverInfo {
+  @include glassBackground;
+
+  position: absolute;
+  z-index: 0;
+  max-width: 480px;
+  border-radius: 5px;
+}
