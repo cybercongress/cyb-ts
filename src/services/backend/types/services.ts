@@ -50,6 +50,26 @@ export type MlSyncState = {
   entryStatus: Partial<SyncMlEntryStatus>;
 };
 
+export type P2PState = {
+  multiaddrs: string[];
+};
+
+export type P2PStatusMessage = {
+  type: 'p2p_status';
+  value: {
+    peers: string[];
+    addresses: string[];
+  };
+};
+
+export type P2PSTopicMessage = {
+  type: 'p2p_msg';
+  value: {
+    topic: string;
+    message: string;
+  };
+};
+
 export type SyncStatusMessage = {
   type: 'sync_status';
   value: Omit<SyncState, 'entryStatus'>;
@@ -71,7 +91,7 @@ export type SyncMlEntryMessage = {
   };
 };
 
-export type ServiceName = 'db' | 'ipfs' | 'sync' | 'ml' | 'rune';
+export type ServiceName = 'db' | 'ipfs' | 'sync' | 'ml' | 'rune' | 'p2p';
 
 export type ServiceStatusMessage = {
   type: 'service_status';
@@ -101,7 +121,9 @@ export type BroadcastChannelMessage =
   | ServiceStatusMessage
   | LoadCommunityMessage
   | SyncMlEntryMessage
-  | SetDefaultAccountMessage;
+  | SetDefaultAccountMessage
+  | P2PStatusMessage
+  | P2PSTopicMessage;
 // | SenseListUpdate
 // | SenseListRemove;
 

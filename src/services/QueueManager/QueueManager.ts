@@ -65,14 +65,7 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: new QueueStrategy(
-    {
-      db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-    },
-    ['db', 'gateway', 'node']
-  ),
+
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
@@ -292,7 +285,7 @@ class QueueManager {
       }
     });
 
-    this.strategy = strategy || strategies.embedded;
+    this.strategy = strategy || strategies.helia;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
 
     // Little hack to handle keep-alive connection to swarm cyber node
@@ -322,7 +315,7 @@ class QueueManager {
 
     isInitialized$.subscribe((isInitialized) => {
       isInitialized && console.log('🚦 ipfs queue initialized');
-      this.node?.reconnectToSwarm(true);
+      this.node?.reconnectToSwarm(false);
     });
 
     this.queue$

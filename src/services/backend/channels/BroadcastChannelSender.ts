@@ -4,6 +4,7 @@ import { Account } from 'src/types/defaultAccount';
 import { SenseListItem } from '../types/sense';
 import {
   BroadcastChannelMessage,
+  P2PStatusMessage,
   ServiceName,
   ServiceStatus,
   SyncEntryName,
@@ -56,6 +57,14 @@ class BroadcastChannelSender {
         account,
       })
     );
+  }
+
+  postP2PStatus(value: Partial<P2PStatusMessage['value']>) {
+    this.channel.postMessage({ type: 'p2p_status', value });
+  }
+
+  postP2PMessage(topic: string, message: string) {
+    this.channel.postMessage({ type: 'p2p_status', value });
   }
 
   post(msg: BroadcastChannelMessage) {

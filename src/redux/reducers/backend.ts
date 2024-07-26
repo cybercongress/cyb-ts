@@ -4,13 +4,14 @@ import {
   ServiceStatus,
   BroadcastChannelMessage,
   MlSyncState,
+  P2PStatusMessage,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
 
 import { removeDublicates } from 'src/utils/list';
-import { clone } from 'lodash';
+import { clone, List } from 'lodash';
 import { SYNC_ENTRIES_TO_TRACK_PROGRESS } from 'src/services/backend/services/sync/services/consts';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 
@@ -20,6 +21,7 @@ type BackendState = {
   dbPendingWrites: number;
   syncState: SyncState;
   mlState: MlSyncState;
+  p2p: P2PStatusMessage['value'] & { messages: Record<string, string[]> };
   community: {
     isLoaded: boolean;
     raw: CommunityDto[];
@@ -57,9 +59,11 @@ const initialState: BackendState = {
   },
   syncState: initialSyncState,
   mlState: { entryStatus: {} },
+  p2p: { peers: [], addresses: [], messages: {} },
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
+    p2p: { status: 'inactive' },
     sync: { status: 'inactive' },
     ml: { status: 'inactive' },
     rune: { status: 'inactive' },
@@ -193,6 +197,20 @@ function backendReducer(
         state
       );
       return newState;
+    }
+    case 'p2p_status': {
+      return { ...state, p2p: { ...state.p2p, ...action.value } };
+    }
+
+    case 'p2p_msg': {
+      const { topic, message } = action.value;
+      const { messages } = state.p2p;
+      if (!messages[topic]) {
+        messages[topic] = [];
+      }
+      messages[topic].push(message);
+
+      return { ...state, p2p: { ...state.p2p, ...action.value, messages } };
     }
 
     default:

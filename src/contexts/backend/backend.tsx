@@ -130,15 +130,17 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
     const channel = new RxBroadcastChannelListener(dispatch);
 
-    backgroundWorkerInstance.ipfsApi
-      .start(getIpfsOpts())
-      .then(() => {
-        setIpfsError(null);
-      })
-      .catch((err) => {
-        setIpfsError(err);
-        console.log(`☠️ Ipfs error: ${err}`);
-      });
+    getIpfsOpts().then((ipfsOpts) => {
+      backgroundWorkerInstance.ipfsApi
+        .start(ipfsOpts)
+        .then(() => {
+          setIpfsError(null);
+        })
+        .catch((err) => {
+          setIpfsError(err);
+          console.log(`☠️ Ipfs error: ${err}`);
+        });
+    });
 
     cozoDbWorkerInstance.init().then(() => {
       // const dbApi = createDbApi();

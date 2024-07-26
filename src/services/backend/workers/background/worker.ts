@@ -16,6 +16,7 @@ import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { createIpfsApi } from './api/ipfsApi';
 import { createMlApi } from './api/mlApi';
 import { createRuneApi } from './api/runeApi';
+import { createP2PApi } from './api/p2pApi';
 
 // import { initRuneDeps } from 'src/services/scripting/wasmBindings';
 
@@ -38,16 +39,18 @@ const createBackgroundWorkerApi = () => {
     broadcastApi
   );
 
+  const { api: p2pApi } = createP2PApi(broadcastApi);
+
   const {
     ipfsQueue,
     ipfsInstance$,
     api: ipfsApi,
-  } = createIpfsApi(rune, broadcastApi);
+  } = createIpfsApi(rune, p2pApi, broadcastApi);
 
   const waitForParticleResolve = (
     cid: ParticleCid,
     priority: QueuePriority = QueuePriority.MEDIUM
-  ) => ipfsQueue.enqueueAndWait(cid, { postProcessing: false, priority });
+  ) => ipfsQueue.enqueueAndWait(cid, { priority });
 
   const serviceDeps = {
     waitForParticleResolve,
@@ -68,6 +71,7 @@ const createBackgroundWorkerApi = () => {
     isIpfsInitialized: () => !!ipfsInstance$.getValue(),
     // syncDrive,
     ipfsApi: proxy(ipfsApi),
+    p2pApi: proxy(p2pApi),
     rune: proxy(rune),
     embeddingApi$,
     // ipfsInstance$,

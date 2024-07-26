@@ -20,8 +20,9 @@ import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend/backend';
 import { IPFSNodes } from 'src/services/ipfs/types';
 import { getIpfsOpts } from 'src/services/ipfs/config';
+import P2PChat from '../Drive/P2PChat';
 
-const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
+const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.HELIA];
 
 function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState(IPFSNodes.HELIA);
@@ -75,12 +76,10 @@ function IpfsSettings() {
     updateUserGatewayUrl(valueInputGateway);
   }, [valueInputGateway]);
 
-  const onClickReConnect = () => {
-    ipfsApi
-      ?.stop()
-      .then(() => ipfsApi?.start(getIpfsOpts()))
-      .then();
-  };
+  const onClickReConnect = async () =>
+    getIpfsOpts().then((ipfsOpts) => {
+      ipfsApi?.stop().then(() => ipfsApi?.start(ipfsOpts));
+    });
 
   const stateProps = {
     valueInput,
@@ -98,106 +97,109 @@ function IpfsSettings() {
   }
 
   return (
-    <Display title={<DisplayTitle title="drive" />}>
-      <div style={{ display: 'grid', gap: '20px' }}>
-        <Drive />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <ContainerKeyValue>
-              <div>client</div>
+    <>
+      <Display title={<DisplayTitle title="drive" />}>
+        <div style={{ display: 'grid', gap: '20px' }}>
+          <Drive />
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+              <ContainerKeyValue>
+                <div>client</div>
 
-              <Select
-                width="300px"
-                valueSelect={valueSelect}
-                textSelectValue={valueSelect !== '' ? valueSelect : ''}
-                onChangeSelect={(item) => onChangeSelect(item)}
-                custom
-                disabled={!isIpfsInitialized}
-              >
-                {renderOptions(dataOpts)}
-              </Select>
-            </ContainerKeyValue>
+                <Select
+                  width="300px"
+                  valueSelect={valueSelect}
+                  textSelectValue={valueSelect !== '' ? valueSelect : ''}
+                  onChangeSelect={(item) => onChangeSelect(item)}
+                  custom
+                  disabled={!isIpfsInitialized}
+                >
+                  {renderOptions(dataOpts)}
+                </Select>
+              </ContainerKeyValue>
 
-            {valueSelect === 'external' && (
-              <>
-                <ContainerKeyValue>
-                  <div>api</div>
+              {valueSelect === 'external' && (
+                <>
+                  <ContainerKeyValue>
+                    <div>api</div>
 
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '280px 50px',
-                      gap: '20px',
-                      position: 'relative',
-                    }}
-                  >
-                    <Input
-                      value={valueInput}
-                      onChange={(e) => setValueInput(e.target.value)}
-                    />
-                    <BtnPassport
-                      style={{ maxWidth: '100px' }}
-                      typeBtn="blue"
-                      onClick={() => setNewUrl()}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '280px 50px',
+                        gap: '20px',
+                        position: 'relative',
+                      }}
                     >
-                      edit
-                    </BtnPassport>
-                  </div>
-                </ContainerKeyValue>
-                <ContainerKeyValue>
-                  <div>gateway</div>
+                      <Input
+                        value={valueInput}
+                        onChange={(e) => setValueInput(e.target.value)}
+                      />
+                      <BtnPassport
+                        style={{ maxWidth: '100px' }}
+                        typeBtn="blue"
+                        onClick={() => setNewUrl()}
+                      >
+                        edit
+                      </BtnPassport>
+                    </div>
+                  </ContainerKeyValue>
+                  <ContainerKeyValue>
+                    <div>gateway</div>
 
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '280px 50px',
-                      gap: '20px',
-                      position: 'relative',
-                    }}
-                  >
-                    <Input
-                      value={valueInputGateway}
-                      onChange={(e) => setValueInputGateway(e.target.value)}
-                    />
-                    <BtnPassport
-                      style={{ maxWidth: '100px' }}
-                      typeBtn="blue"
-                      onClick={() => setNewUrlGateway()}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '280px 50px',
+                        gap: '20px',
+                        position: 'relative',
+                      }}
                     >
-                      edit
-                    </BtnPassport>
-                  </div>
-                </ContainerKeyValue>
-              </>
-            )}
+                      <Input
+                        value={valueInputGateway}
+                        onChange={(e) => setValueInputGateway(e.target.value)}
+                      />
+                      <BtnPassport
+                        style={{ maxWidth: '100px' }}
+                        typeBtn="blue"
+                        onClick={() => setNewUrlGateway()}
+                      >
+                        edit
+                      </BtnPassport>
+                    </div>
+                  </ContainerKeyValue>
+                </>
+              )}
+            </div>
+            <div>
+              <InfoIpfsNode />
+            </div>
           </div>
-          <div>
-            <InfoIpfsNode />
-          </div>
-        </div>
 
-        {!isIpfsInitialized && (
-          <ComponentLoader
-            style={{ margin: '20px auto 10px', width: '100px' }}
-          />
-        )}
-        <Pane
-          width="100%"
-          display="flex"
-          marginBottom={20}
-          padding={10}
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-        >
-          <Button onClick={onClickReConnect}>Reconnect</Button>
-        </Pane>
-        {/* <ActionBar>
+          {!isIpfsInitialized && (
+            <ComponentLoader
+              style={{ margin: '20px auto 10px', width: '100px' }}
+            />
+          )}
+          <Pane
+            width="100%"
+            display="flex"
+            marginBottom={20}
+            padding={10}
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column"
+          >
+            <Button onClick={onClickReConnect}>Reconnect</Button>
+          </Pane>
+          {/* <ActionBar>
           <Button onClick={onClickReConnect}>Reconnect</Button>
           <Button onClick={console.log}>Sync drive</Button>
         </ActionBar> */}
-      </div>
-    </Display>
+        </div>
+      </Display>
+      <P2PChat />
+    </>
   );
 }
 

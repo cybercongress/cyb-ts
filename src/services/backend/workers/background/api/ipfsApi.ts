@@ -1,5 +1,6 @@
+import { BehaviorSubject } from 'rxjs';
 import { proxy } from 'comlink';
-import { BehaviorSubject, Subject } from 'rxjs';
+
 import QueueManager from 'src/services/QueueManager/QueueManager';
 import {
   QueueItemCallback,
@@ -14,16 +15,18 @@ import {
   IpfsOptsType,
 } from 'src/services/ipfs/types';
 import { RuneEngine } from 'src/services/scripting/engine';
+import { P2PApi } from './p2pApi';
+
+export const DEFAUL_P2P_TOPIC = 'cyber';
 
 // eslint-disable-next-line import/prefer-default-export
 export const createIpfsApi = (
   rune: RuneEngine,
+  p2pApi: P2PApi,
   broadcastApi: BroadcastChannelSender
 ) => {
   const ipfsInstance$ = new BehaviorSubject<CybIpfsNode | undefined>(undefined);
-  const ipfsQueue = new QueueManager(ipfsInstance$, {
-    rune,
-  });
+  const ipfsQueue = new QueueManager(ipfsInstance$, {});
   const stopIpfs = async () => {
     const ipfsNode = ipfsInstance$.getValue();
 
@@ -45,8 +48,9 @@ export const createIpfsApi = (
       }
       broadcastApi.postServiceStatus('ipfs', 'starting');
       console.time('🔋 ipfs initialized');
-
-      const newIpfsNode = await initIpfsNode(ipfsOpts);
+      const libp2p = await p2pApi.start(ipfsOpts);
+      const newIpfsNode = await initIpfsNode(ipfsOpts, libp2p);
+      // p2pApi.connectPeer
       console.timeEnd('🔋 ipfs initialized');
 
       ipfsInstance$.next(newIpfsNode);
@@ -65,6 +69,7 @@ export const createIpfsApi = (
     stop: stopIpfs,
     config: async () => ipfsInstance$.getValue()?.config,
     info: async () => ipfsInstance$.getValue()?.info(),
+    p2pApi: proxy(p2pApi),
     fetchWithDetails: async (
       cid: string,
       parseAs?: IpfsContentType,

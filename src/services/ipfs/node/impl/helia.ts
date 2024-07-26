@@ -1,19 +1,9 @@
 import { Helia, Pin, createHelia } from 'helia';
 import { IDBBlockstore } from 'blockstore-idb';
 import { IDBDatastore } from 'datastore-idb';
-import { Libp2p, createLibp2p } from 'libp2p';
-import { noise } from '@chainsafe/libp2p-noise';
-import { yamux } from '@chainsafe/libp2p-yamux';
-// import { mplex } from '@libp2p/mplex';
-
-import { circuitRelayTransport } from 'libp2p/circuit-relay';
 import { UnixFS, unixfs, AddOptions } from '@helia/unixfs';
-import { bootstrap } from '@libp2p/bootstrap';
-import { webRTC, webRTCDirect } from '@libp2p/webrtc';
-import { webSockets } from '@libp2p/websockets';
-import { webTransport } from '@libp2p/webtransport';
-import { identifyService } from 'libp2p/identify';
-import { multiaddr, protocols } from '@multiformats/multiaddr';
+import { Libp2p } from 'libp2p';
+import { multiaddr } from '@multiformats/multiaddr';
 import { LsResult } from 'ipfs-core-types/src/pin';
 
 import {
@@ -22,8 +12,8 @@ import {
   IpfsNodeType,
   IpfsFileStats,
   IpfsNode,
+  InitOptions,
 } from '../../types';
-// import { all } from '@libp2p/websockets/filters';
 import { stringToCid } from '../../utils/cid';
 import { CYBER_GATEWAY_URL } from '../../config';
 
@@ -36,69 +26,6 @@ async function* mapToLsResult(
     yield { cid: cid.toV0(), metadata, type: 'recursive' };
   }
 }
-
-const libp2pFactory = async (
-  datastore: IDBDatastore,
-  bootstrapList: string[] = []
-) => {
-  const libp2p = await createLibp2p({
-    datastore,
-    // addresses: {
-    //   listen: [
-    //     '/ip4/127.0.0.1/tcp/0',
-    //     '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
-    //   ],
-    // },
-    transports: [
-      webSockets(),
-      webTransport(),
-      webRTC({
-        rtcConfiguration: {
-          iceServers: [
-            {
-              urls: [
-                'stun:stun.l.google.com:19302',
-                'stun:global.stun.twilio.com:3478',
-                'STUN:freestun.net:3479',
-                'STUN:stun.bernardoprovenzano.net:3478',
-                'STUN:stun.aa.net.uk:3478',
-              ],
-            },
-            {
-              credential: 'free',
-              username: 'free',
-              urls: ['TURN:freestun.net:3479', 'TURNS:freestun.net:5350'],
-            },
-          ],
-        },
-      }),
-      webRTCDirect(),
-      circuitRelayTransport({
-        discoverRelays: 1,
-      }),
-    ],
-    connectionEncryption: [noise()],
-    streamMuxers: [yamux()],
-    connectionGater: {
-      denyDialMultiaddr: () => {
-        return false;
-        // by default we refuse to dial local addresses from the browser since they
-        // are usually sent by remote peers broadcasting undialable multiaddrs but
-        // here we are explicitly connecting to a local node so do not deny dialing
-        // any discovered address
-      },
-    },
-    peerDiscovery: [
-      bootstrap({
-        list: bootstrapList,
-      }),
-    ],
-    services: {
-      identify: identifyService(),
-    },
-  });
-  return libp2p;
-};
 
 const addOptionsV0: Partial<AddOptions> = {
   cidVersion: 0,
@@ -122,71 +49,20 @@ class HeliaNode implements IpfsNode {
 
   private fs?: UnixFS;
 
-  async init() {
+  private libp2p?: Libp2p;
+
+  async init(options?: InitOptions, libp2p?: Libp2p) {
     const blockstore = new IDBBlockstore('helia-bs');
+    this.libp2p = libp2p;
+
     await blockstore.open();
 
     const datastore = new IDBDatastore('helia-ds');
     await datastore.open();
 
-    const bootstrapList = [
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
-      '/dns4/swarm.io.cybernode.ai/tcp/443/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
-    ];
-    const libp2p = await libp2pFactory(datastore, bootstrapList);
-
     this.node = await createHelia({ blockstore, datastore, libp2p });
 
     this.fs = unixfs(this.node);
-
-    if (typeof window !== 'undefined') {
-      window.libp2p = libp2p;
-      window.node = this.node;
-      window.fs = this.fs;
-      window.toCid = stringToCid;
-    }
-
-    // DEBUG
-    libp2p.addEventListener('peer:connect', (evt) => {
-      const peerId = evt.detail.toString();
-      const conn = libp2p.getConnections(peerId) || [];
-      const transportsByAddr = Object.fromEntries(
-        conn.map((c) => [
-          c.remoteAddr.toString(),
-          c.remoteAddr.protoCodes().map((v) => protocols(v)?.name),
-        ])
-      );
-      console.debug(`Connected to ${peerId}`, transportsByAddr);
-
-      // console.log(
-      //   '---------ppppp',
-      //   peerId,
-      //   conn,
-      //   conn?.remoteAddr.protoCodes().map((v) => protocols(v)?.name)
-      // ); //.includes(WEBRTC_CODE)
-      // if (conn && conn.stat) {
-      //   const transport = conn.stat.transport; // This might vary based on libp2p version
-      //   console.log(`Connected to ${peerId} using transport ${transport}`);
-      // } else {
-      //   console.log(`Connected to ${peerId}`);
-      // }
-    });
-    libp2p.addEventListener('peer:disconnect', (evt) => {
-      console.debug(`Disconnected from ${evt.detail.toString()}`);
-    });
-    console.log(
-      'IPFS - Helia addrs',
-      libp2p.getMultiaddrs().map((a) => a.toString())
-    );
-    // const webrtcConn = await libp2p.dial(
-    //   multiaddr(
-    //     '/ip4/127.0.0.1/udp/4001/quic-v1/webtransport/certhash/uEiDHumbyZRFV1Av7qH9-2l5HGgU2a2UqM6eloqO0vYz5pQ/certhash/uEiDD_TuVgih5_ua31Z4MVbNq7WSw095UAQmZqdUFMDTVRA/p2p/12D3KooWEYGfgK4dEY3spfuDKVq6Jpiyj4KxP1r6HS5RFp5WHebz'
-    //   )
-    // );
-    // console.log('----webrtcConn', webrtcConn);
 
     this._isStarted = true;
   }
@@ -237,10 +113,9 @@ class HeliaNode implements IpfsNode {
     const cid_ = stringToCid(cid);
     const isPinned = await this.node?.pins.isPinned(cid_, options);
     if (!isPinned) {
-      const pinResult = (
-        await this.node?.pins.add(cid_, options)
-      )?.cid.toString();
-      // console.log('------pin', pinResult);
+      const pinResult = await this.node?.pins.add(cid_, options);
+
+      console.log('------pin', pinResult);
     }
     // console.log('------pinned', cid, isPinned);
     return undefined;
@@ -261,7 +136,9 @@ class HeliaNode implements IpfsNode {
   }
 
   async connectPeer(address: string) {
-    const conn = await this.node!.libp2p!.dial(multiaddr(address));
+    const { libp2p } = this.node!;
+    const conn = await this.libp2p!.dial(multiaddr(address));
+
     return true;
   }
 
@@ -274,6 +151,7 @@ class HeliaNode implements IpfsNode {
     const id = this.node!.libp2p.peerId.toString();
     const agentVersion = this.node!.libp2p!.services!.identify!.host!
       .agentVersion as string;
+
     return { id, agentVersion, repoSize: -1 };
   }
 }
