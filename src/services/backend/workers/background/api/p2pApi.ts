@@ -11,7 +11,6 @@ import { identify } from '@libp2p/identify';
 import { webRTC } from '@libp2p/webrtc';
 import { webSockets } from '@libp2p/websockets';
 import * as filters from '@libp2p/websockets/filters';
-import { IDBDatastore } from 'datastore-idb';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { IpfsOptsType, JsonPeerId } from 'src/services/ipfs/types';
 import {
@@ -22,10 +21,11 @@ import { multiaddr, protocols } from '@multiformats/multiaddr';
 import { Option } from 'src/types';
 import { jsonToPeerId } from 'src/services/ipfs/utils/peerId';
 import { fromString, toString } from 'uint8arrays';
+// import { IDBDatastore } from 'datastore-idb';
 // import { MemoryDatastore } from 'datastore-core/dist/src';
-import debug from 'debug';
+// import debug from 'debug';
 
-debug.enable('libp2p:*');
+// debug.enable('libp2p:*');
 
 const bootstrapListDefault = [
   '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
@@ -136,7 +136,7 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
             .map((conn) => conn.remoteAddr.toString()) || []
         );
       });
-      console.log('----syncPeerList', peers);
+      // console.log('----syncPeerList', peers);
       broadcastApi.postP2PStatus({ peers });
     }
   }
@@ -166,9 +166,8 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
       //     console.log('---connection:close', e);
       //   });
       node.addEventListener('self:peer:update', (e) => {
-        console.log('---peer:update1', e);
         const multiaddrs = node!.getMultiaddrs().map((ma) => ma.toString());
-        console.log('---peer:update', e, multiaddrs, node!.getMultiaddrs());
+        // console.log('---peer:update', e, multiaddrs, node!.getMultiaddrs());
         broadcastApi.postP2PStatus({ addresses: multiaddrs });
       });
 
@@ -207,27 +206,27 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
       node!.services.pubsub.addEventListener('message', (event) => {
         const { topic } = event.detail;
         const message = toString(event.detail.data);
+        broadcastApi.postP2PMessage(topic, message);
 
-        console.log(`Message ${topic} <- ${message}`);
+        console.log(`[in] ${topic}: ${message}`);
       });
 
       setTimeout(async () => {
         console.timeEnd('🔋 p2p initialized');
         // await connectPeer(
-        //   '/dns4/acidpictures.ink/tcp/4444/wss/p2p/12D3KooWE3yj6jibgZcxMb6hrpQGKRE9xaqAazFkYaJZDZengzHq/p2p-circuit/webrtc/p2p/12D3KooWSJKzGvPqEv7P6TXHzPi6Ug2HLHXvUey5GizNRk2zJTVh'
+        //   '/dns4/acidpictures.ink/tcp/4444/wss/p2p/12D3KooWE3yj6jibgZcxMb6hrpQGKRE9xaqAazFkYaJZDZengzHq/p2p-circuit/webrtc/p2p/12D3KooWRMHDyP5nswsCxwC5dHVdJZ52m6iNLH3A9YReb1h8Ke9J'
         // ).then(() =>
-        await connectPeer(CYBERNODE_PUBSUB_NODE)
+        //   connectPeer(CYBERNODE_PUBSUB_NODE)
+        //     .then(() => subscribeChannel('cyber'))
+        //     .catch(console.error)
+        // );
+        connectPeer(CYBERNODE_PUBSUB_NODE)
           .then(() => subscribeChannel('cyber'))
           .catch(console.error);
-        // );
-
         const multiaddrs = node!.getMultiaddrs().map((ma) => ma.toString());
-        console.log('-----node multiaddrs', multiaddrs);
         broadcastApi.postServiceStatus('p2p', 'started');
         libp2pInstance$.next(node);
       }, 0);
-
-      // libp2p.services.pubsub.publish('cyber', fromString(message));
 
       return node;
     } catch (err) {
@@ -266,7 +265,8 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
 
   const sendPubSubMessage = (topic: string, message: string) => {
     node!.services!.pubsub!.publish(topic, fromString(message));
-    console.log(`${message} -> ${topic}]`);
+    console.log(`[out] [${topic}]: ${message}`);
+    broadcastApi.postP2PMessage(topic, message);
   };
 
   const api = { start, stop, connectPeer, subscribeChannel, sendPubSubMessage };

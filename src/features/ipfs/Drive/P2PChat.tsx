@@ -14,7 +14,7 @@ function P2PChat() {
   const {
     p2p: { messages },
   } = useAppSelector((store) => store.backend);
-  const { ipfsApi } = useBackend();
+  const { p2pApi } = useBackend();
   const [msg, setMsg] = React.useState('');
   const [peerAddress, setPeerAddress] = React.useState('');
   const [isPeerAddressDisabled, setIsPeerAddressDisabled] =
@@ -28,7 +28,7 @@ function P2PChat() {
   const onSubmit = (event) => {
     if (event.key === 'Enter') {
       setMsg('');
-      ipfsApi?.p2pApi.sendPubSubMessage(DEFAUL_P2P_TOPIC, msg);
+      p2pApi?.sendPubSubMessage(DEFAUL_P2P_TOPIC, msg);
     }
   };
 
@@ -40,7 +40,7 @@ function P2PChat() {
   const onSubmitPeerAddress = (event) => {
     if (event.key === 'Enter') {
       setIsPeerAddressDisabled(true);
-      ipfsApi?.p2pApi.connectPeer(peerAddress);
+      p2pApi?.connectPeer(peerAddress);
     }
   };
 

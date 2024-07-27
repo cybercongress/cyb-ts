@@ -60,7 +60,7 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
         //   const needToReconnect =
         //     Date.now() - lastConnectedTimestamp <
         //     DEFAULT_CONNECTION_LIFETIME_SECONDS;
-        // await this.connectToNode(options.swarmPeerAddress);
+        await this.connectToNode(options.swarmPeerAddress);
         // await this.connectToNode(CYBERNODE_PUBSUB_NODE);
       }
     }

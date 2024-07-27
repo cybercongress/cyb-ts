@@ -64,7 +64,7 @@ class BroadcastChannelSender {
   }
 
   postP2PMessage(topic: string, message: string) {
-    this.channel.postMessage({ type: 'p2p_status', value });
+    this.channel.postMessage({ type: 'p2p_msg', value: { topic, message } });
   }
 
   post(msg: BroadcastChannelMessage) {

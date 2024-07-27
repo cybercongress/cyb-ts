@@ -21,7 +21,6 @@ export const DEFAUL_P2P_TOPIC = 'cyber';
 
 // eslint-disable-next-line import/prefer-default-export
 export const createIpfsApi = (
-  rune: RuneEngine,
   p2pApi: P2PApi,
   broadcastApi: BroadcastChannelSender
 ) => {
@@ -64,6 +63,19 @@ export const createIpfsApi = (
     }
   };
 
+  const getIpfsNode = async (): CybIpfsNode =>
+    new Promise((resolve) => {
+      const ipfsNode = ipfsInstance$.getValue();
+      if (ipfsNode) {
+        resolve(ipfsNode);
+      }
+      ipfsInstance$.subscribe((node) => {
+        if (node) {
+          resolve(node);
+        }
+      });
+    });
+
   const api = {
     start: startIpfs,
     stop: stopIpfs,
@@ -74,13 +86,10 @@ export const createIpfsApi = (
       cid: string,
       parseAs?: IpfsContentType,
       controller?: AbortController
-    ) => {
-      const ipfsNode = ipfsInstance$.getValue();
-      if (!ipfsNode) {
-        throw new Error('ipfs node not initialized');
-      }
-      return ipfsNode.fetchWithDetails(cid, parseAs, controller);
-    },
+    ) =>
+      getIpfsNode().then((node) =>
+        node.fetchWithDetails(cid, parseAs, controller)
+      ),
     enqueue: async (
       cid: string,
       callback: QueueItemCallback,
@@ -92,7 +101,7 @@ export const createIpfsApi = (
     dequeueByParent: async (parent: string) => ipfsQueue.cancelByParent(parent),
     clearQueue: async () => ipfsQueue.clear(),
     addContent: async (content: string | File) =>
-      ipfsInstance$.getValue()?.addContent(content),
+      getIpfsNode().then((node) => node.addContent(content)),
   };
 
   return { ipfsInstance$, ipfsQueue, api };

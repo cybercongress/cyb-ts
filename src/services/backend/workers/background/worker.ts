@@ -1,4 +1,4 @@
-import { proxy } from 'comlink';
+import { proxy, ProxyMarked, ProxyMethods, Remote } from 'comlink';
 
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
@@ -13,19 +13,26 @@ import { SyncServiceParams } from '../../services/sync/types';
 import DbApi from '../../services/DbApi/DbApi';
 
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
-import { createIpfsApi } from './api/ipfsApi';
 import { createMlApi } from './api/mlApi';
 import { createRuneApi } from './api/runeApi';
-import { createP2PApi } from './api/p2pApi';
-
-// import { initRuneDeps } from 'src/services/scripting/wasmBindings';
+import { CybIpfsNode } from 'src/services/ipfs/types';
+import { Option } from 'src/types';
+import { IpfsApi } from './api/ipfsApi';
 
 const createBackgroundWorkerApi = () => {
   const broadcastApi = new BroadcastChannelSender();
 
   const dbInstance$ = new Subject<DbApi>();
+  const ipfsInstance$ = new Subject<Option<CybIpfsNode>>();
+  let ipfsApi: Remote<IpfsApi>;
 
   const injectDb = (db: DbApi) => dbInstance$.next(db);
+  const injectIpfsNode = (node: Option<CybIpfsNode>) =>
+    ipfsInstance$.next(node);
+
+  const injectIpfsApi = (remoteIpfsApi: Remote<IpfsApi>) => {
+    setInnerDeps({ ipfsApi: remoteIpfsApi });
+  };
 
   const params$ = new BehaviorSubject<SyncServiceParams>({
     myAddress: null,
@@ -39,18 +46,12 @@ const createBackgroundWorkerApi = () => {
     broadcastApi
   );
 
-  const { api: p2pApi } = createP2PApi(broadcastApi);
-
-  const {
-    ipfsQueue,
-    ipfsInstance$,
-    api: ipfsApi,
-  } = createIpfsApi(rune, p2pApi, broadcastApi);
+  // const { api: p2pApi } = createP2PApi(broadcastApi);
 
   const waitForParticleResolve = (
     cid: ParticleCid,
     priority: QueuePriority = QueuePriority.MEDIUM
-  ) => ipfsQueue.enqueueAndWait(cid, { priority });
+  ) => ipfsApi.enqueueAndWait(cid, { priority });
 
   const serviceDeps = {
     waitForParticleResolve,
@@ -64,18 +65,17 @@ const createBackgroundWorkerApi = () => {
   const syncService = new SyncService(serviceDeps);
 
   // INITIALIZATION
-  setInnerDeps({ ipfsApi });
 
   return {
     injectDb,
-    isIpfsInitialized: () => !!ipfsInstance$.getValue(),
+    injectIpfsNode,
+    injectIpfsApi,
     // syncDrive,
-    ipfsApi: proxy(ipfsApi),
-    p2pApi: proxy(p2pApi),
+    // ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
     embeddingApi$,
     // ipfsInstance$,
-    ipfsQueue: proxy(ipfsQueue),
+    // ipfsQueue: proxy(ipfsQueue),
     setRuneDeps: (
       deps: Partial<Omit<RuneInnerDeps, 'embeddingApi' | 'dbApi'>>
     ) => setInnerDeps(deps),

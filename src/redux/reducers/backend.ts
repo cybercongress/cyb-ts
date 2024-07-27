@@ -204,13 +204,15 @@ function backendReducer(
 
     case 'p2p_msg': {
       const { topic, message } = action.value;
-      const { messages } = state.p2p;
+
+      const messages = { ...state.p2p.messages };
       if (!messages[topic]) {
         messages[topic] = [];
       }
-      messages[topic].push(message);
-
-      return { ...state, p2p: { ...state.p2p, ...action.value, messages } };
+      // Create a new array with the new message added
+      messages[topic] = [...messages[topic], message];
+      console.log('p2p_msg', messages, state.p2p);
+      return { ...state, p2p: { ...state.p2p, messages } };
     }
 
     default:
