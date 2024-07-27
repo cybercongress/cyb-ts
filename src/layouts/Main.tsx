@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import CircularMenu from 'src/components/appMenu/CircularMenu/CircularMenu';
 import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import MobileMenu from 'src/components/appMenu/MobileMenu/MobileMenu';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
@@ -21,6 +22,8 @@ import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 function MainLayout({ children }: { children: JSX.Element }) {
   const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
   const addressBech32 = defaultAccount.account?.cyber.bech32;
+
+  const currentAddress = useCurrentAddress();
   const { viewportWidth } = useDevice();
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -50,6 +53,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
     ref.current.style.setProperty('--graph-size', `${graphSize}px`);
   }, [ref, graphSize]);
 
+  const link = currentAddress
+    ? routes.robot.routes.brain.path
+    : routes.brain.path;
+
   return (
     <div className={styles.wrapper} ref={ref}>
       <Header />
@@ -62,16 +69,13 @@ function MainLayout({ children }: { children: JSX.Element }) {
         {isMobile ? <MobileMenu /> : <CircularMenu circleSize={graphSize} />}
         {!isMobile && (
           <Link
-            to={routes.brain.path}
+            to={link}
             className={stylesOracle.graphWrapper}
             style={{ bottom: '0px' }}
-          >
-            {/* <Link
-              to={routes.brain.path}
-              className={stylesOracle.enlargeBtn}
-              title="open full graph"
-            /> */}
 
+            // className={stylesOracle.enlargeBtn}
+            // title="open full graph"
+          >
             {isRenderGraph && (
               <CyberlinksGraphContainer
                 size={graphSize}
@@ -80,13 +84,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
             )}
           </Link>
         )}
-        {/* <ActionBar /> */}
-
         <div className={styles.Time}>
           {!isMobile && <TimeHistory />}
           <TimeFooter />
         </div>
-        {/* <Link to={routes.social.path}>contacts</Link> */}
       </footer>
     </div>
   );
