@@ -14,7 +14,6 @@ import {
   IpfsContentType,
   IpfsOptsType,
 } from 'src/services/ipfs/types';
-import { RuneEngine } from 'src/services/scripting/engine';
 import { P2PApi } from './p2pApi';
 
 export const DEFAUL_P2P_TOPIC = 'cyber';
@@ -42,7 +41,7 @@ export const createIpfsApi = (
       if (ipfsNode) {
         // console.log('Ipfs node already started!');
         setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
-        return Promise.resolve();
+        return;
         // await ipfsNode.stop();
       }
       broadcastApi.postServiceStatus('ipfs', 'starting');
@@ -54,7 +53,6 @@ export const createIpfsApi = (
 
       ipfsInstance$.next(newIpfsNode);
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
-      return true;
     } catch (err) {
       console.log('----ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
@@ -81,7 +79,6 @@ export const createIpfsApi = (
     stop: stopIpfs,
     config: async () => ipfsInstance$.getValue()?.config,
     info: async () => ipfsInstance$.getValue()?.info(),
-    p2pApi: proxy(p2pApi),
     fetchWithDetails: async (
       cid: string,
       parseAs?: IpfsContentType,

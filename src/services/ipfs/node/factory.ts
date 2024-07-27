@@ -9,7 +9,7 @@ import {
   CYBERNODE_SWARM_ADDR_WSS,
   CYBER_NODE_SWARM_PEER_ID,
 } from '../config';
-import { withCybFeatures } from './mixins/withCybFeatures';
+import withCybFeatures from './mixins/withCybFeatures';
 
 const nodeClassMap: Record<IpfsNodeType, new () => IpfsNode> = {
   helia: HeliaNode,

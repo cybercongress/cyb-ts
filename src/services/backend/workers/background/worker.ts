@@ -8,7 +8,7 @@ import { RuneInnerDeps } from 'src/services/scripting/runeDeps';
 import { exposeWorkerApi } from '../factoryMethods';
 
 import { SyncService } from '../../services/sync/sync';
-import { SyncServiceParams } from '../../services/sync/types';
+import { FetchIpfsFunc, SyncServiceParams } from '../../services/sync/types';
 
 import DbApi from '../../services/DbApi/DbApi';
 
@@ -24,21 +24,30 @@ const createBackgroundWorkerApi = () => {
 
   const dbInstance$ = new Subject<DbApi>();
   const ipfsInstance$ = new Subject<Option<CybIpfsNode>>();
-  let ipfsApi: Remote<IpfsApi>;
+  const waitForParticleResolve$ = new Subject<FetchIpfsFunc>();
 
   const injectDb = (db: DbApi) => dbInstance$.next(db);
   const injectIpfsNode = (node: Option<CybIpfsNode>) =>
     ipfsInstance$.next(node);
 
-  const injectIpfsApi = (remoteIpfsApi: Remote<IpfsApi>) => {
-    setInnerDeps({ ipfsApi: remoteIpfsApi });
+  const injectIpfsApi = (ipfsApi: Remote<IpfsApi>) => {
+    setInnerDeps({ ipfsApi });
+    const waitForParticleResolve = (
+      cid: ParticleCid,
+      priority: QueuePriority = QueuePriority.MEDIUM
+    ) => ipfsApi.enqueueAndWait(cid, { priority });
+
+    waitForParticleResolve$.next(waitForParticleResolve);
   };
 
   const params$ = new BehaviorSubject<SyncServiceParams>({
     myAddress: null,
   });
 
-  const { embeddingApi$ } = createMlApi(dbInstance$, broadcastApi);
+  const { embeddingApi$, getEmbeddingApi } = createMlApi(
+    dbInstance$,
+    broadcastApi
+  );
 
   const { setInnerDeps, rune } = createRuneApi(
     embeddingApi$,
@@ -48,13 +57,8 @@ const createBackgroundWorkerApi = () => {
 
   // const { api: p2pApi } = createP2PApi(broadcastApi);
 
-  const waitForParticleResolve = (
-    cid: ParticleCid,
-    priority: QueuePriority = QueuePriority.MEDIUM
-  ) => ipfsApi.enqueueAndWait(cid, { priority });
-
   const serviceDeps = {
-    waitForParticleResolve,
+    waitForParticleResolve$,
     dbInstance$,
     ipfsInstance$,
     embeddingApi$,
@@ -64,22 +68,15 @@ const createBackgroundWorkerApi = () => {
   // service to sync updates about cyberlinks, transactions, swarm etc.
   const syncService = new SyncService(serviceDeps);
 
-  // INITIALIZATION
-
   return {
     injectDb,
     injectIpfsNode,
     injectIpfsApi,
-    // syncDrive,
-    // ipfsApi: proxy(ipfsApi),
     rune: proxy(rune),
-    embeddingApi$,
-    // ipfsInstance$,
-    // ipfsQueue: proxy(ipfsQueue),
+    getEmbeddingApi: proxy(getEmbeddingApi), // RepaySubject does not work with comlink
     setRuneDeps: (
       deps: Partial<Omit<RuneInnerDeps, 'embeddingApi' | 'dbApi'>>
     ) => setInnerDeps(deps),
-    // restartSync: (name: SyncEntryName) => syncService.restart(name),
     setParams: (params: Partial<SyncServiceParams>) =>
       params$.next({ ...params$.value, ...params }),
   };

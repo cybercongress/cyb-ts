@@ -17,18 +17,14 @@ import { getIpfsOpts } from 'src/services/ipfs/config';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
-import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
 import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
-import { Observable } from 'rxjs';
 import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
-import { SenseApi, createSenseApi } from './services/senseApi';
 import { RuneEngine } from 'src/services/scripting/engine';
-import { Option } from 'src/types';
 import {
   createP2PApi,
   P2PApi,
@@ -37,6 +33,7 @@ import {
   createIpfsApi,
   IpfsApi,
 } from 'src/services/backend/workers/background/api/ipfsApi';
+import { SenseApi, createSenseApi } from './services/senseApi';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -64,7 +61,7 @@ type BackendProviderContextType = {
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
   isReady: boolean;
-  embeddingApi$: Promise<Observable<EmbeddingApi>> | null;
+  getEmbeddingApi: Remote<() => Promise<EmbeddingApi>>;
   rune: Remote<RuneEngine>;
 };
 
@@ -78,7 +75,8 @@ const valueContext = {
   dbApi: null,
   ipfsApi: null,
   p2pApi: null,
-  embeddingApi$: null,
+  rune: null,
+  getEmbeddingApi: null,
 };
 
 const BackendContext =
@@ -149,8 +147,6 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         : '🧬 Starting backend in PROD mode...'
     );
 
-    setupStoragePersistence();
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channel = new RxBroadcastChannelListener(dispatch);
 
@@ -210,7 +206,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     () =>
       ({
         rune: backgroundWorkerInstance.rune,
-        embeddingApi$: backgroundWorkerInstance.embeddingApi$,
+        getEmbeddingApi: backgroundWorkerInstance.getEmbeddingApi,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi,
         p2pApi,

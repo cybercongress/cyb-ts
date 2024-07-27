@@ -131,6 +131,7 @@ export interface IpfsNode {
   pin: (cid: string, options?: AbortOptions) => Promise<string | undefined>;
   ls: () => AsyncIterable<LsResult>;
   info: () => Promise<IpfsNodeInfo>;
+  getPeers: () => Promise<string[]>;
   connectPeer(address: string): Promise<boolean>;
 }
 

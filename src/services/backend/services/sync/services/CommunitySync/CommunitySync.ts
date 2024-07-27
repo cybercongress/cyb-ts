@@ -20,7 +20,7 @@ import { ServiceDeps } from '../types';
 export default function createCommunitySync$(
   deps: ServiceDeps
 ): Observable<CommunityDto[]> {
-  const { dbInstance$, ipfsInstance$, params$ } = deps;
+  const { dbInstance$, ipfsInstance$, params$, waitForParticleResolve$ } = deps;
   const channel = new BroadcastChannelSender();
 
   return combineLatest([
@@ -29,14 +29,17 @@ export default function createCommunitySync$(
       map((params) => params.myAddress),
       distinctUntilChanged()
     ),
+    waitForParticleResolve$,
     ipfsInstance$,
   ]).pipe(
     filter(
-      ([dbInstance, myAddress, ipfsInstance]) =>
-        !!dbInstance && !!ipfsInstance && !!myAddress
+      ([dbInstance, myAddress, waitForParticleResolve, ipfsInstance]) =>
+        !!dbInstance &&
+        !!ipfsInstance &&
+        !!myAddress &&
+        !!waitForParticleResolve$
     ),
-    switchMap(([dbApi, myAddress, ipfsInstance]) => {
-      const { waitForParticleResolve } = deps;
+    switchMap(([dbApi, myAddress, waitForParticleResolve, ipfsInstance]) => {
       let community: CommunityDto[] = []; // Fix: Add type declaration for community array
       return new Observable<CommunityDto[]>((observer) => {
         observer.next([]);
