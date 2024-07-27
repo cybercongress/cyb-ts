@@ -1,9 +1,9 @@
 import dateFormat from 'dateformat';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
-import MessageContainer from './Message/Message.container';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import styles from './Messages.module.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import MessageContainer from './Message/Message.container';
+import styles from './Messages.module.scss';
 import DateTitle from './DateTitle/DateTitle';
 
 type Props = {
@@ -11,8 +11,9 @@ type Props = {
   currentChatId: string;
 };
 
-const DEFAULT_ITEMS_LENGTH = 15;
-const LOAD_MORE_ITEMS_LENGTH = 15;
+// lengths in days
+const DEFAULT_ITEMS_LENGTH = 5;
+const LOAD_MORE_ITEMS_LENGTH = 3;
 
 function Messages({ messages, currentChatId }: Props) {
   const [showItemsLength, setShowItemsLength] = useState(DEFAULT_ITEMS_LENGTH);
