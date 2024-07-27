@@ -40,6 +40,13 @@
   display: flex;
 }
 
+.navLink {
+  display: block;
+  padding: 12px;
+  position: inherit;
+  margin: -12px;
+}
+
 .external {
   display: block;
   position: absolute;

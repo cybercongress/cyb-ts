@@ -19,7 +19,7 @@ function CircularMenuItem({ item, onClick, selected }: Props) {
         <NavLink
           to={item.to}
           onClick={onClick}
-          style={{ position: 'inherit' }}
+          className={styles.navLink}
           {...(isExternal && { target: '_blank', rel: 'noreferrer noopener' })}
         >
           <img src={item.icon} className={styles.icon} alt="img" />
