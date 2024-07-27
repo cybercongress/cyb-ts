@@ -80,6 +80,27 @@ class HeliaNode implements IpfsNode {
   }
 
   cat(cid: string, options: CatOptions = {}) {
+    // const ccid = stringToCid(cid);
+
+    // (async () => {
+    //   const content = await this.node.blockstore.get(ccid);
+    //   debugger;
+    //   const providers = await this.libp2p.contentRouting.findProviders(ccid);
+    //   for (const provider of providers) {
+    //     if (provider.id !== libp2p.peerId.toString()) {
+    //       try {
+    //         const content = await helia.blockstore.get(ccid, {
+    //           peer: provider.id,
+    //         });
+    //         console.log('Content found:', content);
+    //         break;
+    //       } catch (err) {
+    //         console.error('Error fetching content:', err);
+    //       }
+    //     }
+    //   }
+    // })();
+
     return this.fs!.cat(stringToCid(cid), options);
   }
 
@@ -104,8 +125,12 @@ class HeliaNode implements IpfsNode {
       const data = new TextEncoder().encode(content);
       cid = await this.fs!.addBytes(data, optionsV0);
     }
-    // console.log('----added to helia', cid.toString());
     this.pin(cid.toString(), options);
+    // const cid2 = await this.node.blockstore.put(content);
+    // debugger;
+
+    // await this.libp2p.contentRouting.provide(cid);
+
     return cid.toString();
   }
 
@@ -113,9 +138,15 @@ class HeliaNode implements IpfsNode {
     const cid_ = stringToCid(cid);
     const isPinned = await this.node?.pins.isPinned(cid_, options);
     if (!isPinned) {
-      const pinResult = await this.node?.pins.add(cid_, options);
+      const results: any[] = [];
 
-      console.log('------pin', pinResult);
+      const pinResult = this.node!.pins.add(cid_, options);
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const result of pinResult) {
+        results.push(result.toString());
+      }
+
+      console.log('------pin', results);
     }
     // console.log('------pinned', cid, isPinned);
     return undefined;

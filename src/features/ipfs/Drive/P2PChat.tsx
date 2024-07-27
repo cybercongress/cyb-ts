@@ -61,7 +61,7 @@ function P2PChat() {
       </div>
       <Input
         color={Color.Yellow}
-        placeholder="peer address"
+        placeholder="add peer webRTC multiaddress, and press ENTER..."
         value={peerAddress}
         onChange={onChangePeerAddress}
         onKeyUp={onSubmitPeerAddress}
@@ -73,6 +73,7 @@ function P2PChat() {
         value={msg}
         onChange={onChange}
         onKeyUp={onSubmit}
+        disabled={!isPeerAddressDisabled}
       />
     </Display>
   );

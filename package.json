@@ -162,6 +162,7 @@
     "@jest/transform": "^29.5.0",
     "@ledgerhq/hw-transport-webusb": "5.53.0",
     "@libp2p/bootstrap": "^10.1.2",
+    "@libp2p/kad-dht": "^12.1.2",
     "@libp2p/peer-id": "^4.2.1",
     "@libp2p/peer-id-factory": "^4.2.1",
     "@libp2p/webrtc": "^4.1.2",
