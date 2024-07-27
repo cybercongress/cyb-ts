@@ -1,7 +1,6 @@
 import nebulaIcon from 'images/temple/nebula.png';
 import teleport from 'images/temple/teleport.png';
 import hfr from 'images/temple/hfr.png';
-import temple from 'images/temple/temple.png';
 import robot from 'images/temple/robot.png';
 import shpere from 'images/temple/shpere.png';
 import senate from 'images/temple/senate.png';
@@ -65,7 +64,12 @@ const getMenuItems = () => {
         { name: 'Libs', to: '/libs', icon: require('./images/database.png') },
       ],
     },
-    { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
+    {
+      name: 'Docs',
+      to: 'https://docs.cyb.ai',
+      subItems: [],
+      icon: require('images/temple/autonomous-semantic-programs.png'),
+    },
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Teleport',
