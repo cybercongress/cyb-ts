@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { MenuItem } from 'src/types/menu';
 import cx from 'classnames';
 import { useMemo } from 'react';
@@ -17,6 +17,7 @@ function SubMenu({ selectedApp, closeMenu }: Props) {
             {
               name: 'main',
               to: selectedApp.to,
+              icon: selectedApp.icon,
             },
             ...selectedApp.subItems,
           ]

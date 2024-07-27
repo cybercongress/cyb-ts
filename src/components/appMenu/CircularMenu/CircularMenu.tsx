@@ -1,4 +1,4 @@
-import getMenuItems from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu/appsMenu';
 import styles from './CircularMenu.module.scss';
 import _ from 'lodash';
 import CircularMenuItem from './CircularMenuItem';

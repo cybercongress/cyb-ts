@@ -4,7 +4,7 @@ import { Nullable, Option } from 'src/types';
 import { Citizenship } from 'src/types/citizenship';
 import { MenuItem, MenuItems } from 'src/types/menu';
 import { Networks } from 'src/types/networks';
-import getMenuItems from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu/appsMenu';
 
 const reduceRobotSubItems = (
   passport: Nullable<Citizenship>,

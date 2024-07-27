@@ -1,4 +1,4 @@
-import getMenuItems from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu/appsMenu';
 import DEFAULT_IMG from 'images/large-orange-circle.png';
 import { Link } from 'react-router-dom';
 import findApp from 'src/utils/findApp';

@@ -11,14 +11,19 @@ const findSelectAppByUrl = (
 ) => {
   let pathname = url;
   const isRobot = url.includes('@') || url.includes('neuron/');
+  const isOracle = url.includes('oracle');
 
-  const getMenuItemsObj = reduceRobotSubItems(passport, address);
+  const itemsMenuObj = reduceRobotSubItems(passport, address);
 
   if (isRobot) {
     pathname = routes.robot.path;
   }
 
-  const value = findApp(getMenuItemsObj, pathname);
+  if (isOracle) {
+    pathname = routes.oracle.path;
+  }
+
+  const value = findApp(itemsMenuObj, pathname);
 
   return value;
 };

@@ -1,7 +1,6 @@
 import nebulaIcon from 'images/temple/nebula.png';
 import teleport from 'images/temple/teleport.png';
 import hfr from 'images/temple/hfr.png';
-import temple from 'images/temple/temple.png';
 import robot from 'images/temple/robot.png';
 import shpere from 'images/temple/shpere.png';
 import senate from 'images/temple/senate.png';
@@ -21,10 +20,14 @@ const getMenuItems = () => {
       icon: robot,
       to: '/robot',
       subItems: [
-        { name: 'sense', to: 'sense' },
-        { name: 'brain', to: 'brain' },
-        { name: 'time', to: 'time' },
-        { name: 'sigma', to: 'sigma' },
+        { name: 'sense', to: 'sense', icon: require('./images/dna.png') },
+        { name: 'brain', to: 'brain', icon: require('./images/brain.png') },
+        {
+          name: 'time',
+          to: 'time',
+          icon: require('./images/horizontal-traffic-light.png'),
+        },
+        { name: 'sigma', to: 'sigma', icon: require('./images/sigma@2x.png') },
       ],
       // subItems: myRobotLinks,
     },
@@ -33,15 +36,40 @@ const getMenuItems = () => {
       to: '/',
       icon: oracle,
       subItems: [
-        { name: 'Particles', to: '/particles' },
-        { name: 'Stats', to: '/oracle/stats' },
-        { name: 'Blocks', to: '/network/bostrom/blocks' },
-        { name: 'Txs', to: '/network/bostrom/tx' },
-        { name: 'Contracts', to: '/contracts' },
-        { name: 'Libs', to: '/libs' },
+        {
+          name: 'Particles',
+          to: '/particles',
+          icon: require('./images/horizontal-traffic-light.png'),
+        },
+        {
+          name: 'Stats',
+          to: '/oracle/stats',
+          icon: require('./images/avatar@2x.png'),
+        },
+        {
+          name: 'Blocks',
+          to: '/network/bostrom/blocks',
+          icon: require('./images/gold-blocks.png'),
+        },
+        {
+          name: 'Txs',
+          to: '/network/bostrom/tx',
+          icon: require('./images/horizontal-traffic-light.png'),
+        },
+        {
+          name: 'Contracts',
+          to: '/contracts',
+          icon: require('./images/doc@2x.png'),
+        },
+        { name: 'Libs', to: '/libs', icon: require('./images/database.png') },
       ],
     },
-    { name: 'Temple', to: routes.temple.path, subItems: [], icon: temple },
+    {
+      name: 'Docs',
+      to: 'https://docs.cyb.ai',
+      subItems: [],
+      icon: require('images/temple/autonomous-semantic-programs.png'),
+    },
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'Teleport',
@@ -49,9 +77,21 @@ const getMenuItems = () => {
       icon: teleport,
       active: false,
       subItems: [
-        { name: 'Send', to: routes.teleport.send.path },
-        { name: 'Bridge', to: routes.teleport.bridge.path },
-        { name: 'Swap', to: routes.teleport.swap.path },
+        {
+          name: 'Send',
+          to: routes.teleport.send.path,
+          icon: require('./images/rocket-send@2x.png'),
+        },
+        {
+          name: 'Bridge',
+          to: routes.teleport.bridge.path,
+          icon: require('./images/arrow-swap@2x.png'),
+        },
+        {
+          name: 'Swap',
+          to: routes.teleport.swap.path,
+          icon: require('./images/swap.png'),
+        },
       ],
     },
     {
@@ -59,16 +99,34 @@ const getMenuItems = () => {
       icon: warp,
       to: '/warp',
       subItems: [
-        { name: 'Add liquidity', to: '/warp/add-liquidity' },
-        { name: 'Create pool', to: '/warp/create-pool' },
-        { name: 'Sub liquidity', to: '/warp/sub-liquidity' },
+        {
+          name: 'Add liquidity',
+          to: '/warp/add-liquidity',
+          icon: require('images/msgs_ic_pooladd.svg'),
+        },
+        {
+          name: 'Create pool',
+          to: '/warp/create-pool',
+          icon: require('images/flask-outline.svg'),
+        },
+        {
+          name: 'Sub liquidity',
+          to: '/warp/sub-liquidity',
+          icon: require('images/msgs_ic_poolremove.svg'),
+        },
       ],
     },
     {
       name: 'Sphere',
       icon: shpere,
       to: routes.sphere.path,
-      subItems: [{ name: 'Heroes at rest', to: routes.sphereJailed.path }],
+      subItems: [
+        {
+          name: 'Heroes at rest',
+          to: routes.sphereJailed.path,
+          icon: require('./images/astronaut.png'),
+        },
+      ],
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
@@ -86,13 +144,13 @@ const getMenuItems = () => {
     CHAIN_ID === Networks.BOSTROM
       ? {
           name: 'Cyberver 🟣',
-          icon: require('../containers/application/images/cyberver.png'),
+          icon: require('./images/cyberver.png'),
           to: 'https://spacepussy.ai/cyberver',
           subItems: [],
         }
       : {
           name: 'cyberver',
-          icon: require('../containers/application/images/cyberver.png'),
+          icon: require('./images/cyberver.png'),
           to: '/cyberver',
           subItems: [
             {
@@ -184,9 +242,21 @@ const getMenuItems = () => {
       icon: portal,
       to: '/portal',
       subItems: [
-        { name: 'Citizenship', to: '/citizenship' },
-        { name: 'Gift', to: '/gift' },
-        { name: 'Map', to: routes.portal.routes.map.path },
+        {
+          name: 'Citizenship',
+          to: '/citizenship',
+          icon: require('./images/identification-card.png'),
+        },
+        {
+          name: 'Gift',
+          to: '/gift',
+          icon: require('./images/wrapped-gift.png'),
+        },
+        {
+          name: 'Map',
+          to: routes.portal.routes.map.path,
+          icon: require('./images/world-map.png'),
+        },
         // { name: 'Release', to: '/release' },
       ],
     });
