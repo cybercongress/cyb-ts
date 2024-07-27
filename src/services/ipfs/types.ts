@@ -66,7 +66,7 @@ export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | Readab
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
 
-export type IpfsGatewayContentType = 'video' | 'audio';
+export type IpfsGatewayContentType = 'video' | 'audio' | 'epub';
 export type MimeBasedContentType = 'image' | 'pdf' | 'text' | 'other';
 export type IpfsBaseContentType =
   | IpfsGatewayContentType

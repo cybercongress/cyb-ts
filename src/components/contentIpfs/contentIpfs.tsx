@@ -1,13 +1,15 @@
-import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
 import { CYBER_GATEWAY } from 'src/constants/config';
-import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
-import GatewayContent from './component/gateway';
-import TextMarkdown from '../TextMarkdown';
-import LinkHttp from './component/link';
-import Pdf from '../PDF';
-import Img from './component/img';
-import Audio from './component/Audio/Audio';
+import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
+import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
 import { Option } from 'src/types';
+import EPubView from '../EPubView/EPubView';
+import Pdf from '../PDF';
+import TextMarkdown from '../TextMarkdown';
+import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
+import Audio from './component/Audio/Audio';
+import GatewayContent from './component/gateway';
+import Img from './component/img';
+import LinkHttp from './component/link';
 
 function OtherItem({
   content,
@@ -83,6 +85,12 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <LinkHttp url={details.content!} preview={search} />
           )}
           {contentType === 'html' && <HtmlItem cid={content?.cid} />}
+          {contentType === 'epub' && (
+            <EPubView
+              url={`${CYBER_GATEWAY_URL}/ipfs/${cid}`}
+              search={search}
+            />
+          )}
           {['other', 'cid'].some((i) => i === contentType) && (
             <OtherItem search={search} cid={cid} content={details.content} />
           )}
@@ -91,4 +99,5 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
     </div>
   );
 }
+
 export default ContentIpfs;
