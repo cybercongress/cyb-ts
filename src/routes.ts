@@ -45,6 +45,9 @@ export const routes = {
       energy: {
         path: '/robot/energy',
       },
+      brain: {
+        path: '/robot/brain',
+      },
     },
   },
   robotPassport: {
