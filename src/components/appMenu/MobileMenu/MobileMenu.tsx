@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import getMenuItems from 'src/utils/appsMenu';
+import getMenuItems from 'src/utils/appsMenu/appsMenu';
 import styles from './MobileMenu.module.scss';
 import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
