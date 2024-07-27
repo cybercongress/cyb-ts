@@ -46,6 +46,7 @@ import HubProvider from './contexts/hub';
 
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import ScriptingProvider from './contexts/scripting/scripting';
+import { localStorageKeys } from './constants/localStorageKeys';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -98,6 +99,9 @@ if (container === null) {
 }
 
 const root = createRoot(container);
+
+// temp
+localStorage.removeItem(localStorageKeys.settings.adviserAudio);
 
 function Providers({ children }: { children: React.ReactNode }) {
   return (
