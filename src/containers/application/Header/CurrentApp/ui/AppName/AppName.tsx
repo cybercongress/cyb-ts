@@ -10,6 +10,7 @@ import styles from './AppName.module.scss';
 function AppName() {
   let { pathname } = useLocation();
   const isRobot = pathname.includes('@') || pathname.includes('neuron/');
+  const isOracle = pathname.includes('oracle');
 
   if (isRobot) {
     const pathnameArr = pathname.replace(/^\/|\/$/g, '').split('/');
@@ -18,6 +19,10 @@ function AppName() {
       findItem.includes('@') || findItem.match(PATTERN_CYBER)
         ? routes.robot.path
         : findItem;
+  }
+
+  if (isOracle) {
+    pathname = routes.oracle.path;
   }
 
   const value = findApp(getMenuItems(), pathname);
