@@ -39,7 +39,7 @@ const getMenuItems = () => {
         {
           name: 'Particles',
           to: '/particles',
-          icon: require('./images/horizontal-traffic-light.png'),
+          icon: require('./images/tag@2x.png'),
         },
         {
           name: 'Stats',

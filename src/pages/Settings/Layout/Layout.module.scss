@@ -4,7 +4,7 @@ $size-columns: 200px;
 
 .wrapper {
   display: grid;
-  grid-template-columns: $size-columns minmax($size-columns, calc(62% - $size-columns));
+  grid-template-columns: $size-columns minmax($size-columns, 1fr);
   grid-template-rows: 1fr;
   justify-content: center;
 
@@ -25,6 +25,7 @@ $size-columns: 200px;
 
   > :nth-child(2) {
     left: -2px;
+    margin-right: -2px;
     position: relative;
     overflow-x: auto;
   }
