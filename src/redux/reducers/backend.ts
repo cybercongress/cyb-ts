@@ -11,7 +11,7 @@ import { CommunityDto } from 'src/services/CozoDb/types/dto';
 import { NeuronAddress } from 'src/types/base';
 
 import { removeDublicates } from 'src/utils/list';
-import { clone, List } from 'lodash';
+import { clone } from 'lodash';
 import { SYNC_ENTRIES_TO_TRACK_PROGRESS } from 'src/services/backend/services/sync/services/consts';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 

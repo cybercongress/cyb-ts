@@ -37,16 +37,16 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
     }
 
     async connectToNode(addr: string) {
-      console.log('🐝 connecting to p2p node - ', addr);
+      console.log('🐝 connecting to ipfs node - ', addr);
       super
         .connectPeer(addr)
         .then(() => {
-          console.log(`🐝 connected to p2p node - ${addr}`);
+          console.log(`🐝 connected to ipfs node - ${addr}`);
           return true;
         })
         .catch((err) => {
           console.log(err);
-          console.log(`Can't connect to p2p node ${addr}: ${err.message}`);
+          console.log(`Can't connect to ipfs node ${addr}: ${err.message}`);
           return false;
         });
     }

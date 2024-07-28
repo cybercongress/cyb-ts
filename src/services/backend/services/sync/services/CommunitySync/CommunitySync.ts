@@ -37,7 +37,7 @@ export default function createCommunitySync$(
         !!dbInstance &&
         !!ipfsInstance &&
         !!myAddress &&
-        !!waitForParticleResolve$
+        !!waitForParticleResolve
     ),
     switchMap(([dbApi, myAddress, waitForParticleResolve, ipfsInstance]) => {
       let community: CommunityDto[] = []; // Fix: Add type declaration for community array

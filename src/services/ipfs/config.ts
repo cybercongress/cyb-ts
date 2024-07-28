@@ -15,6 +15,8 @@ export const CYBER_GATEWAY_URL = 'https://gateway.ipfs.cybernode.ai';
 
 export const FILE_SIZE_DOWNLOAD = 20 * 10 ** 6;
 
+export const DEFAUL_P2P_TOPIC = 'cyber';
+
 // eslint-disable-next-line import/no-unused-modules
 export const getIpfsOpts = async () => {
   let ipfsOptsDefault: Omit<IpfsOptsType, 'peerId'> = {

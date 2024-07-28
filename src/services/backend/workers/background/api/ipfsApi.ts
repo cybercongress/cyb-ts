@@ -1,5 +1,4 @@
 import { BehaviorSubject } from 'rxjs';
-import { proxy } from 'comlink';
 
 import QueueManager from 'src/services/QueueManager/QueueManager';
 import {
@@ -16,16 +15,16 @@ import {
 } from 'src/services/ipfs/types';
 import { P2PApi } from './p2pApi';
 
-export const DEFAUL_P2P_TOPIC = 'cyber';
-
 // eslint-disable-next-line import/prefer-default-export
-export const createIpfsApi = (
+const createIpfsApi = (
   p2pApi: P2PApi,
   broadcastApi: BroadcastChannelSender
 ) => {
   const ipfsInstance$ = new BehaviorSubject<CybIpfsNode | undefined>(undefined);
+
   const ipfsQueue = new QueueManager(ipfsInstance$, {});
-  const stopIpfs = async () => {
+
+  const stop = async () => {
     const ipfsNode = ipfsInstance$.getValue();
 
     if (ipfsNode) {
@@ -35,24 +34,20 @@ export const createIpfsApi = (
     broadcastApi.postServiceStatus('ipfs', 'inactive');
   };
 
-  const startIpfs = async (ipfsOpts: IpfsOptsType) => {
+  const start = async (ipfsOpts: IpfsOptsType) => {
     try {
-      const ipfsNode = ipfsInstance$.getValue();
-      if (ipfsNode) {
-        // console.log('Ipfs node already started!');
-        setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
-        return;
-        // await ipfsNode.stop();
-      }
-      broadcastApi.postServiceStatus('ipfs', 'starting');
-      console.time('🔋 ipfs initialized');
-      const libp2p = await p2pApi.start(ipfsOpts);
-      const newIpfsNode = await initIpfsNode(ipfsOpts, libp2p);
-      // p2pApi.connectPeer
-      console.timeEnd('🔋 ipfs initialized');
+      if (ipfsInstance$.getValue()) {
+        broadcastApi.postServiceStatus('ipfs', 'started');
+      } else {
+        broadcastApi.postServiceStatus('ipfs', 'starting');
+        console.time('🔋 ipfs initialized');
+        const libp2p = await p2pApi.start(ipfsOpts);
+        const ipfsNode = await initIpfsNode(ipfsOpts, libp2p);
+        console.timeEnd('🔋 ipfs initialized');
 
-      ipfsInstance$.next(newIpfsNode);
-      setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
+        ipfsInstance$.next(ipfsNode);
+        setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
+      }
     } catch (err) {
       console.log('----ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
@@ -61,7 +56,7 @@ export const createIpfsApi = (
     }
   };
 
-  const getIpfsNode = async (): CybIpfsNode =>
+  const getIpfsNode = async (): Promise<CybIpfsNode> =>
     new Promise((resolve) => {
       const ipfsNode = ipfsInstance$.getValue();
       if (ipfsNode) {
@@ -75,18 +70,17 @@ export const createIpfsApi = (
     });
 
   const api = {
-    start: startIpfs,
-    stop: stopIpfs,
-    config: async () => ipfsInstance$.getValue()?.config,
-    info: async () => ipfsInstance$.getValue()?.info(),
+    start,
+    stop,
+    config: async () => (await getIpfsNode()).config,
+    info: async () => (await getIpfsNode()).info(),
     fetchWithDetails: async (
       cid: string,
       parseAs?: IpfsContentType,
       controller?: AbortController
-    ) =>
-      getIpfsNode().then((node) =>
-        node.fetchWithDetails(cid, parseAs, controller)
-      ),
+    ) => (await getIpfsNode()).fetchWithDetails(cid, parseAs, controller),
+    addContent: async (content: string | File) =>
+      (await getIpfsNode()).addContent(content),
     enqueue: async (
       cid: string,
       callback: QueueItemCallback,
@@ -97,11 +91,11 @@ export const createIpfsApi = (
     dequeue: async (cid: string) => ipfsQueue.cancel(cid),
     dequeueByParent: async (parent: string) => ipfsQueue.cancelByParent(parent),
     clearQueue: async () => ipfsQueue.clear(),
-    addContent: async (content: string | File) =>
-      getIpfsNode().then((node) => node.addContent(content)),
   };
 
   return { ipfsInstance$, ipfsQueue, api };
 };
 
 export type IpfsApi = ReturnType<typeof createIpfsApi>['api'];
+
+export default createIpfsApi;

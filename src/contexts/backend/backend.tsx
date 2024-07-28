@@ -29,11 +29,11 @@ import {
   createP2PApi,
   P2PApi,
 } from 'src/services/backend/workers/background/api/p2pApi';
-import {
-  createIpfsApi,
+import createIpfsApi, {
   IpfsApi,
 } from 'src/services/backend/workers/background/api/ipfsApi';
 import { SenseApi, createSenseApi } from './services/senseApi';
+import { useBackendServiceLoaded, useFollowings } from './hooks';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -96,28 +96,15 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const [ipfsError, setIpfsError] = useState(null);
 
-  const isDbInitialized = useAppSelector(
-    (state) => state.backend.services.db.status === 'started'
-  );
-  const isIpfsInitialized = useAppSelector(
-    (state) => state.backend.services.ipfs.status === 'started'
-  );
-  const isSyncInitialized = useAppSelector(
-    (state) => state.backend.services.sync.status === 'started'
-  );
+  const isDbInitialized = useBackendServiceLoaded('db');
+  const isIpfsInitialized = useBackendServiceLoaded('ipfs');
+  const isSyncInitialized = useBackendServiceLoaded('sync');
+  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
 
-  const { friends, following } = useAppSelector(
-    (state) => state.backend.community
-  );
+  const followings = useFollowings();
 
-  // // TODO: preload from DB
-  const followings = useMemo(() => {
-    return Array.from(new Set([...friends, ...following]));
-  }, [friends, following]);
-
-  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
   const broadcastApi = useMemo(() => new BroadcastChannelSender(), []);
 
   const { api: p2pApi } = useMemo(
@@ -164,9 +151,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
     cozoDbWorkerInstance.init().then(() => {
       // const dbApi = createDbApi();
-      const dbApi = new DbApiWrapper();
-
-      dbApi.init(proxy(cozoDbWorkerInstance));
+      const dbApi = new DbApiWrapper(proxy(cozoDbWorkerInstance));
       setDbApi(dbApi);
       // pass dbApi into background worker
       return backgroundWorkerInstance.injectDb(proxy(dbApi));
@@ -175,6 +160,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
+    backgroundWorkerInstance.setRuneDeps({
+      address: myAddress,
+    });
     dispatch({ type: RESET_SYNC_STATE_ACTION_NAME });
   }, [myAddress, dispatch]);
 
@@ -191,16 +179,13 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
-  useEffect(() => {
-    (async () => {
-      backgroundWorkerInstance.setRuneDeps({
-        address: myAddress,
-        // TODO: proxify particular methods
-        // senseApi: senseApi ? proxy(senseApi) : undefined,
-        // signingClient: signingClient ? proxy(signingClient) : undefined,
-      });
-    })();
-  }, [myAddress]);
+  // useEffect(() => {
+  //   (async () => {
+  //     backgroundWorkerInstance.setRuneDeps({
+  //       address: myAddress,
+  //     });
+  //   })();
+  // }, [myAddress]);
 
   const valueMemo = useMemo(
     () =>

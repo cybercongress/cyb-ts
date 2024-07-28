@@ -18,6 +18,7 @@ import { IpfsOptsType, JsonPeerId } from 'src/services/ipfs/types';
 import {
   CYBERNODE_PUBSUB_NODE,
   CYBERNODE_SWARM_ADDR_WSS,
+  DEFAUL_P2P_TOPIC,
 } from 'src/services/ipfs/config';
 import { multiaddr, protocols } from '@multiformats/multiaddr';
 import { Option } from 'src/types';
@@ -174,7 +175,7 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
         syncPeerList();
       });
 
-      node!.services.pubsub.addEventListener('message', (event) => {
+      node!.services!.pubsub!.addEventListener('message', (event) => {
         const { topic } = event.detail;
         const message = toString(event.detail.data);
         broadcastApi.postP2PMessage(topic, message);
@@ -186,14 +187,9 @@ export const createP2PApi = (broadcastApi: BroadcastChannelSender) => {
         console.timeEnd('🔋 p2p initialized');
 
         connectPeer(CYBERNODE_PUBSUB_NODE)
-          .then(() => subscribeChannel('cyber'))
+          .then(() => subscribeChannel(DEFAUL_P2P_TOPIC))
           .catch(console.error);
 
-        // node!.services!.pubsub.on('cyber', (message) => {
-        //   console.log(`Received message: ${message}`);
-        // });
-
-        const multiaddrs = node!.getMultiaddrs().map((ma) => ma.toString());
         broadcastApi.postServiceStatus('p2p', 'started');
         libp2pInstance$.next(node);
       }, 0);

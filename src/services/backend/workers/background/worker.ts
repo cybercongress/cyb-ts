@@ -1,9 +1,11 @@
-import { proxy, ProxyMarked, ProxyMethods, Remote } from 'comlink';
+import { proxy, Remote } from 'comlink';
 
 import { QueuePriority } from 'src/services/QueueManager/types';
 import { ParticleCid } from 'src/types/base';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { RuneInnerDeps } from 'src/services/scripting/runeDeps';
+import { CybIpfsNode } from 'src/services/ipfs/types';
+import { Option } from 'src/types';
 
 import { exposeWorkerApi } from '../factoryMethods';
 
@@ -15,8 +17,6 @@ import DbApi from '../../services/DbApi/DbApi';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { createMlApi } from './api/mlApi';
 import { createRuneApi } from './api/runeApi';
-import { CybIpfsNode } from 'src/services/ipfs/types';
-import { Option } from 'src/types';
 import { IpfsApi } from './api/ipfsApi';
 
 const createBackgroundWorkerApi = () => {
@@ -27,11 +27,13 @@ const createBackgroundWorkerApi = () => {
   const waitForParticleResolve$ = new Subject<FetchIpfsFunc>();
 
   const injectDb = (db: DbApi) => dbInstance$.next(db);
+
   const injectIpfsNode = (node: Option<CybIpfsNode>) =>
     ipfsInstance$.next(node);
 
   const injectIpfsApi = (ipfsApi: Remote<IpfsApi>) => {
     setInnerDeps({ ipfsApi });
+
     const waitForParticleResolve = (
       cid: ParticleCid,
       priority: QueuePriority = QueuePriority.MEDIUM
@@ -39,10 +41,6 @@ const createBackgroundWorkerApi = () => {
 
     waitForParticleResolve$.next(waitForParticleResolve);
   };
-
-  const params$ = new BehaviorSubject<SyncServiceParams>({
-    myAddress: null,
-  });
 
   const { embeddingApi$, getEmbeddingApi } = createMlApi(
     dbInstance$,
@@ -55,7 +53,9 @@ const createBackgroundWorkerApi = () => {
     broadcastApi
   );
 
-  // const { api: p2pApi } = createP2PApi(broadcastApi);
+  const params$ = new BehaviorSubject<SyncServiceParams>({
+    myAddress: null,
+  });
 
   const serviceDeps = {
     waitForParticleResolve$,

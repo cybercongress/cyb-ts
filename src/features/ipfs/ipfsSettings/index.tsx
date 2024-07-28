@@ -46,21 +46,17 @@ function IpfsSettings() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    let text;
-    let status: AdviserColors = undefined;
     if (!isIpfsInitialized) {
-      text = 'trying to connect to ipfs...';
-      status = 'yellow';
+      setAdviser('trying to connect to ipfs...', 'yellow');
     } else {
-      text = (
+      const text = (
         <>
           manage and store neurones public data drive <br />
           drive storing data forever before the 6th great extinction
         </>
       );
+      setAdviser(text, 'green');
     }
-
-    setAdviser(text, status);
   }, [setAdviser, isIpfsInitialized]);
 
   const onChangeSelect = (item) => {
@@ -78,7 +74,12 @@ function IpfsSettings() {
 
   const onClickReConnect = async () =>
     getIpfsOpts().then((ipfsOpts) => {
-      ipfsApi?.stop().then(() => ipfsApi?.start(ipfsOpts));
+      ipfsApi
+        ?.stop()
+        .then(() => ipfsApi?.start(ipfsOpts))
+        .catch((e) =>
+          setAdviser(`Can't start ipfs node: ${e.toString()}`, 'red')
+        );
     });
 
   const stateProps = {
@@ -105,14 +106,12 @@ function IpfsSettings() {
             <div>
               <ContainerKeyValue>
                 <div>client</div>
-
                 <Select
                   width="300px"
                   valueSelect={valueSelect}
-                  textSelectValue={valueSelect !== '' ? valueSelect : ''}
+                  textSelectValue={valueSelect}
                   onChangeSelect={(item) => onChangeSelect(item)}
                   custom
-                  disabled={!isIpfsInitialized}
                 >
                   {renderOptions(dataOpts)}
                 </Select>
@@ -192,10 +191,6 @@ function IpfsSettings() {
           >
             <Button onClick={onClickReConnect}>Reconnect</Button>
           </Pane>
-          {/* <ActionBar>
-          <Button onClick={onClickReConnect}>Reconnect</Button>
-          <Button onClick={console.log}>Sync drive</Button>
-        </ActionBar> */}
         </div>
       </Display>
       <P2PChat />

@@ -6,8 +6,9 @@ import Display from 'src/components/containerGradient/Display/Display';
 
 import { Input } from 'src/components/Input';
 import { Color, DisplayTitle } from 'src/components';
-import { DEFAUL_P2P_TOPIC } from 'src/services/backend/workers/background/api/ipfsApi';
 import { useBackend } from 'src/contexts/backend/backend';
+import { DEFAUL_P2P_TOPIC } from 'src/services/ipfs/config';
+
 import styles from './drive.scss';
 
 function P2PChat() {
@@ -17,8 +18,7 @@ function P2PChat() {
   const { p2pApi } = useBackend();
   const [msg, setMsg] = React.useState('');
   const [peerAddress, setPeerAddress] = React.useState('');
-  const [isPeerAddressDisabled, setIsPeerAddressDisabled] =
-    React.useState(false);
+  const [isPeerAddressSet, setIsPeerAddressSet] = React.useState(false);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -39,7 +39,7 @@ function P2PChat() {
 
   const onSubmitPeerAddress = (event) => {
     if (event.key === 'Enter') {
-      setIsPeerAddressDisabled(true);
+      setIsPeerAddressSet(true);
       p2pApi?.connectPeer(peerAddress);
     }
   };
@@ -65,16 +65,17 @@ function P2PChat() {
         value={peerAddress}
         onChange={onChangePeerAddress}
         onKeyUp={onSubmitPeerAddress}
-        disabled={isPeerAddressDisabled}
+        disabled={isPeerAddressSet}
       />
-      <Input
-        color={Color.Yellow}
-        placeholder="message something to broadcast and press ENTER..."
-        value={msg}
-        onChange={onChange}
-        onKeyUp={onSubmit}
-        disabled={!isPeerAddressDisabled}
-      />
+      {isPeerAddressSet && (
+        <Input
+          color={Color.Yellow}
+          placeholder="message something to broadcast and press ENTER..."
+          value={msg}
+          onChange={onChange}
+          onKeyUp={onSubmit}
+        />
+      )}
     </Display>
   );
 }

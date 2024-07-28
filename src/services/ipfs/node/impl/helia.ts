@@ -52,9 +52,9 @@ class HeliaNode implements IpfsNode {
   private libp2p?: Libp2p;
 
   async init(options?: InitOptions, libp2p?: Libp2p) {
-    const blockstore = new IDBBlockstore('helia-bs');
     this.libp2p = libp2p;
 
+    const blockstore = new IDBBlockstore('helia-bs');
     await blockstore.open();
 
     const datastore = new IDBDatastore('helia-ds');
@@ -80,27 +80,6 @@ class HeliaNode implements IpfsNode {
   }
 
   cat(cid: string, options: CatOptions = {}) {
-    // const ccid = stringToCid(cid);
-
-    // (async () => {
-    //   const content = await this.node.blockstore.get(ccid);
-    //   debugger;
-    //   const providers = await this.libp2p.contentRouting.findProviders(ccid);
-    //   for (const provider of providers) {
-    //     if (provider.id !== libp2p.peerId.toString()) {
-    //       try {
-    //         const content = await helia.blockstore.get(ccid, {
-    //           peer: provider.id,
-    //         });
-    //         console.log('Content found:', content);
-    //         break;
-    //       } catch (err) {
-    //         console.error('Error fetching content:', err);
-    //       }
-    //     }
-    //   }
-    // })();
-
     return this.fs!.cat(stringToCid(cid), options);
   }
 
@@ -126,10 +105,6 @@ class HeliaNode implements IpfsNode {
       cid = await this.fs!.addBytes(data, optionsV0);
     }
     this.pin(cid.toString(), options);
-    // const cid2 = await this.node.blockstore.put(content);
-    // debugger;
-
-    // await this.libp2p.contentRouting.provide(cid);
 
     return cid.toString();
   }
@@ -146,16 +121,13 @@ class HeliaNode implements IpfsNode {
         results.push(result.toString());
       }
 
-      console.log('------pin', results);
+      console.log('------pinned', results);
     }
-    // console.log('------pinned', cid, isPinned);
     return undefined;
   }
 
   async getPeers() {
-    return this.node!.libp2p!.getConnections().map((c) =>
-      c.remotePeer.toString()
-    );
+    return this.libp2p!.getConnections().map((c) => c.remotePeer.toString());
   }
 
   async stop() {
@@ -167,10 +139,8 @@ class HeliaNode implements IpfsNode {
   }
 
   async connectPeer(address: string) {
-    const { libp2p } = this.node!;
     const conn = await this.libp2p!.dial(multiaddr(address));
-
-    return true;
+    return conn.status === 'open';
   }
 
   ls() {
@@ -179,13 +149,12 @@ class HeliaNode implements IpfsNode {
   }
 
   async info() {
-    const id = this.node!.libp2p.peerId.toString();
-    const agentVersion = this.node!.libp2p!.services!.identify!.host!
+    const id = this.libp2p!.peerId.toString();
+    const agentVersion = this.libp2p!.services!.identify!.host!
       .agentVersion as string;
 
     return { id, agentVersion, repoSize: -1 };
   }
 }
 
-// eslint-disable-next-line import/no-unused-modules
 export default HeliaNode;
