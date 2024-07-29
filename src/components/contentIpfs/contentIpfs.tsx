@@ -1,6 +1,7 @@
 import { CYBER_GATEWAY } from 'src/constants/config';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
+import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
+import { Option } from 'src/types';
 import EPubView from '../EPubView/EPubView';
 import Pdf from '../PDF';
 import TextMarkdown from '../TextMarkdown';
@@ -27,6 +28,10 @@ function OtherItem({
   return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
 }
 
+function HtmlItem({ cid }: { cid: string }) {
+  return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
+}
+
 function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
   if (search) {
     return <div>{`${cid} (gateway)`}</div>;
@@ -36,7 +41,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 
 type ContentTabProps = {
   details: IPFSContentDetails;
-  content?: IPFSContentMaybe;
+  content?: Option<IPFSContent>;
   cid: string;
   search?: boolean;
 };
@@ -79,13 +84,14 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
           {contentType === 'link' && (
             <LinkHttp url={details.content!} preview={search} />
           )}
+          {contentType === 'html' && <HtmlItem cid={content?.cid} />}
           {contentType === 'epub' && (
             <EPubView
               url={`${CYBER_GATEWAY_URL}/ipfs/${cid}`}
               search={search}
             />
           )}
-          {contentType === 'other' && (
+          {['other', 'cid'].some((i) => i === contentType) && (
             <OtherItem search={search} cid={cid} content={details.content} />
           )}
         </>

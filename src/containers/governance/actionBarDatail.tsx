@@ -24,9 +24,12 @@ import {
   Account,
   Input,
   BtnGrd,
+  DenomArr,
+  Select,
 } from '../../components';
 
 import { getTxs } from '../../utils/search/utils';
+// import styles from './ActionBarDetail.module.scss';
 
 import { LEDGER } from '../../utils/config';
 
@@ -179,6 +182,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       <ActionBar>
         <ActionBarContentText>
           <Pane marginRight={10}>send Deposit</Pane>
+          <DenomArr denomValue={BASE_DENOM} onlyImg />
           <div style={{ margin: '0 10px' }}>
             <NumericFormat
               value={valueDeposit}
@@ -191,7 +195,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
               allowLeadingZeros
             />
           </div>
-          <Pane>{BASE_DENOM.toUpperCase()}</Pane>
         </ActionBarContentText>
         <BtnGrd
           text="Deposit"
@@ -209,19 +212,24 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     return (
       <ActionBar>
         <ActionBarContentText>
-          <select
-            style={{ height: 42, width: '200px' }}
-            className="select-green"
-            value={valueSelect}
-            onChange={(e) => setValueSelect(e.target.value)}
-          >
-            <option value={VoteOption.VOTE_OPTION_YES}>Yes</option>
-            <option value={VoteOption.VOTE_OPTION_NO}>No</option>
-            <option value={VoteOption.VOTE_OPTION_ABSTAIN}>Abstain</option>
-            <option value={VoteOption.VOTE_OPTION_NO_WITH_VETO}>
-              No With Veto
-            </option>
-          </select>
+          <Select
+            color="green"
+            width={200}
+            options={[
+              { value: String(VoteOption.VOTE_OPTION_YES), text: 'Yes' },
+              { value: String(VoteOption.VOTE_OPTION_NO), text: 'No' },
+              {
+                value: String(VoteOption.VOTE_OPTION_ABSTAIN),
+                text: 'Abstain',
+              },
+              {
+                value: String(VoteOption.VOTE_OPTION_NO_WITH_VETO),
+                text: 'No With Veto',
+              },
+            ]}
+            valueSelect={String(valueSelect)}
+            onChangeSelect={(value) => setValueSelect(Number(value))}
+          />
         </ActionBarContentText>
         <ButtonImgText
           text={

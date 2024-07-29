@@ -17,7 +17,7 @@ type MenuItem = {
 const links: MenuItem[] = [
   {
     text: 'Sigma',
-    link: '.',
+    link: './sigma',
     description: 'hydrogen',
     name: 'sigma',
     icon: 'Σ',
@@ -111,7 +111,7 @@ const links: MenuItem[] = [
   },
   {
     text: 'Log',
-    link: './log',
+    link: '.',
     name: 'log',
     description: 'tweets',
     icon: '🍀',
@@ -126,7 +126,7 @@ const links: MenuItem[] = [
   {
     text: 'Soul',
     link: './soul',
-    isDisabled: true,
+    // isDisabled: true,
     // description: 'bytes',
     icon: '👻',
   },

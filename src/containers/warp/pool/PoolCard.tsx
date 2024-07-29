@@ -92,7 +92,7 @@ function PoolCard({
 
       {vol24 && (
         <div className={styles.PoolCardContainerMyShares}>
-          <div className={styles.PoolCardContainerMySharesTitle}>Vol 24</div>
+          <div className={styles.PoolCardContainerMySharesTitle}>Vol 24h</div>
           <div>
             <FormatNumberTokens value={vol24.amount} text={vol24.denom} />
           </div>

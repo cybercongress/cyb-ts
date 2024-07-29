@@ -9,6 +9,10 @@ export function isNativeChainId(chain: string) {
   if (chain && Networks[chain.toUpperCase()]) {
     return true;
   }
+  // also temp
+  if (chain && chain === 'space-pussy') {
+    return true;
+  }
   return false;
 }
 

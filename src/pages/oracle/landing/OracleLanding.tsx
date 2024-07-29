@@ -1,7 +1,7 @@
 import { ActionBar, Button, Tabs } from 'src/components';
 import { routes } from 'src/routes';
 import { useEffect, useRef, useState } from 'react';
-import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+// import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
 import { useDevice } from 'src/contexts/device';
@@ -13,8 +13,9 @@ import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 
 import Stats from './Stats/Stats';
-import graphDataPrepared from './graphDataPrepared.json';
+// import graphDataPrepared from './graphDataPrepared.json';
 import { TitleType } from './type';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const mapTitleTypeToTitle = {
   [TitleType.search]: 'search',
@@ -88,25 +89,28 @@ function OracleLanding() {
   const isMobile =
     viewportWidth <= Number(styles.mobileBreakpoint.replace('px', ''));
 
-  useEffect(() => {
-    dispatch(setFocus(true));
+  useAdviserTexts({
+    defaultText: 'ask your question',
+  });
+  // useEffect(() => {
+  //   dispatch(setFocus(true));
 
-    const timeout = setTimeout(() => {
-      setIsRenderGraph(true);
-    }, 1000 * 1.5);
+  //   const timeout = setTimeout(() => {
+  //     setIsRenderGraph(true);
+  //   }, 1000 * 1.5);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [dispatch]);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!ref.current) {
+  //     return;
+  //   }
 
-    ref.current.style.setProperty('--graph-size', `${graphSize}px`);
-  }, [ref, graphSize]);
+  //   ref.current.style.setProperty('--graph-size', `${graphSize}px`);
+  // }, [ref, graphSize]);
 
   const { title, description, text } = listConfig[titleType];
 
@@ -144,7 +148,7 @@ function OracleLanding() {
         <Stats type={titleType} />
       </div>
 
-      {!isMobile && (
+      {/* {!isMobile && (
         <div className={styles.graphWrapper}>
           <Link
             to={routes.brain.path}
@@ -159,7 +163,7 @@ function OracleLanding() {
             />
           )}
         </div>
-      )}
+      )} */}
 
       <div className={styles.footer}>
         {[

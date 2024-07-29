@@ -3,11 +3,24 @@
 .table {
   border-collapse: collapse;
   width: 100%;
+  padding: 0 8px;
 
-  td,
-  th {
-    padding: 18px;
-    text-align: center;
+  tr {
+    th,
+    td {
+      padding: 8px;
+      text-align: center;
+      height: 64px;
+
+      $padding: 16px;
+
+      &:first-of-type {
+        padding-left: $padding;
+      }
+      &:last-of-type {
+        padding-right: $padding;
+      }
+    }
   }
 
   thead {
@@ -15,6 +28,22 @@
 
     th {
       font-weight: 400;
+      position: relative;
+
+      &.sortable {
+        cursor: pointer;
+        white-space: nowrap;
+
+        > span {
+          margin-left: 3px;
+        }
+      }
+
+      &:hover {
+        .resizer {
+          opacity: 1;
+        }
+      }
     }
   }
 
@@ -27,7 +56,7 @@
       }
 
       &.rowSelected {
-        box-shadow: inset 0px 0px 0px 1px #36d6ae;
+        @include tableHover;
       }
 
       &:hover {
@@ -35,4 +64,26 @@
       }
     }
   }
+
+  &.selectable tbody tr {
+    cursor: pointer;
+  }
 }
+
+// .resizer {
+//   position: absolute;
+//   top: 0;
+//   height: 100%;
+//   right: 0;
+//   width: 5px;
+//   background: red;
+//   cursor: col-resize;
+//   user-select: none;
+//   touch-action: none;
+//   opacity: 0;
+// }
+
+// .isResizing {
+//   background: blue;
+//   opacity: 1;
+// }

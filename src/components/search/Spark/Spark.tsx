@@ -50,9 +50,11 @@ function Spark({
           </div>
 
           {/* TODO: refact. meta should be moved inside contentItem and exclude fetchParticle from that  */}
-          <div className={styles.right}>
-            <Meta cid={cid} />
-          </div>
+          {!selfLinks && (
+            <div className={styles.right}>
+              <Meta cid={cid} />
+            </div>
+          )}
         </>
       )}
 
