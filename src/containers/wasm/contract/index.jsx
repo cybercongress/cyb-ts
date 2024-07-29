@@ -13,7 +13,7 @@ import { FlexWrapCantainer, CardCantainer } from '../ui/ui';
 import styles from './stylesContractPage.scss';
 import RenderAbi from './renderAbi';
 import ExecuteTable from './ExecuteTable';
-import { DenomArr } from '../../../components';
+import { DenomArr, MainContainer } from '../../../components';
 import { BASE_DENOM } from 'src/constants/config';
 
 function isStargateMsgExecuteContract(msg) {
@@ -168,7 +168,7 @@ function ContractPage() {
   } = useGetInfoContractAddress(contractAddress, updateFnc);
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <FlexWrapCantainer
         style={{ flexDirection: 'column', width: '60%', boxShadow: 'none' }}
       >
@@ -211,7 +211,7 @@ function ContractPage() {
       <CardCantainer style={{ width: '60%', margin: '0 auto' }}>
         <ExecuteTable executions={executions} />
       </CardCantainer>
-    </main>
+    </MainContainer>
   );
 }
 

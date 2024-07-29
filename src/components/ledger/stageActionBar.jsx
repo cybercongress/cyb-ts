@@ -1,12 +1,10 @@
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
-import { ActionBar, Pane, Text } from '@cybercongress/gravity';
-
+import { Pane, Text } from '@cybercongress/gravity';
 import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { useBackend } from 'src/contexts/backend/backend';
 import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 import { KEY_TYPE } from 'src/pages/Keys/types';
-
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -17,7 +15,7 @@ import { i18n } from '../../i18n/en';
 
 import Button from '../btnGrd';
 import { InputNumber, Input } from '../Input';
-import ActionBarContainer from '../actionBar';
+import ActionBar from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
@@ -27,12 +25,6 @@ const imgRead = require('../../image/duplicate-outline.svg');
 const imgSecrets = require('../../image/secrets_icon.png');
 
 const T = new LocalizedStrings(i18n);
-
-// const toPascalCase = (str) =>
-//   str
-//     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
-//     .map((cht) => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
-//     .join('');
 
 export function ActionBarContentText({ children, ...props }) {
   return (
@@ -50,22 +42,26 @@ export function ActionBarContentText({ children, ...props }) {
   );
 }
 
+// const toPascalCase = (str) =>
+//   str
+//     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
+//     .map((cht) => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
+//     .join('');
+
 export function TransactionSubmitted() {
   return (
     <ActionBar>
-      <ActionBarContentText>
-        Please wait while we confirm the transaction on the blockchain{' '}
-        <Dots big />
-      </ActionBarContentText>
+      Please wait while we confirm the transaction on the blockchain{' '}
+      <Dots big />
     </ActionBar>
   );
 }
 
 export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
   return (
-    <ActionBar>
-      <ActionBarContentText display="inline">
-        <Pane display="inline">Transaction</Pane>{' '}
+    <ActionBar button={{ text: ' Fuck Google', onClick: onClickBtnClose }}>
+      <span>
+        Transaction
         {cosmos ? (
           <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
             {trimString(txHash, 6, 6)}
@@ -74,30 +70,18 @@ export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
           <Link to={`/network/bostrom/tx/${txHash}`}>
             {trimString(txHash, 6, 6)}
           </Link>
-        )}{' '}
-        {txHeight && (
-          <Pane display="inline">
-            was included in the block <br /> at height{' '}
-            {formatNumber(parseFloat(txHeight))}
-          </Pane>
         )}
-      </ActionBarContentText>
-      <Button style={{ margin: '0 10px' }} onClick={onClickBtnClose}>
-        Fuck Google
-      </Button>
+      </span>
     </ActionBar>
   );
 }
 
 export function TransactionError({ onClickBtn, errorMessage }) {
   return (
-    <ActionBar>
-      <ActionBarContentText display="block">
-        Message Error: {errorMessage}
-      </ActionBarContentText>
-      <Button style={{ margin: '0 10px' }} onClick={onClickBtn}>
-        {T.actionBar.confirmedTX.continue}
-      </Button>
+    <ActionBar
+      button={{ text: T.actionBar.confirmedTX.continue, onClick: onClickBtn }}
+    >
+      Message Error: {errorMessage}
     </ActionBar>
   );
 }
@@ -118,7 +102,7 @@ export function StartStageSearchActionBar({
   const { isIpfsInitialized } = useBackend();
   return (
     // use NodeIsLoadingButton component
-    <ActionBarContainer
+    <ActionBar
       button={{
         disabled: !isIpfsInitialized || !contentHash.length,
         onClick: onClickBtn,
@@ -166,7 +150,7 @@ export function StartStageSearchActionBar({
           />
         </Pane>
       </Pane>
-    </ActionBarContainer>
+    </ActionBar>
   );
 }
 
@@ -226,7 +210,7 @@ export function Delegate({
   available,
 }) {
   return (
-    <ActionBarContainer
+    <ActionBar
       onClickBack={onClickBack}
       button={{
         text: T.actionBar.delegate.generate,
@@ -253,7 +237,7 @@ export function Delegate({
       <Text marginLeft={10} fontSize="16px" color="#fff">
         {BASE_DENOM.toUpperCase()}
       </Text>
-    </ActionBarContainer>
+    </ActionBar>
   );
 }
 
@@ -270,7 +254,7 @@ export function ReDelegate({
   onClickBack,
 }) {
   return (
-    <ActionBarContainer
+    <ActionBar
       onClickBack={onClickBack}
       button={{
         text: T.actionBar.delegate.generate,
@@ -315,7 +299,7 @@ export function ReDelegate({
             </option>
           ))}
       </select>
-    </ActionBarContainer>
+    </ActionBar>
   );
 }
 
@@ -329,7 +313,7 @@ export function ActionBarSend({
   onClickBack,
 }) {
   return (
-    <ActionBarContainer
+    <ActionBar
       onClickBack={onClickBack}
       button={{
         text: 'Generate Tx',
@@ -352,7 +336,7 @@ export function ActionBarSend({
           autoFocus={false}
         />
       </div>
-    </ActionBarContainer>
+    </ActionBar>
   );
 }
 
@@ -413,7 +397,7 @@ export function ConnectAddress({
   onClickBack,
 }) {
   return (
-    <ActionBarContainer
+    <ActionBar
       button={{
         disabled: !selectNetwork || !selectMethod,
         text: selectMethod === KEY_TYPE.secrets ? 'Add' : 'Connect',
@@ -462,6 +446,6 @@ export function ConnectAddress({
           text={CHAIN_ID}
         />
       </Pane>
-    </ActionBarContainer>
+    </ActionBar>
   );
 }

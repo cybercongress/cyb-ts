@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
 import SenseList from 'src/features/sense/ui/SenseList/SenseList';
-import styles from './Sense.module.scss';
+import cx from 'classnames';
 import { useAdviser } from 'src/features/adviser/context';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
-import ActionBar from './ActionBar/ActionBar';
 import { useBackend } from 'src/contexts/backend/backend';
 import {
   getSenseChat,
@@ -12,6 +11,9 @@ import {
 } from 'src/features/sense/redux/sense.redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
+import { useRobotContext } from 'src/pages/robot/robot.context';
+import ActionBar from './ActionBar/ActionBar';
+import styles from './Sense.module.scss';
 
 export type AdviserProps = {
   adviser: {
@@ -25,6 +27,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const { senseId: paramSenseId } = useParams<{
     senseId: string;
   }>();
+  const { isOwner } = useRobotContext();
 
   const navigate = useNavigate();
 
@@ -118,22 +121,24 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
 
   return (
     <>
-      <div className={styles.wrapper}>
-        <SenseList
-          select={(id: string) => {
-            setSelected(id);
+      <div className={cx(styles.wrapper, { [styles.NotOwner]: !isOwner })}>
+        {isOwner && (
+          <SenseList
+            select={(id: string) => {
+              setSelected(id);
 
-            if (!paramSenseId) {
-              navigate(`./${id}`);
-            } else {
-              navigate(`../${id}`, {
-                relative: 'path',
-              });
-            }
-          }}
-          selected={selected}
-          adviser={adviserProps}
-        />
+              if (!paramSenseId) {
+                navigate(`./${id}`);
+              } else {
+                navigate(`../${id}`, {
+                  relative: 'path',
+                });
+              }
+            }}
+            selected={selected}
+            adviser={adviserProps}
+          />
+        )}
         <SenseViewer selected={selected} adviser={adviserProps} />
       </div>
 

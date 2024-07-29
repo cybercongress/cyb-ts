@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/redux/store';
-import KeyItem from './KeyItem/KeyItem';
-import { Display, DisplayTitle, MainContainer } from 'src/components';
+import { Display, DisplayTitle } from 'src/components';
 import ActionBar from 'src/pages/Keys/ActionBar/actionBar';
 import { initPocket } from 'src/redux/features/pocket';
-import styles from './Keys.module.scss';
 import { useState } from 'react';
+import styles from './Keys.module.scss';
+import KeyItem from './KeyItem/KeyItem';
 import KeyItemSecrets from './KeyItem/KeyItemSecrets';
 import { KEY_LIST_TYPE } from './types';
 
@@ -30,7 +30,7 @@ function Keys() {
 
   return (
     <>
-      <Display title={<DisplayTitle title="Keys" />}>
+      <Display noPadding title={<DisplayTitle title="Keys" />}>
         <div className={styles.wrapper}>
           {bostromAccounts && bostromAccounts.length > 0 ? (
             bostromAccounts.map(({ cyber: account }) => {

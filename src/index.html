@@ -28,6 +28,31 @@
       content="upload your brain into planet scale superintelligence"
     />
     <meta property="og:image" content="/images/preview.png" />
+
+    <script>
+      if ('<%= process.env.NODE_ENV %>' === 'production') {
+        const commitSHA = document.querySelector(
+          'meta[name="commit-version"]'
+        ).content;
+
+        if (!commitSHA) {
+          console.error('Commit SHA is not defined');
+        } else {
+          console.info(
+            `%c Commit of build: ${commitSHA}`,
+            'color: #36d6ae; font-size: 20px; font-weight: bold;'
+          );
+          console.info(
+            `%c https://github.com/cybercongress/cyb/commit/${commitSHA}`,
+            'font-weight: bold; font-size: 16px;'
+          );
+        }
+      }
+    </script>
+
+    <script>
+      window.cyb = {};
+    </script>
   </head>
   <body>
     <div id="root">
@@ -38,27 +63,20 @@
       </div>
     </div>
 
-    <script>
-      const commitSHA = document.querySelector(
-        'meta[name="commit-version"]'
-      ).content;
-
-      if (process.env.NODE_ENV === 'development') {
-        return;
-      }
-
-      console.info(
-        `%c Commit of build: ${commitSHA}`,
-        'color: #36d6ae; font-size: 20px; font-weight: bold;'
-      );
-      console.info(
-        `%c https://github.com/cybercongress/cyb/commit/${commitSHA}`,
-        'font-weight: bold; font-size: 16px;'
-      );
-    </script>
+    <script
+      defer
+      data-domain="ready.cyb.ai"
+      src="https://metrics.cyb.ai/js/script.js"
+    ></script>
   </body>
 
   <script>
     window.cyb = {};
   </script>
+
+  <script
+    defer
+    data-domain="cyb.ai"
+    src="https://metrics.cyb.ai/js/script.js"
+  ></script>
 </html>

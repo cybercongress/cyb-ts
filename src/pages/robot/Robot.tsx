@@ -1,54 +1,60 @@
 import { Route, Routes } from 'react-router-dom';
 import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
-import FeedsTab from 'src/pages/robot/_refactor/account/tabs/feeds';
-import FollowsTab from 'src/pages/robot/_refactor/account/tabs/follows';
-import Heroes from 'src/pages/robot/_refactor/account/tabs/heroes';
-import TableDiscipline from 'src/containers/gol/table';
-import IpfsSettings from 'src/features/ipfs/ipfsSettings';
 import Sigma from 'src/containers/sigma';
-import Taverna from 'src/containers/taverna';
+import RoutedEnergy from 'src/containers/energy';
+import TableDiscipline from 'src/containers/gol/table';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import Layout from './Layout/Layout';
-import RoutedEnergy from '../../containers/energy/index';
-import UnderConstruction from './UnderConstruction/UnderConstruction';
-import ZeroUser from './ZeroUser/ZeroUser';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
-import Karma from './Karma/Karma';
 import SensePage from './SensePage';
+import LayoutRoot from './Layout/LayoutRoot/Layout';
+import ZeroUser from './ZeroUser/ZeroUser';
+import FeedsTab from './_refactor/account/tabs/feeds/feeds';
+import UnderConstruction from './UnderConstruction/UnderConstruction';
+import Heroes from './_refactor/account/tabs/heroes';
+import Karma from './Karma/Karma';
+import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
 
 function RobotRoutes() {
-  const { isOwner, isLoading, address } = useRobotContext();
+  const { isLoading, address } = useRobotContext();
 
   const newUser = !isLoading && !address;
+
+  useAdviserTexts({
+    defaultText: 'my robot',
+  });
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={newUser ? <ZeroUser /> : <Sigma />} />
-        <Route path="timeline" element={<TxsTable />} />
-        <Route path="chat" element={<UnderConstruction />} />
-        <Route path="badges" element={<TableDiscipline />} />
-        <Route path="items" element={<UnderConstruction />} />
-        <Route path="security" element={<Heroes />} />
-        <Route path="skills" element={<UnderConstruction />} />
-        <Route path="rights" element={<UnderConstruction />} />
+        {newUser ? (
+          <Route index element={<ZeroUser />} />
+        ) : (
+          <Route element={<LayoutRoot />}>
+            <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
+            <Route path="soul" element={<Soul />} />
+            {['energy', 'energy/:pageId'].map((path) => (
+              <Route key={path} path={path} element={<RoutedEnergy />} />
+            ))}
 
-        <Route path="sense-old" element={<Taverna />} />
+            <Route path="swarm" element={<Follows />} />
+            <Route path="security" element={<Heroes />} />
+            <Route path="rights" element={<UnderConstruction />} />
+            <Route path="karma" element={<Karma />} />
+            <Route path="badges" element={<TableDiscipline />} />
+          </Route>
+        )}
+
+        <Route path="sigma" element={<Sigma />} />
+        <Route path="time" element={<TxsTable />} />
 
         {['sense', 'sense/:senseId'].map((path) => (
           <Route key={path} path={path} element={<SensePage />} />
         ))}
 
-        <Route
-          path="drive"
-          element={isOwner ? <IpfsSettings /> : <UnderConstruction />}
-        />
-        <Route path="log" element={<FeedsTab />} />
-        <Route path="energy/*" element={<RoutedEnergy />} />
-        <Route path="swarm" element={<FollowsTab />} />
-        <Route path="brain" element={<Brain />} />
-        <Route path="karma" element={<Karma />} />
-        <Route path="soul" element={<Soul />} />
+        <Route path="brain/*" element={<Brain />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

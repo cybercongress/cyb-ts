@@ -1,6 +1,6 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Dots } from 'src/components';
 import styles from './InfiniteScrollDataTsx.module.scss';
+import Loader2 from 'src/components/ui/Loader2';
 
 type Props = {
   dataLength: number;
@@ -16,12 +16,7 @@ function InfiniteScrollDataTsx({ dataLength, next, hasMore, children }: Props) {
       dataLength={dataLength}
       next={next}
       hasMore={hasMore}
-      loader={
-        <h4>
-          Loading
-          <Dots />
-        </h4>
-      }
+      loader={<Loader2 text="loading swap history" />}
     >
       {children}
     </InfiniteScroll>

@@ -57,9 +57,32 @@ export const Left: Story = {
   },
 };
 
-export const WithNoPadding: Story = {
+export const WithNoHorizontalPadding: Story = {
   args: {
     ...defaultArgs,
     noPaddingX: true,
   },
+};
+
+export const WithNoVerticalPadding: Story = {
+  args: {
+    ...defaultArgs,
+    noPaddingY: true,
+  },
+};
+
+export const Custom: Story = {
+  render: () => (
+    <Display
+      color="green"
+      noPaddingX
+      noPaddingY
+      title={<DisplayTitle title={title} color="yellow" />}
+    >
+      <DisplayTitle title={title} color="red" inDisplay />
+      <DisplayTitle title={title} color="green" inDisplay />
+      <DisplayTitle title={title} color="purple" inDisplay />
+      {text100}
+    </Display>
+  ),
 };

@@ -6,7 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
 import { getRankGrade, searchByHash } from '../../utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { Loading } from '../../components';
+import { Loading, MainContainer } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
 import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
@@ -131,7 +131,7 @@ function Market({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
+      <MainContainer>
         {addressActive === null && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
@@ -207,7 +207,7 @@ function Market({ defaultAccount }) {
             />
           )}
         </ContainerGrid>
-      </main>
+      </MainContainer>
       {!mobile && (
         <ActionBarCont
           addressActive={addressActive}
