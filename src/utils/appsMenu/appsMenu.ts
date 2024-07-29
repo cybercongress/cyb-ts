@@ -16,7 +16,7 @@ import { CHAIN_ID } from 'src/constants/config';
 const getMenuItems = () => {
   const listItemMenu = [
     {
-      name: 'My robot',
+      name: 'robot',
       icon: robot,
       to: '/robot',
       subItems: [
@@ -39,7 +39,7 @@ const getMenuItems = () => {
         {
           name: 'Particles',
           to: '/particles',
-          icon: require('./images/horizontal-traffic-light.png'),
+          icon: require('./images/tag@2x.png'),
         },
         {
           name: 'Stats',

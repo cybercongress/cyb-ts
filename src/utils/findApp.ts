@@ -10,8 +10,8 @@ const findApp = (menuItems: MenuItems, url: string) => {
     if (item.to === url) {
       acc.push(item);
     } else if (findSubItemFc(item.subItems, url).length !== 0) {
-      const findSubItem = findSubItemFc(item.subItems, url);
-      acc.push({ ...item, name: findSubItem[0].name });
+      // const findSubItem = findSubItemFc(item.subItems, url);
+      acc.push(item);
     }
     return acc;
   }, []);
