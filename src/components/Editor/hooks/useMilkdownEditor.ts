@@ -37,22 +37,22 @@ function useMilkdownEditor(
 
   const { get } = editorInfo;
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      (async () => {
-        const editor = get();
-        if (!editor) {
-          return;
-        }
+  // useEffect(() => {
+  //   requestAnimationFrame(() => {
+  //     (async () => {
+  //       const editor = get();
+  //       if (!editor) {
+  //         return;
+  //       }
 
-        editor.use(remarkCybSyntaxPlugin);
-        editor.use(markSchemaCybSyntax);
-        editor.use([inputRuleAsk, inputRuleNeuron]);
+  //       editor.use(remarkCybSyntaxPlugin);
+  //       editor.use(markSchemaCybSyntax);
+  //       editor.use([inputRuleAsk, inputRuleNeuron]);
 
-        await editor.create();
-      })();
-    });
-  }, [get]);
+  //       await editor.create();
+  //     })();
+  //   });
+  // }, [get]);
 
   return editorInfo;
 }
