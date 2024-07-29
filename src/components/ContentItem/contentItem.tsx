@@ -6,7 +6,6 @@ import useParticle from 'src/hooks/useParticle';
 import type { IpfsContentType } from 'src/services/ipfs/types';
 import { $TsFixMe } from 'src/types/tsfix';
 
-
 import SearchItem from '../SearchItem/searchItem';
 
 import { getRankGrade } from '../../utils/search/utils';

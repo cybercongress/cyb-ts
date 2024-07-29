@@ -17,7 +17,7 @@ function FirstTx({ address }: Props) {
       return undefined;
     }
 
-    const timestamp = data?.tx_responses[0].timestamp as string | undefined;
+    const timestamp = data.tx_responses[0]?.timestamp as string | undefined;
 
     if (!timestamp) {
       return undefined;
