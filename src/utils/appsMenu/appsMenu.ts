@@ -16,7 +16,7 @@ import { CHAIN_ID } from 'src/constants/config';
 const getMenuItems = () => {
   const listItemMenu = [
     {
-      name: 'My robot',
+      name: 'robot',
       icon: robot,
       to: '/robot',
       subItems: [
