@@ -19,7 +19,7 @@ function useQueryClientMethod<T extends keyof CyberClient>(
   >(
     ['queryClientMethod', methodName, memoParams],
     () => {
-      const func = queryClient![methodName].bind(queryClient);
+      const func = queryClient![methodName];
 
       // refactor
       if (memoParams) {
