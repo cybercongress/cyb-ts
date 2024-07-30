@@ -24,7 +24,6 @@ function AdviserMeta({ cid, type, size }: Props) {
 
         {!!rank && (
           <div className={styles.rank}>
-            <span>with rank</span>
             <span className={styles.number}>
               {rank.toLocaleString().replaceAll(',', ' ')}
             </span>
