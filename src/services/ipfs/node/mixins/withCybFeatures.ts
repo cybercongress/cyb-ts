@@ -36,29 +36,32 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
       return !!peers.find((peerId) => peerId === options.swarmPeerId);
     }
 
+    async connectToNode(addr: string) {
+      console.log('🐝 connecting to ipfs node - ', addr);
+      super
+        .connectPeer(addr)
+        .then(() => {
+          console.log(`🐝 connected to ipfs node - ${addr}`);
+          return true;
+        })
+        .catch((err) => {
+          console.log(err);
+          console.log(`Can't connect to ipfs node ${addr}: ${err.message}`);
+          return false;
+        });
+    }
+
     async reconnectToSwarm(forced = false) {
       const isConnectedToSwarm = await this.isConnectedToSwarm();
       if (!isConnectedToSwarm || forced) {
         // TODO: refactor using timeout for node config
-
         //   const needToReconnect =
         //     Date.now() - lastConnectedTimestamp <
         //     DEFAULT_CONNECTION_LIFETIME_SECONDS;
-        super
-          .connectPeer(options.swarmPeerAddress)
-          .then(() => {
-            console.log(`🐝 connected to swarm - ${options.swarmPeerAddress}`);
-            return true;
-          })
-          .catch((err) => {
-            console.log(
-              `Can't connect to swarm ${options.swarmPeerAddress}: ${err.message}`
-            );
-            return false;
-          });
+        await this.connectToNode(options.swarmPeerAddress);
       }
     }
   };
 }
 
-export { withCybFeatures };
+export default withCybFeatures;

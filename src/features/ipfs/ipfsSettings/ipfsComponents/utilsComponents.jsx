@@ -17,9 +17,8 @@ function ContainerKeyValue({ children }) {
 }
 
 const renderOptions = (data, selected) => {
-  let items = {};
   if (data !== null) {
-    items = (
+    return (
       <>
         {data
           .filter((item) => item !== selected)
@@ -29,7 +28,7 @@ const renderOptions = (data, selected) => {
       </>
     );
   }
-  return items;
+  return null;
 };
 
 const updateIpfsStateType = (newTypeValue) => {

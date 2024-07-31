@@ -1,6 +1,7 @@
 export type NeuronAddress = string;
 export type ParticleCid = string;
 export type TransactionHash = string;
+export type NeuronPeerId = string;
 
 export type CyberLinkSimple = {
   from: ParticleCid;

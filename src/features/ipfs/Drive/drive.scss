@@ -29,6 +29,11 @@
   font-size: 1.2em;
 }
 
+.subTitle {
+  font-size: 1.2em;
+  margin: 20px 0 20px;
+}
+
 .commandPanel {
   display: flex;
   justify-content: space-between;
@@ -73,6 +78,11 @@
   padding-left: 20px;
   font-size: 0.85em;
 }
+.doubleTabbed {
+  padding-left: 40px;
+  font-size: 0.85em;
+  text-transform: none !important;
+}
 
 .buttonPanel {
   padding-top: 16px;
@@ -86,4 +96,16 @@
   align-items: center;
   display: flex;
   flex-direction: column;
+}
+
+.messages {
+  padding: 12px 0;
+  font-family: monospace;
+}
+
+.green1 {
+  color: #00ff7f;
+}
+.green2 {
+  color: #00ff00;
 }

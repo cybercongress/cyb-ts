@@ -4,6 +4,7 @@ import {
   ServiceStatus,
   BroadcastChannelMessage,
   MlSyncState,
+  P2PStatusMessage,
 } from 'src/services/backend/types/services';
 import { assocPath } from 'ramda';
 import { CommunityDto } from 'src/services/CozoDb/types/dto';
@@ -20,6 +21,7 @@ type BackendState = {
   dbPendingWrites: number;
   syncState: SyncState;
   mlState: MlSyncState;
+  p2p: P2PStatusMessage['value'] & { messages: Record<string, string[]> };
   community: {
     isLoaded: boolean;
     raw: CommunityDto[];
@@ -57,9 +59,11 @@ const initialState: BackendState = {
   },
   syncState: initialSyncState,
   mlState: { entryStatus: {} },
+  p2p: { peers: [], addresses: [], messages: {} },
   services: {
     db: { status: 'inactive' },
     ipfs: { status: 'inactive' },
+    p2p: { status: 'inactive' },
     sync: { status: 'inactive' },
     ml: { status: 'inactive' },
     rune: { status: 'inactive' },
@@ -193,6 +197,21 @@ function backendReducer(
         state
       );
       return newState;
+    }
+    case 'p2p_status': {
+      return { ...state, p2p: { ...state.p2p, ...action.value } };
+    }
+
+    case 'p2p_msg': {
+      const { topic, message } = action.value;
+
+      const messages = { ...state.p2p.messages };
+      if (!messages[topic]) {
+        messages[topic] = [];
+      }
+      // Create a new array with the new message added
+      messages[topic] = [...messages[topic], message];
+      return { ...state, p2p: { ...state.p2p, messages } };
     }
 
     default:

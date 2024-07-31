@@ -44,6 +44,7 @@ import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
 
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { CustomHeaders, XCybSourceValues } from './constants';
+import { Remote } from 'comlink';
 
 const QUEUE_DEBOUNCE_MS = 33;
 const CONNECTION_KEEPER_RETRY_MS = 15000;
@@ -65,14 +66,7 @@ const strategies = {
     },
     ['db', 'node', 'gateway']
   ),
-  embedded: new QueueStrategy(
-    {
-      db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
-    },
-    ['db', 'gateway', 'node']
-  ),
+
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
@@ -88,7 +82,7 @@ type QueueMap = Map<ParticleCid, QueueItem>;
 class QueueManager {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
-  private node: CybIpfsNode | undefined = undefined;
+  private node: Remote<CybIpfsNode> | undefined = undefined;
 
   private strategy: QueueStrategy;
 
@@ -108,14 +102,16 @@ class QueueManager {
     this.strategy = strategy;
   }
 
-  public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
+  public async setNode(
+    node: Remote<CybIpfsNode>,
+    customStrategy?: QueueStrategy
+  ) {
+    const nodeType = await node.nodeType;
     console.log(
-      `* switch node from ${this.node?.nodeType || '<none>'} to ${
-        node.nodeType
-      }`
+      `* switch node from ${this.node?.nodeType || '<none>'} to ${nodeType}`
     );
     this.node = node;
-    this.switchStrategy(customStrategy || strategies[node.nodeType]);
+    this.switchStrategy(customStrategy || strategies[nodeType]);
   }
 
   private getItemBySourceAndPriority(queue: QueueMap) {
@@ -164,7 +160,7 @@ class QueueManager {
       executionTime: Date.now(),
       controller: new AbortController(),
     } as QueueItem);
-    // debugCid(cid, 'fetchData', cid, source);
+    debugCid(cid, 'fetchData', cid, source);
     callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(async () => {
@@ -175,6 +171,8 @@ class QueueManager {
           [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
         },
       }).then((content) => {
+        debugCid(cid, 'enqueueParticleSave', cid, source);
+
         // put saveto db msg into bus
         if (content && source !== 'db') {
           enqueueParticleSave(content);
@@ -292,7 +290,7 @@ class QueueManager {
       }
     });
 
-    this.strategy = strategy || strategies.embedded;
+    this.strategy = strategy || strategies.helia;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
 
     // Little hack to handle keep-alive connection to swarm cyber node
@@ -322,7 +320,7 @@ class QueueManager {
 
     isInitialized$.subscribe((isInitialized) => {
       isInitialized && console.log('🚦 ipfs queue initialized');
-      this.node?.reconnectToSwarm(true);
+      this.node?.reconnectToSwarm(false);
     });
 
     this.queue$

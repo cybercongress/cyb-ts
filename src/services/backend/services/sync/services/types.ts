@@ -12,5 +12,5 @@ export type ServiceDeps = {
   params$: Observable<SyncServiceParams> | undefined;
   followings$?: Observable<NeuronAddress[]>;
   embeddingApi$: Observable<EmbeddingApi>;
-  waitForParticleResolve?: FetchIpfsFunc;
+  waitForParticleResolve$: Observable<FetchIpfsFunc>;
 };
