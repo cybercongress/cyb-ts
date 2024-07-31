@@ -49,7 +49,7 @@ function SenseList({ select, selected }: Props) {
 
   return (
     <div className={styles.wrapper}>
-      <Display noPaddingX>
+      <Display noPadding>
         <div className={styles.filters}>
           <SenseListFilters
             selected={filter}

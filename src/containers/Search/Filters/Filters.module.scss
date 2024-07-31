@@ -23,3 +23,11 @@
     color: rgba(255, 255, 255, 0.78);
   }
 }
+
+.neuronFilter {
+  margin: 0 auto;
+
+  > * {
+    min-width: 380px;
+  }
+}

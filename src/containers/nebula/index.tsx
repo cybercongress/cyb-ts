@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import { DENOM_LIQUID } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import {
   DenomArr,
   ContainerGradient,
@@ -15,8 +17,6 @@ import {
 import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, NebulaImg } from './components';
-import { useAdviser } from 'src/features/adviser/context';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 function Title({
   capData,
@@ -46,11 +46,9 @@ function Nebula() {
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser('nebula');
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'welcome to nebula',
+  });
 
   useEffect(() => {
     if (Object.keys(dataTotalSupply).length > 0) {
@@ -187,7 +185,7 @@ function Nebula() {
   }, [dataRenderItems]);
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
         title={<Title capData={capData} />}

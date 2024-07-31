@@ -6,17 +6,17 @@ import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { GasPrice } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CHAIN_ID } from 'src/constants/config';
 import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useBackend } from 'src/contexts/backend/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import { useAppDispatch } from 'src/redux/hooks';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { Nullable } from 'src/types';
 import { Citizenship } from 'src/types/citizenship';
 import { getKeplr } from 'src/utils/keplrUtils';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 
 import {
   ActionBar as ActionBarSteps,
@@ -33,16 +33,20 @@ import {
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import STEP_INFO from './utils';
-import {
-  addAddress,
-  deleteAddress,
-} from '../../../features/passport/passports.redux';
+
 import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
 import imgKeplr from '../../../image/keplr-icon.svg';
 import imgMetaMask from '../../../image/mm-logo.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
+import imgSpacePussy from '../../../image/space-pussy.svg';
 import imgTerra from '../../../image/terra.svg';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import {
+  addAddress,
+  deleteAddress,
+} from '../../../features/passport/passports.redux';
 import { TxHash } from '../hook/usePingTxs';
 import { ClaimMsg } from './type';
 
@@ -118,12 +122,16 @@ function ActionBarPortalGift({
   const { isIpfsInitialized, ipfsApi } = useBackend();
 
   const navigate = useNavigate();
+  const location = useLocation();
+
   const { signer, signingClient, initSigner } = useSigningClient();
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
-  const { defaultAccount } = useAppSelector((store) => store.pocket);
-  const currentAddress = defaultAccount.account?.cyber?.bech32;
+
+  const currentAddress = useCurrentAddress();
+
+  const isGiftPage = location.pathname === '/gift';
 
   const [currentTx, setCurrentTx] = useState<{
     hash: string;
@@ -612,22 +620,32 @@ function ActionBarPortalGift({
         }}
       >
         <ButtonIcon
+          onClick={() => setSelectNetwork('cosmoshub')}
+          active={selectNetwork === 'cosmoshub'}
+          img={imgCosmos}
+          text="cosmoshub"
+        />
+        <ButtonIcon
           onClick={() => setSelectNetwork('osmosis')}
           active={selectNetwork === 'osmosis'}
           img={imgOsmosis}
           text="osmosis"
         />
+
+        {!isGiftPage && (
+          <ButtonIcon
+            onClick={() => setSelectNetwork('space-pussy')}
+            active={selectNetwork === 'space-pussy'}
+            img={imgSpacePussy}
+            text="space pussy"
+          />
+        )}
+
         <ButtonIcon
           onClick={() => setSelectNetwork('columbus-5')}
           active={selectNetwork === 'columbus-5'}
           img={imgTerra}
           text="terra"
-        />
-        <ButtonIcon
-          onClick={() => setSelectNetwork('cosmoshub')}
-          active={selectNetwork === 'cosmoshub'}
-          img={imgCosmos}
-          text="cosmoshub"
         />
       </ActionBarSteps>
     );

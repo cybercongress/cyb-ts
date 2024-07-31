@@ -8,13 +8,17 @@
   position: relative;
   min-height: 230px;
 
-  >img {
+  > img {
     height: auto;
   }
 
   .imageWrapper {
     position: relative;
-
+    width: 226px;
+    height: 227px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
     .active {
       position: absolute;
       left: 0;
@@ -25,7 +29,7 @@
   .content {
     line-height: 30px;
 
-    >* {
+    > * {
       line-height: initial;
     }
 
@@ -70,4 +74,8 @@
   .passportMain {
     color: var(--green-light);
   }
+}
+
+.pointer {
+  cursor: pointer;
 }

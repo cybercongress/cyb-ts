@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { Keplr } from '@keplr-wallet/types';
 import _ from 'lodash';
@@ -19,6 +18,7 @@ import { CybSignerClient } from 'src/utils/CybSignerClient';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
 import { accountsKeplr } from 'src/utils/utils';
+
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
 //   keplr: Keplr;

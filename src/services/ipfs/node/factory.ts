@@ -54,8 +54,6 @@ export async function initIpfsNode(
   //   instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
   // window.ipfs = instance;
 
-  console.log('----init', ipfsNodeType);
-
   await instance.reconnectToSwarm();
   return instance;
 }

@@ -18,12 +18,18 @@ import { useAdviser } from 'src/features/adviser/context';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { routes } from 'src/routes';
 
+import AdviserContainer from 'src/features/adviser/AdviserContainer';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { initCyblog } from 'src/utils/logging/bootstrap';
 import { setNavigate } from 'src/utils/shareNavigation';
-import AdviserContainer from 'src/features/adviser/AdviserContainer';
 
+
+
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
+import { PreviousPageProvider } from 'src/contexts/previousPage';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
@@ -77,12 +83,20 @@ function App() {
 
   useEffect(() => {
     // tabs
-    if (matchPath(routes.senateProposal.path, location.pathname)) {
+    if (
+      [cybernetRoutes.verse.path, routes.senateProposal.path].some((path) => {
+        return matchPath(path, location.pathname);
+      })
+    ) {
       return;
     }
 
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    dispatch(setTimeHistoryRoute(location.pathname));
+  }, [location.pathname, dispatch]);
 
   useEffect(() => {
     if (ipfsError && !location.pathname.includes('/drive')) {
@@ -110,20 +124,28 @@ function App() {
   // };
 
   return (
-    <MainLayout>
-      <>
-        {/* not move portal order */}
-        {(location.pathname.includes('/brain') ||
-          location.pathname.includes('/oracle2') ||
-          location.pathname.includes('/graph')) && (
-          <div id={PORTAL_ID} className={styles.portal} />
-        )}
+    <PreviousPageProvider>
+      <MainLayout>
+        <>
+          {/* not move portal order */}
+          {(location.pathname.includes('/brain') ||
+            location.pathname.includes('/oracle2') ||
+            location.pathname.includes('/graph')) && (
+            <div id={PORTAL_ID} className={styles.portal} />
+          )}
 
-        {location.pathname !== '/' && <AdviserContainer />}
+          {![
+            /* routes.home.path, */
+            /* routes.teleport.path, */
+            // cybernetRoutes.verse.path,
+          ].some((path) => {
+            return matchPath(path, location.pathname);
+          }) && <AdviserContainer />}
 
-        <Outlet />
-      </>
-    </MainLayout>
+          <Outlet />
+        </>
+      </MainLayout>
+    </PreviousPageProvider>
   );
 }
 

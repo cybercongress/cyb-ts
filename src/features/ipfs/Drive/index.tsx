@@ -6,7 +6,14 @@ import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
 
 import { Pane, Text } from '@cybercongress/gravity';
-import { Button as CybButton, Dots, Loading, Select } from 'src/components';
+import {
+  Button,
+  Button as CybButton,
+  Dots,
+  Input,
+  Loading,
+  Select,
+} from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
@@ -20,6 +27,9 @@ import BackendStatus from './BackendStatus';
 import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
+import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
+import useEmbeddingApi from 'src/hooks/useEmbeddingApi';
+import { useScripting } from 'src/contexts/scripting/scripting';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -38,12 +48,17 @@ function Drive() {
   const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [searchEmbedding, setSearchEmbedding] = useState('');
+  // const [summarizeCid, setSummarizeCid] = useState('');
+  const [outputText, setOutputText] = useState('');
+  // const [questionText, setQuestionText] = useState('');
+  const [embeddingsProcessStatus, setEmbeddingsProcessStatus] = useState('');
+
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { cozoDbRemote, isReady } = useBackend();
-  const { syncState, dbPendingWrites, services } = useAppSelector(
-    (store) => store.backend
-  );
+  const { cozoDbRemote, isReady, ipfsApi } = useBackend();
+  const { embeddingApi } = useScripting();
+  // const embeddingApi = useEmbeddingApi();
 
   // console.log('-----syncStatus', syncState, dbPendingWrites);
 
@@ -140,7 +155,7 @@ function Drive() {
       });
       saveAs(blob, 'export.json');
     } catch (e) {
-      console.log('CozoDb: Failed to import', e);
+      console.log('cozoDb: Failed to import', e);
     }
   };
 
@@ -155,6 +170,77 @@ function Drive() {
     setQueryText(value);
     runQuery(value);
   };
+
+  // const createParticleEmbeddingsClick = async () => {
+  //   const data = await cozoDbRemote?.runCommand(
+  //     '?[cid, text] := *particle{cid, mime, text, blocks, size, size_local, type}, mime="text/plain"',
+  //     true
+  //   );
+
+  //   let index = 0;
+  //   const totalItems = data!.rows.length;
+  //   setEmbeddingsProcessStatus(`Starting... Total particles (0/${totalItems})`);
+
+  //   // eslint-disable-next-line no-restricted-syntax
+  //   for await (const row of data!.rows) {
+  //     const [cid, text] = row;
+  //     const vec = await mlApi?.createEmbedding(text as string);
+  //     const res = await cozoDbRemote?.executePutCommand('embeddings', [
+  //       {
+  //         cid,
+  //         vec,
+  //       } as EmbeddinsDbEntity,
+  //     ]);
+  //     index++;
+  //     setEmbeddingsProcessStatus(
+  //       `Processing particles (${index}/${totalItems})....`
+  //     );
+  //   }
+  //   setEmbeddingsProcessStatus(
+  //     `Embeddings complete for (0/${totalItems}) particles!`
+  //   );
+  // };
+
+  const searchByEmbeddingsClick = async () => {
+    const vec = await embeddingApi?.createEmbedding(searchEmbedding);
+    const queryText = `
+    e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
+    ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
+    `;
+    setQueryText(queryText);
+    runQuery(queryText);
+  };
+
+  // const summarizeClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getSummary(text!);
+  //   setOutputText(output);
+
+  // };
+
+  // const questionClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getQA(questionText, text!);
+  //   setOutputText(output);
+
+  // };
+
+  function onSearchEmbeddingChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+    setSearchEmbedding(value);
+  }
+
+  // function onSummarizeCidChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setSummarizeCid(value);
+  // }
+
+  // function onQuestionChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setQuestionText(value);
+  // }
 
   return (
     <>
@@ -186,7 +272,46 @@ function Drive() {
           </p>
         </Display>
         <BackendStatus />
+        <Pane width="100%">
+          {/* <div className={styles.centerPanel}>
+            <Button small onClick={createParticleEmbeddingsClick}>
+              🤖 create particle embeddings
+            </Button>
+            <div>{embeddingsProcessStatus}</div>
+          </div>
 
+          <div className={styles.buttonPanel}>
+            <Input
+              value={summarizeCid}
+              onChange={(e) => onSummarizeCidChange(e)}
+              placeholder="enter cid:<tokens>"
+            />
+            <Button small onClick={summarizeClick}>
+              🔖 Summarize CID content
+            </Button>
+          </div>
+          <div className={styles.buttonPanel}>
+            <Input
+              value={questionText}
+              onChange={(e) => onQuestionChange(e)}
+              placeholder="enter question..."
+            />
+            <Button small onClick={questionClick}>
+              🔮 Ask question about CID content
+            </Button>
+          </div> */}
+          <div>{outputText}</div>
+          <div className={styles.buttonPanel}>
+            <Input
+              value={searchEmbedding}
+              onChange={(e) => onSearchEmbeddingChange(e)}
+              placeholder="enter sentence...."
+            />
+            <Button small onClick={searchByEmbeddingsClick}>
+              🧬 Search by embedding
+            </Button>
+          </div>
+        </Pane>
         <Pane width="100%">
           <textarea
             placeholder="Enter your query here..."

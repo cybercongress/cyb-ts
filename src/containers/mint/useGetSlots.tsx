@@ -73,7 +73,7 @@ function useGetSlots(addressActive) {
   const [slotsData, setSlotsData] = useState<Slot[]>([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
-  const [balacesResource, setBalacesResource] = useState(initBalacesResource);
+  const [balancesResource, setBalacesResource] = useState(initBalacesResource);
   const [vested, setVested] = useState(initStateVested);
 
   const { data: dataAuthAccounts, refetch: refetchAuthAccounts } = useQuery(
@@ -247,7 +247,7 @@ function useGetSlots(addressActive) {
     slotsData,
     originalVesting,
     loadingAuthAccounts,
-    balacesResource,
+    balancesResource,
     vested,
     update,
   };

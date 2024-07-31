@@ -34,6 +34,7 @@ export type SyncProgress = Partial<{
 export type ServiceStatus = 'inactive' | 'starting' | 'started' | 'error';
 
 export type SyncEntryStatus = Record<SyncEntryName, SyncProgress>;
+export type SyncMlEntryStatus = Record<string, SyncProgress>;
 
 export type SyncState = {
   entryStatus: Partial<SyncEntryStatus>;
@@ -41,8 +42,12 @@ export type SyncState = {
   totalEstimatedTime: number;
   message: string;
   inProgress: boolean;
-  completeIntialSyncEntries: SyncEntryName[];
+  completeIntialSyncEntries: SyncEntryName[] | string[];
   initialSyncDone: boolean;
+};
+
+export type MlSyncState = {
+  entryStatus: Partial<SyncMlEntryStatus>;
 };
 
 export type SyncStatusMessage = {
@@ -58,7 +63,15 @@ export type SyncEntryMessage = {
   };
 };
 
-export type ServiceName = 'db' | 'ipfs' | 'sync';
+export type SyncMlEntryMessage = {
+  type: 'sync_ml_entry';
+  value: {
+    entry: string;
+    state: SyncProgress;
+  };
+};
+
+export type ServiceName = 'db' | 'ipfs' | 'sync' | 'ml' | 'rune';
 
 export type ServiceStatusMessage = {
   type: 'service_status';
@@ -87,6 +100,7 @@ export type BroadcastChannelMessage =
   | IndexedDbWriteMessage
   | ServiceStatusMessage
   | LoadCommunityMessage
+  | SyncMlEntryMessage
   | SetDefaultAccountMessage;
 // | SenseListUpdate
 // | SenseListRemove;
@@ -97,6 +111,8 @@ export const getBroadcastChannemMessageKey = (msg: BroadcastChannelMessage) => {
     case 'service_status':
       return `${type}_${value.name}`;
     case 'sync_entry':
+      return `${type}_${value.entry}`;
+    case 'sync_ml_entry':
       return `${type}_${value.entry}`;
     case 'sync_status':
     default:

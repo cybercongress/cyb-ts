@@ -4,13 +4,11 @@ import { useAppSelector } from 'src/redux/hooks';
 import { useRobotContext } from './robot.context';
 
 function SensePage() {
-  const { isOwner } = useRobotContext();
-
   const keys = useAppSelector(
     (store) => store.pocket.defaultAccount.account?.cyber.keys
   );
 
-  if (!isOwner && !(keys === 'read-only')) {
+  if (!keys || keys === 'read-only') {
     return <Taverna />;
   }
 

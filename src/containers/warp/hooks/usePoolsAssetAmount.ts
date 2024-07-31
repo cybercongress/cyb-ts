@@ -12,19 +12,17 @@ import {
   AssetsType,
 } from '../type';
 import { convertAmount, reduceBalances } from '../../../utils/utils';
+import { useQuery } from '@tanstack/react-query';
 
 const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
   const queryClient = useQueryClient();
   const { marketData } = useAppData();
   const { tracesDenom } = useIbcDenom();
-  const [poolsBal, setPoolsBal] = useState<
-    OptionNeverArray<PoolsWithAssetsType[]>
-  >([]);
+
   const [poolsData, setPoolsData] = useState<
     OptionNeverArray<PoolsWithAssetsCapType[]>
   >([]);
   const [totalCap, setTotalCap] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const lastPoolCapLocalStorage = localStorage.getItem('lastPoolCap');
@@ -42,19 +40,22 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
     // }
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      if (!queryClient || !pools) {
-        return;
-      }
-      setLoading(true);
+  const {
+    data: poolsBal,
+    isLoading,
+    isInitialLoading,
+    isFetching,
+    error,
+  } = useQuery(
+    ['getAllBalances', pools?.map((pool) => pool.id).join(',')],
+    async () => {
       const newArrPools: PoolsWithAssetsType[] = [];
       // eslint-disable-next-line no-restricted-syntax
-      for await (const pool of pools) {
+      for await (const pool of pools!) {
         const assetsData: AssetsType = {};
         const { reserveAccountAddress } = pool;
 
-        const getBalancePromise = await queryClient.getAllBalances(
+        const getBalancePromise = await queryClient!.getAllBalances(
           reserveAccountAddress
         );
 
@@ -69,14 +70,16 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
           newArrPools.push({ ...pool, assets: { ...assetsData } });
         }
       }
+      return newArrPools;
+    },
+    {
+      enabled: Boolean(queryClient && pools?.length > 0),
+    }
+  );
 
-      setPoolsBal(newArrPools);
-      setLoading(false);
-    })();
-  }, [queryClient, pools, tracesDenom]);
-
+  // TODO: replace useEffect with useMemo
   useEffect(() => {
-    if (poolsBal.length > 0) {
+    if (poolsBal?.length > 0) {
       const newArrPools: PoolsWithAssetsCapType[] = [];
       let totalCapTemp = new BigNumber(0);
       poolsBal.forEach((pool) => {
@@ -120,7 +123,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
     }
   }, [poolsBal, marketData]);
 
-  return { poolsData, totalCap, loading };
+  return { poolsData, totalCap, loading: isLoading };
 };
 
 export default usePoolsAssetAmount;

@@ -16,6 +16,8 @@ import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
 import { LEDGER } from 'src/utils/config';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
+import { KEY_TYPE } from '../types';
+import ActionBarSecrets from './actionBarSecrets';
 import ConnectWalletModal from './ConnectWalletModal/ConnectWalletModal';
 import { ConnectMethod } from './types';
 
@@ -24,6 +26,14 @@ const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
 const STAGE_OPEN_MODAL = 2.5;
+const STAGE_ADD_SECRETS = 100;
+
+const checkAddress = (obj, network, address) =>
+  Object.keys(obj).some((k) => {
+    if (obj[k][network]) {
+      return obj[k][network].bech32 === address;
+    }
+  });
 
 function ActionBarConnect({
   addAddress,
@@ -56,14 +66,15 @@ function ActionBarConnect({
 
   const connectAddress = () => {
     switch (connectMethod) {
-      case 'keplr':
+      case KEY_TYPE.keplr:
         connectKeplr();
         break;
-
-      case 'wallet':
+      case KEY_TYPE.secrets:
+        onClickToggleSecrets();
+        break;
+      case KEY_TYPE.wallet:
         setStage(STAGE_OPEN_MODAL);
         break;
-
       default:
         onClickAddAddressUser();
         break;
@@ -79,6 +90,14 @@ function ActionBarConnect({
 
   const onClickAddAddressUser = () => {
     setStage(STAGE_ADD_ADDRESS_USER);
+  };
+
+  const onClickToggleSecrets = () => {
+    setStage(STAGE_ADD_SECRETS);
+  };
+
+  const onClickAddSecrets = () => {
+    console.log('onClickAddSecrets');
   };
 
   const onClickAddAddressUserToLocalStr = async () => {
@@ -216,6 +235,10 @@ function ActionBarConnect({
         </Pane>
       </ActionBar>
     );
+  }
+
+  if (stage === STAGE_ADD_SECRETS) {
+    return <ActionBarSecrets onClickBack={() => setStage(STAGE_INIT)} />;
   }
 
   if (stage === STAGE_ADD_ADDRESS_OK) {

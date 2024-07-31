@@ -6,10 +6,6 @@
   gap: 10px;
   align-items: center;
   padding: 15px 0;
-
-  // &:hover {
-  //   @include tableHover;
-  // }
 }
 
 .containerDetailsBalance {
@@ -79,7 +75,7 @@
 
   &entered {
     opacity: 1;
-    min-height: 320px;
+    min-height: 260px;
     height: 1px;
     margin-top: 30px;
   }

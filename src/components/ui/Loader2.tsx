@@ -2,17 +2,10 @@ import { Dots } from './Dots';
 import styles from './Loading.module.scss';
 
 // temp
-function Loader2() {
+function Loader2({ text = 'loading' }: { text?: string }) {
   return (
     <div className={styles.container}>
-      <span
-        style={{
-          display: 'flex',
-          margin: '15px 100%',
-        }}
-      >
-        loading <Dots />
-      </span>
+      <p>{text}</p> <Dots />
     </div>
   );
 }

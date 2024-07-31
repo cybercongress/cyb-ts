@@ -1,8 +1,9 @@
+@import '../../layouts/variables.module.scss';
+
 .container {
   width: 100vw;
-  height: calc(100vh - 70px);
+  height: calc(100vh - $reservedTopHeight);
   position: fixed;
-  top: 70%;
 }
 
 .containerLoading {

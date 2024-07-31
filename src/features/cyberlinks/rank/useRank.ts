@@ -1,24 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useQueryClient } from 'src/contexts/queryClient';
+import useQueryClientMethod from 'src/hooks/useQueryClientMethod';
 
 function useRank(cid: string) {
-  const [rank, setRank] = useState<number>();
+  const { data } = useQueryClientMethod('rank', [cid]);
 
-  const queryClient = useQueryClient();
+  const rank = data?.rank;
 
-  useEffect(() => {
-    (async () => {
-      if (!queryClient) {
-        return;
-      }
-
-      const response = await queryClient.rank(cid);
-
-      setRank(Number(response.rank));
-    })();
-  }, [cid, queryClient]);
-
-  return rank;
+  return rank ? Number(rank) : undefined;
 }
 
 export default useRank;

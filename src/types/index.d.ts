@@ -6,8 +6,9 @@ export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 declare global {
   interface Window {
-    __TAURI__: any;
     store: Store;
     clipboardData?: DataTransfer;
   }
 }
+
+export type ExtractPromiseType<T> = T extends Promise<infer U> ? U : never;

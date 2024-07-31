@@ -5,7 +5,15 @@
   align-content: stretch;
 
   height: 100%;
-  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
+  max-height: calc(
+    100vh - $reservedTopHeight - $actionBarHeight
+  );
+
+  &.NotOwner {
+    max-height: calc(
+      100vh - $reservedTopHeight - $actionBarHeight - $robotHeaderHeightNotOwner
+    );
+  }
 
   // Display
   > div > div {

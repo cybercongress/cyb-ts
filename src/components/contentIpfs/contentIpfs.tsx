@@ -1,12 +1,15 @@
-import { IPFSContentDetails, IPFSContentMaybe } from 'src/services/ipfs/types';
 import { CYBER_GATEWAY } from 'src/constants/config';
-import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
-import GatewayContent from './component/gateway';
-import TextMarkdown from '../TextMarkdown';
-import LinkHttp from './component/link';
+import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
+import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
+import { Option } from 'src/types';
+import EPubView from '../EPubView/EPubView';
 import Pdf from '../PDF';
-import Img from './component/img';
+import TextMarkdown from '../TextMarkdown';
+import VideoPlayerGatewayOnly from '../VideoPlayer/VideoPlayerGatewayOnly';
 import Audio from './component/Audio/Audio';
+import GatewayContent from './component/gateway';
+import Img from './component/img';
+import LinkHttp from './component/link';
 
 function OtherItem({
   content,
@@ -25,6 +28,10 @@ function OtherItem({
   return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
 }
 
+function HtmlItem({ cid }: { cid: string }) {
+  return <GatewayContent url={`${CYBER_GATEWAY}/ipfs/${cid}`} />;
+}
+
 function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
   if (search) {
     return <div>{`${cid} (gateway)`}</div>;
@@ -34,7 +41,7 @@ function DownloadableItem({ cid, search }: { cid: string; search?: boolean }) {
 
 type ContentTabProps = {
   details: IPFSContentDetails;
-  content?: IPFSContentMaybe;
+  content?: Option<IPFSContent>;
   cid: string;
   search?: boolean;
 };
@@ -66,9 +73,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <VideoPlayerGatewayOnly content={content} details={details} />
           )}
           {contentType === 'text' && (
-            <TextMarkdown preview={search}>
-              {search ? details.text : details.content}
-            </TextMarkdown>
+            <TextMarkdown preview={search}>{details.content}</TextMarkdown>
           )}
           {contentType === 'image' && <Img content={details.content} />}
           {contentType === 'pdf' && details.content && (
@@ -77,7 +82,14 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
           {contentType === 'link' && (
             <LinkHttp url={details.content!} preview={search} />
           )}
-          {contentType === 'other' && (
+          {contentType === 'html' && <HtmlItem cid={content?.cid} />}
+          {contentType === 'epub' && (
+            <EPubView
+              url={`${CYBER_GATEWAY_URL}/ipfs/${cid}`}
+              search={search}
+            />
+          )}
+          {['other', 'cid'].some((i) => i === contentType) && (
             <OtherItem search={search} cid={cid} content={details.content} />
           )}
         </>
@@ -85,4 +97,5 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
     </div>
   );
 }
+
 export default ContentIpfs;

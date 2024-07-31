@@ -3,15 +3,20 @@ import {
   EMPTY,
   Observable,
   catchError,
+  combineLatest,
   debounceTime,
+  distinctUntilChanged,
   filter,
   interval,
   map,
   merge,
   mergeMap,
   of,
+  share,
+  tap,
   throwError,
   timeout,
+  withLatestFrom,
 } from 'rxjs';
 
 import * as R from 'ramda';
@@ -23,7 +28,6 @@ import { ParticleCid } from 'src/types/base';
 import { promiseToObservable } from '../../utils/rxjs/helpers';
 
 import type {
-  IDeferredDbSaver,
   QueueItem,
   QueueItemAsyncResult,
   QueueItemCallback,
@@ -35,12 +39,15 @@ import type {
 
 import { QueueStrategy } from './QueueStrategy';
 
+import { enqueueParticleSave } from '../backend/channels/BackendQueueChannel/backendQueueSenders';
 import BroadcastChannelSender from '../backend/channels/BroadcastChannelSender';
+import { RuneEngine } from '../scripting/engine';
+
 import { QueueItemTimeoutError } from './QueueItemTimeoutError';
 import { CustomHeaders, XCybSourceValues } from './constants';
 
 const QUEUE_DEBOUNCE_MS = 33;
-const CONNECTION_KEEPER_RETRY_MS = 5000;
+const CONNECTION_KEEPER_RETRY_MS = 15000;
 
 function getQueueItemTotalPriority(item: QueueItem): number {
   return (item.priority || 0) + (item.viewPortPriority || 0);
@@ -54,15 +61,15 @@ const strategies = {
   external: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
-      gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
+      gateway: { timeout: 10000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),
   embedded: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 30 },
       gateway: { timeout: 21000, maxConcurrentExecutions: 11 },
     },
     ['db', 'gateway', 'node']
@@ -70,8 +77,8 @@ const strategies = {
   helia: new QueueStrategy(
     {
       db: { timeout: 5000, maxConcurrentExecutions: 999 },
-      node: { timeout: 6 * 1000, maxConcurrentExecutions: 50 }, // TODO: set to 60
-      gateway: { timeout: 3 * 1000, maxConcurrentExecutions: 11 },
+      node: { timeout: 60 * 1000, maxConcurrentExecutions: 50 },
+      gateway: { timeout: 10000, maxConcurrentExecutions: 11 },
     },
     ['db', 'node', 'gateway']
   ),
@@ -83,8 +90,6 @@ class QueueManager {
   private queue$ = new BehaviorSubject<QueueMap>(new Map());
 
   private node: CybIpfsNode | undefined = undefined;
-
-  private defferedDbSaver?: IDeferredDbSaver;
 
   private strategy: QueueStrategy;
 
@@ -105,7 +110,11 @@ class QueueManager {
   }
 
   public async setNode(node: CybIpfsNode, customStrategy?: QueueStrategy) {
-    console.log(`switch node from ${this.node?.nodeType} to ${node.nodeType}`);
+    console.log(
+      `* switch node from ${this.node?.nodeType || '<none>'} to ${
+        node.nodeType
+      }`
+    );
     this.node = node;
     this.switchStrategy(customStrategy || strategies[node.nodeType]);
   }
@@ -125,14 +134,11 @@ class QueueManager {
       const executeCount =
         settings.maxConcurrentExecutions -
         this.executing[queueSource as IpfsContentSource].size;
-
       const itemsByPriority = items
         .sort(
           (a, b) => getQueueItemTotalPriority(b) - getQueueItemTotalPriority(a)
         )
         .slice(0, executeCount);
-
-      // console.log('---itemsByPriority', itemsByPriority);
 
       itemsToExecute.push(...itemsByPriority);
     }
@@ -142,7 +148,6 @@ class QueueManager {
 
   private postSummary() {
     const summary = `(total: ${this.queue$.value.size} |  db - ${this.executing.db.size} node - ${this.executing.node.size} gateway - ${this.executing.gateway.size})`;
-
     this.channel.postServiceStatus('ipfs', 'started', summary);
   }
 
@@ -164,29 +169,27 @@ class QueueManager {
     callbacks.map((callback) => callback(cid, 'executing', source));
 
     return promiseToObservable(async () => {
-      try {
-        const res = await fetchIpfsContent(cid, source, {
-          controller,
-          node: this.node,
-          headers: {
-            [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
-          },
-        }).then((content) => {
-          this.defferedDbSaver?.enqueueIpfsContent(content);
+      return fetchIpfsContent(cid, source, {
+        controller,
+        node: this.node,
+        headers: {
+          [CustomHeaders.XCybSource]: XCybSourceValues.sharedWorker,
+        },
+      }).then((content) => {
+        // put saveto db msg into bus
+        if (content && source !== 'db') {
+          enqueueParticleSave(content);
+        }
 
-          return content;
-        });
-        return res;
-      } catch (e) {
-        console.log('---promtoo', e);
-        throw e;
-      }
+        return content;
+      });
     }).pipe(
       timeout({
         each: settings.timeout,
         with: () =>
           throwError(() => {
             controller?.abort('timeout');
+
             return new QueueItemTimeoutError(settings.timeout);
           }),
       }),
@@ -279,11 +282,9 @@ class QueueManager {
     {
       strategy,
       queueDebounceMs,
-      defferedDbSaver,
     }: {
       strategy?: QueueStrategy;
       queueDebounceMs?: number;
-      defferedDbSaver?: IDeferredDbSaver;
     }
   ) {
     ipfsInstance$.subscribe((node) => {
@@ -294,25 +295,49 @@ class QueueManager {
 
     this.strategy = strategy || strategies.embedded;
     this.queueDebounceMs = queueDebounceMs || QUEUE_DEBOUNCE_MS;
-    this.defferedDbSaver = defferedDbSaver;
 
     // Little hack to handle keep-alive connection to swarm cyber node
     // Fix some lag with node peers(when it shown swarm node in peers but not  connected anymore)
     interval(CONNECTION_KEEPER_RETRY_MS)
-      .pipe(filter(() => this.queue$.value.size > 0 && !!this.node))
-      .subscribe(() => this.node!.reconnectToSwarm(this.lastNodeCallTime));
+      .pipe(
+        filter(
+          () =>
+            !!this.node &&
+            !![...this.queue$.value.values()].find((i) => i.source === 'node')
+        )
+      )
+      .subscribe(() => {
+        // console.log(
+        //   '-----reconnect cnt',
+        //   this.queue$.value.size,
+        //   this.queue$.value
+        // );
+        this.node!.reconnectToSwarm(true);
+      });
+
+    const isInitialized$ = combineLatest([ipfsInstance$]).pipe(
+      map(([ipfsInstance]) => !!ipfsInstance && ipfsInstance?.isStarted),
+      distinctUntilChanged(),
+      share()
+    );
+
+    isInitialized$.subscribe((isInitialized) => {
+      isInitialized && console.log('🚦 ipfs queue initialized');
+      this.node?.reconnectToSwarm(true);
+    });
 
     this.queue$
       .pipe(
-        // tap(() => console.log('----QUEUE')),
+        withLatestFrom(isInitialized$),
+        filter(([, isInitialized]) => isInitialized),
         debounceTime(this.queueDebounceMs),
-        map((queue) => this.cancelDeprioritizedItems(queue)),
+        map(([queue]) => this.cancelDeprioritizedItems(queue)),
         mergeMap((queue) => {
           const workItems = this.getItemBySourceAndPriority(queue);
           // console.log('---workItems', workItems);
           if (workItems.length > 0) {
             // wake up connnection to swarm cyber node
-            this.node?.reconnectToSwarm(this.lastNodeCallTime);
+            this.node?.reconnectToSwarm(false);
 
             return merge(...workItems.map((item) => this.fetchData$(item)));
           }
@@ -471,12 +496,4 @@ class QueueManager {
   }
 }
 
-// TODO: MOVE TO SEPARATE FILE AS GLOBAL VARIABLE
-// const queueManager = new QueueManager<IPFSContentMaybe>();
-
-// if (typeof window !== 'undefined') {
-//   window.qm = queueManager;
-// }
-
-// export { queueManager };
 export default QueueManager;

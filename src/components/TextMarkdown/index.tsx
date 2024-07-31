@@ -1,6 +1,7 @@
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import rehypeStringify from 'rehype-stringify';
 import rehypeSanitize from 'rehype-sanitize';
+import { shortenString } from 'src/utils/string';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import cx from 'classnames';
@@ -39,7 +40,7 @@ function TextMarkdown({
           },
         }}
       >
-        {children}
+        {preview ? shortenString(children) : children}
       </ReactMarkdown>
     </div>
   );

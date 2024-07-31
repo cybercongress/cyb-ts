@@ -5,6 +5,7 @@ import { GetCommandOptions } from 'src/services/CozoDb/types/types';
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types/services';
+import migrate from 'src/services/CozoDb/migrations/migrations';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;
@@ -17,21 +18,29 @@ const createDbWorkerApi = () => {
     postServiceStatus('starting');
 
     if (isInitialized) {
-      console.log('Db: already initialized!');
+      console.log('cozo db - already initialized!');
       postServiceStatus('started');
-      return;
+      return Promise.resolve();
     }
 
     // callback to sync writes count worker -> main thread
     const onWriteCallback = (writesCount: number) => {};
     // channel.post({ type: 'indexeddb_write', value: writesCount });
+    console.time('🔋 cozo db initialized');
 
     await cozoDb.init(onWriteCallback);
+    const reinitializeDbSchema = await migrate(cozoDb);
+    if (reinitializeDbSchema) {
+      await cozoDb.loadDbSchema();
+    }
+    console.timeEnd('🔋 cozo db initialized');
+
     isInitialized = true;
 
     setTimeout(() => {
       postServiceStatus('started');
     }, 0);
+    return Promise.resolve();
   };
 
   const runCommand = async (command: string, immutable?: boolean) =>
@@ -59,7 +68,7 @@ const createDbWorkerApi = () => {
     conditionFields?: string[],
     options: GetCommandOptions = {}
   ) =>
-    cozoDb.get(tableName, conditions, selectFields, conditionFields, options);
+    cozoDb.get(tableName, selectFields, conditions, conditionFields, options);
 
   const importRelations = async (content: string) =>
     cozoDb.importRelations(content);
@@ -77,7 +86,6 @@ const createDbWorkerApi = () => {
 
     const commandFactory = getCommandFactory();
     const putCommand = commandFactory!.generateModifyCommand(tableName, 'put');
-    let isOk = true;
     for (let i = 0; i < array.length; i += batchSize) {
       const batch = array.slice(i, i + batchSize);
 
