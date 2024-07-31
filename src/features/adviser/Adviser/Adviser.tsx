@@ -111,15 +111,40 @@ function Adviser({
     };
   }, [children, ref, color, isOpen]);
 
+  function handleInteraction(e: React.MouseEvent | React.KeyboardEvent) {
+    const { target, currentTarget } = e;
+
+    if (
+      target !== currentTarget &&
+      ['a', 'button'].includes((e.target as any).tagName.toLowerCase())
+    ) {
+      return;
+    }
+
+    setIsOpen(!isOpen);
+  }
+
   return (
     // maybe try use <details> tag
-    <button
-      type="button"
-      disabled={disabled}
+    <div
+      role="button"
       className={cx(styles.wrapper, styles[`color_${color}`], className, {
         [styles.open]: isOpen && children,
+        [styles.disabled]: disabled,
       })}
-      onClick={() => setIsOpen(!isOpen)}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          handleInteraction(e);
+        }
+      }}
+      onClick={(e) => {
+        if (window.getSelection()?.toString()) {
+          return;
+        }
+
+        handleInteraction(e);
+      }}
     >
       <span className={styles.summary}>Adviser</span>
       <div className={styles.content} ref={ref}>
@@ -142,7 +167,7 @@ function Adviser({
         )} */}
         {children}
       </div>
-    </button>
+    </div>
   );
 }
 

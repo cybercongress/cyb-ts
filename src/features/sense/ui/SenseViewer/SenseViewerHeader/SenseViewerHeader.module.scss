@@ -27,32 +27,19 @@
     );
   }
 
-  img {
-    width: auto;
-    max-height: 100px;
-  }
-
   .meta {
     > div {
       min-width: unset;
       padding: 0;
 
+      // content type
       > :nth-child(1) {
         > :nth-child(1) {
           display: none;
         }
-
-        > :nth-child(2) {
-          > span:nth-of-type(1) {
-            display: none;
-          }
-        }
       }
 
-      > :nth-child(2) {
-        // justify-content: left;
-      }
-
+      // moon
       > :last-child {
         > :last-child {
           display: none;
@@ -73,6 +60,11 @@
     max-height: 150px;
     overflow: hidden;
     color: white;
+
+    img {
+      width: auto;
+      max-height: 100px;
+    }
 
     > div {
       display: flex;
