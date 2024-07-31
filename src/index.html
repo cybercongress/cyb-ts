@@ -62,21 +62,13 @@
         <div id="progress-data"></div>
       </div>
     </div>
-
-    <script
-      defer
-      data-domain="ready.cyb.ai"
-      src="https://metrics.cyb.ai/js/script.js"
-    ></script>
   </body>
 
   <script>
-    window.cyb = {};
+    const script = document.createElement('script');
+    script.src = 'https://metrics.cyb.ai/js/script.js';
+    script.setAttribute('data-domain', location.host);
+    script.defer = true;
+    document.body.appendChild(script);
   </script>
-
-  <script
-    defer
-    data-domain="cyb.ai"
-    src="https://metrics.cyb.ai/js/script.js"
-  ></script>
 </html>

@@ -26,8 +26,6 @@ function useGetLinks(
     where.neuron = { _eq: neuron };
   }
 
-  console.log('search neuron:', neuron);
-
   // always no next page when skip
   const [hasNextPage, setHasNextPage] = useState(!skip);
   const [isInitialLoading, setIsInitialLoading] = useState(true);

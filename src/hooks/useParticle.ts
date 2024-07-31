@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useBackend } from 'src/contexts/backend/backend';
-import useQueueIpfsContent from './useQueueIpfsContent';
 import {
   IPFSContentDetails,
   IPFSContentDetailsMutated,
@@ -9,6 +7,7 @@ import { ParticleCid } from 'src/types/base';
 import { parseArrayLikeToDetails } from 'src/services/ipfs/utils/content';
 import { QueueItemStatus } from 'src/services/QueueManager/types';
 import { Option } from 'src/types';
+import useQueueIpfsContent from './useQueueIpfsContent';
 import useRuneMutation from './useRuneMutation';
 
 const useParticle = (

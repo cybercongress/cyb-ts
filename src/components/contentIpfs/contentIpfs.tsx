@@ -73,9 +73,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <VideoPlayerGatewayOnly content={content} details={details} />
           )}
           {contentType === 'text' && (
-            <TextMarkdown preview={search}>
-              {search ? details.text : details.content}
-            </TextMarkdown>
+            <TextMarkdown preview={search}>{details.content}</TextMarkdown>
           )}
           {contentType === 'image' && <Img content={details.content} />}
           {contentType === 'pdf' && details.content && (
