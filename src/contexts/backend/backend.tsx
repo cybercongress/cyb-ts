@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { proxy, Remote } from 'comlink';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
@@ -17,18 +10,24 @@ import { getIpfsOpts } from 'src/services/ipfs/config';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import DbApiWrapper from 'src/services/backend/services/DbApi/DbApi';
 import { CozoDbWorker } from 'src/services/backend/workers/db/worker';
-import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 
 import { DB_NAME } from 'src/services/CozoDb/cozoDb';
 import { RESET_SYNC_STATE_ACTION_NAME } from 'src/redux/reducers/backend';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 // import BroadcastChannelListener from 'src/services/backend/channels/BroadcastChannelListener';
 
-import { Observable } from 'rxjs';
 import { EmbeddingApi } from 'src/services/backend/workers/background/api/mlApi';
-import { SenseApi, createSenseApi } from './services/senseApi';
 import { RuneEngine } from 'src/services/scripting/engine';
-import { Option } from 'src/types';
+import {
+  createP2PApi,
+  P2PApi,
+} from 'src/services/backend/workers/background/api/p2p/p2pApi';
+import createIpfsApi, {
+  IpfsApi,
+} from 'src/services/backend/workers/background/api/ipfsApi';
+import SyncIpfsService from 'src/services/backend/services/sync/services/p2p/SyncIpfsService';
+import { SenseApi, createSenseApi } from './services/senseApi';
+import { useBackendServiceLoaded, useFollowings } from './hooks';
 
 const setupStoragePersistence = async () => {
   let isPersistedStorage = await navigator.storage.persisted();
@@ -48,26 +47,32 @@ const setupStoragePersistence = async () => {
 type BackendProviderContextType = {
   cozoDbRemote: Remote<CozoDbWorker> | null;
   senseApi: SenseApi;
-  ipfsApi: Remote<BackgroundWorker['ipfsApi']> | null;
+  ipfsApi: IpfsApi | null;
+  p2pApi: P2PApi | null;
   dbApi: DbApiWrapper | null;
   ipfsError?: string | null;
   isIpfsInitialized: boolean;
   isDbInitialized: boolean;
   isSyncInitialized: boolean;
   isReady: boolean;
-  embeddingApi$: Promise<Observable<EmbeddingApi>>;
+  getEmbeddingApi: Remote<() => Promise<EmbeddingApi>>;
   rune: Remote<RuneEngine>;
+  p2pSyncService: SyncIpfsService;
 };
 
 const valueContext = {
-  cozoDbRemote: null,
-  senseApi: null,
+  cozoDbRemote: {} as Remote<CozoDbWorker>,
+  senseApi: {} as SenseApi,
   isIpfsInitialized: false,
   isDbInitialized: false,
   isSyncInitialized: false,
   isReady: false,
-  dbApi: null,
-  ipfsApi: null,
+  dbApi: {} as DbApiWrapper,
+  ipfsApi: {} as IpfsApi,
+  p2pApi: {} as P2PApi,
+  rune: {} as RuneEngine,
+  p2pSyncService: {} as SyncIpfsService,
+  getEmbeddingApi: null,
 };
 
 const BackendContext =
@@ -87,31 +92,42 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   const [ipfsError, setIpfsError] = useState(null);
 
-  const isDbInitialized = useAppSelector(
-    (state) => state.backend.services.db.status === 'started'
-  );
-  const isIpfsInitialized = useAppSelector(
-    (state) => state.backend.services.ipfs.status === 'started'
-  );
-  const isSyncInitialized = useAppSelector(
-    (state) => state.backend.services.sync.status === 'started'
-  );
+  const isDbInitialized = useBackendServiceLoaded('db');
+  const isIpfsInitialized = useBackendServiceLoaded('ipfs');
+  const isSyncInitialized = useBackendServiceLoaded('sync');
+  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
 
   const myAddress = useAppSelector(selectCurrentAddress);
 
-  const { friends, following } = useAppSelector(
-    (state) => state.backend.community
+  const followings = useFollowings();
+
+  const broadcastApi = useMemo(() => new BroadcastChannelSender(), []);
+
+  const { api: p2pApi } = useMemo(
+    () => createP2PApi(broadcastApi),
+    [broadcastApi]
   );
 
-  // // TODO: preload from DB
-  const followings = useMemo(() => {
-    return Array.from(new Set([...friends, ...following]));
-  }, [friends, following]);
+  const { ipfsInstance$, api: ipfsApi } = useMemo(
+    () => createIpfsApi(p2pApi, broadcastApi),
+    [p2pApi, broadcastApi]
+  );
 
-  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
-  const [embeddingApi$, setEmbeddingApi] =
-    useState<Option<Observable<EmbeddingApi>>>(undefined);
-  // const embeddingApiRef = useRef<Observable<EmbeddingApi>>();
+  const p2pSyncService = useMemo(
+    () => new SyncIpfsService(ipfsApi, p2pApi),
+    [ipfsApi, p2pApi]
+  );
+
+  useEffect(() => {
+    backgroundWorkerInstance.injectIpfsApi(proxy(ipfsApi));
+
+    ipfsInstance$.subscribe((node: CybIpfsNode | undefined) => {
+      if (node) {
+        backgroundWorkerInstance.injectIpfsNode(proxy(node));
+      }
+    });
+  }, [ipfsApi, ipfsInstance$]);
+
   useEffect(() => {
     console.log(
       process.env.IS_DEV
@@ -119,32 +135,24 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         : '🧬 Starting backend in PROD mode...'
     );
 
-    (async () => {
-      // embeddingApiRef.current = await backgroundWorkerInstance.embeddingApi$;
-      const embeddingApiInstance$ =
-        await backgroundWorkerInstance.embeddingApi$;
-      setEmbeddingApi(embeddingApiInstance$);
-    })();
-
-    setupStoragePersistence();
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channel = new RxBroadcastChannelListener(dispatch);
 
-    backgroundWorkerInstance.ipfsApi
-      .start(getIpfsOpts())
-      .then(() => {
-        setIpfsError(null);
-      })
-      .catch((err) => {
-        setIpfsError(err);
-        console.log(`☠️ Ipfs error: ${err}`);
-      });
+    getIpfsOpts().then((ipfsOpts) => {
+      ipfsApi
+        .start(ipfsOpts)
+        .then(() => {
+          setIpfsError(null);
+        })
+        .catch((err) => {
+          setIpfsError(err);
+          console.log(`☠️ Ipfs error: ${err}`);
+        });
+    });
 
     cozoDbWorkerInstance.init().then(() => {
       // const dbApi = createDbApi();
-      const dbApi = new DbApiWrapper();
-
-      dbApi.init(proxy(cozoDbWorkerInstance));
+      const dbApi = new DbApiWrapper(proxy(cozoDbWorkerInstance));
       setDbApi(dbApi);
       // pass dbApi into background worker
       return backgroundWorkerInstance.injectDb(proxy(dbApi));
@@ -153,6 +161,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     backgroundWorkerInstance.setParams({ myAddress });
+    backgroundWorkerInstance.setRuneDeps({
+      address: myAddress,
+    });
     dispatch({ type: RESET_SYNC_STATE_ACTION_NAME });
   }, [myAddress, dispatch]);
 
@@ -169,29 +180,22 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [isDbInitialized, dbApi, myAddress, followings]);
 
-  useEffect(() => {
-    (async () => {
-      backgroundWorkerInstance.setRuneDeps({
-        address: myAddress,
-        // TODO: proxify particular methods
-        // senseApi: senseApi ? proxy(senseApi) : undefined,
-        // signingClient: signingClient ? proxy(signingClient) : undefined,
-      });
-    })();
-  }, [myAddress]);
-
-  const ipfsApi = useMemo(
-    () => (isIpfsInitialized ? backgroundWorkerInstance.ipfsApi : null),
-    [isIpfsInitialized]
-  );
+  // useEffect(() => {
+  //   (async () => {
+  //     backgroundWorkerInstance.setRuneDeps({
+  //       address: myAddress,
+  //     });
+  //   })();
+  // }, [myAddress]);
 
   const valueMemo = useMemo(
     () =>
       ({
         rune: backgroundWorkerInstance.rune,
-        embeddingApi$: backgroundWorkerInstance.embeddingApi$,
+        getEmbeddingApi: backgroundWorkerInstance.getEmbeddingApi,
         cozoDbRemote: cozoDbWorkerInstance,
         ipfsApi,
+        p2pApi,
         dbApi,
         senseApi,
         ipfsError,
@@ -199,6 +203,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
         isDbInitialized,
         isSyncInitialized,
         isReady,
+        p2pSyncService,
       } as BackendProviderContextType),
     [
       isReady,
@@ -209,6 +214,8 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
       senseApi,
       dbApi,
       ipfsApi,
+      p2pApi,
+      p2pSyncService,
     ]
   );
 

@@ -35,12 +35,14 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     rune: runeBackend,
     ipfsApi,
     isIpfsInitialized,
-    embeddingApi$,
+    getEmbeddingApi,
   } = useBackend();
 
   const [isSoulInitialized, setIsSoulInitialized] = useState(false);
   const runeRef = useRef<Option<Remote<RuneFrontend>>>();
-  const embeddingApiRef = useRef<Option<Remote<EmbeddingApi>>>();
+  const embeddingApiRef = useRef<EmbeddingApi>();
+  const [isEmbeddingApiInitialized, setIsEmbeddingApiInitialized] =
+    useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -57,19 +59,15 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
         }
         setIsSoulInitialized(!!v);
       });
-
-      const embeddingApiSubscription = (await embeddingApi$).subscribe(
-        proxy((embeddingApi) => {
-          if (embeddingApi) {
-            embeddingApiRef.current = embeddingApi;
-            console.log('+ embedding api initalized', embeddingApi);
-          }
+      getEmbeddingApi()
+        .then(async (api) => {
+          embeddingApiRef.current = api;
+          setIsEmbeddingApiInitialized(true);
         })
-      );
+        .catch(console.error);
 
       return () => {
         soulSubscription.unsubscribe();
-        embeddingApiSubscription.unsubscribe();
       };
     };
 
@@ -133,9 +131,10 @@ function ScriptingProvider({ children }: { children: React.ReactNode }) {
     return {
       rune: runeRef.current,
       embeddingApi: embeddingApiRef.current,
+      isEmbeddingApiInitialized,
       isSoulInitialized,
     };
-  }, [isSoulInitialized]);
+  }, [isSoulInitialized, isEmbeddingApiInitialized]);
 
   return (
     <ScriptingContext.Provider value={value}>

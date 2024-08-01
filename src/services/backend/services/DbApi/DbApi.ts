@@ -44,9 +44,8 @@ const DEFAULT_SYNC_STATUS = {
 class DbApiWrapper {
   private db: CozoDbWorker | undefined;
 
-  public init(dbApi: CozoDbWorker) {
+  constructor(dbApi: CozoDbWorker) {
     this.db = dbApi;
-    return this;
   }
 
   public async getSyncStatus(

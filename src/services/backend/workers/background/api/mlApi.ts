@@ -13,8 +13,10 @@ import {
   shareReplay,
   ReplaySubject,
   filter,
+  pipe,
+  tap,
 } from 'rxjs';
-import { proxy } from 'comlink';
+import { proxy, Remote } from 'comlink';
 
 env.allowLocalModels = false;
 
@@ -101,10 +103,7 @@ const createEmbeddingApi$ = (
 
         const searchByEmbedding = async (text: string, count?: number) => {
           const vec = await createEmbedding(text);
-          // console.log('----searchByEmbedding', vec);
-
           const rows = await dbInstance.searchByEmbedding(vec, count);
-          //   console.log('----searcByEmbedding rows', rows);
 
           return rows;
         };
@@ -113,7 +112,8 @@ const createEmbeddingApi$ = (
           createEmbedding,
           searchByEmbedding,
         };
-        replaySubject.next(proxy(api));
+
+        replaySubject.next(api);
       }
     }
   );
@@ -161,7 +161,16 @@ export const createMlApi = (
       );
   };
 
+  const getEmbeddingApi = async () =>
+    new Promise<EmbeddingApi>((resolve) => {
+      embeddingApi$.subscribe((api) => {
+        if (api) {
+          resolve(proxy(api));
+        }
+      });
+    });
+
   init();
 
-  return { embeddingApi$, init };
+  return { embeddingApi$, getEmbeddingApi, init };
 };

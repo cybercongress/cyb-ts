@@ -1,7 +1,7 @@
 import type { TransferHandler } from 'comlink';
 import { IPFSContent } from 'src/services/ipfs/types';
 
-export type IPFSContentTransferable = Omit<IPFSContent, 'result'> & {
+type IPFSContentTransferable = Omit<IPFSContent, 'result'> & {
   port: MessagePort;
 };
 
@@ -75,8 +75,4 @@ const IPFSContentTransferHandler: TransferHandler<
   },
 };
 
-export {
-  IPFSContentTransferHandler,
-  // serializeIPFSContent,
-  // deserializeIPFSContent,
-};
+export default IPFSContentTransferHandler;

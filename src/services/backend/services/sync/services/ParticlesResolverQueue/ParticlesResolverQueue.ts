@@ -90,11 +90,9 @@ class ParticlesResolverQueue {
   }
 
   constructor(deps: ServiceDeps) {
-    if (!deps.waitForParticleResolve) {
-      throw new Error('waitForParticleResolve is not defined');
-    }
-
-    this.waitForParticleResolve = deps.waitForParticleResolve;
+    deps.waitForParticleResolve$.subscribe((waitForParticleResolve) => {
+      this.waitForParticleResolve = waitForParticleResolve;
+    });
 
     deps.embeddingApi$.subscribe((embeddingApi) => {
       this.embeddingApi = embeddingApi;
@@ -116,8 +114,12 @@ class ParticlesResolverQueue {
     this.isInitialized$ = combineLatest([
       deps.dbInstance$,
       deps.ipfsInstance$,
+      deps.waitForParticleResolve$,
     ]).pipe(
-      map(([dbInstance, ipfsInstance]) => !!ipfsInstance && !!dbInstance)
+      map(
+        ([dbInstance, ipfsInstance, waitForParticleResolve]) =>
+          !!ipfsInstance && !!dbInstance && !!waitForParticleResolve
+      )
     );
   }
 
