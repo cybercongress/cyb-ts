@@ -3,8 +3,9 @@ import { UnixFS, unixfs, AddOptions } from '@helia/unixfs';
 import { Libp2p } from 'libp2p';
 import { multiaddr } from '@multiformats/multiaddr';
 import { LsResult } from 'ipfs-core-types/src/pin';
+import { IDBBlockstore } from 'blockstore-idb';
+import { IDBDatastore } from 'datastore-idb';
 
-import { MemoryDatastore } from 'datastore-core';
 import {
   AbortOptions,
   CatOptions,
@@ -53,14 +54,14 @@ class HeliaNode implements IpfsNode {
   async init(options?: InitOptions, libp2p?: Libp2p) {
     this.libp2p = libp2p;
 
-    // const blockstore = new IDBBlockstore('helia-bs');
-    // await blockstore.open();
+    const blockstore = new IDBBlockstore('helia-bs');
+    await blockstore.open();
 
-    // const datastore = new IDBDatastore('helia-ds');
-    // await datastore.open();
+    const datastore = new IDBDatastore('helia-ds');
+    await datastore.open();
 
-    const blockstore = new MemoryDatastore();
-    const datastore = new MemoryDatastore();
+    // const blockstore = new MemoryDatastore();
+    // const datastore = new MemoryDatastore();
 
     this.node = await createHelia({ blockstore, datastore, libp2p });
 
