@@ -120,7 +120,10 @@ function AppRouter() {
           <Route path="/ide" element={<FreestyleIde />} />
 
           <Route path="/robot/*" element={<Robot />} />
-          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
+          <Route
+            path="/ipfs"
+            element={<Navigate to={routes.settings.path} />}
+          />
 
           <Route path={routes.temple.path} element={<Temple />} />
           <Route path={routes.neuron.path} element={<Robot />} />
