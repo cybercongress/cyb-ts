@@ -1,7 +1,7 @@
 @import '../../containerGradient/saber/index.module.scss';
 
 @mixin active-saber($position) {
-  $color-saber: 'white';
+  $color-saber: 'purple';
   color: #fff;
   font-size: 1.125rem;
 
@@ -12,9 +12,7 @@
 
   @if ($position ==left or $position ==right) {
     @include saber($color-saber, $position);
-  }
-
-  @else {
+  } @else {
     @include saber-horizontal($color-saber);
   }
 }
@@ -78,7 +76,7 @@
   @include changeWidth('before');
 
   &::before {
-    width: 100%
+    width: 100%;
   }
 
   border-right: unset;
