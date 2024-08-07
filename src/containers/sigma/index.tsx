@@ -5,17 +5,16 @@ import { useLocation } from 'react-router-dom';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import TokenChange from 'src/components/TokenChange/TokenChange';
 import { routes } from 'src/routes';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import Display from 'src/components/containerGradient/Display/Display';
 import { useAppSelector } from 'src/redux/hooks';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import useCurrentPassport from 'src/features/passport/hooks/useCurrentPassport';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
-import styles from './Sigma.module.scss';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { useAdviser } from 'src/features/adviser/context';
 
 const valueContext = {
   totalCap: 0,
@@ -24,12 +23,10 @@ const valueContext = {
 };
 
 function Sigma() {
-  // const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
   const location = useLocation();
 
-  // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
-  const { address, isOwner, passport } = useRobotContext();
+  const { address, isOwner, passport, isLoading } = useRobotContext();
   const [step, setStep] = useState(STEP_INFO.STATE_PROVE);
   const [selectedAddress, setSelectedAddress] = useState<string | null>();
 
@@ -41,20 +38,12 @@ function Sigma() {
     };
   });
 
-  const { passport: defaultPassport } = usePassportByAddress(
-    defaultAccount?.account?.cyber?.bech32 || null
-  );
-
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser('current neurons capital valuation');
-  }, [setAdviser]);
+  const defaultPassport = useCurrentPassport();
 
   const superSigma = location.pathname === routes.sigma.path;
 
   const accountsData = useMemo(() => {
-    if (!superSigma) {
+    if (!superSigma && address) {
       return [
         {
           bech32: address,
@@ -75,7 +64,13 @@ function Sigma() {
   }, [address, accounts, superSigma]);
 
   const isCurrentOwner = isOwner || superSigma;
-  const currentPassport = isCurrentOwner ? defaultPassport : passport;
+  const currentPassport = isCurrentOwner ? defaultPassport?.data : passport;
+
+  useAdviserTexts({
+    isLoading: isLoading || defaultPassport?.loading,
+    loadingText: 'loading passport',
+    defaultText: 'current neurons capital valuation',
+  });
 
   useEffect(() => {
     const { dataCap } = value;
@@ -89,7 +84,6 @@ function Sigma() {
       updateChangeCap(changeCap);
       updateTotalCap(tempCap);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.dataCap]);
 
   const updateTotalCap = (cap) => {
@@ -131,35 +125,33 @@ function Sigma() {
         isOwner: isCurrentOwner,
       }}
     >
-      <div className={styles.wrapper}>
-        <Display
-          noPaddingX
-          noPaddingY
-          title={
-            <DisplayTitle
-              title={superSigma ? 'Supersigma' : 'Sigma'}
-              image={<img src={require('../../image/sigma.png')} alt="sigma" />}
-            >
-              <TokenChange
-                total={value.totalCap}
-                // change={value.changeCap}
-              />
-            </DisplayTitle>
-          }
-        >
-          {accountsData?.map(({ bech32: address }) => {
-            return (
-              <CardPassport
-                key={address}
-                address={address}
-                passport={currentPassport}
-                selectAddress={isCurrentOwner ? selectAddress : undefined}
-                selectedAddress={selectedAddress}
-              />
-            );
-          })}
-        </Display>
-      </div>
+      <Display
+        noPaddingX
+        noPaddingY
+        title={
+          <DisplayTitle
+            title={superSigma ? 'Supersigma' : 'Sigma'}
+            image={<img src={require('../../image/sigma.png')} alt="sigma" />}
+          >
+            <TokenChange
+              total={value.totalCap}
+              // change={value.changeCap}
+            />
+          </DisplayTitle>
+        }
+      >
+        {accountsData?.map(({ bech32: address }) => {
+          return (
+            <CardPassport
+              key={address}
+              address={address}
+              passport={currentPassport}
+              selectAddress={isCurrentOwner ? selectAddress : undefined}
+              selectedAddress={selectedAddress}
+            />
+          );
+        })}
+      </Display>
 
       {isCurrentOwner && currentPassport && (
         <ActionBarPortalGift

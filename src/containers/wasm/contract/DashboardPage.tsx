@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { BASE_DENOM } from 'src/constants/config';
 import { useWasmDashboardPageQuery } from 'src/generated/graphql';
+import { CardStatisics, Dots, MainContainer } from 'src/components';
 import { formatNumber } from '../../../utils/utils';
-import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
 
@@ -66,7 +66,7 @@ function DashboardPage() {
   const { codes } = useGetCodes();
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <ContainerCol>
         <ContainerCardStatisics>
           <CardStatisics
@@ -128,7 +128,7 @@ function DashboardPage() {
           />
         )}
       </ContainerCol>
-    </main>
+    </MainContainer>
   );
 }
 

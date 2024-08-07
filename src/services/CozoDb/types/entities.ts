@@ -92,8 +92,18 @@ export enum SyncQueueStatus {
   error = -1,
 }
 
-export type SyncQueueDbEntity = {
+export enum SyncQueueJobType {
+  particle = 0,
+  embedding = 1,
+}
+
+export type SyncQueueKey = {
   id: string;
+  job_type: SyncQueueJobType;
+};
+
+export type SyncQueueDbEntity = SyncQueueKey & {
+  data: string;
   status: SyncQueueStatus;
   priority: QueuePriority | number;
 };
@@ -107,9 +117,15 @@ export type CommunityDbEntity = {
   follower: boolean;
 };
 
+export type EmbeddinsDbEntity = {
+  cid: ParticleCid;
+  vec: number[];
+};
+
 export type DbEntity =
   | TransactionDbEntity
   | ParticleDbEntity
   | SyncStatusDbEntity
   | ConfigDbEntity
-  | SyncQueueDbEntity;
+  | SyncQueueDbEntity
+  | EmbeddinsDbEntity;

@@ -1,10 +1,13 @@
 .wrapper {
+  width: 100%;
+
   // Display
   > div {
     > div {
       display: flex;
       overflow-x: hidden;
       flex-direction: column;
+
       // height: auto !important;
     }
 
@@ -18,120 +21,6 @@
       }
     }
   }
-}
-
-.header {
-  // display: grid;
-  // grid-template-areas:
-  //   'avatar title'
-  //   'avatar text';
-
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
-  padding: 10px 15px;
-
-  gap: 0 10px;
-
-  position: relative;
-  &::before {
-    content: '';
-    bottom: -10px;
-    position: absolute;
-    left: -25px;
-    height: 20%;
-    pointer-events: none;
-    right: -10px;
-    filter: blur(10px);
-    background-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.484),
-      rgba(0, 0, 0, 1)
-    );
-  }
-
-  img {
-    width: auto;
-    max-height: 100px;
-  }
-
-  .meta {
-    > div {
-      min-width: unset;
-      padding: 0;
-
-      > :nth-child(1) {
-        > :nth-child(1) {
-          display: none;
-        }
-
-        > :nth-child(2) {
-          > span:nth-of-type(1) {
-            display: none;
-          }
-        }
-      }
-
-      > :nth-child(2) {
-        // justify-content: left;
-      }
-
-      > :last-child {
-        > :last-child {
-          display: none;
-        }
-      }
-    }
-  }
-
-  & > :nth-child(1) {
-    grid-area: avatar;
-  }
-
-  .title {
-    font-size: 16px;
-    text-transform: none;
-    grid-area: title;
-
-    margin-top: 15px;
-    max-height: 150px;
-    overflow: hidden;
-    color: white;
-
-    > div {
-      display: flex;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    > div > div {
-      // display: -webkit-box;
-      // -webkit-line-clamp: 5;
-      // -webkit-box-orient: vertical;
-      * {
-        line-height: normal;
-      }
-      min-height: 50px;
-    }
-  }
-
-  > p {
-    grid-area: text;
-    font-size: 14px;
-
-    button {
-      color: rgba(255, 255, 255, 0.5);
-    }
-  }
-}
-
-.header_Neuron {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0 5px;
 }
 
 .noData {

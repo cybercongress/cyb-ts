@@ -1,11 +1,11 @@
-import { Account, Tooltip } from 'src/components';
-import styles from './Message.module.scss';
+import { Account } from 'src/components';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import { routes } from 'src/routes';
 import { Link, useNavigate } from 'react-router-dom';
-import Date from '../../../components/Date/Date';
 import cx from 'classnames';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
+import Date from '../../../components/Date/Date';
+import styles from './Message.module.scss';
 import CoinsAmount, {
   CoinAction,
 } from '../../../components/CoinAmount/CoinAmount';
@@ -89,10 +89,11 @@ function Message({
             return;
           }
           // if text not selected
-          // shouldn't be null
-          if (window.getSelection().toString() === '') {
-            handleNavigate();
+          if (window.getSelection()?.toString()) {
+            return;
           }
+
+          handleNavigate();
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {

@@ -25,6 +25,7 @@ import DataIbcHistory from './components/dataIbcHistory/DataIbcHistory';
 import InputNumberDecimalScale from '../components/Inputs/InputNumberDecimalScale/InputNumberDecimalScale';
 import { useTeleport } from '../Teleport.context';
 import { CHAIN_ID } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 type Query = {
   networkFrom: string;
@@ -267,6 +268,10 @@ function Bridge() {
     const balanceToken = balance ? balance[tokenB] || 0 : 0;
     setTokenBBalance(balanceToken);
   }, [getAccountBalancesToken, networkB, tokenB]);
+
+  useAdviserTexts({
+    defaultText: 'bridge tokens',
+  });
 
   const stateActionBar = {
     tokenAmount,

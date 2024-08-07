@@ -4,10 +4,18 @@ import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
+import {
+  useStake as useVerseStake,
+  useStake as useVerseStake,
+} from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
+import {
+  CYBERVER_CONTRACTS,
+  CYBERVER_CONTRACTS,
+} from 'src/features/cybernet/constants';
+import { useQueryClient, useQueryClient } from 'src/contexts/queryClient';
+
+import { isPussyChain } from 'src/utils/chains/pussy';
 import { fromBech32 } from '../../../utils/utils';
-import { useStake as useVerseStake } from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
-import { CYBERVER_CONTRACTS } from 'src/features/cybernet/constants';
-import { useQueryClient } from 'src/contexts/queryClient';
 
 const initValue = {
   denom: BASE_DENOM,
@@ -76,17 +84,18 @@ const getCommissionAmount = (data) => {
 };
 
 function useCyberverBalance({ address }) {
+  const skip = !address || !isPussyChain;
   // will be refactored to loop
   const s1 = useVerseStake({
     address,
     contractAddress: CYBERVER_CONTRACTS[0],
-    skip: !address,
+    skip,
   });
 
   const s2 = useVerseStake({
     address,
     contractAddress: CYBERVER_CONTRACTS[1],
-    skip: !address,
+    skip,
   });
 
   const total1 = s1.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;

@@ -20,8 +20,6 @@ const config = {
   devtool: 'cheap-module-source-map',
   entry: {
     main: [path.join(__dirname, 'src', 'index.tsx')],
-    // helia: 'helia',
-    // cozodb: 'cyb-cozo-lib-wasm',
   },
   output: {
     filename: '[name].js',
@@ -203,6 +201,10 @@ const config = {
         test: /\.(graphql|gql)$/,
         exclude: /node_modules/,
         use: 'graphql-tag/loader',
+      },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
       },
     ],
   },

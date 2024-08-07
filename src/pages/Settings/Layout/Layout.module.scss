@@ -1,8 +1,10 @@
 @import '../../../layouts/variables.module.scss';
 
+$size-columns: 200px;
+
 .wrapper {
   display: grid;
-  grid-template-columns: 200px minmax(200px, 62%);
+  grid-template-columns: $size-columns minmax($size-columns, 1fr);
   grid-template-rows: 1fr;
   justify-content: center;
 
@@ -23,6 +25,7 @@
 
   > :nth-child(2) {
     left: -2px;
+    margin-right: -2px;
     position: relative;
     overflow-x: auto;
   }

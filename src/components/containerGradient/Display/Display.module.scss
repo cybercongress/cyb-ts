@@ -1,11 +1,10 @@
-@import '../saber/index.module.scss';
-@import './variables.module.scss';
-@import '../../../style/mixins.scss';
+@import '../saber/index.module';
+@import './variables.module';
+@import '../../../style/mixins';
 
 .wrapper {
   // TODO: remove this
   z-index: 0;
-
   display: flex;
   flex-direction: column;
 
@@ -30,6 +29,7 @@
       content: '';
       display: none;
     }
+
     border-right: unset !important;
   }
 
@@ -38,13 +38,13 @@
       content: '';
       display: none;
     }
+
     border-left: unset !important;
   }
 
   .inner {
     padding: $display-padding-top $display-padding-x;
     overflow: auto;
-
     height: 100%;
     max-height: 100%;
 

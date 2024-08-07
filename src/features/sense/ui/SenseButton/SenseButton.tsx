@@ -1,28 +1,19 @@
-import { Link } from 'react-router-dom';
-import styles from './SenseButton.module.scss';
 import { routes } from 'src/routes';
-import cx from 'classnames';
 import { Tooltip } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectUnreadCounts } from '../../redux/sense.redux';
+import SideButtonLink from 'src/components/sideButtonLink/SideButtonLink';
 
-type Props = {
-  className?: string;
-};
-
-function SenseButton({ className }: Props) {
+function SenseButton() {
   const { particles, neurons } = useAppSelector(selectUnreadCounts);
   const total = particles + neurons;
 
   return (
-    <Link
-      className={cx(styles.senseBtn, className)}
-      to={routes.robot.routes.sense.path}
-    >
+    <SideButtonLink to={routes.robot.routes.sense.path} buttonType="sense">
       <Tooltip tooltip="sense notifications">
         <span>{total || ''} 🧬</span>
       </Tooltip>
-    </Link>
+    </SideButtonLink>
   );
 }
 

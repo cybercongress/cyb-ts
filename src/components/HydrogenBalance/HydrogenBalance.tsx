@@ -1,13 +1,22 @@
 import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import IconsNumber from '../IconsNumber/IconsNumber';
 
-function HydrogenBalance({ address }) {
+type Props = {
+  address?: string;
+  isVertical?: boolean;
+};
+
+function HydrogenBalance({ address, isVertical }: Props) {
   const { totalAmountInLiquid } = useGetBalanceBostrom(address);
 
   return (
-    <div>
-      <IconsNumber value={totalAmountInLiquid.currentCap} type="hydrogen" />
-    </div>
+    <span>
+      <IconsNumber
+        value={totalAmountInLiquid.currentCap}
+        type="hydrogen"
+        isVertical={isVertical}
+      />
+    </span>
   );
 }
 
